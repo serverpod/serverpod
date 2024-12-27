@@ -129,7 +129,6 @@ typedef _OnInputStreamClosed = void Function(
   CloseReason? closeReason,
   MethodStreamCallContext callContext,
 );
-typedef _OnAllStreamsClosed = void Function();
 
 /// Manages the streams for an endpoint method call.
 /// Should only be used by Serverpod packages.
@@ -143,19 +142,20 @@ class MethodStreamManager {
   final _OnOutputStreamError? _onOutputStreamError;
   final _OnOutputStreamClosed? _onOutputStreamClosed;
   final _OnInputStreamClosed? _onInputStreamClosed;
-  final _OnAllStreamsClosed? _onAllStreamsClosed;
 
   MethodStreamManager({
     _OnInputStreamClosed? onInputStreamClosed,
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
     _OnOutputStreamValue? onOutputStreamValue,
-    _OnAllStreamsClosed? onAllStreamsClosed,
-  })  : _onAllStreamsClosed = onAllStreamsClosed,
-        _onInputStreamClosed = onInputStreamClosed,
+  })  : _onInputStreamClosed = onInputStreamClosed,
         _onOutputStreamClosed = onOutputStreamClosed,
         _onOutputStreamError = onOutputStreamError,
         _onOutputStreamValue = onOutputStreamValue;
+
+  int get openInputStreamCount => _inputStreamContexts.length;
+
+  int get openOutputStreamCount => _outputStreamContexts.length;
 
   Future<void> closeAllStreams() async {
     var inputControllers =
@@ -235,8 +235,11 @@ class MethodStreamManager {
       methodStreamId,
     );
 
-    var inputStreams =
-        _createInputStreams(methodStreamCallContext, methodStreamId);
+    var inputStreams = _createInputStreams(
+      methodStreamCallContext,
+      methodStreamId,
+      session,
+    );
     var streamParams = inputStreams.map(
       (key, value) => MapEntry(key, value.stream),
     );
@@ -336,29 +339,43 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
+      session.serverpod.logVerbose(
+          'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
+          '${methodStreamCallContext.method.name}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
     });
 
+    var streamKey = _buildStreamKey(
+      endpoint: methodStreamCallContext.fullEndpointPath,
+      method: methodStreamCallContext.method.name,
+      methodStreamId: methodStreamId,
+    );
+
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
-      (value) {
+      (value) async {
         _onOutputStreamValue?.call(
             methodStreamId, value, methodStreamCallContext);
       },
-      onError: (e, s) async {
+      onError: (e, s) {
+        // All method calls that return futures are unawaited to ensure that
+        // the calls are invoked synchronously. If an 'await' is added
+        // here, processing new messages might be initiated before the
+        // subscription is canceled.
+        if (e is _StreamComplete) {
+          _updateCloseReason(streamKey, CloseReason.done);
+          unawaited(subscription.cancel());
+          return;
+        }
+
         _onOutputStreamError?.call(
             methodStreamId, e, s, methodStreamCallContext);
 
-        var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.fullEndpointPath,
-          method: methodStreamCallContext.method.name,
-          methodStreamId: methodStreamId,
-        );
         _updateCloseReason(streamKey, CloseReason.error);
 
-        await session.close(error: e, stackTrace: s);
+        unawaited(session.close(error: e, stackTrace: s));
 
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
@@ -366,7 +383,7 @@ class MethodStreamManager {
         /// for the listen method because this cancels
         /// the stream before the onError callback has
         /// been called.
-        await subscription.cancel();
+        unawaited(subscription.cancel());
       },
     );
 
@@ -425,12 +442,16 @@ class MethodStreamManager {
   Map<String, StreamController> _createInputStreams(
     MethodStreamCallContext callContext,
     UuidValue methodStreamId,
+    Session session,
   ) {
     var inputStreams = <String, StreamController>{};
 
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
+        session.serverpod.logVerbose(
+            'Cancelling method input stream for ${callContext.fullEndpointPath}.'
+            '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
@@ -530,10 +551,6 @@ class MethodStreamManager {
     }
 
     await _closeControllers(inputStreamControllers);
-
-    if (_outputStreamContexts.isEmpty && _inputStreamContexts.isEmpty) {
-      _onAllStreamsClosed?.call();
-    }
   }
 
   void _handleMethodWithStreamReturn({
@@ -557,21 +574,13 @@ class MethodStreamManager {
     }
 
     outputController.addStream(methodStream).whenComplete(
-      () async {
-        var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.fullEndpointPath,
-          method: methodStreamCallContext.method.name,
-          methodStreamId: methodStreamId,
+          // The stream complete message is sent as an error to circumvent
+          // branching when passing along stream events to the the handler.
+          () => outputController.addError(_StreamComplete()),
         );
-
-        var closeReasonIsNotAlreadySetToError =
-            _outputStreamContexts[streamKey]?.closeReason != CloseReason.error;
-        if (closeReasonIsNotAlreadySetToError) {
-          _updateCloseReason(streamKey, CloseReason.done);
-        }
-
-        await subscription.cancel();
-      },
-    );
   }
 }
+
+/// Passed as the last message on a stream to indicate that the stream is
+/// complete and no more messages will be sent from the endpoint.
+class _StreamComplete {}

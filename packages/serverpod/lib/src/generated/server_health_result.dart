@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'server_health_metric.dart' as _i2;
+import 'server_health_connection_info.dart' as _i3;
 
 /// Information about health and connection metrics.
 abstract class ServerHealthResult
@@ -22,7 +23,7 @@ abstract class ServerHealthResult
 
   factory ServerHealthResult({
     required List<_i2.ServerHealthMetric> metrics,
-    required List<_i2.ServerHealthConnectionInfo> connectionInfos,
+    required List<_i3.ServerHealthConnectionInfo> connectionInfos,
   }) = _ServerHealthResultImpl;
 
   factory ServerHealthResult.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,7 +33,7 @@ abstract class ServerHealthResult
               _i2.ServerHealthMetric.fromJson((e as Map<String, dynamic>)))
           .toList(),
       connectionInfos: (jsonSerialization['connectionInfos'] as List)
-          .map((e) => _i2.ServerHealthConnectionInfo.fromJson(
+          .map((e) => _i3.ServerHealthConnectionInfo.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
     );
@@ -42,11 +43,11 @@ abstract class ServerHealthResult
   List<_i2.ServerHealthMetric> metrics;
 
   /// List of connection metrics.
-  List<_i2.ServerHealthConnectionInfo> connectionInfos;
+  List<_i3.ServerHealthConnectionInfo> connectionInfos;
 
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,
-    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
+    List<_i3.ServerHealthConnectionInfo>? connectionInfos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +75,7 @@ abstract class ServerHealthResult
 class _ServerHealthResultImpl extends ServerHealthResult {
   _ServerHealthResultImpl({
     required List<_i2.ServerHealthMetric> metrics,
-    required List<_i2.ServerHealthConnectionInfo> connectionInfos,
+    required List<_i3.ServerHealthConnectionInfo> connectionInfos,
   }) : super._(
           metrics: metrics,
           connectionInfos: connectionInfos,
@@ -83,7 +84,7 @@ class _ServerHealthResultImpl extends ServerHealthResult {
   @override
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,
-    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
+    List<_i3.ServerHealthConnectionInfo>? connectionInfos,
   }) {
     return ServerHealthResult(
       metrics: metrics ?? this.metrics.map((e0) => e0.copyWith()).toList(),

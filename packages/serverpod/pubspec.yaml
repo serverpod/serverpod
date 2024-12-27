@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod
-version: 2.1.5
+version: 2.3.0
 description: Serverpod is an open-source, scalable app server, written in Dart for the Flutter community.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -32,14 +32,15 @@ dependencies:
   retry: ^3.1.1
   synchronized: ^3.1.0
   system_resources: ^1.6.0
-  vm_service: ">=13.0.0 <15.0.0"
+  vm_service: ">=13.0.0 <16.0.0"
   yaml: ^3.1.1
-  serverpod_shared: 2.1.5
-  serverpod_serialization: 2.1.5
+  serverpod_shared: 2.3.0
+  serverpod_serialization: 2.3.0
+  uuid: ^4.1.0
 
 dev_dependencies:
   test: ^1.24.2
-  serverpod_lints: 2.1.5
+  serverpod_lints: 2.3.0
 
 dependency_overrides:
   serverpod_shared:

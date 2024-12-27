@@ -3,16 +3,16 @@
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 2.1.5
+version: 2.3.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod: 2.1.5
-  serverpod_serialization: 2.1.5
-  serverpod_shared: 2.1.5
+  serverpod: 2.3.0
+  serverpod_serialization: 2.3.0
+  serverpod_shared: 2.3.0
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   openid_client: ^0.4.8
@@ -25,8 +25,9 @@ dependencies:
   pointycastle: ^3.7.4
 
 dev_dependencies:
-  serverpod_lints: 2.1.5
+  serverpod_lints: 2.3.0
   test: ^1.24.2
+  serverpod_test: 2.3.0
 
 dependency_overrides:
   serverpod:
@@ -37,6 +38,8 @@ dependency_overrides:
     path: ../../../packages/serverpod_lints
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
 
 false_secrets:
   - test/firebase/firebase_auth_mock.dart

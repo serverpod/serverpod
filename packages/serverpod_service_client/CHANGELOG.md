@@ -1,3 +1,34 @@
+## 2.3.0
+- feat: Adds support for transaction isolation levels.
+- feat: Adds typed interface for transaction savepoints.
+- feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
+- feat: Adds support for model definitions placement anywhere in server's `src` directory.
+- fix: Adds additional diagnostic information to database query exceptions.
+- fix: Resolved an issue that caused premature closure of method stream websocket connections.
+- fix: Improves message transmission guarantee in method streams.
+
+## 2.2.2
+ - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
+
+## 2.2.1
+ - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
+
+## 2.2.0
+ - feat: Improves Serverpod startup and lifecycle events logging.
+ - feat: Adds full support for testing framework.
+ - feat: Adds configuration for controlling log output location.
+ - feat: Adds support for signing out a user from a single device.
+ - feat: EXPERIMENTAL. Adds support for inheritance in models.
+ - feat: EXPERIMENTAL. Adds support for sealed classes in models.
+ - fix: Only reports invalid Dart endpoint definition files when using `--watch`.
+ - fix: Uses direct model import when protocol files are analyzed.
+ - fix: Removes redundant file collection from code generation.
+ - fix: Fixes error in `serverpod generate` when a `Session` is set as a named required parameter.
+ - fix: Responds with 400 when throwing serializable exceptions.
+ - fix: Correctly removes account requests after an account is created (auth module).
+ - fix: Passes `String` instead of `Error` object to logger in `session.close`.
+ - fix: Replaces `null` assert with error check in `WebWidget`.
+
 ## 2.1.5
  - feat: EXPERIMENTAL. Adds testing framework. [docs](https://docs.serverpod.dev/next/concepts/testing/get-started)
  - fix: Correctly handles method and endpoint streams for modules.

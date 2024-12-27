@@ -24,6 +24,10 @@ class TypeDefinition {
 
   final String? url;
 
+  /// Populated if type is a model that is defined in the project. I.e. not a
+  /// module or serverpod model.
+  final SerializableModelDefinition? projectModelDefinition;
+
   /// Whether this type is nullable.
   final bool nullable;
 
@@ -42,6 +46,7 @@ class TypeDefinition {
     this.dartType,
     this.customClass = false,
     this.enumDefinition,
+    this.projectModelDefinition,
   });
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
@@ -136,6 +141,7 @@ class TypeDefinition {
         dartType: dartType,
         generics: generics,
         enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
       );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -147,7 +153,18 @@ class TypeDefinition {
         dartType: dartType,
         generics: generics,
         enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
       );
+
+  static String getRef(SerializableModelDefinition model) {
+    if (model is ClassDefinition) {
+      var sealedTopNode = model.sealedTopNode;
+      if (sealedTopNode != null) {
+        return sealedTopNode.fileRef();
+      }
+    }
+    return model.fileRef();
+  }
 
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(
@@ -188,8 +205,16 @@ class TypeDefinition {
               '/${split[1]}';
         } else if (url == defaultModuleAlias) {
           // protocol: reference
-          t.url = p.posix
-              .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
+          var localProjectModelDefinition = projectModelDefinition;
+          String reference = switch (localProjectModelDefinition) {
+            // Import model directly
+            SerializableModelDefinition modelDefinition =>
+              getRef(modelDefinition),
+            // Import model through generated protocol file
+            null => 'protocol.dart',
+          };
+
+          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
@@ -408,20 +433,25 @@ class TypeDefinition {
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
   TypeDefinition applyProtocolReferences(
-      List<SerializableModelDefinition> classDefinitions) {
+    List<SerializableModelDefinition> classDefinitions,
+  ) {
+    var modelDefinition = classDefinitions
+        .where((c) => c.className == className)
+        .where((c) => c.moduleAlias == defaultModuleAlias)
+        .firstOrNull;
+    bool isProjectModel =
+        url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
         className: className,
         nullable: nullable,
         customClass: customClass,
         dartType: dartType,
+        projectModelDefinition: isProjectModel ? modelDefinition : null,
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
         enumDefinition: enumDefinition,
-        url:
-            url == null && classDefinitions.any((c) => c.className == className)
-                ? defaultModuleAlias
-                : url);
+        url: isProjectModel ? defaultModuleAlias : url);
   }
 
   /// converts '[className]' string value to [ValueType]

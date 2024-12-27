@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefaultModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -18,23 +19,23 @@ abstract class EnumDefaultModel
     this.id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i2.ByIndexEnum? byIndexEnumDefaultModel,
-    _i2.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _i3.ByIndexEnum? byIndexEnumDefaultModel,
+    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
   })  : byNameEnumDefaultModel =
             byNameEnumDefaultModel ?? _i2.ByNameEnum.byName1,
         byNameEnumDefaultModelNull =
             byNameEnumDefaultModelNull ?? _i2.ByNameEnum.byName2,
         byIndexEnumDefaultModel =
-            byIndexEnumDefaultModel ?? _i2.ByIndexEnum.byIndex1,
+            byIndexEnumDefaultModel ?? _i3.ByIndexEnum.byIndex1,
         byIndexEnumDefaultModelNull =
-            byIndexEnumDefaultModelNull ?? _i2.ByIndexEnum.byIndex2;
+            byIndexEnumDefaultModelNull ?? _i3.ByIndexEnum.byIndex2;
 
   factory EnumDefaultModel({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i2.ByIndexEnum? byIndexEnumDefaultModel,
-    _i2.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _i3.ByIndexEnum? byIndexEnumDefaultModel,
+    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) = _EnumDefaultModelImpl;
 
   factory EnumDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -47,12 +48,12 @@ abstract class EnumDefaultModel
               ? null
               : _i2.ByNameEnum.fromJson(
                   (jsonSerialization['byNameEnumDefaultModelNull'] as String)),
-      byIndexEnumDefaultModel: _i2.ByIndexEnum.fromJson(
+      byIndexEnumDefaultModel: _i3.ByIndexEnum.fromJson(
           (jsonSerialization['byIndexEnumDefaultModel'] as int)),
       byIndexEnumDefaultModelNull:
           jsonSerialization['byIndexEnumDefaultModelNull'] == null
               ? null
-              : _i2.ByIndexEnum.fromJson(
+              : _i3.ByIndexEnum.fromJson(
                   (jsonSerialization['byIndexEnumDefaultModelNull'] as int)),
     );
   }
@@ -68,9 +69,9 @@ abstract class EnumDefaultModel
 
   _i2.ByNameEnum? byNameEnumDefaultModelNull;
 
-  _i2.ByIndexEnum byIndexEnumDefaultModel;
+  _i3.ByIndexEnum byIndexEnumDefaultModel;
 
-  _i2.ByIndexEnum? byIndexEnumDefaultModelNull;
+  _i3.ByIndexEnum? byIndexEnumDefaultModelNull;
 
   @override
   _i1.Table get table => t;
@@ -79,8 +80,8 @@ abstract class EnumDefaultModel
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i2.ByIndexEnum? byIndexEnumDefaultModel,
-    _i2.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _i3.ByIndexEnum? byIndexEnumDefaultModel,
+    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -145,8 +146,8 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i2.ByIndexEnum? byIndexEnumDefaultModel,
-    _i2.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _i3.ByIndexEnum? byIndexEnumDefaultModel,
+    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) : super._(
           id: id,
           byNameEnumDefaultModel: byNameEnumDefaultModel,
@@ -160,7 +161,7 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
     Object? id = _Undefined,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     Object? byNameEnumDefaultModelNull = _Undefined,
-    _i2.ByIndexEnum? byIndexEnumDefaultModel,
+    _i3.ByIndexEnum? byIndexEnumDefaultModel,
     Object? byIndexEnumDefaultModelNull = _Undefined,
   }) {
     return EnumDefaultModel(
@@ -173,7 +174,7 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
       byIndexEnumDefaultModel:
           byIndexEnumDefaultModel ?? this.byIndexEnumDefaultModel,
       byIndexEnumDefaultModelNull:
-          byIndexEnumDefaultModelNull is _i2.ByIndexEnum?
+          byIndexEnumDefaultModelNull is _i3.ByIndexEnum?
               ? byIndexEnumDefaultModelNull
               : this.byIndexEnumDefaultModelNull,
     );
@@ -209,9 +210,9 @@ class EnumDefaultModelTable extends _i1.Table {
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultModelNull;
 
-  late final _i1.ColumnEnum<_i2.ByIndexEnum> byIndexEnumDefaultModel;
+  late final _i1.ColumnEnum<_i3.ByIndexEnum> byIndexEnumDefaultModel;
 
-  late final _i1.ColumnEnum<_i2.ByIndexEnum> byIndexEnumDefaultModelNull;
+  late final _i1.ColumnEnum<_i3.ByIndexEnum> byIndexEnumDefaultModelNull;
 
   @override
   List<_i1.Column> get columns => [

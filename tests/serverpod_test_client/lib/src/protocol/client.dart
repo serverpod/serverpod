@@ -14,8 +14,8 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
 import 'dart:typed_data' as _i4;
 import 'package:uuid/uuid_value.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol_custom_classes.dart' as _i6;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i7;
+import 'package:serverpod_test_shared/src/protocol_custom_classes.dart' as _i6;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i7;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i8;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i9;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i10;
@@ -37,7 +37,9 @@ import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_fiel
     as _i19;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i20;
-import 'protocol.dart' as _i21;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -411,6 +413,35 @@ class EndpointCustomTypes extends _i1.EndpointRef {
         'returnFreezedCustomClassNullable',
         {'data': data},
       );
+
+  _i2.Future<_i7.CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+              _i7.CustomClassWithoutProtocolSerialization data) =>
+          caller
+              .callServerEndpoint<_i7.CustomClassWithoutProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithoutProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+              _i7.CustomClassWithProtocolSerialization data) =>
+          caller.callServerEndpoint<_i7.CustomClassWithProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+              _i7.CustomClassWithProtocolSerializationMethod data) =>
+          caller.callServerEndpoint<
+              _i7.CustomClassWithProtocolSerializationMethod>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerializationMethod',
+            {'data': data},
+          );
 }
 
 /// {@category Endpoint}
@@ -2330,6 +2361,27 @@ class EndpointTestTools extends _i1.EndpointRef {
         'echoSimpleDatas',
         {'simpleDatas': simpleDatas},
       );
+
+  _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
+        'testTools',
+        'logMessageWithSession',
+        {},
+      );
+
+  _i2.Future<void> addWillCloseListenerToSessionAndThrow() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'addWillCloseListenerToSessionAndThrow',
+        {},
+      );
+
+  _i2.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}
@@ -2371,8 +2423,29 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
       );
 }
 
-class _Modules {
-  _Modules(Client client) {
+/// {@category Endpoint}
+class EndpointMyFeature extends _i1.EndpointRef {
+  EndpointMyFeature(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myFeature';
+
+  _i2.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
+        'myFeature',
+        'myFeatureMethod',
+        {},
+      );
+
+  _i2.Future<_i21.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i21.MyFeatureModel>(
+        'myFeature',
+        'myFeatureModel',
+        {},
+      );
+}
+
+class Modules {
+  Modules(Client client) {
     auth = _i3.Caller(client);
     module = _i17.Caller(client);
   }
@@ -2398,7 +2471,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i21.Protocol(),
+          _i22.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -2449,7 +2522,8 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
-    modules = _Modules(this);
+    myFeature = EndpointMyFeature(this);
+    modules = Modules(this);
   }
 
   late final EndpointAsyncTasks asyncTasks;
@@ -2533,7 +2607,9 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
-  late final _Modules modules;
+  late final EndpointMyFeature myFeature;
+
+  late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
@@ -2577,6 +2653,7 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'myFeature': myFeature,
       };
 
   @override

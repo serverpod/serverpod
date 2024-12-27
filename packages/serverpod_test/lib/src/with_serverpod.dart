@@ -66,6 +66,7 @@ void Function(TestClosure<T>)
   required RollbackDatabase? maybeRollbackDatabase,
   required bool? maybeEnableSessionLogging,
   required List<String>? maybeTestGroupTagsOverride,
+  required Duration? maybeServerpodStartTimeout,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
@@ -75,6 +76,8 @@ void Function(TestClosure<T>)
       'Rollbacks where enabled but the database is not enabled in for this project configuration.',
     );
   }
+
+  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 30);
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
@@ -111,6 +114,8 @@ void Function(TestClosure<T>)
     mainServerpodSession: mainServerpodSession,
   );
 
+  bool startServerpodFailed = false;
+
   return (
     TestClosure<T> testClosure,
   ) {
@@ -118,29 +123,48 @@ void Function(TestClosure<T>)
       testGroupName,
       () {
         setUpAll(() async {
-          await testServerpod.start();
+          try {
+            await testServerpod.start().timeout(startTimeout, onTimeout: () {
+              throw InitializationException(
+                'Serverpod did not start within the timeout of $startTimeout. '
+                'This might indicate that Serverpod cannot connect to the database. '
+                'Ensure that you have run `docker compose up` and check the logs for more information.',
+              );
+            });
+          } catch (_) {
+            startServerpodFailed = true;
+            rethrow;
+          }
 
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();
 
             await localTransactionManager.createTransaction();
-            await localTransactionManager.addSavePoint();
+            await localTransactionManager.addSavepoint();
           }
         });
 
         tearDown(() async {
+          if (startServerpodFailed) {
+            return;
+          }
+
           if (rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();
 
-            await localTransactionManager.rollbackToPreviousSavePoint();
-            await localTransactionManager.addSavePoint();
+            await localTransactionManager.rollbackToPreviousSavepoint();
+            await localTransactionManager.addSavepoint();
           }
 
           await GlobalStreamManager.closeAllStreams();
         });
 
         tearDownAll(() async {
+          if (startServerpodFailed) {
+            return;
+          }
+
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();

@@ -20,9 +20,6 @@ class EndpointDefinition {
   /// The methods this endpoint defines.
   final List<MethodDefinition> methods;
 
-  /// The subdirectories this endpoints dart file is stored in,
-  final List<String> subDirParts;
-
   /// Create a new [EndpointDefinition].
   const EndpointDefinition({
     required this.name,
@@ -30,7 +27,6 @@ class EndpointDefinition {
     required this.methods,
     required this.className,
     required this.filePath,
-    required this.subDirParts,
   });
 }
 

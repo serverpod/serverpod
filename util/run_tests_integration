@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
+# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests_integration"
@@ -11,4 +14,4 @@ set -e
 
 cd tests/docker/tests_integration
 
-docker compose up --abort-on-container-exit --exit-code-from serverpod_test_server --build --remove-orphans
+docker compose --profile concurrency_one up --abort-on-container-exit --exit-code-from serverpod_test_server --build --remove-orphans

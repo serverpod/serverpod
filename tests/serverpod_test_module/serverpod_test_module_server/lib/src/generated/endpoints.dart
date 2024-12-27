@@ -12,8 +12,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/module_endpoint.dart' as _i2;
 import '../endpoints/streaming.dart' as _i3;
+import '../module_feature/endpoints/my_feature_endpoint.dart' as _i4;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
-    as _i4;
+    as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -29,6 +30,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'streaming',
+          'serverpod_test_module',
+        ),
+      'myModuleFeature': _i4.MyModuleFeatureEndpoint()
+        ..initialize(
+          server,
+          'myModuleFeature',
           'serverpod_test_module',
         ),
     };
@@ -59,7 +66,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i4.ModuleClass>(),
+              type: _i1.getType<_i5.ModuleClass>(),
               nullable: false,
             )
           },
@@ -138,6 +145,32 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             streamParams['stream']!.cast<int>(),
           ),
+        ),
+      },
+    );
+    connectors['myModuleFeature'] = _i1.EndpointConnector(
+      name: 'myModuleFeature',
+      endpoint: endpoints['myModuleFeature']!,
+      methodConnectors: {
+        'myFeatureMethod': _i1.MethodConnector(
+          name: 'myFeatureMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['myModuleFeature'] as _i4.MyModuleFeatureEndpoint)
+                  .myFeatureMethod(session),
+        ),
+        'myFeatureModel': _i1.MethodConnector(
+          name: 'myFeatureModel',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['myModuleFeature'] as _i4.MyModuleFeatureEndpoint)
+                  .myFeatureModel(session),
         ),
       },
     );

@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/src/custom_classes.dart';
 import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 
 class CustomTypesEndpoint extends Endpoint {
@@ -55,6 +54,30 @@ class CustomTypesEndpoint extends Endpoint {
   Future<FreezedCustomClass?> returnFreezedCustomClassNullable(
     Session session,
     FreezedCustomClass? data,
+  ) async {
+    return data;
+  }
+
+  Future<CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+    Session session,
+    CustomClassWithoutProtocolSerialization data,
+  ) async {
+    return data;
+  }
+
+  Future<CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+    Session session,
+    CustomClassWithProtocolSerialization data,
+  ) async {
+    return data;
+  }
+
+  Future<CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+    Session session,
+    CustomClassWithProtocolSerializationMethod data,
   ) async {
     return data;
   }

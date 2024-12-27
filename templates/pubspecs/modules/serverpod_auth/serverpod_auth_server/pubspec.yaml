@@ -26,6 +26,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
+  serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:
@@ -36,6 +37,8 @@ dependency_overrides:
     path: ../../../packages/serverpod_lints
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
 
 false_secrets:
   - test/firebase/firebase_auth_mock.dart

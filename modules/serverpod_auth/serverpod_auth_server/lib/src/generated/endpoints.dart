@@ -396,7 +396,30 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).signOut(session),
+              (endpoints['status'] as _i7.StatusEndpoint)
+                  .
+// ignore: deprecated_member_use_from_same_package
+                  signOut(session),
+        ),
+        'signOutDevice': _i1.MethodConnector(
+          name: 'signOutDevice',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['status'] as _i7.StatusEndpoint)
+                  .signOutDevice(session),
+        ),
+        'signOutAllDevices': _i1.MethodConnector(
+          name: 'signOutAllDevices',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['status'] as _i7.StatusEndpoint)
+                  .signOutAllDevices(session),
         ),
         'getUserInfo': _i1.MethodConnector(
           name: 'getUserInfo',

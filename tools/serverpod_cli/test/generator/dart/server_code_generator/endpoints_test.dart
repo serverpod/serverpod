@@ -23,21 +23,25 @@ void main() {
   group(
       'Given protocol definition without endpoints when generating endpoints file',
       () {
-    var protocolDefinition = const ProtocolDefinition(
-      endpoints: [],
-      models: [],
-    );
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
+    setUpAll(() {
+      var protocolDefinition = const ProtocolDefinition(
+        endpoints: [],
+        models: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+      endpointsFile = codeMap[expectedFileName];
+    });
 
     test('then endpoints file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var endpointsFile = codeMap[expectedFileName];
     group(
       'then endpoints file',
       () {
@@ -49,7 +53,6 @@ void main() {
           expect(endpointsFile, isNot(contains('connectors')));
         });
       },
-      skip: endpointsFile == null,
     );
   });
 
@@ -57,26 +60,31 @@ void main() {
       'Given protocol definition with endpoint when generating endpoints file',
       () {
     var endpointName = 'testing';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .build(),
-      ],
-      models: [],
-    );
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
+    setUpAll(() {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .build(),
+        ],
+        models: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      endpointsFile = codeMap[expectedFileName];
+    });
 
     test('then endpoints file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var endpointsFile = codeMap[expectedFileName];
     group(
       'then endpoints file',
       () {
@@ -88,7 +96,6 @@ void main() {
           expect(endpointsFile, contains('connectors[\'$endpointName\']'));
         });
       },
-      skip: endpointsFile == null,
     );
   });
 
@@ -97,29 +104,34 @@ void main() {
       () {
     var firstEndpointName = 'testing1';
     var secondEndpointName = 'testing2';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${firstEndpointName.pascalCase}Endpoint')
-            .withName(firstEndpointName)
-            .build(),
-        EndpointDefinitionBuilder()
-            .withClassName('${secondEndpointName.pascalCase}Endpoint')
-            .withName(secondEndpointName)
-            .build(),
-      ],
-      models: [],
-    );
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+    setUpAll(() {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${firstEndpointName.pascalCase}Endpoint')
+              .withName(firstEndpointName)
+              .build(),
+          EndpointDefinitionBuilder()
+              .withClassName('${secondEndpointName.pascalCase}Endpoint')
+              .withName(secondEndpointName)
+              .build(),
+        ],
+        models: [],
+      );
+
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+      endpointsFile = codeMap[expectedFileName];
+    });
 
     test('then endpoints file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
-    var endpointsFile = codeMap[expectedFileName];
 
     group(
       'then endpoints file',
@@ -134,7 +146,6 @@ void main() {
               endpointsFile, contains('connectors[\'$secondEndpointName\']'));
         });
       },
-      skip: endpointsFile == null,
     );
   });
 
@@ -143,31 +154,37 @@ void main() {
       () {
     var endpointName = 'testing';
     var methodName = 'streamMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder()
-              .withName(methodName)
-              .withReturnType(
-                  TypeDefinitionBuilder().withStreamOf('String').build())
-              .buildMethodStreamDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+    setUpAll(() {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+            MethodDefinitionBuilder()
+                .withName(methodName)
+                .withReturnType(
+                    TypeDefinitionBuilder().withStreamOf('String').build())
+                .buildMethodStreamDefinition(),
+          ]).build(),
+        ],
+        models: [],
+      );
+
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      endpointsFile = codeMap[expectedFileName];
+    });
 
     test('then endpoints file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
-    var endpointsFile = codeMap[expectedFileName];
 
     test('then endpoints file contains MethodStreamConnector for method.', () {
       expect(
@@ -188,33 +205,37 @@ void main() {
       () {
     var endpointName = 'testing';
     var methodName = 'streamMethod';
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [
-        EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withParameters([
-            ParameterDefinition(
-              name: 'streamParam',
-              type: TypeDefinitionBuilder().withStreamOf('String').build(),
-              required: false,
-            ),
-          ]).buildMethodStreamDefinition(),
-        ]).build(),
-      ],
-      models: [],
-    );
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
+    setUpAll(() {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+            MethodDefinitionBuilder().withName(methodName).withParameters([
+              ParameterDefinition(
+                name: 'streamParam',
+                type: TypeDefinitionBuilder().withStreamOf('String').build(),
+                required: false,
+              ),
+            ]).buildMethodStreamDefinition(),
+          ]).build(),
+        ],
+        models: [],
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+      endpointsFile = codeMap[expectedFileName];
+    });
 
     test('then endpoints file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
-    var endpointsFile = codeMap[expectedFileName];
 
     test('then endpoints file contains MethodStreamConnector for method.', () {
       expect(
@@ -246,21 +267,65 @@ void main() {
       () {
     var endpointName = 'testing';
     var methodName = 'deprecatedMethod';
+    late Map<String, String> codeMap;
+    late String? endpointsFile;
+    setUpAll(() {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+            MethodDefinitionBuilder().withName(methodName).withAnnotations([
+              const AnnotationDefinition(
+                name: 'Deprecated',
+                arguments: ["'This method is deprecated.'"],
+                methodCallAnalyzerIgnoreRule:
+                    'deprecated_member_use_from_same_package',
+              )
+            ]).buildMethodCallDefinition(),
+          ]).build(),
+        ],
+        models: [],
+      );
+
+      codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+      endpointsFile = codeMap[expectedFileName];
+    });
+
+    test('then endpoint file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    test(
+        'then endpoint file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
+        () {
+      expect(
+        endpointsFile,
+        contains(
+          '\n// ignore: deprecated_member_use_from_same_package\n',
+        ),
+      );
+    });
+  });
+
+  group(
+      'Given a protocol definition with an endpoint defined in the lib folder',
+      () {
     var protocolDefinition = ProtocolDefinition(
       endpoints: [
         EndpointDefinitionBuilder()
-            .withClassName('${endpointName.pascalCase}Endpoint')
-            .withName(endpointName)
-            .withMethods([
-          MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            const AnnotationDefinition(
-              name: 'Deprecated',
-              arguments: ["'This method is deprecated.'"],
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            )
-          ]).buildMethodCallDefinition(),
-        ]).build(),
+            .withClassName('MyEndpoint')
+            .withName('myEndpoint')
+            .withFilePath(path.joinAll([
+              ...config.serverPackageDirectoryPathParts,
+              'lib',
+              'my_endpoint.dart'
+            ]))
+            .build(),
       ],
       models: [],
     );
@@ -270,20 +335,19 @@ void main() {
       config: config,
     );
 
-    test('then client file is created.', () {
+    test('then endpoint file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
+
     var endpointsFile = codeMap[expectedFileName];
 
-    test(
-        'then client file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
-        () {
-      expect(
-        endpointsFile,
-        contains(
-          '\n// ignore: deprecated_member_use_from_same_package\n',
-        ),
-      );
+    test('then import path is correct.', () {
+      var importPath = [
+        '..',
+        '..',
+        'my_endpoint.dart',
+      ].join('/');
+      expect(endpointsFile, contains("import '$importPath' as "));
     });
   });
 }

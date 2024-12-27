@@ -46,8 +46,28 @@ class ServerpodModulesNotFoundException implements Exception {
   String toString() => message;
 }
 
+abstract interface class ModelLoadConfig {
+  /// Path parts to the lib/src/protocol directory of the server package.
+  List<String> get protocolSourcePathParts;
+
+  /// Path parts to the lib/src/models directory of the server package.
+  List<String> get modelSourcePathParts;
+
+  /// Path parts to the lib/src folder of the server package.
+  List<String> get srcSourcePathParts;
+
+  /// Path parts to the lib folder of the server package.
+  List<String> get libSourcePathParts;
+
+  /// Relative path parts to the model directory
+  List<String> get relativeModelSourcePathParts;
+
+  /// Relative path parts to the protocol directory
+  List<String> get relativeProtocolSourcePathParts;
+}
+
 /// The configuration of the generation and analyzing process.
-class GeneratorConfig {
+class GeneratorConfig implements ModelLoadConfig {
   const GeneratorConfig({
     required this.name,
     required this.type,
@@ -97,25 +117,39 @@ class GeneratorConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
-  /// Path parts to the lib folder of the server package.
+  @override
   List<String> get libSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib'];
 
-  /// Path parts to the protocol directory of the server package.
+  @override
+  List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
+
+  @override
+  List<String> get relativeProtocolSourcePathParts =>
+      ['lib', 'src', 'protocol'];
+
+  @override
   List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
 
-  /// Path parts to the model directory of the server package.
+  @override
+  List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
+
+  @override
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
-
-  /// Path parts to the endpoints directory of the server package.
-  List<String> get endpointsSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
+      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
+
+  /// The path parts of the generated endpoint file.
+  List<String> get generatedServerEndpointFilePathParts =>
+      [...generatedServeModelPathParts, 'endpoints.dart'];
+
+  /// The path parts of the generated protocol file.
+  List<String> get generatedServerProtocolFilePathParts =>
+      [...generatedServeModelPathParts, 'protocol.dart'];
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
@@ -142,10 +176,6 @@ class GeneratorConfig {
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
-    if (!isExperimentalFeatureEnabled(ExperimentalFeature.testTools)) {
-      return null;
-    }
-
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts != null) {
@@ -260,10 +290,10 @@ class GeneratorConfig {
         'pubspec.yaml'
       ]));
       var yamlStr = file.readAsStringSync();
-      var yaml = loadYaml(yamlStr);
+      Map yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
       dartClientDependsOnServiceClient =
-          yaml['dependencies'].containsKey('serverpod_service_client');
+          (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
@@ -301,7 +331,8 @@ class GeneratorConfig {
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
       for (var package in modulesData.keys) {
-        var nickname = modulesData[package]?['nickname'];
+        var packageValue = modulesData[package];
+        var nickname = packageValue is Map ? packageValue['nickname'] : null;
         manualModules[package] = nickname is String ? nickname : null;
       }
     }
@@ -319,9 +350,10 @@ class GeneratorConfig {
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
-    if (generatorConfig['extraClasses'] != null) {
+    var configExtraClasses = generatorConfig['extraClasses'];
+    if (configExtraClasses != null) {
       try {
-        for (var extraClassConfig in generatorConfig['extraClasses']) {
+        for (var extraClassConfig in configExtraClasses) {
           extraClasses.add(
             parseType(
               extraClassConfig,
@@ -334,7 +366,7 @@ class GeneratorConfig {
       } catch (e) {
         throw SourceSpanFormatException(
             'Failed to load \'extraClasses\' config',
-            generatorConfig['extraClasses'].span);
+            configExtraClasses is YamlNode ? configExtraClasses.span : null);
       }
     }
 
@@ -416,7 +448,6 @@ class GeneratorConfig {
     var str = '''type: $type
 sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
 sourceModel: ${p.joinAll(modelSourcePathParts)}
-sourceEndpoints: ${p.joinAll(endpointsSourcePathParts)}
 generatedClientDart: ${p.joinAll(generatedDartClientModelPathParts)}
 generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 ''';
@@ -431,7 +462,7 @@ generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 }
 
 /// Describes the configuration of a Serverpod module a package depends on.
-class ModuleConfig {
+class ModuleConfig implements ModelLoadConfig {
   PackageType type;
 
   /// The user defined nickname of the module.
@@ -450,13 +481,27 @@ class ModuleConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
-  /// Path parts to the protocol directory of the server package.
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+  @override
+  List<String> get libSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib'];
 
-  /// Path parts to the model directory of the server package.
+  @override
+  List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
+
+  @override
+  List<String> get relativeProtocolSourcePathParts =>
+      ['lib', 'src', 'protocol'];
+
+  @override
+  List<String> get protocolSourcePathParts =>
+      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+
+  @override
+  List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
+
+  @override
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
+      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// The migration versions of the module.
   List<String> migrationVersions;

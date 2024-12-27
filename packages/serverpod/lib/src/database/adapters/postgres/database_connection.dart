@@ -5,12 +5,14 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
-import 'package:serverpod/src/database/exceptions.dart';
+import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
@@ -18,6 +20,8 @@ import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../database_pool_manager.dart';
 import '../../query_parameters.dart';
+
+part 'postgres_exceptions.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
@@ -157,7 +161,7 @@ class DatabaseConnection {
     );
 
     if (result.length != 1) {
-      throw DatabaseInsertRowException(
+      throw _PgDatabaseInsertRowException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -222,7 +226,7 @@ class DatabaseConnection {
     );
 
     if (updated.isEmpty) {
-      throw DatabaseUpdateRowException(
+      throw _PgDatabaseUpdateRowException(
         'Failed to update row, no rows updated',
       );
     }
@@ -263,7 +267,7 @@ class DatabaseConnection {
     );
 
     if (result.isEmpty) {
-      throw DatabaseDeleteRowException(
+      throw _PgDatabaseDeleteRowException(
         'Failed to delete row, no rows deleted.',
       );
     }
@@ -307,7 +311,11 @@ class DatabaseConnection {
         .withLimit(limit)
         .build();
 
-    var result = await _query(session, query, transaction: transaction);
+    var result = await _query(
+      session,
+      query,
+      context: _resolveQueryContext(transaction),
+    );
 
     if (result.length != 1) return 0;
 
@@ -328,8 +336,8 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
@@ -347,21 +355,21 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
   }
 
-  Future<pg.Result> _query(
+  static Future<pg.Result> _query(
     Session session,
     String query, {
     int? timeoutInSeconds,
-    required Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
+    required pg.Session context,
   }) async {
     assert(
       simpleQueryMode == false ||
@@ -369,15 +377,11 @@ class DatabaseConnection {
       'simpleQueryMode does not support parameters',
     );
 
-    var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
         timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
-      var context =
-          postgresTransaction?.executionContext ?? _postgresConnection;
-
       var result = await context.execute(
         parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
@@ -393,37 +397,37 @@ class DatabaseConnection {
         numRowsAffected: result.affectedRows,
       );
       return result;
+    } on pg.ServerException catch (exception, trace) {
+      var message = switch (exception.code) {
+        (PgErrorCode.undefinedTable) =>
+          'Table not found, have you applied the database migration? (${exception.message})',
+        (_) => exception.message,
+      };
+
+      var serverpodException = _PgDatabaseQueryException.fromServerException(
+        exception,
+        messageOverride: message,
+      );
+
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
+    } on pg.PgException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException(exception.message);
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
     } catch (exception, trace) {
-      if (exception is pg.ServerException) {
-        var message = switch (exception.code) {
-          ('42P01') =>
-            'Table not found, have you applied the database migration? (${exception.message})',
-          (_) => exception.message,
-        };
-
-        var serverpodException = DatabaseException(message);
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
-      if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(exception.message);
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
@@ -441,9 +445,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -460,9 +464,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -479,10 +483,15 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.map((row) => row.toColumnMap());
+  }
+
+  pg.Session _resolveQueryContext(Transaction? transaction) {
+    var postgresTransaction = _castToPostgresTransaction(transaction);
+    return postgresTransaction?.executionContext ?? _postgresConnection;
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
@@ -519,7 +528,7 @@ class DatabaseConnection {
         .toList();
   }
 
-  void _logQuery(
+  static void _logQuery(
     Session session,
     String query,
     DateTime startTime, {
@@ -542,12 +551,30 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    required TransactionSettings settings,
+    required Session session,
+  }) {
+    var pgTransactionSettings = pg.TransactionSettings(
+      isolationLevel: switch (settings.isolationLevel) {
+        IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
+        IsolationLevel.readUncommitted => pg.IsolationLevel.readUncommitted,
+        IsolationLevel.repeatableRead => pg.IsolationLevel.repeatableRead,
+        IsolationLevel.serializable => pg.IsolationLevel.serializable,
+        null => null,
+      },
+    );
+
     return _postgresConnection.runTx<R>(
       (ctx) {
-        var transaction = _PostgresTransaction(ctx);
+        var transaction = _PostgresTransaction(
+          ctx,
+          session,
+        );
         return transactionFunction(transaction);
       },
+      settings: pgTransactionSettings,
     );
   }
 
@@ -750,15 +777,55 @@ _PostgresTransaction? _castToPostgresTransaction(
   return transaction;
 }
 
+class _PostgresSavepoint implements Savepoint {
+  @override
+  final String id;
+  final _PostgresTransaction _transaction;
+
+  _PostgresSavepoint(this.id, this._transaction);
+
+  @override
+  Future<void> release() async {
+    await _transaction._query('RELEASE SAVEPOINT $id;');
+  }
+
+  @override
+  Future<void> rollback() async {
+    await _transaction._query('ROLLBACK TO SAVEPOINT $id;');
+  }
+}
+
 /// Postgres specific implementation of transactions.
 class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
+  final Session _session;
 
-  _PostgresTransaction(this.executionContext);
+  _PostgresTransaction(
+    this.executionContext,
+    this._session,
+  );
 
   @override
   Future<void> cancel() async {
     await executionContext.rollback();
+  }
+
+  Future<void> _query(String query, {QueryParameters? parameters}) async {
+    await DatabaseConnection._query(
+      _session,
+      query,
+      parameters: parameters,
+      context: executionContext,
+    );
+  }
+
+  @override
+  Future<Savepoint> createSavepoint() async {
+    var postgresCompatibleRandomString =
+        const Uuid().v4().replaceAll(RegExp(r'-'), '_');
+    var savepointId = 'savepoint_$postgresCompatibleRandomString';
+    await _query('SAVEPOINT $savepointId;');
+    return _PostgresSavepoint(savepointId, this);
   }
 }
 

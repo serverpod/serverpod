@@ -342,7 +342,7 @@ class Server {
       return;
     } else if (result is ExceptionResult) {
       request.response.headers.contentType = ContentType.json;
-      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.statusCode = HttpStatus.badRequest;
 
       var serializedModel =
           serializationManager.encodeWithTypeForProtocol(result.model);

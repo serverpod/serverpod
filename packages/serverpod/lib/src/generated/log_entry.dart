@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_level.dart' as _i2;
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {

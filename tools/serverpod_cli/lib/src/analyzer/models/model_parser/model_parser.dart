@@ -35,6 +35,7 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var isSealed = _parseIsSealed(documentContents);
     var extendsClass = _parseExtendsClass(documentContents);
 
     var classType = parseType(
@@ -60,6 +61,7 @@ class ModelParser {
     return ClassDefinition(
       moduleAlias: protocolSource.moduleAlias,
       className: className,
+      isSealed: isSealed,
       extendsClass: extendsClass,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
@@ -67,7 +69,7 @@ class ModelParser {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
-      subDirParts: protocolSource.protocolRootPathParts,
+      subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
@@ -104,12 +106,19 @@ class ModelParser {
       values: values,
       serialized: serializeAs,
       documentation: enumDocumentation,
-      subDirParts: protocolSource.protocolRootPathParts,
+      subDirParts: protocolSource.subDirPathParts,
       serverOnly: serverOnly,
       type: enumType,
     );
     enumDef.type.enumDefinition = enumDef;
     return enumDef;
+  }
+
+  static bool _parseIsSealed(YamlMap documentContents) {
+    var isSealed = documentContents.nodes[Keyword.isSealed]?.value;
+    if (isSealed is! bool) return false;
+
+    return isSealed;
   }
 
   static UnresolvedInheritanceDefinition? _parseExtendsClass(
