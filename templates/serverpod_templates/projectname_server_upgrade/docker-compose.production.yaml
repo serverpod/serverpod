@@ -34,7 +34,7 @@ services:
     labels:
       - "traefik.enable=false" # We typically don't expose databases externally via HTTP
     ports:
-      # You should have a firewall in place that DOES NOT allow acces from the
+      # You should have a firewall in place that DOES NOT allow access from the
       # internet on this port. On the host machine, we need access to it.
       - "5432:5432"
     environment:
