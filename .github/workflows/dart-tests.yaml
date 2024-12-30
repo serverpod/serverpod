@@ -50,10 +50,11 @@ jobs:
 
   dart_analyze_latest:
     name: dart analyze latest
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flutter-version: ['3.27.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -68,10 +69,11 @@ jobs:
 
   dart_analyze_downgrade:
     name: dart analyze downgrade
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flutter-version: ['3.19.0', '3.27.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
