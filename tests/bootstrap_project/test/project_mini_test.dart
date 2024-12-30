@@ -66,7 +66,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -215,7 +215,7 @@ void main() async {
   });
 
   group('Given a mini project', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
     setUpAll(() async {
@@ -408,7 +408,7 @@ void main() async {
   });
 
   group('Given a created mini project', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
     setUp(() async {
       var createProcess = await runProcess(

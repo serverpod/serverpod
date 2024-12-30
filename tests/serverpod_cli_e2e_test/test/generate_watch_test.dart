@@ -34,7 +34,7 @@ void main() async {
   });
 
   group('Given a model file that is changed when generate watch is active', () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
@@ -197,7 +197,7 @@ fields:
   group(
       'Given a model file in the "lib/src/ directory that is changed when generate watch is active',
       () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
@@ -359,7 +359,7 @@ fields:
 
   group('Given an endpoint file that is changed when generate watch is active',
       () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
@@ -528,7 +528,7 @@ class TestEndpoint extends Endpoint {
   group(
       'Given an endpoint file in the "lib/src" folder that is changed when generate watch is active',
       () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
@@ -698,7 +698,7 @@ class TestEndpoint extends Endpoint {
   group(
       'Given a serializable model used in an endpoint that is moved to a subfolder when generate watch is active',
       () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
@@ -856,7 +856,7 @@ fields:
 
   group('Given a generated file that is changed when generate watch is active',
       () {
-    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     late Process createProcess;
