@@ -15,3 +15,9 @@ scripts:
     run: melos analyze --no-fatal-warnings
   lint_strict:
     run: melos analyze --fatal-infos --fatal-warnings
+  downgrade_flutter:
+    run: melos exec --flutter -c 1 -- flutter pub downgrade
+  downgrade_dart:
+    run: melos exec --no-flutter -c 1 -- dart pub downgrade
+  downgrade:
+    run: melos downgrade_flutter && melos downgrade_dart
