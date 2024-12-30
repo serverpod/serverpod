@@ -1,0 +1,17 @@
+name: serverpod
+
+packages:
+  - examples/**
+  - integrations/*
+  - modules/*
+  - packages/*
+  - tests/*
+  - tools/*
+
+scripts:
+  lint:
+    run: melos analyze --fatal-warnings
+  lint_loose:
+    run: melos analyze --no-fatal-warnings
+  lint_strict:
+    run: melos analyze --fatal-infos --fatal-warnings
