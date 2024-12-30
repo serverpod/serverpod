@@ -19,9 +19,9 @@ Redis becomes necessary when you want to scale your application horizontally.
 
 ## Prerequisites
 
-- This guide assumes you have basic knowledge of Serverpod.
+- This guide assumes you have basic knowledge of Serverpod and terminal.
+- This guide contains terminal commands that are specific to Unix-based systems (macOS & linux).
 - The `docker-compose.production.yaml` file is configured to run on ARM machines.
-- Configure the branches that trigger the deployment in the `.github/workflows/deployment-docker.yml` file.
 
 ## Table of Contents
 
@@ -56,9 +56,9 @@ If you want to use another architecture or hoster, check the docker-compose file
 ### Registering at Hetzner Cloud
 
 Register an account at Hetzner Cloud and create a new project.
-Use this referral link you get 20€ for free: [Hetzner Cloud](https://hetzner.cloud/?ref=BFdFFipLgfDs)
+Use this referral link to get 20€ credits for free: [Hetzner Cloud](https://hetzner.cloud/?ref=BFdFFipLgfDs)
 
-Next, go to the ["Cloud Console"](https://console.hetzner.cloud/) and create a project.
+Next, go to the [Cloud Console](https://console.hetzner.cloud/) and create a project.
 
 ### Setting up an SSH key to connect to the server
 
@@ -78,7 +78,7 @@ Leave all options at their default values by pressing enter.
 ssh-keygen -t rsa -b 4096
 ```
 
-When asked for a password, just press enter.
+When asked for a password, don't enter anything, just press enter.
 This will create a keypair in `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub`.
 
 Copy the public key to the clipboard:
@@ -91,7 +91,7 @@ Select the output and copy it to the clipboard.
 
 In your Hetzner project, follow these steps:
 
-1. Left hand-side, click on "Security" -> "SSH keys" -> "Add SSH key"
+1. Left hand-side, click on **Security** > **SSH keys** > **Add SSH key**
 2. Add the public key you generated earlier.
 
 ### Creating a new server
@@ -147,7 +147,7 @@ However, to ensure they can access it, check the `sshd_config` file:
 sudo nano /etc/ssh/sshd_config
 ```
 
-Find or add the AllowUsers directive in the file. This directive specifies which
+Find or add the `AllowUsers` directive in the file. This directive specifies which
 users are allowed to SSH into the server. If it doesn't exist, add it at the end
 of the file. If there are multiple users, separate them with spaces:
 
@@ -178,7 +178,7 @@ sudo systemctl restart ssh
 
    Leave any options at their default values by pressing enter.
 
-3. Add your public SSH key to the `authorized_keys` file:
+3. Add the public SSH key to the `authorized_keys` file:
 
    ```bash
    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -190,7 +190,7 @@ sudo systemctl restart ssh
    sudo systemctl restart ssh
    ```
 
-Copy the private key to the clipboard, including the lines `-----BEGIN OPENSSH PRIVATE KEY-----` and ending with `-----END OPEN SSH PRIVATE KEY-----`. Save this key in a secure place, you will need it later.
+Copy the private key to the clipboard, including the lines `-----BEGIN OPENSSH PRIVATE KEY-----` and ending with `-----END OPEN SSH PRIVATE KEY-----`. Save this key in a secure place, you will need it later. Use the following command to display the private key:
 
 ```bash
 cat ~/.ssh/id_rsa
@@ -299,9 +299,9 @@ From the root of your repository, open the `.github/workflows/deployment-docker.
 
 Push your changes to the repository.
 
-To trigger the action, go to the "Actions" tab in your repository and click on
-the "Deploy to Docker" workflow. Click on "Run workflow" and select the branch
-you want to deploy.
+To manually trigger the action, go to the "Actions" tab in your repository and
+click on the "Deploy to Docker" workflow. Click on "Run workflow" and select the
+branch you want to deploy.
 
 ## Using the Serverpod Insights app
 
