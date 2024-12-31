@@ -1081,6 +1081,7 @@ class SerializableModelLibraryGenerator {
 
       for (SerializableModelFieldDefinition field in fields) {
         if (!field.hasDefaults) continue;
+        if (classDefinition.inheritedFields.contains(field)) continue;
 
         Code? defaultCode = _getDefaultValue(
           classDefinition,
@@ -1154,7 +1155,9 @@ class SerializableModelLibraryGenerator {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
-      bool shouldIncludeType = !setAsToThis || field.defaultModelValue != null;
+      bool shouldIncludeType = !setAsToThis ||
+          (field.defaultModelValue != null) &&
+              (!inheritedFields.contains(field));
 
       bool hasDefaults = field.hasDefaults;
 
