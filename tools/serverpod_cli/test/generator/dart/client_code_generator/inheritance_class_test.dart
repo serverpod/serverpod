@@ -35,19 +35,21 @@ void main() {
   );
 
   group(
-      'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
+      'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
       () {
     var models = [
       ClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
+          .withSimpleField('parentDefault', 'int', defaultValue: '0')
           .withChildClasses(
         [
           ClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
+              .withSimpleField('childDefault', 'int', defaultValue: '-1')
               .build(),
         ],
       ).build(),
@@ -55,11 +57,13 @@ void main() {
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
+          .withSimpleField('childDefault', 'int', defaultValue: '-1')
           .withExtendsClass(
             ClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
+                .withSimpleField('parentDefault', 'int', defaultValue: '0')
                 .build(),
           )
           .build(),
@@ -95,6 +99,19 @@ void main() {
         test('without the factory keyword', () {
           expect(publicConstructor?.factoryKeyword, isNull);
         });
+
+        group('with the initializers', () {
+          test('containing 1 entry', () {
+            expect(publicConstructor?.initializers.length, 1);
+          }, skip: publicConstructor == null);
+
+          test('correctly set', () {
+            expect(
+              publicConstructor?.initializers.first.toSource(),
+              'parentDefault = parentDefault ?? 0',
+            );
+          }, skip: publicConstructor == null);
+        });
       });
     });
 
@@ -118,9 +135,22 @@ void main() {
         test('with both classes vars as params', () {
           expect(
             privateConstructor?.parameters.toSource(),
-            '({required super.name, this.age})',
+            '({required super.name, super.parentDefault, this.age, int? childDefault})',
           );
         }, skip: privateConstructor == null);
+
+        group('with the initializers', () {
+          test('containing 1 entry', () {
+            expect(privateConstructor?.initializers.length, 1);
+          }, skip: privateConstructor == null);
+
+          test('correctly set', () {
+            expect(
+              privateConstructor?.initializers.first.toSource(),
+              'childDefault = childDefault ?? -1',
+            );
+          }, skip: privateConstructor == null);
+        });
       });
 
       group('has a factory constructor', () {
@@ -152,7 +182,7 @@ void main() {
         test('with the class vars as params', () {
           expect(
             factoryConstructor?.parameters.toSource(),
-            '({required String name, int? age})',
+            '({required String name, int? parentDefault, int? age, int? childDefault})',
           );
         }, skip: factoryConstructor == null);
       });
@@ -178,7 +208,7 @@ void main() {
         test('with the named params set where all variables are nullable.', () {
           expect(
             copyWithMethod?.parameters?.toSource(),
-            '({String? name, int? age})',
+            '({String? name, int? parentDefault, int? age, int? childDefault})',
           );
         }, skip: copyWithMethod == null);
 
@@ -219,14 +249,14 @@ void main() {
         test('with the params set to the same as the parent class.', () {
           expect(
             defaultConstructor?.parameters.toSource(),
-            '({required String name, int? age})',
+            '({required String name, int? parentDefault, int? age, int? childDefault})',
           );
         }, skip: defaultConstructor == null);
 
         test('with super call to named private constructor', () {
           expect(
             defaultConstructor?.initializers.first.toSource(),
-            'super._(name: name, age: age)',
+            'super._(name: name, parentDefault: parentDefault, age: age, childDefault: childDefault)',
           );
         });
       });
