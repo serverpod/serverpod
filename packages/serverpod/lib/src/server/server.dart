@@ -280,7 +280,7 @@ class Server {
     if (readBody) {
       try {
         body = await _readBody(request);
-      } on ResultRequestTooLarge catch (e) {
+      } on _RequestTooLargeException catch (e) {
         if (serverpod.runtimeSettings.logMalformedCalls) {
           // TODO: Log to database?
           stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
@@ -414,7 +414,7 @@ class Server {
     var builder = BytesBuilder();
     var len = request.headers.contentLength;
     if (len > serverpod.config.maxRequestSize) {
-      throw ResultRequestTooLarge(serverpod.config.maxRequestSize, len);
+      throw _RequestTooLargeException(serverpod.config.maxRequestSize, len);
     }
     await for (var segment in request) {
       builder.add(segment);
@@ -566,5 +566,37 @@ class Server {
     await Future.wait(webSocketCompletions);
 
     _running = false;
+  }
+}
+
+/// The result of a failed request to the server where the request size
+/// exceeds the maximum allowed limit.
+///
+/// This error provides details about the maximum allowed size and the actual
+/// size of the request, allowing the client to adjust their request accordingly.
+class _RequestTooLargeException implements Exception {
+  /// Maximum allowed request size in bytes.
+  final int maxSize;
+
+  /// Actual size of the request in bytes.
+  final int actualSize;
+
+  /// Description of the error.
+  ///
+  /// Contains a human-readable explanation of the error, including the maximum
+  /// allowed size and the actual size of the request.
+  final String errorDescription;
+
+  /// Creates a new [ResultRequestTooLarge] object.
+  ///
+  /// - [maxSize]: The maximum allowed size for the request in bytes.
+  /// - [actualSize]: The actual size of the received request in bytes.
+  _RequestTooLargeException(this.maxSize, this.actualSize)
+      : errorDescription =
+            'Request size exceeds the maximum allowed size of $maxSize bytes. Actual size: $actualSize bytes.';
+
+  @override
+  String toString() {
+    return errorDescription;
   }
 }
