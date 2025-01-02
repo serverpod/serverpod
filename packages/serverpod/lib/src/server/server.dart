@@ -412,11 +412,12 @@ class Server {
 
   Future<String> _readBody(HttpRequest request) async {
     var builder = BytesBuilder();
-    var len = request.headers.contentLength;
-    if (len > serverpod.config.maxRequestSize) {
-      throw _RequestTooLargeException(serverpod.config.maxRequestSize, len);
-    }
+    var len = 0;
     await for (var segment in request) {
+      len += segment.length;
+      if (len > serverpod.config.maxRequestSize) {
+        throw _RequestTooLargeException(serverpod.config.maxRequestSize);
+      }
       builder.add(segment);
     }
     return const Utf8Decoder().convert(builder.toBytes());
@@ -572,14 +573,11 @@ class Server {
 /// The result of a failed request to the server where the request size
 /// exceeds the maximum allowed limit.
 ///
-/// This error provides details about the maximum allowed size and the actual
-/// size of the request, allowing the client to adjust their request accordingly.
+/// This error provides details about the maximum allowed size, allowing the
+/// client to adjust their request accordingly.
 class _RequestTooLargeException implements Exception {
   /// Maximum allowed request size in bytes.
   final int maxSize;
-
-  /// Actual size of the request in bytes.
-  final int actualSize;
 
   /// Description of the error.
   ///
@@ -590,10 +588,9 @@ class _RequestTooLargeException implements Exception {
   /// Creates a new [ResultRequestTooLarge] object.
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
-  /// - [actualSize]: The actual size of the received request in bytes.
-  _RequestTooLargeException(this.maxSize, this.actualSize)
+  _RequestTooLargeException(this.maxSize)
       : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes. Actual size: $actualSize bytes.';
+            'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   @override
   String toString() {

@@ -59,7 +59,7 @@ void main() {
 
       // Check the error message
       var expectedMessage =
-          'Request size exceeds the maximum allowed size of $maxRequestSize bytes. Actual size: $requestBodyLength bytes.';
+          'Request size exceeds the maximum allowed size of $maxRequestSize bytes.';
       expect(response.body, equals(expectedMessage));
     });
   });
