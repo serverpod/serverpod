@@ -31,8 +31,8 @@ void main() {
   });
 
   group('Given a clean state', () {
-    var (:commandRoot, :projectName) = createRandomProjectName(tempPath);
-    final (:serverDir, :flutterDir, :clientDir) =
+    var (commandRoot: _, :projectName) = createRandomProjectName(tempPath);
+    final (:serverDir, flutterDir: _, :clientDir) =
         createProjectFolderPaths(projectName);
 
     group('when creating a new project', () {
