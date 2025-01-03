@@ -1,6 +1,6 @@
 part of 'database_connection.dart';
 
-final class _PgDatabaseQueryException implements DatabaseQueryException {
+final class _PgDatabaseQueryException extends DatabaseQueryException {
   @override
   final String message;
   @override
@@ -47,24 +47,21 @@ final class _PgDatabaseQueryException implements DatabaseQueryException {
   }
 }
 
-final class _PgDatabaseInsertRowException
-    implements DatabaseInsertRowException {
+final class _PgDatabaseInsertRowException extends DatabaseInsertRowException {
   @override
   final String message;
 
   _PgDatabaseInsertRowException(this.message);
 }
 
-final class _PgDatabaseUpdateRowException
-    implements DatabaseUpdateRowException {
+final class _PgDatabaseUpdateRowException extends DatabaseUpdateRowException {
   @override
   final String message;
 
   _PgDatabaseUpdateRowException(this.message);
 }
 
-final class _PgDatabaseDeleteRowException
-    implements DatabaseDeleteRowException {
+final class _PgDatabaseDeleteRowException extends DatabaseDeleteRowException {
   @override
   final String message;
 
