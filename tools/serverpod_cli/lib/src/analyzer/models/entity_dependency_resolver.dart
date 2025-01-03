@@ -14,7 +14,7 @@ class ModelDependencyResolver {
   ) {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       _resolveInheritance(classDefinition, modelDefinitions);
-      for (var fieldDefinition in classDefinition.fields) {
+      for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
         _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
         _resolveEnumType(fieldDefinition.type, modelDefinitions);
