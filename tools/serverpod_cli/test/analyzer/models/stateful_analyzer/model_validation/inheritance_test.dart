@@ -173,6 +173,115 @@ void main() {
       );
     });
 
+    group(
+        'Given a child-class with table and a parent-class without table, then the parent-class fields are inherited and no error is collected',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
+          class: ExampleChildClass
+          table: example_child_table
+          extends: Example
+          fields:
+            age: int
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
+
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('Then the child-class is resolved', () {
+        var parent = models.first as ClassDefinition;
+        var isChildResolved =
+            parent.childClasses.first is ResolvedInheritanceDefinition;
+
+        expect(isChildResolved, isTrue);
+      });
+
+      test('Then extendsClass is resolved', () {
+        var child = models.last as ClassDefinition;
+        var extendsClass = child.extendsClass;
+        var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
+
+        expect(isExtendsResolved, isTrue);
+      });
+
+      test('Then the parent fields are inherited', () {
+        var child = models.last as ClassDefinition;
+        var parentFields = (models.first as ClassDefinition).fields;
+        var allChildFields = child.fieldsIncludingInherited;
+
+        expect(allChildFields.contains(parentFields.first), isTrue);
+      });
+    });
+
+    group(
+        'Given a child-class with table that have an index on a field created by a parent-class without table, then no error is collected and the index is defined',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
+          class: ExampleChildClass
+          table: example_child_table
+          extends: Example
+          fields:
+            age: int
+          indexes:
+            example_index:
+              fields: name
+              unique: true
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
+
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      var child = models.last as ClassDefinition;
+      test('then the index definition contains the fields of the index.', () {
+        var index = child.indexes.first;
+        var indexFields = index.fields;
+        expect(indexFields, ['name']);
+      }, skip: errors.isNotEmpty);
+
+      test('then the field definition contains index.', () {
+        var field = child.fieldsIncludingInherited
+            .firstWhere((field) => field.name == 'name');
+        var index = field.indexes.firstOrNull;
+
+        expect(index?.name, 'example_index');
+      }, skip: errors.isNotEmpty);
+    });
+
     test(
         'Given a child-class with table, When the parent-class also has a table, then error is collected that only one class in hierarchy can have a table',
         () {
