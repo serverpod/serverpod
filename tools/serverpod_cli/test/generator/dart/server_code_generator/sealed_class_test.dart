@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -14,8 +16,14 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  String getExpectedFilePath(String fileName) =>
-      path.join('lib', 'src', 'generated', '$fileName.dart');
+  String getExpectedFilePath(String fileName, {List<String>? subDirParts}) =>
+      p.joinAll([
+        'lib',
+        'src',
+        'generated',
+        ...?subDirParts,
+        '$fileName.dart',
+      ]);
 
   var serverpodImportPath = 'package:serverpod/serverpod.dart';
 
@@ -705,5 +713,326 @@ void main() {
         expect(directives.first, isNot(isA<PartDirective>()));
       });
     });
+  });
+
+  group(
+      'Given a hierarchy: sealed > normal > normal, when the sealed top node is in another directory',
+      () {
+    var grandparent = ClassDefinitionBuilder()
+        .withClassName('ExampleGrandparent')
+        .withSubDirParts(['sub_dir'])
+        .withFileName('example_grandparent')
+        .withSimpleField('name', 'String')
+        .withIsSealed(true) // <= sealed
+        .build();
+    var parent = ClassDefinitionBuilder()
+        .withClassName('ExampleParent')
+        .withFileName('example_parent')
+        .withSimpleField('name', 'String')
+        .withExtendsClass(grandparent)
+        .build();
+    var child = ClassDefinitionBuilder()
+        .withClassName('ExampleChild')
+        .withFileName('example_child')
+        .withSimpleField('age', 'int', nullable: true)
+        .withExtendsClass(parent)
+        .build();
+
+    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+    var models = [
+      grandparent,
+      parent,
+      child,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var grandparentPath = getExpectedFilePath(
+      grandparent.fileName,
+      subDirParts: ['sub_dir'],
+    );
+    var parentPath = getExpectedFilePath(parent.fileName);
+    var childPath = getExpectedFilePath(child.fileName);
+
+    var grandparentCompilationUnit =
+        parseString(content: codeMap[grandparentPath]!).unit;
+    var parentCompilationUnit = parseString(content: codeMap[parentPath]!).unit;
+    var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+    group('then ${grandparent.className}', () {
+      test('has a part directive with ${parent.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: '../${parent.fileName}.dart',
+        );
+
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+
+      test('has a part directive with ${child.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: '../${child.fileName}.dart',
+        );
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${parent.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          parentCompilationUnit,
+          uri: 'sub_dir/${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${child.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          childCompilationUnit,
+          uri: 'sub_dir/${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a hierarchy: sealed > normal > normal when the middle node is in another directory',
+      () {
+    var grandparent = ClassDefinitionBuilder()
+        .withClassName('ExampleGrandparent')
+        .withFileName('example_grandparent')
+        .withSimpleField('name', 'String')
+        .withIsSealed(true) // <= sealed
+        .build();
+    var parent = ClassDefinitionBuilder()
+        .withClassName('ExampleParent')
+        .withFileName('example_parent')
+        .withSubDirParts(['sub_dir'])
+        .withSimpleField('name', 'String')
+        .withExtendsClass(grandparent)
+        .build();
+    var child = ClassDefinitionBuilder()
+        .withClassName('ExampleChild')
+        .withFileName('example_child')
+        .withSimpleField('age', 'int', nullable: true)
+        .withExtendsClass(parent)
+        .build();
+
+    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+    var models = [
+      grandparent,
+      parent,
+      child,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var grandparentPath = getExpectedFilePath(grandparent.fileName);
+    var parentPath = getExpectedFilePath(
+      parent.fileName,
+      subDirParts: ['sub_dir'],
+    );
+    var childPath = getExpectedFilePath(child.fileName);
+
+    var grandparentCompilationUnit =
+        parseString(content: codeMap[grandparentPath]!).unit;
+    var parentCompilationUnit = parseString(content: codeMap[parentPath]!).unit;
+    var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+    group('then ${grandparent.className}', () {
+      test('has a part directive with ${parent.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: 'sub_dir/${parent.fileName}.dart',
+        );
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+
+      test('has a part directive with ${child.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: '${child.fileName}.dart',
+        );
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${parent.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          parentCompilationUnit,
+          uri: '../${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${child.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          childCompilationUnit,
+          uri: '${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a hierarchy: sealed > normal > normal when the bottom node is in another directory',
+      () {
+    var grandparent = ClassDefinitionBuilder()
+        .withClassName('ExampleGrandparent')
+        .withFileName('example_grandparent')
+        .withSimpleField('name', 'String')
+        .withIsSealed(true) // <= sealed
+        .build();
+    var parent = ClassDefinitionBuilder()
+        .withClassName('ExampleParent')
+        .withFileName('example_parent')
+        .withSimpleField('name', 'String')
+        .withExtendsClass(grandparent)
+        .build();
+    var child = ClassDefinitionBuilder()
+        .withClassName('ExampleChild')
+        .withFileName('example_child')
+        .withSubDirParts(['sub_dir'])
+        .withSimpleField('age', 'int', nullable: true)
+        .withExtendsClass(parent)
+        .build();
+
+    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+    var models = [
+      grandparent,
+      parent,
+      child,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var grandparentPath = getExpectedFilePath(grandparent.fileName);
+    var parentPath = getExpectedFilePath(parent.fileName);
+    var childPath = getExpectedFilePath(
+      child.fileName,
+      subDirParts: ['sub_dir'],
+    );
+
+    var grandparentCompilationUnit =
+        parseString(content: codeMap[grandparentPath]!).unit;
+    var parentCompilationUnit = parseString(content: codeMap[parentPath]!).unit;
+    var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+    group('then ${grandparent.className}', () {
+      test('has a part directive with ${parent.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: '${parent.fileName}.dart',
+        );
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+
+      test('has a part directive with ${child.className} uri', () {
+        var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+          grandparentCompilationUnit,
+          uri: 'sub_dir/${child.fileName}.dart',
+        );
+        expect(
+          partDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${parent.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          parentCompilationUnit,
+          uri: '${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+
+    group('then ${child.className}', () {
+      test('has a part-of directive with ${grandparent.className} uri', () {
+        var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+          childCompilationUnit,
+          uri: '../${grandparent.fileName}.dart',
+        );
+        expect(
+          partOfDirective,
+          isNotNull,
+        );
+      });
+    });
+  });
+
+  test(
+      'CompilationUnit.directives[i].uri.stringValue returns relative path without separators on Windows.',
+      () {
+    var content = Platform.isWindows
+        ? "part 'sub_dir\\example_child.dart';"
+        : "part 'sub_dir/example_child.dart';";
+
+    var unit = parseString(content: content).unit;
+
+    var directive = unit.directives.whereType<PartDirective>().first;
+
+    var directiveStringValue = directive.uri.stringValue;
+
+    var expectedPath = Platform.isWindows
+        ? 'sub_direxample_child.dart'
+        : 'sub_dir/example_child.dart';
+
+    expect(directiveStringValue == expectedPath, isTrue);
   });
 }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:analyzer/dart/ast/ast.dart';
 
 abstract class CompilationUnitHelpers {
@@ -123,16 +124,31 @@ abstract class CompilationUnitHelpers {
     return tryFindExportDirective(unit, uri: uri) != null;
   }
 
+  /// This is a temporary workaround for this bug: https://github.com/dart-lang/sdk/issues/59629
+  /// In which `directive.uri.stringValue` returns the path on windows without separators.
+  /// Meaning on:
+  /// linux: `sub_dir/filename.dart` and `../filename.dart`
+  /// windows: `subdirfilename.dart` and `..filename.dart`
+  static String applyWindowsBugfix(String input) {
+    if (Platform.isWindows) {
+      return input.replaceAll('/', '');
+    }
+    return input;
+  }
+
   /// Returns [List<PartDirective>] if the [unit] contains a part directive with the
   /// given [uri], otherwise returns `null`.
   static PartDirective? tryFindPartDirective(
     CompilationUnit unit, {
     required String uri,
   }) {
-    return unit.directives
-        .whereType<PartDirective>()
-        .where((directive) => directive.uri.stringValue == uri)
-        .firstOrNull;
+    return unit.directives.whereType<PartDirective>().where((directive) {
+      String directiveUri = directive.uri.stringValue!;
+
+      uri = applyWindowsBugfix(uri);
+
+      return directiveUri == uri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part directive with the given
@@ -150,11 +166,13 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    var directives = unit.directives
-        .whereType<PartOfDirective>()
-        .where((directive) => directive.uri?.stringValue == uri);
+    return unit.directives.whereType<PartOfDirective>().where((directive) {
+      String directiveUri = directive.uri!.stringValue!;
 
-    return directives.isNotEmpty ? directives.first : null;
+      uri = applyWindowsBugfix(uri);
+
+      return directiveUri == uri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part of directive with the given
