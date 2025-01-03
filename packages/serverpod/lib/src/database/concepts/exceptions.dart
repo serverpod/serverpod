@@ -1,5 +1,5 @@
 /// Exception thrown when an error occurs in the database.
-abstract interface class DatabaseException implements Exception {
+abstract base class DatabaseException implements Exception {
   /// Returns the message of the exception.
   String get message;
 
@@ -8,7 +8,7 @@ abstract interface class DatabaseException implements Exception {
 }
 
 /// Exception thrown when an exception occurs during a database query.
-abstract interface class DatabaseQueryException implements DatabaseException {
+abstract base class DatabaseQueryException implements DatabaseException {
   /// Returns the error code of the exception.
   String? get code;
 
@@ -47,22 +47,19 @@ abstract interface class DatabaseQueryException implements DatabaseException {
 }
 
 /// Exception thrown when an insert row operation fails.
-abstract interface class DatabaseInsertRowException
-    implements DatabaseException {
+abstract base class DatabaseInsertRowException implements DatabaseException {
   @override
   String toString() => 'DatabaseInsertRowException: $message';
 }
 
 /// Exception thrown when an update row operation fails.
-abstract interface class DatabaseUpdateRowException
-    implements DatabaseException {
+abstract base class DatabaseUpdateRowException implements DatabaseException {
   @override
   String toString() => 'DatabaseUpdateRowException: $message';
 }
 
 /// Exception thrown when a delete row operation fails.
-abstract interface class DatabaseDeleteRowException
-    implements DatabaseException {
+abstract base class DatabaseDeleteRowException implements DatabaseException {
   @override
   String toString() => 'DatabaseDeleteRowException: $message';
 }
