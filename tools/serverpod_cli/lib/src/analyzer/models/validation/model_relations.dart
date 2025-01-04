@@ -73,7 +73,7 @@ class ParsedModelsCollection {
     Map<String, List<SerializableModelDefinition>> indexNames = {};
     for (var model in models) {
       if (model is ClassDefinition) {
-        var indexes = model.indexes;
+        var indexes = model.indexesIncludingInherited;
 
         for (var index in indexes) {
           indexNames.update(
