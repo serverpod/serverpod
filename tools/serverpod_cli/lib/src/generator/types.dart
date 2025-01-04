@@ -58,7 +58,13 @@ class TypeDefinition {
 
   bool get isMapType => className == 'Map';
 
-  bool get isIdType => className == 'int';
+  static List<String> get validIdTypes => ['int', 'UuidValue'];
+
+  bool get isIdType => validIdTypes.contains(className);
+
+  bool get isIntIdType => className == 'int';
+
+  bool get isUuidIdType => className == 'UuidValue';
 
   bool get isVoidType => className == 'void';
 
@@ -128,9 +134,14 @@ class TypeDefinition {
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [TypeDefinition] of a non null int
   /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
+
+  /// A convenience variable for getting a [TypeDefinition] of a non null
+  /// UuidValue quickly.
+  static TypeDefinition uuid =
+      TypeDefinition(className: 'UuidValue', nullable: false);
 
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
