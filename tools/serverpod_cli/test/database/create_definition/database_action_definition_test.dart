@@ -37,7 +37,7 @@ void main() {
 
     var field = FieldDefinitionBuilder()
         .withName('parentId')
-        .withIdType(true)
+        .withIdType(isNullable: true)
         .withRelation(relation)
         .build();
 

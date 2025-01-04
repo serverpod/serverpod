@@ -19,6 +19,7 @@ class ClassDefinitionBuilder {
   bool _isException;
   String? _tableName;
   bool _managedMigration;
+  TypeDefinition _idTypeDefinition;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
@@ -31,6 +32,7 @@ class ClassDefinitionBuilder {
         _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
+        _idTypeDefinition = TypeDefinition.int.asNullable,
         _fields = [],
         _subDirParts = [],
         _managedMigration = true,
@@ -46,7 +48,7 @@ class ClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withName('id')
-            .withType(TypeDefinition.int.asNullable)
+            .withType(_idTypeDefinition)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -221,6 +223,7 @@ class ClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignKeyType,
     bool nullableRelation = false,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
@@ -239,7 +242,7 @@ class ClassDefinitionBuilder {
           .build(),
       () => FieldDefinitionBuilder()
           .withName(foreignFieldName)
-          .withIdType(nullableRelation)
+          .withIdType(type: foreignKeyType, isNullable: nullableRelation)
           .withShouldPersist(true)
           .withRelation(ForeignRelationDefinitionBuilder()
               .withParentTable(parentTable)
@@ -305,6 +308,11 @@ class ClassDefinitionBuilder {
           .build();
     });
 
+    return this;
+  }
+
+  ClassDefinitionBuilder withIdFieldType(TypeDefinition type) {
+    _idTypeDefinition = type;
     return this;
   }
 

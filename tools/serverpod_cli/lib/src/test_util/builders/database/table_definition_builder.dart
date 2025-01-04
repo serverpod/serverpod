@@ -7,6 +7,7 @@ class TableDefinitionBuilder {
   String? _dartName;
   String? _module;
   String _schema;
+  String _idType;
   List<ColumnDefinition> _columns;
   List<ForeignKeyDefinition> _foreignKeys;
   List<IndexDefinition> _indexes;
@@ -16,9 +17,9 @@ class TableDefinitionBuilder {
       : _name = 'example',
         _dartName = 'Example',
         _schema = 'public',
+        _idType = 'int',
         _module = 'test_project',
         _columns = [
-          ColumnDefinitionBuilder().withIdColumn().build(),
           ColumnDefinitionBuilder().withNameColumn().build(),
         ],
         _foreignKeys = [],
@@ -28,6 +29,10 @@ class TableDefinitionBuilder {
         _managed = true;
 
   TableDefinition build() {
+    _columns.insert(
+      0,
+      ColumnDefinitionBuilder().withIdColumn(type: _idType).build(),
+    );
     return TableDefinition(
       name: _name,
       dartName: _dartName,
@@ -52,6 +57,11 @@ class TableDefinitionBuilder {
 
   TableDefinitionBuilder withModule(String? module) {
     _module = module;
+    return this;
+  }
+
+  TableDefinitionBuilder withIdType(String idType) {
+    _idType = idType;
     return this;
   }
 

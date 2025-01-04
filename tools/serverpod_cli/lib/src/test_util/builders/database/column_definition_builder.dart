@@ -24,12 +24,18 @@ class ColumnDefinitionBuilder {
     );
   }
 
-  ColumnDefinitionBuilder withIdColumn() {
+  ColumnDefinitionBuilder withIdColumn({String type = 'int'}) {
     _name = 'id';
-    _columnType = ColumnType.integer;
     _isNullable = false;
-    _columnDefault = "nextval('test_id_seq'::regclass)";
-    _dartType = 'int';
+    if (type == 'int') {
+      _columnType = ColumnType.integer;
+      _columnDefault = "nextval('test_id_seq'::regclass)";
+      _dartType = 'int';
+    } else if ((type == 'uuid') || (type == 'UuidValue')) {
+      _columnType = ColumnType.uuid;
+      _columnDefault = 'gen_random_uuid()';
+      _dartType = 'UuidValue';
+    }
     return this;
   }
 

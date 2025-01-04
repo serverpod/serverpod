@@ -28,11 +28,9 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withPrimaryKey() {
+  FieldDefinitionBuilder withPrimaryKey({TypeDefinition? type}) {
     _name = 'id';
-    _type = TypeDefinition.int;
-
-    return this;
+    return withIdType(type: type);
   }
 
   FieldDefinitionBuilder withEnumDefinition(
@@ -60,8 +58,12 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withIdType([bool isNullable = false]) {
-    _type = TypeDefinition.int;
+  FieldDefinitionBuilder withIdType({
+    TypeDefinition? type,
+    bool isNullable = false,
+  }) {
+    _type = type ?? TypeDefinition.int;
+    if (!_type.isIdType) throw ArgumentError('Id type $_type is not supported');
     if (isNullable) {
       _type = _type.asNullable;
     }
