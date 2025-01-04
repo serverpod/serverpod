@@ -79,6 +79,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
+    required this.defaultIdType,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
@@ -206,6 +207,9 @@ class GeneratorConfig implements ModelLoadConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// User defined default type for primary keys.
+  final TypeDefinition defaultIdType;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -377,6 +381,18 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    String defaultIdTypeStr = generatorConfig['defaultIdType'] ?? 'int';
+    TypeDefinition defaultIdType;
+    if (defaultIdTypeStr == 'int') {
+      defaultIdType = TypeDefinition.int;
+    } else if (['uuid', 'UuidValue'].contains(defaultIdTypeStr)) {
+      defaultIdType = TypeDefinition.uuid;
+    } else {
+      throw ArgumentError(
+        "Invalid defaultIdType: '$defaultIdTypeStr'. Valid options are ${TypeDefinition.validIdTypes}.",
+      );
+    }
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -388,6 +404,7 @@ class GeneratorConfig implements ModelLoadConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
+      defaultIdType: defaultIdType,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
     );
