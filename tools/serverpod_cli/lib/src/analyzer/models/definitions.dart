@@ -93,6 +93,10 @@ class ClassDefinition extends SerializableModelDefinition {
     return fields.where((element) => element.name == name).firstOrNull;
   }
 
+  /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
+  /// If the field is not present, an error is thrown.
+  SerializableModelFieldDefinition get idField => findField('id')!;
+
   /// Returns the `ClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
   ClassDefinition? get parentClass {

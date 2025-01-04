@@ -204,8 +204,8 @@ class ModelDependencyResolver {
     String tableName,
   ) {
     var relationFieldType = relation.nullableRelation
-        ? TypeDefinition.int.asNullable
-        : TypeDefinition.int;
+        ? referenceDefinition.idField.type.asNullable
+        : referenceDefinition.idField.type.asNonNullable;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -369,7 +369,7 @@ class ModelDependencyResolver {
 
       var foreignField = SerializableModelFieldDefinition(
         name: foreignFieldName,
-        type: TypeDefinition.int.asNullable,
+        type: classDefinition.idField.type.asNullable,
         scope: ModelFieldScopeDefinition.none,
         shouldPersist: true,
         relation: ForeignRelationDefinition(
