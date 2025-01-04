@@ -311,14 +311,16 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       if (isNullable != false) {
         throw (const FormatException('The id column must be non-nullable'));
       }
-
-      if (columnType != ColumnType.integer && columnType != ColumnType.bigint) {
-        throw (const FormatException(
-          'The id column must be of type integer or bigint',
-        ));
+      if ((columnType == ColumnType.integer) ||
+          (columnType == ColumnType.bigint)) {
+        return '"id" bigserial PRIMARY KEY';
       }
-
-      return '"id" bigserial PRIMARY KEY';
+      if (columnType == ColumnType.uuid) {
+        return '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()';
+      }
+      throw const FormatException(
+        'Invalid column type for id column. Must be integer or uuid.',
+      );
     }
 
     String type;
