@@ -17,4 +17,26 @@ void main() {
 
     expect(sql, contains('"id" bigserial PRIMARY KEY'));
   });
+
+  for (var (idClassName, definitionContains) in [
+    ('int', '"id" bigserial PRIMARY KEY'),
+    ('uuid', '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()'),
+  ]) {
+    test(
+        'Given database table definition when generating sql with default id set to $idClassName then table id column contains $definitionContains.',
+        () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withIdType(idClassName)
+                .withName('example_table')
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(sql, contains(definitionContains));
+    });
+  }
 }
