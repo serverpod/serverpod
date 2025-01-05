@@ -58,9 +58,9 @@ class TypeDefinition {
 
   bool get isMapType => className == 'Map';
 
-  static List<String> get validIdTypes => ['int', 'UuidValue'];
+  static List<TypeDefinition> get validIdTypes => [int, uuid];
 
-  bool get isIdType => validIdTypes.contains(className);
+  bool get isIdType => validIdTypes.map((t) => t.className).contains(className);
 
   bool get isIntIdType => className == 'int';
 

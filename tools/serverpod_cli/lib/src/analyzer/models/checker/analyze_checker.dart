@@ -6,8 +6,9 @@ import 'package:yaml/yaml.dart';
 class AnalyzeChecker {
   static bool isIdType(dynamic type) {
     if (type is! String) return false;
-    var nonNullableType = type.replaceAll('?', '');
-    return TypeDefinition.validIdTypes.contains(nonNullableType);
+    return TypeDefinition.validIdTypes
+        .map((t) => t.className)
+        .contains(type.replaceAll('?', ''));
   }
 
   static bool isParentDefined(dynamic node) {

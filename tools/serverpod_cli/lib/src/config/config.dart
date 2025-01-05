@@ -388,8 +388,11 @@ class GeneratorConfig implements ModelLoadConfig {
     } else if (['uuid', 'UuidValue'].contains(defaultIdTypeStr)) {
       defaultIdType = TypeDefinition.uuid;
     } else {
+      var validIdTypes = TypeDefinition.validIdTypes
+          .map((type) => type.className)
+          .join("', '");
       throw ArgumentError(
-        "Invalid defaultIdType: '$defaultIdTypeStr'. Valid options are ${TypeDefinition.validIdTypes}.",
+        "Invalid defaultIdType: '$defaultIdTypeStr'. Valid options are '$validIdTypes'.",
       );
     }
 
@@ -545,7 +548,7 @@ name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
 serverPackage: $serverPackage
-migrationVersions: $migrationVersions 
+migrationVersions: $migrationVersions
 ''';
   }
 }
