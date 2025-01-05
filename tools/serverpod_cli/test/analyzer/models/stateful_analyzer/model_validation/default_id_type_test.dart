@@ -20,10 +20,10 @@ void main() {
     var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
     var model = statefulAnalyzer.validateAll().first as ClassDefinition;
 
-    expect(model.idField.type.isIntIdType, true);
+    expect(model.idField.type.className, 'int');
   });
 
-  for (var idType in TypeDefinition.validIdTypes) {
+  for (var idType in SupportedIdType.all) {
     var idClassName = idType.className;
 
     test(

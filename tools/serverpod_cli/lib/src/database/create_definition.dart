@@ -123,13 +123,8 @@ String? _getColumnDefault(
   ColumnType type,
 ) {
   if (column.name == 'id') {
-    if (column.type.isIntIdType) {
-      return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
-    } else if (column.type.isUuidIdType) {
-      return 'gen_random_uuid()';
-    } else {
-      throw StateError('Invalid id type: ${column.type}');
-    }
+    return SupportedIdType.fromTypeDefinition(column.type)
+        .dbColumnDefaultBuilder(classDefinition.tableName!);
   }
 
   var defaultValueType = column.type.defaultValueType;

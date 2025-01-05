@@ -16,7 +16,7 @@ void main() {
     'SetDefault',
   ];
 
-  for (var idType in TypeDefinition.validIdTypes) {
+  for (var idType in SupportedIdType.all) {
     var idClassName = idType.className;
     var config = GeneratorConfigBuilder().withDefaultIdType(idType).build();
 

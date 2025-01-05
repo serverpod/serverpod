@@ -1,16 +1,8 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:yaml/yaml.dart';
 
 class AnalyzeChecker {
-  static bool isIdType(dynamic type) {
-    if (type is! String) return false;
-    return TypeDefinition.validIdTypes
-        .map((t) => t.className)
-        .contains(type.replaceAll('?', ''));
-  }
-
   static bool isParentDefined(dynamic node) {
     if (node is! YamlMap) return false;
     return node.containsKey(Keyword.parent);

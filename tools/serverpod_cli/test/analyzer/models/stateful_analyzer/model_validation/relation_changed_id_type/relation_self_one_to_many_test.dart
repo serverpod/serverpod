@@ -7,7 +7,7 @@ import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  for (var idType in TypeDefinition.validIdTypes) {
+  for (var idType in SupportedIdType.all) {
     var config = GeneratorConfigBuilder().withDefaultIdType(idType).build();
 
     group('Given a class with a one to many relation', () {

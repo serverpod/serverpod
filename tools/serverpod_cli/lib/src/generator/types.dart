@@ -58,13 +58,7 @@ class TypeDefinition {
 
   bool get isMapType => className == 'Map';
 
-  static List<TypeDefinition> get validIdTypes => [int, uuid];
-
-  bool get isIdType => validIdTypes.map((t) => t.className).contains(className);
-
-  bool get isIntIdType => className == 'int';
-
-  bool get isUuidIdType => className == 'UuidValue';
+  bool get isIdType => SupportedIdType.all.any((e) => e.className == className);
 
   bool get isVoidType => className == 'void';
 
@@ -513,6 +507,64 @@ class TypeDefinition {
     var urlString = url != null ? '$url:' : '';
     return '$urlString$className$genericsString$nullableString';
   }
+}
+
+/// Supported ID type definitions.
+/// All configuration to support other types is done only on this class.
+class SupportedIdType {
+  const SupportedIdType({
+    required this.type,
+    required this.dbColDefinition,
+    required this.dbColumnDefaultBuilder,
+  });
+
+  /// The supported id type.
+  final TypeDefinition type;
+
+  /// The database column definition to be used for this id type.
+  final String dbColDefinition;
+
+  /// A builder for the default value for the column on the database definition.
+  final String Function(String tableName) dbColumnDefaultBuilder;
+
+  /// The class name of the id type.
+  String get className => type.className;
+
+  static SupportedIdType get int => SupportedIdType(
+        type: TypeDefinition.int,
+        dbColDefinition: '"id" bigserial PRIMARY KEY',
+        dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
+      );
+
+  static SupportedIdType get uuid => SupportedIdType(
+        type: TypeDefinition.uuid,
+        dbColDefinition: '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()',
+        dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
+      );
+
+  /// All supported id types.
+  static List<SupportedIdType> get all => [int, uuid];
+
+  /// Supported id types as strings.
+  static List<String> get allAsStrings => all.map((e) => e.className).toList();
+
+  /// Get the [SupportedIdType] from a string. Also serve to validate the input.
+  /// The string can come from a ColumnType or dart type.
+  static SupportedIdType fromString(String input) {
+    if (['int', 'integer', 'bigint'].contains(input)) return int;
+    if (['uuid', 'UuidValue'].contains(input)) return uuid;
+    throw FormatException(
+      'Invalid id type $input. Valid options are $allAsStrings.',
+    );
+  }
+
+  /// Get the [SupportedIdType] from a [TypeDefinition].
+  static SupportedIdType fromTypeDefinition(TypeDefinition type) =>
+      fromString(type.className);
+
+  /// Get the [SupportedIdType] from a ColumnType.
+  static SupportedIdType fromColumnType(ColumnType type) =>
+      fromString(type.name);
 }
 
 /// Parses a type from a string and deals with whitespace and generics.

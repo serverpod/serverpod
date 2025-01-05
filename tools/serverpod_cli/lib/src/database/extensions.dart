@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/database/migration.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 //
@@ -311,16 +312,7 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       if (isNullable != false) {
         throw (const FormatException('The id column must be non-nullable'));
       }
-      if ((columnType == ColumnType.integer) ||
-          (columnType == ColumnType.bigint)) {
-        return '"id" bigserial PRIMARY KEY';
-      }
-      if (columnType == ColumnType.uuid) {
-        return '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()';
-      }
-      throw const FormatException(
-        'Invalid column type for id column. Must be integer or uuid.',
-      );
+      return SupportedIdType.fromColumnType(columnType).dbColDefinition;
     }
 
     String type;

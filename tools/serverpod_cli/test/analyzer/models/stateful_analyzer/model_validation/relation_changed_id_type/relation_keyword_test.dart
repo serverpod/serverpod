@@ -8,7 +8,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
-  for (var idType in TypeDefinition.validIdTypes) {
+  for (var idType in SupportedIdType.all) {
     var idClassName = idType.className;
     var config = GeneratorConfigBuilder().withDefaultIdType(idType).build();
 

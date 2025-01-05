@@ -18,7 +18,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
-    TypeDefinition defaultIdType,
+    SupportedIdType defaultIdType,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -162,14 +162,14 @@ class ModelParser {
     bool hasTable,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
-    TypeDefinition defaultIdType,
+    SupportedIdType defaultIdType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
     if (hasTable) {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
-          type: defaultIdType.asNullable,
+          type: defaultIdType.type.asNullable,
           scope: ModelFieldScopeDefinition.all,
           shouldPersist: true,
           documentation: [

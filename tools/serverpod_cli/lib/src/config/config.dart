@@ -209,7 +209,7 @@ class GeneratorConfig implements ModelLoadConfig {
   final List<TypeDefinition> extraClasses;
 
   /// User defined default type for primary keys.
-  final TypeDefinition defaultIdType;
+  final SupportedIdType defaultIdType;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -382,16 +382,13 @@ class GeneratorConfig implements ModelLoadConfig {
     ];
 
     String defaultIdTypeStr = generatorConfig['defaultIdType'] ?? 'int';
-    TypeDefinition defaultIdType;
-    if (defaultIdTypeStr == 'int') {
-      defaultIdType = TypeDefinition.int;
-    } else if (['uuid', 'UuidValue'].contains(defaultIdTypeStr)) {
-      defaultIdType = TypeDefinition.uuid;
-    } else {
-      var validIdTypes = TypeDefinition.validIdTypes
-          .map((type) => type.className)
-          .join("', '");
-      throw ArgumentError(
+    SupportedIdType defaultIdType;
+    try {
+      defaultIdType = SupportedIdType.fromString(defaultIdTypeStr);
+    } catch (e) {
+      var validIdTypes =
+          SupportedIdType.all.map((type) => type.className).join("', '");
+      throw FormatException(
         "Invalid defaultIdType: '$defaultIdTypeStr'. Valid options are '$validIdTypes'.",
       );
     }

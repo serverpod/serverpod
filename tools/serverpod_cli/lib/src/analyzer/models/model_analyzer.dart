@@ -40,7 +40,7 @@ class SerializableModelAnalyzer {
   static SerializableModelDefinition? extractModelDefinition(
     ModelSource modelSource,
     List<TypeDefinition> extraClasses,
-    TypeDefinition defaultIdType,
+    SupportedIdType defaultIdType,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
       modelSource.yamlSourceUri,
