@@ -39,6 +39,7 @@ Future<bool> performCreate(
   String name,
   ServerpodTemplateType template,
   bool force,
+  String? defaultIdType,
 ) async {
   // If the name is a dot, we are upgrading an existing project
   // Instead of creating a new one, we try to upgrade the current directory.
@@ -118,6 +119,7 @@ Future<bool> performCreate(
         _copyServerUpgrade(
           serverpodDirs,
           name: name,
+          defaultIdType: defaultIdType,
         );
         return true;
       },
@@ -351,6 +353,7 @@ void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
+  String? defaultIdType,
 }) {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
@@ -412,6 +415,11 @@ void _copyServerUpgrade(
         Replacement(
           slotName: 'REDIS_TEST_PASSWORD',
           replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'defaultIdType: int\n',
+          replacement:
+              defaultIdType != null ? 'defaultIdType: $defaultIdType\n' : '',
         ),
       ],
       fileNameReplacements: [

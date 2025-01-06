@@ -1,5 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -36,6 +37,11 @@ class CreateCommand extends ServerpodCommand {
       help: 'Template to use when creating a new project, valid options are '
           '"mini", "server" or "module".',
     );
+    argParser.addOption(
+      'defaultIdType',
+      allowed: SupportedIdType.allAlias,
+      help: 'Default type for primary keys. Valid options are:',
+    );
   }
 
   @override
@@ -67,7 +73,8 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    if (!await performCreate(name, template, force)) {
+    String? defaultIdType = argResults!['defaultIdType'];
+    if (!await performCreate(name, template, force, defaultIdType)) {
       throw ExitException();
     }
   }

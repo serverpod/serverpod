@@ -1,4 +1,5 @@
 type: server
+defaultIdType: int
 
 client_package_path: ../projectname_client
 server_test_tools_path: test/integration/test_tools

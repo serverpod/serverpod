@@ -514,12 +514,16 @@ class TypeDefinition {
 class SupportedIdType {
   const SupportedIdType({
     required this.type,
+    required this.aliases,
     required this.dbColDefinition,
     required this.dbColumnDefaultBuilder,
   });
 
   /// The supported id type.
   final TypeDefinition type;
+
+  /// The aliases for the id type. Specially for user input.
+  final List<String> aliases;
 
   /// The database column definition to be used for this id type.
   final String dbColDefinition;
@@ -532,12 +536,14 @@ class SupportedIdType {
 
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
+        aliases: ['int', 'integer', 'bigint'],
         dbColDefinition: '"id" bigserial PRIMARY KEY',
         dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
       );
 
   static SupportedIdType get uuid => SupportedIdType(
         type: TypeDefinition.uuid,
+        aliases: ['uuid', 'UuidValue'],
         dbColDefinition: '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()',
         dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
       );
@@ -545,17 +551,16 @@ class SupportedIdType {
   /// All supported id types.
   static List<SupportedIdType> get all => [int, uuid];
 
-  /// Supported id types as strings.
-  static List<String> get allAsStrings => all.map((e) => e.className).toList();
+  /// Supported id types as strings. Uses only first alias to avoid confusion.
+  static List<String> get allAlias => all.map((e) => e.aliases.first).toList();
 
   /// Get the [SupportedIdType] from a string. Also serve to validate the input.
   /// The string can come from a ColumnType or dart type.
   static SupportedIdType fromString(String input) {
-    if (['int', 'integer', 'bigint'].contains(input)) return int;
-    if (['uuid', 'UuidValue'].contains(input)) return uuid;
-    throw FormatException(
-      'Invalid id type $input. Valid options are $allAsStrings.',
-    );
+    for (var idType in all) {
+      if (idType.aliases.contains(input)) return idType;
+    }
+    throw FormatException('Invalid id type $input. Valid options: $allAlias.');
   }
 
   /// Get the [SupportedIdType] from a [TypeDefinition].
