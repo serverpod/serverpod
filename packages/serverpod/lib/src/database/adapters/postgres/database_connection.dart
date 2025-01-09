@@ -578,7 +578,8 @@ class DatabaseConnection {
     );
   }
 
-  Future<Map<String, Map<int, List<Map<String, dynamic>>>>> _queryIncludedLists(
+  Future<Map<String, Map<dynamic, List<Map<String, dynamic>>>>>
+      _queryIncludedLists(
     Session session,
     Table table,
     Include? include,
@@ -587,8 +588,8 @@ class DatabaseConnection {
   ) async {
     if (include == null) return {};
 
-    Map<String, Map<int, List<Map<String, dynamic>>>> resolvedListRelations =
-        {};
+    Map<String, Map<dynamic, List<Map<String, dynamic>>>>
+        resolvedListRelations = {};
 
     for (var entry in include.includes.entries) {
       var nestedInclude = entry.value;
@@ -601,7 +602,7 @@ class DatabaseConnection {
       }
 
       if (nestedInclude is IncludeList) {
-        var ids = _extractPrimaryKeyForRelation<int>(
+        var ids = _extractPrimaryKeyForRelation<dynamic>(
           previousResultSet,
           tableRelation,
         );
