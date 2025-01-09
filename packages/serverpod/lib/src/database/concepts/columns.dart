@@ -72,9 +72,32 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   Expression _encodeValueForQuery(T value);
 }
 
+/// A [Column] whose values can be compared equal to other values.
+abstract class ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
+    with _NullableColumnDefaultOperations<T> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnComparableEquals(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
+}
+
+/// A [Column] whose values can be compared equal or unequal to other values.
+/// Attends full specification of default PG comparison operations:
+/// https://www.postgresql.org/docs/current/functions-comparison.html#FUNCTIONS-COMPARISON-OP-TABLE
+abstract class ColumnComparable<T> extends ColumnComparableEquals<T>
+    with _ColumnComparisonDefaultOperations<T> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnComparable(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
+}
+
 /// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
-    with _NullableColumnDefaultOperations<E> {
+class ColumnEnum<E extends Enum> extends ColumnComparableEquals<E> {
   final EnumSerialization _serialized;
 
   ColumnEnum._(
@@ -118,8 +141,7 @@ class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
 }
 
 /// A [Column] holding an [String].
-class ColumnString extends _ValueOperatorColumn<String>
-    with _NullableColumnDefaultOperations<String> {
+class ColumnString extends ColumnComparable<String> {
   /// Maximum length for a varchar
   final int? varcharLength;
 
@@ -164,8 +186,7 @@ class ColumnString extends _ValueOperatorColumn<String>
 }
 
 /// A [Column] holding an [bool].
-class ColumnBool extends _ValueOperatorColumn<bool>
-    with _NullableColumnDefaultOperations<bool> {
+class ColumnBool extends ColumnComparableEquals<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnBool(
     super.columnName,
@@ -179,10 +200,8 @@ class ColumnBool extends _ValueOperatorColumn<bool>
 
 /// A [Column] holding an [DateTime]. In the database it is stored as a
 /// timestamp without time zone.
-class ColumnDateTime extends _ValueOperatorColumn<DateTime>
-    with
-        _NullableColumnDefaultOperations<DateTime>,
-        _ColumnNumberOperations<DateTime> {
+class ColumnDateTime extends ColumnComparable<DateTime>
+    with _ColumnComparisonBetweenOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(
     super.columnName,
@@ -195,10 +214,8 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
 }
 
 /// A [Column] holding [Duration].
-class ColumnDuration extends _ValueOperatorColumn<Duration>
-    with
-        _NullableColumnDefaultOperations<Duration>,
-        _ColumnNumberOperations<Duration> {
+class ColumnDuration extends ColumnComparable<Duration>
+    with _ColumnComparisonBetweenOperations<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDuration(
     super.columnName,
@@ -211,8 +228,7 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
 }
 
 /// A [Column] holding [UuidValue].
-class ColumnUuid extends _ValueOperatorColumn<UuidValue>
-    with _NullableColumnDefaultOperations<UuidValue> {
+class ColumnUuid extends ColumnComparable<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnUuid(
     super.columnName,
@@ -225,8 +241,8 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
 }
 
 /// A [Column] holding an [int].
-class ColumnInt extends _ValueOperatorColumn<int>
-    with _NullableColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+class ColumnInt extends ColumnComparable<int>
+    with _ColumnComparisonBetweenOperations<int> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnInt(
     super.columnName,
@@ -239,10 +255,8 @@ class ColumnInt extends _ValueOperatorColumn<int>
 }
 
 /// A [Column] holding an [double].
-class ColumnDouble extends _ValueOperatorColumn<double>
-    with
-        _NullableColumnDefaultOperations<double>,
-        _ColumnNumberOperations<double> {
+class ColumnDouble extends ColumnComparable<double>
+    with _ColumnComparisonBetweenOperations<double> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDouble(
     super.columnName,
@@ -256,7 +270,10 @@ class ColumnDouble extends _ValueOperatorColumn<double>
 
 /// A [Column] holding a count of rows.
 class ColumnCount extends _ValueOperatorColumn<int>
-    with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+    with
+        _ColumnDefaultOperations<int>,
+        _ColumnComparisonDefaultOperations<int>,
+        _ColumnComparisonBetweenOperations<int> {
   /// Where expression applied to filter what is counted.
   Expression? innerWhere;
 
@@ -370,21 +387,7 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   }
 }
 
-mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
-  /// Creates an [Expression] checking if the value in the column inclusively
-  /// is between the [min], [max] values.
-  Expression between(T min, T max) {
-    return _BetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
-  }
-
-  /// Creates an [Expression] checking if the value in the column inclusively
-  /// is NOT between the [min], [max] values.
-  Expression notBetween(T min, T max) {
-    return _NotBetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
-  }
-
+mixin _ColumnComparisonDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Database greater than operator.
   /// Throws [ArgumentError] if [other] is not an [Expression], [T] or [Column].
   Expression operator >(dynamic other) {
@@ -425,6 +428,22 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
     throw ArgumentError(
       'Invalid type for comparison: ${other.runtimeType}, allowed types are Expression, $T or Column',
     );
+  }
+}
+
+mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
+  /// Creates an [Expression] checking if the value in the column inclusively
+  /// is between the [min], [max] values.
+  Expression between(T min, T max) {
+    return _BetweenExpression(
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+  }
+
+  /// Creates an [Expression] checking if the value in the column inclusively
+  /// is NOT between the [min], [max] values.
+  Expression notBetween(T min, T max) {
+    return _NotBetweenExpression(
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 }
 
