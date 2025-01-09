@@ -6,9 +6,12 @@ import 'package:serverpod/serverpod.dart';
 class CloudStorageEndpoint extends Endpoint {
   Future<void> reset(Session session) async {
     // Remove all entries
-    await session.db.deleteWhere<CloudStorageEntry>(where: Constant.bool(true));
-    await session.db
-        .deleteWhere<CloudStorageDirectUploadEntry>(where: Constant.bool(true));
+    await session.db.deleteWhere<int, CloudStorageEntry>(
+      where: Constant.bool(true),
+    );
+    await session.db.deleteWhere<int, CloudStorageDirectUploadEntry>(
+      where: Constant.bool(true),
+    );
   }
 
   Future<void> storePublicFile(

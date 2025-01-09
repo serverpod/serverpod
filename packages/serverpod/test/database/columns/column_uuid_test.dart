@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnUuid', () {
     var columnName = 'id';
-    var column = ColumnUuid(columnName, Table(tableName: 'test'));
+    var column = ColumnUuid(columnName, Table<int>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

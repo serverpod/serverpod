@@ -15,14 +15,14 @@ class TestDatabaseProxy implements Database {
   TestDatabaseProxy(this._db, this._rollbackDatabase, this._transactionManager);
 
   @override
-  Future<int> count<T extends TableRow>({
+  Future<int> count<T_ID, T extends TableRow<T_ID>>({
     Expression? where,
     int? limit,
     bool useCache = true,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.count<T>(
+      () => _db.count<T_ID, T>(
         where: where,
         limit: limit,
         useCache: useCache,
@@ -33,12 +33,12 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> delete<T extends TableRow>(
+  Future<List<T>> delete<T_ID, T extends TableRow<T_ID>>(
     List<T> rows, {
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.delete<T>(
+      () => _db.delete<T_ID, T>(
         rows,
         transaction: transaction,
       ),
@@ -47,12 +47,12 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<T> deleteRow<T extends TableRow>(
+  Future<T> deleteRow<T_ID, T extends TableRow<T_ID>>(
     T row, {
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.deleteRow<T>(
+      () => _db.deleteRow<T_ID, T>(
         row,
         transaction: transaction,
       ),
@@ -61,12 +61,12 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> deleteWhere<T extends TableRow>({
+  Future<List<T>> deleteWhere<T_ID, T extends TableRow<T_ID>>({
     required Expression where,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.deleteWhere<T>(
+      () => _db.deleteWhere<T_ID, T>(
         where: where,
         transaction: transaction,
       ),
@@ -75,7 +75,7 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> find<T extends TableRow>({
+  Future<List<T>> find<T_ID, T extends TableRow<T_ID>>({
     Expression? where,
     int? limit,
     int? offset,
@@ -86,7 +86,7 @@ class TestDatabaseProxy implements Database {
     Include? include,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.find<T>(
+      () => _db.find<T_ID, T>(
         where: where,
         limit: limit,
         offset: offset,
@@ -101,19 +101,23 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<T?> findById<T extends TableRow>(
-    int id, {
+  Future<T?> findById<T_ID, T extends TableRow<T_ID>>(
+    T_ID id, {
     Transaction? transaction,
     Include? include,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.findById<T>(id, transaction: transaction, include: include),
+      () => _db.findById<T_ID, T>(
+        id,
+        transaction: transaction,
+        include: include,
+      ),
       isPartOfUserTransaction: transaction != null,
     );
   }
 
   @override
-  Future<T?> findFirstRow<T extends TableRow>({
+  Future<T?> findFirstRow<T_ID, T extends TableRow<T_ID>>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -123,7 +127,7 @@ class TestDatabaseProxy implements Database {
     Include? include,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.findFirstRow<T>(
+      () => _db.findFirstRow<T_ID, T>(
         where: where,
         offset: offset,
         orderBy: orderBy,
@@ -137,12 +141,12 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> insert<T extends TableRow>(
+  Future<List<T>> insert<T_ID, T extends TableRow<T_ID>>(
     List<T> rows, {
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.insert<T>(
+      () => _db.insert<T_ID, T>(
         rows,
         transaction: transaction,
       ),
@@ -151,12 +155,12 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<T> insertRow<T extends TableRow>(
+  Future<T> insertRow<T_ID, T extends TableRow<T_ID>>(
     T row, {
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.insertRow<T>(
+      () => _db.insertRow<T_ID, T>(
         row,
         transaction: transaction,
       ),
@@ -288,13 +292,13 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> update<T extends TableRow>(
+  Future<List<T>> update<T_ID, T extends TableRow<T_ID>>(
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
-      () => _db.update<T>(
+      () => _db.update<T_ID, T>(
         rows,
         columns: columns,
         transaction: transaction,
@@ -304,14 +308,14 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<T> updateRow<T extends TableRow>(
+  Future<T> updateRow<T_ID, T extends TableRow<T_ID>>(
     T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () async {
-        return _db.updateRow<T>(
+        return _db.updateRow<T_ID, T>(
           row,
           columns: columns,
           transaction: transaction,
