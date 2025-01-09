@@ -14,7 +14,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 
-abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Types implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -100,7 +100,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
   _i4.TestEnumStringified? aStringifiedEnum;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Types copyWith({
     int? id,
@@ -243,7 +243,7 @@ class _TypesImpl extends Types {
   }
 }
 
-class TypesTable extends _i1.Table {
+class TypesTable extends _i1.Table<int> {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
@@ -332,7 +332,7 @@ class TypesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Types.t;
+  _i1.Table<int> get table => Types.t;
 }
 
 class TypesIncludeList extends _i1.IncludeList {
@@ -352,7 +352,7 @@ class TypesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Types.t;
+  _i1.Table<int> get table => Types.t;
 }
 
 class TypesRepository {
@@ -368,7 +368,7 @@ class TypesRepository {
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Types>(
+    return session.db.find<int, Types>(
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -388,7 +388,7 @@ class TypesRepository {
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<Types>(
+    return session.db.findFirstRow<int, Types>(
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
@@ -403,7 +403,7 @@ class TypesRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Types>(
+    return session.db.findById<int, Types>(
       id,
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class TypesRepository {
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Types>(
+    return session.db.insert<int, Types>(
       rows,
       transaction: transaction,
     );
@@ -425,7 +425,7 @@ class TypesRepository {
     Types row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Types>(
+    return session.db.insertRow<int, Types>(
       row,
       transaction: transaction,
     );
@@ -437,7 +437,7 @@ class TypesRepository {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Types>(
+    return session.db.update<int, Types>(
       rows,
       columns: columns?.call(Types.t),
       transaction: transaction,
@@ -450,7 +450,7 @@ class TypesRepository {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Types>(
+    return session.db.updateRow<int, Types>(
       row,
       columns: columns?.call(Types.t),
       transaction: transaction,
@@ -462,7 +462,7 @@ class TypesRepository {
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Types>(
+    return session.db.delete<int, Types>(
       rows,
       transaction: transaction,
     );
@@ -473,7 +473,7 @@ class TypesRepository {
     Types row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Types>(
+    return session.db.deleteRow<int, Types>(
       row,
       transaction: transaction,
     );
@@ -484,7 +484,7 @@ class TypesRepository {
     required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Types>(
+    return session.db.deleteWhere<int, Types>(
       where: where(Types.t),
       transaction: transaction,
     );
@@ -496,7 +496,7 @@ class TypesRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Types>(
+    return session.db.count<int, Types>(
       where: where?.call(Types.t),
       limit: limit,
       transaction: transaction,

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
 
-abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Person._({
     this.id,
     required this.name,
@@ -55,7 +55,7 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
   int? _cityCitizensCityId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Person copyWith({
     int? id,
@@ -187,7 +187,7 @@ class PersonImplicit extends _PersonImpl {
   }
 }
 
-class PersonTable extends _i1.Table {
+class PersonTable extends _i1.Table<int> {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
     name = _i1.ColumnString(
       'name',
@@ -233,7 +233,7 @@ class PersonTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'organization') {
       return organization;
     }
@@ -252,7 +252,7 @@ class PersonInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table get table => Person.t;
+  _i1.Table<int> get table => Person.t;
 }
 
 class PersonIncludeList extends _i1.IncludeList {
@@ -272,7 +272,7 @@ class PersonIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Person.t;
+  _i1.Table<int> get table => Person.t;
 }
 
 class PersonRepository {
@@ -293,7 +293,7 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.find<Person>(
+    return session.db.find<int, Person>(
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -315,7 +315,7 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.findFirstRow<Person>(
+    return session.db.findFirstRow<int, Person>(
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
@@ -332,7 +332,7 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.findById<Person>(
+    return session.db.findById<int, Person>(
       id,
       transaction: transaction,
       include: include,
@@ -344,7 +344,7 @@ class PersonRepository {
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Person>(
+    return session.db.insert<int, Person>(
       rows,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class PersonRepository {
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Person>(
+    return session.db.insertRow<int, Person>(
       row,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class PersonRepository {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Person>(
+    return session.db.update<int, Person>(
       rows,
       columns: columns?.call(Person.t),
       transaction: transaction,
@@ -380,7 +380,7 @@ class PersonRepository {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Person>(
+    return session.db.updateRow<int, Person>(
       row,
       columns: columns?.call(Person.t),
       transaction: transaction,
@@ -392,7 +392,7 @@ class PersonRepository {
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Person>(
+    return session.db.delete<int, Person>(
       rows,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class PersonRepository {
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Person>(
+    return session.db.deleteRow<int, Person>(
       row,
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class PersonRepository {
     required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Person>(
+    return session.db.deleteWhere<int, Person>(
       where: where(Person.t),
       transaction: transaction,
     );
@@ -426,7 +426,7 @@ class PersonRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Person>(
+    return session.db.count<int, Person>(
       where: where?.call(Person.t),
       limit: limit,
       transaction: transaction,
@@ -451,7 +451,7 @@ class PersonAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
-    await session.db.updateRow<Person>(
+    await session.db.updateRow<int, Person>(
       $person,
       columns: [Person.t.organizationId],
       transaction: transaction,
@@ -472,7 +472,7 @@ class PersonDetachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: null);
-    await session.db.updateRow<Person>(
+    await session.db.updateRow<int, Person>(
       $person,
       columns: [Person.t.organizationId],
       transaction: transaction,

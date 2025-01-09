@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
 abstract class ReadWriteTestEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
     this.id,
     required this.number,
@@ -43,7 +43,7 @@ abstract class ReadWriteTestEntry
   int number;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ReadWriteTestEntry copyWith({
     int? id,
@@ -118,7 +118,7 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
   }
 }
 
-class ReadWriteTestEntryTable extends _i1.Table {
+class ReadWriteTestEntryTable extends _i1.Table<int> {
   ReadWriteTestEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_readwrite_test') {
     number = _i1.ColumnInt(
@@ -144,7 +144,7 @@ class ReadWriteTestEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ReadWriteTestEntry.t;
+  _i1.Table<int> get table => ReadWriteTestEntry.t;
 }
 
 class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
@@ -164,7 +164,7 @@ class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ReadWriteTestEntry.t;
+  _i1.Table<int> get table => ReadWriteTestEntry.t;
 }
 
 class ReadWriteTestEntryRepository {
@@ -180,7 +180,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ReadWriteTestEntry>(
+    return session.db.find<int, ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -200,7 +200,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ReadWriteTestEntry>(
+    return session.db.findFirstRow<int, ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -215,7 +215,7 @@ class ReadWriteTestEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ReadWriteTestEntry>(
+    return session.db.findById<int, ReadWriteTestEntry>(
       id,
       transaction: transaction,
     );
@@ -226,7 +226,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ReadWriteTestEntry>(
+    return session.db.insert<int, ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -237,7 +237,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ReadWriteTestEntry>(
+    return session.db.insertRow<int, ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -249,7 +249,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ReadWriteTestEntry>(
+    return session.db.update<int, ReadWriteTestEntry>(
       rows,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -262,7 +262,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ReadWriteTestEntry>(
+    return session.db.updateRow<int, ReadWriteTestEntry>(
       row,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -274,7 +274,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ReadWriteTestEntry>(
+    return session.db.delete<int, ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -285,7 +285,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ReadWriteTestEntry>(
+    return session.db.deleteRow<int, ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class ReadWriteTestEntryRepository {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ReadWriteTestEntry>(
+    return session.db.deleteWhere<int, ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class ReadWriteTestEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ReadWriteTestEntry>(
+    return session.db.count<int, ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       transaction: transaction,

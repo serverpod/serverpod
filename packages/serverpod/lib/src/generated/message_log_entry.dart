@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
 abstract class MessageLogEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -98,7 +98,7 @@ abstract class MessageLogEntry
   int order;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   MessageLogEntry copyWith({
     int? id,
@@ -236,7 +236,7 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
-class MessageLogEntryTable extends _i1.Table {
+class MessageLogEntryTable extends _i1.Table<int> {
   MessageLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_message_log') {
     sessionLogId = _i1.ColumnInt(
@@ -336,7 +336,7 @@ class MessageLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryIncludeList extends _i1.IncludeList {
@@ -356,7 +356,7 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryRepository {
@@ -372,7 +372,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<MessageLogEntry>(
+    return session.db.find<int, MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -392,7 +392,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<MessageLogEntry>(
+    return session.db.findFirstRow<int, MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -407,7 +407,7 @@ class MessageLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<MessageLogEntry>(
+    return session.db.findById<int, MessageLogEntry>(
       id,
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MessageLogEntry>(
+    return session.db.insert<int, MessageLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MessageLogEntry>(
+    return session.db.insertRow<int, MessageLogEntry>(
       row,
       transaction: transaction,
     );
@@ -441,7 +441,7 @@ class MessageLogEntryRepository {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<MessageLogEntry>(
+    return session.db.update<int, MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
@@ -454,7 +454,7 @@ class MessageLogEntryRepository {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<MessageLogEntry>(
+    return session.db.updateRow<int, MessageLogEntry>(
       row,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
@@ -466,7 +466,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MessageLogEntry>(
+    return session.db.delete<int, MessageLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -477,7 +477,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MessageLogEntry>(
+    return session.db.deleteRow<int, MessageLogEntry>(
       row,
       transaction: transaction,
     );
@@ -488,7 +488,7 @@ class MessageLogEntryRepository {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<MessageLogEntry>(
+    return session.db.deleteWhere<int, MessageLogEntry>(
       where: where(MessageLogEntry.t),
       transaction: transaction,
     );
@@ -500,7 +500,7 @@ class MessageLogEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<MessageLogEntry>(
+    return session.db.count<int, MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
       transaction: transaction,

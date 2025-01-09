@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for an email reset.
-abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class EmailReset
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EmailReset._({
     this.id,
     required this.userId,
@@ -54,7 +55,7 @@ abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
   DateTime expiration;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   EmailReset copyWith({
     int? id,
@@ -143,7 +144,7 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
-class EmailResetTable extends _i1.Table {
+class EmailResetTable extends _i1.Table<int> {
   EmailResetTable({super.tableRelation})
       : super(tableName: 'serverpod_email_reset') {
     userId = _i1.ColumnInt(
@@ -185,7 +186,7 @@ class EmailResetInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmailReset.t;
+  _i1.Table<int> get table => EmailReset.t;
 }
 
 class EmailResetIncludeList extends _i1.IncludeList {
@@ -205,7 +206,7 @@ class EmailResetIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmailReset.t;
+  _i1.Table<int> get table => EmailReset.t;
 }
 
 class EmailResetRepository {
@@ -221,7 +222,7 @@ class EmailResetRepository {
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailReset>(
+    return session.db.find<int, EmailReset>(
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -241,7 +242,7 @@ class EmailResetRepository {
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailReset>(
+    return session.db.findFirstRow<int, EmailReset>(
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
@@ -256,7 +257,7 @@ class EmailResetRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailReset>(
+    return session.db.findById<int, EmailReset>(
       id,
       transaction: transaction,
     );
@@ -267,7 +268,7 @@ class EmailResetRepository {
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailReset>(
+    return session.db.insert<int, EmailReset>(
       rows,
       transaction: transaction,
     );
@@ -278,7 +279,7 @@ class EmailResetRepository {
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailReset>(
+    return session.db.insertRow<int, EmailReset>(
       row,
       transaction: transaction,
     );
@@ -290,7 +291,7 @@ class EmailResetRepository {
     _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailReset>(
+    return session.db.update<int, EmailReset>(
       rows,
       columns: columns?.call(EmailReset.t),
       transaction: transaction,
@@ -303,7 +304,7 @@ class EmailResetRepository {
     _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailReset>(
+    return session.db.updateRow<int, EmailReset>(
       row,
       columns: columns?.call(EmailReset.t),
       transaction: transaction,
@@ -315,7 +316,7 @@ class EmailResetRepository {
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailReset>(
+    return session.db.delete<int, EmailReset>(
       rows,
       transaction: transaction,
     );
@@ -326,7 +327,7 @@ class EmailResetRepository {
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailReset>(
+    return session.db.deleteRow<int, EmailReset>(
       row,
       transaction: transaction,
     );
@@ -337,7 +338,7 @@ class EmailResetRepository {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailReset>(
+    return session.db.deleteWhere<int, EmailReset>(
       where: where(EmailReset.t),
       transaction: transaction,
     );
@@ -349,7 +350,7 @@ class EmailResetRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailReset>(
+    return session.db.count<int, EmailReset>(
       where: where?.call(EmailReset.t),
       limit: limit,
       transaction: transaction,

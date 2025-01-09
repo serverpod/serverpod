@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectFieldScopes
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectFieldScopes._({
     this.id,
     required this.normal,
@@ -50,7 +50,7 @@ abstract class ObjectFieldScopes
   String? database;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ObjectFieldScopes copyWith({
     int? id,
@@ -138,7 +138,7 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
   }
 }
 
-class ObjectFieldScopesTable extends _i1.Table {
+class ObjectFieldScopesTable extends _i1.Table<int> {
   ObjectFieldScopesTable({super.tableRelation})
       : super(tableName: 'object_field_scopes') {
     normal = _i1.ColumnString(
@@ -170,7 +170,7 @@ class ObjectFieldScopesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectFieldScopes.t;
+  _i1.Table<int> get table => ObjectFieldScopes.t;
 }
 
 class ObjectFieldScopesIncludeList extends _i1.IncludeList {
@@ -190,7 +190,7 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectFieldScopes.t;
+  _i1.Table<int> get table => ObjectFieldScopes.t;
 }
 
 class ObjectFieldScopesRepository {
@@ -206,7 +206,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectFieldScopes>(
+    return session.db.find<int, ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -226,7 +226,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectFieldScopes>(
+    return session.db.findFirstRow<int, ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -241,7 +241,7 @@ class ObjectFieldScopesRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectFieldScopes>(
+    return session.db.findById<int, ObjectFieldScopes>(
       id,
       transaction: transaction,
     );
@@ -252,7 +252,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectFieldScopes>(
+    return session.db.insert<int, ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -263,7 +263,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectFieldScopes>(
+    return session.db.insertRow<int, ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -275,7 +275,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectFieldScopes>(
+    return session.db.update<int, ObjectFieldScopes>(
       rows,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -288,7 +288,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectFieldScopes>(
+    return session.db.updateRow<int, ObjectFieldScopes>(
       row,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -300,7 +300,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectFieldScopes>(
+    return session.db.delete<int, ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -311,7 +311,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectFieldScopes>(
+    return session.db.deleteRow<int, ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -322,7 +322,7 @@ class ObjectFieldScopesRepository {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectFieldScopes>(
+    return session.db.deleteWhere<int, ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
       transaction: transaction,
     );
@@ -334,7 +334,7 @@ class ObjectFieldScopesRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectFieldScopes>(
+    return session.db.count<int, ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       transaction: transaction,

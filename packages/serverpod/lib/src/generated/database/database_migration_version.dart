@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DatabaseMigrationVersion._({
     this.id,
     required this.module,
@@ -57,7 +57,7 @@ abstract class DatabaseMigrationVersion
   DateTime? timestamp;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   DatabaseMigrationVersion copyWith({
     int? id,
@@ -146,7 +146,7 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
   }
 }
 
-class DatabaseMigrationVersionTable extends _i1.Table {
+class DatabaseMigrationVersionTable extends _i1.Table<int> {
   DatabaseMigrationVersionTable({super.tableRelation})
       : super(tableName: 'serverpod_migrations') {
     module = _i1.ColumnString(
@@ -188,7 +188,7 @@ class DatabaseMigrationVersionInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DatabaseMigrationVersion.t;
+  _i1.Table<int> get table => DatabaseMigrationVersion.t;
 }
 
 class DatabaseMigrationVersionIncludeList extends _i1.IncludeList {
@@ -208,7 +208,7 @@ class DatabaseMigrationVersionIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DatabaseMigrationVersion.t;
+  _i1.Table<int> get table => DatabaseMigrationVersion.t;
 }
 
 class DatabaseMigrationVersionRepository {
@@ -224,7 +224,7 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DatabaseMigrationVersion>(
+    return session.db.find<int, DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -244,7 +244,7 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DatabaseMigrationVersion>(
+    return session.db.findFirstRow<int, DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -259,7 +259,7 @@ class DatabaseMigrationVersionRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DatabaseMigrationVersion>(
+    return session.db.findById<int, DatabaseMigrationVersion>(
       id,
       transaction: transaction,
     );
@@ -270,7 +270,7 @@ class DatabaseMigrationVersionRepository {
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DatabaseMigrationVersion>(
+    return session.db.insert<int, DatabaseMigrationVersion>(
       rows,
       transaction: transaction,
     );
@@ -281,7 +281,7 @@ class DatabaseMigrationVersionRepository {
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DatabaseMigrationVersion>(
+    return session.db.insertRow<int, DatabaseMigrationVersion>(
       row,
       transaction: transaction,
     );
@@ -293,7 +293,7 @@ class DatabaseMigrationVersionRepository {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DatabaseMigrationVersion>(
+    return session.db.update<int, DatabaseMigrationVersion>(
       rows,
       columns: columns?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
@@ -306,7 +306,7 @@ class DatabaseMigrationVersionRepository {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DatabaseMigrationVersion>(
+    return session.db.updateRow<int, DatabaseMigrationVersion>(
       row,
       columns: columns?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
@@ -318,7 +318,7 @@ class DatabaseMigrationVersionRepository {
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DatabaseMigrationVersion>(
+    return session.db.delete<int, DatabaseMigrationVersion>(
       rows,
       transaction: transaction,
     );
@@ -329,7 +329,7 @@ class DatabaseMigrationVersionRepository {
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DatabaseMigrationVersion>(
+    return session.db.deleteRow<int, DatabaseMigrationVersion>(
       row,
       transaction: transaction,
     );
@@ -340,7 +340,7 @@ class DatabaseMigrationVersionRepository {
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DatabaseMigrationVersion>(
+    return session.db.deleteWhere<int, DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
       transaction: transaction,
     );
@@ -352,7 +352,7 @@ class DatabaseMigrationVersionRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DatabaseMigrationVersion>(
+    return session.db.count<int, DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
       transaction: transaction,

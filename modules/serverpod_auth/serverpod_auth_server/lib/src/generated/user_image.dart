@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
-abstract class UserImage implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UserImage
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UserImage._({
     this.id,
     required this.userId,
@@ -53,7 +54,7 @@ abstract class UserImage implements _i1.TableRow, _i1.ProtocolSerialization {
   String url;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   UserImage copyWith({
     int? id,
@@ -142,7 +143,7 @@ class _UserImageImpl extends UserImage {
   }
 }
 
-class UserImageTable extends _i1.Table {
+class UserImageTable extends _i1.Table<int> {
   UserImageTable({super.tableRelation})
       : super(tableName: 'serverpod_user_image') {
     userId = _i1.ColumnInt(
@@ -184,7 +185,7 @@ class UserImageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserImage.t;
+  _i1.Table<int> get table => UserImage.t;
 }
 
 class UserImageIncludeList extends _i1.IncludeList {
@@ -204,7 +205,7 @@ class UserImageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserImage.t;
+  _i1.Table<int> get table => UserImage.t;
 }
 
 class UserImageRepository {
@@ -220,7 +221,7 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserImage>(
+    return session.db.find<int, UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -240,7 +241,7 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserImage>(
+    return session.db.findFirstRow<int, UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
@@ -255,7 +256,7 @@ class UserImageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserImage>(
+    return session.db.findById<int, UserImage>(
       id,
       transaction: transaction,
     );
@@ -266,7 +267,7 @@ class UserImageRepository {
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserImage>(
+    return session.db.insert<int, UserImage>(
       rows,
       transaction: transaction,
     );
@@ -277,7 +278,7 @@ class UserImageRepository {
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserImage>(
+    return session.db.insertRow<int, UserImage>(
       row,
       transaction: transaction,
     );
@@ -289,7 +290,7 @@ class UserImageRepository {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserImage>(
+    return session.db.update<int, UserImage>(
       rows,
       columns: columns?.call(UserImage.t),
       transaction: transaction,
@@ -302,7 +303,7 @@ class UserImageRepository {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserImage>(
+    return session.db.updateRow<int, UserImage>(
       row,
       columns: columns?.call(UserImage.t),
       transaction: transaction,
@@ -314,7 +315,7 @@ class UserImageRepository {
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserImage>(
+    return session.db.delete<int, UserImage>(
       rows,
       transaction: transaction,
     );
@@ -325,7 +326,7 @@ class UserImageRepository {
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserImage>(
+    return session.db.deleteRow<int, UserImage>(
       row,
       transaction: transaction,
     );
@@ -336,7 +337,7 @@ class UserImageRepository {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserImage>(
+    return session.db.deleteWhere<int, UserImage>(
       where: where(UserImage.t),
       transaction: transaction,
     );
@@ -348,7 +349,7 @@ class UserImageRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserImage>(
+    return session.db.count<int, UserImage>(
       where: where?.call(UserImage.t),
       limit: limit,
       transaction: transaction,

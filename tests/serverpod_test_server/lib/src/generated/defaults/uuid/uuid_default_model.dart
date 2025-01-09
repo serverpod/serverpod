@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 
 abstract class UuidDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UuidDefaultModel._({
     this.id,
     _i1.UuidValue? uuidDefaultModelRandom,
@@ -72,7 +72,7 @@ abstract class UuidDefaultModel
   _i1.UuidValue? uuidDefaultModelStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   UuidDefaultModel copyWith({
     int? id,
@@ -177,7 +177,7 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   }
 }
 
-class UuidDefaultModelTable extends _i1.Table {
+class UuidDefaultModelTable extends _i1.Table<int> {
   UuidDefaultModelTable({super.tableRelation})
       : super(tableName: 'uuid_default_model') {
     uuidDefaultModelRandom = _i1.ColumnUuid(
@@ -223,7 +223,7 @@ class UuidDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UuidDefaultModel.t;
+  _i1.Table<int> get table => UuidDefaultModel.t;
 }
 
 class UuidDefaultModelIncludeList extends _i1.IncludeList {
@@ -243,7 +243,7 @@ class UuidDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UuidDefaultModel.t;
+  _i1.Table<int> get table => UuidDefaultModel.t;
 }
 
 class UuidDefaultModelRepository {
@@ -259,7 +259,7 @@ class UuidDefaultModelRepository {
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UuidDefaultModel>(
+    return session.db.find<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
@@ -279,7 +279,7 @@ class UuidDefaultModelRepository {
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UuidDefaultModel>(
+    return session.db.findFirstRow<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
@@ -294,7 +294,7 @@ class UuidDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UuidDefaultModel>(
+    return session.db.findById<int, UuidDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -305,7 +305,7 @@ class UuidDefaultModelRepository {
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UuidDefaultModel>(
+    return session.db.insert<int, UuidDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -316,7 +316,7 @@ class UuidDefaultModelRepository {
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UuidDefaultModel>(
+    return session.db.insertRow<int, UuidDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -328,7 +328,7 @@ class UuidDefaultModelRepository {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UuidDefaultModel>(
+    return session.db.update<int, UuidDefaultModel>(
       rows,
       columns: columns?.call(UuidDefaultModel.t),
       transaction: transaction,
@@ -341,7 +341,7 @@ class UuidDefaultModelRepository {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UuidDefaultModel>(
+    return session.db.updateRow<int, UuidDefaultModel>(
       row,
       columns: columns?.call(UuidDefaultModel.t),
       transaction: transaction,
@@ -353,7 +353,7 @@ class UuidDefaultModelRepository {
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UuidDefaultModel>(
+    return session.db.delete<int, UuidDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -364,7 +364,7 @@ class UuidDefaultModelRepository {
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UuidDefaultModel>(
+    return session.db.deleteRow<int, UuidDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class UuidDefaultModelRepository {
     required _i1.WhereExpressionBuilder<UuidDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UuidDefaultModel>(
+    return session.db.deleteWhere<int, UuidDefaultModel>(
       where: where(UuidDefaultModel.t),
       transaction: transaction,
     );
@@ -387,7 +387,7 @@ class UuidDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UuidDefaultModel>(
+    return session.db.count<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       limit: limit,
       transaction: transaction,

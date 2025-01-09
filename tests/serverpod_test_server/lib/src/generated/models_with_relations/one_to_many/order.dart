@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 
-abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Order implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Order._({
     this.id,
     required this.description,
@@ -61,7 +61,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Comment>? comments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Order copyWith({
     int? id,
@@ -168,7 +168,7 @@ class _OrderImpl extends Order {
   }
 }
 
-class OrderTable extends _i1.Table {
+class OrderTable extends _i1.Table<int> {
   OrderTable({super.tableRelation}) : super(tableName: 'order') {
     description = _i1.ColumnString(
       'description',
@@ -242,7 +242,7 @@ class OrderTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'customer') {
       return customer;
     }
@@ -273,7 +273,7 @@ class OrderInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Order.t;
+  _i1.Table<int> get table => Order.t;
 }
 
 class OrderIncludeList extends _i1.IncludeList {
@@ -293,7 +293,7 @@ class OrderIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Order.t;
+  _i1.Table<int> get table => Order.t;
 }
 
 class OrderRepository {
@@ -314,7 +314,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.find<Order>(
+    return session.db.find<int, Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -336,7 +336,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.findFirstRow<Order>(
+    return session.db.findFirstRow<int, Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -353,7 +353,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.findById<Order>(
+    return session.db.findById<int, Order>(
       id,
       transaction: transaction,
       include: include,
@@ -365,7 +365,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Order>(
+    return session.db.insert<int, Order>(
       rows,
       transaction: transaction,
     );
@@ -376,7 +376,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Order>(
+    return session.db.insertRow<int, Order>(
       row,
       transaction: transaction,
     );
@@ -388,7 +388,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Order>(
+    return session.db.update<int, Order>(
       rows,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -401,7 +401,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Order>(
+    return session.db.updateRow<int, Order>(
       row,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -413,7 +413,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Order>(
+    return session.db.delete<int, Order>(
       rows,
       transaction: transaction,
     );
@@ -424,7 +424,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Order>(
+    return session.db.deleteRow<int, Order>(
       row,
       transaction: transaction,
     );
@@ -435,7 +435,7 @@ class OrderRepository {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Order>(
+    return session.db.deleteWhere<int, Order>(
       where: where(Order.t),
       transaction: transaction,
     );
@@ -447,7 +447,7 @@ class OrderRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Order>(
+    return session.db.count<int, Order>(
       where: where?.call(Order.t),
       limit: limit,
       transaction: transaction,
@@ -472,7 +472,7 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await session.db.update<_i3.Comment>(
+    await session.db.update<int, _i3.Comment>(
       $comment,
       columns: [_i3.Comment.t.orderId],
       transaction: transaction,
@@ -497,7 +497,7 @@ class OrderAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<Order>(
+    await session.db.updateRow<int, Order>(
       $order,
       columns: [Order.t.customerId],
       transaction: transaction,
@@ -518,7 +518,7 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.db.updateRow<_i3.Comment>(
+    await session.db.updateRow<int, _i3.Comment>(
       $comment,
       columns: [_i3.Comment.t.orderId],
       transaction: transaction,

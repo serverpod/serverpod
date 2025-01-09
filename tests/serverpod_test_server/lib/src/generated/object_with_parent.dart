@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithParent
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithParent._({
     this.id,
     required this.other,
@@ -40,7 +40,7 @@ abstract class ObjectWithParent
   int other;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ObjectWithParent copyWith({
     int? id,
@@ -115,7 +115,7 @@ class _ObjectWithParentImpl extends ObjectWithParent {
   }
 }
 
-class ObjectWithParentTable extends _i1.Table {
+class ObjectWithParentTable extends _i1.Table<int> {
   ObjectWithParentTable({super.tableRelation})
       : super(tableName: 'object_with_parent') {
     other = _i1.ColumnInt(
@@ -140,7 +140,7 @@ class ObjectWithParentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithParent.t;
+  _i1.Table<int> get table => ObjectWithParent.t;
 }
 
 class ObjectWithParentIncludeList extends _i1.IncludeList {
@@ -160,7 +160,7 @@ class ObjectWithParentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithParent.t;
+  _i1.Table<int> get table => ObjectWithParent.t;
 }
 
 class ObjectWithParentRepository {
@@ -176,7 +176,7 @@ class ObjectWithParentRepository {
     _i1.OrderByListBuilder<ObjectWithParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithParent>(
+    return session.db.find<int, ObjectWithParent>(
       where: where?.call(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -196,7 +196,7 @@ class ObjectWithParentRepository {
     _i1.OrderByListBuilder<ObjectWithParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithParent>(
+    return session.db.findFirstRow<int, ObjectWithParent>(
       where: where?.call(ObjectWithParent.t),
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
@@ -211,7 +211,7 @@ class ObjectWithParentRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithParent>(
+    return session.db.findById<int, ObjectWithParent>(
       id,
       transaction: transaction,
     );
@@ -222,7 +222,7 @@ class ObjectWithParentRepository {
     List<ObjectWithParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithParent>(
+    return session.db.insert<int, ObjectWithParent>(
       rows,
       transaction: transaction,
     );
@@ -233,7 +233,7 @@ class ObjectWithParentRepository {
     ObjectWithParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithParent>(
+    return session.db.insertRow<int, ObjectWithParent>(
       row,
       transaction: transaction,
     );
@@ -245,7 +245,7 @@ class ObjectWithParentRepository {
     _i1.ColumnSelections<ObjectWithParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithParent>(
+    return session.db.update<int, ObjectWithParent>(
       rows,
       columns: columns?.call(ObjectWithParent.t),
       transaction: transaction,
@@ -258,7 +258,7 @@ class ObjectWithParentRepository {
     _i1.ColumnSelections<ObjectWithParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithParent>(
+    return session.db.updateRow<int, ObjectWithParent>(
       row,
       columns: columns?.call(ObjectWithParent.t),
       transaction: transaction,
@@ -270,7 +270,7 @@ class ObjectWithParentRepository {
     List<ObjectWithParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithParent>(
+    return session.db.delete<int, ObjectWithParent>(
       rows,
       transaction: transaction,
     );
@@ -281,7 +281,7 @@ class ObjectWithParentRepository {
     ObjectWithParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithParent>(
+    return session.db.deleteRow<int, ObjectWithParent>(
       row,
       transaction: transaction,
     );
@@ -292,7 +292,7 @@ class ObjectWithParentRepository {
     required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithParent>(
+    return session.db.deleteWhere<int, ObjectWithParent>(
       where: where(ObjectWithParent.t),
       transaction: transaction,
     );
@@ -304,7 +304,7 @@ class ObjectWithParentRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithParent>(
+    return session.db.count<int, ObjectWithParent>(
       where: where?.call(ObjectWithParent.t),
       limit: limit,
       transaction: transaction,

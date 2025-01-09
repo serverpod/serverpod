@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class EmptyModelRelationItem
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -43,7 +43,7 @@ abstract class EmptyModelRelationItem
   int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   EmptyModelRelationItem copyWith({
     int? id,
@@ -156,7 +156,7 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   }
 }
 
-class EmptyModelRelationItemTable extends _i1.Table {
+class EmptyModelRelationItemTable extends _i1.Table<int> {
   EmptyModelRelationItemTable({super.tableRelation})
       : super(tableName: 'empty_model_relation_item') {
     name = _i1.ColumnString(
@@ -188,7 +188,7 @@ class EmptyModelRelationItemInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
@@ -208,7 +208,7 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemRepository {
@@ -224,7 +224,7 @@ class EmptyModelRelationItemRepository {
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmptyModelRelationItem>(
+    return session.db.find<int, EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
@@ -244,7 +244,7 @@ class EmptyModelRelationItemRepository {
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmptyModelRelationItem>(
+    return session.db.findFirstRow<int, EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
@@ -259,7 +259,7 @@ class EmptyModelRelationItemRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmptyModelRelationItem>(
+    return session.db.findById<int, EmptyModelRelationItem>(
       id,
       transaction: transaction,
     );
@@ -270,7 +270,7 @@ class EmptyModelRelationItemRepository {
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmptyModelRelationItem>(
+    return session.db.insert<int, EmptyModelRelationItem>(
       rows,
       transaction: transaction,
     );
@@ -281,7 +281,7 @@ class EmptyModelRelationItemRepository {
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmptyModelRelationItem>(
+    return session.db.insertRow<int, EmptyModelRelationItem>(
       row,
       transaction: transaction,
     );
@@ -293,7 +293,7 @@ class EmptyModelRelationItemRepository {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmptyModelRelationItem>(
+    return session.db.update<int, EmptyModelRelationItem>(
       rows,
       columns: columns?.call(EmptyModelRelationItem.t),
       transaction: transaction,
@@ -306,7 +306,7 @@ class EmptyModelRelationItemRepository {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmptyModelRelationItem>(
+    return session.db.updateRow<int, EmptyModelRelationItem>(
       row,
       columns: columns?.call(EmptyModelRelationItem.t),
       transaction: transaction,
@@ -318,7 +318,7 @@ class EmptyModelRelationItemRepository {
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmptyModelRelationItem>(
+    return session.db.delete<int, EmptyModelRelationItem>(
       rows,
       transaction: transaction,
     );
@@ -329,7 +329,7 @@ class EmptyModelRelationItemRepository {
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmptyModelRelationItem>(
+    return session.db.deleteRow<int, EmptyModelRelationItem>(
       row,
       transaction: transaction,
     );
@@ -340,7 +340,7 @@ class EmptyModelRelationItemRepository {
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmptyModelRelationItem>(
+    return session.db.deleteWhere<int, EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),
       transaction: transaction,
     );
@@ -352,7 +352,7 @@ class EmptyModelRelationItemRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmptyModelRelationItem>(
+    return session.db.count<int, EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       limit: limit,
       transaction: transaction,

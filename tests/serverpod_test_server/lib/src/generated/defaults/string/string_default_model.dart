@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class StringDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   StringDefaultModel._({
     this.id,
     String? stringDefaultModel,
@@ -49,7 +49,7 @@ abstract class StringDefaultModel
   String stringDefaultModelNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   StringDefaultModel copyWith({
     int? id,
@@ -132,7 +132,7 @@ class _StringDefaultModelImpl extends StringDefaultModel {
   }
 }
 
-class StringDefaultModelTable extends _i1.Table {
+class StringDefaultModelTable extends _i1.Table<int> {
   StringDefaultModelTable({super.tableRelation})
       : super(tableName: 'string_default_model') {
     stringDefaultModel = _i1.ColumnString(
@@ -164,7 +164,7 @@ class StringDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => StringDefaultModel.t;
+  _i1.Table<int> get table => StringDefaultModel.t;
 }
 
 class StringDefaultModelIncludeList extends _i1.IncludeList {
@@ -184,7 +184,7 @@ class StringDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => StringDefaultModel.t;
+  _i1.Table<int> get table => StringDefaultModel.t;
 }
 
 class StringDefaultModelRepository {
@@ -200,7 +200,7 @@ class StringDefaultModelRepository {
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<StringDefaultModel>(
+    return session.db.find<int, StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -220,7 +220,7 @@ class StringDefaultModelRepository {
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<StringDefaultModel>(
+    return session.db.findFirstRow<int, StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
@@ -235,7 +235,7 @@ class StringDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<StringDefaultModel>(
+    return session.db.findById<int, StringDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -246,7 +246,7 @@ class StringDefaultModelRepository {
     List<StringDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<StringDefaultModel>(
+    return session.db.insert<int, StringDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -257,7 +257,7 @@ class StringDefaultModelRepository {
     StringDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<StringDefaultModel>(
+    return session.db.insertRow<int, StringDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -269,7 +269,7 @@ class StringDefaultModelRepository {
     _i1.ColumnSelections<StringDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<StringDefaultModel>(
+    return session.db.update<int, StringDefaultModel>(
       rows,
       columns: columns?.call(StringDefaultModel.t),
       transaction: transaction,
@@ -282,7 +282,7 @@ class StringDefaultModelRepository {
     _i1.ColumnSelections<StringDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<StringDefaultModel>(
+    return session.db.updateRow<int, StringDefaultModel>(
       row,
       columns: columns?.call(StringDefaultModel.t),
       transaction: transaction,
@@ -294,7 +294,7 @@ class StringDefaultModelRepository {
     List<StringDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<StringDefaultModel>(
+    return session.db.delete<int, StringDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -305,7 +305,7 @@ class StringDefaultModelRepository {
     StringDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<StringDefaultModel>(
+    return session.db.deleteRow<int, StringDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -316,7 +316,7 @@ class StringDefaultModelRepository {
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<StringDefaultModel>(
+    return session.db.deleteWhere<int, StringDefaultModel>(
       where: where(StringDefaultModel.t),
       transaction: transaction,
     );
@@ -328,7 +328,7 @@ class StringDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<StringDefaultModel>(
+    return session.db.count<int, StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
       limit: limit,
       transaction: transaction,

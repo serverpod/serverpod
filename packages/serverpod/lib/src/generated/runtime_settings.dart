@@ -15,7 +15,7 @@ import 'log_settings_override.dart' as _i3;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   RuntimeSettings._({
     this.id,
     required this.logSettings,
@@ -66,7 +66,7 @@ abstract class RuntimeSettings
   bool logMalformedCalls;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   RuntimeSettings copyWith({
     int? id,
@@ -165,7 +165,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   }
 }
 
-class RuntimeSettingsTable extends _i1.Table {
+class RuntimeSettingsTable extends _i1.Table<int> {
   RuntimeSettingsTable({super.tableRelation})
       : super(tableName: 'serverpod_runtime_settings') {
     logSettings = _i1.ColumnSerializable(
@@ -215,7 +215,7 @@ class RuntimeSettingsInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => RuntimeSettings.t;
+  _i1.Table<int> get table => RuntimeSettings.t;
 }
 
 class RuntimeSettingsIncludeList extends _i1.IncludeList {
@@ -235,7 +235,7 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RuntimeSettings.t;
+  _i1.Table<int> get table => RuntimeSettings.t;
 }
 
 class RuntimeSettingsRepository {
@@ -251,7 +251,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<RuntimeSettings>(
+    return session.db.find<int, RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -271,7 +271,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<RuntimeSettings>(
+    return session.db.findFirstRow<int, RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -286,7 +286,7 @@ class RuntimeSettingsRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<RuntimeSettings>(
+    return session.db.findById<int, RuntimeSettings>(
       id,
       transaction: transaction,
     );
@@ -297,7 +297,7 @@ class RuntimeSettingsRepository {
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RuntimeSettings>(
+    return session.db.insert<int, RuntimeSettings>(
       rows,
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class RuntimeSettingsRepository {
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RuntimeSettings>(
+    return session.db.insertRow<int, RuntimeSettings>(
       row,
       transaction: transaction,
     );
@@ -320,7 +320,7 @@ class RuntimeSettingsRepository {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RuntimeSettings>(
+    return session.db.update<int, RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
@@ -333,7 +333,7 @@ class RuntimeSettingsRepository {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RuntimeSettings>(
+    return session.db.updateRow<int, RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
@@ -345,7 +345,7 @@ class RuntimeSettingsRepository {
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RuntimeSettings>(
+    return session.db.delete<int, RuntimeSettings>(
       rows,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class RuntimeSettingsRepository {
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RuntimeSettings>(
+    return session.db.deleteRow<int, RuntimeSettings>(
       row,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class RuntimeSettingsRepository {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RuntimeSettings>(
+    return session.db.deleteWhere<int, RuntimeSettings>(
       where: where(RuntimeSettings.t),
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class RuntimeSettingsRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RuntimeSettings>(
+    return session.db.count<int, RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
       transaction: transaction,

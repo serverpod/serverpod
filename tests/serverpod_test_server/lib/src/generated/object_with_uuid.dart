@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithUuid
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithUuid._({
     this.id,
     required this.uuid,
@@ -48,7 +48,7 @@ abstract class ObjectWithUuid
   _i1.UuidValue? uuidNullable;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ObjectWithUuid copyWith({
     int? id,
@@ -131,7 +131,7 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   }
 }
 
-class ObjectWithUuidTable extends _i1.Table {
+class ObjectWithUuidTable extends _i1.Table<int> {
   ObjectWithUuidTable({super.tableRelation})
       : super(tableName: 'object_with_uuid') {
     uuid = _i1.ColumnUuid(
@@ -163,7 +163,7 @@ class ObjectWithUuidInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithUuid.t;
+  _i1.Table<int> get table => ObjectWithUuid.t;
 }
 
 class ObjectWithUuidIncludeList extends _i1.IncludeList {
@@ -183,7 +183,7 @@ class ObjectWithUuidIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithUuid.t;
+  _i1.Table<int> get table => ObjectWithUuid.t;
 }
 
 class ObjectWithUuidRepository {
@@ -199,7 +199,7 @@ class ObjectWithUuidRepository {
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithUuid>(
+    return session.db.find<int, ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
@@ -219,7 +219,7 @@ class ObjectWithUuidRepository {
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithUuid>(
+    return session.db.findFirstRow<int, ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
@@ -234,7 +234,7 @@ class ObjectWithUuidRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithUuid>(
+    return session.db.findById<int, ObjectWithUuid>(
       id,
       transaction: transaction,
     );
@@ -245,7 +245,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithUuid>(
+    return session.db.insert<int, ObjectWithUuid>(
       rows,
       transaction: transaction,
     );
@@ -256,7 +256,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithUuid>(
+    return session.db.insertRow<int, ObjectWithUuid>(
       row,
       transaction: transaction,
     );
@@ -268,7 +268,7 @@ class ObjectWithUuidRepository {
     _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithUuid>(
+    return session.db.update<int, ObjectWithUuid>(
       rows,
       columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
@@ -281,7 +281,7 @@ class ObjectWithUuidRepository {
     _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithUuid>(
+    return session.db.updateRow<int, ObjectWithUuid>(
       row,
       columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
@@ -293,7 +293,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithUuid>(
+    return session.db.delete<int, ObjectWithUuid>(
       rows,
       transaction: transaction,
     );
@@ -304,7 +304,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithUuid>(
+    return session.db.deleteRow<int, ObjectWithUuid>(
       row,
       transaction: transaction,
     );
@@ -315,7 +315,7 @@ class ObjectWithUuidRepository {
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithUuid>(
+    return session.db.deleteWhere<int, ObjectWithUuid>(
       where: where(ObjectWithUuid.t),
       transaction: transaction,
     );
@@ -327,7 +327,7 @@ class ObjectWithUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithUuid>(
+    return session.db.count<int, ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       limit: limit,
       transaction: transaction,

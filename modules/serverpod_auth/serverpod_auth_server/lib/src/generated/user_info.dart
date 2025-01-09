@@ -16,7 +16,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UserInfo
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UserInfo._({
     this.id,
     required this.userIdentifier,
@@ -90,7 +91,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   bool blocked;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   UserInfo copyWith({
     int? id,
@@ -214,7 +215,7 @@ class _UserInfoImpl extends UserInfo {
   }
 }
 
-class UserInfoTable extends _i1.Table {
+class UserInfoTable extends _i1.Table<int> {
   UserInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_user_info') {
     userIdentifier = _i1.ColumnString(
@@ -297,7 +298,7 @@ class UserInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserInfo.t;
+  _i1.Table<int> get table => UserInfo.t;
 }
 
 class UserInfoIncludeList extends _i1.IncludeList {
@@ -317,7 +318,7 @@ class UserInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserInfo.t;
+  _i1.Table<int> get table => UserInfo.t;
 }
 
 class UserInfoRepository {
@@ -333,7 +334,7 @@ class UserInfoRepository {
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserInfo>(
+    return session.db.find<int, UserInfo>(
       where: where?.call(UserInfo.t),
       orderBy: orderBy?.call(UserInfo.t),
       orderByList: orderByList?.call(UserInfo.t),
@@ -353,7 +354,7 @@ class UserInfoRepository {
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserInfo>(
+    return session.db.findFirstRow<int, UserInfo>(
       where: where?.call(UserInfo.t),
       orderBy: orderBy?.call(UserInfo.t),
       orderByList: orderByList?.call(UserInfo.t),
@@ -368,7 +369,7 @@ class UserInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserInfo>(
+    return session.db.findById<int, UserInfo>(
       id,
       transaction: transaction,
     );
@@ -379,7 +380,7 @@ class UserInfoRepository {
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserInfo>(
+    return session.db.insert<int, UserInfo>(
       rows,
       transaction: transaction,
     );
@@ -390,7 +391,7 @@ class UserInfoRepository {
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserInfo>(
+    return session.db.insertRow<int, UserInfo>(
       row,
       transaction: transaction,
     );
@@ -402,7 +403,7 @@ class UserInfoRepository {
     _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserInfo>(
+    return session.db.update<int, UserInfo>(
       rows,
       columns: columns?.call(UserInfo.t),
       transaction: transaction,
@@ -415,7 +416,7 @@ class UserInfoRepository {
     _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserInfo>(
+    return session.db.updateRow<int, UserInfo>(
       row,
       columns: columns?.call(UserInfo.t),
       transaction: transaction,
@@ -427,7 +428,7 @@ class UserInfoRepository {
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserInfo>(
+    return session.db.delete<int, UserInfo>(
       rows,
       transaction: transaction,
     );
@@ -438,7 +439,7 @@ class UserInfoRepository {
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserInfo>(
+    return session.db.deleteRow<int, UserInfo>(
       row,
       transaction: transaction,
     );
@@ -449,7 +450,7 @@ class UserInfoRepository {
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserInfo>(
+    return session.db.deleteWhere<int, UserInfo>(
       where: where(UserInfo.t),
       transaction: transaction,
     );
@@ -461,7 +462,7 @@ class UserInfoRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserInfo>(
+    return session.db.count<int, UserInfo>(
       where: where?.call(UserInfo.t),
       limit: limit,
       transaction: transaction,

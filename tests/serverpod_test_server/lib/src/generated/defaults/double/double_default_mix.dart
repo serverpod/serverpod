@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DoubleDefaultMix._({
     this.id,
     double? doubleDefaultAndDefaultModel,
@@ -58,7 +58,7 @@ abstract class DoubleDefaultMix
   double doubleDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   DoubleDefaultMix copyWith({
     int? id,
@@ -154,7 +154,7 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
   }
 }
 
-class DoubleDefaultMixTable extends _i1.Table {
+class DoubleDefaultMixTable extends _i1.Table<int> {
   DoubleDefaultMixTable({super.tableRelation})
       : super(tableName: 'double_default_mix') {
     doubleDefaultAndDefaultModel = _i1.ColumnDouble(
@@ -196,7 +196,7 @@ class DoubleDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DoubleDefaultMix.t;
+  _i1.Table<int> get table => DoubleDefaultMix.t;
 }
 
 class DoubleDefaultMixIncludeList extends _i1.IncludeList {
@@ -216,7 +216,7 @@ class DoubleDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DoubleDefaultMix.t;
+  _i1.Table<int> get table => DoubleDefaultMix.t;
 }
 
 class DoubleDefaultMixRepository {
@@ -232,7 +232,7 @@ class DoubleDefaultMixRepository {
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DoubleDefaultMix>(
+    return session.db.find<int, DoubleDefaultMix>(
       where: where?.call(DoubleDefaultMix.t),
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
@@ -252,7 +252,7 @@ class DoubleDefaultMixRepository {
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DoubleDefaultMix>(
+    return session.db.findFirstRow<int, DoubleDefaultMix>(
       where: where?.call(DoubleDefaultMix.t),
       orderBy: orderBy?.call(DoubleDefaultMix.t),
       orderByList: orderByList?.call(DoubleDefaultMix.t),
@@ -267,7 +267,7 @@ class DoubleDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DoubleDefaultMix>(
+    return session.db.findById<int, DoubleDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -278,7 +278,7 @@ class DoubleDefaultMixRepository {
     List<DoubleDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DoubleDefaultMix>(
+    return session.db.insert<int, DoubleDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -289,7 +289,7 @@ class DoubleDefaultMixRepository {
     DoubleDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DoubleDefaultMix>(
+    return session.db.insertRow<int, DoubleDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -301,7 +301,7 @@ class DoubleDefaultMixRepository {
     _i1.ColumnSelections<DoubleDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DoubleDefaultMix>(
+    return session.db.update<int, DoubleDefaultMix>(
       rows,
       columns: columns?.call(DoubleDefaultMix.t),
       transaction: transaction,
@@ -314,7 +314,7 @@ class DoubleDefaultMixRepository {
     _i1.ColumnSelections<DoubleDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DoubleDefaultMix>(
+    return session.db.updateRow<int, DoubleDefaultMix>(
       row,
       columns: columns?.call(DoubleDefaultMix.t),
       transaction: transaction,
@@ -326,7 +326,7 @@ class DoubleDefaultMixRepository {
     List<DoubleDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DoubleDefaultMix>(
+    return session.db.delete<int, DoubleDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -337,7 +337,7 @@ class DoubleDefaultMixRepository {
     DoubleDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DoubleDefaultMix>(
+    return session.db.deleteRow<int, DoubleDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -348,7 +348,7 @@ class DoubleDefaultMixRepository {
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DoubleDefaultMix>(
+    return session.db.deleteWhere<int, DoubleDefaultMix>(
       where: where(DoubleDefaultMix.t),
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class DoubleDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DoubleDefaultMix>(
+    return session.db.count<int, DoubleDefaultMix>(
       where: where?.call(DoubleDefaultMix.t),
       limit: limit,
       transaction: transaction,

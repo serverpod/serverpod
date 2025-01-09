@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
 abstract class GoogleRefreshToken
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   GoogleRefreshToken._({
     this.id,
     required this.userId,
@@ -48,7 +48,7 @@ abstract class GoogleRefreshToken
   String refreshToken;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   GoogleRefreshToken copyWith({
     int? id,
@@ -130,7 +130,7 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
   }
 }
 
-class GoogleRefreshTokenTable extends _i1.Table {
+class GoogleRefreshTokenTable extends _i1.Table<int> {
   GoogleRefreshTokenTable({super.tableRelation})
       : super(tableName: 'serverpod_google_refresh_token') {
     userId = _i1.ColumnInt(
@@ -164,7 +164,7 @@ class GoogleRefreshTokenInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => GoogleRefreshToken.t;
+  _i1.Table<int> get table => GoogleRefreshToken.t;
 }
 
 class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
@@ -184,7 +184,7 @@ class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => GoogleRefreshToken.t;
+  _i1.Table<int> get table => GoogleRefreshToken.t;
 }
 
 class GoogleRefreshTokenRepository {
@@ -200,7 +200,7 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<GoogleRefreshToken>(
+    return session.db.find<int, GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -220,7 +220,7 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<GoogleRefreshToken>(
+    return session.db.findFirstRow<int, GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -235,7 +235,7 @@ class GoogleRefreshTokenRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<GoogleRefreshToken>(
+    return session.db.findById<int, GoogleRefreshToken>(
       id,
       transaction: transaction,
     );
@@ -246,7 +246,7 @@ class GoogleRefreshTokenRepository {
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<GoogleRefreshToken>(
+    return session.db.insert<int, GoogleRefreshToken>(
       rows,
       transaction: transaction,
     );
@@ -257,7 +257,7 @@ class GoogleRefreshTokenRepository {
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<GoogleRefreshToken>(
+    return session.db.insertRow<int, GoogleRefreshToken>(
       row,
       transaction: transaction,
     );
@@ -269,7 +269,7 @@ class GoogleRefreshTokenRepository {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<GoogleRefreshToken>(
+    return session.db.update<int, GoogleRefreshToken>(
       rows,
       columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
@@ -282,7 +282,7 @@ class GoogleRefreshTokenRepository {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<GoogleRefreshToken>(
+    return session.db.updateRow<int, GoogleRefreshToken>(
       row,
       columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
@@ -294,7 +294,7 @@ class GoogleRefreshTokenRepository {
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<GoogleRefreshToken>(
+    return session.db.delete<int, GoogleRefreshToken>(
       rows,
       transaction: transaction,
     );
@@ -305,7 +305,7 @@ class GoogleRefreshTokenRepository {
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<GoogleRefreshToken>(
+    return session.db.deleteRow<int, GoogleRefreshToken>(
       row,
       transaction: transaction,
     );
@@ -316,7 +316,7 @@ class GoogleRefreshTokenRepository {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<GoogleRefreshToken>(
+    return session.db.deleteWhere<int, GoogleRefreshToken>(
       where: where(GoogleRefreshToken.t),
       transaction: transaction,
     );
@@ -328,7 +328,7 @@ class GoogleRefreshTokenRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<GoogleRefreshToken>(
+    return session.db.count<int, GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       limit: limit,
       transaction: transaction,

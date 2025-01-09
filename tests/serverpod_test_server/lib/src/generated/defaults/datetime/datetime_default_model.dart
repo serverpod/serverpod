@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DateTimeDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DateTimeDefaultModel._({
     this.id,
     DateTime? dateTimeDefaultModelNow,
@@ -61,7 +61,7 @@ abstract class DateTimeDefaultModel
   DateTime? dateTimeDefaultModelStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   DateTimeDefaultModel copyWith({
     int? id,
@@ -156,7 +156,7 @@ class _DateTimeDefaultModelImpl extends DateTimeDefaultModel {
   }
 }
 
-class DateTimeDefaultModelTable extends _i1.Table {
+class DateTimeDefaultModelTable extends _i1.Table<int> {
   DateTimeDefaultModelTable({super.tableRelation})
       : super(tableName: 'datetime_default_model') {
     dateTimeDefaultModelNow = _i1.ColumnDateTime(
@@ -195,7 +195,7 @@ class DateTimeDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DateTimeDefaultModel.t;
+  _i1.Table<int> get table => DateTimeDefaultModel.t;
 }
 
 class DateTimeDefaultModelIncludeList extends _i1.IncludeList {
@@ -215,7 +215,7 @@ class DateTimeDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DateTimeDefaultModel.t;
+  _i1.Table<int> get table => DateTimeDefaultModel.t;
 }
 
 class DateTimeDefaultModelRepository {
@@ -231,7 +231,7 @@ class DateTimeDefaultModelRepository {
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DateTimeDefaultModel>(
+    return session.db.find<int, DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
       orderByList: orderByList?.call(DateTimeDefaultModel.t),
@@ -251,7 +251,7 @@ class DateTimeDefaultModelRepository {
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DateTimeDefaultModel>(
+    return session.db.findFirstRow<int, DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
       orderByList: orderByList?.call(DateTimeDefaultModel.t),
@@ -266,7 +266,7 @@ class DateTimeDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DateTimeDefaultModel>(
+    return session.db.findById<int, DateTimeDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -277,7 +277,7 @@ class DateTimeDefaultModelRepository {
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DateTimeDefaultModel>(
+    return session.db.insert<int, DateTimeDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -288,7 +288,7 @@ class DateTimeDefaultModelRepository {
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DateTimeDefaultModel>(
+    return session.db.insertRow<int, DateTimeDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -300,7 +300,7 @@ class DateTimeDefaultModelRepository {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DateTimeDefaultModel>(
+    return session.db.update<int, DateTimeDefaultModel>(
       rows,
       columns: columns?.call(DateTimeDefaultModel.t),
       transaction: transaction,
@@ -313,7 +313,7 @@ class DateTimeDefaultModelRepository {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DateTimeDefaultModel>(
+    return session.db.updateRow<int, DateTimeDefaultModel>(
       row,
       columns: columns?.call(DateTimeDefaultModel.t),
       transaction: transaction,
@@ -325,7 +325,7 @@ class DateTimeDefaultModelRepository {
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DateTimeDefaultModel>(
+    return session.db.delete<int, DateTimeDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -336,7 +336,7 @@ class DateTimeDefaultModelRepository {
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DateTimeDefaultModel>(
+    return session.db.deleteRow<int, DateTimeDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -347,7 +347,7 @@ class DateTimeDefaultModelRepository {
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DateTimeDefaultModel>(
+    return session.db.deleteWhere<int, DateTimeDefaultModel>(
       where: where(DateTimeDefaultModel.t),
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class DateTimeDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DateTimeDefaultModel>(
+    return session.db.count<int, DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       limit: limit,
       transaction: transaction,

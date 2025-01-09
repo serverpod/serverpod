@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
 
-abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Post implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -62,7 +62,7 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Post? next;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Post copyWith({
     int? id,
@@ -164,7 +164,7 @@ class _PostImpl extends Post {
   }
 }
 
-class PostTable extends _i1.Table {
+class PostTable extends _i1.Table<int> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
     content = _i1.ColumnString(
       'content',
@@ -218,7 +218,7 @@ class PostTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'previous') {
       return previous;
     }
@@ -249,7 +249,7 @@ class PostInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int> get table => Post.t;
 }
 
 class PostIncludeList extends _i1.IncludeList {
@@ -269,7 +269,7 @@ class PostIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int> get table => Post.t;
 }
 
 class PostRepository {
@@ -290,7 +290,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.find<Post>(
+    return session.db.find<int, Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -312,7 +312,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findFirstRow<Post>(
+    return session.db.findFirstRow<int, Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -329,7 +329,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findById<Post>(
+    return session.db.findById<int, Post>(
       id,
       transaction: transaction,
       include: include,
@@ -341,7 +341,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Post>(
+    return session.db.insert<int, Post>(
       rows,
       transaction: transaction,
     );
@@ -352,7 +352,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Post>(
+    return session.db.insertRow<int, Post>(
       row,
       transaction: transaction,
     );
@@ -364,7 +364,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Post>(
+    return session.db.update<int, Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -377,7 +377,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Post>(
+    return session.db.updateRow<int, Post>(
       row,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -389,7 +389,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Post>(
+    return session.db.delete<int, Post>(
       rows,
       transaction: transaction,
     );
@@ -400,7 +400,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Post>(
+    return session.db.deleteRow<int, Post>(
       row,
       transaction: transaction,
     );
@@ -411,7 +411,7 @@ class PostRepository {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Post>(
+    return session.db.deleteWhere<int, Post>(
       where: where(Post.t),
       transaction: transaction,
     );
@@ -423,7 +423,7 @@ class PostRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Post>(
+    return session.db.count<int, Post>(
       where: where?.call(Post.t),
       limit: limit,
       transaction: transaction,
@@ -448,7 +448,7 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<int, _i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -469,7 +469,7 @@ class PostAttachRowRepository {
     }
 
     var $post = post.copyWith(nextId: next.id);
-    await session.db.updateRow<Post>(
+    await session.db.updateRow<int, Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,
@@ -498,7 +498,7 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<int, _i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -515,7 +515,7 @@ class PostDetachRowRepository {
     }
 
     var $post = post.copyWith(nextId: null);
-    await session.db.updateRow<Post>(
+    await session.db.updateRow<int, Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,

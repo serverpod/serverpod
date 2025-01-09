@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 
-abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Team implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Team._({
     this.id,
     required this.name,
@@ -61,7 +61,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Player>? players;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Team copyWith({
     int? id,
@@ -167,7 +167,7 @@ class _TeamImpl extends Team {
   }
 }
 
-class TeamTable extends _i1.Table {
+class TeamTable extends _i1.Table<int> {
   TeamTable({super.tableRelation}) : super(tableName: 'team') {
     name = _i1.ColumnString(
       'name',
@@ -241,7 +241,7 @@ class TeamTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'arena') {
       return arena;
     }
@@ -272,7 +272,7 @@ class TeamInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Team.t;
+  _i1.Table<int> get table => Team.t;
 }
 
 class TeamIncludeList extends _i1.IncludeList {
@@ -292,7 +292,7 @@ class TeamIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Team.t;
+  _i1.Table<int> get table => Team.t;
 }
 
 class TeamRepository {
@@ -317,7 +317,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
-    return session.db.find<Team>(
+    return session.db.find<int, Team>(
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -339,7 +339,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
-    return session.db.findFirstRow<Team>(
+    return session.db.findFirstRow<int, Team>(
       where: where?.call(Team.t),
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
@@ -356,7 +356,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
-    return session.db.findById<Team>(
+    return session.db.findById<int, Team>(
       id,
       transaction: transaction,
       include: include,
@@ -368,7 +368,7 @@ class TeamRepository {
     List<Team> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Team>(
+    return session.db.insert<int, Team>(
       rows,
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class TeamRepository {
     Team row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Team>(
+    return session.db.insertRow<int, Team>(
       row,
       transaction: transaction,
     );
@@ -391,7 +391,7 @@ class TeamRepository {
     _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Team>(
+    return session.db.update<int, Team>(
       rows,
       columns: columns?.call(Team.t),
       transaction: transaction,
@@ -404,7 +404,7 @@ class TeamRepository {
     _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Team>(
+    return session.db.updateRow<int, Team>(
       row,
       columns: columns?.call(Team.t),
       transaction: transaction,
@@ -416,7 +416,7 @@ class TeamRepository {
     List<Team> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Team>(
+    return session.db.delete<int, Team>(
       rows,
       transaction: transaction,
     );
@@ -427,7 +427,7 @@ class TeamRepository {
     Team row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Team>(
+    return session.db.deleteRow<int, Team>(
       row,
       transaction: transaction,
     );
@@ -438,7 +438,7 @@ class TeamRepository {
     required _i1.WhereExpressionBuilder<TeamTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Team>(
+    return session.db.deleteWhere<int, Team>(
       where: where(Team.t),
       transaction: transaction,
     );
@@ -450,7 +450,7 @@ class TeamRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Team>(
+    return session.db.count<int, Team>(
       where: where?.call(Team.t),
       limit: limit,
       transaction: transaction,
@@ -475,7 +475,7 @@ class TeamAttachRepository {
     }
 
     var $player = player.map((e) => e.copyWith(teamId: team.id)).toList();
-    await session.db.update<_i3.Player>(
+    await session.db.update<int, _i3.Player>(
       $player,
       columns: [_i3.Player.t.teamId],
       transaction: transaction,
@@ -500,7 +500,7 @@ class TeamAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<Team>(
+    await session.db.updateRow<int, Team>(
       $team,
       columns: [Team.t.arenaId],
       transaction: transaction,
@@ -521,7 +521,7 @@ class TeamAttachRowRepository {
     }
 
     var $player = player.copyWith(teamId: team.id);
-    await session.db.updateRow<_i3.Player>(
+    await session.db.updateRow<int, _i3.Player>(
       $player,
       columns: [_i3.Player.t.teamId],
       transaction: transaction,
@@ -542,7 +542,7 @@ class TeamDetachRepository {
     }
 
     var $player = player.map((e) => e.copyWith(teamId: null)).toList();
-    await session.db.update<_i3.Player>(
+    await session.db.update<int, _i3.Player>(
       $player,
       columns: [_i3.Player.t.teamId],
       transaction: transaction,
@@ -563,7 +563,7 @@ class TeamDetachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: null);
-    await session.db.updateRow<Team>(
+    await session.db.updateRow<int, Team>(
       $team,
       columns: [Team.t.arenaId],
       transaction: transaction,
@@ -580,7 +580,7 @@ class TeamDetachRowRepository {
     }
 
     var $player = player.copyWith(teamId: null);
-    await session.db.updateRow<_i3.Player>(
+    await session.db.updateRow<int, _i3.Player>(
       $player,
       columns: [_i3.Player.t.teamId],
       transaction: transaction,

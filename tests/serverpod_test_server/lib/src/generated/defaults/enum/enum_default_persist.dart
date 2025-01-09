@@ -14,7 +14,7 @@ import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EnumDefaultPersist._({
     this.id,
     this.byNameEnumDefaultPersist,
@@ -55,7 +55,7 @@ abstract class EnumDefaultPersist
   _i3.ByIndexEnum? byIndexEnumDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   EnumDefaultPersist copyWith({
     int? id,
@@ -145,7 +145,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }
 }
 
-class EnumDefaultPersistTable extends _i1.Table {
+class EnumDefaultPersistTable extends _i1.Table<int> {
   EnumDefaultPersistTable({super.tableRelation})
       : super(tableName: 'enum_default_persist') {
     byNameEnumDefaultPersist = _i1.ColumnEnum(
@@ -181,7 +181,7 @@ class EnumDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EnumDefaultPersist.t;
+  _i1.Table<int> get table => EnumDefaultPersist.t;
 }
 
 class EnumDefaultPersistIncludeList extends _i1.IncludeList {
@@ -201,7 +201,7 @@ class EnumDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EnumDefaultPersist.t;
+  _i1.Table<int> get table => EnumDefaultPersist.t;
 }
 
 class EnumDefaultPersistRepository {
@@ -217,7 +217,7 @@ class EnumDefaultPersistRepository {
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EnumDefaultPersist>(
+    return session.db.find<int, EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -237,7 +237,7 @@ class EnumDefaultPersistRepository {
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EnumDefaultPersist>(
+    return session.db.findFirstRow<int, EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
@@ -252,7 +252,7 @@ class EnumDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EnumDefaultPersist>(
+    return session.db.findById<int, EnumDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -263,7 +263,7 @@ class EnumDefaultPersistRepository {
     List<EnumDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EnumDefaultPersist>(
+    return session.db.insert<int, EnumDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -274,7 +274,7 @@ class EnumDefaultPersistRepository {
     EnumDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EnumDefaultPersist>(
+    return session.db.insertRow<int, EnumDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -286,7 +286,7 @@ class EnumDefaultPersistRepository {
     _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EnumDefaultPersist>(
+    return session.db.update<int, EnumDefaultPersist>(
       rows,
       columns: columns?.call(EnumDefaultPersist.t),
       transaction: transaction,
@@ -299,7 +299,7 @@ class EnumDefaultPersistRepository {
     _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EnumDefaultPersist>(
+    return session.db.updateRow<int, EnumDefaultPersist>(
       row,
       columns: columns?.call(EnumDefaultPersist.t),
       transaction: transaction,
@@ -311,7 +311,7 @@ class EnumDefaultPersistRepository {
     List<EnumDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EnumDefaultPersist>(
+    return session.db.delete<int, EnumDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -322,7 +322,7 @@ class EnumDefaultPersistRepository {
     EnumDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EnumDefaultPersist>(
+    return session.db.deleteRow<int, EnumDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class EnumDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EnumDefaultPersist>(
+    return session.db.deleteWhere<int, EnumDefaultPersist>(
       where: where(EnumDefaultPersist.t),
       transaction: transaction,
     );
@@ -345,7 +345,7 @@ class EnumDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EnumDefaultPersist>(
+    return session.db.count<int, EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       limit: limit,
       transaction: transaction,

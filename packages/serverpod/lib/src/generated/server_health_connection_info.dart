@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
 abstract class ServerHealthConnectionInfo
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -77,7 +77,7 @@ abstract class ServerHealthConnectionInfo
   int granularity;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ServerHealthConnectionInfo copyWith({
     int? id,
@@ -187,7 +187,7 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
   }
 }
 
-class ServerHealthConnectionInfoTable extends _i1.Table {
+class ServerHealthConnectionInfoTable extends _i1.Table<int> {
   ServerHealthConnectionInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_health_connection_info') {
     serverId = _i1.ColumnString(
@@ -254,7 +254,7 @@ class ServerHealthConnectionInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ServerHealthConnectionInfo.t;
+  _i1.Table<int> get table => ServerHealthConnectionInfo.t;
 }
 
 class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
@@ -274,7 +274,7 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ServerHealthConnectionInfo.t;
+  _i1.Table<int> get table => ServerHealthConnectionInfo.t;
 }
 
 class ServerHealthConnectionInfoRepository {
@@ -290,7 +290,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ServerHealthConnectionInfo>(
+    return session.db.find<int, ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -310,7 +310,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ServerHealthConnectionInfo>(
+    return session.db.findFirstRow<int, ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -325,7 +325,7 @@ class ServerHealthConnectionInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ServerHealthConnectionInfo>(
+    return session.db.findById<int, ServerHealthConnectionInfo>(
       id,
       transaction: transaction,
     );
@@ -336,7 +336,7 @@ class ServerHealthConnectionInfoRepository {
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ServerHealthConnectionInfo>(
+    return session.db.insert<int, ServerHealthConnectionInfo>(
       rows,
       transaction: transaction,
     );
@@ -347,7 +347,7 @@ class ServerHealthConnectionInfoRepository {
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ServerHealthConnectionInfo>(
+    return session.db.insertRow<int, ServerHealthConnectionInfo>(
       row,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ServerHealthConnectionInfo>(
+    return session.db.update<int, ServerHealthConnectionInfo>(
       rows,
       columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
@@ -372,7 +372,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ServerHealthConnectionInfo>(
+    return session.db.updateRow<int, ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
@@ -384,7 +384,7 @@ class ServerHealthConnectionInfoRepository {
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ServerHealthConnectionInfo>(
+    return session.db.delete<int, ServerHealthConnectionInfo>(
       rows,
       transaction: transaction,
     );
@@ -395,7 +395,7 @@ class ServerHealthConnectionInfoRepository {
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ServerHealthConnectionInfo>(
+    return session.db.deleteRow<int, ServerHealthConnectionInfo>(
       row,
       transaction: transaction,
     );
@@ -406,7 +406,7 @@ class ServerHealthConnectionInfoRepository {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ServerHealthConnectionInfo>(
+    return session.db.deleteWhere<int, ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class ServerHealthConnectionInfoRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ServerHealthConnectionInfo>(
+    return session.db.count<int, ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
       transaction: transaction,

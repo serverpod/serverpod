@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   IntDefaultMix._({
     this.id,
     int? intDefaultAndDefaultModel,
@@ -56,7 +56,7 @@ abstract class IntDefaultMix
   int intDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   IntDefaultMix copyWith({
     int? id,
@@ -148,7 +148,7 @@ class _IntDefaultMixImpl extends IntDefaultMix {
   }
 }
 
-class IntDefaultMixTable extends _i1.Table {
+class IntDefaultMixTable extends _i1.Table<int> {
   IntDefaultMixTable({super.tableRelation})
       : super(tableName: 'int_default_mix') {
     intDefaultAndDefaultModel = _i1.ColumnInt(
@@ -190,7 +190,7 @@ class IntDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => IntDefaultMix.t;
+  _i1.Table<int> get table => IntDefaultMix.t;
 }
 
 class IntDefaultMixIncludeList extends _i1.IncludeList {
@@ -210,7 +210,7 @@ class IntDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => IntDefaultMix.t;
+  _i1.Table<int> get table => IntDefaultMix.t;
 }
 
 class IntDefaultMixRepository {
@@ -226,7 +226,7 @@ class IntDefaultMixRepository {
     _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<IntDefaultMix>(
+    return session.db.find<int, IntDefaultMix>(
       where: where?.call(IntDefaultMix.t),
       orderBy: orderBy?.call(IntDefaultMix.t),
       orderByList: orderByList?.call(IntDefaultMix.t),
@@ -246,7 +246,7 @@ class IntDefaultMixRepository {
     _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<IntDefaultMix>(
+    return session.db.findFirstRow<int, IntDefaultMix>(
       where: where?.call(IntDefaultMix.t),
       orderBy: orderBy?.call(IntDefaultMix.t),
       orderByList: orderByList?.call(IntDefaultMix.t),
@@ -261,7 +261,7 @@ class IntDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<IntDefaultMix>(
+    return session.db.findById<int, IntDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -272,7 +272,7 @@ class IntDefaultMixRepository {
     List<IntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<IntDefaultMix>(
+    return session.db.insert<int, IntDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -283,7 +283,7 @@ class IntDefaultMixRepository {
     IntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<IntDefaultMix>(
+    return session.db.insertRow<int, IntDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -295,7 +295,7 @@ class IntDefaultMixRepository {
     _i1.ColumnSelections<IntDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<IntDefaultMix>(
+    return session.db.update<int, IntDefaultMix>(
       rows,
       columns: columns?.call(IntDefaultMix.t),
       transaction: transaction,
@@ -308,7 +308,7 @@ class IntDefaultMixRepository {
     _i1.ColumnSelections<IntDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<IntDefaultMix>(
+    return session.db.updateRow<int, IntDefaultMix>(
       row,
       columns: columns?.call(IntDefaultMix.t),
       transaction: transaction,
@@ -320,7 +320,7 @@ class IntDefaultMixRepository {
     List<IntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<IntDefaultMix>(
+    return session.db.delete<int, IntDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -331,7 +331,7 @@ class IntDefaultMixRepository {
     IntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<IntDefaultMix>(
+    return session.db.deleteRow<int, IntDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class IntDefaultMixRepository {
     required _i1.WhereExpressionBuilder<IntDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<IntDefaultMix>(
+    return session.db.deleteWhere<int, IntDefaultMix>(
       where: where(IntDefaultMix.t),
       transaction: transaction,
     );
@@ -354,7 +354,7 @@ class IntDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<IntDefaultMix>(
+    return session.db.count<int, IntDefaultMix>(
       where: where?.call(IntDefaultMix.t),
       limit: limit,
       transaction: transaction,

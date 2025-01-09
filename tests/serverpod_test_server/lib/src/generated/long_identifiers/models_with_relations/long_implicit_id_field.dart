@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class LongImplicitIdField
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   LongImplicitIdField._({
     this.id,
     required this.name,
@@ -42,7 +42,7 @@ abstract class LongImplicitIdField
   int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   LongImplicitIdField copyWith({
     int? id,
@@ -156,7 +156,7 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   }
 }
 
-class LongImplicitIdFieldTable extends _i1.Table {
+class LongImplicitIdFieldTable extends _i1.Table<int> {
   LongImplicitIdFieldTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field') {
     name = _i1.ColumnString(
@@ -190,7 +190,7 @@ class LongImplicitIdFieldInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => LongImplicitIdField.t;
+  _i1.Table<int> get table => LongImplicitIdField.t;
 }
 
 class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
@@ -210,7 +210,7 @@ class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => LongImplicitIdField.t;
+  _i1.Table<int> get table => LongImplicitIdField.t;
 }
 
 class LongImplicitIdFieldRepository {
@@ -226,7 +226,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<LongImplicitIdField>(
+    return session.db.find<int, LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -246,7 +246,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<LongImplicitIdField>(
+    return session.db.findFirstRow<int, LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -261,7 +261,7 @@ class LongImplicitIdFieldRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<LongImplicitIdField>(
+    return session.db.findById<int, LongImplicitIdField>(
       id,
       transaction: transaction,
     );
@@ -272,7 +272,7 @@ class LongImplicitIdFieldRepository {
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<LongImplicitIdField>(
+    return session.db.insert<int, LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
@@ -283,7 +283,7 @@ class LongImplicitIdFieldRepository {
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<LongImplicitIdField>(
+    return session.db.insertRow<int, LongImplicitIdField>(
       row,
       transaction: transaction,
     );
@@ -295,7 +295,7 @@ class LongImplicitIdFieldRepository {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<LongImplicitIdField>(
+    return session.db.update<int, LongImplicitIdField>(
       rows,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -308,7 +308,7 @@ class LongImplicitIdFieldRepository {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<LongImplicitIdField>(
+    return session.db.updateRow<int, LongImplicitIdField>(
       row,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -320,7 +320,7 @@ class LongImplicitIdFieldRepository {
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<LongImplicitIdField>(
+    return session.db.delete<int, LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
@@ -331,7 +331,7 @@ class LongImplicitIdFieldRepository {
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<LongImplicitIdField>(
+    return session.db.deleteRow<int, LongImplicitIdField>(
       row,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class LongImplicitIdFieldRepository {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<LongImplicitIdField>(
+    return session.db.deleteWhere<int, LongImplicitIdField>(
       where: where(LongImplicitIdField.t),
       transaction: transaction,
     );
@@ -354,7 +354,7 @@ class LongImplicitIdFieldRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<LongImplicitIdField>(
+    return session.db.count<int, LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       limit: limit,
       transaction: transaction,

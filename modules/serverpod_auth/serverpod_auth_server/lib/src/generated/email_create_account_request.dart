@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
 abstract class EmailCreateAccountRequest
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -62,7 +62,7 @@ abstract class EmailCreateAccountRequest
   String verificationCode;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   EmailCreateAccountRequest copyWith({
     int? id,
@@ -158,7 +158,7 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
   }
 }
 
-class EmailCreateAccountRequestTable extends _i1.Table {
+class EmailCreateAccountRequestTable extends _i1.Table<int> {
   EmailCreateAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_email_create_request') {
     userName = _i1.ColumnString(
@@ -208,7 +208,7 @@ class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmailCreateAccountRequest.t;
+  _i1.Table<int> get table => EmailCreateAccountRequest.t;
 }
 
 class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
@@ -228,7 +228,7 @@ class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmailCreateAccountRequest.t;
+  _i1.Table<int> get table => EmailCreateAccountRequest.t;
 }
 
 class EmailCreateAccountRequestRepository {
@@ -244,7 +244,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailCreateAccountRequest>(
+    return session.db.find<int, EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -264,7 +264,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailCreateAccountRequest>(
+    return session.db.findFirstRow<int, EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -279,7 +279,7 @@ class EmailCreateAccountRequestRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailCreateAccountRequest>(
+    return session.db.findById<int, EmailCreateAccountRequest>(
       id,
       transaction: transaction,
     );
@@ -290,7 +290,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailCreateAccountRequest>(
+    return session.db.insert<int, EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -301,7 +301,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailCreateAccountRequest>(
+    return session.db.insertRow<int, EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -313,7 +313,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailCreateAccountRequest>(
+    return session.db.update<int, EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -326,7 +326,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailCreateAccountRequest>(
+    return session.db.updateRow<int, EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -338,7 +338,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailCreateAccountRequest>(
+    return session.db.delete<int, EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -349,7 +349,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailCreateAccountRequest>(
+    return session.db.deleteRow<int, EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class EmailCreateAccountRequestRepository {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailCreateAccountRequest>(
+    return session.db.deleteWhere<int, EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
       transaction: transaction,
     );
@@ -372,7 +372,7 @@ class EmailCreateAccountRequestRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailCreateAccountRequest>(
+    return session.db.count<int, EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
       transaction: transaction,

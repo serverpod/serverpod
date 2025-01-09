@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
-abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Student implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Student._({
     this.id,
     required this.name,
@@ -47,7 +47,7 @@ abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Enrollment>? enrollments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Student copyWith({
     int? id,
@@ -134,7 +134,7 @@ class _StudentImpl extends Student {
   }
 }
 
-class StudentTable extends _i1.Table {
+class StudentTable extends _i1.Table<int> {
   StudentTable({super.tableRelation}) : super(tableName: 'student') {
     name = _i1.ColumnString(
       'name',
@@ -186,7 +186,7 @@ class StudentTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'enrollments') {
       return __enrollments;
     }
@@ -205,7 +205,7 @@ class StudentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table get table => Student.t;
+  _i1.Table<int> get table => Student.t;
 }
 
 class StudentIncludeList extends _i1.IncludeList {
@@ -225,7 +225,7 @@ class StudentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Student.t;
+  _i1.Table<int> get table => Student.t;
 }
 
 class StudentRepository {
@@ -246,7 +246,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.find<Student>(
+    return session.db.find<int, Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -268,7 +268,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.findFirstRow<Student>(
+    return session.db.findFirstRow<int, Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
@@ -285,7 +285,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.findById<Student>(
+    return session.db.findById<int, Student>(
       id,
       transaction: transaction,
       include: include,
@@ -297,7 +297,7 @@ class StudentRepository {
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Student>(
+    return session.db.insert<int, Student>(
       rows,
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class StudentRepository {
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Student>(
+    return session.db.insertRow<int, Student>(
       row,
       transaction: transaction,
     );
@@ -320,7 +320,7 @@ class StudentRepository {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Student>(
+    return session.db.update<int, Student>(
       rows,
       columns: columns?.call(Student.t),
       transaction: transaction,
@@ -333,7 +333,7 @@ class StudentRepository {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Student>(
+    return session.db.updateRow<int, Student>(
       row,
       columns: columns?.call(Student.t),
       transaction: transaction,
@@ -345,7 +345,7 @@ class StudentRepository {
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Student>(
+    return session.db.delete<int, Student>(
       rows,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class StudentRepository {
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Student>(
+    return session.db.deleteRow<int, Student>(
       row,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class StudentRepository {
     required _i1.WhereExpressionBuilder<StudentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Student>(
+    return session.db.deleteWhere<int, Student>(
       where: where(Student.t),
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class StudentRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Student>(
+    return session.db.count<int, Student>(
       where: where?.call(Student.t),
       limit: limit,
       transaction: transaction,
@@ -405,7 +405,7 @@ class StudentAttachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(studentId: student.id)).toList();
-    await session.db.update<_i2.Enrollment>(
+    await session.db.update<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
       transaction: transaction,
@@ -430,7 +430,7 @@ class StudentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(studentId: student.id);
-    await session.db.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
       transaction: transaction,

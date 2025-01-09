@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
-abstract class Course implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Course implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Course._({
     this.id,
     required this.name,
@@ -47,7 +47,7 @@ abstract class Course implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Enrollment>? enrollments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Course copyWith({
     int? id,
@@ -134,7 +134,7 @@ class _CourseImpl extends Course {
   }
 }
 
-class CourseTable extends _i1.Table {
+class CourseTable extends _i1.Table<int> {
   CourseTable({super.tableRelation}) : super(tableName: 'course') {
     name = _i1.ColumnString(
       'name',
@@ -186,7 +186,7 @@ class CourseTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'enrollments') {
       return __enrollments;
     }
@@ -205,7 +205,7 @@ class CourseInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table get table => Course.t;
+  _i1.Table<int> get table => Course.t;
 }
 
 class CourseIncludeList extends _i1.IncludeList {
@@ -225,7 +225,7 @@ class CourseIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Course.t;
+  _i1.Table<int> get table => Course.t;
 }
 
 class CourseRepository {
@@ -250,7 +250,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.db.find<Course>(
+    return session.db.find<int, Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -272,7 +272,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.db.findFirstRow<Course>(
+    return session.db.findFirstRow<int, Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -289,7 +289,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.db.findById<Course>(
+    return session.db.findById<int, Course>(
       id,
       transaction: transaction,
       include: include,
@@ -301,7 +301,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Course>(
+    return session.db.insert<int, Course>(
       rows,
       transaction: transaction,
     );
@@ -312,7 +312,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Course>(
+    return session.db.insertRow<int, Course>(
       row,
       transaction: transaction,
     );
@@ -324,7 +324,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Course>(
+    return session.db.update<int, Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
@@ -337,7 +337,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Course>(
+    return session.db.updateRow<int, Course>(
       row,
       columns: columns?.call(Course.t),
       transaction: transaction,
@@ -349,7 +349,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Course>(
+    return session.db.delete<int, Course>(
       rows,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Course>(
+    return session.db.deleteRow<int, Course>(
       row,
       transaction: transaction,
     );
@@ -371,7 +371,7 @@ class CourseRepository {
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Course>(
+    return session.db.deleteWhere<int, Course>(
       where: where(Course.t),
       transaction: transaction,
     );
@@ -383,7 +383,7 @@ class CourseRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Course>(
+    return session.db.count<int, Course>(
       where: where?.call(Course.t),
       limit: limit,
       transaction: transaction,
@@ -409,7 +409,7 @@ class CourseAttachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(courseId: course.id)).toList();
-    await session.db.update<_i2.Enrollment>(
+    await session.db.update<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
       transaction: transaction,
@@ -434,7 +434,7 @@ class CourseAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.db.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
       transaction: transaction,
@@ -456,7 +456,7 @@ class CourseDetachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(courseId: null)).toList();
-    await session.db.update<_i2.Enrollment>(
+    await session.db.update<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
       transaction: transaction,
@@ -477,7 +477,7 @@ class CourseDetachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: null);
-    await session.db.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<int, _i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
       transaction: transaction,

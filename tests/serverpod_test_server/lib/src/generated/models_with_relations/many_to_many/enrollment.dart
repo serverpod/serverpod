@@ -13,7 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/student.dart' as _i2;
 import '../../models_with_relations/many_to_many/course.dart' as _i3;
 
-abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Enrollment
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -62,7 +63,7 @@ abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   _i3.Course? course;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   Enrollment copyWith({
     int? id,
@@ -164,7 +165,7 @@ class _EnrollmentImpl extends Enrollment {
   }
 }
 
-class EnrollmentTable extends _i1.Table {
+class EnrollmentTable extends _i1.Table<int> {
   EnrollmentTable({super.tableRelation}) : super(tableName: 'enrollment') {
     studentId = _i1.ColumnInt(
       'studentId',
@@ -218,7 +219,7 @@ class EnrollmentTable extends _i1.Table {
       ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _i1.Table<int>? getRelationTable(String relationField) {
     if (relationField == 'student') {
       return student;
     }
@@ -249,7 +250,7 @@ class EnrollmentInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Enrollment.t;
+  _i1.Table<int> get table => Enrollment.t;
 }
 
 class EnrollmentIncludeList extends _i1.IncludeList {
@@ -269,7 +270,7 @@ class EnrollmentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Enrollment.t;
+  _i1.Table<int> get table => Enrollment.t;
 }
 
 class EnrollmentRepository {
@@ -288,7 +289,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
-    return session.db.find<Enrollment>(
+    return session.db.find<int, Enrollment>(
       where: where?.call(Enrollment.t),
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
@@ -310,7 +311,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
-    return session.db.findFirstRow<Enrollment>(
+    return session.db.findFirstRow<int, Enrollment>(
       where: where?.call(Enrollment.t),
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
@@ -327,7 +328,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
-    return session.db.findById<Enrollment>(
+    return session.db.findById<int, Enrollment>(
       id,
       transaction: transaction,
       include: include,
@@ -339,7 +340,7 @@ class EnrollmentRepository {
     List<Enrollment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Enrollment>(
+    return session.db.insert<int, Enrollment>(
       rows,
       transaction: transaction,
     );
@@ -350,7 +351,7 @@ class EnrollmentRepository {
     Enrollment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Enrollment>(
+    return session.db.insertRow<int, Enrollment>(
       row,
       transaction: transaction,
     );
@@ -362,7 +363,7 @@ class EnrollmentRepository {
     _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Enrollment>(
+    return session.db.update<int, Enrollment>(
       rows,
       columns: columns?.call(Enrollment.t),
       transaction: transaction,
@@ -375,7 +376,7 @@ class EnrollmentRepository {
     _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Enrollment>(
+    return session.db.updateRow<int, Enrollment>(
       row,
       columns: columns?.call(Enrollment.t),
       transaction: transaction,
@@ -387,7 +388,7 @@ class EnrollmentRepository {
     List<Enrollment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Enrollment>(
+    return session.db.delete<int, Enrollment>(
       rows,
       transaction: transaction,
     );
@@ -398,7 +399,7 @@ class EnrollmentRepository {
     Enrollment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Enrollment>(
+    return session.db.deleteRow<int, Enrollment>(
       row,
       transaction: transaction,
     );
@@ -409,7 +410,7 @@ class EnrollmentRepository {
     required _i1.WhereExpressionBuilder<EnrollmentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Enrollment>(
+    return session.db.deleteWhere<int, Enrollment>(
       where: where(Enrollment.t),
       transaction: transaction,
     );
@@ -421,7 +422,7 @@ class EnrollmentRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Enrollment>(
+    return session.db.count<int, Enrollment>(
       where: where?.call(Enrollment.t),
       limit: limit,
       transaction: transaction,
@@ -446,7 +447,7 @@ class EnrollmentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(studentId: student.id);
-    await session.db.updateRow<Enrollment>(
+    await session.db.updateRow<int, Enrollment>(
       $enrollment,
       columns: [Enrollment.t.studentId],
       transaction: transaction,
@@ -467,7 +468,7 @@ class EnrollmentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.db.updateRow<Enrollment>(
+    await session.db.updateRow<int, Enrollment>(
       $enrollment,
       columns: [Enrollment.t.courseId],
       transaction: transaction,

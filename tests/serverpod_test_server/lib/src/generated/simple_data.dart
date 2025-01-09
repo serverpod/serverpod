@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class SimpleData
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   SimpleData._({
     this.id,
     required this.num,
@@ -43,7 +44,7 @@ abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
   int num;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   SimpleData copyWith({
     int? id,
@@ -118,7 +119,7 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
-class SimpleDataTable extends _i1.Table {
+class SimpleDataTable extends _i1.Table<int> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     num = _i1.ColumnInt(
       'num',
@@ -145,7 +146,7 @@ class SimpleDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => SimpleData.t;
+  _i1.Table<int> get table => SimpleData.t;
 }
 
 class SimpleDataIncludeList extends _i1.IncludeList {
@@ -165,7 +166,7 @@ class SimpleDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => SimpleData.t;
+  _i1.Table<int> get table => SimpleData.t;
 }
 
 class SimpleDataRepository {
@@ -181,7 +182,7 @@ class SimpleDataRepository {
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<SimpleData>(
+    return session.db.find<int, SimpleData>(
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -201,7 +202,7 @@ class SimpleDataRepository {
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<SimpleData>(
+    return session.db.findFirstRow<int, SimpleData>(
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
@@ -216,7 +217,7 @@ class SimpleDataRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SimpleData>(
+    return session.db.findById<int, SimpleData>(
       id,
       transaction: transaction,
     );
@@ -227,7 +228,7 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SimpleData>(
+    return session.db.insert<int, SimpleData>(
       rows,
       transaction: transaction,
     );
@@ -238,7 +239,7 @@ class SimpleDataRepository {
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SimpleData>(
+    return session.db.insertRow<int, SimpleData>(
       row,
       transaction: transaction,
     );
@@ -250,7 +251,7 @@ class SimpleDataRepository {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<SimpleData>(
+    return session.db.update<int, SimpleData>(
       rows,
       columns: columns?.call(SimpleData.t),
       transaction: transaction,
@@ -263,7 +264,7 @@ class SimpleDataRepository {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<SimpleData>(
+    return session.db.updateRow<int, SimpleData>(
       row,
       columns: columns?.call(SimpleData.t),
       transaction: transaction,
@@ -275,7 +276,7 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SimpleData>(
+    return session.db.delete<int, SimpleData>(
       rows,
       transaction: transaction,
     );
@@ -286,7 +287,7 @@ class SimpleDataRepository {
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SimpleData>(
+    return session.db.deleteRow<int, SimpleData>(
       row,
       transaction: transaction,
     );
@@ -297,7 +298,7 @@ class SimpleDataRepository {
     required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<SimpleData>(
+    return session.db.deleteWhere<int, SimpleData>(
       where: where(SimpleData.t),
       transaction: transaction,
     );
@@ -309,7 +310,7 @@ class SimpleDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<SimpleData>(
+    return session.db.count<int, SimpleData>(
       where: where?.call(SimpleData.t),
       limit: limit,
       transaction: transaction,

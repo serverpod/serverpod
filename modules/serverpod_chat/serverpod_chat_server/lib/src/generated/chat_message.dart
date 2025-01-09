@@ -14,7 +14,8 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'chat_message_attachment.dart' as _i3;
 
 /// A chat message.
-abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class ChatMessage
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ChatMessage._({
     this.id,
     required this.channel,
@@ -97,7 +98,7 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   ChatMessage copyWith({
     int? id,
@@ -236,7 +237,7 @@ class _ChatMessageImpl extends ChatMessage {
   }
 }
 
-class ChatMessageTable extends _i1.Table {
+class ChatMessageTable extends _i1.Table<int> {
   ChatMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_message') {
     channel = _i1.ColumnString(
@@ -302,7 +303,7 @@ class ChatMessageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ChatMessage.t;
+  _i1.Table<int> get table => ChatMessage.t;
 }
 
 class ChatMessageIncludeList extends _i1.IncludeList {
@@ -322,7 +323,7 @@ class ChatMessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ChatMessage.t;
+  _i1.Table<int> get table => ChatMessage.t;
 }
 
 class ChatMessageRepository {
@@ -338,7 +339,7 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ChatMessage>(
+    return session.db.find<int, ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
@@ -358,7 +359,7 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ChatMessage>(
+    return session.db.findFirstRow<int, ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
@@ -373,7 +374,7 @@ class ChatMessageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ChatMessage>(
+    return session.db.findById<int, ChatMessage>(
       id,
       transaction: transaction,
     );
@@ -384,7 +385,7 @@ class ChatMessageRepository {
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ChatMessage>(
+    return session.db.insert<int, ChatMessage>(
       rows,
       transaction: transaction,
     );
@@ -395,7 +396,7 @@ class ChatMessageRepository {
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ChatMessage>(
+    return session.db.insertRow<int, ChatMessage>(
       row,
       transaction: transaction,
     );
@@ -407,7 +408,7 @@ class ChatMessageRepository {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ChatMessage>(
+    return session.db.update<int, ChatMessage>(
       rows,
       columns: columns?.call(ChatMessage.t),
       transaction: transaction,
@@ -420,7 +421,7 @@ class ChatMessageRepository {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ChatMessage>(
+    return session.db.updateRow<int, ChatMessage>(
       row,
       columns: columns?.call(ChatMessage.t),
       transaction: transaction,
@@ -432,7 +433,7 @@ class ChatMessageRepository {
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ChatMessage>(
+    return session.db.delete<int, ChatMessage>(
       rows,
       transaction: transaction,
     );
@@ -443,7 +444,7 @@ class ChatMessageRepository {
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ChatMessage>(
+    return session.db.deleteRow<int, ChatMessage>(
       row,
       transaction: transaction,
     );
@@ -454,7 +455,7 @@ class ChatMessageRepository {
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ChatMessage>(
+    return session.db.deleteWhere<int, ChatMessage>(
       where: where(ChatMessage.t),
       transaction: transaction,
     );
@@ -466,7 +467,7 @@ class ChatMessageRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ChatMessage>(
+    return session.db.count<int, ChatMessage>(
       where: where?.call(ChatMessage.t),
       limit: limit,
       transaction: transaction,
