@@ -191,6 +191,7 @@ class ClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignIdType,
     bool nullableRelation = false,
   }) {
     _fields.addAll([
@@ -207,6 +208,7 @@ class ClassDefinitionBuilder {
             .withShouldPersist(false)
             .withRelation(ObjectRelationDefinition(
               parentTable: parentTable,
+              idType: foreignIdType ?? TypeDefinition.int,
               fieldName: foreignFieldName,
               foreignFieldName: 'id',
               isForeignKeyOrigin: false,
@@ -224,6 +226,7 @@ class ClassDefinitionBuilder {
     String parentTable, {
     String? foreignKeyFieldName,
     TypeDefinition? foreignKeyType,
+    TypeDefinition? foreignIdType,
     bool nullableRelation = false,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
@@ -234,6 +237,7 @@ class ClassDefinitionBuilder {
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
             parentTable: parentTable,
+            idType: foreignIdType ?? TypeDefinition.int,
             fieldName: foreignFieldName,
             foreignFieldName: 'id',
             nullableRelation: nullableRelation,
@@ -255,8 +259,9 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withImplicitListRelationField(
     String fieldName,
-    String className,
-  ) {
+    String className, {
+    TypeDefinition? idType,
+  }) {
     _fields.add(() {
       return FieldDefinitionBuilder()
           .withName(fieldName)
@@ -271,6 +276,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            idType: idType ?? TypeDefinition.int,
             foreignFieldName:
                 '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
             nullableRelation: true,
@@ -285,6 +291,7 @@ class ClassDefinitionBuilder {
     String fieldName,
     String className,
     String foreignKeyFieldName, {
+    TypeDefinition? idType,
     bool nullableRelation = false,
   }) {
     _fields.add(() {
@@ -301,6 +308,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            idType: idType ?? TypeDefinition.int,
             foreignFieldName: foreignKeyFieldName,
             nullableRelation: nullableRelation,
             implicitForeignField: false,

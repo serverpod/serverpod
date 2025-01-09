@@ -435,8 +435,12 @@ class ListRelationDefinition extends RelationDefinition {
   /// If true, the foreign field is implicit.
   final bool implicitForeignField;
 
+  /// Type of the primary key stored on [foreignFieldName].
+  TypeDefinition idType;
+
   ListRelationDefinition({
     String? name,
+    required this.idType,
     required this.fieldName,
     required this.foreignFieldName,
     this.foreignContainerField,
@@ -467,8 +471,12 @@ class ObjectRelationDefinition extends RelationDefinition {
 
   final bool nullableRelation;
 
+  /// Type of the primary key stored on [foreignFieldName].
+  TypeDefinition idType;
+
   ObjectRelationDefinition({
     String? name,
+    required this.idType,
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
@@ -566,8 +574,12 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
+  /// Type of the primary key stored on [foreignFieldName].
+  TypeDefinition idType;
+
   ForeignRelationDefinition({
     String? name,
+    required this.idType,
     required this.parentTable,
     required this.foreignFieldName,
     this.containerField,
