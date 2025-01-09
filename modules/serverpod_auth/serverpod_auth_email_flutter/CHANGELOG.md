@@ -1,3 +1,7 @@
+## 2.3.1
+- fix: Resolved an issue where database exceptions failed to generate informative `toString` messages.
+- fix: Improves performance of HTTP request body parsing for both endpoints and the web server.
+
 ## 2.3.0
 - feat: Adds support for transaction isolation levels.
 - feat: Adds typed interface for transaction savepoints.
