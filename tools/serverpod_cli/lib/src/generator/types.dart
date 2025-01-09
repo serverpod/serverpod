@@ -510,7 +510,10 @@ class TypeDefinition {
 }
 
 /// Supported ID type definitions.
-/// All configuration to support other types is done only on this class.
+/// All configuration to support other types is done only on this class. For
+/// new variants of id types, add a new static getter and update the [all]
+/// getter. For different types, it is necessary to also update the `Table`
+/// constructor at `packages:serverpod/src/database/concepts/table.dart`.
 class SupportedIdType {
   const SupportedIdType({
     required this.type,
@@ -522,7 +525,9 @@ class SupportedIdType {
   /// The supported id type.
   final TypeDefinition type;
 
-  /// The aliases for the id type. Specially for user input.
+  /// The aliases for the id type. Specially for user input. The first alias
+  /// is the [userOption] available for configuration. [TypeDefinition] class
+  /// names and [ColumnType] names must be included after for correct parsing.
   final List<String> aliases;
 
   /// The database column definition to be used for this id type.
@@ -533,6 +538,9 @@ class SupportedIdType {
 
   /// The class name of the id type.
   String get className => type.className;
+
+  /// Get the id type user option name. Only first alias to avoid confusion.
+  String get userOption => aliases.first;
 
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
@@ -551,16 +559,20 @@ class SupportedIdType {
   /// All supported id types.
   static List<SupportedIdType> get all => [int, uuid];
 
-  /// Supported id types as strings. Uses only first alias to avoid confusion.
-  static List<String> get allAlias => all.map((e) => e.aliases.first).toList();
+  /// Alias exposed to the user.
+  static List<String> get userOptions => all.map((e) => e.userOption).toList();
 
   /// Get the [SupportedIdType] from a string. Also serve to validate the input.
   /// The string can come from a ColumnType or dart type.
-  static SupportedIdType fromString(String input) {
+  static SupportedIdType fromString(String input, {bool fromUser = false}) {
     for (var idType in all) {
-      if (idType.aliases.contains(input)) return idType;
+      var aliases = (fromUser) ? [idType.aliases.first] : idType.aliases;
+      if (aliases.contains(input)) return idType;
     }
-    throw FormatException('Invalid id type $input. Valid options: $allAlias.');
+    var options = (fromUser)
+        ? userOptions.map((e) => "'$e'").join(', ')
+        : all.map((e) => "'${e.aliases.join("'|'")}'").join(', ');
+    throw FormatException('Invalid id type $input. Valid options: $options.');
   }
 
   /// Get the [SupportedIdType] from a [TypeDefinition].

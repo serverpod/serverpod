@@ -381,17 +381,10 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    String defaultIdTypeStr = generatorConfig['defaultIdType'] ?? 'int';
-    SupportedIdType defaultIdType;
-    try {
-      defaultIdType = SupportedIdType.fromString(defaultIdTypeStr);
-    } catch (e) {
-      var validIdTypes =
-          SupportedIdType.all.map((type) => type.className).join("', '");
-      throw FormatException(
-        "Invalid defaultIdType: '$defaultIdTypeStr'. Valid options are '$validIdTypes'.",
-      );
-    }
+    SupportedIdType defaultIdType = SupportedIdType.fromString(
+      generatorConfig['defaultIdType'] ?? 'int',
+      fromUser: true,
+    );
 
     return GeneratorConfig(
       name: name,

@@ -39,7 +39,7 @@ class CreateCommand extends ServerpodCommand {
     );
     argParser.addOption(
       'defaultIdType',
-      allowed: SupportedIdType.allAlias,
+      allowed: SupportedIdType.userOptions,
       help: 'Default type for primary keys. Valid options are:',
     );
   }
