@@ -100,27 +100,38 @@ class SerializableModelLibraryGenerator {
         ]);
 
         if (serverCode && tableName != null) {
+          var idTypeReference = classDefinition.idField.type.reference(
+            serverCode,
+            nullable: false,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          );
+
           libraryBuilder.body.addAll([
             _buildModelTableClass(
               className,
               tableName,
               fields,
               classDefinition,
+              idTypeReference,
             ),
             _buildModelIncludeClass(
               className,
               fields,
               classDefinition,
+              idTypeReference,
             ),
             _buildModelIncludeListClass(
               className,
               fields,
               classDefinition,
+              idTypeReference,
             ),
             buildRepository.buildModelRepositoryClass(
               className,
               fields,
               classDefinition,
+              idTypeReference,
             ),
             if (buildRepository.hasAttachOperations(fields))
               buildRepository.buildModelAttachRepositoryClass(
@@ -191,9 +202,19 @@ class SerializableModelLibraryGenerator {
       }
 
       if (serverCode && tableName != null) {
-        classBuilder.implements.add(
-          refer('TableRow', serverpodUrl(serverCode)),
+        var idTypeReference = classDefinition.idField.type.reference(
+          serverCode,
+          nullable: false,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
         );
+
+        classBuilder.implements.add(TypeReference(
+          (f) => f
+            ..symbol = 'TableRow'
+            ..url = serverpodUrl(serverCode)
+            ..types.add(idTypeReference),
+        ));
 
         classBuilder.fields.addAll([
           _buildModelClassTableField(className),
@@ -204,13 +225,18 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(Field(
           (f) => f
             ..name = 'id'
-            ..type = refer('int?')
+            ..type = classDefinition.idField.type.reference(
+              serverCode,
+              nullable: true,
+              subDirParts: classDefinition.subDirParts,
+              config: config,
+            )
             ..annotations.add(
               refer('override'),
             ),
         ));
 
-        classBuilder.methods.add(_buildModelClassTableGetter());
+        classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
       } else {
         classBuilder.implements
             .add(refer('SerializableModel', serverpodUrl(serverCode)));
@@ -687,13 +713,18 @@ class SerializableModelLibraryGenerator {
     };
   }
 
-  Method _buildModelClassTableGetter() {
+  Method _buildModelClassTableGetter(TypeReference idTypeReference) {
     return Method(
       (m) => m
         ..name = 'table'
         ..annotations.add(refer('override'))
         ..type = MethodType.getter
-        ..returns = refer('Table', serverpodUrl(serverCode))
+        ..returns = TypeReference(
+          (f) => f
+            ..symbol = 'Table'
+            ..url = serverpodUrl(serverCode)
+            ..types.add(idTypeReference),
+        )
         ..lambda = true
         ..body = const Code('t'),
     );
@@ -1315,10 +1346,14 @@ class SerializableModelLibraryGenerator {
       String className,
       String tableName,
       List<SerializableModelFieldDefinition> fields,
-      ClassDefinition classDefinition) {
+      ClassDefinition classDefinition,
+      TypeReference idTypeReference) {
     return Class((c) {
       c.name = '${className}Table';
-      c.extend = refer('Table', serverpodUrl(serverCode));
+      c.extend = TypeReference((f) => f
+        ..symbol = 'Table'
+        ..url = serverpodUrl(serverCode)
+        ..types.add(idTypeReference));
 
       c.constructors.add(
           _buildModelTableClassConstructor(tableName, fields, classDefinition));
@@ -1341,19 +1376,22 @@ class SerializableModelLibraryGenerator {
           f.relation is ObjectRelationDefinition ||
           f.relation is ListRelationDefinition);
       if (relationFields.isNotEmpty) {
-        c.methods.add(_buildModelTableClassGetRelationTable(relationFields));
+        c.methods.add(_buildModelTableClassGetRelationTable(
+            relationFields, idTypeReference));
       }
     });
   }
 
   Method _buildModelTableClassGetRelationTable(
-      Iterable<SerializableModelFieldDefinition> relationFields) {
+      Iterable<SerializableModelFieldDefinition> relationFields,
+      TypeReference idTypeReference) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference(
           (t) => t
             ..symbol = 'Table'
+            ..types.add(idTypeReference)
             ..isNullable = true
             ..url = serverpodUrl(true),
         )
@@ -1769,6 +1807,7 @@ class SerializableModelLibraryGenerator {
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
+    TypeReference idTypeReference,
   ) {
     return Class(((c) {
       c.extend = refer('IncludeObject', serverpodUrl(true));
@@ -1791,7 +1830,7 @@ class SerializableModelLibraryGenerator {
 
       c.methods.addAll([
         _buildModelIncludeClassIncludesGetter(relationFields),
-        _buildModelIncludeClassTableGetter(className),
+        _buildModelIncludeClassTableGetter(className, idTypeReference),
       ]);
     }));
   }
@@ -1800,6 +1839,7 @@ class SerializableModelLibraryGenerator {
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
+    TypeReference idTypeReference,
   ) {
     return Class(((c) {
       c.extend = refer('IncludeList', serverpodUrl(true));
@@ -1809,7 +1849,7 @@ class SerializableModelLibraryGenerator {
 
       c.methods.addAll([
         _buildModelIncludeListClassIncludesGetter(),
-        _buildModelIncludeClassTableGetter(className),
+        _buildModelIncludeClassTableGetter(className, idTypeReference),
       ]);
     }));
   }
@@ -1899,12 +1939,16 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelIncludeClassTableGetter(String className) {
+  Method _buildModelIncludeClassTableGetter(
+    String className,
+    TypeReference idTypeReference,
+  ) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'Table'
+          ..types.add(idTypeReference)
           ..url = serverpodUrl(serverCode))
         ..name = 'table'
         ..lambda = true
