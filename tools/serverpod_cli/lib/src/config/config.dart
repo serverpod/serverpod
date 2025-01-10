@@ -79,7 +79,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
-    required this.defaultIdType,
+    this.configuredDefaultIdType,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
@@ -209,7 +209,11 @@ class GeneratorConfig implements ModelLoadConfig {
   final List<TypeDefinition> extraClasses;
 
   /// User defined default type for primary keys.
-  final SupportedIdType defaultIdType;
+  final SupportedIdType? configuredDefaultIdType;
+
+  /// The default id type for the project.
+  SupportedIdType get defaultIdType =>
+      configuredDefaultIdType ?? SupportedIdType.int;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -381,10 +385,10 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    SupportedIdType defaultIdType = SupportedIdType.fromString(
-      generatorConfig['defaultIdType'] ?? 'int',
-      fromUser: true,
-    );
+    String? defaultIdTypeName = generatorConfig['defaultIdType'];
+    SupportedIdType? defaultIdType = (defaultIdTypeName != null)
+        ? SupportedIdType.fromString(defaultIdTypeName, fromUser: true)
+        : null;
 
     return GeneratorConfig(
       name: name,
@@ -397,7 +401,7 @@ class GeneratorConfig implements ModelLoadConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
-      defaultIdType: defaultIdType,
+      configuredDefaultIdType: defaultIdType,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
     );

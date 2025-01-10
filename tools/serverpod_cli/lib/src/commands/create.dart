@@ -1,4 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -73,7 +75,29 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    String? defaultIdType = argResults!['defaultIdType'];
+    GeneratorConfig config;
+    try {
+      config = await GeneratorConfig.load();
+    } catch (_) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    String? defaultIdTypeName = argResults!['defaultIdType'];
+    SupportedIdType? defaultIdType = (defaultIdTypeName != null)
+        ? SupportedIdType.fromString(defaultIdTypeName)
+        : null;
+    defaultIdType ??= config.defaultIdType;
+
+    if (!config
+        .isExperimentalFeatureEnabled(ExperimentalFeature.changeIdType)) {
+      log.error(
+        'The "defaultIdType" option is not enabled. To enable it, add the '
+        'experimental feature "changeIdType" to the config file or the '
+        'command line.',
+      );
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
     if (!await performCreate(name, template, force, defaultIdType)) {
       throw ExitException();
     }

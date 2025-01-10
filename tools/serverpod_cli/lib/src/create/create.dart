@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -39,7 +40,7 @@ Future<bool> performCreate(
   String name,
   ServerpodTemplateType template,
   bool force,
-  String? defaultIdType,
+  SupportedIdType? defaultIdType,
 ) async {
   // If the name is a dot, we are upgrading an existing project
   // Instead of creating a new one, we try to upgrade the current directory.
@@ -353,7 +354,7 @@ void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
-  String? defaultIdType,
+  SupportedIdType? defaultIdType,
 }) {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
