@@ -45,6 +45,7 @@ class ModelParser {
     );
 
     var tableName = _parseTableName(documentContents);
+    var idType = _parseIdType(documentContents) ?? defaultIdType;
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
@@ -52,7 +53,7 @@ class ModelParser {
       tableName != null,
       extraClasses,
       serverOnly,
-      defaultIdType,
+      idType,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -156,20 +157,30 @@ class ModelParser {
     return tableName;
   }
 
+  static SupportedIdType? _parseIdType(YamlMap documentContents) {
+    var idType = documentContents.nodes[Keyword.idType]?.value;
+    if (idType is! String) return null;
+    try {
+      return SupportedIdType.fromString(idType, fromUser: true);
+    } on FormatException {
+      return null;
+    }
+  }
+
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
-    SupportedIdType defaultIdType,
+    SupportedIdType idType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
     if (hasTable) {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
-          type: defaultIdType.type.asNullable,
+          type: idType.type.asNullable,
           scope: ModelFieldScopeDefinition.all,
           shouldPersist: true,
           documentation: [
