@@ -51,8 +51,9 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.idType,
         isRequired: false,
-        // TODO: Add a restriction that the `
-        // keyRestriction: restrictions.validateTableNameKey,
+        dependsOnKeys: {
+          Keyword.table,
+        },
         valueRestriction: restrictions.validateIdType,
         isHidden: !restrictions.config
             .isExperimentalFeatureEnabled(ExperimentalFeature.changeIdType),
