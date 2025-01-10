@@ -18,7 +18,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<void> deleteFile(
       {required Session session, required String path}) async {
     try {
-      await session.db.deleteWhere<CloudStorageEntry>(
+      await session.db.deleteWhere<int, CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -31,7 +31,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<bool> fileExists(
       {required Session session, required String path}) async {
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
+      var numRows = await session.db.count<int, CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -120,8 +120,8 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
-    var inserted =
-        await session.db.insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
+    var inserted = await session.db
+        .insertRow<int, CloudStorageDirectUploadEntry>(uploadEntry);
 
     var uri = Uri(
       scheme: config.apiServer.publicScheme,
