@@ -22,7 +22,7 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
               .hasMatch(databaseObject.uuidDefaultRandom.toString()),
           isTrue,
         );

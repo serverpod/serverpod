@@ -49,7 +49,7 @@ void main() async {
         () {
           var object = UuidDefault();
           expect(
-            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
                 .hasMatch(object.uuidDefaultRandom.toString()),
             isTrue,
           );
@@ -61,7 +61,7 @@ void main() async {
         () {
           var object = UuidDefault();
           expect(
-            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
                 .hasMatch(object.uuidDefaultRandomNull.toString()),
             isTrue,
           );
