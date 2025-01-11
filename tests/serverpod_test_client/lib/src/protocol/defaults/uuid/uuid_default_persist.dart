@@ -15,12 +15,14 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
   UuidDefaultPersist._({
     this.id,
     this.uuidDefaultPersistRandom,
+    this.uuidDefaultPersistRandomV7,
     this.uuidDefaultPersistStr,
   });
 
   factory UuidDefaultPersist({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) = _UuidDefaultPersistImpl;
 
@@ -32,6 +34,11 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
               ? null
               : _i1.UuidValueJsonExtension.fromJson(
                   jsonSerialization['uuidDefaultPersistRandom']),
+      uuidDefaultPersistRandomV7:
+          jsonSerialization['uuidDefaultPersistRandomV7'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                  jsonSerialization['uuidDefaultPersistRandomV7']),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
@@ -46,11 +53,14 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
 
   _i1.UuidValue? uuidDefaultPersistRandom;
 
+  _i1.UuidValue? uuidDefaultPersistRandomV7;
+
   _i1.UuidValue? uuidDefaultPersistStr;
 
   UuidDefaultPersist copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   });
   @override
@@ -59,6 +69,8 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
       if (id != null) 'id': id,
       if (uuidDefaultPersistRandom != null)
         'uuidDefaultPersistRandom': uuidDefaultPersistRandom?.toJson(),
+      if (uuidDefaultPersistRandomV7 != null)
+        'uuidDefaultPersistRandomV7': uuidDefaultPersistRandomV7?.toJson(),
       if (uuidDefaultPersistStr != null)
         'uuidDefaultPersistStr': uuidDefaultPersistStr?.toJson(),
     };
@@ -76,10 +88,12 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   _UuidDefaultPersistImpl({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) : super._(
           id: id,
           uuidDefaultPersistRandom: uuidDefaultPersistRandom,
+          uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
           uuidDefaultPersistStr: uuidDefaultPersistStr,
         );
 
@@ -87,6 +101,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
     Object? uuidDefaultPersistRandom = _Undefined,
+    Object? uuidDefaultPersistRandomV7 = _Undefined,
     Object? uuidDefaultPersistStr = _Undefined,
   }) {
     return UuidDefaultPersist(
@@ -94,6 +109,9 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
       uuidDefaultPersistRandom: uuidDefaultPersistRandom is _i1.UuidValue?
           ? uuidDefaultPersistRandom
           : this.uuidDefaultPersistRandom,
+      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _i1.UuidValue?
+          ? uuidDefaultPersistRandomV7
+          : this.uuidDefaultPersistRandomV7,
       uuidDefaultPersistStr: uuidDefaultPersistStr is _i1.UuidValue?
           ? uuidDefaultPersistStr
           : this.uuidDefaultPersistStr,
