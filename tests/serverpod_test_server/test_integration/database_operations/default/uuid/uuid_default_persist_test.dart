@@ -30,6 +30,23 @@ void main() async {
     );
 
     test(
+      'when creating a record in the database, then the "defaultPersist=random_v7" UUID field should not be null and should generate a valid UUID',
+      () async {
+        var object = UuidDefaultPersist();
+        var databaseObject = await UuidDefaultPersist.db.insertRow(
+          session,
+          object,
+        );
+        expect(databaseObject.uuidDefaultPersistRandomV7, isNotNull);
+        expect(
+          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+              .hasMatch(databaseObject.uuidDefaultPersistRandomV7.toString()),
+          isTrue,
+        );
+      },
+    );
+
+    test(
       'when creating a record in the database, then the "defaultPersist" UUID field with a string should match the default',
       () async {
         var object = UuidDefaultPersist();
@@ -58,6 +75,25 @@ void main() async {
         expect(
           RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
               .hasMatch(databaseObject!.uuidDefaultPersistRandom.toString()),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'when creating a record in the database with an unsafe query, then the "defaultPersist=random_v7" UUID field should generate a valid UUID',
+      () async {
+        await session.db.unsafeQuery(
+          '''
+        INSERT INTO ${UuidDefaultPersist.t.tableName}
+        VALUES (DEFAULT, DEFAULT);
+        ''',
+        );
+        var databaseObject = await UuidDefaultPersist.db.findFirstRow(session);
+        expect(databaseObject?.uuidDefaultPersistRandomV7, isNotNull);
+        expect(
+          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+              .hasMatch(databaseObject!.uuidDefaultPersistRandomV7.toString()),
           isTrue,
         );
       },
@@ -93,6 +129,24 @@ void main() async {
         );
         expect(
           specificDatabaseObject.uuidDefaultPersistRandom,
+          uuid,
+        );
+      },
+    );
+
+    test(
+      'when creating a record in the database with a specific value, then the "uuidDefaultPersistRandomV7" field value should match the provided value',
+      () async {
+        var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+        var specificObject = UuidDefaultPersist(
+          uuidDefaultPersistRandomV7: uuid,
+        );
+        var specificDatabaseObject = await UuidDefaultPersist.db.insertRow(
+          session,
+          specificObject,
+        );
+        expect(
+          specificDatabaseObject.uuidDefaultPersistRandomV7,
           uuid,
         );
       },
