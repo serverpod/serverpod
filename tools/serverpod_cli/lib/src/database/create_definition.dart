@@ -162,6 +162,9 @@ String? _getColumnDefault(
       if (defaultUuidValueRandom == defaultValue) {
         return 'gen_random_uuid()';
       }
+      if (defaultUuidValueRandomV7 == defaultValue) {
+        return 'gen_random_uuid_v7()';
+      }
       return '${_escapeSqlString(defaultValue)}::uuid';
     case DefaultValueAllowedType.duration:
       Duration parsedDuration = parseDuration(defaultValue);

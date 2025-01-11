@@ -1254,9 +1254,11 @@ class SerializableModelLibraryGenerator {
       case DefaultValueAllowedType.uuidValue:
         if (defaultValue is! String) return null;
 
-        if (defaultUuidValueRandom == defaultValue) {
+        if ((defaultValue == defaultUuidValueRandom) ||
+            (defaultValue == defaultUuidValueRandomV7)) {
           return refer('Uuid()', 'package:uuid/uuid.dart')
-              .property('v4obj')
+              .property(
+                  (defaultValue == defaultUuidValueRandom) ? 'v4obj' : 'v7obj')
               .call([]).code;
         }
 

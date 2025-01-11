@@ -255,11 +255,12 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
-        !value.startsWith("'") &&
-        !value.startsWith('"');
+    if ((value == defaultUuidValueRandom) ||
+        (value == defaultUuidValueRandomV7)) {
+      return [];
+    }
 
-    if (invalidDefaultValue) {
+    if (!value.startsWith("'") && !value.startsWith('"')) {
       errors.add(
         SourceSpanSeverityException(
           invalidValueError,
@@ -268,8 +269,6 @@ class DefaultValueRestriction extends ValueRestriction {
       );
       return errors;
     }
-
-    if (value == defaultUuidValueRandom) return [];
 
     bool validSingleQuote = isValidSingleQuote(value);
     bool validDoubleQuote = isValidDoubleQuote(value);
