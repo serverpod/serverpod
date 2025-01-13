@@ -499,12 +499,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } catch (e, s) {
       onFailedCall?.call(callContext, e, s);
 
-      if (logFailedCalls) {
-        // ignore: avoid_print
-        print('Failed call: $endpoint.$method');
-        // ignore: avoid_print
-        print('$e');
-      }
       rethrow;
     }
   }
