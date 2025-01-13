@@ -26,9 +26,10 @@ class DartServerCodeGenerator extends CodeGenerator {
 
     return {
       for (var entry in modelAllocatorContext.entries)
-        entry.model.getFullFilePath(config, true): serverSideGenerator
-            .generateModelLibrary(entry.model)
-            .generateCode(allocator: entry.allocator),
+        entry.model.getFullFilePath(config, serverCode: true):
+            serverSideGenerator
+                .generateModelLibrary(entry.model)
+                .generateCode(allocator: entry.allocator),
     };
   }
 

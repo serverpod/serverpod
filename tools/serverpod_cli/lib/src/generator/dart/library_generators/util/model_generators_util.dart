@@ -44,11 +44,11 @@ class ModelAllocatorContext {
 
       if (topNode != null) {
         var importCollector = ImportCollector(
-          topNode.getFullFilePath(config, false),
+          topNode.getFullFilePath(config, serverCode: false),
         );
 
         for (var model in sealedHierarchy) {
-          var currentPath = model.getFullFilePath(config, false);
+          var currentPath = model.getFullFilePath(config, serverCode: false);
 
           var partOfAllocator = PartOfAllocator(
             currentPath: currentPath,
@@ -123,7 +123,7 @@ extension SerializableModelPath on SerializableModelDefinition {
 
   /// Returns a String with the full server or client path followed by
   /// `filename.dart`.
-  String getFullFilePath(GeneratorConfig config, bool serverCode) {
+  String getFullFilePath(GeneratorConfig config, {required bool serverCode}) {
     return p.joinAll([
       ...serverCode
           ? config.generatedServeModelPathParts
