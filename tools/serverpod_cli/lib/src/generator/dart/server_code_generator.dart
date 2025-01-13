@@ -1,4 +1,3 @@
-import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -6,8 +5,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -24,43 +22,14 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext =
-        <({SerializableModelDefinition model, Allocator? allocator})>[];
-
-    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
-
-    var modelsWithoutSealedHierarchies =
-        ModelFilterUtil.getClassesWithoutSealedHierarchies(models);
-
-    for (var sealedHierarchy in sealedHierarchies) {
-      var partOfAllocator = PartOfAllocator([]);
-      var partAllocator = PartAllocator(partOfAllocator);
-
-      for (var protocolFile in sealedHierarchy) {
-        modelAllocatorContext.add((
-          model: protocolFile,
-          allocator:
-              protocolFile.isSealedTopNode ? partAllocator : partOfAllocator
-        ));
-      }
-    }
-
-    for (var protocolFile in modelsWithoutSealedHierarchies) {
-      modelAllocatorContext.add((
-        model: protocolFile,
-        allocator: null,
-      ));
-    }
+    var modelAllocatorContext = ModelAllocatorContext.build(models, config);
 
     return {
-      for (var entry in modelAllocatorContext)
-        p.joinAll([
-          ...config.generatedServeModelPathParts,
-          ...entry.model.subDirParts,
-          '${entry.model.fileName}.dart'
-        ]): serverSideGenerator
-            .generateModelLibrary(entry.model)
-            .generateCode(allocator: entry.allocator),
+      for (var entry in modelAllocatorContext.entries)
+        entry.model.getFullFilePath(config, serverCode: true):
+            serverSideGenerator
+                .generateModelLibrary(entry.model)
+                .generateCode(allocator: entry.allocator),
     };
   }
 

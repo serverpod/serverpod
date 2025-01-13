@@ -324,24 +324,6 @@ class Restrictions {
           )
         ];
       }
-
-      // This is temporary until [PartAllocator] and [PartOfAllocator] can
-      // automatically allocate the imports from the sub-classes relative to
-      // the parent imports.
-      // https://github.com/serverpod/serverpod/issues/2893
-      var sealedTopNode = currentModel.sealedTopNode;
-
-      if (sealedTopNode != null) {
-        if (currentModel.subDirParts.join() !=
-            sealedTopNode.subDirParts.join()) {
-          return [
-            SourceSpanSeverityException(
-              'All models in a sealed library must be in the same subdirectory. The class "${currentModel.className}" needs to be located in the same subdirectory as "${sealedTopNode.className}".',
-              span,
-            )
-          ];
-        }
-      }
     }
 
     return [];
