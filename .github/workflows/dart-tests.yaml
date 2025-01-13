@@ -30,74 +30,70 @@ jobs:
 
   dart_analyze:
     name: dart analyze
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         flutter-version: ['3.19.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Install dependencies
-        run: bash util/pub_get_all
-      - name: Analyze
-        run: bash util/run_tests_analyze
-
-  dart_analyze_downgrade:
-    name: dart analyze downgrade
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ['3.19.0']
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-      - name: Install dependencies
-        run: bash util/pub_get_all --downgrade
-      - name: Analyze
-        run: bash util/run_tests_analyze --allow-warnings
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Run lint
+        run: melos lint_strict
 
   dart_analyze_latest:
     name: dart analyze latest
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.24.0']
+        flutter-version: ['3.27.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Install dependencies
-        run: bash util/pub_get_all
-      - name: Analyze
-        run: bash util/run_tests_analyze --allow-infos
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Run lint
+        run: melos lint
 
-  dart_analyze_latest_downgrade:
-    name: dart analyze latest downgrade
-    runs-on: ubuntu-latest
+  dart_analyze_downgrade:
+    name: dart analyze downgrade
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Install dependencies
-        run: bash util/pub_get_all --downgrade
-      - name: Analyze
-        run: bash util/run_tests_analyze --allow-warnings
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Downgrade dependencies
+        run: melos downgrade
+      - name: Run lint
+        run: melos lint_loose
 
   serverpod_generate:
     name: serverpod generate
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -113,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -127,7 +123,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
         os: [windows-latest, ubuntu-latest]
         path:
           [
@@ -154,7 +150,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
         os: [ubuntu-latest]
         path: ['packages/serverpod_client']
     steps:
@@ -172,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -186,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -200,7 +196,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
         path: ['packages/serverpod_shared']
     steps:
       - uses: actions/checkout@v3
@@ -216,7 +212,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -230,7 +226,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -245,7 +241,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
         os: [windows-latest, ubuntu-latest]
         path: ['tests/bootstrap_project']
     steps:
@@ -272,7 +268,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -287,7 +283,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.19.0', '3.24.0']
+        flutter-version: ['3.19.0', '3.27.0']
         os: [ubuntu-latest]
         path: ['tests/serverpod_cli_e2e_test']
     steps:

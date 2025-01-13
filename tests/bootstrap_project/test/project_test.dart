@@ -471,7 +471,7 @@ void main() async {
 
   group('Given a clean state', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
-    final (:serverDir, :flutterDir, :clientDir) =
+    final (:serverDir, flutterDir: _, :clientDir) =
         createProjectFolderPaths(projectName);
 
     late Process createProcess;

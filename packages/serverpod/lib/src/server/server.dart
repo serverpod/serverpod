@@ -276,10 +276,19 @@ class Server {
       return;
     }
 
-    String? body;
+    String body;
     if (readBody) {
       try {
         body = await _readBody(request);
+      } on _RequestTooLargeException catch (e) {
+        if (serverpod.runtimeSettings.logMalformedCalls) {
+          // TODO: Log to database?
+          stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
+        }
+        request.response.statusCode = HttpStatus.requestEntityTooLarge;
+        request.response.write(e.errorDescription);
+        await request.response.close();
+        return;
       } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
@@ -293,7 +302,7 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultNoSuchEndpoint) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
@@ -401,16 +410,17 @@ class Server {
     );
   }
 
-  Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
+  Future<String> _readBody(HttpRequest request) async {
+    var builder = BytesBuilder();
     var len = 0;
-    var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
-      if (len > serverpod.config.maxRequestSize) return null;
-      data += segment;
+      if (len > serverpod.config.maxRequestSize) {
+        throw _RequestTooLargeException(serverpod.config.maxRequestSize);
+      }
+      builder.add(segment);
     }
-    return const Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(builder.toBytes());
   }
 
   Future<Result> _handleUriCall(
@@ -557,5 +567,33 @@ class Server {
     await Future.wait(webSocketCompletions);
 
     _running = false;
+  }
+}
+
+/// The result of a failed request to the server where the request size
+/// exceeds the maximum allowed limit.
+///
+/// This error provides details about the maximum allowed size, allowing the
+/// client to adjust their request accordingly.
+class _RequestTooLargeException implements Exception {
+  /// Maximum allowed request size in bytes.
+  final int maxSize;
+
+  /// Description of the error.
+  ///
+  /// Contains a human-readable explanation of the error, including the maximum
+  /// allowed size and the actual size of the request.
+  final String errorDescription;
+
+  /// Creates a new [ResultRequestTooLarge] object.
+  ///
+  /// - [maxSize]: The maximum allowed size for the request in bytes.
+  _RequestTooLargeException(this.maxSize)
+      : errorDescription =
+            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+
+  @override
+  String toString() {
+    return errorDescription;
   }
 }

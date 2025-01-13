@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Ask a question
+    url: https://github.com/serverpod/serverpod/discussions
+    about: Ask your questions on Github discussions and get help from the community!
+  - name: Consult the documentation
+    url: https://docs.serverpod.dev
+    about: Find the documentation for Serverpod here.

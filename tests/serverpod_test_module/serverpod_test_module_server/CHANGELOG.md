@@ -1,12 +1,14 @@
-## 2.3.0-beta.2
-- fix: Adds additional diagnostic information to database query exceptions.
-- fix: Resolved an issue that caused premature closure of method stream websocket connections.
+## 2.3.1
+- fix: Resolved an issue where database exceptions failed to generate informative `toString` messages.
+- fix: Improves performance of HTTP request body parsing for both endpoints and the web server.
 
-## 2.3.0-beta.1
+## 2.3.0
 - feat: Adds support for transaction isolation levels.
 - feat: Adds typed interface for transaction savepoints.
 - feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
 - feat: Adds support for model definitions placement anywhere in server's `src` directory.
+- fix: Adds additional diagnostic information to database query exceptions.
+- fix: Resolved an issue that caused premature closure of method stream websocket connections.
 - fix: Improves message transmission guarantee in method streams.
 
 ## 2.2.2

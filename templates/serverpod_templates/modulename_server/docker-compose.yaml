@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   # Test services
   postgres_test:
