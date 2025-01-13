@@ -137,9 +137,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// If true, the client will log any failed calls to stdout.
-  final bool logFailedCalls;
-
   /// Optional [AuthenticationKeyManager] if the client needs to sign the user
   /// in.
   final AuthenticationKeyManager? authenticationKeyManager;
@@ -214,7 +211,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.serializationManager, {
     dynamic securityContext,
     required this.authenticationKeyManager,
-    this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
