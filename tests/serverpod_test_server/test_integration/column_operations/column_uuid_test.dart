@@ -115,5 +115,51 @@ void main() async {
 
       expect(result.length, 3);
     });
+
+    test('when filtering using greater than then matching rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid > secondUuid,
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aUuid, firstUuid);
+    });
+
+    test(
+        'when filtering using greater or equal than then matching rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid >= secondUuid,
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
+    });
+
+    test('when filtering using less than then matching rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid < firstUuid,
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aUuid, secondUuid);
+    });
+
+    test(
+        'when filtering using less or equal than then matching rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid <= firstUuid,
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
+    });
   });
 }
