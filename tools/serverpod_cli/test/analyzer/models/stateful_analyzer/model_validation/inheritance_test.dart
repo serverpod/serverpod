@@ -197,7 +197,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-              .validateAll();
+          .validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
