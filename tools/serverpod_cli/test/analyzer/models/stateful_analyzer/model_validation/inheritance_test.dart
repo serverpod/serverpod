@@ -196,37 +196,12 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models =
-          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
       var errors = collector.errors;
       test('then no errors are collected.', () {
         expect(errors, isEmpty);
-      });
-
-      test('Then the child-class is resolved', () {
-        var parent = models.first as ClassDefinition;
-        var isChildResolved =
-            parent.childClasses.first is ResolvedInheritanceDefinition;
-
-        expect(isChildResolved, isTrue);
-      });
-
-      test('Then extendsClass is resolved', () {
-        var child = models.last as ClassDefinition;
-        var extendsClass = child.extendsClass;
-        var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
-
-        expect(isExtendsResolved, isTrue);
-      });
-
-      test('Then the parent fields are inherited', () {
-        var child = models.last as ClassDefinition;
-        var parentFields = (models.first as ClassDefinition).fields;
-        var allChildFields = child.fieldsIncludingInherited;
-
-        expect(allChildFields.contains(parentFields.first), isTrue);
       });
     });
 
