@@ -524,9 +524,8 @@ class SupportedIdType {
   /// The supported id type.
   final TypeDefinition type;
 
-  /// The aliases for the id type. Specially for user input. The first alias
-  /// is the [userOption] available for configuration. [TypeDefinition] class
-  /// names and [ColumnType] names must be included after for correct parsing.
+  /// The aliases for the id type as exposed to the user. Supports multiple,
+  /// even though it is not recommended to use more than one to avoid confusion.
   final List<String> aliases;
 
   /// A builder for the default value for the column on the database definition.
@@ -535,47 +534,34 @@ class SupportedIdType {
   /// The class name of the id type.
   String get className => type.className;
 
-  /// Get the id type user option name. Only first alias to avoid confusion.
-  String get userOption => aliases.first;
-
+  /// If no id type is specified, the default id type is [int].
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
-        aliases: ['int', 'integer', 'bigint'],
+        aliases: ['int'],
         dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
       );
 
   static SupportedIdType get uuid => SupportedIdType(
         type: TypeDefinition.uuid,
-        aliases: ['uuid', 'UuidValue'],
+        aliases: ['uuid'],
         dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
       );
 
   /// All supported id types.
   static List<SupportedIdType> get all => [int, uuid];
 
-  /// Alias exposed to the user.
-  static List<String> get userOptions => all.map((e) => e.userOption).toList();
+  /// All aliases exposed to the user.
+  static List<String> get userOptions => all.expand((e) => e.aliases).toList();
 
-  /// Get the [SupportedIdType] from a string. Also serve to validate the input.
-  /// The string can come from a ColumnType or dart type.
-  static SupportedIdType fromString(String input, {bool fromUser = false}) {
+  /// Get the [SupportedIdType] from a valid string alias. If the input is
+  /// invalid, will throw a [FormatException].
+  static SupportedIdType fromString(String input) {
     for (var idType in all) {
-      var aliases = (fromUser) ? [idType.aliases.first] : idType.aliases;
-      if (aliases.contains(input)) return idType;
+      if (idType.aliases.contains(input)) return idType;
     }
-    var options = (fromUser)
-        ? userOptions.map((e) => "'$e'").join(', ')
-        : all.map((e) => "'${e.aliases.join("'|'")}'").join(', ');
+    var options = all.map((e) => "'${e.aliases.join("'|'")}'").join(', ');
     throw FormatException('Invalid id type $input. Valid options: $options.');
   }
-
-  /// Get the [SupportedIdType] from a [TypeDefinition].
-  static SupportedIdType fromTypeDefinition(TypeDefinition type) =>
-      fromString(type.className);
-
-  /// Get the [SupportedIdType] from a ColumnType.
-  static SupportedIdType fromColumnType(ColumnType type) =>
-      fromString(type.name);
 }
 
 /// Parses a type from a string and deals with whitespace and generics.

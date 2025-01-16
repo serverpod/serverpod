@@ -387,7 +387,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
     String? defaultIdTypeName = generatorConfig['defaultIdType'];
     SupportedIdType? defaultIdType = (defaultIdTypeName != null)
-        ? SupportedIdType.fromString(defaultIdTypeName, fromUser: true)
+        ? SupportedIdType.fromString(defaultIdTypeName)
         : null;
 
     return GeneratorConfig(

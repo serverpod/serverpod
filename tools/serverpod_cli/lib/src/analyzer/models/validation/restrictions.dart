@@ -290,7 +290,7 @@ class Restrictions {
       ];
     }
     try {
-      SupportedIdType.fromString(idType, fromUser: true);
+      SupportedIdType.fromString(idType);
     } on FormatException catch (e) {
       return [SourceSpanSeverityException(e.message, span)];
     }

@@ -161,7 +161,7 @@ class ModelParser {
     var idType = documentContents.nodes[Keyword.idType]?.value;
     if (idType is! String) return null;
     try {
-      return SupportedIdType.fromString(idType, fromUser: true);
+      return SupportedIdType.fromString(idType);
     } on FormatException {
       return null;
     }
