@@ -91,9 +91,10 @@ class ModelDependencyResolver {
       return;
     }
 
-    var enumDefinitionList = modelDefinitions
-        .whereType<EnumDefinition>()
-        .where((e) => e.className == typeDefinition.className);
+    var enumDefinitionList = modelDefinitions.whereType<EnumDefinition>().where(
+        (e) =>
+            e.className == typeDefinition.className &&
+            e.moduleAlias == typeDefinition.moduleAlias);
 
     if (enumDefinitionList.isEmpty) return;
 
@@ -111,7 +112,9 @@ class ModelDependencyResolver {
     var referenceClass = modelDefinitions
         .cast<SerializableModelDefinition?>()
         .firstWhere(
-            (model) => model?.className == fieldDefinition.type.className,
+            (model) =>
+                model?.className == fieldDefinition.type.className &&
+                model?.moduleAlias == fieldDefinition.type.moduleAlias,
             orElse: () => null);
 
     if (referenceClass is! ClassDefinition) return;
