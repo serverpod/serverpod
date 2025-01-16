@@ -222,6 +222,172 @@ void main() {
     });
   });
 
+  group(
+      'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
+      () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String')
+          .withSimpleField('parentDefault', 'int', defaultValue: '0')
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int')
+              .withSimpleField('childDefault', 'int', defaultValue: '-1')
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withSimpleField('childDefault', 'int', defaultValue: '-1')
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .withSimpleField('parentDefault', 'int', defaultValue: '0')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var parentCompilationUnit =
+        parseString(content: codeMap[parentExpectedFilePath]!).unit;
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    group('Then the $parentClassName', () {
+      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        parentCompilationUnit,
+        name: parentClassName,
+      );
+
+      group('has a public constructor', () {
+        var publicConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+          parentClass!,
+          name: null,
+        );
+
+        group('with the initializers', () {
+          test('containing 1 entry', () {
+            expect(publicConstructor?.initializers.length, 1);
+          }, skip: publicConstructor == null);
+
+          test('correctly set', () {
+            expect(
+              publicConstructor?.initializers.first.toSource(),
+              'parentDefault = parentDefault ?? 0',
+            );
+          }, skip: publicConstructor == null);
+        });
+      });
+    });
+
+    group('Then the $childClassName', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        childCompilationUnit,
+        name: childClassName,
+      );
+
+      group('has a private constructor', () {
+        var privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+          childClass!,
+          name: '_',
+        );
+
+        test('with both classes vars as params', () {
+          expect(
+            privateConstructor?.parameters.toSource(),
+            '({required super.name, super.parentDefault, this.age, int? childDefault})',
+          );
+        }, skip: privateConstructor == null);
+
+        group('with the initializers', () {
+          test('containing 1 entry', () {
+            expect(privateConstructor?.initializers.length, 1);
+          }, skip: privateConstructor == null);
+
+          test('correctly set', () {
+            expect(
+              privateConstructor?.initializers.first.toSource(),
+              'childDefault = childDefault ?? -1',
+            );
+          }, skip: privateConstructor == null);
+        });
+      });
+
+      group('has a factory constructor', () {
+        var factoryConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+          childClass!,
+          name: null,
+        );
+
+        test('with the class vars as params', () {
+          expect(
+            factoryConstructor?.parameters.toSource(),
+            '({required String name, int? parentDefault, int? age, int? childDefault})',
+          );
+        }, skip: factoryConstructor == null);
+      });
+
+      group('has a copyWith method', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        test('with the named params set where all variables are nullable.', () {
+          expect(
+            copyWithMethod?.parameters?.toSource(),
+            '({String? name, int? parentDefault, int? age, int? childDefault})',
+          );
+        }, skip: copyWithMethod == null);
+      }, skip: childClass == null);
+    });
+    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      childCompilationUnit,
+      name: '_${childClassName}Impl',
+    );
+
+    group('then the class named _${childClassName}Impl', () {
+      group('has a constructor', () {
+        var defaultConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+          copyWithClass!,
+          name: null,
+        );
+
+        test('with the params set to the same as the parent class.', () {
+          expect(
+            defaultConstructor?.parameters.toSource(),
+            '({required String name, int? parentDefault, int? age, int? childDefault})',
+          );
+        }, skip: defaultConstructor == null);
+
+        test('with super call to named private constructor', () {
+          expect(
+            defaultConstructor?.initializers.first.toSource(),
+            'super._(name: name, parentDefault: parentDefault, age: age, childDefault: childDefault)',
+          );
+        });
+      });
+    });
+  });
+
   group('Given a child-class with table name when generating code', () {
     var models = [
       ClassDefinitionBuilder()
