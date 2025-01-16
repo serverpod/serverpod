@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/database/migration.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 //
@@ -307,13 +306,6 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
   String toPgSqlFragment() {
     String out = '';
-    // The id column is special.
-    if (name == 'id') {
-      if (isNullable != false) {
-        throw (const FormatException('The id column must be non-nullable'));
-      }
-      return SupportedIdType.fromColumnType(columnType).dbColDefinition;
-    }
 
     String type;
     switch (columnType) {
@@ -350,6 +342,20 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
 
     var nullable = isNullable ? '' : ' NOT NULL';
     var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
+
+    // The id column is special.
+    if (name == 'id') {
+      if (isNullable != false) {
+        throw (const FormatException('The id column must be non-nullable'));
+      }
+      if (columnType == ColumnType.integer) {
+        type = 'bigserial';
+        defaultValue = '';
+      }
+
+      type = '$type PRIMARY KEY';
+      nullable = '';
+    }
 
     out += '"$name" $type$nullable$defaultValue';
     return out;

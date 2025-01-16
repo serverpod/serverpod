@@ -518,7 +518,6 @@ class SupportedIdType {
   const SupportedIdType({
     required this.type,
     required this.aliases,
-    required this.dbColDefinition,
     required this.dbColumnDefaultBuilder,
   });
 
@@ -529,9 +528,6 @@ class SupportedIdType {
   /// is the [userOption] available for configuration. [TypeDefinition] class
   /// names and [ColumnType] names must be included after for correct parsing.
   final List<String> aliases;
-
-  /// The database column definition to be used for this id type.
-  final String dbColDefinition;
 
   /// A builder for the default value for the column on the database definition.
   final String Function(String tableName) dbColumnDefaultBuilder;
@@ -545,14 +541,12 @@ class SupportedIdType {
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
         aliases: ['int', 'integer', 'bigint'],
-        dbColDefinition: '"id" bigserial PRIMARY KEY',
         dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
       );
 
   static SupportedIdType get uuid => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuid', 'UuidValue'],
-        dbColDefinition: '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()',
         dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
       );
 

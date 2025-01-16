@@ -18,8 +18,8 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
+  SupportedIdType? _idType;
   bool _managedMigration;
-  TypeDefinition _idTypeDefinition;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
@@ -32,7 +32,7 @@ class ClassDefinitionBuilder {
         _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
-        _idTypeDefinition = TypeDefinition.int.asNullable,
+        _idType = SupportedIdType.int,
         _fields = [],
         _subDirParts = [],
         _managedMigration = true,
@@ -47,8 +47,7 @@ class ClassDefinitionBuilder {
       _fields.insert(
         0,
         () => FieldDefinitionBuilder()
-            .withName('id')
-            .withType(_idTypeDefinition)
+            .withPrimaryKey(_tableName!, type: _idType, isNullable: true)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -319,8 +318,8 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withIdFieldType(TypeDefinition type) {
-    _idTypeDefinition = type;
+  ClassDefinitionBuilder withIdFieldType(SupportedIdType type) {
+    _idType = type;
     return this;
   }
 

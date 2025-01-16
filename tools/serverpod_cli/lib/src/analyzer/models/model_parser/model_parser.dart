@@ -50,7 +50,7 @@ class ModelParser {
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      tableName != null,
+      tableName,
       extraClasses,
       serverOnly,
       idType,
@@ -170,18 +170,19 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    bool hasTable,
+    String? tableName,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
     SupportedIdType idType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
-    if (hasTable) {
+    if (tableName != null) {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
           type: idType.type.asNullable,
           scope: ModelFieldScopeDefinition.all,
+          defaultPersistValue: idType.dbColumnDefaultBuilder(tableName),
           shouldPersist: true,
           documentation: [
             '/// The database id, set if the object has been inserted into the',

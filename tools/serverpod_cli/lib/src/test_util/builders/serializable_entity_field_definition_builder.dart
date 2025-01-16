@@ -28,9 +28,17 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withPrimaryKey({TypeDefinition? type}) {
-    _name = 'id';
-    return withIdType(type: type);
+  FieldDefinitionBuilder withPrimaryKey(
+    String tableName, {
+    SupportedIdType? type,
+    bool isNullable = false,
+  }) {
+    type ??= SupportedIdType.int;
+    return withName('id')
+      ..withIdType(type: type.type, isNullable: isNullable)
+      ..withDefaults(
+        defaultPersistValue: type.dbColumnDefaultBuilder(tableName),
+      );
   }
 
   FieldDefinitionBuilder withEnumDefinition(

@@ -30,7 +30,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   name: column.name,
                   columnType:
                       ColumnType.values.byName(column.type.databaseTypeEnum),
-                  // The id column is not null, since it is auto incrementing.
+                  // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
                   columnDefault: _getColumnDefault(
@@ -123,8 +123,13 @@ String? _getColumnDefault(
   ColumnType type,
 ) {
   if (column.name == 'id') {
-    return SupportedIdType.fromTypeDefinition(column.type)
-        .dbColumnDefaultBuilder(classDefinition.tableName!);
+    var defaultValue = column.defaultPersistValue;
+    if (defaultValue is! String) {
+      throw StateError('Invalid default id value: $defaultValue');
+    }
+    // Default id values can contain a placeholder `<table_name>` to be replaced
+    // here by the actual table name. It's the case for bigserial columns.
+    return defaultValue.replaceAll('<table_name>', classDefinition.tableName!);
   }
 
   var defaultValueType = column.type.defaultValueType;
