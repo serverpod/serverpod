@@ -1,0 +1,6 @@
+class: CompanyUuid
+table: company_uuid
+idType: uuid
+fields:
+  name: String
+  town: TownInt?, relation

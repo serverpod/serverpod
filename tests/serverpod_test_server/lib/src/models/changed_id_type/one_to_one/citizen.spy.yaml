@@ -1,0 +1,8 @@
+class: CitizenInt
+table: citizen_int
+idType: int
+fields:
+  name: String
+  address: AddressUuid?, relation(name=citizen_address)
+  company: CompanyUuid?, relation
+  oldCompany: CompanyUuid?, relation(optional)

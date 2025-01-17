@@ -1,0 +1,11 @@
+class: AddressUuid
+table: address_uuid
+idType: uuid
+fields:
+  street: String
+  inhabitantId: int?
+  inhabitant: CitizenInt?, relation(name=citizen_address, field=inhabitantId, onDelete=Cascade)
+indexes:
+  inhabitant_uuid_index_idx:
+    fields: inhabitantId
+    unique: true

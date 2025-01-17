@@ -1,0 +1,5 @@
+class: CustomerInt
+table: customer_int
+fields:
+  name: String
+  orders: List<OrderUuid>?, relation(name=customer_orders)

@@ -1,0 +1,6 @@
+class: PlayerUuid
+table: player_uuid
+idType: uuid
+fields:
+  name: String
+  team: TeamInt?, relation(name=team_player, optional, onDelete=SetNull)

@@ -1,0 +1,14 @@
+class: ChangedIdTypeSelf
+table: changed_id_type_self
+idType: uuid
+fields:
+  name: String
+  previous: ChangedIdTypeSelf?, relation(name=changed_id_next_previous)
+  nextId: UuidValue?
+  next: ChangedIdTypeSelf?, relation(name=changed_id_next_previous, field=nextId)
+  parent: ChangedIdTypeSelf?, relation(name=changed_id_parent, optional)
+  children: List<ChangedIdTypeSelf>?, relation(name=changed_id_parent)
+indexes:
+  changed_id_type_self_next_unique_idx:
+    fields: nextId
+    unique: true
