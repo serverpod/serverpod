@@ -116,12 +116,14 @@ class ClassDefinitionBuilder {
   ClassDefinitionBuilder withSimpleField(
     String fieldName,
     String type, {
+    dynamic defaultValue,
     bool nullable = false,
   }) {
     _fields.add(
       () => FieldDefinitionBuilder()
           .withName(fieldName)
           .withTypeDefinition(type, nullable)
+          .withDefaults(defaultModelValue: defaultValue)
           .build(),
     );
     return this;
