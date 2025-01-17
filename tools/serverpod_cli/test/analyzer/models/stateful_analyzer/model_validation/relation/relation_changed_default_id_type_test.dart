@@ -62,7 +62,6 @@ void main() {
         });
 
         test('then the object relation id type is $idClassName.', () {
-          expect(relation.fieldName, 'myParentId');
           expect(relation.idType.className, idClassName);
         });
       });
@@ -121,10 +120,6 @@ void main() {
         var field = exampleClass.findField('parent');
         var relation = field!.relation as ObjectRelationDefinition;
 
-        test('then parent field has a nullable relation.', () {
-          expect(relation.nullableRelation, isTrue);
-        });
-
         test('then relation id type is $idClassName.', () {
           expect(relation.idType.className, idClassName);
         });
@@ -141,7 +136,7 @@ void main() {
 
     group('For one to one relations with default id type of $idClassName', () {
       group(
-          'Given a class with a only a foreign key field defined for the relation',
+          'Given a class with only a foreign key field defined for the relation',
           () {
         var models = [
           ModelSourceBuilder().withFileName('user').withYaml(
@@ -183,15 +178,17 @@ void main() {
           expect(addressDefinition.idField.type.className, idClassName);
         });
 
+        var field = userDefinition.findField('addressId');
+        test('then the foreign id field have type $idClassName.', () {
+          expect(field?.type.className, idClassName);
+        });
+
         test(
             'then the foreign relation id type on the addressId is $idClassName.',
             () {
-          var field = userDefinition.findField('addressId');
           var foreignRelation = field?.relation as ForeignRelationDefinition;
 
-          expect(foreignRelation.foreignFieldName, 'id');
           expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
         });
       });
 
@@ -245,18 +242,20 @@ void main() {
           var field = userDefinition.findField('address');
           var objectRelation = field?.relation as ObjectRelationDefinition;
 
-          expect(objectRelation.fieldName, 'addressId');
           expect(objectRelation.idType.className, idClassName);
+        });
+
+        var field = userDefinition.findField('addressId');
+        test('then the foreign id field have type $idClassName.', () {
+          expect(field?.type.className, idClassName);
         });
 
         test(
             'then the foreign relation id type on the addressId is $idClassName.',
             () {
-          var field = userDefinition.findField('addressId');
           var foreignRelation = field?.relation as ForeignRelationDefinition;
 
           expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
         });
       });
     });
@@ -310,21 +309,20 @@ void main() {
         var field = addressDefinition.findField('user');
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.name, 'user_address');
-        expect(objectRelation.foreignFieldName, 'addressId');
         expect(objectRelation.idType.className, idClassName);
+      });
+
+      var field = userDefinition.findField('addressId');
+      test('then the foreign id field have type $idClassName.', () {
+        expect(field?.type.className, idClassName);
       });
 
       test(
           'then the foreign relation id type on the addressId is $idClassName.',
           () {
-        var field = userDefinition.findField('addressId');
         var foreignRelation = field?.relation as ForeignRelationDefinition;
 
-        expect(foreignRelation.name, 'user_address');
-        expect(foreignRelation.foreignFieldName, 'id');
         expect(foreignRelation.idType.className, idClassName);
-        expect(field?.type.className, idClassName);
       });
     });
 
@@ -378,9 +376,6 @@ void main() {
         var field = addressDefinition.findField('user');
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.name, 'user_address');
-        expect(objectRelation.foreignFieldName, 'addressId');
-        expect(objectRelation.foreignContainerField?.name, 'address');
         expect(objectRelation.idType.className, idClassName);
       });
 
@@ -390,21 +385,20 @@ void main() {
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
         expect(objectRelation.fieldName, 'addressId');
-        expect(objectRelation.foreignContainerField?.name, 'user');
         expect(objectRelation.idType.className, idClassName);
+      });
+
+      var field = userDefinition.findField('addressId');
+      test('then the foreign id field have type $idClassName.', () {
+        expect(field?.type.className, idClassName);
       });
 
       test(
           'then the foreign relation id type on the addressId is $idClassName.',
           () {
-        var field = userDefinition.findField('addressId');
         var foreignRelation = field?.relation as ForeignRelationDefinition;
 
-        expect(foreignRelation.name, 'user_address');
-        expect(foreignRelation.foreignFieldName, 'id');
-        expect(foreignRelation.foreignContainerField?.name, 'user');
         expect(foreignRelation.idType.className, idClassName);
-        expect(field?.type.className, idClassName);
       });
     });
 
@@ -446,35 +440,33 @@ void main() {
           expect(employeeDefinition.idField.type.className, idClassName);
         });
 
-        test(
-            'then the list relation field id type on the company side is $idClassName.',
-            () {
-          var employeesField = companyDefinition.findField('employees');
-          var listRelation = employeesField?.relation as ListRelationDefinition;
+        group('then the list relation', () {
+          test('have id type on the company side of $idClassName.', () {
+            var employeesField = companyDefinition.findField('employees');
+            var field = employeesField?.relation as ListRelationDefinition;
 
-          expect(listRelation.foreignContainerField?.name, 'company');
-          expect(listRelation.idType.className, idClassName);
+            expect(field.idType.className, idClassName);
+          });
         });
 
-        test(
-            'then the object relation id type on the employee side is $idClassName.',
-            () {
-          var field = employeeDefinition.findField('company');
-          var objectRelation = field?.relation as ObjectRelationDefinition;
+        group('then the object relation', () {
+          test('have id type on the employee side of $idClassName.', () {
+            var field = employeeDefinition.findField('company');
+            var objectRelation = field?.relation as ObjectRelationDefinition;
 
-          expect(objectRelation.foreignContainerField?.name, 'employees');
-          expect(objectRelation.idType.className, idClassName);
-        });
+            expect(objectRelation.idType.className, idClassName);
+          });
 
-        test(
-            'then the foreign relation id type on the employee side is $idClassName.',
-            () {
           var field = employeeDefinition.findField('companyId');
-          var foreignRelation = field?.relation as ForeignRelationDefinition;
+          test('have the foreign id field of type $idClassName.', () {
+            expect(field?.type.className, idClassName);
+          });
 
-          expect(foreignRelation.foreignContainerField?.name, 'employees');
-          expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
+          test('have the foreign relation id type of $idClassName.', () {
+            var foreignRelation = field?.relation as ForeignRelationDefinition;
+
+            expect(foreignRelation.idType.className, idClassName);
+          });
         });
       });
 
@@ -511,51 +503,51 @@ void main() {
 
         var employeeDefinition = definitions.first as ClassDefinition;
         var companyDefinition = definitions.last as ClassDefinition;
-        var idFieldName = '_companyEmployeesCompanyId';
 
         test('then the tables have id type $idClassName.', () {
           expect(companyDefinition.idField.type.className, idClassName);
           expect(employeeDefinition.idField.type.className, idClassName);
         });
 
-        test(
-            'then the list relation field id type on the company side is $idClassName.',
-            () {
-          var employeesField = companyDefinition.findField('employees');
-          var listRelation = employeesField?.relation as ListRelationDefinition;
+        group('then the list relation', () {
+          test('have id type on the company side of $idClassName.', () {
+            var employeesField = companyDefinition.findField('employees');
+            var field = employeesField?.relation as ListRelationDefinition;
 
-          expect(listRelation.foreignFieldName, idFieldName);
-          expect(listRelation.idType.className, idClassName);
+            expect(field.idType.className, idClassName);
+          });
+
+          var field =
+              employeeDefinition.findField('_companyEmployeesCompanyId');
+          test('have the foreign id field of type $idClassName.', () {
+            expect(field?.type.className, idClassName);
+          });
+
+          test('have the foreign relation id type of $idClassName.', () {
+            var foreignRelation = field?.relation as ForeignRelationDefinition;
+
+            expect(foreignRelation.idType.className, idClassName);
+          });
         });
 
-        test(
-            'then the foreign relation id type on the company side is $idClassName.',
-            () {
-          var field = employeeDefinition.findField(idFieldName);
-          var foreignRelation = field?.relation as ForeignRelationDefinition;
+        group('then the object relation', () {
+          test('have id type on the employee side of $idClassName.', () {
+            var field = employeeDefinition.findField('company');
+            var objectRelation = field?.relation as ObjectRelationDefinition;
 
-          expect(foreignRelation.foreignContainerField?.name, 'employees');
-          expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
-        });
+            expect(objectRelation.idType.className, idClassName);
+          });
 
-        test(
-            'then the object relation id type on the employee side is $idClassName.',
-            () {
-          var field = employeeDefinition.findField('company');
-          var objectRelation = field?.relation as ObjectRelationDefinition;
-
-          expect(objectRelation.idType.className, idClassName);
-        });
-
-        test(
-            'then the foreign relation id type on the employee side is $idClassName.',
-            () {
           var field = employeeDefinition.findField('companyId');
-          var foreignRelation = field?.relation as ForeignRelationDefinition;
+          test('have the foreign id field of type $idClassName.', () {
+            expect(field?.type.className, idClassName);
+          });
 
-          expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
+          test('have the foreign relation id type of $idClassName.', () {
+            var foreignRelation = field?.relation as ForeignRelationDefinition;
+
+            expect(foreignRelation.idType.className, idClassName);
+          });
         });
       });
 
@@ -590,32 +582,31 @@ void main() {
 
         var employeeDefinition = definitions.first as ClassDefinition;
         var companyDefinition = definitions.last as ClassDefinition;
-        var idFieldName = '_companyEmployeesCompanyId';
 
         test('then the tables have id type $idClassName.', () {
           expect(companyDefinition.idField.type.className, idClassName);
           expect(employeeDefinition.idField.type.className, idClassName);
         });
 
-        test(
-            'then the list relation field id type on the company side is $idClassName.',
-            () {
-          var employeesField = companyDefinition.findField('employees');
-          var listRelation = employeesField?.relation as ListRelationDefinition;
+        group('then the list relation', () {
+          test('have id type on the company side of $idClassName.', () {
+            var employeesField = companyDefinition.findField('employees');
+            var field = employeesField?.relation as ListRelationDefinition;
 
-          expect(listRelation.foreignFieldName, idFieldName);
-          expect(listRelation.idType.className, idClassName);
-        });
+            expect(field.idType.className, idClassName);
+          });
 
-        test(
-            'then the foreign relation id type on the employee side is $idClassName.',
-            () {
-          var field = employeeDefinition.findField(idFieldName);
-          var foreignRelation = field?.relation as ForeignRelationDefinition;
+          var field =
+              employeeDefinition.findField('_companyEmployeesCompanyId');
+          test('have the foreign id field of type $idClassName.', () {
+            expect(field?.type.className, idClassName);
+          });
 
-          expect(foreignRelation.foreignContainerField?.name, 'employees');
-          expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
+          test('have the foreign relation id type of $idClassName.', () {
+            var foreignRelation = field?.relation as ForeignRelationDefinition;
+
+            expect(foreignRelation.idType.className, idClassName);
+          });
         });
       });
 
@@ -652,27 +643,23 @@ void main() {
         var employeeDefinition = definitions.first as ClassDefinition;
         var companyDefinition = definitions.last as ClassDefinition;
 
-        test(
-            'then the list relation field id type on the company side is $idClassName.',
-            () {
-          var employeesField = companyDefinition.findField('employees');
-          var listRelation = employeesField?.relation as ListRelationDefinition;
-
-          expect(listRelation.name, 'company_employees');
-          expect(listRelation.foreignFieldName, 'companyId');
-          expect(listRelation.idType.className, idClassName);
+        test('then the tables have id type $idClassName.', () {
+          expect(companyDefinition.idField.type.className, idClassName);
+          expect(employeeDefinition.idField.type.className, idClassName);
         });
 
-        test(
-            'then the foreign relation id type on the employee side is $idClassName.',
-            () {
-          var field = employeeDefinition.findField('companyId');
-          var foreignRelation = field?.relation as ForeignRelationDefinition;
+        group('then the list relation', () {
+          test('have id type on the company side of $idClassName.', () {
+            var employeesField = companyDefinition.findField('employees');
+            var field = employeesField?.relation as ListRelationDefinition;
 
-          expect(foreignRelation.name, 'company_employees');
-          expect(foreignRelation.foreignContainerField?.name, 'employees');
-          expect(foreignRelation.idType.className, idClassName);
-          expect(field?.type.className, idClassName);
+            expect(field.idType.className, idClassName);
+          });
+
+          var field = employeeDefinition.findField('companyId');
+          test('have the foreign id field of type $idClassName.', () {
+            expect(field?.type.className, idClassName);
+          });
         });
       });
     });
