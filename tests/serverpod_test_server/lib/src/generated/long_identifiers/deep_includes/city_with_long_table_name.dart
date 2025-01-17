@@ -257,7 +257,7 @@ class CityWithLongTableNameTable extends _i1.Table<int> {
       ];
 
   @override
-  _i1.Table<int>? getRelationTable(String relationField) {
+  _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'citizens') {
       return __citizens;
     }

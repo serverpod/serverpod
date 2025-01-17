@@ -1,0 +1,408 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../../changed_id_type/one_to_many/order.dart' as _i2;
+
+abstract class CommentInt
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+  CommentInt._({
+    this.id,
+    required this.description,
+    required this.orderId,
+    this.order,
+  });
+
+  factory CommentInt({
+    int? id,
+    required String description,
+    required _i1.UuidValue orderId,
+    _i2.OrderUuid? order,
+  }) = _CommentIntImpl;
+
+  factory CommentInt.fromJson(Map<String, dynamic> jsonSerialization) {
+    return CommentInt(
+      id: jsonSerialization['id'] as int?,
+      description: jsonSerialization['description'] as String,
+      orderId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['orderId']),
+      order: jsonSerialization['order'] == null
+          ? null
+          : _i2.OrderUuid.fromJson(
+              (jsonSerialization['order'] as Map<String, dynamic>)),
+    );
+  }
+
+  static final t = CommentIntTable();
+
+  static const db = CommentIntRepository._();
+
+  @override
+  int? id;
+
+  String description;
+
+  _i1.UuidValue orderId;
+
+  _i2.OrderUuid? order;
+
+  @override
+  _i1.Table<int> get table => t;
+
+  CommentInt copyWith({
+    int? id,
+    String? description,
+    _i1.UuidValue? orderId,
+    _i2.OrderUuid? order,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'id': id,
+      'description': description,
+      'orderId': orderId.toJson(),
+      if (order != null) 'order': order?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      if (id != null) 'id': id,
+      'description': description,
+      'orderId': orderId.toJson(),
+      if (order != null) 'order': order?.toJsonForProtocol(),
+    };
+  }
+
+  static CommentIntInclude include({_i2.OrderUuidInclude? order}) {
+    return CommentIntInclude._(order: order);
+  }
+
+  static CommentIntIncludeList includeList({
+    _i1.WhereExpressionBuilder<CommentIntTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    CommentIntInclude? include,
+  }) {
+    return CommentIntIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CommentInt.t),
+      orderDescending: orderDescending,
+      orderByList: orderByList?.call(CommentInt.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _CommentIntImpl extends CommentInt {
+  _CommentIntImpl({
+    int? id,
+    required String description,
+    required _i1.UuidValue orderId,
+    _i2.OrderUuid? order,
+  }) : super._(
+          id: id,
+          description: description,
+          orderId: orderId,
+          order: order,
+        );
+
+  @override
+  CommentInt copyWith({
+    Object? id = _Undefined,
+    String? description,
+    _i1.UuidValue? orderId,
+    Object? order = _Undefined,
+  }) {
+    return CommentInt(
+      id: id is int? ? id : this.id,
+      description: description ?? this.description,
+      orderId: orderId ?? this.orderId,
+      order: order is _i2.OrderUuid? ? order : this.order?.copyWith(),
+    );
+  }
+}
+
+class CommentIntTable extends _i1.Table<int> {
+  CommentIntTable({super.tableRelation}) : super(tableName: 'comment_int') {
+    description = _i1.ColumnString(
+      'description',
+      this,
+    );
+    orderId = _i1.ColumnUuid(
+      'orderId',
+      this,
+    );
+  }
+
+  late final _i1.ColumnString description;
+
+  late final _i1.ColumnUuid orderId;
+
+  _i2.OrderUuidTable? _order;
+
+  _i2.OrderUuidTable get order {
+    if (_order != null) return _order!;
+    _order = _i1.createRelationTable(
+      relationFieldName: 'order',
+      field: CommentInt.t.orderId,
+      foreignField: _i2.OrderUuid.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.OrderUuidTable(tableRelation: foreignTableRelation),
+    );
+    return _order!;
+  }
+
+  @override
+  List<_i1.Column> get columns => [
+        id,
+        description,
+        orderId,
+      ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'order') {
+      return order;
+    }
+    return null;
+  }
+}
+
+class CommentIntInclude extends _i1.IncludeObject {
+  CommentIntInclude._({_i2.OrderUuidInclude? order}) {
+    _order = order;
+  }
+
+  _i2.OrderUuidInclude? _order;
+
+  @override
+  Map<String, _i1.Include?> get includes => {'order': _order};
+
+  @override
+  _i1.Table<int> get table => CommentInt.t;
+}
+
+class CommentIntIncludeList extends _i1.IncludeList {
+  CommentIntIncludeList._({
+    _i1.WhereExpressionBuilder<CommentIntTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(CommentInt.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int> get table => CommentInt.t;
+}
+
+class CommentIntRepository {
+  const CommentIntRepository._();
+
+  final attachRow = const CommentIntAttachRowRepository._();
+
+  Future<List<CommentInt>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<CommentIntTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    _i1.Transaction? transaction,
+    CommentIntInclude? include,
+  }) async {
+    return session.db.find<int, CommentInt>(
+      where: where?.call(CommentInt.t),
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<CommentInt?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<CommentIntTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    _i1.Transaction? transaction,
+    CommentIntInclude? include,
+  }) async {
+    return session.db.findFirstRow<int, CommentInt>(
+      where: where?.call(CommentInt.t),
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<CommentInt?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    CommentIntInclude? include,
+  }) async {
+    return session.db.findById<int, CommentInt>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<List<CommentInt>> insert(
+    _i1.Session session,
+    List<CommentInt> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<int, CommentInt>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<CommentInt> insertRow(
+    _i1.Session session,
+    CommentInt row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<int, CommentInt>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<CommentInt>> update(
+    _i1.Session session,
+    List<CommentInt> rows, {
+    _i1.ColumnSelections<CommentIntTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<int, CommentInt>(
+      rows,
+      columns: columns?.call(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<CommentInt> updateRow(
+    _i1.Session session,
+    CommentInt row, {
+    _i1.ColumnSelections<CommentIntTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<int, CommentInt>(
+      row,
+      columns: columns?.call(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<CommentInt>> delete(
+    _i1.Session session,
+    List<CommentInt> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<int, CommentInt>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<CommentInt> deleteRow(
+    _i1.Session session,
+    CommentInt row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<int, CommentInt>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<CommentInt>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CommentIntTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<int, CommentInt>(
+      where: where(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<CommentIntTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<int, CommentInt>(
+      where: where?.call(CommentInt.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}
+
+class CommentIntAttachRowRepository {
+  const CommentIntAttachRowRepository._();
+
+  Future<void> order(
+    _i1.Session session,
+    CommentInt commentInt,
+    _i2.OrderUuid order, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (commentInt.id == null) {
+      throw ArgumentError.notNull('commentInt.id');
+    }
+    if (order.id == null) {
+      throw ArgumentError.notNull('order.id');
+    }
+
+    var $commentInt = commentInt.copyWith(orderId: order.id);
+    await session.db.updateRow<int, CommentInt>(
+      $commentInt,
+      columns: [CommentInt.t.orderId],
+      transaction: transaction,
+    );
+  }
+}

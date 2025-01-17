@@ -186,7 +186,7 @@ class CustomerTable extends _i1.Table<int> {
       ];
 
   @override
-  _i1.Table<int>? getRelationTable(String relationField) {
+  _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'orders') {
       return __orders;
     }
