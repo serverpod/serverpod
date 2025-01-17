@@ -1075,7 +1075,10 @@ class BuildRepositoryClass {
         config: config,
       );
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = (relation.isForeignKeyOrigin
+              ? classDefinition.idField.type
+              : relation.idType)
+          .reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1450,7 +1453,10 @@ class BuildRepositoryClass {
       var relation = field.relation;
       (relation as ObjectRelationDefinition);
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = (relation.isForeignKeyOrigin
+              ? classDefinition.idField.type
+              : relation.idType)
+          .reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
