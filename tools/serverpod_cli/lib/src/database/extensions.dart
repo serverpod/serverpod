@@ -348,7 +348,7 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       if (isNullable != false) {
         throw (const FormatException('The id column must be non-nullable'));
       }
-      if (columnType == ColumnType.integer) {
+      if (dartType == 'int') {
         type = 'bigserial';
         defaultValue = '';
       }
