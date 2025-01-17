@@ -20,7 +20,8 @@ void main() {
 
   for (var (idClassName, definitionContains) in [
     ('int', '"id" bigserial PRIMARY KEY'),
-    ('uuid', '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()'),
+    ('uuidV4', '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()'),
+    ('uuidV7', '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7()'),
   ]) {
     test(
         'Given database table definition when generating sql with default id set to $idClassName then table id column contains $definitionContains.',
