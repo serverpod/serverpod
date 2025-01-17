@@ -31,7 +31,7 @@ class TableDefinitionBuilder {
   TableDefinition build() {
     _columns.insert(
       0,
-      ColumnDefinitionBuilder().withIdColumn(type: _idType).build(),
+      ColumnDefinitionBuilder().withIdColumn(_name, type: _idType).build(),
     );
     return TableDefinition(
       name: _name,
