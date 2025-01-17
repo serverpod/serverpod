@@ -62,8 +62,9 @@ class Table<T_ID> {
   }
 
   /// Returns [TableColumnRelation] for the given [relationField]. If no relation
-  /// exists, returns null.
-  Table<T_ID>? getRelationTable(String relationField) {
+  /// exists, returns null. The return must be dynamic to allow for relations
+  /// with different id types.
+  Table? getRelationTable(String relationField) {
     return null;
   }
 

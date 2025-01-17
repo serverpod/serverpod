@@ -1391,7 +1391,6 @@ class SerializableModelLibraryGenerator {
         ..returns = TypeReference(
           (t) => t
             ..symbol = 'Table'
-            ..types.add(idTypeReference)
             ..isNullable = true
             ..url = serverpodUrl(true),
         )
