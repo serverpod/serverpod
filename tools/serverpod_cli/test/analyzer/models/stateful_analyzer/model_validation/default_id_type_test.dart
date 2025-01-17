@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
@@ -25,10 +26,9 @@ void main() {
 
   for (var idType in SupportedIdType.all) {
     var idClassName = idType.className;
+    var idTypeAlias = idType.aliases.first;
 
-    test(
-        'Given the default id type is $idClassName, the id of the table is $idClassName.',
-        () {
+    group('Given the default id type is $idTypeAlias', () {
       var yamlSource = ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -38,11 +38,24 @@ void main() {
         ''',
       ).build();
 
+      var collector = CodeGenerationCollector();
       var config = GeneratorConfigBuilder().withDefaultIdType(idType).build();
       var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
       var model = statefulAnalyzer.validateAll().first as ClassDefinition;
+      var errors = collector.errors;
 
-      expect(model.idField.type.className, idClassName);
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test("then the id of the table is '$idClassName'.", () {
+        expect(model.idField.type.className, idClassName);
+      }, skip: errors.isNotEmpty);
+
+      var expectedDefaultValue = idType.dbColumnDefaultBuilder('example');
+      test("then the default persist value is '$expectedDefaultValue'", () {
+        expect(model.idField.defaultPersistValue, expectedDefaultValue);
+      }, skip: errors.isNotEmpty);
     });
   }
 }
