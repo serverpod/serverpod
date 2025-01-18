@@ -576,12 +576,8 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
-  /// Type of the primary key stored on [foreignFieldName].
-  TypeDefinition idType;
-
   ForeignRelationDefinition({
     String? name,
-    required this.idType,
     required this.parentTable,
     required this.foreignFieldName,
     this.containerField,

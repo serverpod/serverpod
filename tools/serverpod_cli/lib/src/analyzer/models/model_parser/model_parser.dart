@@ -307,7 +307,6 @@ class ModelParser {
     } else if (typeResult.isIdType && parentTable != null) {
       return ForeignRelationDefinition(
         name: relationName,
-        idType: typeResult,
         parentTable: parentTable,
         foreignFieldName: defaultPrimaryKeyName,
         onUpdate: onUpdate,

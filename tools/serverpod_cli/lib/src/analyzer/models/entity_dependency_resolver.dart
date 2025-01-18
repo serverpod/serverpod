@@ -229,7 +229,6 @@ class ModelDependencyResolver {
       name: _createImplicitForeignIdFieldName(fieldDefinition.name),
       relation: ForeignRelationDefinition(
         name: relation.name,
-        idType: referenceDefinition.idField.type,
         parentTable: tableName,
         foreignFieldName: defaultPrimaryKeyName,
         containerField: fieldDefinition,
@@ -291,7 +290,6 @@ class ModelDependencyResolver {
 
     field.relation = ForeignRelationDefinition(
       name: relation.name,
-      idType: referenceDefinition.idField.type,
       parentTable: tableName,
       foreignFieldName: defaultPrimaryKeyName,
       containerField: fieldDefinition,
@@ -383,7 +381,6 @@ class ModelDependencyResolver {
         shouldPersist: true,
         relation: ForeignRelationDefinition(
           name: autoRelationName,
-          idType: referenceClass.idField.type,
           parentTable: tableName,
           foreignFieldName: defaultPrimaryKeyName,
           containerField: null, // Will never be set on implicit list relations.
