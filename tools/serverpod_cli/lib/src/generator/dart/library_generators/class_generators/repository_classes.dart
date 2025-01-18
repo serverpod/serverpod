@@ -917,7 +917,7 @@ class BuildRepositoryClass {
 
       var relation = field.relation as ListRelationDefinition;
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = relation.foreignKeyOwnerIdType.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -999,7 +999,7 @@ class BuildRepositoryClass {
 
       var relation = field.relation as ListRelationDefinition;
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = relation.foreignKeyOwnerIdType.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1304,7 +1304,7 @@ class BuildRepositoryClass {
         config: config,
       );
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = relation.foreignKeyOwnerIdType.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1380,7 +1380,7 @@ class BuildRepositoryClass {
         config: config,
       );
 
-      var idTypeReference = relation.idType.reference(
+      var idTypeReference = relation.foreignKeyOwnerIdType.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,

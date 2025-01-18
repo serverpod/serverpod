@@ -259,7 +259,7 @@ class ClassDefinitionBuilder {
   ClassDefinitionBuilder withImplicitListRelationField(
     String fieldName,
     String className, {
-    TypeDefinition? idType,
+    TypeDefinition? foreignKeyOwnerIdType,
   }) {
     _fields.add(() {
       return FieldDefinitionBuilder()
@@ -275,7 +275,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
-            idType: idType ?? TypeDefinition.int,
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName:
                 '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
             nullableRelation: true,
@@ -290,7 +290,7 @@ class ClassDefinitionBuilder {
     String fieldName,
     String className,
     String foreignKeyFieldName, {
-    TypeDefinition? idType,
+    TypeDefinition? foreignKeyOwnerIdType,
     bool nullableRelation = false,
   }) {
     _fields.add(() {
@@ -307,7 +307,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
-            idType: idType ?? TypeDefinition.int,
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName: foreignKeyFieldName,
             nullableRelation: nullableRelation,
             implicitForeignField: false,

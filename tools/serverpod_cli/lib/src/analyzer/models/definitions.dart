@@ -425,6 +425,9 @@ class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
 
+  /// Type of the id of the table that owns the [foreignFieldName] field.
+  TypeDefinition foreignKeyOwnerIdType;
+
   /// References the field in the other object holding the data for the relation.
   /// Meaning either an object of the type of the current object.
   /// If this is null then there is no link from the other side.
@@ -435,14 +438,11 @@ class ListRelationDefinition extends RelationDefinition {
   /// If true, the foreign field is implicit.
   final bool implicitForeignField;
 
-  /// Type of the primary key stored on [foreignFieldName].
-  TypeDefinition idType;
-
   ListRelationDefinition({
     String? name,
-    required this.idType,
     required this.fieldName,
     required this.foreignFieldName,
+    required this.foreignKeyOwnerIdType,
     this.foreignContainerField,
     required this.nullableRelation,
     this.implicitForeignField = false,

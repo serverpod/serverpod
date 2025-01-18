@@ -411,11 +411,13 @@ void main() {
         });
 
         group('then the list relation', () {
-          test('have id type on the company side of $idClassName.', () {
+          test(
+              'have the foreign key owner id type on the company side of $idClassName.',
+              () {
             var field = companyClass.findField('employees');
             var relation = field?.relation as ListRelationDefinition;
 
-            expect(relation.idType.className, idClassName);
+            expect(relation.foreignKeyOwnerIdType.className, idClassName);
           });
         });
 
@@ -472,11 +474,13 @@ void main() {
         var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
-          test('have id type on the company side of $idClassName.', () {
+          test(
+              'have the foreign key owner id type on the company side of $idClassName.',
+              () {
             var field = companyClass.findField('employees');
             var relation = field?.relation as ListRelationDefinition;
 
-            expect(relation.idType.className, idClassName);
+            expect(relation.foreignKeyOwnerIdType.className, idClassName);
           });
 
           test('have the foreign id field of type $idClassName.', () {
@@ -537,11 +541,13 @@ void main() {
         var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
-          test('have id type on the company side of $idClassName.', () {
+          test(
+              'have the foreign key owner id type on the company side of $idClassName.',
+              () {
             var field = companyClass.findField('employees');
             var relation = field?.relation as ListRelationDefinition;
 
-            expect(relation.idType.className, idClassName);
+            expect(relation.foreignKeyOwnerIdType.className, idClassName);
           });
 
           test('have the foreign id field of type $idClassName.', () {
@@ -585,11 +591,13 @@ void main() {
         var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
-          test('have id type on the company side of $idClassName.', () {
+          test(
+              'have the foreign key owner id type on the company side of $idClassName.',
+              () {
             var field = companyClass.findField('employees');
             var relation = field?.relation as ListRelationDefinition;
 
-            expect(relation.idType.className, idClassName);
+            expect(relation.foreignKeyOwnerIdType.className, idClassName);
           });
         });
       });

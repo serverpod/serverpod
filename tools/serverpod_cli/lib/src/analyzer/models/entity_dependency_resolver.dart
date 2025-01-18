@@ -394,7 +394,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: autoRelationName,
-        idType: classDefinition.idField.type,
+        foreignKeyOwnerIdType: classDefinition.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField:
@@ -436,7 +436,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
-        idType: referenceClass.idField.type,
+        foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
