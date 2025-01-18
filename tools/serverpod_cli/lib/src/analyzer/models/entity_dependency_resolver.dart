@@ -189,7 +189,9 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       name: relation.name,
-      idType: referenceClass.idField.type,
+      parentTableIdType: relation.isForeignKeyOrigin
+          ? classDefinition.idField.type
+          : referenceClass.idField.type,
       parentTable: tableName,
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
@@ -248,7 +250,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
-      idType: referenceDefinition.idField.type,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: foreignRelationField.name,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,
@@ -300,7 +302,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
-      idType: referenceDefinition.idField.type,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,

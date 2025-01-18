@@ -62,7 +62,7 @@ void main() {
         });
 
         test('then the object relation id type is $idClassName.', () {
-          expect(relation.idType.className, idClassName);
+          expect(relation.parentTableIdType.className, idClassName);
         });
       });
 
@@ -121,7 +121,7 @@ void main() {
         var relation = field!.relation as ObjectRelationDefinition;
 
         test('then relation id type is $idClassName.', () {
-          expect(relation.idType.className, idClassName);
+          expect(relation.parentTableIdType.className, idClassName);
         });
 
         test('then the foreign side object relation has id type $idClassName',
@@ -129,7 +129,7 @@ void main() {
           var field = exampleParentClass.findField('example');
           var foreignRelation = field!.relation as ObjectRelationDefinition;
 
-          expect(foreignRelation.idType.className, idClassName);
+          expect(foreignRelation.parentTableIdType.className, idClassName);
         });
       });
     });
@@ -242,7 +242,7 @@ void main() {
           var field = userDefinition.findField('address');
           var objectRelation = field?.relation as ObjectRelationDefinition;
 
-          expect(objectRelation.idType.className, idClassName);
+          expect(objectRelation.parentTableIdType.className, idClassName);
         });
 
         var field = userDefinition.findField('addressId');
@@ -309,7 +309,7 @@ void main() {
         var field = addressDefinition.findField('user');
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.idType.className, idClassName);
+        expect(objectRelation.parentTableIdType.className, idClassName);
       });
 
       var field = userDefinition.findField('addressId');
@@ -376,7 +376,7 @@ void main() {
         var field = addressDefinition.findField('user');
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.idType.className, idClassName);
+        expect(objectRelation.parentTableIdType.className, idClassName);
       });
 
       test('then the object relation id type on the user side is $idClassName.',
@@ -385,7 +385,7 @@ void main() {
         var objectRelation = field?.relation as ObjectRelationDefinition;
 
         expect(objectRelation.fieldName, 'addressId');
-        expect(objectRelation.idType.className, idClassName);
+        expect(objectRelation.parentTableIdType.className, idClassName);
       });
 
       var field = userDefinition.findField('addressId');
@@ -454,7 +454,7 @@ void main() {
             var field = employeeDefinition.findField('company');
             var objectRelation = field?.relation as ObjectRelationDefinition;
 
-            expect(objectRelation.idType.className, idClassName);
+            expect(objectRelation.parentTableIdType.className, idClassName);
           });
 
           var field = employeeDefinition.findField('companyId');
@@ -535,7 +535,7 @@ void main() {
             var field = employeeDefinition.findField('company');
             var objectRelation = field?.relation as ObjectRelationDefinition;
 
-            expect(objectRelation.idType.className, idClassName);
+            expect(objectRelation.parentTableIdType.className, idClassName);
           });
 
           var field = employeeDefinition.findField('companyId');

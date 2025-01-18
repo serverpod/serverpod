@@ -207,7 +207,7 @@ class ClassDefinitionBuilder {
             .withShouldPersist(false)
             .withRelation(ObjectRelationDefinition(
               parentTable: parentTable,
-              idType: foreignIdType ?? TypeDefinition.int,
+              parentTableIdType: foreignIdType ?? TypeDefinition.int,
               fieldName: foreignFieldName,
               foreignFieldName: 'id',
               isForeignKeyOrigin: false,
@@ -236,7 +236,7 @@ class ClassDefinitionBuilder {
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
             parentTable: parentTable,
-            idType: foreignIdType ?? TypeDefinition.int,
+            parentTableIdType: foreignIdType ?? TypeDefinition.int,
             fieldName: foreignFieldName,
             foreignFieldName: 'id',
             nullableRelation: nullableRelation,
