@@ -8,90 +8,35 @@ import 'package:test/test.dart';
 
 void main() {
   for (var idType in SupportedIdType.all) {
+    var idTypeAlias = idType.aliases.first;
     var idClassName = idType.className;
     var config = GeneratorConfigBuilder().withDefaultIdType(idType).build();
 
-    group('For manual relations with default id type of  $idClassName', () {
+    group('For manual relations with default id type of $idTypeAlias', () {
       group(
           'Given a class with a relation with a defined field name that holds the relation',
           () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-          class: Example
-          table: example
-          fields:
-            myParentId: $idClassName
-            parent: ExampleParent?, relation(field=myParentId)
-          indexes:
-            my_parent_index_idx:
-              fields: myParentId
-              unique: true
-          ''',
+            class: Example
+            table: example
+            fields:
+              myParentId: $idClassName
+              parent: ExampleParent?, relation(field=myParentId)
+            indexes:
+              my_parent_index_idx:
+                fields: myParentId
+                unique: true
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('example_parent').withYaml(
             '''
-          class: ExampleParent
-          table: example_parent
-          fields:
-            name: String
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var analyzer =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector));
-        var definitions = analyzer.validateAll();
-
-        test('then no errors were collected', () {
-          expect(collector.errors, isEmpty);
-        });
-
-        var exampleClass = definitions.first as ClassDefinition;
-        var parent = exampleClass.findField('parent');
-        var relation = parent?.relation as ObjectRelationDefinition;
-
-        test('then the table has id type $idClassName.', () {
-          expect(exampleClass.idField.type.className, idClassName);
-        });
-
-        test('then the field type is same as the relation id type.', () {
-          var field = exampleClass.findField('myParentId');
-          expect(field?.type.className, idClassName);
-        });
-
-        test('then the object relation id type is $idClassName.', () {
-          expect(relation.parentTableIdType.className, idClassName);
-        });
-      });
-
-      group(
-          'Given two classes with a named relation with a defined field name that holds the relation',
-          () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            parentId: $idClassName?
-            parent: ExampleParent?, relation(name=example_parent, field=parentId)
-          indexes:
-            parent_index_idx:
-              fields: parentId
-              unique: true
-
-          ''',
-          ).build(),
-          ModelSourceBuilder().withFileName('example_parent').withYaml(
-            '''
-          class: ExampleParent
-          table: example_parent
-          fields:
-            name: String
-            example: Example?, relation(name=example_parent)
-          ''',
+            class: ExampleParent
+            table: example_parent
+            fields:
+              name: String
+            ''',
           ).build()
         ];
 
@@ -107,57 +52,128 @@ void main() {
         var exampleClass = definitions.first as ClassDefinition;
         var exampleParentClass = definitions.last as ClassDefinition;
 
-        test('then the tables have id type $idClassName.', () {
+        test('then the table Example has id type $idTypeAlias.', () {
           expect(exampleClass.idField.type.className, idClassName);
-          expect(exampleParentClass.idField.type.className, idClassName);
+          expect(
+            exampleClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('example'),
+          );
         });
+
+        test('then the table ExampleParent has id type $idTypeAlias.', () {
+          expect(exampleParentClass.idField.type.className, idClassName);
+          expect(
+            exampleParentClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('example_parent'),
+          );
+        });
+
+        test('then the field type is same as the relation id type.', () {
+          var field = exampleClass.findField('myParentId');
+
+          expect(field?.type.className, idClassName);
+        });
+
+        test(
+            'then the parent table id type of the object relation is $idClassName.',
+            () {
+          var field = exampleClass.findField('parent');
+          var relation = field?.relation as ObjectRelationDefinition;
+
+          expect(relation.parentTableIdType.className, idClassName);
+        });
+      });
+
+      group(
+          'Given two classes with a named relation with a defined field name that holds the relation',
+          () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              parentId: $idClassName?
+              parent: ExampleParent?, relation(name=example_parent, field=parentId)
+            indexes:
+              parent_index_idx:
+                fields: parentId
+                unique: true
+            ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('example_parent').withYaml(
+            '''
+            class: ExampleParent
+            table: example_parent
+            fields:
+              name: String
+              example: Example?, relation(name=example_parent)
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var analyzer =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector));
+        var definitions = analyzer.validateAll();
+
+        test('then no errors were collected', () {
+          expect(collector.errors, isEmpty);
+        });
+
+        var exampleClass = definitions.first as ClassDefinition;
+        var exampleParentClass = definitions.last as ClassDefinition;
 
         test('then parentId is nullable', () {
           var field = exampleClass.findField('parentId');
+
           expect(field?.type.nullable, isTrue);
         });
 
-        var field = exampleClass.findField('parent');
-        var relation = field!.relation as ObjectRelationDefinition;
+        test(
+            'then the parent table id type of the object relation is $idClassName.',
+            () {
+          var field = exampleClass.findField('parent');
+          var relation = field!.relation as ObjectRelationDefinition;
 
-        test('then relation id type is $idClassName.', () {
           expect(relation.parentTableIdType.className, idClassName);
         });
 
-        test('then the foreign side object relation has id type $idClassName',
+        test(
+            'then the parent table id type of the foreign side object relation is $idClassName',
             () {
           var field = exampleParentClass.findField('example');
-          var foreignRelation = field!.relation as ObjectRelationDefinition;
+          var relation = field!.relation as ObjectRelationDefinition;
 
-          expect(foreignRelation.parentTableIdType.className, idClassName);
+          expect(relation.parentTableIdType.className, idClassName);
         });
       });
     });
 
-    group('For one to one relations with default id type of $idClassName', () {
+    group('For one to one relations with default id type of $idTypeAlias', () {
       group(
           'Given a class with only a foreign key field defined for the relation',
           () {
         var models = [
           ModelSourceBuilder().withFileName('user').withYaml(
             '''
-        class: User
-        table: user
-        fields:
-          addressId: $idClassName, relation(parent=address)
-        indexes:
-          address_index_idx:
-            fields: addressId
-            unique: true
-        ''',
+            class: User
+            table: user
+            fields:
+              addressId: $idClassName, relation(parent=address)
+            indexes:
+              address_index_idx:
+                fields: addressId
+                unique: true
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('address').withYaml(
             '''
-        class: Address
-        table: address
-        fields:
-          street: String
-        ''',
+            class: Address
+            table: address
+            fields:
+              street: String
+            ''',
           ).build(),
         ];
 
@@ -170,17 +186,23 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var userDefinition = definitions.first as ClassDefinition;
-        var addressDefinition = definitions.last as ClassDefinition;
+        var userClass = definitions.first as ClassDefinition;
+        var addressClass = definitions.last as ClassDefinition;
 
-        test('then the tables have id type $idClassName.', () {
-          expect(userDefinition.idField.type.className, idClassName);
-          expect(addressDefinition.idField.type.className, idClassName);
+        test('then the table User has id type $idTypeAlias.', () {
+          expect(userClass.idField.type.className, idClassName);
+          expect(
+            userClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('user'),
+          );
         });
 
-        var field = userDefinition.findField('addressId');
-        test('then the foreign id field have type $idClassName.', () {
-          expect(field?.type.className, idClassName);
+        test('then the table Address has id type $idTypeAlias.', () {
+          expect(addressClass.idField.type.className, idClassName);
+          expect(
+            addressClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('address'),
+          );
         });
       });
 
@@ -190,24 +212,24 @@ void main() {
         var models = [
           ModelSourceBuilder().withFileName('user').withYaml(
             '''
-        class: User
-        table: user
-        fields:
-          addressId: $idClassName
-          address: Address?, relation(field=addressId)
-        indexes:
-          address_index_idx:
-            fields: addressId
-            unique: true
-        ''',
+            class: User
+            table: user
+            fields:
+              addressId: $idClassName
+              address: Address?, relation(field=addressId)
+            indexes:
+              address_index_idx:
+                fields: addressId
+                unique: true
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('address').withYaml(
             '''
-        class: Address
-        table: address
-        fields:
-          street: String
-        ''',
+            class: Address
+            table: address
+            fields:
+              street: String
+            ''',
           ).build(),
         ];
 
@@ -220,26 +242,15 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var userDefinition = definitions.first as ClassDefinition;
-        var addressDefinition = definitions.last as ClassDefinition;
-
-        test('then the tables have id type $idClassName.', () {
-          expect(userDefinition.idField.type.className, idClassName);
-          expect(addressDefinition.idField.type.className, idClassName);
-        });
+        var userClass = definitions.first as ClassDefinition;
 
         test(
-            'then the object relation id type on the user side is $idClassName.',
+            'then the parent table id type of the object relation is $idClassName.',
             () {
-          var field = userDefinition.findField('address');
-          var objectRelation = field?.relation as ObjectRelationDefinition;
+          var field = userClass.findField('address');
+          var relation = field?.relation as ObjectRelationDefinition;
 
-          expect(objectRelation.parentTableIdType.className, idClassName);
-        });
-
-        var field = userDefinition.findField('addressId');
-        test('then the foreign id field have type $idClassName.', () {
-          expect(field?.type.className, idClassName);
+          expect(relation.parentTableIdType.className, idClassName);
         });
       });
     });
@@ -250,23 +261,23 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
-        class: User
-        table: user
-        fields:
-          addressId: $idClassName, relation(name=user_address, parent=address)
-        indexes:
-          address_index_idx:
-            fields: addressId
-            unique: true
-        ''',
+          class: User
+          table: user
+          fields:
+            addressId: $idClassName, relation(name=user_address, parent=address)
+          indexes:
+            address_index_idx:
+              fields: addressId
+              unique: true
+          ''',
         ).build(),
         ModelSourceBuilder().withFileName('address').withYaml(
           '''
-        class: Address
-        table: address
-        fields:
-          user: User?, relation(name=user_address)
-        ''',
+          class: Address
+          table: address
+          fields:
+            user: User?, relation(name=user_address)
+          ''',
         ).build(),
       ];
 
@@ -279,26 +290,15 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      var userDefinition = definitions.first as ClassDefinition;
-      var addressDefinition = definitions.last as ClassDefinition;
-
-      test('then the tables have id type $idClassName.', () {
-        expect(userDefinition.idField.type.className, idClassName);
-        expect(addressDefinition.idField.type.className, idClassName);
-      });
+      var addressClass = definitions.last as ClassDefinition;
 
       test(
-          'then the object relation id type on the address side is $idClassName.',
+          'then the parent table id type of the object relation on the address side is $idClassName.',
           () {
-        var field = addressDefinition.findField('user');
-        var objectRelation = field?.relation as ObjectRelationDefinition;
+        var field = addressClass.findField('user');
+        var relation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.parentTableIdType.className, idClassName);
-      });
-
-      var field = userDefinition.findField('addressId');
-      test('then the foreign id field have type $idClassName.', () {
-        expect(field?.type.className, idClassName);
+        expect(relation.parentTableIdType.className, idClassName);
       });
     });
 
@@ -308,24 +308,24 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('user').withYaml(
           '''
-        class: User
-        table: user
-        fields:
-          addressId: $idClassName
-          address: Address?, relation(name=user_address, field=addressId)
-        indexes:
-          address_index_idx:
-            fields: addressId
-            unique: true
-        ''',
+          class: User
+          table: user
+          fields:
+            addressId: $idClassName
+            address: Address?, relation(name=user_address, field=addressId)
+          indexes:
+            address_index_idx:
+              fields: addressId
+              unique: true
+          ''',
         ).build(),
         ModelSourceBuilder().withFileName('address').withYaml(
           '''
-        class: Address
-        table: address
-        fields:
-          user: User?, relation(name=user_address)
-        ''',
+          class: Address
+          table: address
+          fields:
+            user: User?, relation(name=user_address)
+          ''',
         ).build(),
       ];
 
@@ -338,56 +338,47 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      var userDefinition = definitions.first as ClassDefinition;
-      var addressDefinition = definitions.last as ClassDefinition;
+      var userClass = definitions.first as ClassDefinition;
+      var addressClass = definitions.last as ClassDefinition;
 
-      test('then the tables have id type $idClassName.', () {
-        expect(userDefinition.idField.type.className, idClassName);
-        expect(addressDefinition.idField.type.className, idClassName);
+      test(
+          'then the parent table id type of the object relation on the address side is $idClassName.',
+          () {
+        var field = addressClass.findField('user');
+        var relation = field?.relation as ObjectRelationDefinition;
+
+        expect(relation.parentTableIdType.className, idClassName);
       });
 
       test(
-          'then the object relation id type on the address side is $idClassName.',
+          'then the parent table id type of the object relation on the user side is $idClassName.',
           () {
-        var field = addressDefinition.findField('user');
-        var objectRelation = field?.relation as ObjectRelationDefinition;
+        var field = userClass.findField('address');
+        var relation = field?.relation as ObjectRelationDefinition;
 
-        expect(objectRelation.parentTableIdType.className, idClassName);
-      });
-
-      test('then the object relation id type on the user side is $idClassName.',
-          () {
-        var field = userDefinition.findField('address');
-        var objectRelation = field?.relation as ObjectRelationDefinition;
-
-        expect(objectRelation.fieldName, 'addressId');
-        expect(objectRelation.parentTableIdType.className, idClassName);
-      });
-
-      var field = userDefinition.findField('addressId');
-      test('then the foreign id field have type $idClassName.', () {
-        expect(field?.type.className, idClassName);
+        expect(relation.fieldName, 'addressId');
+        expect(relation.parentTableIdType.className, idClassName);
       });
     });
 
-    group('For one to many relations with default id type of $idClassName', () {
+    group('For one to many relations with default id type of $idTypeAlias', () {
       group('Given a class with a one to many relation', () {
         var models = [
           ModelSourceBuilder().withFileName('employee').withYaml(
             '''
-        class: Employee
-        table: employee
-        fields:
-          company: Company?, relation(name=company_employees)
-        ''',
+            class: Employee
+            table: employee
+            fields:
+              company: Company?, relation(name=company_employees)
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('company').withYaml(
             '''
-        class: Company
-        table: company
-        fields:
-          employees: List<Employee>?, relation(name=company_employees)
-        ''',
+            class: Company
+            table: company
+            fields:
+              employees: List<Employee>?, relation(name=company_employees)
+            ''',
           ).build()
         ];
 
@@ -400,33 +391,47 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeDefinition = definitions.first as ClassDefinition;
-        var companyDefinition = definitions.last as ClassDefinition;
+        var employeeClass = definitions.first as ClassDefinition;
+        var companyClass = definitions.last as ClassDefinition;
 
-        test('then the tables have id type $idClassName.', () {
-          expect(companyDefinition.idField.type.className, idClassName);
-          expect(employeeDefinition.idField.type.className, idClassName);
+        test('then the table Employee has id type $idTypeAlias.', () {
+          expect(employeeClass.idField.type.className, idClassName);
+          expect(
+            employeeClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('employee'),
+          );
+        });
+
+        test('then the table Company has id type $idTypeAlias.', () {
+          expect(companyClass.idField.type.className, idClassName);
+          expect(
+            companyClass.idField.defaultPersistValue,
+            idType.dbColumnDefaultBuilder('company'),
+          );
         });
 
         group('then the list relation', () {
           test('have id type on the company side of $idClassName.', () {
-            var employeesField = companyDefinition.findField('employees');
-            var field = employeesField?.relation as ListRelationDefinition;
+            var field = companyClass.findField('employees');
+            var relation = field?.relation as ListRelationDefinition;
 
-            expect(field.idType.className, idClassName);
+            expect(relation.idType.className, idClassName);
           });
         });
 
         group('then the object relation', () {
-          test('have id type on the employee side of $idClassName.', () {
-            var field = employeeDefinition.findField('company');
-            var objectRelation = field?.relation as ObjectRelationDefinition;
+          test(
+              'have parent table id type on the employee side of $idClassName.',
+              () {
+            var field = employeeClass.findField('company');
+            var relation = field?.relation as ObjectRelationDefinition;
 
-            expect(objectRelation.parentTableIdType.className, idClassName);
+            expect(relation.parentTableIdType.className, idClassName);
           });
 
-          var field = employeeDefinition.findField('companyId');
           test('have the foreign id field of type $idClassName.', () {
+            var field = employeeClass.findField('companyId');
+
             expect(field?.type.className, idClassName);
           });
         });
@@ -438,19 +443,19 @@ void main() {
         var models = [
           ModelSourceBuilder().withFileName('employee').withYaml(
             '''
-        class: Employee
-        table: employee
-        fields:
-          company: Company?, relation
-        ''',
+            class: Employee
+            table: employee
+            fields:
+              company: Company?, relation
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('company').withYaml(
             '''
-        class: Company
-        table: company
-        fields:
-          employees: List<Employee>?, relation
-        ''',
+            class: Company
+            table: company
+            fields:
+              employees: List<Employee>?, relation
+            ''',
           ).build(),
         ];
 
@@ -463,39 +468,37 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeDefinition = definitions.first as ClassDefinition;
-        var companyDefinition = definitions.last as ClassDefinition;
-
-        test('then the tables have id type $idClassName.', () {
-          expect(companyDefinition.idField.type.className, idClassName);
-          expect(employeeDefinition.idField.type.className, idClassName);
-        });
+        var employeeClass = definitions.first as ClassDefinition;
+        var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
           test('have id type on the company side of $idClassName.', () {
-            var employeesField = companyDefinition.findField('employees');
-            var field = employeesField?.relation as ListRelationDefinition;
+            var field = companyClass.findField('employees');
+            var relation = field?.relation as ListRelationDefinition;
 
-            expect(field.idType.className, idClassName);
+            expect(relation.idType.className, idClassName);
           });
 
-          var field =
-              employeeDefinition.findField('_companyEmployeesCompanyId');
           test('have the foreign id field of type $idClassName.', () {
+            var field = employeeClass.findField('_companyEmployeesCompanyId');
+
             expect(field?.type.className, idClassName);
           });
         });
 
         group('then the object relation', () {
-          test('have id type on the employee side of $idClassName.', () {
-            var field = employeeDefinition.findField('company');
-            var objectRelation = field?.relation as ObjectRelationDefinition;
+          test(
+              'have parent table id type on the employee side of $idClassName.',
+              () {
+            var field = employeeClass.findField('company');
+            var relation = field?.relation as ObjectRelationDefinition;
 
-            expect(objectRelation.parentTableIdType.className, idClassName);
+            expect(relation.parentTableIdType.className, idClassName);
           });
 
-          var field = employeeDefinition.findField('companyId');
           test('have the foreign id field of type $idClassName.', () {
+            var field = employeeClass.findField('companyId');
+
             expect(field?.type.className, idClassName);
           });
         });
@@ -505,19 +508,19 @@ void main() {
         var models = [
           ModelSourceBuilder().withFileName('employee').withYaml(
             '''
-        class: Employee
-        table: employee
-        fields:
-          name: String
-        ''',
+            class: Employee
+            table: employee
+            fields:
+              name: String
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('company').withYaml(
             '''
-        class: Company
-        table: company
-        fields:
-          employees: List<Employee>?, relation
-        ''',
+            class: Company
+            table: company
+            fields:
+              employees: List<Employee>?, relation
+            ''',
           ).build(),
         ];
 
@@ -530,25 +533,20 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeDefinition = definitions.first as ClassDefinition;
-        var companyDefinition = definitions.last as ClassDefinition;
-
-        test('then the tables have id type $idClassName.', () {
-          expect(companyDefinition.idField.type.className, idClassName);
-          expect(employeeDefinition.idField.type.className, idClassName);
-        });
+        var employeeClass = definitions.first as ClassDefinition;
+        var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
           test('have id type on the company side of $idClassName.', () {
-            var employeesField = companyDefinition.findField('employees');
-            var field = employeesField?.relation as ListRelationDefinition;
+            var field = companyClass.findField('employees');
+            var relation = field?.relation as ListRelationDefinition;
 
-            expect(field.idType.className, idClassName);
+            expect(relation.idType.className, idClassName);
           });
 
-          var field =
-              employeeDefinition.findField('_companyEmployeesCompanyId');
           test('have the foreign id field of type $idClassName.', () {
+            var field = employeeClass.findField('_companyEmployeesCompanyId');
+
             expect(field?.type.className, idClassName);
           });
         });
@@ -559,19 +557,19 @@ void main() {
         var models = [
           ModelSourceBuilder().withFileName('employee').withYaml(
             '''
-        class: Employee
-        table: employee
-        fields:
-          companyId: $idClassName, relation(name=company_employees, parent=company)
-        ''',
+            class: Employee
+            table: employee
+            fields:
+              companyId: $idClassName, relation(name=company_employees, parent=company)
+            ''',
           ).build(),
           ModelSourceBuilder().withFileName('company').withYaml(
             '''
-        class: Company
-        table: company
-        fields:
-          employees: List<Employee>?, relation(name=company_employees)
-        ''',
+            class: Company
+            table: company
+            fields:
+              employees: List<Employee>?, relation(name=company_employees)
+            ''',
           ).build()
         ];
 
@@ -584,25 +582,14 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeDefinition = definitions.first as ClassDefinition;
-        var companyDefinition = definitions.last as ClassDefinition;
-
-        test('then the tables have id type $idClassName.', () {
-          expect(companyDefinition.idField.type.className, idClassName);
-          expect(employeeDefinition.idField.type.className, idClassName);
-        });
+        var companyClass = definitions.last as ClassDefinition;
 
         group('then the list relation', () {
           test('have id type on the company side of $idClassName.', () {
-            var employeesField = companyDefinition.findField('employees');
-            var field = employeesField?.relation as ListRelationDefinition;
+            var field = companyClass.findField('employees');
+            var relation = field?.relation as ListRelationDefinition;
 
-            expect(field.idType.className, idClassName);
-          });
-
-          var field = employeeDefinition.findField('companyId');
-          test('have the foreign id field of type $idClassName.', () {
-            expect(field?.type.className, idClassName);
+            expect(relation.idType.className, idClassName);
           });
         });
       });
