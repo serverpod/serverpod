@@ -1,6 +1,6 @@
 class: AddressUuid
 table: address_uuid
-idType: uuid
+idType: uuidV4
 fields:
   street: String
   inhabitantId: int?

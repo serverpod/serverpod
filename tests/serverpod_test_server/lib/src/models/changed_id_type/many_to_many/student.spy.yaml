@@ -1,6 +1,6 @@
 class: StudentUuid
 table: student_uuid
-idType: uuid
+idType: uuidV4
 fields:
   name: String
   enrollments: List<EnrollmentInt>?, relation(name=student_enrollments)

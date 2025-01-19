@@ -1,6 +1,6 @@
 class: CompanyUuid
 table: company_uuid
-idType: uuid
+idType: uuidV7
 fields:
   name: String
   town: TownInt?, relation
