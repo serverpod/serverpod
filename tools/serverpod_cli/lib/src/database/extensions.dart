@@ -223,6 +223,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 
     // Must be declared at the beginning for the function to be available.
     out += _sqlUuidGenerateV7FunctionDeclaration();
+    out += '\n';
 
     // Create tables
     out += tableCreation;
@@ -444,6 +445,10 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     out += 'BEGIN;\n';
     out += '\n';
 
+    // Must be declared at the beginning for the function to be available.
+    out += _sqlUuidGenerateV7FunctionDeclaration();
+    out += '\n';
+
     var foreignKeyActions = '';
     for (var action in actions) {
       out += action.toPgSql();
@@ -663,8 +668,7 @@ String _sqlUuidGenerateV7FunctionDeclaration() {
    * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
    * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    */
-  return ''
-      '\n--'
+  return '--'
       '\n-- Function: gen_random_uuid_v7()'
       '\n-- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74'
       '\n-- License: MIT (copyright notice included on the generator source code).'
