@@ -1418,10 +1418,10 @@ class Protocol extends _i1.SerializationManagerServer {
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'course_uuid_id_seq\'::regclass)',
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -2277,15 +2277,15 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'studentId',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'int',
+          dartType: 'UuidValue',
         ),
         _i2.ColumnDefinition(
           name: 'courseId',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'int',
+          dartType: 'UuidValue',
         ),
       ],
       foreignKeys: [
@@ -4717,10 +4717,10 @@ class Protocol extends _i1.SerializationManagerServer {
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'student_uuid_id_seq\'::regclass)',
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
           name: 'name',

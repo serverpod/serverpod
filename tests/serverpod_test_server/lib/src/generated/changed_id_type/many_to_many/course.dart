@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class CourseUuid
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   CourseUuid._({
     this.id,
     required this.name,
@@ -21,14 +21,16 @@ abstract class CourseUuid
   });
 
   factory CourseUuid({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) = _CourseUuidImpl;
 
   factory CourseUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CourseUuid(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: (jsonSerialization['enrollments'] as List?)
           ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
@@ -41,24 +43,24 @@ abstract class CourseUuid
   static const db = CourseUuidRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   String name;
 
   List<_i2.EnrollmentInt>? enrollments;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   CourseUuid copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? name,
     List<_i2.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
         'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
@@ -68,7 +70,7 @@ abstract class CourseUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
         'enrollments':
@@ -111,7 +113,7 @@ class _Undefined {}
 
 class _CourseUuidImpl extends CourseUuid {
   _CourseUuidImpl({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
@@ -127,7 +129,7 @@ class _CourseUuidImpl extends CourseUuid {
     Object? enrollments = _Undefined,
   }) {
     return CourseUuid(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.EnrollmentInt>?
           ? enrollments
@@ -136,7 +138,7 @@ class _CourseUuidImpl extends CourseUuid {
   }
 }
 
-class CourseUuidTable extends _i1.Table<int> {
+class CourseUuidTable extends _i1.Table<_i1.UuidValue> {
   CourseUuidTable({super.tableRelation}) : super(tableName: 'course_uuid') {
     name = _i1.ColumnString(
       'name',
@@ -207,7 +209,7 @@ class CourseUuidInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table<int> get table => CourseUuid.t;
+  _i1.Table<_i1.UuidValue> get table => CourseUuid.t;
 }
 
 class CourseUuidIncludeList extends _i1.IncludeList {
@@ -227,7 +229,7 @@ class CourseUuidIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => CourseUuid.t;
+  _i1.Table<_i1.UuidValue> get table => CourseUuid.t;
 }
 
 class CourseUuidRepository {
@@ -252,7 +254,7 @@ class CourseUuidRepository {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
   }) async {
-    return session.db.find<int, CourseUuid>(
+    return session.db.find<_i1.UuidValue, CourseUuid>(
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -274,7 +276,7 @@ class CourseUuidRepository {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<int, CourseUuid>(
+    return session.db.findFirstRow<_i1.UuidValue, CourseUuid>(
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
@@ -287,11 +289,11 @@ class CourseUuidRepository {
 
   Future<CourseUuid?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
   }) async {
-    return session.db.findById<int, CourseUuid>(
+    return session.db.findById<_i1.UuidValue, CourseUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -303,7 +305,7 @@ class CourseUuidRepository {
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, CourseUuid>(
+    return session.db.insert<_i1.UuidValue, CourseUuid>(
       rows,
       transaction: transaction,
     );
@@ -314,7 +316,7 @@ class CourseUuidRepository {
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, CourseUuid>(
+    return session.db.insertRow<_i1.UuidValue, CourseUuid>(
       row,
       transaction: transaction,
     );
@@ -326,7 +328,7 @@ class CourseUuidRepository {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, CourseUuid>(
+    return session.db.update<_i1.UuidValue, CourseUuid>(
       rows,
       columns: columns?.call(CourseUuid.t),
       transaction: transaction,
@@ -339,7 +341,7 @@ class CourseUuidRepository {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, CourseUuid>(
+    return session.db.updateRow<_i1.UuidValue, CourseUuid>(
       row,
       columns: columns?.call(CourseUuid.t),
       transaction: transaction,
@@ -351,7 +353,7 @@ class CourseUuidRepository {
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, CourseUuid>(
+    return session.db.delete<_i1.UuidValue, CourseUuid>(
       rows,
       transaction: transaction,
     );
@@ -362,7 +364,7 @@ class CourseUuidRepository {
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, CourseUuid>(
+    return session.db.deleteRow<_i1.UuidValue, CourseUuid>(
       row,
       transaction: transaction,
     );
@@ -373,7 +375,7 @@ class CourseUuidRepository {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, CourseUuid>(
+    return session.db.deleteWhere<_i1.UuidValue, CourseUuid>(
       where: where(CourseUuid.t),
       transaction: transaction,
     );
@@ -385,7 +387,7 @@ class CourseUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, CourseUuid>(
+    return session.db.count<_i1.UuidValue, CourseUuid>(
       where: where?.call(CourseUuid.t),
       limit: limit,
       transaction: transaction,

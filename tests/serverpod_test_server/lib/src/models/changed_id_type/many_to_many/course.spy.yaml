@@ -1,5 +1,6 @@
 class: CourseUuid
 table: course_uuid
+idType: uuid
 fields:
   name: String
   enrollments: List<EnrollmentInt>?, relation(name=course_enrollments)

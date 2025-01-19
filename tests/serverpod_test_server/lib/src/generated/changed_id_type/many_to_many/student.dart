@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class StudentUuid
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   StudentUuid._({
     this.id,
     required this.name,
@@ -21,14 +21,16 @@ abstract class StudentUuid
   });
 
   factory StudentUuid({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) = _StudentUuidImpl;
 
   factory StudentUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return StudentUuid(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: (jsonSerialization['enrollments'] as List?)
           ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
@@ -41,24 +43,24 @@ abstract class StudentUuid
   static const db = StudentUuidRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   String name;
 
   List<_i2.EnrollmentInt>? enrollments;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   StudentUuid copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? name,
     List<_i2.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
         'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
@@ -68,7 +70,7 @@ abstract class StudentUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
         'enrollments':
@@ -111,7 +113,7 @@ class _Undefined {}
 
 class _StudentUuidImpl extends StudentUuid {
   _StudentUuidImpl({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
@@ -127,7 +129,7 @@ class _StudentUuidImpl extends StudentUuid {
     Object? enrollments = _Undefined,
   }) {
     return StudentUuid(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.EnrollmentInt>?
           ? enrollments
@@ -136,7 +138,7 @@ class _StudentUuidImpl extends StudentUuid {
   }
 }
 
-class StudentUuidTable extends _i1.Table<int> {
+class StudentUuidTable extends _i1.Table<_i1.UuidValue> {
   StudentUuidTable({super.tableRelation}) : super(tableName: 'student_uuid') {
     name = _i1.ColumnString(
       'name',
@@ -207,7 +209,7 @@ class StudentUuidInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table<int> get table => StudentUuid.t;
+  _i1.Table<_i1.UuidValue> get table => StudentUuid.t;
 }
 
 class StudentUuidIncludeList extends _i1.IncludeList {
@@ -227,7 +229,7 @@ class StudentUuidIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => StudentUuid.t;
+  _i1.Table<_i1.UuidValue> get table => StudentUuid.t;
 }
 
 class StudentUuidRepository {
@@ -248,7 +250,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.find<int, StudentUuid>(
+    return session.db.find<_i1.UuidValue, StudentUuid>(
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -270,7 +272,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<int, StudentUuid>(
+    return session.db.findFirstRow<_i1.UuidValue, StudentUuid>(
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -283,11 +285,11 @@ class StudentUuidRepository {
 
   Future<StudentUuid?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.findById<int, StudentUuid>(
+    return session.db.findById<_i1.UuidValue, StudentUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -299,7 +301,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, StudentUuid>(
+    return session.db.insert<_i1.UuidValue, StudentUuid>(
       rows,
       transaction: transaction,
     );
@@ -310,7 +312,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, StudentUuid>(
+    return session.db.insertRow<_i1.UuidValue, StudentUuid>(
       row,
       transaction: transaction,
     );
@@ -322,7 +324,7 @@ class StudentUuidRepository {
     _i1.ColumnSelections<StudentUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, StudentUuid>(
+    return session.db.update<_i1.UuidValue, StudentUuid>(
       rows,
       columns: columns?.call(StudentUuid.t),
       transaction: transaction,
@@ -335,7 +337,7 @@ class StudentUuidRepository {
     _i1.ColumnSelections<StudentUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, StudentUuid>(
+    return session.db.updateRow<_i1.UuidValue, StudentUuid>(
       row,
       columns: columns?.call(StudentUuid.t),
       transaction: transaction,
@@ -347,7 +349,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, StudentUuid>(
+    return session.db.delete<_i1.UuidValue, StudentUuid>(
       rows,
       transaction: transaction,
     );
@@ -358,7 +360,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, StudentUuid>(
+    return session.db.deleteRow<_i1.UuidValue, StudentUuid>(
       row,
       transaction: transaction,
     );
@@ -369,7 +371,7 @@ class StudentUuidRepository {
     required _i1.WhereExpressionBuilder<StudentUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, StudentUuid>(
+    return session.db.deleteWhere<_i1.UuidValue, StudentUuid>(
       where: where(StudentUuid.t),
       transaction: transaction,
     );
@@ -381,7 +383,7 @@ class StudentUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, StudentUuid>(
+    return session.db.count<_i1.UuidValue, StudentUuid>(
       where: where?.call(StudentUuid.t),
       limit: limit,
       transaction: transaction,

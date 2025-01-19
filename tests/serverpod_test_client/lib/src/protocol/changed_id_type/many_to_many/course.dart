@@ -20,14 +20,16 @@ abstract class CourseUuid implements _i1.SerializableModel {
   });
 
   factory CourseUuid({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) = _CourseUuidImpl;
 
   factory CourseUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CourseUuid(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: (jsonSerialization['enrollments'] as List?)
           ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
@@ -38,21 +40,21 @@ abstract class CourseUuid implements _i1.SerializableModel {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _i1.UuidValue? id;
 
   String name;
 
   List<_i2.EnrollmentInt>? enrollments;
 
   CourseUuid copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? name,
     List<_i2.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
         'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
@@ -69,7 +71,7 @@ class _Undefined {}
 
 class _CourseUuidImpl extends CourseUuid {
   _CourseUuidImpl({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
@@ -85,7 +87,7 @@ class _CourseUuidImpl extends CourseUuid {
     Object? enrollments = _Undefined,
   }) {
     return CourseUuid(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.EnrollmentInt>?
           ? enrollments

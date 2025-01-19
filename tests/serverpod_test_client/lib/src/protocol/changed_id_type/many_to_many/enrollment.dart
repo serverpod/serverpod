@@ -24,21 +24,23 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
 
   factory EnrollmentInt({
     int? id,
-    required int studentId,
+    required _i1.UuidValue studentId,
     _i2.StudentUuid? student,
-    required int courseId,
+    required _i1.UuidValue courseId,
     _i3.CourseUuid? course,
   }) = _EnrollmentIntImpl;
 
   factory EnrollmentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnrollmentInt(
       id: jsonSerialization['id'] as int?,
-      studentId: jsonSerialization['studentId'] as int,
+      studentId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['studentId']),
       student: jsonSerialization['student'] == null
           ? null
           : _i2.StudentUuid.fromJson(
               (jsonSerialization['student'] as Map<String, dynamic>)),
-      courseId: jsonSerialization['courseId'] as int,
+      courseId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['courseId']),
       course: jsonSerialization['course'] == null
           ? null
           : _i3.CourseUuid.fromJson(
@@ -51,28 +53,28 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int studentId;
+  _i1.UuidValue studentId;
 
   _i2.StudentUuid? student;
 
-  int courseId;
+  _i1.UuidValue courseId;
 
   _i3.CourseUuid? course;
 
   EnrollmentInt copyWith({
     int? id,
-    int? studentId,
+    _i1.UuidValue? studentId,
     _i2.StudentUuid? student,
-    int? courseId,
+    _i1.UuidValue? courseId,
     _i3.CourseUuid? course,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'studentId': studentId,
+      'studentId': studentId.toJson(),
       if (student != null) 'student': student?.toJson(),
-      'courseId': courseId,
+      'courseId': courseId.toJson(),
       if (course != null) 'course': course?.toJson(),
     };
   }
@@ -88,9 +90,9 @@ class _Undefined {}
 class _EnrollmentIntImpl extends EnrollmentInt {
   _EnrollmentIntImpl({
     int? id,
-    required int studentId,
+    required _i1.UuidValue studentId,
     _i2.StudentUuid? student,
-    required int courseId,
+    required _i1.UuidValue courseId,
     _i3.CourseUuid? course,
   }) : super._(
           id: id,
@@ -103,9 +105,9 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   @override
   EnrollmentInt copyWith({
     Object? id = _Undefined,
-    int? studentId,
+    _i1.UuidValue? studentId,
     Object? student = _Undefined,
-    int? courseId,
+    _i1.UuidValue? courseId,
     Object? course = _Undefined,
   }) {
     return EnrollmentInt(
