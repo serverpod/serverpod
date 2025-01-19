@@ -285,7 +285,7 @@ void _logStartInstructions(String name) {
       newParagraph: true,
     );
     log.info(
-      'docker compose up --build --detach',
+      'docker compose --profile dev up --build --detach',
       type: TextLogType.command,
     );
     log.info(
@@ -299,7 +299,7 @@ void _logStartInstructions(String name) {
       newParagraph: true,
     );
     log.info(
-      'docker compose up --build --detach',
+      'docker compose --profile dev up --build --detach',
       type: TextLogType.command,
     );
     log.info(
