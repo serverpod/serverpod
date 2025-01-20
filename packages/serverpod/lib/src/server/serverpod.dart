@@ -37,7 +37,8 @@ class Serverpod {
   static Serverpod? _instance;
 
   /// id use with service manager
-  final ServiceHolder _serviceHolder = ServiceManager.register(ServiceManager.defaultId);
+  final ServiceHolder _serviceHolder =
+      ServiceManager.register(ServiceManager.defaultId);
   late ConsoleLogger _consoleLogger;
 
   late Session _internalSession;
@@ -227,7 +228,8 @@ class Serverpod {
     }
 
     try {
-      var settings = await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      var settings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (settings != null) {
         _updateLogSettings(settings);
       }
@@ -238,10 +240,12 @@ class Serverpod {
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {
-      var oldRuntimeSettings = await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      var oldRuntimeSettings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        settings = await internal.RuntimeSettings.db.insertRow(internalSession, settings);
+        settings = await internal.RuntimeSettings.db
+            .insertRow(internalSession, settings);
       } else {
         settings.id = oldRuntimeSettings.id;
         await internal.RuntimeSettings.db.updateRow(internalSession, settings);
@@ -279,7 +283,8 @@ class Serverpod {
   };
 
   static const _defaultHttpOptionsResponseHeaders = {
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
+    'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
   };
 
   /// Creates a new Serverpod.
@@ -305,7 +310,8 @@ class Serverpod {
     stdout.writeln(commandLineArgs.toString());
 
     // Create a console logger
-    _consoleLogger = ConsoleLogger(commandLineArgs.loggingMode == ServerpodLoggingMode.verbose);
+    _consoleLogger = ConsoleLogger(
+        commandLineArgs.loggingMode == ServerpodLoggingMode.verbose);
     _serviceHolder.register(_consoleLogger);
 
     _runMode = commandLineArgs.runMode;
@@ -471,7 +477,8 @@ class Serverpod {
 
     if (Features.enableMigrations) {
       await _applyMigrations();
-    } else if (commandLineArgs.applyMigrations || commandLineArgs.applyRepairMigration) {
+    } else if (commandLineArgs.applyMigrations ||
+        commandLineArgs.applyRepairMigration) {
       stderr.writeln(
         'Migrations are disabled in this project, skipping applying migration(s).',
       );
@@ -489,7 +496,8 @@ class Serverpod {
     }
 
     // Start servers.
-    if (commandLineArgs.role == ServerpodRole.monolith || commandLineArgs.role == ServerpodRole.serverless) {
+    if (commandLineArgs.role == ServerpodRole.monolith ||
+        commandLineArgs.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
       // Serverpod Insights.
@@ -527,9 +535,11 @@ class Serverpod {
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
-    var appliedMigrations = (commandLineArgs.applyMigrations | commandLineArgs.applyRepairMigration);
+    var appliedMigrations = (commandLineArgs.applyMigrations |
+        commandLineArgs.applyRepairMigration);
     if (commandLineArgs.role == ServerpodRole.monolith ||
-        (commandLineArgs.role == ServerpodRole.maintenance && !appliedMigrations)) {
+        (commandLineArgs.role == ServerpodRole.maintenance &&
+            !appliedMigrations)) {
       _consoleLogger.logVerbose('Starting maintenance tasks.');
 
       // Start future calls
@@ -543,14 +553,16 @@ class Serverpod {
 
     _consoleLogger.logVerbose('Serverpod start complete.');
 
-    if (commandLineArgs.role == ServerpodRole.maintenance && appliedMigrations) {
+    if (commandLineArgs.role == ServerpodRole.maintenance &&
+        appliedMigrations) {
       _consoleLogger.logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
     }
   }
 
   Future<void> _applyMigrations() async {
-    int? maxAttempts = commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+    int? maxAttempts =
+        commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
 
     try {
       await _connectToDatabase(
@@ -568,23 +580,27 @@ class Serverpod {
 
       if (commandLineArgs.applyRepairMigration) {
         _consoleLogger.logVerbose('Applying database repair migration');
-        var appliedRepairMigration = await migrationManager.applyRepairMigration(internalSession);
+        var appliedRepairMigration =
+            await migrationManager.applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
           stderr.writeln('Failed to apply database repair migration.');
         } else {
-          stdout.writeln('Database repair migration "$appliedRepairMigration" applied.');
+          stdout.writeln(
+              'Database repair migration "$appliedRepairMigration" applied.');
         }
         await migrationManager.initialize(internalSession);
       }
 
       if (commandLineArgs.applyMigrations) {
         _consoleLogger.logVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(internalSession);
+        var migrationsApplied =
+            await migrationManager.migrateToLatest(internalSession);
 
         if (migrationsApplied == null) {
           stdout.writeln('Latest database migration already applied.');
         } else {
-          stdout.writeln('Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:');
+          stdout.writeln(
+              'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:');
           for (var migration in migrationsApplied) {
             stdout.writeln(' - $migration');
           }
@@ -604,7 +620,8 @@ class Serverpod {
 
     _consoleLogger.logVerbose('Loading runtime settings.');
     try {
-      _runtimeSettings = await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      _runtimeSettings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
@@ -613,9 +630,11 @@ class Serverpod {
     }
 
     if (_runtimeSettings == null) {
-      _consoleLogger.logVerbose('Runtime settings not found, creating default settings.');
+      _consoleLogger
+          .logVerbose('Runtime settings not found, creating default settings.');
       try {
-        _runtimeSettings = await RuntimeSettings.db.insertRow(internalSession, _defaultRuntimeSettings);
+        _runtimeSettings = await RuntimeSettings.db
+            .insertRow(internalSession, _defaultRuntimeSettings);
       } catch (e) {
         _exitCode = 1;
         stderr.writeln(
@@ -693,7 +712,8 @@ class Serverpod {
     Duration delay, {
     String? identifier,
   }) async {
-    assert(server.running, 'Server is not running, call start() before using future calls');
+    assert(server.running,
+        'Server is not running, call start() before using future calls');
     var futureCallManager = _futureCallManager;
     if (futureCallManager == null) {
       throw StateError('Future calls are disabled.');
@@ -716,7 +736,8 @@ class Serverpod {
     String? identifier,
   }) async {
     var futureCallManager = _futureCallManager;
-    assert(server.running, 'Server is not running, call start() before using future calls');
+    assert(server.running,
+        'Server is not running, call start() before using future calls');
     if (futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
