@@ -982,7 +982,7 @@ class Restrictions {
     if (documentDefinition is! ClassDefinition) return [];
     var definition = documentDefinition as ClassDefinition;
 
-    var fields = definition.fields;
+    var fields = definition.fieldsIncludingInherited;
     var indexFields = convertIndexList(content);
 
     var validDatabaseFieldNames = fields

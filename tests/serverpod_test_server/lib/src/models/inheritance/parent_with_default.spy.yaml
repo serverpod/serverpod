@@ -1,0 +1,4 @@
+class: ParentWithDefault
+fields:
+    name: String
+    parentDefault: int, default=0
