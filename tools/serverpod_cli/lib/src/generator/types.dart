@@ -541,14 +541,20 @@ class SupportedIdType {
         dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
       );
 
-  static SupportedIdType get uuid => SupportedIdType(
+  static SupportedIdType get uuidV4 => SupportedIdType(
         type: TypeDefinition.uuid,
-        aliases: ['uuid'],
+        aliases: ['uuidV4'],
         dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
       );
 
+  static SupportedIdType get uuidV7 => SupportedIdType(
+        type: TypeDefinition.uuid,
+        aliases: ['uuidV7'],
+        dbColumnDefaultBuilder: (_) => 'gen_random_uuid_v7()',
+      );
+
   /// All supported id types.
-  static List<SupportedIdType> get all => [int, uuid];
+  static List<SupportedIdType> get all => [int, uuidV4, uuidV7];
 
   /// All aliases exposed to the user.
   static List<String> get userOptions => all.expand((e) => e.aliases).toList();

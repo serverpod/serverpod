@@ -1,6 +1,6 @@
 class: OrderUuid
 table: order_uuid
-idType: uuid
+idType: uuidV7
 fields:
   description: String
   customer: CustomerInt?, relation(name=customer_orders, onDelete=Cascade)

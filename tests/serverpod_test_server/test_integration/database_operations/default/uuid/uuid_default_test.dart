@@ -22,8 +22,25 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
               .hasMatch(databaseObject.uuidDefaultRandom.toString()),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'when creating a record in the database, then the "default=random_v7" UUID field should not be null and should generate a valid UUID',
+      () async {
+        var object = UuidDefault();
+        var databaseObject = await UuidDefault.db.insertRow(
+          session,
+          object,
+        );
+        expect(databaseObject.uuidDefaultRandomV7, isNotNull);
+        expect(
+          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+              .hasMatch(databaseObject.uuidDefaultRandomV7.toString()),
           isTrue,
         );
       },
@@ -72,6 +89,24 @@ void main() async {
         );
         expect(
           specificDatabaseObject.uuidDefaultRandom,
+          uuid,
+        );
+      },
+    );
+
+    test(
+      'when creating a record in the database with a specific value, then the "uuidDefaultRandomV7" field value should match the provided value',
+      () async {
+        var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+        var specificObject = UuidDefault(
+          uuidDefaultRandomV7: uuid,
+        );
+        var specificDatabaseObject = await UuidDefault.db.insertRow(
+          session,
+          specificObject,
+        );
+        expect(
+          specificDatabaseObject.uuidDefaultRandomV7,
           uuid,
         );
       },

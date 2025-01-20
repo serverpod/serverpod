@@ -243,7 +243,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
+        'The "$key" value must be "random", "random_v7" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
 
     if (value is! String || value.isEmpty) {
       errors.add(
@@ -255,11 +255,12 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
-        !value.startsWith("'") &&
-        !value.startsWith('"');
+    if ((value == defaultUuidValueRandom) ||
+        (value == defaultUuidValueRandomV7)) {
+      return [];
+    }
 
-    if (invalidDefaultValue) {
+    if (!value.startsWith("'") && !value.startsWith('"')) {
       errors.add(
         SourceSpanSeverityException(
           invalidValueError,
@@ -268,8 +269,6 @@ class DefaultValueRestriction extends ValueRestriction {
       );
       return errors;
     }
-
-    if (value == defaultUuidValueRandom) return [];
 
     bool validSingleQuote = isValidSingleQuote(value);
     bool validDoubleQuote = isValidDoubleQuote(value);

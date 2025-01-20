@@ -278,6 +278,57 @@ void main() {
       });
     });
 
+    group('when "defaultPersist" is set to "random_v7"', () {
+      var field = FieldDefinitionBuilder()
+          .withName('uuid')
+          .withTypeDefinition('UuidValue', false)
+          .withDefaults(defaultPersistValue: 'random_v7')
+          .build();
+
+      var model = ClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
+
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
+
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
+
+      test('then the last column should have the correct default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          'gen_random_uuid_v7()',
+        );
+      });
+    });
+
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')

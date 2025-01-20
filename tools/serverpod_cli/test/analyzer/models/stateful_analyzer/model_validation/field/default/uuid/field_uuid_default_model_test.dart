@@ -37,6 +37,32 @@ void main() {
     );
 
     test(
+      'when the field is of type UUID and the defaultModel is set to "random_v7", then the field\'s default model value is "random".',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            uuidType: UuidValue, defaultModel=random_v7
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultModelValue, 'random_v7');
+      },
+    );
+
+    test(
       'when the field is of type UUID and the defaultModel is set to a valid UUID string with single quotes, then the field\'s default model value is the provided UUID string.',
       () {
         var models = [
@@ -119,7 +145,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -147,7 +173,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
