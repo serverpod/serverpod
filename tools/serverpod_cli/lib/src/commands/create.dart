@@ -75,21 +75,23 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    GeneratorConfig config;
+    SupportedIdType? defaultIdType;
+    bool isChangeIdTypeEnabled;
     try {
-      config = await GeneratorConfig.load();
+      var config = await GeneratorConfig.load();
+      defaultIdType = config.defaultIdType;
+      isChangeIdTypeEnabled = config.isExperimentalFeatureEnabled(
+        ExperimentalFeature.changeIdType,
+      );
+    } on ServerpodProjectNotFoundException catch (_) {
+      isChangeIdTypeEnabled = CommandLineExperimentalFeatures.instance.features
+          .contains(ExperimentalFeature.changeIdType);
     } catch (_) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
     String? defaultIdTypeName = argResults!['defaultIdType'];
-    SupportedIdType? defaultIdType = (defaultIdTypeName != null)
-        ? SupportedIdType.fromString(defaultIdTypeName)
-        : null;
-    defaultIdType ??= config.defaultIdType;
-
-    if (!config
-        .isExperimentalFeatureEnabled(ExperimentalFeature.changeIdType)) {
+    if ((defaultIdTypeName != null) && !isChangeIdTypeEnabled) {
       log.error(
         'The "defaultIdType" option is not enabled. To enable it, add the '
         'experimental feature "changeIdType" to the config file or the '
@@ -97,6 +99,10 @@ class CreateCommand extends ServerpodCommand {
       );
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
+
+    defaultIdType = (defaultIdTypeName != null)
+        ? SupportedIdType.fromString(defaultIdTypeName)
+        : defaultIdType;
 
     if (!await performCreate(name, template, force, defaultIdType)) {
       throw ExitException();
