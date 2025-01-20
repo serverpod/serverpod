@@ -10,6 +10,8 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -141,8 +143,7 @@ class Server {
     try {
       _runServer(httpServer);
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
+      stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to run server.');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       return false;
@@ -154,7 +155,8 @@ class Server {
   }
 
   void _runServer(HttpServer httpServer) async {
-    serverpod.logVerbose(
+    ConsoleLogger? logger = ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>();
+    logger?.logVerbose(
       'runServer address: ${httpServer.address}, port: ${httpServer.port}',
     );
 
@@ -163,15 +165,14 @@ class Server {
 
     try {
       await for (var request in httpServer) {
-        serverpod.logVerbose(
+        logger?.logVerbose(
           'received request: ${request.method} ${request.uri.path}',
         );
 
         _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
+      stderr.writeln('${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
     }
@@ -197,8 +198,9 @@ class Server {
 
   //TODO: encode analyze
   Future<void> _handleRequest(HttpRequest request) async {
-    serverpod
-        .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
+    ServiceManager.request(ServiceManager.defaultId)
+        .locate<ConsoleLogger>()
+        ?.logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
     for (var header in httpResponseHeaders.entries) {
       request.response.headers.add(header.key, header.value);
@@ -211,8 +213,7 @@ class Server {
     } catch (e) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Specific log for this?
-        stderr.writeln(
-            'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        stderr.writeln('Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -290,8 +291,7 @@ class Server {
         await request.response.close();
         return;
       } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
+        stderr.writeln('${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
         request.response.statusCode = HttpStatus.badRequest;
@@ -338,8 +338,7 @@ class Server {
       return;
     } else if (result is ResultInternalServerError) {
       request.response.statusCode = HttpStatus.internalServerError;
-      request.response.writeln(
-          'Internal server error. Call log id: ${result.sessionLogId}');
+      request.response.writeln('Internal server error. Call log id: ${result.sessionLogId}');
       await request.response.close();
       return;
     } else if (result is ResultStatusCode) {
@@ -353,15 +352,13 @@ class Server {
       request.response.headers.contentType = ContentType.json;
       request.response.statusCode = HttpStatus.badRequest;
 
-      var serializedModel =
-          serializationManager.encodeWithTypeForProtocol(result.model);
+      var serializedModel = serializationManager.encodeWithTypeForProtocol(result.model);
       request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {
       // Set content type.
       if (!result.sendByteDataAsRaw) {
-        request.response.headers.contentType =
-            ContentType('application', 'json', charset: 'utf-8');
+        request.response.headers.contentType = ContentType('application', 'json', charset: 'utf-8');
       }
 
       // Send the response
@@ -394,7 +391,9 @@ class Server {
     try {
       webSocket = await WebSocketTransformer.upgrade(request);
     } on WebSocketException {
-      serverpod.logVerbose('Failed to upgrade connection to websocket');
+      ServiceManager.request(ServiceManager.defaultId)
+          .locate<ConsoleLogger>()
+          ?.logVerbose('Failed to upgrade connection to websocket');
       return;
     }
     webSocket.pingInterval = const Duration(seconds: 30);
@@ -472,8 +471,7 @@ class Server {
     // Get the the authentication key, if any
     // If it is provided in the HTTP authorization header we use that,
     // otherwise we look for it in the query parameters (the old method).
-    var authHeaderValue =
-        request.headers.value(HttpHeaders.authorizationHeader);
+    var authHeaderValue = request.headers.value(HttpHeaders.authorizationHeader);
     String? authenticationKey;
     try {
       authenticationKey = unwrapAuthHeaderValue(authHeaderValue);
@@ -511,8 +509,7 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
-        return ResultInternalServerError(
-            'Session was not created', StackTrace.current, 0);
+        return ResultInternalServerError('Session was not created', StackTrace.current, 0);
       }
 
       var result = await methodCallContext.method.call(
@@ -537,16 +534,12 @@ class Server {
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
     } on Exception catch (e, stackTrace) {
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+      var sessionLogId = await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(e.toString(), stackTrace, sessionLogId ?? 0);
     } catch (e, stackTrace) {
       // Something did not work out
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+      var sessionLogId = await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(e.toString(), stackTrace, sessionLogId ?? 0);
     } finally {
       await maybeSession?.close();
     }
@@ -589,8 +582,7 @@ class _RequestTooLargeException implements Exception {
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
   _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+      : errorDescription = 'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   @override
   String toString() {

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class _RevokedAuthenticationHandler {
@@ -20,8 +22,7 @@ class _RevokedAuthenticationHandler {
     var localRevokedAuthenticationCallback = _revokedAuthenticationCallback;
     var localAuthenticationInfo = _authenticationInfo;
 
-    if (localRevokedAuthenticationCallback != null &&
-        localAuthenticationInfo != null) {
+    if (localRevokedAuthenticationCallback != null && localAuthenticationInfo != null) {
       session.messages.removeListener(
         MessageCentralServerpodChannels.revokedAuthentication(
           localAuthenticationInfo.userId,
@@ -31,14 +32,12 @@ class _RevokedAuthenticationHandler {
     }
   }
 
-  static Future<_RevokedAuthenticationHandler?>
-      createIfAuthenticationIsRequired(
+  static Future<_RevokedAuthenticationHandler?> createIfAuthenticationIsRequired(
     Endpoint endpoint,
     Session session, {
     required void Function() onRevokedAuthentication,
   }) async {
-    var authenticationIsRequired =
-        endpoint.requireLogin || endpoint.requiredScopes.isNotEmpty;
+    var authenticationIsRequired = endpoint.requireLogin || endpoint.requiredScopes.isNotEmpty;
     if (!authenticationIsRequired) {
       return null;
     }
@@ -52,12 +51,9 @@ class _RevokedAuthenticationHandler {
 
     void localRevokedAuthenticationCallback(event) async {
       var authenticationRevokedReason = switch (event) {
-        RevokedAuthenticationUser _ =>
-          AuthenticationFailureReason.unauthenticated,
+        RevokedAuthenticationUser _ => AuthenticationFailureReason.unauthenticated,
         RevokedAuthenticationAuthId revokedAuthId =>
-          revokedAuthId.authId == authenticationInfo.authId
-              ? AuthenticationFailureReason.unauthenticated
-              : null,
+          revokedAuthId.authId == authenticationInfo.authId ? AuthenticationFailureReason.unauthenticated : null,
         RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
             (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
           )
@@ -158,8 +154,7 @@ class MethodStreamManager {
   int get openOutputStreamCount => _outputStreamContexts.length;
 
   Future<void> closeAllStreams() async {
-    var inputControllers =
-        _inputStreamContexts.values.map((c) => c.controller).toList();
+    var inputControllers = _inputStreamContexts.values.map((c) => c.controller).toList();
     _inputStreamContexts.clear();
 
     var outboundStreamContexts = _outputStreamContexts.values.toList();
@@ -320,8 +315,7 @@ class MethodStreamManager {
     UuidValue methodStreamId,
   ) async {
     bool isCancelled = false;
-    var revokedAuthenticationHandler =
-        await _RevokedAuthenticationHandler.createIfAuthenticationIsRequired(
+    var revokedAuthenticationHandler = await _RevokedAuthenticationHandler.createIfAuthenticationIsRequired(
       methodStreamCallContext.endpoint,
       session,
       onRevokedAuthentication: () => closeStream(
@@ -339,9 +333,10 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
-      session.serverpod.logVerbose(
-          'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
-          '${methodStreamCallContext.method.name}, id $methodStreamId');
+      ServiceManager.request(ServiceManager.defaultId)
+          .locate<ConsoleLogger>()
+          ?.logVerbose('Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
+              '${methodStreamCallContext.method.name}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
@@ -356,8 +351,7 @@ class MethodStreamManager {
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) async {
-        _onOutputStreamValue?.call(
-            methodStreamId, value, methodStreamCallContext);
+        _onOutputStreamValue?.call(methodStreamId, value, methodStreamCallContext);
       },
       onError: (e, s) {
         // All method calls that return futures are unawaited to ensure that
@@ -370,8 +364,7 @@ class MethodStreamManager {
           return;
         }
 
-        _onOutputStreamError?.call(
-            methodStreamId, e, s, methodStreamCallContext);
+        _onOutputStreamError?.call(methodStreamId, e, s, methodStreamCallContext);
 
         _updateCloseReason(streamKey, CloseReason.error);
 
@@ -387,8 +380,7 @@ class MethodStreamManager {
       },
     );
 
-    var outputStreamContext =
-        _OutputStreamContext(outputController, subscription);
+    var outputStreamContext = _OutputStreamContext(outputController, subscription);
     _outputStreamContexts[_buildStreamKey(
       endpoint: methodStreamCallContext.fullEndpointPath,
       method: methodStreamCallContext.method.name,
@@ -423,8 +415,7 @@ class MethodStreamManager {
     // Close all controllers that have listeners.
     // If close is called on a controller that has no listeners, it will
     // return a future that never completes.
-    var controllersToClose =
-        controllers.where((c) => c.hasListener && !c.isClosed);
+    var controllersToClose = controllers.where((c) => c.hasListener && !c.isClosed);
 
     for (var controller in controllersToClose) {
       // Paused streams will never process the close event and
@@ -449,9 +440,10 @@ class MethodStreamManager {
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
-        session.serverpod.logVerbose(
-            'Cancelling method input stream for ${callContext.fullEndpointPath}.'
-            '${callContext.method.name}.$parameterName, id $methodStreamId');
+        ServiceManager.request(ServiceManager.defaultId)
+            .locate<ConsoleLogger>()
+            ?.logVerbose('Cancelling method input stream for ${callContext.fullEndpointPath}.'
+                '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
@@ -496,12 +488,10 @@ class MethodStreamManager {
       methodStreamId: methodStreamId,
     );
     try {
-      var result = await methodStreamCallContext.method
-          .call(session, methodStreamCallContext.arguments, streamParams);
+      var result = await methodStreamCallContext.method.call(session, methodStreamCallContext.arguments, streamParams);
 
       _updateCloseReason(streamKey, CloseReason.done);
-      if (methodStreamCallContext.method.returnType !=
-          MethodStreamReturnType.voidType) {
+      if (methodStreamCallContext.method.returnType != MethodStreamReturnType.voidType) {
         outputController.add(result);
       }
     } catch (e, stackTrace) {
@@ -512,8 +502,7 @@ class MethodStreamManager {
     await outputController.close();
   }
 
-  Future<void> _closeOutboundStream(
-      MethodStreamCallContext callContext, UuidValue methodStreamId) async {
+  Future<void> _closeOutboundStream(MethodStreamCallContext callContext, UuidValue methodStreamId) async {
     var context = _outputStreamContexts.remove(
       _buildStreamKey(
         endpoint: callContext.fullEndpointPath,
@@ -524,8 +513,7 @@ class MethodStreamManager {
 
     if (context == null) return;
 
-    _onOutputStreamClosed?.call(
-        methodStreamId, context.closeReason, callContext);
+    _onOutputStreamClosed?.call(methodStreamId, context.closeReason, callContext);
 
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in callContext.inputStreams) {

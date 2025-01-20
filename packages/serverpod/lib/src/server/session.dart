@@ -11,6 +11,8 @@ import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 import '../cache/caches.dart';
 
 /// A listener that will be called when the session is about to close.
@@ -160,9 +162,7 @@ abstract class Session implements DatabaseAccessor {
       _logManager = SessionLogManager(
         logWriter,
         session: this,
-        settingsForSession: (Session session) => server
-            .serverpod.logSettingsManager
-            .getLogSettingsForSession(session),
+        settingsForSession: (Session session) => server.serverpod.logSettingsManager.getLogSettingsForSession(session),
         disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
@@ -188,8 +188,7 @@ abstract class Session implements DatabaseAccessor {
       logWriters.add(StdOutLogWriter(session));
     }
 
-    if ((_isLongLived(session)) &&
-        logSettings.logStreamingSessionsContinuously) {
+    if ((_isLongLived(session)) && logSettings.logStreamingSessionsContinuously) {
       return MultipleLogWriter(logWriters);
     }
 
@@ -235,10 +234,11 @@ abstract class Session implements DatabaseAccessor {
     }
 
     try {
+      ConsoleLogger? logger = ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>();
       if (_logManager == null && error != null) {
-        serverpod.logVerbose(error.toString());
+        logger?.logVerbose(error.toString());
         if (stackTrace != null) {
-          serverpod.logVerbose(stackTrace.toString());
+          logger?.logVerbose(stackTrace.toString());
         }
       }
 
@@ -532,8 +532,7 @@ class StorageAccess {
     required String storageId,
     required List<String> paths,
   }) =>
-      Future.wait(
-          paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
+      Future.wait(paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
 
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
@@ -548,8 +547,7 @@ class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+    return await storage.createDirectFileUploadDescription(session: _session, path: path);
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -587,10 +585,8 @@ class MessageCentralAccess {
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
+  void removeListener(String channelName, MessageCentralListenerCallback listener) {
+    _session.server.messageCentral.removeListener(_session, channelName, listener);
   }
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
@@ -692,5 +688,4 @@ extension SessionInternalMethods on Session {
 
 /// Returns true if the session is expected to be alive for an extended
 /// period of time.
-bool _isLongLived(Session session) =>
-    session is StreamingSession || session is MethodStreamSession;
+bool _isLongLived(Session session) => session is StreamingSession || session is MethodStreamSession;

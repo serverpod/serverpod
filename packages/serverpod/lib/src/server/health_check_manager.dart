@@ -7,6 +7,8 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 import 'package:system_resources/system_resources.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
 
@@ -156,8 +158,9 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      _pod.logVerbose(e.toString());
-      _pod.logVerbose(stackTrace.toString());
+      ConsoleLogger? logger = ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>();
+      logger?.logVerbose(e.toString());
+      logger?.logVerbose(stackTrace.toString());
     }
   }
 
@@ -177,10 +180,7 @@ class HealthCheckManager {
     // Select entries from a past hour or day.
     var entries = await ServerHealthConnectionInfo.db.find(
       session,
-      where: (t) =>
-          (t.timestamp < startTime) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where: (t) => (t.timestamp < startTime) & t.granularity.equals(srcGranularity) & t.serverId.equals(_pod.serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: srcGranularity == 1 ? 61 : 25,
@@ -190,9 +190,7 @@ class HealthCheckManager {
       // There is nothing here to optimize.
       return false;
     }
-    var firstEntryTime = srcGranularity == 1
-        ? entries.first.timestamp.asHour
-        : entries.first.timestamp.asDay;
+    var firstEntryTime = srcGranularity == 1 ? entries.first.timestamp.asHour : entries.first.timestamp.asDay;
 
     // There is stuff to optimize.
     int maxActive = 0;
@@ -230,9 +228,7 @@ class HealthCheckManager {
           (t.timestamp >= firstEntryTime) &
           (t.timestamp <
               firstEntryTime.add(
-                srcGranularity == 1
-                    ? const Duration(hours: 1)
-                    : const Duration(days: 1),
+                srcGranularity == 1 ? const Duration(hours: 1) : const Duration(days: 1),
               )) &
           t.granularity.equals(srcGranularity) &
           t.serverId.equals(_pod.serverId),
@@ -263,10 +259,7 @@ class HealthCheckManager {
     // Select entries from a past hour or day.
     var entries = await ServerHealthMetric.db.find(
       session,
-      where: (t) =>
-          (t.timestamp < startTime) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where: (t) => (t.timestamp < startTime) & t.granularity.equals(srcGranularity) & t.serverId.equals(_pod.serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: (srcGranularity == 1 ? 61 : 25) * numHealthChecks,
@@ -278,9 +271,7 @@ class HealthCheckManager {
     }
 
     // There is stuff to optimize.
-    var firstEntryTime = srcGranularity == 1
-        ? entries.first.timestamp.asHour
-        : entries.first.timestamp.asDay;
+    var firstEntryTime = srcGranularity == 1 ? entries.first.timestamp.asHour : entries.first.timestamp.asDay;
 
     // Sort entries by their name/type.
     var entryMap = <String, List<ServerHealthMetric>>{};
@@ -298,10 +289,8 @@ class HealthCheckManager {
       var hasFail = false;
 
       for (var entry in entryMap[entryName]!) {
-        if ((srcGranularity == 1 &&
-                firstEntryTime.isSameHour(entry.timestamp)) ||
-            (srcGranularity == 60 &&
-                firstEntryTime.isSameDay(entry.timestamp))) {
+        if ((srcGranularity == 1 && firstEntryTime.isSameHour(entry.timestamp)) ||
+            (srcGranularity == 60 && firstEntryTime.isSameDay(entry.timestamp))) {
           if (!entry.isHealthy) hasFail = true;
           totalValue += entry.value;
         }
@@ -331,9 +320,7 @@ class HealthCheckManager {
           (t.timestamp >= firstEntryTime) &
           (t.timestamp <
               firstEntryTime.add(
-                srcGranularity == 1
-                    ? const Duration(hours: 1)
-                    : const Duration(days: 1),
+                srcGranularity == 1 ? const Duration(hours: 1) : const Duration(days: 1),
               )) &
           t.granularity.equals(srcGranularity) &
           t.serverId.equals(_pod.serverId),
@@ -346,8 +333,7 @@ class HealthCheckManager {
 Duration _timeUntilNextMinute() {
   // Add a second to make sure we don't end up on the same minute.
   var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next =
-      DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
+  var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
     const Duration(minutes: 1),
   );
 

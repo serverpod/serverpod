@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 import 'helpers/method_stream_manager.dart';
 
@@ -19,10 +21,12 @@ class MethodWebsocketRequestHandler {
     HttpRequest request,
     void Function() onClosed,
   ) async {
+    ConsoleLogger? logger = ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>();
+
     var methodStreamManager = _createMethodStreamManager(webSocket, server);
 
     try {
-      server.serverpod.logVerbose('Method websocket connection established.');
+      logger?.logVerbose('Method websocket connection established.');
       await for (String jsonData in webSocket) {
         WebSocketMessage message;
         try {
@@ -41,8 +45,7 @@ class MethodWebsocketRequestHandler {
               method: var method,
               connectionId: var connectionId,
             ):
-            server.serverpod.logVerbose(
-                'Open method stream command for $endpoint.$method, id $connectionId');
+            logger?.logVerbose('Open method stream command for $endpoint.$method, id $connectionId');
             webSocket.tryAdd(
               await _handleOpenMethodStreamCommand(
                 server,
@@ -57,8 +60,7 @@ class MethodWebsocketRequestHandler {
               method: var method,
               connectionId: var connectionId,
             ):
-            server.serverpod.logVerbose(
-                'Open method stream response for $endpoint.$method, id $connectionId');
+            logger?.logVerbose('Open method stream response for $endpoint.$method, id $connectionId');
             break;
           case MethodStreamMessage():
             _dispatchMethodStreamMessage(
@@ -73,8 +75,7 @@ class MethodWebsocketRequestHandler {
               method: var method,
               connectionId: var connectionId,
             ):
-            server.serverpod.logVerbose(
-                'Close method stream command for $endpoint.$method, id $connectionId');
+            logger?.logVerbose('Close method stream command for $endpoint.$method, id $connectionId');
             await methodStreamManager.closeStream(
               endpoint: message.endpoint,
               method: message.method,
@@ -98,21 +99,19 @@ class MethodWebsocketRequestHandler {
           case PongCommand():
             break;
           case BadRequestMessage():
-            server.serverpod.logVerbose(
+            logger?.logVerbose(
               'Bad request message: ${message.request}, closing connection.',
             );
             return;
         }
       }
     } catch (e, stackTrace) {
-      if (e is! UnknownMessageException ||
-          server.serverpod.runtimeSettings.logMalformedCalls) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Method stream websocket error: $e');
+      if (e is! UnknownMessageException || server.serverpod.runtimeSettings.logMalformedCalls) {
+        stderr.writeln('${DateTime.now().toUtc()} Method stream websocket error: $e');
         stderr.writeln('$stackTrace');
       }
     } finally {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Closing method stream websocket while '
         '${methodStreamManager.openOutputStreamCount} out-streams and '
         '${methodStreamManager.openInputStreamCount} in-streams still open.',
@@ -201,8 +200,7 @@ class MethodWebsocketRequestHandler {
   ) {
     if (message.parameter == null) {
       // Assume message is intended for method streams return stream.
-      webSocket.tryAdd(BadRequestMessage.buildMessage(
-          'Server does not accept messages targeting the return stream.'));
+      webSocket.tryAdd(BadRequestMessage.buildMessage('Server does not accept messages targeting the return stream.'));
       throw Exception(
         'Message targeting return stream received: $message',
       );
@@ -217,9 +215,9 @@ class MethodWebsocketRequestHandler {
     );
     if (success) return;
 
-    server.serverpod.logVerbose(
-      'Failed to dispatch message: $message',
-    );
+    ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>()?.logVerbose(
+          'Failed to dispatch message: $message',
+        );
 
     webSocket.tryAdd(CloseMethodStreamCommand.buildMessage(
       endpoint: message.endpoint,
@@ -236,11 +234,12 @@ class MethodWebsocketRequestHandler {
     OpenMethodStreamCommand message,
     MethodStreamManager methodStreamManager,
   ) async {
+    ConsoleLogger? logger = ServiceManager.request(ServiceManager.defaultId).locate<ConsoleLogger>();
     Map<String, dynamic> arguments;
     try {
       arguments = jsonDecode(message.encodedArgs);
     } catch (e) {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Failed to parse arguments for open stream request: $message ($e)',
       );
       return OpenMethodStreamResponse.buildMessage(
@@ -255,8 +254,7 @@ class MethodWebsocketRequestHandler {
     MethodStreamCallContext methodStreamCallContext;
     bool keepSessionOpen = false;
     try {
-      methodStreamCallContext =
-          await server.endpoints.getMethodStreamCallContext(
+      methodStreamCallContext = await server.endpoints.getMethodStreamCallContext(
         createSessionCallback: (connector) {
           maybeSession = MethodStreamSession(
             server: server,
@@ -276,7 +274,7 @@ class MethodWebsocketRequestHandler {
       );
       keepSessionOpen = true;
     } on MethodNotFoundException {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Endpoint method not found for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
@@ -286,7 +284,7 @@ class MethodWebsocketRequestHandler {
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     } on EndpointNotFoundException {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Endpoint not found for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
@@ -296,7 +294,7 @@ class MethodWebsocketRequestHandler {
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     } on InvalidEndpointMethodTypeException {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Endpoint method is not a valid stream method: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
@@ -306,7 +304,7 @@ class MethodWebsocketRequestHandler {
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     } on InvalidParametersException catch (e) {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Failed to parse parameters or input streams for open stream request: $message (${e.message})',
       );
       return OpenMethodStreamResponse.buildMessage(
@@ -316,19 +314,17 @@ class MethodWebsocketRequestHandler {
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
     } on NotAuthorizedException catch (e) {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Authentication failed for open stream request: $message',
       );
       return switch (e.authenticationFailedResult.reason) {
-        AuthenticationFailureReason.insufficientAccess =>
-          OpenMethodStreamResponse.buildMessage(
+        AuthenticationFailureReason.insufficientAccess => OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
             responseType: OpenMethodStreamResponseType.authorizationDeclined,
           ),
-        AuthenticationFailureReason.unauthenticated =>
-          OpenMethodStreamResponse.buildMessage(
+        AuthenticationFailureReason.unauthenticated => OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
@@ -336,7 +332,7 @@ class MethodWebsocketRequestHandler {
           ),
       };
     } catch (e) {
-      server.serverpod.logVerbose(
+      logger?.logVerbose(
         'Unexpected error when opening stream: $e',
       );
       throw StateError('Unexpected error when opening stream: $e');
@@ -369,8 +365,7 @@ extension on WebSocket {
     try {
       add(data);
     } catch (e) {
-      stderr.writeln(
-          'Error "$e", when trying to send data over websocket: $data');
+      stderr.writeln('Error "$e", when trying to send data over websocket: $data');
     }
   }
 }
