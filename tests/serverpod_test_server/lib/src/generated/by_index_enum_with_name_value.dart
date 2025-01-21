@@ -9,26 +9,26 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i1;
 
-enum TestByNameEnum implements _i1.SerializableModel {
+enum ByIndexEnumWithNameValue implements _i1.SerializableModel {
   type,
   name;
 
-  static TestByNameEnum fromJson(String name) {
-    switch (name) {
-      case 'type':
-        return TestByNameEnum.type;
-      case 'name':
-        return TestByNameEnum.name;
+  static ByIndexEnumWithNameValue fromJson(int index) {
+    switch (index) {
+      case 0:
+        return ByIndexEnumWithNameValue.type;
+      case 1:
+        return ByIndexEnumWithNameValue.name;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "TestByNameEnum"');
+            'Value "$index" cannot be converted to "ByIndexEnumWithNameValue"');
     }
   }
 
   @override
-  String toJson() => this.name;
+  int toJson() => index;
   @override
   String toString() => this.name;
 }

@@ -1,4 +1,4 @@
-enum: TestByNameEnum
+enum: ByNameEnumWithNameValue
 serialized: byName
 values:
   - type
