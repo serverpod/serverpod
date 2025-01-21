@@ -48,25 +48,25 @@ enum ColumnType implements _i1.SerializableModel {
   static ColumnType fromJson(int index) {
     switch (index) {
       case 0:
-        return text;
+        return ColumnType.text;
       case 1:
-        return boolean;
+        return ColumnType.boolean;
       case 2:
-        return integer;
+        return ColumnType.integer;
       case 3:
-        return doublePrecision;
+        return ColumnType.doublePrecision;
       case 4:
-        return timestampWithoutTimeZone;
+        return ColumnType.timestampWithoutTimeZone;
       case 5:
-        return bytea;
+        return ColumnType.bytea;
       case 6:
-        return bigint;
+        return ColumnType.bigint;
       case 7:
-        return uuid;
+        return ColumnType.uuid;
       case 8:
-        return json;
+        return ColumnType.json;
       case 9:
-        return unknown;
+        return ColumnType.unknown;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ColumnType"');

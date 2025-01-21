@@ -18,9 +18,9 @@ enum ByNameEnum implements _i1.SerializableModel {
   static ByNameEnum fromJson(String name) {
     switch (name) {
       case 'byName1':
-        return byName1;
+        return ByNameEnum.byName1;
       case 'byName2':
-        return byName2;
+        return ByNameEnum.byName2;
       default:
         throw ArgumentError(
             'Value "$name" cannot be converted to "ByNameEnum"');

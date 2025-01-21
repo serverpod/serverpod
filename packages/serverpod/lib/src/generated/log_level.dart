@@ -22,15 +22,15 @@ enum LogLevel implements _i1.SerializableModel {
   static LogLevel fromJson(int index) {
     switch (index) {
       case 0:
-        return debug;
+        return LogLevel.debug;
       case 1:
-        return info;
+        return LogLevel.info;
       case 2:
-        return warning;
+        return LogLevel.warning;
       case 3:
-        return error;
+        return LogLevel.error;
       case 4:
-        return fatal;
+        return LogLevel.fatal;
       default:
         throw ArgumentError('Value "$index" cannot be converted to "LogLevel"');
     }

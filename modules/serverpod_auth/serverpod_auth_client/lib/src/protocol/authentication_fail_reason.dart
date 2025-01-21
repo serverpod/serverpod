@@ -22,15 +22,15 @@ enum AuthenticationFailReason implements _i1.SerializableModel {
   static AuthenticationFailReason fromJson(int index) {
     switch (index) {
       case 0:
-        return invalidCredentials;
+        return AuthenticationFailReason.invalidCredentials;
       case 1:
-        return userCreationDenied;
+        return AuthenticationFailReason.userCreationDenied;
       case 2:
-        return internalError;
+        return AuthenticationFailReason.internalError;
       case 3:
-        return tooManyFailedAttempts;
+        return AuthenticationFailReason.tooManyFailedAttempts;
       case 4:
-        return blocked;
+        return AuthenticationFailReason.blocked;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "AuthenticationFailReason"');

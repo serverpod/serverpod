@@ -30,33 +30,33 @@ enum FilterConstraintType implements _i1.SerializableModel {
   static FilterConstraintType fromJson(int index) {
     switch (index) {
       case 0:
-        return equals;
+        return FilterConstraintType.equals;
       case 1:
-        return notEquals;
+        return FilterConstraintType.notEquals;
       case 2:
-        return like;
+        return FilterConstraintType.like;
       case 3:
-        return iLike;
+        return FilterConstraintType.iLike;
       case 4:
-        return notLike;
+        return FilterConstraintType.notLike;
       case 5:
-        return notILike;
+        return FilterConstraintType.notILike;
       case 6:
-        return lessThan;
+        return FilterConstraintType.lessThan;
       case 7:
-        return lessThanOrEquals;
+        return FilterConstraintType.lessThanOrEquals;
       case 8:
-        return greaterThan;
+        return FilterConstraintType.greaterThan;
       case 9:
-        return greaterThanOrEquals;
+        return FilterConstraintType.greaterThanOrEquals;
       case 10:
-        return between;
+        return FilterConstraintType.between;
       case 11:
-        return inThePast;
+        return FilterConstraintType.inThePast;
       case 12:
-        return isNull;
+        return FilterConstraintType.isNull;
       case 13:
-        return isNotNull;
+        return FilterConstraintType.isNotNull;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "FilterConstraintType"');
