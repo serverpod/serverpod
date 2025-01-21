@@ -123,26 +123,6 @@ class ClassDefinition extends SerializableModelDefinition {
     ];
   }
 
-  /// Returns a list of all indexes declared in the parent class.
-  /// If there is no parent class, an empty list is returned.
-  /// Inherited indexes act as index generators for child classes.
-  /// They are created with the table name as prefix to the original name.
-  List<SerializableModelIndexDefinition> get inheritedIndexes {
-    var inherited = parentClass?.indexesIncludingInherited ?? [];
-    if (tableName == null) return inherited;
-    return [
-      for (var index in inherited) index.copyWithPrefix(tableName!),
-    ];
-  }
-
-  /// Returns a list of all indexes in this class, including inherited indexes.
-  List<SerializableModelIndexDefinition> get indexesIncludingInherited {
-    return [
-      ...inheritedIndexes,
-      ...indexes,
-    ];
-  }
-
   /// Returns `true` if this class is a parent class or sealed.
   bool get isParentClass => childClasses.isNotEmpty || isSealed;
 
@@ -332,16 +312,6 @@ class SerializableModelIndexDefinition {
     required this.unique,
     required this.fields,
   });
-
-  /// Copy the index with a new name that is prefixed with [prefix].
-  SerializableModelIndexDefinition copyWithPrefix(String prefix) {
-    return SerializableModelIndexDefinition(
-      name: '${prefix}_$name',
-      type: type,
-      unique: unique,
-      fields: fields,
-    );
-  }
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
