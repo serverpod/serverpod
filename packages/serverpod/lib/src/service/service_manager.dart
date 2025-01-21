@@ -8,7 +8,7 @@ class ServiceHolder {
   /// Register the specified service
   /// The caller is allowed to swap out service, so no checks
   /// are performed.  Null will result in an exception
-  register(dynamic service) {
+  void register(dynamic service) {
     _registered[service.runtimeType] = service;
   }
 
