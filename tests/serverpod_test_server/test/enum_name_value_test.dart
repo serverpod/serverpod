@@ -85,7 +85,8 @@ void main() {
       test(
           'the value "type", '
           'then it should result in the same enum value', () {
-        var encoded = SerializationManager.encode(ByIndexEnumWithNameValue.type);
+        var encoded =
+            SerializationManager.encode(ByIndexEnumWithNameValue.type);
         var decoded = Protocol().decode<ByIndexEnumWithNameValue>(encoded);
         expect(decoded, ByIndexEnumWithNameValue.type);
       });
@@ -93,7 +94,8 @@ void main() {
       test(
           'the value "name", '
           'then it should result in the same enum value', () {
-        var encoded = SerializationManager.encode(ByIndexEnumWithNameValue.name);
+        var encoded =
+            SerializationManager.encode(ByIndexEnumWithNameValue.name);
         var decoded = Protocol().decode<ByIndexEnumWithNameValue>(encoded);
         expect(decoded, ByIndexEnumWithNameValue.name);
       });
