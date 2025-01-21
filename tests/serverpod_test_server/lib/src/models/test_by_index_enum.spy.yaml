@@ -1,0 +1,6 @@
+enum: TestByIndexEnum
+serialized: byIndex
+values:
+  - type
+  - name
+

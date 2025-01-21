@@ -1,0 +1,6 @@
+enum: TestByNameEnum
+serialized: byName
+values:
+  - type
+  - name
+
