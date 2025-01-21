@@ -25,9 +25,9 @@ enum IndexElementDefinitionType implements _i1.SerializableModel {
   static IndexElementDefinitionType fromJson(int index) {
     switch (index) {
       case 0:
-        return column;
+        return IndexElementDefinitionType.column;
       case 1:
-        return expression;
+        return IndexElementDefinitionType.expression;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "IndexElementDefinitionType"');

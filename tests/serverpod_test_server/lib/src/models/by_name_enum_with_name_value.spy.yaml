@@ -1,0 +1,6 @@
+enum: ByNameEnumWithNameValue
+serialized: byName
+values:
+  - type
+  - name
+

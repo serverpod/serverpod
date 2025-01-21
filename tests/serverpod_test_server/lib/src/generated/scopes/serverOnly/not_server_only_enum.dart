@@ -18,9 +18,9 @@ enum NotServerOnlyEnum implements _i1.SerializableModel {
   static NotServerOnlyEnum fromJson(int index) {
     switch (index) {
       case 0:
-        return foo;
+        return NotServerOnlyEnum.foo;
       case 1:
-        return bar;
+        return NotServerOnlyEnum.bar;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "NotServerOnlyEnum"');

@@ -20,13 +20,13 @@ enum DatabaseMigrationActionType implements _i1.SerializableModel {
   static DatabaseMigrationActionType fromJson(String name) {
     switch (name) {
       case 'createTable':
-        return createTable;
+        return DatabaseMigrationActionType.createTable;
       case 'createTableIfNotExists':
-        return createTableIfNotExists;
+        return DatabaseMigrationActionType.createTableIfNotExists;
       case 'deleteTable':
-        return deleteTable;
+        return DatabaseMigrationActionType.deleteTable;
       case 'alterTable':
-        return alterTable;
+        return DatabaseMigrationActionType.alterTable;
       default:
         throw ArgumentError(
             'Value "$name" cannot be converted to "DatabaseMigrationActionType"');
