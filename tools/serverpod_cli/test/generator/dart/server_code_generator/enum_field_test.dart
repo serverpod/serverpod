@@ -99,7 +99,7 @@ void main() {
       config: config,
     );
 
-    test('tthen generated enum uses "this.name" in the toJson method', () {
+    test('then generated enum uses "this.name" in the toJson method', () {
       expect(
         codeMap[expectedFileName],
         contains('String toJson() => this.name;'),
