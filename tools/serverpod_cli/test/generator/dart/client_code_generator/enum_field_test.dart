@@ -61,8 +61,9 @@ void main() {
     });
   });
 
-  group('Given an enum named Example serialized by name when generating code',
-      () {
+  group(
+      'Given an enum named Example serialized by name with no values named "name" '
+      'when generating code', () {
     var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
@@ -88,6 +89,44 @@ void main() {
       expect(
         codeMap[expectedFileName],
         contains('String toString() => name;'),
+      );
+    });
+  });
+
+  group(
+      'Given an enum named Example serialized by name with one of its values '
+      'named "name" when generating code', () {
+    var models = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withValues([
+            ProtocolEnumValueDefinition('name', []),
+          ])
+          .withSerialized(EnumSerialization.byName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+    test('then generated enum has static fromJson method', () {
+      expect(codeMap[expectedFileName],
+          contains('static Example fromJson(String name)'));
+    });
+
+    test('then generated enum has toJson method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toJson() => this.name;'),
+      );
+    });
+
+    test('then generated enum has toString method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toString() => this.name;'),
       );
     });
   });

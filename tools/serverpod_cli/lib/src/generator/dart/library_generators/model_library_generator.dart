@@ -2029,14 +2029,32 @@ class SerializableModelLibraryGenerator {
               })
           ]);
 
+          // Check if the enum has a value named "name"
+          bool hasValueNamedName =
+              enumDefinition.values.any((v) => v.name == 'name');
+
           switch (enumDefinition.serialized) {
             case EnumSerialization.byIndex:
               e.methods.addAll(enumSerializationMethodsByIndex(enumDefinition));
               break;
             case EnumSerialization.byName:
-              e.methods.addAll(enumSerializationMethodsByName(enumDefinition));
+              e.methods.addAll(enumSerializationMethodsByName(
+                enumDefinition,
+                hasValueNamedName: hasValueNamedName,
+              ));
               break;
           }
+
+          e.methods.add(
+            Method(
+              (m) => m
+                ..annotations.add(refer('override'))
+                ..returns = refer('String')
+                ..name = 'toString'
+                ..lambda = true
+                ..body = refer(hasValueNamedName ? 'this.name' : 'name').code,
+            ),
+          );
         }),
       );
     });
@@ -2056,7 +2074,9 @@ class SerializableModelLibraryGenerator {
               ..statements.addAll([
                 const Code('switch(index){'),
                 for (int i = 0; i < enumDefinition.values.length; i++)
-                  Code('case $i: return ${enumDefinition.values[i].name};'),
+                  Code(
+                    'case $i: return ${enumDefinition.className}.${enumDefinition.values[i].name};',
+                  ),
                 Code(
                   'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
                 ),
@@ -2071,18 +2091,13 @@ class SerializableModelLibraryGenerator {
           ..lambda = true
           ..body = refer('index').code,
       ),
-      Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = refer('String')
-          ..name = 'toString'
-          ..lambda = true
-          ..body = refer('name').code,
-      ),
     ];
   }
 
-  List<Method> enumSerializationMethodsByName(EnumDefinition enumDefinition) {
+  List<Method> enumSerializationMethodsByName(
+    EnumDefinition enumDefinition, {
+    required bool hasValueNamedName,
+  }) {
     return [
       Method((m) => m
         ..static = true
@@ -2095,7 +2110,9 @@ class SerializableModelLibraryGenerator {
               ..statements.addAll([
                 const Code('switch(name){'),
                 for (var value in enumDefinition.values)
-                  Code("case '${value.name}': return ${value.name};"),
+                  Code(
+                    "case '${value.name}': return ${enumDefinition.className}.${value.name};",
+                  ),
                 Code(
                   'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
                 ),
@@ -2108,15 +2125,7 @@ class SerializableModelLibraryGenerator {
           ..returns = refer('String')
           ..name = _toJsonMethodName
           ..lambda = true
-          ..body = refer('name').code,
-      ),
-      Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = refer('String')
-          ..name = 'toString'
-          ..lambda = true
-          ..body = refer('name').code,
+          ..body = refer(hasValueNamedName ? 'this.name' : 'name').code,
       ),
     ];
   }
