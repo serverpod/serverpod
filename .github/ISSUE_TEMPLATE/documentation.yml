@@ -1,0 +1,34 @@
+name: Documentation request
+description: Request a correction, clarification, or addition to the documentation.
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this template to help us improve the documentation. Be as specific and clear as possible!
+
+  - type: textarea
+    id: issue-summary
+    attributes:
+      label: Summary of the issue
+      description: Describe the documentation correction or the proposed addition. Please add references to relevant documentation sections if applicable.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: experience
+    attributes:
+      label: How experienced are you with this library?
+      multiple: false
+      description: This helps us understand where in the user journey this issue might arise.
+      options:
+        - Beginner - Just getting started with this library
+        - Intermediate - Familiar with the basics or have used it in a few projects
+        - Expert - Experienced and comfortable with using this library in complex projects
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Are you interested in working on a PR for this?
+      options:
+        - label: I want to work on this
