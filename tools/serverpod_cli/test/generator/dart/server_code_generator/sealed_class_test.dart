@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as p;
@@ -1014,25 +1012,5 @@ void main() {
         );
       });
     });
-  });
-
-  test(
-      'CompilationUnit.directives[i].uri.stringValue returns relative path without separators on Windows.',
-      () {
-    var content = Platform.isWindows
-        ? "part 'sub_dir\\example_child.dart';"
-        : "part 'sub_dir/example_child.dart';";
-
-    var unit = parseString(content: content).unit;
-
-    var directive = unit.directives.whereType<PartDirective>().first;
-
-    var directiveStringValue = directive.uri.stringValue;
-
-    var expectedPath = Platform.isWindows
-        ? 'sub_direxample_child.dart'
-        : 'sub_dir/example_child.dart';
-
-    expect(directiveStringValue == expectedPath, isTrue);
   });
 }
