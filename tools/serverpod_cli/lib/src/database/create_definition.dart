@@ -52,7 +52,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               isUnique: true,
               isPrimary: true,
             ),
-            for (var index in classDefinition.indexesIncludingInherited)
+            for (var index in classDefinition.indexes)
               IndexDefinition(
                 indexName: index.name,
                 elements: [
