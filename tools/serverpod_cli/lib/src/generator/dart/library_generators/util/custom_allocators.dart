@@ -18,7 +18,7 @@ class ImportCollector {
 
     // If on Windows, top level paths could appear with backslashes and break
     // the import clause, such as `import '..\protocol.dart' as _i1;`.
-    return relativePath.replaceAll('\\', '/');
+    return p.split(relativePath).join('/');
   }
 
   int getOrCreateAlias(String topNodePath, String currentPath) {
