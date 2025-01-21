@@ -73,6 +73,15 @@ void main() {
         expect(parentClass, isNotNull);
       });
 
+      test('has a relative protocol import directive', () {
+        var protocolImport = CompilationUnitHelpers.tryFindImportDirective(
+          parentCompilationUnit,
+          uri: '../protocol.dart',
+        );
+
+        expect(protocolImport, isNotNull);
+      }, skip: 'The real code generation have this import, but not the test.');
+
       test('has a part directive with ${child.className} uri', () {
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           parentCompilationUnit,
