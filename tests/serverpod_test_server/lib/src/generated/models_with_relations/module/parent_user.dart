@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ParentUser implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class ParentUser
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ParentUser._({
     this.id,
     this.name,
@@ -44,7 +45,7 @@ abstract class ParentUser implements _i1.TableRow, _i1.ProtocolSerialization {
   int? userInfoId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
@@ -132,7 +133,7 @@ class _ParentUserImpl extends ParentUser {
   }
 }
 
-class ParentUserTable extends _i1.Table {
+class ParentUserTable extends _i1.Table<int> {
   ParentUserTable({super.tableRelation}) : super(tableName: 'parent_user') {
     name = _i1.ColumnString(
       'name',
@@ -163,7 +164,7 @@ class ParentUserInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ParentUser.t;
+  _i1.Table<int> get table => ParentUser.t;
 }
 
 class ParentUserIncludeList extends _i1.IncludeList {
@@ -183,7 +184,7 @@ class ParentUserIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ParentUser.t;
+  _i1.Table<int> get table => ParentUser.t;
 }
 
 class ParentUserRepository {

@@ -14,7 +14,7 @@ import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart
     as _i2;
 
 abstract class LongImplicitIdFieldCollection
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
     this.id,
     required this.name,
@@ -56,7 +56,7 @@ abstract class LongImplicitIdFieldCollection
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
@@ -165,7 +165,7 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
   }
 }
 
-class LongImplicitIdFieldCollectionTable extends _i1.Table {
+class LongImplicitIdFieldCollectionTable extends _i1.Table<int> {
   LongImplicitIdFieldCollectionTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field_collection') {
     name = _i1.ColumnString(
@@ -258,7 +258,7 @@ class LongImplicitIdFieldCollectionInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => LongImplicitIdFieldCollection.t;
+  _i1.Table<int> get table => LongImplicitIdFieldCollection.t;
 }
 
 class LongImplicitIdFieldCollectionIncludeList extends _i1.IncludeList {
@@ -278,7 +278,7 @@ class LongImplicitIdFieldCollectionIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => LongImplicitIdFieldCollection.t;
+  _i1.Table<int> get table => LongImplicitIdFieldCollection.t;
 }
 
 class LongImplicitIdFieldCollectionRepository {

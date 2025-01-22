@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 abstract class ObjectWithByteData
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithByteData._({
     this.id,
     required this.byteData,
@@ -42,7 +42,7 @@ abstract class ObjectWithByteData
   _i2.ByteData byteData;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
@@ -123,7 +123,7 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }
 }
 
-class ObjectWithByteDataTable extends _i1.Table {
+class ObjectWithByteDataTable extends _i1.Table<int> {
   ObjectWithByteDataTable({super.tableRelation})
       : super(tableName: 'object_with_bytedata') {
     byteData = _i1.ColumnByteData(
@@ -148,7 +148,7 @@ class ObjectWithByteDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithByteData.t;
+  _i1.Table<int> get table => ObjectWithByteData.t;
 }
 
 class ObjectWithByteDataIncludeList extends _i1.IncludeList {
@@ -168,7 +168,7 @@ class ObjectWithByteDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithByteData.t;
+  _i1.Table<int> get table => ObjectWithByteData.t;
 }
 
 class ObjectWithByteDataRepository {

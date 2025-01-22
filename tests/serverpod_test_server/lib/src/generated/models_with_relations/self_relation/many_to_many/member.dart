@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
 
-abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Member implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Member._({
     this.id,
     required this.name,
@@ -55,7 +55,7 @@ abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Blocking>? blockedBy;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
@@ -165,7 +165,7 @@ class _MemberImpl extends Member {
   }
 }
 
-class MemberTable extends _i1.Table {
+class MemberTable extends _i1.Table<int> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
     name = _i1.ColumnString(
       'name',
@@ -283,7 +283,7 @@ class MemberInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int> get table => Member.t;
 }
 
 class MemberIncludeList extends _i1.IncludeList {
@@ -303,7 +303,7 @@ class MemberIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int> get table => Member.t;
 }
 
 class MemberRepository {

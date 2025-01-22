@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
-abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Student implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Student._({
     this.id,
     required this.name,
@@ -47,7 +47,7 @@ abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Enrollment>? enrollments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
@@ -140,7 +140,7 @@ class _StudentImpl extends Student {
   }
 }
 
-class StudentTable extends _i1.Table {
+class StudentTable extends _i1.Table<int> {
   StudentTable({super.tableRelation}) : super(tableName: 'student') {
     name = _i1.ColumnString(
       'name',
@@ -211,7 +211,7 @@ class StudentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table get table => Student.t;
+  _i1.Table<int> get table => Student.t;
 }
 
 class StudentIncludeList extends _i1.IncludeList {
@@ -231,7 +231,7 @@ class StudentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Student.t;
+  _i1.Table<int> get table => Student.t;
 }
 
 class StudentRepository {

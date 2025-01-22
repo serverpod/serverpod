@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UserNoteWithALongName
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UserNoteWithALongName._({
     this.id,
     required this.name,
@@ -43,7 +43,7 @@ abstract class UserNoteWithALongName
   int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
@@ -163,7 +163,7 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
   }
 }
 
-class UserNoteWithALongNameTable extends _i1.Table {
+class UserNoteWithALongNameTable extends _i1.Table<int> {
   UserNoteWithALongNameTable({super.tableRelation})
       : super(tableName: 'user_note_with_a_long_name') {
     name = _i1.ColumnString(
@@ -197,7 +197,7 @@ class UserNoteWithALongNameInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserNoteWithALongName.t;
+  _i1.Table<int> get table => UserNoteWithALongName.t;
 }
 
 class UserNoteWithALongNameIncludeList extends _i1.IncludeList {
@@ -217,7 +217,7 @@ class UserNoteWithALongNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserNoteWithALongName.t;
+  _i1.Table<int> get table => UserNoteWithALongName.t;
 }
 
 class UserNoteWithALongNameRepository {

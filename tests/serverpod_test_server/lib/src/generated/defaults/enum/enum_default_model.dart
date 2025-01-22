@@ -14,7 +14,7 @@ import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EnumDefaultModel._({
     this.id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
@@ -74,7 +74,7 @@ abstract class EnumDefaultModel
   _i3.ByIndexEnum? byIndexEnumDefaultModelNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -187,7 +187,7 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
   }
 }
 
-class EnumDefaultModelTable extends _i1.Table {
+class EnumDefaultModelTable extends _i1.Table<int> {
   EnumDefaultModelTable({super.tableRelation})
       : super(tableName: 'enum_default_model') {
     byNameEnumDefaultModel = _i1.ColumnEnum(
@@ -237,7 +237,7 @@ class EnumDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EnumDefaultModel.t;
+  _i1.Table<int> get table => EnumDefaultModel.t;
 }
 
 class EnumDefaultModelIncludeList extends _i1.IncludeList {
@@ -257,7 +257,7 @@ class EnumDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EnumDefaultModel.t;
+  _i1.Table<int> get table => EnumDefaultModel.t;
 }
 
 class EnumDefaultModelRepository {

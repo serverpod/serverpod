@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class LongImplicitIdField
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   LongImplicitIdField._({
     this.id,
     required this.name,
@@ -42,7 +42,7 @@ abstract class LongImplicitIdField
   int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
@@ -162,7 +162,7 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   }
 }
 
-class LongImplicitIdFieldTable extends _i1.Table {
+class LongImplicitIdFieldTable extends _i1.Table<int> {
   LongImplicitIdFieldTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field') {
     name = _i1.ColumnString(
@@ -196,7 +196,7 @@ class LongImplicitIdFieldInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => LongImplicitIdField.t;
+  _i1.Table<int> get table => LongImplicitIdField.t;
 }
 
 class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
@@ -216,7 +216,7 @@ class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => LongImplicitIdField.t;
+  _i1.Table<int> get table => LongImplicitIdField.t;
 }
 
 class LongImplicitIdFieldRepository {
