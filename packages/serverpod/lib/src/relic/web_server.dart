@@ -80,12 +80,12 @@ class WebServer {
             _port,
           ),
       };
-    } catch (e) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
-        'port $_port may already be in use.',
+    } catch (e, stackTrace) {
+      logError(
+        'Failed to bind socket, '
+        'Webserver port $_port may already be in use.',
       );
-      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      logError(e, stackTrace: stackTrace);
       return false;
     }
     httpServer.autoCompress = true;
@@ -94,8 +94,7 @@ class WebServer {
       _start,
       (e, stackTrace) {
         // Last resort error handling
-        stdout.writeln('${DateTime.now()} Relic zoned error: $e');
-        stdout.writeln('$stackTrace');
+        logError('Relic zoned error: $e', stackTrace: stackTrace);
       },
     );
 
@@ -103,7 +102,7 @@ class WebServer {
   }
 
   void _start() async {
-    stdout.writeln('Webserver listening on port $_port');
+    logInfo('Webserver listening on port $_port');
 
     try {
       await for (var request in httpServer) {
@@ -188,16 +187,24 @@ class WebServer {
   }
 
   /// Logs an error to stderr.
-  void logError(var e, {StackTrace? stackTrace}) {
-    stderr.writeln('ERROR: $e');
+  void logError(Object e, {StackTrace? stackTrace}) {
+    var now = DateTime.now().toUtc();
+    stderr.writeln('$now WebServer ERROR: $e');
     if (stackTrace != null) {
       stderr.writeln('$stackTrace');
     }
   }
 
-  /// Logs a message to stdout.
+  /// Logs an info message to stdout.
+  void logInfo(String msg) {
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer  INFO: $msg');
+  }
+
+  /// Logs a debug message to stdout.
   void logDebug(String msg) {
-    stdout.writeln(msg);
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer DEBUG: $msg');
   }
 
   /// Stops the webserver.
