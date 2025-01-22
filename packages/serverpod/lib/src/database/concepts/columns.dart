@@ -752,3 +752,17 @@ class _NotInSetExpression extends _SetColumnExpression {
   @override
   String get operator => 'NOT IN';
 }
+
+/// An extention on iterable for Id columns.
+extension IdColumnIterable on Iterable {
+  /// Casts the elements of the iterable to the correct id type.
+  Iterable castToIdType() {
+    if (first is int) {
+      return cast<int>();
+    } else if (first is UuidValue) {
+      return cast<UuidValue>();
+    }
+
+    throw Exception('Unsupported id column type: ${first.runtimeType}');
+  }
+}

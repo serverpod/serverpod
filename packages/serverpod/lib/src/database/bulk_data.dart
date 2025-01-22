@@ -14,7 +14,7 @@ class DatabaseBulkData {
   static Future<BulkData> exportTableData({
     required Database database,
     required String table,
-    int lastId = 0,
+    Object? lastId,
     int limit = 100,
     Filter? filter,
   }) async {
@@ -65,8 +65,12 @@ class DatabaseBulkData {
     }
 
     List<List<dynamic>> data;
+    if (lastId != null) {
+      String strLastId = (lastId is num) ? '$lastId' : "'$lastId'";
+      filterQuery = ' AND id > $strLastId$filterQuery';
+    }
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
+        'WHERE 1=1$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
     } catch (e) {
