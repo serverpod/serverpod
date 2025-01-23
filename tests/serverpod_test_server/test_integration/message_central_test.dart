@@ -26,9 +26,9 @@ void main() async {
   });
 
   test(
-      'Given a message central '
-      'when a message is posted to a channel that is not registered '
-      'then it returns true', () async {
+      'Given no listeners on channel '
+      'when a message is posted to channel '
+      'then true is returned.', () async {
     final result = await messageCentral.postMessage(
       channelName,
       SimpleData(num: 42),
@@ -159,14 +159,6 @@ void main() async {
     tearDown(() async {
       await subscription1.cancel();
       await subscription2.cancel();
-    });
-
-    test('when message is posted then it returns true', () async {
-      final result = await messageCentral.postMessage(
-        channelName,
-        SimpleData(num: 42),
-      );
-      expect(result, isTrue);
     });
 
     test('when message is posted then all streams receive the message',
