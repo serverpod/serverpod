@@ -25,11 +25,11 @@ enum TestEnum implements _i1.SerializableModel {
   static TestEnum fromJson(int index) {
     switch (index) {
       case 0:
-        return one;
+        return TestEnum.one;
       case 1:
-        return two;
+        return TestEnum.two;
       case 2:
-        return three;
+        return TestEnum.three;
       default:
         throw ArgumentError('Value "$index" cannot be converted to "TestEnum"');
     }

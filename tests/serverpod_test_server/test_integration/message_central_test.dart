@@ -25,6 +25,17 @@ void main() async {
     await server.shutdown(exitProcess: false);
   });
 
+  test(
+      'Given no listeners on channel '
+      'when a message is posted to channel '
+      'then true is returned.', () async {
+    final result = await messageCentral.postMessage(
+      channelName,
+      SimpleData(num: 42),
+    );
+    expect(result, isTrue);
+  });
+
   group('Given listener on channel in message central', () {
     late Completer<SimpleData> messageReceivedCompleter;
     var listenerMethod = (message) {
@@ -38,6 +49,14 @@ void main() async {
 
     tearDown(() {
       messageCentral.removeListener(channelName, listenerMethod);
+    });
+
+    test('when message is posted then it returns true', () async {
+      final result = await messageCentral.postMessage(
+        channelName,
+        SimpleData(num: 42),
+      );
+      expect(result, isTrue);
     });
 
     test('when message is posted then listener is notified', () async {
@@ -73,6 +92,14 @@ void main() async {
 
     tearDown(() async {
       await subscription.cancel();
+    });
+
+    test('when message is posted then it returns true', () async {
+      final result = await messageCentral.postMessage(
+        channelName,
+        SimpleData(num: 42),
+      );
+      expect(result, isTrue);
     });
 
     test('when message is posted then message is delivered on stream',

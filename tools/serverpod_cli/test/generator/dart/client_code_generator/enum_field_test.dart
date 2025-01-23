@@ -92,6 +92,38 @@ void main() {
     });
   });
 
+  group('Given an enum with a value named "name" when generating code', () {
+    var models = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withValues([
+            ProtocolEnumValueDefinition('name', []),
+          ])
+          .withSerialized(EnumSerialization.byName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    test('then generated enum uses "this.name" in the toJson method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toJson() => this.name;'),
+      );
+    });
+
+    test('then generated enum uses "this.name" in the toString method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toString() => this.name;'),
+      );
+    });
+  });
+
   group('Given enum with documentation when generating code', () {
     var documentation = [
       '// This is an example documentation',

@@ -28,11 +28,11 @@ enum ForeignKeyMatchType implements _i1.SerializableModel {
   static ForeignKeyMatchType fromJson(int index) {
     switch (index) {
       case 0:
-        return full;
+        return ForeignKeyMatchType.full;
       case 1:
-        return partial;
+        return ForeignKeyMatchType.partial;
       case 2:
-        return simple;
+        return ForeignKeyMatchType.simple;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ForeignKeyMatchType"');

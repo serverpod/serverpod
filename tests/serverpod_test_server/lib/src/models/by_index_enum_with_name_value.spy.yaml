@@ -1,0 +1,6 @@
+enum: ByIndexEnumWithNameValue
+serialized: byIndex
+values:
+  - type
+  - name
+
