@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/redis/controller.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// Channels that are listened to by the Serverpod Framework.
 abstract class MessageCentralServerpodChannels {
@@ -24,11 +26,16 @@ typedef MessageCentralListenerCallback = void Function(
 /// endpoints. The message central can pass on any serializable to a channel.
 /// The channel can be listened to by from any place in the server.
 class MessageCentral {
+  final ServiceLocator _serviceLocator;
+
   final _channels = <String, Set<MessageCentralListenerCallback>>{};
   final _sessionToChannelNamesLookup = <Session, Set<String>>{};
   final _sessionToCallbacksLookup =
       <Session, Set<MessageCentralListenerCallback>>{};
   final _sessionToCleanupCallbacksLookup = <Session, Set<Function()>>{};
+
+  /// create a new instance
+  MessageCentral(this._serviceLocator);
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
   /// can be provided, in which case the message is sent only to that specific
@@ -45,9 +52,16 @@ class MessageCentral {
   }) async {
     if (global) {
       // Send to Redis
-      var data =
-          Serverpod.instance.serializationManager.encodeWithType(message);
-      var redisController = Serverpod.instance.redisController;
+      SerializationManagerServer? sms =
+          _serviceLocator.locate<SerializationManagerServer>();
+      if (sms == null) {
+        throw Exception('Serialization Manager not configured');
+      }
+
+      RedisController? redisController =
+          _serviceLocator.locate<RedisController>();
+
+      var data = sms.encodeWithType(message);
       if (redisController == null) {
         throw StateError('Redis needs to be enabled to use this method');
       }
@@ -100,8 +114,10 @@ class MessageCentral {
     }
     callbacks.add(listener);
 
-    if (session.serverpod.redisController != null) {
-      session.serverpod.redisController!.subscribe(
+    RedisController? redisController =
+        _serviceLocator.locate<RedisController>();
+    if (redisController != null) {
+      redisController.subscribe(
         channelName,
         _receivedRedisMessage,
       );
@@ -110,8 +126,12 @@ class MessageCentral {
 
   void _receivedRedisMessage(String channelName, String message) {
     // var serialization = jsonDecode(message);
-    var messageObj =
-        Serverpod.instance.serializationManager.decodeWithType(message);
+    SerializationManagerServer? sms =
+        _serviceLocator.locate<SerializationManagerServer>();
+    if (sms == null) {
+      throw Exception('Serialization Manager not configured');
+    }
+    var messageObj = sms.decodeWithType(message);
     if (messageObj == null) {
       return;
     }
@@ -126,8 +146,9 @@ class MessageCentral {
       channel.remove(listener);
       if (channel.isEmpty) {
         _channels.remove(channelName);
-        if (session.serverpod.redisController != null) {
-          session.serverpod.redisController!.unsubscribe(channelName);
+        var redisController = _serviceLocator.locate<RedisController>();
+        if (redisController != null) {
+          redisController!.unsubscribe(channelName);
         }
       }
     }
@@ -177,8 +198,9 @@ class MessageCentral {
     channel.remove(listener);
     if (channel.isEmpty) {
       _channels.remove(channelName);
-      if (session.serverpod.redisController != null) {
-        session.serverpod.redisController!.unsubscribe(channelName);
+      var redisController = _serviceLocator.locate<RedisController>();
+      if (redisController != null) {
+        redisController.unsubscribe(channelName);
       }
     }
 

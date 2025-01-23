@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/src/service/service_manager.dart';
+
 import '../server/session.dart';
 
 /// The [CloudStorage] provides a standardized interface to store binary files
@@ -27,7 +29,7 @@ abstract class CloudStorage {
   /// string shouldn't start with a slash).
   /// This method should throw an IOException if the file upload fails.
   Future<void> storeFile({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
@@ -38,27 +40,27 @@ abstract class CloudStorage {
   /// If the files are public, the may also be accessible through a web
   /// interface.
   Future<ByteData?> retrieveFile({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   });
 
   /// Returns a public link to a file in the storage. If the file isn't public
   /// or if no such file exists, null is returned.
   Future<Uri?> getPublicUrl({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   });
 
   /// Returns true if the file exists.
   Future<bool> fileExists({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   });
 
   /// Deletes the specified file if it exists. Does nothing if the file doesn't
   /// exist.
   Future<void> deleteFile({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   });
 
@@ -67,7 +69,7 @@ abstract class CloudStorage {
   /// [verifyDirectFileUpload] method should be called. If the file upload
   /// hasn't been confirmed before the URL expires, the file will be deleted.
   Future<String?> createDirectFileUploadDescription({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
@@ -76,7 +78,7 @@ abstract class CloudStorage {
   /// Call this method once a direct file upload is completed. Failure to call
   /// this method will cause the uploaded file to be deleted.
   Future<bool> verifyDirectFileUpload({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   });
 }

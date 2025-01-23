@@ -63,7 +63,7 @@ class MethodStreaming extends Endpoint {
 
   Future<bool> wasBroadcastStreamCanceled(Session session) async {
     var streamWasCanceled = Completer<bool>();
-    session.messages.addListener(cancelStreamChannelName, (data) {
+    session.messages.addListener(session, cancelStreamChannelName, (data) {
       streamWasCanceled.complete(true);
     });
     return streamWasCanceled.future;
@@ -71,7 +71,7 @@ class MethodStreaming extends Endpoint {
 
   Future<bool> wasSessionWillCloseListenerCalled(Session session) async {
     var sessionWillCloseListenerWasCalled = Completer<bool>();
-    session.messages.addListener(sessionClosedChannelName, (data) {
+    session.messages.addListener(session, sessionClosedChannelName, (data) {
       sessionWillCloseListenerWasCalled.complete(true);
     });
     return sessionWillCloseListenerWasCalled.future;

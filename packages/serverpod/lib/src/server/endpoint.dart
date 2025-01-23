@@ -27,9 +27,6 @@ abstract class Endpoint {
   /// The [Server] this [Endpoint] is running on.
   Server get server => _server;
 
-  /// The [ServerPod] this [Endpoint] is running on.
-  Serverpod get pod => server.serverpod;
-
   /// List of [Scope]s that are required to access this [Endpoint]. Override
   /// this getter to setup custom requirements.
   Set<Scope> get requiredScopes => {};

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// The [DatabaseCloudStorage] uses the standard Serverpod database to store
 /// binary files. It's the default [CloudStorage] interface of Serverpod, but
@@ -16,9 +17,10 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<void> deleteFile(
-      {required Session session, required String path}) async {
+      {required ServiceLocator serviceLocator, required String path}) async {
     try {
-      await session.db.deleteWhere<CloudStorageEntry>(
+      Database db = serviceLocator.locate<Database>()!;
+      await db.deleteWhere<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -29,9 +31,10 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<bool> fileExists(
-      {required Session session, required String path}) async {
+      {required ServiceLocator serviceLocator, required String path}) async {
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
+      Database db = serviceLocator.locate<Database>()!;
+      var numRows = await db.count<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -43,13 +46,13 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<Uri?> getPublicUrl(
-      {required Session session, required String path}) async {
+      {required ServiceLocator serviceLocator, required String path}) async {
     if (storageId != 'public') return null;
 
-    var exists = await fileExists(session: session, path: path);
+    var exists = await fileExists(serviceLocator: serviceLocator, path: path);
     if (!exists) return null;
 
-    var config = session.server.serverpod.config;
+    ServerpodConfig config = serviceLocator.locate<ServerpodConfig>()!;
 
     return Uri(
       scheme: config.apiServer.publicScheme,
@@ -65,14 +68,15 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<ByteData?> retrieveFile({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   }) async {
     var query =
         'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND path=${EscapedExpression(path)} AND verified=${EscapedExpression(true)}';
 
     try {
-      var result = await session.db.unsafeQuery(query);
+      Database db = serviceLocator.locate<Database>()!;
+      var result = await db.unsafeQuery(query);
       if (result.isNotEmpty) {
         var encoded = (result.first.first as String).replaceAll('\n', '');
         return ByteData.view(base64Decode(encoded).buffer);
@@ -86,7 +90,7 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<void> storeFile({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
@@ -97,7 +101,8 @@ class DatabaseCloudStorage extends CloudStorage {
     var query =
         'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (${EscapedExpression(storageId)}, ${EscapedExpression(path)}, ${EscapedExpression(addedTime)}, ${EscapedExpression(expiration?.toUtc())}, ${EscapedExpression(verified)}, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=${EscapedExpression(addedTime)}, "expiration"=${EscapedExpression(expiration?.toUtc())}, "verified"=${EscapedExpression(verified)}';
     try {
-      await session.db.unsafeQuery(query);
+      Database db = serviceLocator.locate<Database>()!;
+      await db.unsafeQuery(query);
     } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
     }
@@ -105,12 +110,12 @@ class DatabaseCloudStorage extends CloudStorage {
 
   @override
   Future<String?> createDirectFileUploadDescription({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
   }) async {
-    var config = session.server.serverpod.config;
+    ServerpodConfig config = serviceLocator.locate<ServerpodConfig>()!;
 
     var expiration = DateTime.now().add(expirationDuration);
 
@@ -120,8 +125,9 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
+    Database db = serviceLocator.locate<Database>()!;
     var inserted =
-        await session.db.insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
+        await db.insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
 
     var uri = Uri(
       scheme: config.apiServer.publicScheme,
@@ -148,12 +154,13 @@ class DatabaseCloudStorage extends CloudStorage {
   /// database cloud storage.
   @override
   Future<bool> verifyDirectFileUpload({
-    required Session session,
+    required ServiceLocator serviceLocator,
     required String path,
   }) async {
     var query =
         'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
-    var result = await session.db.unsafeQuery(query);
+    Database db = serviceLocator.locate<Database>()!;
+    var result = await db.unsafeQuery(query);
     if (result.isEmpty) return false;
 
     var verified = result.first.first as bool;
@@ -161,7 +168,7 @@ class DatabaseCloudStorage extends CloudStorage {
 
     query =
         'UPDATE serverpod_cloud_storage SET "verified"=${EscapedExpression(true)} WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
-    await session.db.unsafeQuery(query);
+    await db.unsafeQuery(query);
     return true;
   }
 

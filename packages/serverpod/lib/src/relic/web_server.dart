@@ -5,11 +5,12 @@ import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// The Serverpod webserver.
 class WebServer {
   /// Reference to the [Serverpod] this webserver is associated with.
-  final Serverpod serverpod;
+  final ServiceLocator serviceLocator;
 
   /// The server id of this server.
   final String serverId;
@@ -22,9 +23,9 @@ class WebServer {
 
   /// Creates a new webserver.
   WebServer({
-    required this.serverpod,
-  }) : serverId = serverpod.serverId {
-    var config = serverpod.config.webServer;
+    required this.serviceLocator,
+  }) : serverId = serviceLocator.locate<String>(name: 'serverId')! {
+    var config = serviceLocator.locate<ServerpodConfig>()!.webServer;
 
     if (config == null) {
       throw StateError(
@@ -103,7 +104,7 @@ class WebServer {
   }
 
   void _handleRequest(HttpRequest request) async {
-    if (serverpod.runMode == 'production') {
+    if (serviceLocator.locate<String>(name: 'runMode')! == 'production') {
       request.response.headers.add('Strict-Transport-Security',
           'max-age=63072000; includeSubDomains; preload');
     }
@@ -131,7 +132,7 @@ class WebServer {
     authenticationKey ??= queryParameters['auth'];
 
     WebCallSession session = WebCallSession(
-      server: serverpod.server,
+      serviceLocator: serviceLocator,
       endpoint: uri.path,
       authenticationKey: authenticationKey,
     );

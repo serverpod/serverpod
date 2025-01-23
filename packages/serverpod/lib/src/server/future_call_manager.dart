@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -51,14 +50,14 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = _server.serverpod.internalSession;
+    var session = _server.serviceLocator.locate<InternalSession>()!;
     await FutureCallEntry.db.insertRow(session, entry);
   }
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = _server.serverpod.internalSession;
+    var session = _server.serviceLocator.locate<InternalSession>()!;
 
     await FutureCallEntry.db.deleteWhere(
       session,
@@ -98,7 +97,8 @@ class FutureCallManager {
     var pendingFutureCall = Completer<void>();
     _pendingFutureCall = pendingFutureCall;
 
-    if (_server.serverpod.commandLineArgs.role == ServerpodRole.maintenance) {
+    if (_server.serviceLocator.locate<CommandLineArgs>()!.role ==
+        ServerpodRole.maintenance) {
       stdout.writeln('Processing future calls.');
     }
 
@@ -106,7 +106,7 @@ class FutureCallManager {
       // Get calls
       var now = DateTime.now().toUtc();
 
-      var tempSession = _server.serverpod.internalSession;
+      var tempSession = _server.serviceLocator.locate<InternalSession>()!;
 
       var rows = await FutureCallEntry.db.deleteWhere(
         tempSession,
@@ -126,7 +126,7 @@ class FutureCallManager {
         }
 
         var futureCallSession = FutureCallSession(
-          server: _server,
+          serviceLocator: _server.serviceLocator,
           futureCallName: entry.name,
         );
 
@@ -149,12 +149,12 @@ class FutureCallManager {
 
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
-    if (_server.serverpod.commandLineArgs.role == ServerpodRole.monolith &&
-        !_shuttingDown) {
+    CommandLineArgs commandLineArgs =
+        _server.serviceLocator.locate<CommandLineArgs>()!;
+    if (commandLineArgs.role == ServerpodRole.monolith && !_shuttingDown) {
       // Check the queue again in 5 seconds
       _timer = Timer(const Duration(seconds: 5), _checkQueue);
-    } else if (_server.serverpod.commandLineArgs.role ==
-        ServerpodRole.maintenance) {
+    } else if (commandLineArgs.role == ServerpodRole.maintenance) {
       onCompleted();
     }
 

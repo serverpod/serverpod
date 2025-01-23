@@ -1,7 +1,7 @@
 import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
@@ -56,8 +56,13 @@ class MigrationManager {
     var warnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
-    var targetTables =
-        session.serverpod.serializationManager.getTargetTableDefinitions();
+    var targetTables = session.serviceLocator
+        .locate<SerializationManagerServer>()
+        ?.getTargetTableDefinitions();
+
+    if (targetTables == null) {
+      throw Exception('Serialization Manager not initialized');
+    }
 
     for (var table in targetTables) {
       var liveTable = liveDatabase.findTableNamed(table.name);
@@ -164,7 +169,12 @@ class MigrationManager {
   Future<List<String>?> migrateToLatest(Session session) async {
     var latestVersion = getLatestVersion();
 
-    var moduleName = session.serverpod.serializationManager.getModuleName();
+    var moduleName = session.serviceLocator
+        .locate<SerializationManagerServer>()
+        ?.getModuleName();
+    if (moduleName == null) {
+      throw Exception('Serialization Manager not configured');
+    }
 
     if (isVersionInstalled(moduleName, latestVersion)) {
       return null;

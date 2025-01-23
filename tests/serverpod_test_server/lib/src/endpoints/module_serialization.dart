@@ -15,7 +15,9 @@ class ModuleSerializationEndpoint extends Endpoint {
 
     try {
       var s = SerializationManager.encode(moduleClass);
-      var unpacked = pod.serializationManager.decode<module.ModuleClass>(s);
+      var serializationManager =
+          session.serviceLocator.locate<SerializationManagerServer>()!;
+      var unpacked = serializationManager.decode<module.ModuleClass>(s);
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
       stdout.writeln(

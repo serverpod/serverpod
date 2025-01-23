@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/service.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class RedisEndpoint extends Endpoint {
@@ -34,7 +35,7 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
-    session.messages.addListener(channel, (message) {
+    session.messages.addListener(session, channel, (message) {
       data = message as SimpleData?;
     });
     await Future.delayed(const Duration(seconds: 2));
@@ -50,6 +51,9 @@ class RedisEndpoint extends Endpoint {
   }
 
   Future<int> countSubscribedChannels(Session session) async {
-    return session.serverpod.redisController!.subscribedChannels.length;
+    return session.serviceLocator
+        .locate<RedisController>()!
+        .subscribedChannels
+        .length;
   }
 }

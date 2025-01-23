@@ -73,7 +73,7 @@ class TestToolsEndpoint extends Endpoint {
 
   Stream<int> listenForNumbersOnSharedStream(Session session) async* {
     var sharedStream =
-        session.messages.createStream<SimpleData>(sharedStreamName);
+        session.messages.createStream<SimpleData>(session, sharedStreamName);
 
     await for (var message in sharedStream) {
       yield message.num;

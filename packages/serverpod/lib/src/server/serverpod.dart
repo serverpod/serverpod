@@ -10,6 +10,7 @@ import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/future_call_facade.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
@@ -26,7 +27,7 @@ import '../generated/protocol.dart' as internal;
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
-  Serverpod pod,
+  ServiceLocator serviceLocator,
   DateTime timestamp,
 );
 
@@ -36,9 +37,12 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
 class Serverpod {
   static Serverpod? _instance;
 
-  /// id use with service manager
-  final ServiceHolder _serviceHolder =
-      ServiceManager.register(ServiceManager.defaultId);
+  final ServiceHolder _serviceHolder = ServiceHolder();
+
+  /// source for all components configured by this serverpod instance
+  late final ServiceLocator serviceLocator =
+      WrappingServiceLocator(_serviceHolder);
+
   late ConsoleLogger _consoleLogger;
 
   late Session _internalSession;
@@ -88,7 +92,7 @@ class Serverpod {
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
-  final SerializationManagerServer serializationManager;
+  final SerializationManagerServer _serializationManager;
   late SerializationManagerServer _internalSerializationManager;
 
   /// Definition of endpoints used by the server. This is typically generated.
@@ -99,7 +103,7 @@ class Serverpod {
   late Caches _caches;
 
   /// The Redis controller used by Serverpod.
-  RedisController? redisController;
+  RedisController? _redisController;
 
   /// Caches used by the server.
   Caches get caches => _caches;
@@ -163,6 +167,7 @@ class Serverpod {
   LogSettingsManager? _logSettingsManager;
 
   FutureCallManager? _futureCallManager;
+  late FutureCallFacade _futureCallFacade;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -290,7 +295,7 @@ class Serverpod {
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
-    this.serializationManager,
+    this._serializationManager,
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
@@ -305,6 +310,15 @@ class Serverpod {
     _instance = this;
     _internalSerializationManager = internal.Protocol();
 
+    _serviceHolder.register(_serializationManager);
+    _serviceHolder.register(endpoints);
+    _serviceHolder.register(authenticationHandler);
+    _serviceHolder.register(healthCheckHandler);
+
+    // TODO create a holder class for this information
+    _serviceHolder.register(httpResponseHeaders);
+    _serviceHolder.register(httpOptionsResponseHeaders);
+
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
     stdout.writeln(commandLineArgs.toString());
@@ -316,6 +330,7 @@ class Serverpod {
 
     _runMode = commandLineArgs.runMode;
     serverId = commandLineArgs.serverId;
+    _serviceHolder.register(serverId, name: 'serverId');
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -329,6 +344,7 @@ class Serverpod {
           _passwords,
         );
     _consoleLogger.logVerbose(this.config.toString());
+    _serviceHolder.register(this.config);
 
     Features(this.config);
 
@@ -336,13 +352,20 @@ class Serverpod {
     // loaded settings from the database.
     _updateLogSettings(_defaultRuntimeSettings);
 
+    // these are all configured by _updateLogSettings
+    _serviceHolder.register(_runtimeSettings);
+    _serviceHolder.register(_logSettingsManager);
+    _serviceHolder.register(_logManager);
+
     // Setup database
     var databaseConfiguration = this.config.database;
     if (Features.enableDatabase && databaseConfiguration != null) {
       _databasePoolManager = DatabasePoolManager(
-        serializationManager,
+        _serializationManager,
         databaseConfiguration,
       );
+
+      _serviceHolder.register(_databasePoolManager);
 
       // TODO: Remove this when we have a better way to handle this.
       // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
@@ -358,32 +381,37 @@ class Serverpod {
         'private': DatabaseCloudStorage('private'),
       });
     }
+    _serviceHolder.register(storage, name: 'storage');
 
     // Setup Redis
     var redis = this.config.redis;
     if (Features.enableRedis && redis != null) {
-      redisController = RedisController(
+      _redisController = RedisController(
         host: redis.host,
         port: redis.port,
         user: redis.user,
         password: redis.password,
       );
+
+      _serviceHolder.register(_redisController);
     }
 
     _caches = Caches(
-      serializationManager,
+      _serializationManager,
       this.config,
       serverId,
-      redisController,
+      _redisController,
     );
+    _serviceHolder.register(_caches);
 
     var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
+    _serviceHolder.register(authHandler);
 
     server = Server(
-      serverpod: this,
+      serviceLocator: serviceLocator,
       serverId: serverId,
       port: this.config.apiServer.port,
-      serializationManager: serializationManager,
+      serializationManager: _serializationManager,
       databasePoolManager: _databasePoolManager,
       passwords: _passwords,
       runMode: _runMode,
@@ -396,26 +424,67 @@ class Serverpod {
     );
     endpoints.initializeEndpoints(server);
 
-    _internalSession = InternalSession(server: server, enableLogging: false);
+    _internalSession =
+        InternalSession(serviceLocator: serviceLocator, enableLogging: false);
+    _serviceHolder.register(_internalSession);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
         server,
-        serializationManager,
+        _serializationManager,
         _onCompletedFutureCalls,
       );
     }
 
+    // Always register the facade, even when future calls are disabled
+    // The facade knows how to handle the feature being disabled
+    _futureCallFacade = FutureCallFacade(server, _futureCallManager);
+    _serviceHolder.register(_futureCallFacade);
+
     if (Features.enableScheduledHealthChecks) {
       _healthCheckManager = HealthCheckManager(
-        this,
+        serviceLocator,
         _onCompletedHealthChecks,
       );
     }
 
     if (Features.enableWebServer()) {
-      _webServer = WebServer(serverpod: this);
+      _webServer = WebServer(serviceLocator: server.serviceLocator);
     }
+
+    // These are here because HealthCheckManager needs to
+    // reload setting sometimes.
+    //
+    // TODO extract functionality shared between health checks and server pod
+    //  into a separate class
+    //
+    // This effectively gives serverpod a self reference
+    // so server pod instances will never be garbage collected
+    // but currently that isn't really a problem since you really only
+    // run one serverpod instance and aren't trying to swap them out
+    // dynamically
+    _serviceHolder.register(() {
+      reloadRuntimeSettings();
+      _serviceHolder.replace(_runtimeSettings);
+      _serviceHolder.replace(_logSettingsManager);
+      _serviceHolder.replace(_logManager);
+    }, name: 'reloadRuntimeSettings');
+
+    _serviceHolder.register(
+        (RuntimeSettings runtimeSetings) =>
+            updateRuntimeSettings(runtimeSettings),
+        name: 'updateRuntimeSettings');
+
+    _serviceHolder.register(() => shutdown(), name: 'shutdownFunction');
+
+    _serviceHolder.register((String key) => getPassword(key),
+        name: 'passwordAccessFunction');
+
+    // things initialized inline in their declarations, that need to be registered
+    _serviceHolder.register(filesWhitelistedForInsights,
+        name: 'filesWhitelistedForInsights');
+    _serviceHolder.register(serverId, name: serverId);
+    _serviceHolder.register(runMode, name: 'runMode');
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -431,6 +500,7 @@ class Serverpod {
   /// An [ExitException] will be thrown if the start up sequence fails.
   Future<void> start({bool runInGuardedZone = true}) async {
     _startedTime = DateTime.now().toUtc();
+    _serviceHolder.register(_startedTime, name: 'startedTime');
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
@@ -490,7 +560,7 @@ class Serverpod {
     // Connect to Redis
     if (Features.enableRedis) {
       _consoleLogger.logVerbose('Connecting to Redis.');
-      await redisController?.start();
+      await _redisController?.start();
     } else {
       _consoleLogger.logVerbose('Redis is disabled, skipping.');
     }
@@ -673,7 +743,7 @@ class Serverpod {
     var endpoints = internal.Endpoints();
 
     _serviceServer = Server(
-      serverpod: this,
+      serviceLocator: serviceLocator,
       serverId: serverId,
       port: config.insightsServer!.port,
       serializationManager: _internalSerializationManager,
@@ -694,71 +764,34 @@ class Serverpod {
     return success;
   }
 
-  /// Registers a [FutureCall] with the [Serverpod] and associates it with
-  /// the specified name.
+  /// Passthrough
   void registerFutureCall(FutureCall call, String name) {
-    var futureCallManager = _futureCallManager;
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-    _futureCallManager?.registerFutureCall(call, name);
+    _futureCallFacade.registerFutureCall(call, name);
   }
 
-  /// Calls a [FutureCall] by its name after the specified delay, optionally
-  /// passing a [SerializableModel] object as parameter.
+  /// Passthrough
   Future<void> futureCallWithDelay(
     String callName,
     SerializableModel? object,
     Duration delay, {
     String? identifier,
   }) async {
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
-    var futureCallManager = _futureCallManager;
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-    await _futureCallManager?.scheduleFutureCall(
-      callName,
-      object,
-      DateTime.now().toUtc().add(delay),
-      serverId,
-      identifier,
-    );
+    return _futureCallFacade.futureCallWithDelay(callName, object, delay);
   }
 
-  /// Calls a [FutureCall] by its name at the specified time, optionally passing
-  /// a [SerializableModel] object as parameter.
+  /// Passthrough
   Future<void> futureCallAtTime(
     String callName,
     SerializableModel? object,
     DateTime time, {
     String? identifier,
   }) async {
-    var futureCallManager = _futureCallManager;
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-
-    await _futureCallManager?.scheduleFutureCall(
-      callName,
-      object,
-      time,
-      serverId,
-      identifier,
-    );
+    return _futureCallFacade.futureCallAtTime(callName, object, time);
   }
 
-  /// Cancels a [FutureCall] with the specified identifier. If no future call
-  /// with the specified identifier is found, this call will have no effect.
+  /// Passthrough
   Future<void> cancelFutureCall(String identifier) async {
-    var futureCallManager = _futureCallManager;
-    if (futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
-    await _futureCallManager?.cancelFutureCall(identifier);
+    return _futureCallFacade.cancelFutureCall(identifier);
   }
 
   /// Retrieves a password for the given key. Passwords are loaded from the
@@ -791,7 +824,7 @@ class Serverpod {
   /// when you are done.
   Future<InternalSession> createSession({bool enableLogging = true}) async {
     var session = InternalSession(
-      server: server,
+      serviceLocator: serviceLocator,
       enableLogging: enableLogging,
     );
     return session;
@@ -800,7 +833,7 @@ class Serverpod {
   /// Shuts down the Serverpod and all associated servers.
   Future<void> shutdown({bool exitProcess = true}) async {
     await _internalSession.close();
-    await redisController?.stop();
+    await _redisController?.stop();
     await server.shutdown();
     await _webServer?.stop();
     await _serviceServer?.shutdown();

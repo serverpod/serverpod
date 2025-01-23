@@ -99,8 +99,8 @@ class ChatEndpoint extends Endpoint {
         sendStreamMessage(session, message);
       }
 
-      session.messages
-          .addListener(_channelPrefix + message.channel, messageListener);
+      session.messages.addListener(
+          session, _channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
 
       var initialMessageChunk = await _fetchMessageChunk(
@@ -120,8 +120,8 @@ class ChatEndpoint extends Endpoint {
       // Remove listener for a subscribed channel
       var listener = chatSession.messageListeners[message.channel];
       if (listener != null) {
-        session.messages
-            .removeListener(_channelPrefix + message.channel, listener);
+        session.messages.removeListener(
+            session, _channelPrefix + message.channel, listener);
         chatSession.messageListeners.remove(message.channel);
       }
     } else if (message is ChatMessagePost) {

@@ -19,7 +19,8 @@ Future<AuthenticationInfo?> authenticationHandler(
     var secret = parts[1];
 
     // Get the authentication key from the database
-    var tempSession = await session.serverpod.createSession(
+    var tempSession = InternalSession(
+      serviceLocator: session.serviceLocator,
       enableLogging: false,
     );
 
