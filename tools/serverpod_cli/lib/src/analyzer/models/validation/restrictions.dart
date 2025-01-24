@@ -748,6 +748,17 @@ class Restrictions {
       ));
     }
 
+    if (!AnalyzeChecker.isFieldDefined(content)) {
+      var isOptional = AnalyzeChecker.isOptionalDefined(content);
+      var isServerOnly = field.scope == ModelFieldScopeDefinition.serverOnly;
+      if (isServerOnly && !isOptional) {
+        errors.add(SourceSpanSeverityException(
+          'The relation with scope "${field.scope.name}" requires the relation to be optional.',
+          span,
+        ));
+      }
+    }
+
     return errors;
   }
 

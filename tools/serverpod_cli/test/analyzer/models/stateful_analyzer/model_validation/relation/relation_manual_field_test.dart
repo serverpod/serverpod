@@ -298,6 +298,46 @@ fields:
   });
 
   group(
+    'Given a class with an optional relation pointing to a field ',
+    () {
+      var models = [
+        ModelSourceBuilder()
+            .withYaml(
+              '''
+                class: Example
+                table: example
+                fields:
+                  manualId: int
+                  relationObject: Example?, relation(optional, field=manualId), scope=serverOnly
+                ''',
+            )
+            .withFileName('example_class')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      var errors = collector.errors;
+
+      test('then an error was collected.', () {
+        expect(errors, isNotEmpty);
+      });
+
+      test(
+          'then the error message reports that the "optional" property '
+          'is mutually exclusive with the "field" property.', () {
+        var error = errors.first;
+        expect(
+          error.message,
+          'The "optional" property is mutually exclusive with the "field" property.',
+        );
+      });
+    },
+  );
+
+  group(
       'Given two classes with a named relation with a defined field name that holds the relation',
       () {
     var models = [

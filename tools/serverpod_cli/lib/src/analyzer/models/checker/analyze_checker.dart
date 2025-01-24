@@ -19,6 +19,11 @@ class AnalyzeChecker {
     return node.containsKey(Keyword.optional);
   }
 
+  static bool isFieldDefined(dynamic node) {
+    if (node is! YamlMap) return false;
+    return node.containsKey(Keyword.field);
+  }
+
   static List<SerializableModelFieldDefinition> filterRelationByName(
     ClassDefinition classDefinition,
     ClassDefinition foreignClass,
