@@ -11,13 +11,13 @@ void main() {
   var parentClassModel = ModelSourceBuilder()
       .withYaml(
         '''
-        class: ParentClass
-        table: parent
+        class: Post
+        table: post
         fields:
-          name: String
+          title: String
         ''',
       )
-      .withFileName('parent_class')
+      .withFileName('post_class')
       .build();
 
   group('Given a class with a non-optional relation and "serverOnly" scope',
@@ -30,13 +30,13 @@ void main() {
           ModelSourceBuilder()
               .withYaml(
                 '''
-                class: Example
-                table: example
+                class: Comment
+                table: comment
                 fields:
-                  parentClass: ParentClass?, relation, scope=serverOnly
+                  post: Post?, relation, scope=serverOnly
                 ''',
               )
-              .withFileName('example_class')
+              .withFileName('comment_class')
               .build(),
         ];
 
@@ -56,83 +56,21 @@ void main() {
     );
 
     test(
-      'when analyzed then an error is generated for a foreign key relation',
+      'when analyzed then no errors are generated for a manual field relation',
       () {
         var models = [
           parentClassModel,
           ModelSourceBuilder()
               .withYaml(
                 '''
-                class: Example
-                table: example
+                class: Comment
+                table: comment
                 fields:
-                  relationId: int
-                  parentClass: ParentClass?, relation(field=relationId), scope=serverOnly
+                  postId: int,
+                  post: Post?, relation(field=postId), scope=serverOnly
                 ''',
               )
-              .withFileName('example_class')
-              .build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(error.severity, SourceSpanSeverity.error);
-        expect(
-          error.message,
-          'The relation with scope "serverOnly" requires the relation to be optional.',
-        );
-      },
-    );
-  });
-
-  group('Given a class with an optional relation and "serverOnly" scope', () {
-    test(
-      'when analyzed then no errors are generated for an object relation',
-      () {
-        var models = [
-          parentClassModel,
-          ModelSourceBuilder()
-              .withYaml(
-                '''
-                class: Example
-                table: example
-                fields:
-                  parentClass: ParentClass?, relation(optional), scope=serverOnly
-                ''',
-              )
-              .withFileName('example_class')
-              .build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isEmpty);
-      },
-    );
-
-    test(
-      'when analyzed then no errors are generated for a foreign key relation',
-      () {
-        var models = [
-          parentClassModel,
-          ModelSourceBuilder()
-              .withYaml(
-                '''
-                class: Example
-                table: example
-                fields:
-                  relationId: int
-                  parentClass: ParentClass?, relation(optional, field=relationId), scope=serverOnly
-                ''',
-              )
-              .withFileName('example_class')
+              .withFileName('comment_class')
               .build(),
         ];
 
@@ -144,4 +82,31 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given a class with an optional relation and "serverOnly" scope '
+    'when analyzed then no errors are generated for an object relation',
+    () {
+      var models = [
+        parentClassModel,
+        ModelSourceBuilder()
+            .withYaml(
+              '''
+                class: Comment
+                table: comment
+                fields:
+                  post: Post?, relation(optional), scope=serverOnly
+                ''',
+            )
+            .withFileName('comment_class')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
 }
