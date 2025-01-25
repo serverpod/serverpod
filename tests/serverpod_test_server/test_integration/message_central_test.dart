@@ -33,11 +33,11 @@ void main() async {
 
     setUp(() {
       messageReceivedCompleter = Completer<SimpleData>();
-      messageCentral.addListener(channelName, listenerMethod);
+      messageCentral.addListener(session, channelName, listenerMethod);
     });
 
     tearDown(() {
-      messageCentral.removeListener(channelName, listenerMethod);
+      messageCentral.removeListener(session, channelName, listenerMethod);
     });
 
     test('when message is posted then listener is notified', () async {
@@ -61,7 +61,7 @@ void main() async {
       streamDoneCompleter = Completer();
       streamErrorCompleter = Completer<dynamic>();
 
-      stream = messageCentral.createStream<SimpleData>(channelName);
+      stream = messageCentral.createStream<SimpleData>(session, channelName);
       subscription = stream.listen((data) {
         messageReceivedCompleter.complete(data);
       }, onDone: () {
@@ -75,8 +75,7 @@ void main() async {
       await subscription.cancel();
     });
 
-    test('when message is posted then message is delivered on stream',
-        () async {
+    test('when message is posted then message is delivered on stream', () async {
       await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
       await expectLater(messageReceivedCompleter.future, completes);
@@ -84,9 +83,7 @@ void main() async {
       expect(message.num, 42);
     });
 
-    test(
-        'when message of incompatible type is posted then stream error is delivered',
-        () async {
+    test('when message of incompatible type is posted then stream error is delivered', () async {
       await messageCentral.postMessage(channelName, Types());
 
       await expectLater(streamErrorCompleter.future, completes);
@@ -112,7 +109,7 @@ void main() async {
     setUp(() {
       messageReceivedCompleter1 = Completer<SimpleData>();
       stream1DoneCompleter = Completer();
-      var stream1 = messageCentral.createStream<SimpleData>(channelName);
+      var stream1 = messageCentral.createStream<SimpleData>(session, channelName);
       subscription1 = stream1.listen((data) {
         messageReceivedCompleter1.complete(data);
       }, onDone: () {
@@ -121,7 +118,7 @@ void main() async {
 
       messageReceivedCompleter2 = Completer<SimpleData>();
       stream2DoneCompleter = Completer();
-      var stream2 = messageCentral.createStream<SimpleData>(channelName);
+      var stream2 = messageCentral.createStream<SimpleData>(session, channelName);
       subscription2 = stream2.listen((data) {
         messageReceivedCompleter2.complete(data);
       }, onDone: () {
@@ -134,8 +131,7 @@ void main() async {
       await subscription2.cancel();
     });
 
-    test('when message is posted then all streams receive the message',
-        () async {
+    test('when message is posted then all streams receive the message', () async {
       await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
       await expectLater(messageReceivedCompleter1.future, completes);
@@ -146,9 +142,7 @@ void main() async {
       expect(message2.num, 42);
     });
 
-    test(
-        'when one subscription is canceled then messages posted are still delivered to the other stream',
-        () async {
+    test('when one subscription is canceled then messages posted are still delivered to the other stream', () async {
       await subscription2.cancel();
       await messageCentral.postMessage(channelName, SimpleData(num: 42));
 
