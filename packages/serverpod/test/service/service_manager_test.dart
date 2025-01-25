@@ -37,5 +37,39 @@ void main() {
       ServiceHolder holder = ServiceHolder();
       expect(() => holder.register(null, name: null), throwsException);
     });
+
+    test('Replacing a value causes the new value to be located', () {
+      ServiceHolder holder = ServiceHolder();
+      holder.register('anonymous');
+      expect(holder.locate<String>(), 'anonymous');
+
+      holder.replace('anonymous-again');
+      expect(holder.locate<String>(), 'anonymous-again');
+    });
+
+    test('Locating downstream will find upstream components', () {
+      ServiceHolder holder = ServiceHolder();
+      ServiceHolder downstream = ServiceHolder(upstream: holder);
+
+      holder.register('anonymous');
+      expect(downstream.locate<String>(), 'anonymous');
+    });
+
+    test('Overriding a value value downstream returns the overriden value', () {
+      ServiceHolder holder = ServiceHolder();
+      DummyService service1 = DummyService();
+      holder.register(service1);
+
+      DummyService service2 = DummyService();
+      ServiceHolder downstream = ServiceHolder(upstream: holder);
+      downstream.register(service2);
+
+      expect(downstream.locate<DummyService>(), service2);
+
+      DummyService service3 = DummyService();
+      holder.replace(service3);
+      expect(holder.locate<DummyService>(), service3);
+      expect(downstream.locate<DummyService>(), service2);
+    });
   });
 }
