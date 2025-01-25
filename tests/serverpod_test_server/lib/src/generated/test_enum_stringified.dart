@@ -20,11 +20,11 @@ enum TestEnumStringified implements _i1.SerializableModel {
   static TestEnumStringified fromJson(String name) {
     switch (name) {
       case 'one':
-        return one;
+        return TestEnumStringified.one;
       case 'two':
-        return two;
+        return TestEnumStringified.two;
       case 'three':
-        return three;
+        return TestEnumStringified.three;
       default:
         throw ArgumentError(
             'Value "$name" cannot be converted to "TestEnumStringified"');

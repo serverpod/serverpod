@@ -11,24 +11,24 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-enum EnumSerialization implements _i1.SerializableModel {
-  byName,
-  byIndex;
+enum ByNameEnumWithNameValue implements _i1.SerializableModel {
+  type,
+  name;
 
-  static EnumSerialization fromJson(int index) {
-    switch (index) {
-      case 0:
-        return EnumSerialization.byName;
-      case 1:
-        return EnumSerialization.byIndex;
+  static ByNameEnumWithNameValue fromJson(String name) {
+    switch (name) {
+      case 'type':
+        return ByNameEnumWithNameValue.type;
+      case 'name':
+        return ByNameEnumWithNameValue.name;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "EnumSerialization"');
+            'Value "$name" cannot be converted to "ByNameEnumWithNameValue"');
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => this.name;
   @override
-  String toString() => name;
+  String toString() => this.name;
 }

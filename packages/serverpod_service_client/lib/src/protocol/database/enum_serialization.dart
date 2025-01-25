@@ -18,9 +18,9 @@ enum EnumSerialization implements _i1.SerializableModel {
   static EnumSerialization fromJson(int index) {
     switch (index) {
       case 0:
-        return byName;
+        return EnumSerialization.byName;
       case 1:
-        return byIndex;
+        return EnumSerialization.byIndex;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "EnumSerialization"');

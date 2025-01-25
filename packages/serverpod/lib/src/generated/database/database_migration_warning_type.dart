@@ -20,13 +20,13 @@ enum DatabaseMigrationWarningType implements _i1.SerializableModel {
   static DatabaseMigrationWarningType fromJson(String name) {
     switch (name) {
       case 'tableDropped':
-        return tableDropped;
+        return DatabaseMigrationWarningType.tableDropped;
       case 'columnDropped':
-        return columnDropped;
+        return DatabaseMigrationWarningType.columnDropped;
       case 'notNullAdded':
-        return notNullAdded;
+        return DatabaseMigrationWarningType.notNullAdded;
       case 'uniqueIndexCreated':
-        return uniqueIndexCreated;
+        return DatabaseMigrationWarningType.uniqueIndexCreated;
       default:
         throw ArgumentError(
             'Value "$name" cannot be converted to "DatabaseMigrationWarningType"');
