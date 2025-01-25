@@ -202,62 +202,11 @@ class Serverpod {
     );
   }
 
-  internal.RuntimeSettings? _runtimeSettings;
+  late _SettingsHolder _settingsHolder;
 
   /// Serverpod runtime settings as read from the database.
-  internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
-
-  void _updateLogSettings(internal.RuntimeSettings settings) {
-    _runtimeSettings = settings;
-    _logSettingsManager = LogSettingsManager(settings);
-    _logManager = LogManager(settings, serverId: serverId);
-  }
-
-  /// Updates the runtime settings and writes the new settings to the database.
-  Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
-    _updateLogSettings(settings);
-    if (Features.enablePersistentLogging) {
-      await _storeRuntimeSettings(settings);
-    }
-  }
-
-  /// Reloads the runtime settings from the database.
-  Future<void> reloadRuntimeSettings() async {
-    if (!Features.enablePersistentLogging) {
-      throw StateError(
-        'Persistent logging is disabled, runtime settings are not stored in '
-        'the database.',
-      );
-    }
-
-    try {
-      var settings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
-      if (settings != null) {
-        _updateLogSettings(settings);
-      }
-    } catch (_) {
-      return;
-    }
-  }
-
-  Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    try {
-      var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
-      if (oldRuntimeSettings == null) {
-        settings.id = null;
-        settings = await internal.RuntimeSettings.db
-            .insertRow(internalSession, settings);
-      } else {
-        settings.id = oldRuntimeSettings.id;
-        await internal.RuntimeSettings.db.updateRow(internalSession, settings);
-      }
-    } catch (error, stackTrace) {
-      _consoleLogger.logVerbose(error.toString());
-      _consoleLogger.logVerbose(stackTrace.toString());
-    }
-  }
+  internal.RuntimeSettings get runtimeSettings =>
+      _settingsHolder.runtimeSettings;
 
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
@@ -348,12 +297,8 @@ class Serverpod {
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
-    _updateLogSettings(_defaultRuntimeSettings);
-
-    // these are all configured by _updateLogSettings
-    _serviceHolder.register(_runtimeSettings);
-    _serviceHolder.register(_logSettingsManager);
-    _serviceHolder.register(_logManager);
+    _settingsHolder = _SettingsHolder(serviceLocator, _defaultRuntimeSettings);
+    _serviceHolder.register(SettingsManager(_settingsHolder, _serviceHolder));
 
     // Setup database
     var databaseConfiguration = this.config.database;
@@ -450,28 +395,10 @@ class Serverpod {
       _webServer = WebServer(serviceLocator: server.serviceLocator);
     }
 
-    // These are here because HealthCheckManager needs to
-    // reload setting sometimes.
-    //
-    // TODO extract functionality shared between health checks and server pod
-    //  into a separate class
-    //
-    // This effectively gives serverpod a self reference
-    // so server pod instances will never be garbage collected
-    // but currently that isn't really a problem since you really only
-    // run one serverpod instance and aren't trying to swap them out
-    // dynamically
-    _serviceHolder.register(() {
-      reloadRuntimeSettings();
-      _serviceHolder.replace(_runtimeSettings);
-      _serviceHolder.replace(_logSettingsManager);
-      _serviceHolder.replace(_logManager);
-    }, name: 'reloadRuntimeSettings');
-
-    _serviceHolder.register(
-        (RuntimeSettings runtimeSetings) =>
-            updateRuntimeSettings(runtimeSettings),
-        name: 'updateRuntimeSettings');
+    // we don't want a copy of SettingsManager
+    // it just needs access to our service holder so it
+    // register or swap out settings
+    _serviceHolder.register(_settingsHolder);
 
     _serviceHolder.register(() => shutdown(), name: 'shutdownFunction');
 
@@ -539,10 +466,6 @@ class Serverpod {
     // attempting to connect to the database.
     _databasePoolManager?.start();
 
-    if (_databasePoolManager == null) {
-      _runtimeSettings = _defaultRuntimeSettings;
-    }
-
     if (Features.enableMigrations) {
       await _applyMigrations();
     } else if (commandLineArgs.applyMigrations ||
@@ -552,8 +475,6 @@ class Serverpod {
       );
       _exitCode = 1;
     }
-
-    _updateLogSettings(_runtimeSettings ?? _defaultRuntimeSettings);
 
     // Connect to Redis
     if (Features.enableRedis) {
@@ -688,29 +609,12 @@ class Serverpod {
 
     _consoleLogger.logVerbose('Loading runtime settings.');
     try {
-      _runtimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      await _settingsHolder.loadSettings();
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
         'Failed to load runtime settings. $e',
       );
-    }
-
-    if (_runtimeSettings == null) {
-      _consoleLogger
-          .logVerbose('Runtime settings not found, creating default settings.');
-      try {
-        _runtimeSettings = await RuntimeSettings.db
-            .insertRow(internalSession, _defaultRuntimeSettings);
-      } catch (e) {
-        _exitCode = 1;
-        stderr.writeln(
-          'Failed to store runtime settings. $e',
-        );
-      }
-    } else {
-      _consoleLogger.logVerbose('Runtime settings loaded.');
     }
   }
 
@@ -907,4 +811,133 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+}
+
+/// Responsible for loading/reloading settings
+class _SettingsHolder {
+  final ServiceLocator _serviceLocator;
+  final internal.RuntimeSettings _defaultSettings;
+
+  /// get the current [RuntimeSettings] value
+  internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
+  internal.RuntimeSettings? _runtimeSettings;
+
+  /// get the current [LogSettingsManager]
+  LogSettingsManager get logSettingsManager => _logSettingsManager;
+  late LogSettingsManager _logSettingsManager;
+
+  /// get the current [LogManager]
+  LogManager get logManager => _logManager;
+  late LogManager _logManager;
+
+  /// create a new Instance
+  _SettingsHolder(this._serviceLocator, this._defaultSettings) {
+    _updateLogSettings(_defaultSettings);
+  }
+
+  void _updateLogSettings(internal.RuntimeSettings settings) {
+    _runtimeSettings = settings;
+    _logSettingsManager = LogSettingsManager(settings);
+    _logManager = LogManager(settings,
+        serverId: _serviceLocator.locate<String>(name: 'serverId')!);
+  }
+
+  /// Updates the runtime settings and writes the new settings to the database.
+  Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
+    _updateLogSettings(settings);
+    if (Features.enablePersistentLogging) {
+      await _storeRuntimeSettings(settings);
+    }
+  }
+
+  Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
+    try {
+      InternalSession internalSession =
+          _serviceLocator.locate<InternalSession>()!;
+      var oldRuntimeSettings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      if (oldRuntimeSettings == null) {
+        settings.id = null;
+        settings = await internal.RuntimeSettings.db
+            .insertRow(internalSession, settings);
+      } else {
+        settings.id = oldRuntimeSettings.id;
+        await internal.RuntimeSettings.db.updateRow(internalSession, settings);
+      }
+    } catch (error, stackTrace) {
+      ConsoleLogger consoleLogger = _serviceLocator.locate<ConsoleLogger>()!;
+      consoleLogger.logVerbose(error.toString());
+      consoleLogger.logVerbose(stackTrace.toString());
+    }
+  }
+
+  Future<void> loadSettings() async {
+    if (!Features.enablePersistentLogging) {
+      throw StateError(
+        'Persistent logging is disabled, runtime settings are not stored in '
+        'the database.',
+      );
+    }
+
+    InternalSession internalSession =
+        _serviceLocator.locate<InternalSession>()!;
+    var settings =
+        await internal.RuntimeSettings.db.findFirstRow(internalSession);
+    _updateLogSettings(settings ?? _defaultSettings);
+  }
+
+  /// Reloads the runtime settings from the database.
+  Future<void> reloadRuntimeSettings() async {
+    if (!Features.enablePersistentLogging) {
+      throw StateError(
+        'Persistent logging is disabled, runtime settings are not stored in '
+        'the database.',
+      );
+    }
+
+    try {
+      InternalSession internalSession =
+          _serviceLocator.locate<InternalSession>()!;
+      var settings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      if (settings != null) {
+        _updateLogSettings(settings);
+      }
+    } catch (_) {
+      return;
+    }
+  }
+}
+
+/// Provide a public facing view of a [_SettingsHolder]
+class SettingsManager {
+  final _SettingsHolder _settingsHolder;
+  final ServiceHolder _serviceHolder;
+
+  /// Initialize a new instance and register the [SettingsHolder]'s values
+  SettingsManager(this._settingsHolder, this._serviceHolder) {
+    _serviceHolder.register(_settingsHolder.runtimeSettings);
+    _serviceHolder.register(_settingsHolder.logManager);
+    _serviceHolder.register(_settingsHolder.logSettingsManager);
+  }
+
+  /// Reloads the runtime settings and replaces the service registrations.
+  Future<void> reloadRuntimeSettings() async {
+    return _settingsHolder
+        .reloadRuntimeSettings()
+        .then((vaolue) => _replaceServices());
+  }
+
+  /// Update the runtime settings and replace the service registrations
+  Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
+    return _settingsHolder
+        .updateRuntimeSettings(settings)
+        .then((value) => _replaceServices());
+  }
+
+  void _replaceServices() {
+    _serviceHolder.replace(_settingsHolder.runtimeSettings);
+    _serviceHolder.replace(_settingsHolder.logSettingsManager);
+    _serviceHolder.replace(_settingsHolder.logManager);
+  }
 }

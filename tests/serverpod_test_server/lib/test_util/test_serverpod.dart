@@ -56,7 +56,9 @@ class TestServerpod {
   }
 
   Future<void> updateRuntimeSettings(serverpod.RuntimeSettings settings) async {
-    await _serverpod.updateRuntimeSettings(settings);
+    SettingsManager settingsManager =
+        _serverpod.serviceLocator.locate<SettingsManager>()!;
+    await settingsManager.updateRuntimeSettings(settings);
   }
 
   Future<Session> session() async {

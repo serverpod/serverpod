@@ -8,7 +8,6 @@ import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/service/definitions.dart';
-import 'package:serverpod/src/service/service_manager.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -29,7 +28,8 @@ class InsightsEndpoint extends Endpoint {
   /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
     await server.serviceLocator
-        .locate<ReloadSettingsFunction>(name: 'reloadRuntimeSettings')!();
+        .locate<SettingsManager>()!
+        .reloadRuntimeSettings();
     return server.serviceLocator.locate<RuntimeSettings>()!;
   }
 
@@ -38,8 +38,9 @@ class InsightsEndpoint extends Endpoint {
     Session session,
     RuntimeSettings runtimeSettings,
   ) async {
-    await server.serviceLocator.locate<UpdateSettingsFunction>(
-        name: 'updateRuntimeSettings')!(runtimeSettings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(runtimeSettings);
   }
 
   /// Clear all server logs.

@@ -7,7 +7,6 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/service/console_logger.dart';
-import 'package:serverpod/src/service/definitions.dart';
 import 'package:serverpod/src/service/service_manager.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
 import 'package:system_resources/system_resources.dart';
@@ -73,8 +72,7 @@ class HealthCheckManager {
       // the same time. Doesn't cause any harm, but would be nice to fix.
     }
 
-    await _serviceLocator.locate<ReloadSettingsFunction>(
-        name: 'reloadRuntimeSettings')!();
+    await _serviceLocator.locate<SettingsManager>()!.reloadRuntimeSettings();
 
     await _cleanUpClosedSessions();
 

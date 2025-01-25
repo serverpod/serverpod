@@ -43,7 +43,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
     });
 
     test(
@@ -127,7 +129,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       var controller = StreamController<int>();
       var outputStream = client.logging.streamEmpty(controller.stream);
@@ -170,7 +174,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(false)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
     });
 
     test(
@@ -199,7 +205,9 @@ void main() async {
               .build())
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       var controller = StreamController<int>();
       var outputStream = client.logging.streamEmpty(controller.stream);
@@ -225,7 +233,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(false)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       var controller = StreamController<int>();
       var outputStream = client.logging.streamEmpty(controller.stream);
@@ -249,7 +259,9 @@ void main() async {
         .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     var controller = StreamController<int>();
     var outputStream = client.logging.streamEmpty(controller.stream);
@@ -276,7 +288,9 @@ void main() async {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     var controller = StreamController<int>();
     var outputStream = client.logging.streamEmpty(controller.stream);
@@ -304,7 +318,9 @@ void main() async {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     var controller = StreamController<int>();
     var outputStream = client.logging.streamEmpty(controller.stream);
@@ -332,7 +348,9 @@ void main() async {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     var controller = StreamController<int>();
     var outputStream = client.logging.streamEmpty(controller.stream);
@@ -361,7 +379,9 @@ void main() async {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     var controller = StreamController<int>();
     var outputStream = client.logging.streamEmpty(controller.stream);

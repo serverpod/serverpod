@@ -35,7 +35,9 @@ void main() {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     await client.logging.emptyMethod();
 
@@ -57,7 +59,9 @@ void main() {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     await client.logging.emptyMethod();
 
@@ -78,7 +82,9 @@ void main() {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     await client.logging.emptyMethod();
 
@@ -102,7 +108,9 @@ void main() {
         )
         .build();
 
-    await server.updateRuntimeSettings(settings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(settings);
 
     await client.logging.emptyMethod();
 

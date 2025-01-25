@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/service/service_manager.dart';
 
 /// Channels that are listened to by the Serverpod Framework.
@@ -148,7 +147,7 @@ class MessageCentral {
         _channels.remove(channelName);
         var redisController = _serviceLocator.locate<RedisController>();
         if (redisController != null) {
-          redisController!.unsubscribe(channelName);
+          redisController.unsubscribe(channelName);
         }
       }
     }
