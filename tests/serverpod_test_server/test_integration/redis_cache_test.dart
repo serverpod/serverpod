@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/service.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -11,7 +12,7 @@ void main() async {
 
   late RedisCache cache;
   setUpAll(() async {
-    var redisController = session.serverpod.redisController;
+    var redisController = session.serviceLocator.locate<RedisController>();
     await redisController?.start();
     cache = RedisCache(Protocol(), redisController);
   });
@@ -146,20 +147,24 @@ void main() async {
 
     setUp(() async {
       messageCompleter = Completer();
-      session.messages.addListener(channelName, listener);
+      session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .addListener(session, channelName, listener);
     });
 
     tearDown(() async {
-      session.messages.removeListener(channelName, listener);
+      session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .removeListener(session, channelName, listener);
     });
 
     test('when global message is published to channel then message is received',
         () async {
-      await session.messages.postMessage(
-        channelName,
-        messageSent,
-        global: true,
-      );
+      await session.serviceLocator.locate<MessageCentralAccess>()!.postMessage(
+            channelName,
+            messageSent,
+            global: true,
+          );
 
       var messageReceived = await messageCompleter.future.timeout(
         Duration(seconds: 10),
@@ -172,11 +177,13 @@ void main() async {
 
     test('when global message is published to channel confirmation is received',
         () async {
-      var published = await session.messages.postMessage(
-        channelName,
-        messageSent,
-        global: true,
-      );
+      var published = await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .postMessage(
+            channelName,
+            messageSent,
+            global: true,
+          );
 
       expect(published, true);
     });
@@ -191,21 +198,26 @@ void main() async {
       };
 
       setUp(() async {
-        session.messages.addListener(uniqueChannelName, uniqueCannelListener);
+        session.serviceLocator
+            .locate<MessageCentralAccess>()!
+            .addListener(session, uniqueChannelName, uniqueCannelListener);
         uniqueChannelMessageCompleter = Completer();
       });
 
       tearDown(() async {
-        session.messages
-            .removeListener(uniqueChannelName, uniqueCannelListener);
+        session.serviceLocator
+            .locate<MessageCentralAccess>()!
+            .removeListener(session, uniqueChannelName, uniqueCannelListener);
       });
 
       test('then no message is received', () async {
-        await session.messages.postMessage(
-          uniqueChannelName,
-          messageSent,
-          global: true,
-        );
+        await session.serviceLocator
+            .locate<MessageCentralAccess>()!
+            .postMessage(
+              uniqueChannelName,
+              messageSent,
+              global: true,
+            );
 
         var uniqueChannelMessageReceived =
             await uniqueChannelMessageCompleter.future.timeout(
@@ -228,11 +240,13 @@ void main() async {
         'when global message is published to channel with no listeners then publish is still successful',
         () async {
       var uniqueChannelName = Uuid().v4();
-      var published = await session.messages.postMessage(
-        uniqueChannelName,
-        messageSent,
-        global: true,
-      );
+      var published = await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .postMessage(
+            uniqueChannelName,
+            messageSent,
+            global: true,
+          );
 
       expect(published, true);
     });
@@ -240,7 +254,7 @@ void main() async {
 
   group('Given stopped redis controller', () {
     setUp(() async {
-      var controller = session.serverpod.redisController;
+      var controller = session.serviceLocator.locate<RedisController>();
       assert(controller != null, 'Expected redis controller to be not null');
       if (controller != null) {
         await controller.stop();
@@ -248,7 +262,7 @@ void main() async {
     });
 
     tearDown(() async {
-      var controller = session.serverpod.redisController;
+      var controller = session.serviceLocator.locate<RedisController>();
       assert(controller != null, 'Expected redis controller to be not null');
       if (controller != null) {
         await controller.start();
@@ -256,41 +270,52 @@ void main() async {
     });
 
     test('when publishing global message then publish fails', () async {
-      var published = await session.messages.postMessage(
-        'testChannel',
-        SimpleData(num: 1337),
-        global: true,
-      );
+      var published = await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .postMessage(
+            'testChannel',
+            SimpleData(num: 1337),
+            global: true,
+          );
 
       expect(published, false);
     });
   });
 
   group('Given null redis controller', () {
-    final tempController = session.serverpod.redisController;
+    final tempController = session.serviceLocator.locate<RedisController>();
+    var tmpSession;
+
     setUp(() async {
       assert(
-        session.serverpod.redisController != null,
+        tempController != null,
         'Expected redis controller to be not null',
       );
-      session.serverpod.redisController = null;
-    });
 
-    tearDown(() async {
+      final ServiceHolder holder =
+          ServiceHolder(upstream: session.serviceLocator);
+      holder.register(null, name: holder.anonymousName(RedisController));
+      tmpSession = InternalSession(
+          serviceLocator: WrappingServiceLocator(holder),
+          enableLogging: session.enableLogging);
+      // session.serverpod.redisController = null;
       assert(
-        session.serverpod.redisController == null,
+        tmpSession.serviceLocator.locate<RedisController>() == null,
         'Expected redis controller to be null',
       );
-      session.serverpod.redisController = tempController;
     });
+
+    tearDown(() async {});
 
     test('when publishing global message then state error is thrown', () async {
       expectLater(
-        () async => await session.messages.postMessage(
-          'testChannel',
-          SimpleData(num: 1337),
-          global: true,
-        ),
+        () async => await session.serviceLocator
+            .locate<MessageCentralAccess>()!
+            .postMessage(
+              'testChannel',
+              SimpleData(num: 1337),
+              global: true,
+            ),
         throwsStateError,
       );
     });

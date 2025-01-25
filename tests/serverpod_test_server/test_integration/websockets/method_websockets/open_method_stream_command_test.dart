@@ -38,7 +38,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -65,7 +65,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -92,7 +92,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -119,7 +119,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -146,7 +146,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -173,7 +173,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -200,7 +200,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -233,7 +233,7 @@ void main() {
 
       var message = WebSocketMessage.fromJsonString(
         await response as String,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       expect(
           message,
@@ -259,7 +259,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -287,7 +287,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
       ;
 
@@ -333,7 +333,7 @@ void main() {
         var response = await webSocket.stream.first as String;
         var message = WebSocketMessage.fromJsonString(
           response,
-          server.serializationManager,
+          server.serviceLocator.locate<SerializationManager>()!,
         );
         ;
 
@@ -384,7 +384,7 @@ void main() {
         var response = await webSocket.stream.first as String;
         var message = WebSocketMessage.fromJsonString(
           response,
-          server.serializationManager,
+          server.serviceLocator.locate<SerializationManager>()!,
         );
         ;
 

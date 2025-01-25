@@ -31,7 +31,7 @@ void main() {
       var response = await webSocket.stream.first as String;
       var message = WebSocketMessage.fromJsonString(
         response,
-        server.serializationManager,
+        server.serviceLocator.locate<SerializationManager>()!,
       );
 
       expect(message, isA<PongCommand>());

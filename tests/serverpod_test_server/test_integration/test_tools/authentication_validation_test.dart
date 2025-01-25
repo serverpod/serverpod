@@ -141,10 +141,12 @@ void main() {
             'and the authenticated user is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
-              authenticatedUserId,
-              RevokedAuthenticationUser(),
-            ),
+            session.serviceLocator
+                .locate<MessageCentralAccess>()!
+                .authenticationRevoked(
+                  authenticatedUserId,
+                  RevokedAuthenticationUser(),
+                ),
             completion(true),
           );
 
@@ -163,10 +165,12 @@ void main() {
             'and the required scope for an endpoint is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
-              authenticatedUserId,
-              RevokedAuthenticationScope(scopes: ['user']),
-            ),
+            session.serviceLocator
+                .locate<MessageCentralAccess>()!
+                .authenticationRevoked(
+                  authenticatedUserId,
+                  RevokedAuthenticationScope(scopes: ['user']),
+                ),
             completion(true),
           );
 
@@ -256,10 +260,12 @@ void main() {
             'and the authenticated user is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
-              authenticatedUserId,
-              RevokedAuthenticationUser(),
-            ),
+            session.serviceLocator
+                .locate<MessageCentralAccess>()!
+                .authenticationRevoked(
+                  authenticatedUserId,
+                  RevokedAuthenticationUser(),
+                ),
             completion(true),
           );
 
@@ -282,10 +288,12 @@ void main() {
             'and the required scope for an endpoint is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
-              authenticatedUserId,
-              RevokedAuthenticationScope(scopes: ['user']),
-            ),
+            session.serviceLocator
+                .locate<MessageCentralAccess>()!
+                .authenticationRevoked(
+                  authenticatedUserId,
+                  RevokedAuthenticationScope(scopes: ['user']),
+                ),
             completion(true),
           );
 

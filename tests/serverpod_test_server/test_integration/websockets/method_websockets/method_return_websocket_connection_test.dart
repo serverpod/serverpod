@@ -47,9 +47,7 @@ void main() {
 
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(
-          event,
-          server.serializationManager,
-        );
+            event, server.serviceLocator.locate<SerializationManager>()!);
         ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
@@ -104,7 +102,8 @@ void main() {
         method: keepAliveMethod,
         parameter: 'stream',
         object: 4,
-        serializationManager: server.serializationManager,
+        serializationManager:
+            server.serviceLocator.locate<SerializationManager>()!,
         connectionId: keepAliveConnectionId,
       ));
 
@@ -156,9 +155,7 @@ void main() {
 
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(
-          event,
-          server.serializationManager,
-        );
+            event, server.serviceLocator.locate<SerializationManager>()!);
         ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
@@ -213,7 +210,8 @@ void main() {
         method: keepAliveMethod,
         parameter: 'stream',
         object: 4,
-        serializationManager: server.serializationManager,
+        serializationManager:
+            server.serviceLocator.locate<SerializationManager>()!,
         connectionId: keepAliveConnectionId,
       ));
 
@@ -265,9 +263,7 @@ void main() {
 
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(
-          event,
-          server.serializationManager,
-        );
+            event, server.serviceLocator.locate<SerializationManager>()!);
         ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
@@ -322,7 +318,8 @@ void main() {
         method: keepAliveMethod,
         parameter: 'stream',
         object: 4,
-        serializationManager: server.serializationManager,
+        serializationManager:
+            server.serviceLocator.locate<SerializationManager>()!,
         connectionId: keepAliveConnectionId,
       ));
 

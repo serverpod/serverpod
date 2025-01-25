@@ -58,7 +58,8 @@ class TestToolsEndpoint extends Endpoint {
 
   static const sharedStreamName = 'shared-stream';
   Future<void> postNumberToSharedStream(Session session, int number) async {
-    await session.messages
+    await session.serviceLocator
+        .locate<MessageCentralAccess>()!
         .postMessage(sharedStreamName, SimpleData(num: number));
   }
 
@@ -66,14 +67,16 @@ class TestToolsEndpoint extends Endpoint {
   // The test code does not have to start to start listening to the returned stream for it to execute up to the yield.
   Stream<int> postNumberToSharedStreamAndReturnStream(
       Session session, int number) async* {
-    await session.messages
+    await session.serviceLocator
+        .locate<MessageCentralAccess>()!
         .postMessage(sharedStreamName, SimpleData(num: number));
     yield 1;
   }
 
   Stream<int> listenForNumbersOnSharedStream(Session session) async* {
-    var sharedStream =
-        session.messages.createStream<SimpleData>(session, sharedStreamName);
+    var sharedStream = session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .createStream<SimpleData>(session, sharedStreamName);
 
     await for (var message in sharedStream) {
       yield message.num;

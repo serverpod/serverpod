@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/service/console_logger.dart';
-import 'package:serverpod/src/service/service_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class _RevokedAuthenticationHandler {
@@ -24,13 +23,13 @@ class _RevokedAuthenticationHandler {
 
     if (localRevokedAuthenticationCallback != null &&
         localAuthenticationInfo != null) {
-      session.messages.removeListener(
-        session,
-        MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
+      session.serviceLocator.locate<MessageCentralAccess>()!.removeListener(
+            session,
+            MessageCentralServerpodChannels.revokedAuthentication(
+              localAuthenticationInfo.userId,
+            ),
+            localRevokedAuthenticationCallback,
+          );
     }
   }
 
@@ -74,13 +73,13 @@ class _RevokedAuthenticationHandler {
       }
     }
 
-    session.messages.addListener(
-      session,
-      MessageCentralServerpodChannels.revokedAuthentication(
-        authenticationInfo.userId,
-      ),
-      localRevokedAuthenticationCallback,
-    );
+    session.serviceLocator.locate<MessageCentralAccess>()!.addListener(
+          session,
+          MessageCentralServerpodChannels.revokedAuthentication(
+            authenticationInfo.userId,
+          ),
+          localRevokedAuthenticationCallback,
+        );
 
     return _RevokedAuthenticationHandler._(
       authenticationInfo,

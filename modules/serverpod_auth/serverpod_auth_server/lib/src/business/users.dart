@@ -155,12 +155,14 @@ class Users {
     if (scopesHaveBeenRevoked) {
       var removedScopesList =
           removedScopes.map((s) => s.name).whereType<String>().toList();
-      await session.messages.authenticationRevoked(
-        userId,
-        RevokedAuthenticationScope(
-          scopes: removedScopesList,
-        ),
-      );
+      await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .authenticationRevoked(
+            userId,
+            RevokedAuthenticationScope(
+              scopes: removedScopesList,
+            ),
+          );
     }
 
     await invalidateCacheForUser(session, userId);

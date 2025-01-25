@@ -35,7 +35,9 @@ class RedisEndpoint extends Endpoint {
 
   Future<SimpleData?> listenToChannel(Session session, String channel) async {
     SimpleData? data;
-    session.messages.addListener(session, channel, (message) {
+    session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .addListener(session, channel, (message) {
       data = message as SimpleData?;
     });
     await Future.delayed(const Duration(seconds: 2));
@@ -47,7 +49,9 @@ class RedisEndpoint extends Endpoint {
     String channel,
     SimpleData data,
   ) async {
-    session.messages.postMessage(channel, data, global: true);
+    session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .postMessage(channel, data, global: true);
   }
 
   Future<int> countSubscribedChannels(Session session) async {

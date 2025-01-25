@@ -21,18 +21,18 @@ class ServiceHolder implements ServiceLocator {
   ServiceHolder({ServiceLocator? upstream}) : _upstream = upstream;
 
   /// generate a name based on a [Type]
-  String _anonymousName(Type type) {
+  String anonymousName(Type type) {
     return 'anonymous($type)';
   }
 
   // determine if we use a supplied name or a generated name
   // generated name will be 'anonymous(Type)'
-  String _keyName(component, String? name) {
+  String keyName(component, String? name) {
     if (component == null && name == null) {
       throw Exception('Either component or name must be non-null');
     }
 
-    return name ?? _anonymousName(component.runtimeType);
+    return name ?? anonymousName(component.runtimeType);
   }
 
   /// Register the specified component
@@ -46,7 +46,7 @@ class ServiceHolder implements ServiceLocator {
   /// will result in an exception
   void register(dynamic component, {String? name}) {
     // throws an exception if both parameters are null
-    String key = _keyName(component, name);
+    String key = keyName(component, name);
 
     // don't allow changing of registered components
     // as this leads to hard to diagnose bugs
@@ -62,7 +62,7 @@ class ServiceHolder implements ServiceLocator {
   /// If the component is not registered, an exception is thrown
   void replace(dynamic component, {String? name}) {
     // throws an exception if both parameters are null
-    String key = _keyName(component, name);
+    String key = keyName(component, name);
     if (_named.containsKey(key)) {
       _named[key] = component;
     } else {
@@ -76,7 +76,7 @@ class ServiceHolder implements ServiceLocator {
   @override
   T? locate<T>({String? name}) {
     // determine the name to use for lookup
-    String key = name ?? _anonymousName(T);
+    String key = name ?? anonymousName(T);
 
     // check our map of registered servies for a match
     // if no match is found, and _upstream is not null

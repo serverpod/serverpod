@@ -99,7 +99,7 @@ class ChatEndpoint extends Endpoint {
         sendStreamMessage(session, message);
       }
 
-      session.messages.addListener(
+      session.serviceLocator.locate<MessageCentralAccess>()!.addListener(
           session, _channelPrefix + message.channel, messageListener);
       chatSession.messageListeners[message.channel] = messageListener;
 
@@ -120,7 +120,7 @@ class ChatEndpoint extends Endpoint {
       // Remove listener for a subscribed channel
       var listener = chatSession.messageListeners[message.channel];
       if (listener != null) {
-        session.messages.removeListener(
+        session.serviceLocator.locate<MessageCentralAccess>()!.removeListener(
             session, _channelPrefix + message.channel, listener);
         chatSession.messageListeners.remove(message.channel);
       }
@@ -156,11 +156,11 @@ class ChatEndpoint extends Endpoint {
         await ChatMessage.db.insertRow(session, chatMessage);
       }
 
-      session.messages.postMessage(
-        _channelPrefix + message.channel,
-        chatMessage,
-        global: ChatConfig.current.postMessagesGlobally,
-      );
+      session.serviceLocator.locate<MessageCentralAccess>()!.postMessage(
+            _channelPrefix + message.channel,
+            chatMessage,
+            global: ChatConfig.current.postMessagesGlobally,
+          );
 
       if (ChatConfig.current.onDidSendMessage != null) {
         await ChatConfig.current.onDidSendMessage!(

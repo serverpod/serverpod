@@ -49,12 +49,14 @@ class MethodStreaming extends Endpoint {
   static const sessionClosedChannelName = 'sessionClosedChannel';
   Stream<int?> getBroadcastStream(Session session) {
     session.addWillCloseListener((localSession) {
-      localSession.messages
+      localSession.serviceLocator
+          .locate<MessageCentralAccess>()!
           .postMessage(sessionClosedChannelName, SimpleData(num: 1));
     });
     var stream = StreamController<int?>.broadcast(
       onCancel: () {
-        session.messages
+        session.serviceLocator
+            .locate<MessageCentralAccess>()!
             .postMessage(cancelStreamChannelName, SimpleData(num: 1));
       },
     );
@@ -63,7 +65,9 @@ class MethodStreaming extends Endpoint {
 
   Future<bool> wasBroadcastStreamCanceled(Session session) async {
     var streamWasCanceled = Completer<bool>();
-    session.messages.addListener(session, cancelStreamChannelName, (data) {
+    session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .addListener(session, cancelStreamChannelName, (data) {
       streamWasCanceled.complete(true);
     });
     return streamWasCanceled.future;
@@ -71,7 +75,9 @@ class MethodStreaming extends Endpoint {
 
   Future<bool> wasSessionWillCloseListenerCalled(Session session) async {
     var sessionWillCloseListenerWasCalled = Completer<bool>();
-    session.messages.addListener(session, sessionClosedChannelName, (data) {
+    session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .addListener(session, sessionClosedChannelName, (data) {
       sessionWillCloseListenerWasCalled.complete(true);
     });
     return sessionWillCloseListenerWasCalled.future;

@@ -9,6 +9,7 @@ import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/message_central_access.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 import 'package:serverpod/src/service/console_logger.dart';
@@ -23,8 +24,11 @@ class Server {
   // closed and the [WebSocket] object.
   final Map<String, (Future<void>, WebSocket)> _webSockets = {};
 
+  late ServiceHolder _serviceHolder;
+  late ServiceLocator _serviceLocator;
+
   /// The [ServiceLocator] with all the configured services.
-  final ServiceLocator serviceLocator;
+  ServiceLocator get serviceLocator => _serviceLocator;
 
   /// The id of the server. If running in a cluster, all servers need unique
   /// ids.
@@ -100,7 +104,7 @@ class Server {
 
   /// Creates a new [Server] object.
   Server({
-    required this.serviceLocator,
+    required serviceLocator,
     required this.serverId,
     required this.port,
     required this.serializationManager,
@@ -117,7 +121,17 @@ class Server {
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
-        messageCentral = MessageCentral(serviceLocator);
+        messageCentral = MessageCentral(serviceLocator) {
+    // configure service registration
+    _serviceHolder = ServiceHolder(upstream: serviceLocator);
+    _serviceLocator = WrappingServiceLocator(_serviceHolder);
+
+    // register services
+    var messages = MessageCentralAccess(serviceLocator);
+    _serviceHolder.register(messages);
+
+    _serviceHolder.register(messageCentral);
+  }
 
   /// Starts the server.
   /// Returns true if the server was started successfully.

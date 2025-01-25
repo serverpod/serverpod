@@ -55,9 +55,7 @@ void main() {
         var responsesReceived = 0;
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
@@ -85,24 +83,24 @@ void main() {
 
         for (var value in inputValuesStream1) {
           webSocket.sink.add(MethodStreamMessage.buildMessage(
-            endpoint: endpoint,
-            method: method,
-            parameter: inputStreamParameter1,
-            connectionId: connectionId,
-            object: value,
-            serializationManager: server.serializationManager,
-          ));
+              endpoint: endpoint,
+              method: method,
+              parameter: inputStreamParameter1,
+              connectionId: connectionId,
+              object: value,
+              serializationManager:
+                  server.serviceLocator.locate<SerializationManager>()!));
         }
 
         for (var value in inputValuesStream2) {
           webSocket.sink.add(MethodStreamMessage.buildMessage(
-            endpoint: endpoint,
-            method: method,
-            parameter: inputStreamParameter2,
-            connectionId: connectionId,
-            object: value,
-            serializationManager: server.serializationManager,
-          ));
+              endpoint: endpoint,
+              method: method,
+              parameter: inputStreamParameter2,
+              connectionId: connectionId,
+              object: value,
+              serializationManager:
+                  server.serviceLocator.locate<SerializationManager>()!));
         }
       });
 
@@ -150,9 +148,7 @@ void main() {
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
@@ -190,13 +186,13 @@ void main() {
         });
 
         webSocket.sink.add(MethodStreamMessage.buildMessage(
-          endpoint: endpoint,
-          method: method,
-          parameter: openStreamParameter,
-          connectionId: connectionId,
-          object: inputValue,
-          serializationManager: server.serializationManager,
-        ));
+            endpoint: endpoint,
+            method: method,
+            parameter: openStreamParameter,
+            connectionId: connectionId,
+            object: inputValue,
+            serializationManager:
+                server.serviceLocator.locate<SerializationManager>()!));
 
         await expectLater(
           endpointResponse.future,
@@ -226,9 +222,7 @@ void main() {
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();

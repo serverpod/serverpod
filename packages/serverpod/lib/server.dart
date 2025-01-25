@@ -7,6 +7,7 @@ export 'src/server/endpoint_dispatch.dart';
 export 'src/server/future_call.dart';
 export 'src/server/future_call_facade.dart';
 export 'src/server/message_central.dart';
+export 'src/server/message_central_access.dart';
 export 'src/server/run_mode.dart';
 export 'src/server/server.dart';
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
