@@ -18,7 +18,6 @@ import 'package:serverpod/src/service/service_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../generated/protocol.dart';
-import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../database_pool_manager.dart';
