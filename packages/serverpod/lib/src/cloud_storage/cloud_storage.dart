@@ -3,8 +3,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod/src/service/service_manager.dart';
 
-import '../server/session.dart';
-
 /// The [CloudStorage] provides a standardized interface to store binary files
 /// in the cloud. The default implementation is to use the database for binary
 /// storage, but it can be extended to support Google Cloud, Amazon S3, or any

@@ -25,8 +25,9 @@ class ServiceHolder implements ServiceLocator {
     return 'anonymous($type)';
   }
 
-  // determine if we use a supplied name or a generated name
-  // generated name will be 'anonymous(Type)'
+  /// Determine if we use a supplied name or a generated name
+  ///
+  /// generated name will be 'anonymous(Type)'
   String keyName(component, String? name) {
     if (component == null && name == null) {
       throw Exception('Either component or name must be non-null');

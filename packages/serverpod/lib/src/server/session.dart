@@ -5,15 +5,13 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
-import 'package:serverpod/src/server/message_central_access.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/service/console_logger.dart';
 import 'package:serverpod/src/service/service_manager.dart';
+
 import '../cache/caches.dart';
 
 /// A listener that will be called when the session is about to close.

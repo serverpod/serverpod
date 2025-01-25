@@ -6,7 +6,6 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/service/console_logger.dart';
-import 'package:serverpod/src/service/service_manager.dart';
 
 import 'helpers/method_stream_manager.dart';
 
@@ -117,7 +116,7 @@ class MethodWebsocketRequestHandler {
         stderr.writeln('$stackTrace');
       }
     } finally {
-      logger?.logVerbose(
+      logger.logVerbose(
         'Closing method stream websocket while '
         '${methodStreamManager.openOutputStreamCount} out-streams and '
         '${methodStreamManager.openInputStreamCount} in-streams still open.',

@@ -9,7 +9,6 @@ import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/server/message_central_access.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 import 'package:serverpod/src/service/console_logger.dart';
