@@ -1,11 +1,10 @@
 import 'dart:math';
 
-import 'package:super_string/super_string.dart';
-
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
@@ -342,6 +341,12 @@ class ModelDependencyResolver {
   ) {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedListRelationDefinition) {
+      return;
+    }
+
+    if (fieldDefinition.type.generics.isEmpty) {
+      // Having other than 1 generics on a list type is an error, but we can not throw that here without breaking all parsing.
+      // The appropriate check is being done in `restrictions.dart` (`_validateFieldDataType`)
       return;
     }
 
