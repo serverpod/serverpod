@@ -1337,6 +1337,16 @@ class Restrictions {
       );
     }
 
+    if ((definition.tableName != null) && (parentNodeName == 'id')) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultModelKey}" key is not allowed on the "id" '
+          'field. Use the "${Keyword.defaultKey}" key instead.',
+          span,
+        ),
+      );
+    }
+
     return errors;
   }
 
@@ -1350,6 +1360,16 @@ class Restrictions {
 
     var field = definition.findField(parentNodeName);
     if (field == null) return [];
+
+    if ((definition.tableName != null) && (parentNodeName == 'id')) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultPersistKey}" key is not allowed on the "id" '
+          'field. Use the "${Keyword.defaultKey}" key instead.',
+          span,
+        ),
+      ];
+    }
 
     var errors = <SourceSpanSeverityException>[];
 
