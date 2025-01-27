@@ -13,6 +13,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../config/config.dart';
 
 const _moduleRef = 'module:';
+const _projectRef = 'project:';
+const _packageRef = 'package:';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -77,7 +79,13 @@ class TypeDefinition {
     if (url?.startsWith(_moduleRef) ?? false) {
       return url?.substring(_moduleRef.length);
     }
-    return null;
+    if (url?.startsWith(_projectRef) ?? false) {
+      return null;
+    }
+    if (url?.startsWith(_packageRef) ?? false) {
+      return null;
+    }
+    return url;
   }
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
@@ -437,7 +445,7 @@ class TypeDefinition {
   ) {
     var modelDefinition = classDefinitions
         .where((c) => c.className == className)
-        .where((c) => c.moduleAlias == defaultModuleAlias)
+        .where((c) => c.type.moduleAlias == defaultModuleAlias)
         .firstOrNull;
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
