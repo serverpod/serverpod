@@ -150,6 +150,29 @@ void main() {
     expect(retrieved, isNull);
   });
 
+  test(
+      'get object which is expired in cache will call given `cacheMissHandler`',
+      () async {
+    final key = 'obj1';
+
+    await cache.put(
+      key,
+      SimpleData(num: 1),
+      // Object is expired from the start (but still gets added to the cache); we could also use a mocked "now" to have it expire on read
+      lifetime: Duration(minutes: -1),
+    );
+
+    final retrieved = await cache.get<SimpleData>(
+      key,
+      CacheMissHandler(
+        () async => SimpleData(num: 2),
+        lifetime: Duration(minutes: 10),
+      ),
+    );
+
+    expect(retrieved?.num, 2);
+  });
+
   group(
       'get object not in cache when cache miss handler is specified to return object',
       () {
