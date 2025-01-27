@@ -157,14 +157,13 @@ void main() {
       () async {
     final key = 'obj1';
 
-    await cache.put(
-      key,
-      SimpleData(num: 1),
-      // Object is expired from the start (but still gets added to the cache); we could also use a mocked "now" to have it expire on read
-      lifetime: Duration(minutes: -1),
-    );
+    await cache.put(key, SimpleData(num: 1),
+        lifetime: Duration(milliseconds: 100));
 
-    final retrieved = await cache.get<SimpleData>(
+    // Expire the newly added key
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    var retrieved = await cache.get<SimpleData>(
       key,
       CacheMissHandler(
         () async => SimpleData(num: 2),
