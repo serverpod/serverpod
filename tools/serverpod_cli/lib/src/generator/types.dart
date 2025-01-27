@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -544,13 +545,13 @@ class SupportedIdType {
   static SupportedIdType get uuidV4 => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuidV4'],
-        dbColumnDefaultBuilder: (_) => 'gen_random_uuid()',
+        dbColumnDefaultBuilder: (_) => defaultUuidValueRandom,
       );
 
   static SupportedIdType get uuidV7 => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuidV7'],
-        dbColumnDefaultBuilder: (_) => 'gen_random_uuid_v7()',
+        dbColumnDefaultBuilder: (_) => defaultUuidValueRandomV7,
       );
 
   /// All supported id types.
