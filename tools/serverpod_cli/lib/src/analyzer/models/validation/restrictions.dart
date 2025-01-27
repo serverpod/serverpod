@@ -483,15 +483,6 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ClassDefinition && def.tableName != null && fieldName == 'id') {
-      return [
-        SourceSpanSeverityException(
-          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
-          span,
-        )
-      ];
-    }
-
     if (def is ClassDefinition &&
         def.tableName != null &&
         _databaseModelReservedFieldNames.contains(fieldName)) {
