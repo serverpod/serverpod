@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -171,6 +173,35 @@ void main() {
     );
 
     expect(retrieved?.num, 2);
+  });
+
+  test(
+      'get `cacheMissHandler` will only be called once when multiple requests are made',
+      () async {
+    final key = 'value_to_be_computed';
+
+    final completer = Completer<SimpleData>();
+
+    final retrieved1Future = cache.get<SimpleData>(
+      key,
+      CacheMissHandler(
+        () async => completer.future,
+        lifetime: Duration(minutes: 10),
+      ),
+    );
+
+    final retrieved2Future = cache.get<SimpleData>(
+      key,
+      CacheMissHandler(
+        () async => throw '`cacheMissHandler` should not be called twice',
+        lifetime: Duration(minutes: 10),
+      ),
+    );
+
+    completer.complete(SimpleData(num: 100));
+
+    expect((await retrieved1Future)?.num, 100);
+    expect((await retrieved2Future)?.num, 100);
   });
 
   group(
