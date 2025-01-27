@@ -833,6 +833,28 @@ class Restrictions {
 
     errors.addAll(_validateFieldDataType(field.type, span));
 
+    if ((classDefinition.tableName != null) && (parentNodeName == 'id')) {
+      var typeClassName = field.type.className;
+      var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
+
+      if (!supportedTypes.contains(typeClassName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" is not a valid id type. Valid options '
+            'are: ${supportedTypes.toSet().join(', ')}.',
+            span,
+          ),
+        );
+      } else if ((typeClassName != 'int') && (!field.hasDefaults)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" must have a default value.',
+            span,
+          ),
+        );
+      }
+    }
+
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
 
