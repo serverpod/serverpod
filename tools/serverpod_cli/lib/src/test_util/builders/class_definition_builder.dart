@@ -3,14 +3,12 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
 class ClassDefinitionBuilder {
-  String _moduleAlias;
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -27,8 +25,7 @@ class ClassDefinitionBuilder {
   InheritanceDefinition? _extendsClass;
 
   ClassDefinitionBuilder()
-      : _moduleAlias = defaultModuleAlias,
-        _fileName = 'example',
+      : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         _fields = [],
@@ -54,7 +51,6 @@ class ClassDefinitionBuilder {
     }
 
     return ClassDefinition(
-      moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
@@ -71,11 +67,6 @@ class ClassDefinitionBuilder {
       isSealed: _isSealed,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
-  }
-
-  ClassDefinitionBuilder withModuleAlias(String moduleAlias) {
-    _moduleAlias = moduleAlias;
-    return this;
   }
 
   ClassDefinitionBuilder withFileName(String fileName) {

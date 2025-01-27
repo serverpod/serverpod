@@ -94,7 +94,7 @@ class ModelDependencyResolver {
     var enumDefinitionList = modelDefinitions.whereType<EnumDefinition>().where(
         (e) =>
             e.className == typeDefinition.className &&
-            e.moduleAlias == typeDefinition.moduleAlias);
+            e.type.moduleAlias == typeDefinition.moduleAlias);
 
     if (enumDefinitionList.isEmpty) return;
 
@@ -114,7 +114,7 @@ class ModelDependencyResolver {
         .firstWhere(
             (model) =>
                 model?.className == fieldDefinition.type.className &&
-                model?.moduleAlias == fieldDefinition.type.moduleAlias,
+                model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
             orElse: () => null);
 
     if (referenceClass is! ClassDefinition) return;

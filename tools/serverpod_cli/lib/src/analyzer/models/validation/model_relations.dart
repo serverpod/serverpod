@@ -21,7 +21,7 @@ class ParsedModelsCollection {
         modelWithPath,
   ) {
     var models = modelWithPath.map((e) => e.model).toList();
-    modules = models.map((e) => e.moduleAlias).toSet();
+    modules = models.map((e) => e.type.moduleAlias).nonNulls.toSet();
     classNames = _createClassNameMap(models);
     tableNames = _createTableNameMap(models);
     indexNames = _createIndexNameMap(models);
@@ -92,8 +92,8 @@ class ParsedModelsCollection {
     List<ModelWithDocumentPath> models,
   ) {
     Map<String, List<ModelWithDocumentPath>> filePaths = {};
-    for (var (:documentPath, :model)
-        in models.where((e) => e.model.moduleAlias == defaultModuleAlias)) {
+    for (var (:documentPath, :model) in models
+        .where((e) => e.model.type.moduleAlias == defaultModuleAlias)) {
       filePaths.update(
         _buildGeneratedFilePath(model),
         (value) => value..add((documentPath: documentPath, model: model)),

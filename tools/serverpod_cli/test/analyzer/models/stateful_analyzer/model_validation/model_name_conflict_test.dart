@@ -63,7 +63,8 @@ void main() {
 
       expect(enumField.type.enumDefinition, isA<EnumDefinition>());
 
-      expect(enumField.type.enumDefinition?.moduleAlias, defaultModuleAlias);
+      expect(
+          enumField.type.enumDefinition?.type.moduleAlias, defaultModuleAlias);
     });
 
     test(
@@ -117,7 +118,8 @@ void main() {
 
       expect(enumField.type.enumDefinition, isA<EnumDefinition>());
 
-      expect(enumField.type.enumDefinition?.moduleAlias, secondModuleAlias);
+      expect(
+          enumField.type.enumDefinition?.type.moduleAlias, secondModuleAlias);
     });
   });
 
