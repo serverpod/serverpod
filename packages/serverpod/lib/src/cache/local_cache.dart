@@ -70,7 +70,7 @@ class LocalCache extends Cache {
 
     if (entry == null) return false;
 
-    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+    if (entry.isExpired) {
       await invalidateKey(key);
       return false;
     }
@@ -85,14 +85,13 @@ class LocalCache extends Cache {
   ]) async {
     var entry = _entries[key];
 
-    if (entry != null &&
-        (entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
-      await invalidateKey(key);
-      return null;
-    }
-
     if (entry != null) {
-      return serializationManager.decode<T>(entry.serializedObject);
+      if (entry.isExpired) {
+        // invalidate key and generate a new value below
+        await invalidateKey(key);
+      } else {
+        return serializationManager.decode<T>(entry.serializedObject);
+      }
     }
 
     if (cacheMissHandler == null) return null;
@@ -193,6 +192,11 @@ class _CacheEntry {
     required this.serializedObject,
     this.lifetime,
   }) : creationTime = DateTime.now();
+
+  bool get isExpired {
+    var expirationTime = this.expirationTime;
+    return expirationTime != null && expirationTime.isBefore(DateTime.now());
+  }
 }
 
 class _KeyListKey {
