@@ -105,7 +105,7 @@ class LocalCache extends Cache {
 
     var pendingEntry = _inProgressCacheValues[key];
     if (pendingEntry != null) {
-      return pendingEntry.then((v) => v as T);
+      return (await pendingEntry) as T;
     }
 
     if (cacheMissHandler == null) return null;
