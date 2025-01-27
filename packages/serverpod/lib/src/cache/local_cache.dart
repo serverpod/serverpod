@@ -97,7 +97,6 @@ class LocalCache extends Cache {
 
     if (entry != null) {
       if (entry.isExpired) {
-        // invalidate key and generate a new value below
         await invalidateKey(key);
       } else {
         return serializationManager.decode<T>(entry.serializedObject);

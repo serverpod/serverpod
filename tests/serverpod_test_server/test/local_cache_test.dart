@@ -160,7 +160,6 @@ void main() {
     await cache.put(key, SimpleData(num: 1),
         lifetime: Duration(milliseconds: 100));
 
-    // Expire the newly added key
     await Future.delayed(const Duration(milliseconds: 200));
 
     var retrieved = await cache.get<SimpleData>(
