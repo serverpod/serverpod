@@ -1101,6 +1101,26 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateScopeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition.tableName != null) && (parentNodeName == 'id')) {
+      errors.add(SourceSpanSeverityException(
+        'The "${Keyword.scope}" key is not allowed on the "id" field.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validatePersistKey(
     String parentNodeName,
     String relation,
@@ -1116,6 +1136,13 @@ class Restrictions {
         'The "persist" property requires a table to be set on the class.',
         span,
       ));
+    } else if (parentNodeName == 'id') {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.persist}" key is not allowed on the "id" field.',
+          span,
+        ),
+      ];
     }
 
     var field = definition.findField(parentNodeName);
