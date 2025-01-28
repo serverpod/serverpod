@@ -17,7 +17,7 @@ void main() async {
     server = IntegrationTestServer.create();
     await server.start();
     session = await server.createSession();
-    messageCentral = session.messages;
+    messageCentral = session.serviceLocator.locate<MessageCentralAccess>()!;
   });
 
   tearDown(() async {
@@ -44,11 +44,11 @@ void main() async {
 
     setUp(() {
       messageReceivedCompleter = Completer<SimpleData>();
-      messageCentral.addListener(channelName, listenerMethod);
+      messageCentral.addListener(session, channelName, listenerMethod);
     });
 
     tearDown(() {
-      messageCentral.removeListener(channelName, listenerMethod);
+      messageCentral.removeListener(session, channelName, listenerMethod);
     });
 
     test('when message is posted then it returns true', () async {
@@ -80,7 +80,7 @@ void main() async {
       streamDoneCompleter = Completer();
       streamErrorCompleter = Completer<dynamic>();
 
-      stream = messageCentral.createStream<SimpleData>(channelName);
+      stream = messageCentral.createStream<SimpleData>(session, channelName);
       subscription = stream.listen((data) {
         messageReceivedCompleter.complete(data);
       }, onDone: () {
@@ -139,7 +139,8 @@ void main() async {
     setUp(() {
       messageReceivedCompleter1 = Completer<SimpleData>();
       stream1DoneCompleter = Completer();
-      var stream1 = messageCentral.createStream<SimpleData>(channelName);
+      var stream1 =
+          messageCentral.createStream<SimpleData>(session, channelName);
       subscription1 = stream1.listen((data) {
         messageReceivedCompleter1.complete(data);
       }, onDone: () {
@@ -148,7 +149,8 @@ void main() async {
 
       messageReceivedCompleter2 = Completer<SimpleData>();
       stream2DoneCompleter = Completer();
-      var stream2 = messageCentral.createStream<SimpleData>(channelName);
+      var stream2 =
+          messageCentral.createStream<SimpleData>(session, channelName);
       subscription2 = stream2.listen((data) {
         messageReceivedCompleter2.complete(data);
       }, onDone: () {

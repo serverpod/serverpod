@@ -6,12 +6,14 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/extensions.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
 /// using JSON. Primarily used for Serverpod Insights.
 class DatabaseBulkData {
   /// Exports data from the provided [table].
   static Future<BulkData> exportTableData({
+    required ServiceLocator serviceLocator,
     required Database database,
     required String table,
     int lastId = 0,
@@ -25,7 +27,7 @@ class DatabaseBulkData {
       );
     }
     var targetTableDefinition =
-        await _getTargetTableDefinition(database, table);
+        await _getTargetTableDefinition(serviceLocator, database, table);
     if (targetTableDefinition == null) {
       throw BulkDataException(
         message: 'The "$table" table was not found in the database definition.',
@@ -143,11 +145,17 @@ class DatabaseBulkData {
   }
 
   static Future<TableDefinition?> _getTargetTableDefinition(
+    ServiceLocator serviceLocator,
     Database database,
     String table,
   ) async {
-    var tableDefinitions =
-        Serverpod.instance.serializationManager.getTargetTableDefinitions();
+    SerializationManagerServer? sms =
+        serviceLocator.locate<SerializationManagerServer>();
+    if (sms == null) {
+      throw Exception('Serialization Manager not configured');
+    }
+
+    var tableDefinitions = sms.getTargetTableDefinitions();
 
     var tableDefinition =
         tableDefinitions.firstWhereOrNull((e) => e.name == table);

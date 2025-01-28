@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
@@ -10,6 +11,8 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -20,8 +23,11 @@ class Server {
   // closed and the [WebSocket] object.
   final Map<String, (Future<void>, WebSocket)> _webSockets = {};
 
-  /// The [Serverpod] managing the server.
-  final Serverpod serverpod;
+  late ServiceHolder _serviceHolder;
+  late ServiceLocator _serviceLocator;
+
+  /// The [ServiceLocator] with all the configured services.
+  ServiceLocator get serviceLocator => _serviceLocator;
 
   /// The id of the server. If running in a cluster, all servers need unique
   /// ids.
@@ -85,7 +91,7 @@ class Server {
   Map<String, String> passwords;
 
   /// Central message dispatch for real time messages.
-  MessageCentral messageCentral = MessageCentral();
+  late MessageCentral messageCentral;
 
   /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
@@ -97,7 +103,7 @@ class Server {
 
   /// Creates a new [Server] object.
   Server({
-    required this.serverpod,
+    required serviceLocator,
     required this.serverId,
     required this.port,
     required this.serializationManager,
@@ -113,7 +119,18 @@ class Server {
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
-        _databasePoolManager = databasePoolManager;
+        _databasePoolManager = databasePoolManager,
+        messageCentral = MessageCentral(serviceLocator) {
+    // configure service registration
+    _serviceHolder = ServiceHolder(upstream: serviceLocator);
+    _serviceLocator = WrappingServiceLocator(_serviceHolder);
+
+    // register services
+    var messages = MessageCentralAccess(serviceLocator);
+    _serviceHolder.register(messages);
+
+    _serviceHolder.register(messageCentral);
+  }
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -154,7 +171,8 @@ class Server {
   }
 
   void _runServer(HttpServer httpServer) async {
-    serverpod.logVerbose(
+    ConsoleLogger? logger = serviceLocator.locate<ConsoleLogger>();
+    logger?.logVerbose(
       'runServer address: ${httpServer.address}, port: ${httpServer.port}',
     );
 
@@ -163,7 +181,7 @@ class Server {
 
     try {
       await for (var request in httpServer) {
-        serverpod.logVerbose(
+        logger?.logVerbose(
           'received request: ${request.method} ${request.uri.path}',
         );
 
@@ -197,8 +215,9 @@ class Server {
 
   //TODO: encode analyze
   Future<void> _handleRequest(HttpRequest request) async {
-    serverpod
-        .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
+    serviceLocator
+        .locate<ConsoleLogger>()
+        ?.logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
     for (var header in httpResponseHeaders.entries) {
       request.response.headers.add(header.key, header.value);
@@ -209,7 +228,8 @@ class Server {
     try {
       uri = request.requestedUri;
     } catch (e) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
+      if (serviceLocator.locate<RuntimeSettings>()?.logMalformedCalls ??
+          false) {
         // TODO: Specific log for this?
         stderr.writeln(
             'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
@@ -224,7 +244,7 @@ class Server {
 
     if (uri.path == '/') {
       // Perform health checks
-      var checks = await performHealthChecks(serverpod);
+      var checks = await performHealthChecks(serviceLocator);
       var issues = <String>[];
       var allOk = true;
       for (var metric in checks.metrics) {
@@ -277,11 +297,12 @@ class Server {
     }
 
     String body;
+    RuntimeSettings runtimeSettings = serviceLocator.locate<RuntimeSettings>()!;
     if (readBody) {
       try {
         body = await _readBody(request);
       } on _RequestTooLargeException catch (e) {
-        if (serverpod.runtimeSettings.logMalformedCalls) {
+        if (runtimeSettings.logMalformedCalls) {
           // TODO: Log to database?
           stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
@@ -305,7 +326,7 @@ class Server {
     var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultNoSuchEndpoint) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
+      if (runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
@@ -315,7 +336,7 @@ class Server {
       await request.response.close();
       return;
     } else if (result is ResultInvalidParams) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
+      if (runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
@@ -325,7 +346,7 @@ class Server {
       await request.response.close();
       return;
     } else if (result is ResultAuthenticationFailed) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
+      if (runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
       }
@@ -394,7 +415,9 @@ class Server {
     try {
       webSocket = await WebSocketTransformer.upgrade(request);
     } on WebSocketException {
-      serverpod.logVerbose('Failed to upgrade connection to websocket');
+      serviceLocator
+          .locate<ConsoleLogger>()!
+          .logVerbose('Failed to upgrade connection to websocket');
       return;
     }
     webSocket.pingInterval = const Duration(seconds: 30);
@@ -415,8 +438,10 @@ class Server {
     var len = 0;
     await for (var segment in request) {
       len += segment.length;
-      if (len > serverpod.config.maxRequestSize) {
-        throw _RequestTooLargeException(serverpod.config.maxRequestSize);
+      ServerpodConfig serverpodConfig =
+          serviceLocator.locate<ServerpodConfig>()!;
+      if (len > serverpodConfig.maxRequestSize) {
+        throw _RequestTooLargeException(serverpodConfig.maxRequestSize);
       }
       builder.add(segment);
     }
@@ -490,7 +515,7 @@ class Server {
       var methodCallContext = await endpoints.getMethodCallContext(
         createSessionCallback: (connector) {
           maybeSession = MethodCallSession(
-            server: this,
+            serviceLocator: serviceLocator,
             uri: uri,
             body: body,
             path: path,

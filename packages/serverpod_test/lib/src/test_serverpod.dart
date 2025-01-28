@@ -52,7 +52,7 @@ class InternalServerpodSession extends Session {
   InternalServerpodSession({
     required super.endpoint,
     required super.method,
-    required super.server,
+    required super.serviceLocator,
     required super.enableLogging,
     required this.rollbackDatabase,
     required bool isDatabaseEnabled,
@@ -166,7 +166,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     TransactionManager? transactionManager,
   }) {
     return InternalServerpodSession(
-      server: _serverpod.server,
+      serviceLocator: _serverpod.serviceLocator,
       enableLogging: enableLogging,
       endpoint: endpoint,
       method: method,

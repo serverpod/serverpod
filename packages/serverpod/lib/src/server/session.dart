@@ -5,12 +5,13 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
-import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
+
 import '../cache/caches.dart';
 
 /// A listener that will be called when the session is about to close.
@@ -39,11 +40,12 @@ abstract class Session implements DatabaseAccessor {
   /// The id of the session.
   final UuidValue sessionId;
 
-  /// The [Server] that created the session.
-  final Server server;
+  // Source of any externally configured services we need
+  late ServiceLocator _serviceLocator;
+  late ServiceHolder _serviceHolder;
 
-  /// The [Serverpod] this session is running on.
-  Serverpod get serverpod => server.serverpod;
+  /// Make configured services availble to clients
+  ServiceLocator get serviceLocator => _serviceLocator;
 
   late DateTime _startTime;
 
@@ -103,17 +105,14 @@ abstract class Session implements DatabaseAccessor {
   }
 
   /// Provides access to all caches used by the server.
-  Caches get caches => server.caches;
+  Caches get caches => _serviceLocator.locate<Caches>()!;
 
   /// Map of passwords loaded from config/passwords.yaml
-  Map<String, String> get passwords => server.passwords;
+  Map<String, String> get passwords =>
+      _serviceLocator.locate<Map<String, String>>(name: 'passwords')!;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
-
-  /// Access to the [MessageCentral] for passing real time messages between
-  /// web socket streams and other listeners.
-  late MessageCentralAccess messages;
 
   bool _closed = false;
 
@@ -132,7 +131,8 @@ abstract class Session implements DatabaseAccessor {
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     UuidValue? sessionId,
-    required this.server,
+    required ServiceLocator serviceLocator,
+    Database? db,
     String? authenticationKey,
     HttpRequest? httpRequest,
     WebSocket? webSocket,
@@ -145,27 +145,28 @@ abstract class Session implements DatabaseAccessor {
         sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
-    storage = StorageAccess._(this);
-    messages = MessageCentralAccess._(this);
+    _serviceHolder = ServiceHolder(upstream: serviceLocator);
+    _serviceLocator = WrappingServiceLocator(_serviceHolder);
 
-    if (Features.enableDatabase) {
-      _db = server.createDatabase(this);
-    }
+    storage = StorageAccess._(_serviceLocator);
+
+    // if (Features.enableDatabase) {
+    _db = db; //server.createDatabase(this);
+    // }
 
     if (enableLogging) {
       var logWriter = _createLogWriter(
         this,
-        server.serverpod.logSettingsManager,
+        _serviceLocator.locate<LogSettingsManager>()!,
       );
-      _logManager = SessionLogManager(
-        logWriter,
-        session: this,
-        settingsForSession: (Session session) => server
-            .serverpod.logSettingsManager
-            .getLogSettingsForSession(session),
-        disableLoggingSlowSessions: _isLongLived(this),
-        serverId: server.serverId,
-      );
+      _logManager = SessionLogManager(logWriter,
+          session: this,
+          settingsForSession: (Session session) => _serviceLocator
+              .locate<LogSettingsManager>()!
+              .getLogSettingsForSession(session),
+          disableLoggingSlowSessions: _isLongLived(this),
+          serverId: _serviceLocator.locate<String>(name: 'serverId')!);
+      _serviceHolder.register(_logManager);
     } else {
       _logManager = null;
     }
@@ -179,7 +180,7 @@ abstract class Session implements DatabaseAccessor {
     if (Features.enablePersistentLogging) {
       logWriters.add(
         DatabaseLogWriter(
-          logWriterSession: session.serverpod.internalSession,
+          logWriterSession: _serviceLocator.locate<InternalSession>()!,
         ),
       );
     }
@@ -203,7 +204,9 @@ abstract class Session implements DatabaseAccessor {
   Future<void> _initialize() async {
     var authKey = _authenticationKey;
     if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
+      // AuthenticationHandler is a function that takes a session and an auth key
+      _authenticated =
+          await _serviceLocator.locate<AuthenticationHandler>()!(this, authKey);
     }
 
     _initialized = true;
@@ -235,14 +238,16 @@ abstract class Session implements DatabaseAccessor {
     }
 
     try {
+      ConsoleLogger logger = _serviceLocator.locate<ConsoleLogger>()!;
       if (_logManager == null && error != null) {
-        serverpod.logVerbose(error.toString());
+        logger.logVerbose(error.toString());
         if (stackTrace != null) {
-          serverpod.logVerbose(stackTrace.toString());
+          logger.logVerbose(stackTrace.toString());
         }
       }
 
-      server.messageCentral.removeListenersForSession(this);
+      MessageCentral messageCentral = _serviceLocator.locate<MessageCentral>()!;
+      messageCentral.removeListenersForSession(this);
       return await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
@@ -286,7 +291,7 @@ class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
   InternalSession({
-    required super.server,
+    required super.serviceLocator,
     super.enableLogging = true,
   }) : super(endpoint: 'InternalSession');
 }
@@ -323,7 +328,7 @@ class MethodCallSession extends Session {
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession({
-    required super.server,
+    required super.serviceLocator,
     required this.uri,
     required this.body,
     required String path,
@@ -343,7 +348,7 @@ class MethodCallSession extends Session {
 class WebCallSession extends Session {
   /// Creates a new [Session] for a method call to an endpoint.
   WebCallSession({
-    required super.server,
+    required super.serviceLocator,
     required super.endpoint,
     required super.authenticationKey,
     super.enableLogging = true,
@@ -365,7 +370,7 @@ class MethodStreamSession extends Session {
 
   /// Creates a new [MethodStreamSession].
   MethodStreamSession({
-    required super.server,
+    required super.serviceLocator,
     required super.enableLogging,
     required super.authenticationKey,
     required super.endpoint,
@@ -408,7 +413,7 @@ class StreamingSession extends Session {
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
-    required super.server,
+    required super.serviceLocator,
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
@@ -441,7 +446,7 @@ class FutureCallSession extends Session {
 
   /// Creates a new [Session] for a [FutureCall].
   FutureCallSession({
-    required super.server,
+    required super.serviceLocator,
     required this.futureCallName,
     super.enableLogging = true,
   }) : super(endpoint: 'FutureCall', method: futureCallName);
@@ -449,9 +454,9 @@ class FutureCallSession extends Session {
 
 /// Collects methods for accessing cloud storage.
 class StorageAccess {
-  final Session _session;
+  final ServiceLocator _serviceLocator;
 
-  StorageAccess._(this._session);
+  StorageAccess._(this._serviceLocator);
 
   /// Store a file in the cloud storage. [storageId] is typically 'public' or
   /// 'private'. The public storage can be accessed through a public URL. The
@@ -463,12 +468,15 @@ class StorageAccess {
     required ByteData byteData,
     DateTime? expiration,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.storeFile(session: _session, path: path, byteData: byteData);
+    await storage.storeFile(
+        serviceLocator: _serviceLocator, path: path, byteData: byteData);
   }
 
   /// Retrieve a file from cloud storage.
@@ -476,12 +484,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.retrieveFile(session: _session, path: path);
+    return await storage.retrieveFile(
+        serviceLocator: _serviceLocator, path: path);
   }
 
   /// Checks if a file exists in cloud storage.
@@ -489,12 +500,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.fileExists(session: _session, path: path);
+    return await storage.fileExists(
+        serviceLocator: _serviceLocator, path: path);
   }
 
   /// Deletes a file from cloud storage.
@@ -502,12 +516,14 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.deleteFile(session: _session, path: path);
+    await storage.deleteFile(serviceLocator: _serviceLocator, path: path);
   }
 
   /// Gets the public URL for a file, if the [storageId] is a public storage.
@@ -515,12 +531,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.getPublicUrl(session: _session, path: path);
+    return await storage.getPublicUrl(
+        serviceLocator: _serviceLocator, path: path);
   }
 
   /// Bulk lookup of a list of public links to files given a list of paths in
@@ -543,13 +562,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
     return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+        serviceLocator: _serviceLocator, path: path);
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -558,116 +579,15 @@ class StorageAccess {
     required String storageId,
     required String path,
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap =
+        _serviceLocator.locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.verifyDirectFileUpload(session: _session, path: path);
-  }
-}
-
-/// Provides access to the Serverpod's [MessageCentral].
-class MessageCentralAccess {
-  final Session _session;
-
-  MessageCentralAccess._(this._session);
-
-  /// Adds a listener to a named channel. Whenever a message is posted using
-  /// [postMessage], the [listener] will be notified.
-  void addListener(
-    String channelName,
-    MessageCentralListenerCallback listener,
-  ) {
-    _session.server.messageCentral.addListener(
-      _session,
-      channelName,
-      listener,
-    );
-  }
-
-  /// Removes a listener from a named channel.
-  void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
-  }
-
-  /// Posts a [message] to a named channel. If [global] is set to true, the
-  /// message will be posted to all servers in the cluster, otherwise it will
-  /// only be posted locally on the current server. Returns true if the message
-  /// was successfully posted.
-  ///
-  /// Returns true if the message was successfully posted.
-  ///
-  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
-  Future<bool> postMessage(
-    String channelName,
-    SerializableModel message, {
-    bool global = false,
-  }) =>
-      _session.server.messageCentral.postMessage(
-        channelName,
-        message,
-        global: global,
-      );
-
-  /// Creates a stream that listens to a specified channel.
-  ///
-  /// This stream emits messages of type [T] whenever a message is received on
-  /// the specified channel.
-  ///
-  /// If messages on the channel does not match the type [T], the stream will
-  /// emit an error.
-  Stream<T> createStream<T>(String channelName) =>
-      _session.server.messageCentral.createStream<T>(_session, channelName);
-
-  /// Broadcasts revoked authentication events to the Serverpod framework.
-  /// This message ensures authenticated connections to the user are closed.
-  ///
-  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
-  /// user.
-  ///
-  /// The [message] must be of type [RevokedAuthenticationUser],
-  /// [RevokedAuthenticationAuthId], or [RevokedAuthenticationScope].
-  ///
-  /// [RevokedAuthenticationUser] is used to communicate that all the user's
-  /// authentication is revoked.
-  ///
-  /// [RevokedAuthenticationAuthId] is used to communicate that a specific
-  /// authentication id has been revoked for a user.
-  ///
-  /// [RevokedAuthenticationScope] is used to communicate that a specific
-  /// scope or scopes have been revoked for the user.
-  Future<bool> authenticationRevoked(
-    int userId,
-    SerializableModel message,
-  ) async {
-    if (message is! RevokedAuthenticationUser &&
-        message is! RevokedAuthenticationAuthId &&
-        message is! RevokedAuthenticationScope) {
-      throw ArgumentError(
-        'Message must be of type RevokedAuthenticationUser, '
-        'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
-      );
-    }
-
-    try {
-      return await _session.server.messageCentral.postMessage(
-        MessageCentralServerpodChannels.revokedAuthentication(userId),
-        message,
-        global: true,
-      );
-    } on StateError catch (_) {
-      // Throws StateError if Redis is not enabled that is ignored.
-    }
-
-    // If Redis is not enabled, send the message locally.
-    return _session.server.messageCentral.postMessage(
-      MessageCentralServerpodChannels.revokedAuthentication(userId),
-      message,
-      global: false,
-    );
+    return await storage.verifyDirectFileUpload(
+        serviceLocator: _serviceLocator, path: path);
   }
 }
 

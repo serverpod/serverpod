@@ -127,7 +127,8 @@ class SessionLogManager {
       order: _nextLogOrderId,
     );
 
-    if (_session.serverpod.runMode == ServerpodRunMode.development) {
+    if (_session.serviceLocator.locate<String>(name: 'runMode')! ==
+        ServerpodRunMode.development) {
       stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
@@ -296,7 +297,8 @@ class SessionLogManager {
     var duration = session.duration;
     LogSettings logSettings = _settingsForSession(session);
 
-    if (session.serverpod.runMode == ServerpodRunMode.development) {
+    if (_session.serviceLocator.locate<String>(name: 'runMode')! ==
+        ServerpodRunMode.development) {
       stdout.writeln(
         'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
       );

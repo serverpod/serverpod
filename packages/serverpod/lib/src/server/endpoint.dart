@@ -2,7 +2,6 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../authentication/scope.dart';
 import 'server.dart';
-import 'serverpod.dart';
 import 'session.dart';
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
@@ -26,9 +25,6 @@ abstract class Endpoint {
 
   /// The [Server] this [Endpoint] is running on.
   Server get server => _server;
-
-  /// The [ServerPod] this [Endpoint] is running on.
-  Serverpod get pod => server.serverpod;
 
   /// List of [Scope]s that are required to access this [Endpoint]. Override
   /// this getter to setup custom requirements.

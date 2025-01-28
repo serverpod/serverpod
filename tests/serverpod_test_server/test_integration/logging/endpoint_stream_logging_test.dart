@@ -35,7 +35,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -59,7 +61,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -85,7 +89,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -112,7 +118,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -140,7 +148,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -169,7 +179,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -194,7 +206,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(true)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -223,7 +237,9 @@ void main() async {
               .withLogStreamingSessionsContinuously(false)
               .build())
           .build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
@@ -248,7 +264,9 @@ void main() async {
               .build())
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -272,7 +290,9 @@ void main() async {
           .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -299,7 +319,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -327,7 +349,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

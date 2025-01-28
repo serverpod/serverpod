@@ -25,7 +25,9 @@ void main() async {
         'and a non valid message type when broadcasting revoked authentication event then exception is thrown',
         () {
       expect(
-        () => session.messages.authenticationRevoked(1, EmptyModel()),
+        () => session.serviceLocator
+            .locate<MessageCentralAccess>()!
+            .authenticationRevoked(1, EmptyModel()),
         throwsA(isA<ArgumentError>()),
       );
     });
@@ -34,15 +36,18 @@ void main() async {
         'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
         () async {
       var eventCompleter = Completer<RevokedAuthenticationUser>();
-      session.messages
+      session.serviceLocator
+          .locate<MessageCentralAccess>()!
           .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication(1))
+              session, MessageCentralServerpodChannels.revokedAuthentication(1))
           .listen(
             (event) => eventCompleter.complete(event),
           );
 
       var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked(1, message);
+      var event = await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .authenticationRevoked(1, message);
 
       expect(event, isTrue);
       await expectLater(
@@ -78,15 +83,18 @@ void main() async {
         'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
         () async {
       var eventCompleter = Completer<RevokedAuthenticationUser>();
-      session.messages
+      session.serviceLocator
+          .locate<MessageCentralAccess>()!
           .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication(1))
+              session, MessageCentralServerpodChannels.revokedAuthentication(1))
           .listen(
             (event) => eventCompleter.complete(event),
           );
 
       var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked(1, message);
+      var event = await session.serviceLocator
+          .locate<MessageCentralAccess>()!
+          .authenticationRevoked(1, message);
 
       expect(event, isTrue);
       await expectLater(

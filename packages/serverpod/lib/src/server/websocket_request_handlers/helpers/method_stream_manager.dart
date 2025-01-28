@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/service/console_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class _RevokedAuthenticationHandler {
@@ -22,12 +23,13 @@ class _RevokedAuthenticationHandler {
 
     if (localRevokedAuthenticationCallback != null &&
         localAuthenticationInfo != null) {
-      session.messages.removeListener(
-        MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
+      session.serviceLocator.locate<MessageCentralAccess>()!.removeListener(
+            session,
+            MessageCentralServerpodChannels.revokedAuthentication(
+              localAuthenticationInfo.userId,
+            ),
+            localRevokedAuthenticationCallback,
+          );
     }
   }
 
@@ -71,12 +73,13 @@ class _RevokedAuthenticationHandler {
       }
     }
 
-    session.messages.addListener(
-      MessageCentralServerpodChannels.revokedAuthentication(
-        authenticationInfo.userId,
-      ),
-      localRevokedAuthenticationCallback,
-    );
+    session.serviceLocator.locate<MessageCentralAccess>()!.addListener(
+          session,
+          MessageCentralServerpodChannels.revokedAuthentication(
+            authenticationInfo.userId,
+          ),
+          localRevokedAuthenticationCallback,
+        );
 
     return _RevokedAuthenticationHandler._(
       authenticationInfo,
@@ -339,7 +342,7 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
-      session.serverpod.logVerbose(
+      session.serviceLocator.locate<ConsoleLogger>()!.logVerbose(
           'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
           '${methodStreamCallContext.method.name}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
@@ -449,7 +452,7 @@ class MethodStreamManager {
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
-        session.serverpod.logVerbose(
+        session.serviceLocator.locate<ConsoleLogger>()?.logVerbose(
             'Cancelling method input stream for ${callContext.fullEndpointPath}.'
             '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(

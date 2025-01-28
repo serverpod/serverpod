@@ -52,9 +52,7 @@ void main() {
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();

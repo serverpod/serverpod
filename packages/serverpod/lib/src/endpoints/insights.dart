@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
+import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/service/definitions.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -19,12 +22,15 @@ class InsightsEndpoint extends Endpoint {
   bool get requireLogin => true;
 
   @override
-  bool get logSessions => server.serverpod.runtimeSettings.logServiceCalls;
+  bool get logSessions =>
+      server.serviceLocator.locate<RuntimeSettings>()!.logServiceCalls;
 
   /// Get the current [RuntimeSettings] from the running [Server].
   Future<RuntimeSettings> getRuntimeSettings(Session session) async {
-    await server.serverpod.reloadRuntimeSettings();
-    return server.serverpod.runtimeSettings;
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .reloadRuntimeSettings();
+    return server.serviceLocator.locate<RuntimeSettings>()!;
   }
 
   /// Update the current [RuntimeSettings] in the running [Server].
@@ -32,7 +38,9 @@ class InsightsEndpoint extends Endpoint {
     Session session,
     RuntimeSettings runtimeSettings,
   ) async {
-    await server.serverpod.updateRuntimeSettings(runtimeSettings);
+    await server.serviceLocator
+        .locate<SettingsManager>()!
+        .updateRuntimeSettings(runtimeSettings);
   }
 
   /// Clear all server logs.
@@ -126,10 +134,12 @@ class InsightsEndpoint extends Endpoint {
 
   /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
+    Caches caches = session.serviceLocator.locate<Caches>()!;
+
     return CachesInfo(
-      local: _getCacheInfo(pod.caches.local, fetchKeys),
-      localPrio: _getCacheInfo(pod.caches.localPrio, fetchKeys),
-      global: _getCacheInfo(pod.caches.global, fetchKeys),
+      local: _getCacheInfo(caches.local, fetchKeys),
+      localPrio: _getCacheInfo(caches.localPrio, fetchKeys),
+      global: _getCacheInfo(caches.global, fetchKeys),
     );
   }
 
@@ -143,12 +153,13 @@ class InsightsEndpoint extends Endpoint {
 
   /// Safely shuts down this [ServerPod].
   Future<void> shutdown(Session session) async {
-    await server.serverpod.shutdown();
+    await server.serviceLocator
+        .locate<ShutdownFunction>(name: 'shutdownFunction')!();
   }
 
   /// Performs a health check on the running [ServerPod].
   Future<ServerHealthResult> checkHealth(Session session) async {
-    return await performHealthChecks(pod);
+    return await performHealthChecks(session.serviceLocator);
   }
 
   /// Gets historical health check data. Returns data for the whole cluster.
@@ -198,7 +209,13 @@ class InsightsEndpoint extends Endpoint {
   /// - [getLiveDatabaseDefinition]
   Future<List<TableDefinition>> getTargetTableDefinition(
       Session session) async {
-    return session.serverpod.serializationManager.getTargetTableDefinitions();
+    SerializationManagerServer? sms =
+        session.serviceLocator.locate<SerializationManagerServer>();
+    if (sms == null) {
+      throw Exception('Serialization Manager not configured');
+    }
+
+    return sms.getTargetTableDefinitions();
   }
 
   /// Returns the structure of the live database by
@@ -213,7 +230,9 @@ class InsightsEndpoint extends Endpoint {
     var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
 
     // Make sure that the migration manager is up-to-date.
-    await session.serverpod.migrationManager.initialize(session);
+    await session.serviceLocator
+        .locate<MigrationManager>()!
+        .initialize(session);
 
     return databaseDefinition;
   }
@@ -237,8 +256,12 @@ class InsightsEndpoint extends Endpoint {
         version,
       );
       var data = await file.readAsString();
-      var databaseDefinition = session.serverpod.serializationManager
-          .decode<DatabaseDefinition>(data);
+      SerializationManagerServer? sms =
+          session.serviceLocator.locate<SerializationManagerServer>();
+      if (sms == null) {
+        throw Exception('Serialization Manager not configured');
+      }
+      var databaseDefinition = sms.decode<DatabaseDefinition>(data);
 
       latestAvailableMigrations = databaseDefinition.installedModules;
     }
@@ -261,6 +284,7 @@ class InsightsEndpoint extends Endpoint {
   }) async {
     try {
       return DatabaseBulkData.exportTableData(
+        serviceLocator: session.serviceLocator,
         database: session.db,
         table: table,
         lastId: startingId,
@@ -329,7 +353,9 @@ class InsightsEndpoint extends Endpoint {
   Future<String> fetchFile(Session session, String path) async {
     // Test the file in unix format.
     if (!PathUtil.isFileWhitelisted(
-        path, session.serverpod.filesWhitelistedForInsights)) {
+        path,
+        session.serviceLocator
+            .locate<Set<String>>(name: 'filesWhitelistedForInsights')!)) {
       throw AccessDeniedException(
         message: 'File is not in whitelist: $path',
       );

@@ -21,7 +21,7 @@ abstract class EndpointWebsocketRequestHandler {
   ) async {
     try {
       var session = StreamingSession(
-        server: server,
+        serviceLocator: server.serviceLocator,
         uri: request.uri,
         httpRequest: request,
         webSocket: webSocket,

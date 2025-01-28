@@ -36,7 +36,9 @@ void main() async {
         'Given a log settings that enables all logging when calling a noop method then a single log entry is created.',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
 
@@ -57,7 +59,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
 
@@ -79,7 +83,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
       await client.logging.slowMethod(500);
@@ -104,7 +110,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
 
@@ -133,7 +141,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
       await client.logging.slowQueryMethod(1);
@@ -155,7 +165,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.queryMethod(1);
 
@@ -176,7 +188,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.queryMethod(4);
 
@@ -200,7 +214,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.queryMethod(4);
 
@@ -224,7 +240,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
 
@@ -247,7 +265,9 @@ void main() async {
         () async {
       var settings = RuntimeSettingsBuilder().build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.log('message', [LogLevel.debug.toJson()]);
 
@@ -266,7 +286,9 @@ void main() async {
         () async {
       var settings = RuntimeSettingsBuilder().build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.log('message', [LogLevel.debug.toJson()]);
 
@@ -287,7 +309,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging
           .log('message', toLogLevelInts([LogLevel.debug, LogLevel.info]));
@@ -312,7 +336,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.log(
         'message',
@@ -343,7 +369,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.log(
         'message',
@@ -375,7 +403,9 @@ void main() async {
           )
           .build();
 
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.log(
         'message',
@@ -434,7 +464,9 @@ void main() async {
         'Given a log settings that enable all logging and the serverpod config does not have a database config when calling a noop method then a single log entry is pushed to stdout.',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await client.logging.emptyMethod();
 

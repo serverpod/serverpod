@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod/server.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
@@ -12,10 +13,11 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../generated/protocol.dart';
-import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../database_pool_manager.dart';
@@ -391,7 +393,7 @@ class DatabaseConnection {
       );
 
       _logQuery(
-        session,
+        session.serviceLocator,
         query,
         startTime,
         numRowsAffected: result.affectedRows,
@@ -410,7 +412,7 @@ class DatabaseConnection {
       );
 
       _logQuery(
-        session,
+        session.serviceLocator,
         query,
         startTime,
         exception: serverpodException,
@@ -420,7 +422,7 @@ class DatabaseConnection {
     } on pg.PgException catch (exception, trace) {
       var serverpodException = _PgDatabaseQueryException(exception.message);
       _logQuery(
-        session,
+        session.serviceLocator,
         query,
         startTime,
         exception: serverpodException,
@@ -428,7 +430,8 @@ class DatabaseConnection {
       );
       throw serverpodException;
     } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      _logQuery(session.serviceLocator, query, startTime,
+          exception: exception, trace: trace);
       rethrow;
     }
   }
@@ -529,7 +532,7 @@ class DatabaseConnection {
   }
 
   static void _logQuery(
-    Session session,
+    ServiceLocator serviceLocator,
     String query,
     DateTime startTime, {
     int? numRowsAffected,
@@ -541,13 +544,13 @@ class DatabaseConnection {
     // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;
 
-    session.logManager?.logQuery(
-      query: query,
-      duration: duration,
-      numRowsAffected: numRowsAffected,
-      error: exception?.toString(),
-      stackTrace: trace,
-    );
+    serviceLocator.locate<SessionLogManager>()?.logQuery(
+          query: query,
+          duration: duration,
+          numRowsAffected: numRowsAffected,
+          error: exception?.toString(),
+          stackTrace: trace,
+        );
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -752,7 +755,9 @@ class DatabaseConnection {
 }
 
 Table _getTableOrAssert<T>(Session session, {required String operation}) {
-  var table = session.serverpod.serializationManager.getTableForType(T);
+  var table = session.serviceLocator
+      .locate<SerializationManagerServer>()
+      ?.getTableForType(T);
   assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);

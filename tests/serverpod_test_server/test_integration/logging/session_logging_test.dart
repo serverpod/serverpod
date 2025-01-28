@@ -54,7 +54,9 @@ void main() async {
     test('logs should be stored in the database and not appear in stdout',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await IOOverrides.runZoned(
         () async {
@@ -74,7 +76,9 @@ void main() async {
     test('when logging is disabled at runtime, no logs should be written',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await IOOverrides.runZoned(
         () async {
@@ -136,7 +140,9 @@ void main() async {
         'logs should not be stored in the database but should appear in stdout',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await IOOverrides.runZoned(
         () async {
@@ -195,7 +201,9 @@ void main() async {
 
     test('no logs should be written to the database or stdout', () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       await IOOverrides.runZoned(
         () async {

@@ -1,6 +1,4 @@
-import 'authentication_info.dart';
-import 'scope.dart';
-import '../server/session.dart';
+import 'package:serverpod/serverpod.dart';
 
 /// The [AuthenticationHandler] for the servers service connection.
 Future<AuthenticationInfo?> serviceAuthenticationHandler(
@@ -10,11 +8,12 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(
     // var name = parts[0];
     var secret = parts[1];
 
-    if (session.server.serverpod.config.serviceSecret == null) {
+    ServerpodConfig config = session.serviceLocator.locate<ServerpodConfig>()!;
+    if (config.serviceSecret == null) {
       return null;
     }
 
-    if (secret == session.server.serverpod.config.serviceSecret) {
+    if (secret == config.serviceSecret) {
       return AuthenticationInfo(0, <Scope>{Scope.none});
     }
   } catch (e) {

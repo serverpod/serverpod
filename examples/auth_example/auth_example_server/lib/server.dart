@@ -1,6 +1,7 @@
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/service.dart';
 
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
@@ -50,8 +51,13 @@ void run(List<String> args) async {
   auth.AuthConfig.set(auth.AuthConfig(
     sendValidationEmail: (session, email, validationCode) async {
       // Retrieve the credentials
-      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
-      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+
+      // TODO I'm guessing this code should be using password manager instead of Serverpod.getPassword(String)
+      //   but don't know for sure
+      PasswordAccessFunction passwordAccessFunction = session.serviceLocator
+          .locate<PasswordAccessFunction>(name: 'passwordAccessFunction')!;
+      final gmailEmail = passwordAccessFunction('gmailEmail');
+      final gmailPassword = passwordAccessFunction('gmailPassword');
 
       // Create a SMTP client for Gmail.
       final smtpServer = gmail(gmailEmail, gmailPassword);
@@ -75,8 +81,12 @@ void run(List<String> args) async {
     },
     sendPasswordResetEmail: (session, userInfo, validationCode) async {
       // Retrieve the credentials
-      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
-      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+      // TODO I'm guessing this code should be using password manager instead of Serverpod.getPassword(String)
+      //   but don't know for sure
+      PasswordAccessFunction passwordAccessFunction = session.serviceLocator
+          .locate<PasswordAccessFunction>(name: 'passwordAccessFunction')!;
+      final gmailEmail = passwordAccessFunction('gmailEmail');
+      final gmailPassword = passwordAccessFunction('gmailPassword');
 
       // Create a SMTP client for Gmail.
       final smtpServer = gmail(gmailEmail, gmailPassword);

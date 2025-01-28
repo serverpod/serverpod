@@ -52,9 +52,7 @@ void main() {
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
@@ -79,13 +77,13 @@ void main() {
 
         for (var inputValue in inputValues)
           webSocket.sink.add(MethodStreamMessage.buildMessage(
-            endpoint: endpoint,
-            method: method,
-            parameter: inputParameter,
-            connectionId: connectionId,
-            object: inputValue,
-            serializationManager: server.serializationManager,
-          ));
+              endpoint: endpoint,
+              method: method,
+              parameter: inputParameter,
+              connectionId: connectionId,
+              object: inputValue,
+              serializationManager:
+                  server.serviceLocator.locate<SerializationManager>()!));
 
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,
@@ -176,9 +174,7 @@ void main() {
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
+              event, server.serviceLocator.locate<SerializationManager>()!);
           ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
@@ -206,13 +202,13 @@ void main() {
             'Failed to open method stream with server');
 
         webSocket.sink.add(MethodStreamMessage.buildMessage(
-          endpoint: endpoint,
-          method: method,
-          parameter: inputParameter,
-          connectionId: connectionId,
-          object: null,
-          serializationManager: server.serializationManager,
-        ));
+            endpoint: endpoint,
+            method: method,
+            parameter: inputParameter,
+            connectionId: connectionId,
+            object: null,
+            serializationManager:
+                server.serviceLocator.locate<SerializationManager>()!));
 
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,

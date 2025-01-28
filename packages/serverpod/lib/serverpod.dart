@@ -25,5 +25,8 @@ export 'package:serverpod/src/generated/log_level.dart';
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 
+// Redis
+export 'package:serverpod/src/redis/controller.dart';
+
 // Cache
 export 'package:serverpod/src/cache/cache_miss_handler.dart';

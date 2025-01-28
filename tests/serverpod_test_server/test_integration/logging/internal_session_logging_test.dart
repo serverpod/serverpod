@@ -26,7 +26,9 @@ void main() async {
         'Given an internal session with logging enabled when calling log then a log is written.',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       var testSession = await server.createSession(enableLogging: true);
 
@@ -45,7 +47,9 @@ void main() async {
         'Given an internal session with logging disabled but the log settings on the highest level when calling log then no log is written.',
         () async {
       var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+      await server.serviceLocator
+          .locate<SettingsManager>()!
+          .updateRuntimeSettings(settings);
 
       var testSession = await server.createSession(enableLogging: false);
 

@@ -54,7 +54,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -94,7 +94,8 @@ void main() {
           parameter: inputParameter,
           connectionId: connectionId,
           object: serializableException,
-          serializationManager: server.serializationManager,
+          serializationManager:
+              server.serviceLocator.locate<SerializationManager>()!,
         ));
       });
 

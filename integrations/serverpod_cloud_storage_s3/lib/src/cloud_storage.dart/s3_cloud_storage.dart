@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/service.dart';
 import '../aws_s3_client/client/client.dart';
 import '../aws_s3_upload/aws_s3_upload.dart';
 
@@ -56,8 +57,8 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<void> storeFile({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
@@ -75,8 +76,8 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<ByteData?> retrieveFile({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
   }) async {
     final response = await _s3Client.getObject(path);
     if (response.statusCode == 200) {
@@ -87,10 +88,10 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<Uri?> getPublicUrl({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
   }) async {
-    if (await fileExists(session: session, path: path)) {
+    if (await fileExists(serviceLocator: serviceLocator, path: path)) {
       return Uri.parse('https://$publicHost/$path');
     }
     return null;
@@ -98,8 +99,8 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<bool> fileExists({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
   }) async {
     var response = await _s3Client.headObject(path);
     return response.statusCode == 200;
@@ -107,16 +108,16 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<void> deleteFile({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
   }) async {
     await _s3Client.deleteObject(path);
   }
 
   @override
   Future<String?> createDirectFileUploadDescription({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
   }) async {
@@ -133,9 +134,9 @@ class S3CloudStorage extends CloudStorage {
 
   @override
   Future<bool> verifyDirectFileUpload({
-    required Session session,
     required String path,
+    required ServiceLocator serviceLocator,
   }) async {
-    return fileExists(session: session, path: path);
+    return fileExists(serviceLocator: serviceLocator, path: path);
   }
 }

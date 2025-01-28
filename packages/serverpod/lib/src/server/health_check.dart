@@ -1,22 +1,25 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/service/service_manager.dart';
+import 'package:system_resources/system_resources.dart';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
 
-import 'package:system_resources/system_resources.dart';
-
 /// Performs all health checks on the [Serverpod].
-Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
+Future<ServerHealthResult> performHealthChecks(
+    ServiceLocator serviceLocator) async {
   var now = DateTime.now().toUtc();
   now = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute);
 
-  var result = await defaultHealthCheckMetrics(pod, now);
+  var result = await defaultHealthCheckMetrics(serviceLocator, now);
 
-  if (pod.healthCheckHandler != null) {
-    result.metrics.addAll(await pod.healthCheckHandler!(pod, now));
+  HealthCheckHandler? healthCheckHandler =
+      serviceLocator.locate<HealthCheckHandler>();
+  if (healthCheckHandler != null) {
+    result.metrics.addAll(await healthCheckHandler(serviceLocator, now));
   }
 
   return result;
@@ -24,7 +27,7 @@ Future<ServerHealthResult> performHealthChecks(Serverpod pod) async {
 
 /// Performs all default health checks on the [Serverpod].
 Future<ServerHealthResult> defaultHealthCheckMetrics(
-  Serverpod pod,
+  ServiceLocator serviceLocator,
   DateTime timestamp,
 ) async {
   double? cpuLoad;
@@ -52,7 +55,8 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         number: rnd,
       );
 
-      entry = await ReadWriteTestEntry.db.insertRow(pod.internalSession, entry);
+      entry = await ReadWriteTestEntry.db
+          .insertRow(serviceLocator.locate<Session>()!, entry);
 
       // Verify random number
       dbHealthy = entry.number == rnd;
@@ -64,13 +68,14 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     catch (e) {}
   }
 
-  var connectionsInfo = pod.server.httpServer.connectionsInfo();
+  var connectionsInfo = serviceLocator.locate<HttpServer>()!.connectionsInfo();
+  String serverId = serviceLocator.locate<String>(name: 'serverId')!;
 
   return ServerHealthResult(
     metrics: [
       if (dbHealthy != null)
         ServerHealthMetric(
-          serverId: pod.serverId,
+          serverId: serverId,
           name: 'serverpod_database',
           timestamp: timestamp,
           value: dbResponseTime,
@@ -79,7 +84,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         ),
       if (cpuLoad != null)
         ServerHealthMetric(
-          serverId: pod.serverId,
+          serverId: serverId,
           name: 'serverpod_cpu',
           timestamp: timestamp,
           value: cpuLoad,
@@ -88,7 +93,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         ),
       if (memoryUsage != null)
         ServerHealthMetric(
-          serverId: pod.serverId,
+          serverId: serverId,
           name: 'serverpod_memory',
           timestamp: timestamp,
           value: memoryUsage,
@@ -98,7 +103,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     ],
     connectionInfos: [
       ServerHealthConnectionInfo(
-        serverId: pod.serverId,
+        serverId: serverId,
         timestamp: timestamp,
         active: connectionsInfo.active,
         closing: connectionsInfo.closing,

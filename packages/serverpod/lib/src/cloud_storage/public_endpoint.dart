@@ -73,11 +73,13 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     var byteData = ByteData.view(Uint8List.fromList(body).buffer);
 
-    var storage = server.serverpod.storage[storageId];
+    Map<String, CloudStorage> storageMap = session.serviceLocator
+        .locate<Map<String, CloudStorage>>(name: 'storage')!;
+    var storage = storageMap[storageId];
     if (storage == null) return false;
 
     await storage.storeFile(
-      session: session,
+      serviceLocator: session.serviceLocator,
       path: path,
       byteData: byteData,
       verified: false,
@@ -93,7 +95,8 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     await for (var segment in request) {
       len += segment.length;
-      if (len > server.serverpod.config.maxRequestSize) return null;
+      ServerpodConfig config = server.serviceLocator.locate<ServerpodConfig>()!;
+      if (len > config.maxRequestSize) return null;
       data += segment;
     }
     return data;

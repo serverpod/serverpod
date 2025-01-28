@@ -34,7 +34,7 @@ void main() {
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
-          server.serializationManager,
+          server.serviceLocator.locate<SerializationManager>()!,
         );
         if (message is CloseMethodStreamCommand) {
           closeMethodCommand.complete(message);
@@ -47,7 +47,8 @@ void main() {
         parameter: 'stream',
         connectionId: const Uuid().v4obj(),
         object: 1,
-        serializationManager: server.serializationManager,
+        serializationManager:
+            server.serviceLocator.locate<SerializationManager>()!,
       ));
 
       await expectLater(
@@ -82,7 +83,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -150,7 +151,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -235,7 +236,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -319,7 +320,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -408,7 +409,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -522,7 +523,7 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
-            server.serializationManager,
+            server.serviceLocator.locate<SerializationManager>()!,
           );
           ;
           if (message is OpenMethodStreamResponse) {
@@ -551,7 +552,8 @@ void main() {
           method: method,
           connectionId: connectionId,
           object: 1,
-          serializationManager: server.serializationManager,
+          serializationManager:
+              server.serviceLocator.locate<SerializationManager>()!,
         ));
       });
 

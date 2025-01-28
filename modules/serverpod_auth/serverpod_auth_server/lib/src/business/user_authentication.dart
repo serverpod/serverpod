@@ -74,10 +74,12 @@ class UserAuthentication {
     if (auths.isEmpty) return;
 
     // Notify clients about the revoked authentication for the user
-    await session.messages.authenticationRevoked(
-      userId,
-      RevokedAuthenticationUser(),
-    );
+    await session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .authenticationRevoked(
+          userId,
+          RevokedAuthenticationUser(),
+        );
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
@@ -112,10 +114,12 @@ class UserAuthentication {
 
     // Notify the client about the revoked authentication for the specific
     // auth key
-    await session.messages.authenticationRevoked(
-      auth.userId,
-      RevokedAuthenticationAuthId(authId: authKeyId),
-    );
+    await session.serviceLocator
+        .locate<MessageCentralAccess>()!
+        .authenticationRevoked(
+          auth.userId,
+          RevokedAuthenticationAuthId(authId: authKeyId),
+        );
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user

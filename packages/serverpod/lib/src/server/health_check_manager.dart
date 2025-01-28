@@ -6,16 +6,17 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/server/serverpod.dart';
-import 'package:system_resources/system_resources.dart';
+import 'package:serverpod/src/service/console_logger.dart';
+import 'package:serverpod/src/service/service_manager.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
+import 'package:system_resources/system_resources.dart';
 
 /// Performs health checks on the server once a minute, typically this class
 /// is managed internally by Serverpod. Writes results to the database.
 /// The [HealthCheckManager] is also responsible for periodically read and update
 /// the server configuration.
 class HealthCheckManager {
-  final Serverpod _pod;
+  final ServiceLocator _serviceLocator;
 
   /// Called when health checks have been completed, if the server is
   /// running in [ServerpodRole.maintenance] mode.
@@ -25,7 +26,7 @@ class HealthCheckManager {
   Timer? _timer;
 
   /// Creates a new [HealthCheckManager].
-  HealthCheckManager(this._pod, this.onCompleted);
+  HealthCheckManager(this._serviceLocator, this.onCompleted);
 
   /// Starts the health check manager.
   Future<void> start() async {
@@ -47,15 +48,16 @@ class HealthCheckManager {
   }
 
   void _performHealthCheck() async {
-    if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    if (_serviceLocator.locate<CommandLineArgs>()!.role ==
+        ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
 
-    var session = _pod.internalSession;
+    var session = _serviceLocator.locate<InternalSession>()!;
     var numHealthChecks = 0;
 
     try {
-      var result = await performHealthChecks(_pod);
+      var result = await performHealthChecks(_serviceLocator);
       numHealthChecks = result.metrics.length;
 
       for (var metric in result.metrics) {
@@ -70,7 +72,7 @@ class HealthCheckManager {
       // the same time. Doesn't cause any harm, but would be nice to fix.
     }
 
-    await _pod.reloadRuntimeSettings();
+    await _serviceLocator.locate<SettingsManager>()!.reloadRuntimeSettings();
 
     await _cleanUpClosedSessions();
 
@@ -78,9 +80,11 @@ class HealthCheckManager {
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.
-    if (_pod.commandLineArgs.role == ServerpodRole.monolith) {
+    CommandLineArgs commandLineArgs =
+        _serviceLocator.locate<CommandLineArgs>()!;
+    if (commandLineArgs.role == ServerpodRole.monolith) {
       _scheduleNextCheck();
-    } else if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    } else if (commandLineArgs.role == ServerpodRole.maintenance) {
       onCompleted();
     }
   }
@@ -94,7 +98,7 @@ class HealthCheckManager {
   }
 
   Future<void> _cleanUpClosedSessions() async {
-    var session = _pod.internalSession;
+    InternalSession session = _serviceLocator.locate<InternalSession>()!;
 
     try {
       var encoder = DatabasePoolManager.encoder;
@@ -103,8 +107,10 @@ class HealthCheckManager {
       var threeMinutesAgo = encoder.convert(
         DateTime.now().subtract(const Duration(minutes: 3)).toUtc(),
       );
-      var serverStartTime = encoder.convert(_pod.startedTime);
-      var serverId = encoder.convert(_pod.serverId);
+      var serverStartTime = encoder
+          .convert(_serviceLocator.locate<DateTime>(name: 'startedTime')!);
+      var serverId =
+          encoder.convert(_serviceLocator.locate<String>(name: 'serverId'));
 
       // Touch all sessions that have been opened by this server.
       var touchQuery =
@@ -122,7 +128,7 @@ class HealthCheckManager {
   }
 
   Future<void> _optimizeHealthCheckData(int numHealthChecks) async {
-    var session = _pod.internalSession;
+    InternalSession session = _serviceLocator.locate<InternalSession>()!;
     try {
       // Optimize connection info entries.
       var didOptimizeMinutes = await _optimizeConnectionInfoEntries(
@@ -156,8 +162,9 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      _pod.logVerbose(e.toString());
-      _pod.logVerbose(stackTrace.toString());
+      ConsoleLogger logger = _serviceLocator.locate<ConsoleLogger>()!;
+      logger.logVerbose(e.toString());
+      logger.logVerbose(stackTrace.toString());
     }
   }
 
@@ -166,6 +173,8 @@ class HealthCheckManager {
     int srcGranularity,
     Duration preserveDelay,
   ) async {
+    String serverId = session.serviceLocator.locate<String>(name: 'serverId')!;
+
     var now = DateTime.now().toUtc();
     var startTime = DateTime.utc(
       now.year,
@@ -180,7 +189,7 @@ class HealthCheckManager {
       where: (t) =>
           (t.timestamp < startTime) &
           t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+          t.serverId.equals(serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: srcGranularity == 1 ? 61 : 25,
@@ -210,7 +219,7 @@ class HealthCheckManager {
 
     // Write new, compressed entry.
     var hourlyInfo = ServerHealthConnectionInfo(
-      serverId: _pod.serverId,
+      serverId: serverId,
       timestamp: firstEntryTime,
       active: maxActive,
       closing: maxClosing,
@@ -235,7 +244,7 @@ class HealthCheckManager {
                     : const Duration(days: 1),
               )) &
           t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+          t.serverId.equals(serverId),
     );
 
     // All done.
@@ -252,6 +261,7 @@ class HealthCheckManager {
       return false;
     }
 
+    String serverId = _serviceLocator.locate<String>(name: 'serverId')!;
     var now = DateTime.now().toUtc();
     var startTime = DateTime.utc(
       now.year,
@@ -266,7 +276,7 @@ class HealthCheckManager {
       where: (t) =>
           (t.timestamp < startTime) &
           t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+          t.serverId.equals(serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: (srcGranularity == 1 ? 61 : 25) * numHealthChecks,
@@ -310,7 +320,7 @@ class HealthCheckManager {
 
       // Write new, compressed entry.
       var compressedEntry = ServerHealthMetric(
-        serverId: _pod.serverId,
+        serverId: serverId,
         name: entryName,
         timestamp: firstEntryTime,
         value: totalValue / numEntries,
@@ -336,7 +346,7 @@ class HealthCheckManager {
                     : const Duration(days: 1),
               )) &
           t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+          t.serverId.equals(serverId),
     );
 
     return true;
