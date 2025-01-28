@@ -164,11 +164,7 @@ class WebServer {
       logError(e, stackTrace: stackTrace);
 
       request.response.statusCode = HttpStatus.internalServerError;
-      if (serverpod.runMode == ServerpodRunMode.production) {
-        request.response.write('Internal Server Error');
-      } else {
-        request.response.write('$e');
-      }
+      request.response.write('Internal Server Error');
 
       await request.response.close();
     }
