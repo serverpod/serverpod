@@ -494,7 +494,7 @@ class BuildRepositoryClass {
         ..docs.add(
             '/// Inserts all [$className]s in the list and returns the inserted rows.\n'
             '///\n'
-            '/// The returned [$className]s will have their `id` field set.\n'
+            '/// The returned [$className]s will have their `id` fields set.\n'
             '///\n'
             '/// This is an atomic operation, meaning that if one of the rows fails to\n'
             '/// insert, none of the rows will be inserted.')
@@ -543,8 +543,7 @@ class BuildRepositoryClass {
         ..docs.add(
             '/// Inserts a single [$className] and returns the inserted row.\n'
             '///\n'
-            '/// The returned [$className]s will have its `id` field set.\n'
-            '///\n')
+            '/// The returned [$className] will have its `id` field set.')
         ..name = 'insertRow'
         ..returns = TypeReference(
           (r) => r
