@@ -224,6 +224,15 @@ class EmailResetRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<EmailReset>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
@@ -254,6 +263,14 @@ class EmailResetRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<EmailReset?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
@@ -286,6 +303,9 @@ class EmailResetRepository {
   }
 
   /// Inserts all [EmailReset]s in the list and returns the inserted rows.
+  ///
+  /// The returned [EmailReset]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<EmailReset>> insert(
@@ -300,6 +320,8 @@ class EmailResetRepository {
   }
 
   /// Inserts a single [EmailReset] and returns the inserted row.
+  ///
+  /// The returned [EmailReset] will have its `id` field set.
   Future<EmailReset> insertRow(
     _i1.Session session,
     EmailReset row, {

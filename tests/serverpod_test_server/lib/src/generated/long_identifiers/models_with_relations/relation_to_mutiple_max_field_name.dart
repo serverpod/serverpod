@@ -266,6 +266,15 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<RelationToMultipleMaxFieldName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -298,6 +307,14 @@ class RelationToMultipleMaxFieldNameRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<RelationToMultipleMaxFieldName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -334,6 +351,9 @@ class RelationToMultipleMaxFieldNameRepository {
   }
 
   /// Inserts all [RelationToMultipleMaxFieldName]s in the list and returns the inserted rows.
+  ///
+  /// The returned [RelationToMultipleMaxFieldName]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<RelationToMultipleMaxFieldName>> insert(
@@ -348,6 +368,8 @@ class RelationToMultipleMaxFieldNameRepository {
   }
 
   /// Inserts a single [RelationToMultipleMaxFieldName] and returns the inserted row.
+  ///
+  /// The returned [RelationToMultipleMaxFieldName] will have its `id` field set.
   Future<RelationToMultipleMaxFieldName> insertRow(
     _i1.Session session,
     RelationToMultipleMaxFieldName row, {

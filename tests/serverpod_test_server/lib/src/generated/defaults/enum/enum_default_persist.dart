@@ -220,6 +220,15 @@ class EnumDefaultPersistRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<EnumDefaultPersist>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
@@ -250,6 +259,14 @@ class EnumDefaultPersistRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<EnumDefaultPersist?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
@@ -282,6 +299,9 @@ class EnumDefaultPersistRepository {
   }
 
   /// Inserts all [EnumDefaultPersist]s in the list and returns the inserted rows.
+  ///
+  /// The returned [EnumDefaultPersist]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<EnumDefaultPersist>> insert(
@@ -296,6 +316,8 @@ class EnumDefaultPersistRepository {
   }
 
   /// Inserts a single [EnumDefaultPersist] and returns the inserted row.
+  ///
+  /// The returned [EnumDefaultPersist] will have its `id` field set.
   Future<EnumDefaultPersist> insertRow(
     _i1.Session session,
     EnumDefaultPersist row, {

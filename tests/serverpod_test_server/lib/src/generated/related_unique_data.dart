@@ -245,6 +245,15 @@ class RelatedUniqueDataRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -277,6 +286,14 @@ class RelatedUniqueDataRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -313,6 +330,9 @@ class RelatedUniqueDataRepository {
   }
 
   /// Inserts all [RelatedUniqueData]s in the list and returns the inserted rows.
+  ///
+  /// The returned [RelatedUniqueData]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<RelatedUniqueData>> insert(
@@ -327,6 +347,8 @@ class RelatedUniqueDataRepository {
   }
 
   /// Inserts a single [RelatedUniqueData] and returns the inserted row.
+  ///
+  /// The returned [RelatedUniqueData] will have its `id` field set.
   Future<RelatedUniqueData> insertRow(
     _i1.Session session,
     RelatedUniqueData row, {

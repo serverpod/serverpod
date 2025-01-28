@@ -217,6 +217,15 @@ class DateTimeDefaultPersistRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<DateTimeDefaultPersist>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
@@ -247,6 +256,14 @@ class DateTimeDefaultPersistRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<DateTimeDefaultPersist?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
@@ -279,6 +296,9 @@ class DateTimeDefaultPersistRepository {
   }
 
   /// Inserts all [DateTimeDefaultPersist]s in the list and returns the inserted rows.
+  ///
+  /// The returned [DateTimeDefaultPersist]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<DateTimeDefaultPersist>> insert(
@@ -293,6 +313,8 @@ class DateTimeDefaultPersistRepository {
   }
 
   /// Inserts a single [DateTimeDefaultPersist] and returns the inserted row.
+  ///
+  /// The returned [DateTimeDefaultPersist] will have its `id` field set.
   Future<DateTimeDefaultPersist> insertRow(
     _i1.Session session,
     DateTimeDefaultPersist row, {

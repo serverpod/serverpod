@@ -202,6 +202,15 @@ class MethodInfoRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<MethodInfo>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -232,6 +241,14 @@ class MethodInfoRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<MethodInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -264,6 +281,9 @@ class MethodInfoRepository {
   }
 
   /// Inserts all [MethodInfo]s in the list and returns the inserted rows.
+  ///
+  /// The returned [MethodInfo]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<MethodInfo>> insert(
@@ -278,6 +298,8 @@ class MethodInfoRepository {
   }
 
   /// Inserts a single [MethodInfo] and returns the inserted row.
+  ///
+  /// The returned [MethodInfo] will have its `id` field set.
   Future<MethodInfo> insertRow(
     _i1.Session session,
     MethodInfo row, {

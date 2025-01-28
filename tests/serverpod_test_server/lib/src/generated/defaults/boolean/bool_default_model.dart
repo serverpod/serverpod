@@ -222,6 +222,15 @@ class BoolDefaultModelRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<BoolDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
@@ -252,6 +261,14 @@ class BoolDefaultModelRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<BoolDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
@@ -284,6 +301,9 @@ class BoolDefaultModelRepository {
   }
 
   /// Inserts all [BoolDefaultModel]s in the list and returns the inserted rows.
+  ///
+  /// The returned [BoolDefaultModel]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<BoolDefaultModel>> insert(
@@ -298,6 +318,8 @@ class BoolDefaultModelRepository {
   }
 
   /// Inserts a single [BoolDefaultModel] and returns the inserted row.
+  ///
+  /// The returned [BoolDefaultModel] will have its `id` field set.
   Future<BoolDefaultModel> insertRow(
     _i1.Session session,
     BoolDefaultModel row, {

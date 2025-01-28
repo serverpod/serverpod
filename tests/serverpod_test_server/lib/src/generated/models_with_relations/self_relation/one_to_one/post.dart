@@ -292,6 +292,15 @@ class PostRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Post>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
@@ -324,6 +333,14 @@ class PostRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Post?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
@@ -360,6 +377,9 @@ class PostRepository {
   }
 
   /// Inserts all [Post]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Post]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<Post>> insert(
@@ -374,6 +394,8 @@ class PostRepository {
   }
 
   /// Inserts a single [Post] and returns the inserted row.
+  ///
+  /// The returned [Post] will have its `id` field set.
   Future<Post> insertRow(
     _i1.Session session,
     Post row, {

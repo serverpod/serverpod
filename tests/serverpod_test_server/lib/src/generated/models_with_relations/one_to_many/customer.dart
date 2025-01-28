@@ -251,6 +251,15 @@ class CustomerRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Customer>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -283,6 +292,14 @@ class CustomerRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Customer?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -319,6 +336,9 @@ class CustomerRepository {
   }
 
   /// Inserts all [Customer]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Customer]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<Customer>> insert(
@@ -333,6 +353,8 @@ class CustomerRepository {
   }
 
   /// Inserts a single [Customer] and returns the inserted row.
+  ///
+  /// The returned [Customer] will have its `id` field set.
   Future<Customer> insertRow(
     _i1.Session session,
     Customer row, {

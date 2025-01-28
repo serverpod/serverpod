@@ -247,6 +247,15 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<CloudStorageDirectUploadEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
@@ -277,6 +286,14 @@ class CloudStorageDirectUploadEntryRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<CloudStorageDirectUploadEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
@@ -309,6 +326,9 @@ class CloudStorageDirectUploadEntryRepository {
   }
 
   /// Inserts all [CloudStorageDirectUploadEntry]s in the list and returns the inserted rows.
+  ///
+  /// The returned [CloudStorageDirectUploadEntry]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<CloudStorageDirectUploadEntry>> insert(
@@ -323,6 +343,8 @@ class CloudStorageDirectUploadEntryRepository {
   }
 
   /// Inserts a single [CloudStorageDirectUploadEntry] and returns the inserted row.
+  ///
+  /// The returned [CloudStorageDirectUploadEntry] will have its `id` field set.
   Future<CloudStorageDirectUploadEntry> insertRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {

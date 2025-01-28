@@ -199,6 +199,15 @@ class IntDefaultModelRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<IntDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
@@ -229,6 +238,14 @@ class IntDefaultModelRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<IntDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
@@ -261,6 +278,9 @@ class IntDefaultModelRepository {
   }
 
   /// Inserts all [IntDefaultModel]s in the list and returns the inserted rows.
+  ///
+  /// The returned [IntDefaultModel]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<IntDefaultModel>> insert(
@@ -275,6 +295,8 @@ class IntDefaultModelRepository {
   }
 
   /// Inserts a single [IntDefaultModel] and returns the inserted row.
+  ///
+  /// The returned [IntDefaultModel] will have its `id` field set.
   Future<IntDefaultModel> insertRow(
     _i1.Session session,
     IntDefaultModel row, {

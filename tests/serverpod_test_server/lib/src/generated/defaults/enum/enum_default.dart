@@ -265,6 +265,15 @@ class EnumDefaultRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<EnumDefault>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
@@ -295,6 +304,14 @@ class EnumDefaultRepository {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<EnumDefault?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
@@ -327,6 +344,9 @@ class EnumDefaultRepository {
   }
 
   /// Inserts all [EnumDefault]s in the list and returns the inserted rows.
+  ///
+  /// The returned [EnumDefault]s will have their `id` fields set.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<EnumDefault>> insert(
@@ -341,6 +361,8 @@ class EnumDefaultRepository {
   }
 
   /// Inserts a single [EnumDefault] and returns the inserted row.
+  ///
+  /// The returned [EnumDefault] will have its `id` field set.
   Future<EnumDefault> insertRow(
     _i1.Session session,
     EnumDefault row, {
