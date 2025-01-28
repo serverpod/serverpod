@@ -29,7 +29,6 @@ class EnumDefinitionBuilder {
 
   EnumDefinition build() {
     var enumDefinition = EnumDefinition(
-      // moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
