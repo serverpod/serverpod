@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -34,7 +35,10 @@ class ColumnDefinitionBuilder {
     _name = 'id';
     _isNullable = false;
     _columnType = ColumnType.values.byName(idType.type.databaseTypeEnum);
-    _columnDefault = idType.dbColumnDefaultBuilder(tableName);
+    _columnDefault = getColumnDefault(
+      idType.type,
+      idType.dbColumnDefaultBuilder(tableName),
+    );
     _dartType = idType.type.className;
     return this;
   }

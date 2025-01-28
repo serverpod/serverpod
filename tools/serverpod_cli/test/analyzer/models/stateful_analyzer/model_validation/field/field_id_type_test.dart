@@ -1,14 +1,17 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  test(
-    'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
+
+  group(
+    'Given a class with a table and an int field called "id" defined.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -22,15 +25,24 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ClassDefinition;
 
-      var error = collector.errors.first;
+      test('then no errors are collected,', () {
+        expect(collector.errors, isEmpty);
+      });
 
-      expect(
-        error.message,
-        'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
-      );
+      test('then only one int id field is defined.', () {
+        expect(definition.fields, hasLength(1));
+        expect(definition.fields.first.name, 'id');
+        expect(definition.fields.first.type.className, 'int');
+      });
+
+      test('then the id field is nullable despite the declaration.', () {
+        expect(definition.fields.first.type.nullable, true);
+      });
     },
   );
 
@@ -85,4 +97,154 @@ void main() {
       expect(definition.fields, hasLength(1));
     },
   );
+
+  test(
+    'Given a class with the int id field and the default key, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: int, default=1
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors.first.message,
+        contains(
+          'The field "id" with type "int" is sequential and does not accept a direct "default" assignment.',
+        ),
+      );
+    },
+  );
+
+  for (var forbiddenKey in [
+    Keyword.defaultModelKey,
+    Keyword.defaultPersistKey,
+    Keyword.persist,
+    Keyword.scope,
+  ]) {
+    test(
+      'Given a class with the int id field and the forbidden $forbiddenKey key, then an error is collected.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: int, $forbiddenKey
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(
+          collector.errors.first.message,
+          contains('The "$forbiddenKey" key is not allowed on the "id" field.'),
+        );
+      },
+    );
+  }
+
+  for (var idType in SupportedIdType.all) {
+    // The int type is the only one that has no default key.
+    if (idType.aliases.first == 'int') continue;
+
+    var idClassName = idType.className;
+    var defaultValue = idType.dbColumnDefaultBuilder('example');
+
+    test(
+        'Given a class with the $idClassName id type and no default value, then an error is collected.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: $idClassName
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors.first.message,
+        contains('The type "$idClassName" must have a default value.'),
+      );
+    });
+
+    group(
+        'Given a class with the $idClassName id type and default=$defaultValue',
+        () {
+      var yamlSource = ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          id: $idClassName, default=$defaultValue
+        ''',
+      ).build();
+
+      var collector = CodeGenerationCollector();
+      var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
+      var definitions = statefulAnalyzer.validateAll();
+      var errors = collector.errors;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      var definition = definitions.first as ClassDefinition;
+
+      test("then the id of the table is '$idClassName'.", () {
+        expect(definition.idField.type.className, idClassName);
+      }, skip: errors.isNotEmpty);
+
+      test("then the default persist value is '$defaultValue'", () {
+        expect(definition.idField.defaultPersistValue, defaultValue);
+      }, skip: errors.isNotEmpty);
+    });
+  }
+
+  test(
+      'Given a class with the UuidValue id type and an invalid default value, then an error is collected.',
+      () {
+    var invalidDefaultValue = "'550e8400-e29b-41d4-a716-446655440000'";
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          id: UuidValue, default=$invalidDefaultValue
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, models, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors.first.message,
+      contains(
+        'The default value "$invalidDefaultValue" is not supported for the id type "UuidValue". Valid options are:',
+      ),
+    );
+  });
 }

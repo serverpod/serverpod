@@ -1,6 +1,6 @@
 class: PlayerUuid
 table: player_uuid
-idType: uuidV4
 fields:
+  id: UuidValue, default=random
   name: String
   team: TeamInt?, relation(name=team_player, optional, onDelete=SetNull)

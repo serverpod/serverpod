@@ -32,6 +32,15 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
+    if ((definition.tableName != null) && (parentNodeName == 'id')) {
+      return _idTypeDefaultValidation(
+        definition.tableName!,
+        field.type,
+        value,
+        span,
+      );
+    }
+
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
         return _dateDateValidation(value, span);
@@ -50,6 +59,40 @@ class DefaultValueRestriction extends ValueRestriction {
       case DefaultValueAllowedType.isEnum:
         return _enumValidation(value, span, field);
     }
+  }
+
+  List<SourceSpanSeverityException> _idTypeDefaultValidation(
+    String tableName,
+    TypeDefinition idType,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    var typeClassName = idType.className;
+    var errors = <SourceSpanSeverityException>[];
+
+    var supportedDefaults = SupportedIdType.all
+        .where((e) => e.type.className == typeClassName)
+        .map((e) => e.dbColumnDefaultBuilder(tableName));
+
+    if (typeClassName == 'int') {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field "id" with type "int" is sequential and does not accept '
+          'a direct "default" assignment.',
+          span,
+        ),
+      );
+    } else if (!supportedDefaults.contains(value)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The default value "$value" is not supported for the id type '
+          '"$typeClassName". Valid options are: ${supportedDefaults.join(', ')}.',
+          span,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> _dateDateValidation(

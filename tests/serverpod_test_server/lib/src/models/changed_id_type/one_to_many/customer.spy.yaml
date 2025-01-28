@@ -1,6 +1,6 @@
 class: CustomerInt
 table: customer_int
-idType: int
 fields:
+  id: int
   name: String
   orders: List<OrderUuid>?, relation(name=customer_orders)
