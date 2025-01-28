@@ -210,10 +210,19 @@ class BuildRepositoryClass {
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..docs.add(
-          '/// Find a list of [$className]s from a table, using the provided [where]\n'
-          '/// expression, optionally using [limit], [offset], and [orderBy]. To order by\n'
-          '/// multiple columns, use [orderByList]. If [where] is omitted, all rows in\n'
-          '/// the table will be returned.')
+          '/// Returns a list of [$className]s matching the given query parameters.\n'
+          '/// \n'
+          '/// Use [where] to specify which items to include in the return value.\n'
+          '/// If none is specified, all items will be returned.\n'
+          '///\n'
+          '/// To specify the order of the items use [orderBy] or [orderByList]\n'
+          '/// when sorting by multiple columns.\n'
+          '///\n'
+          '/// The maximum number of items can be set by [limit]. If no limit is set,\n'
+          '/// all items matching the query will be returned.\n'
+          '///\n'
+          '/// [offset] defines how many items to skip, after which [limit] (or all)\n'
+          '/// items are read from the database.')
       ..name = 'find'
       ..returns = TypeReference(
         (r) => r
@@ -313,7 +322,15 @@ class BuildRepositoryClass {
   ) {
     return Method((m) => m
       ..docs.add(
-          '/// Find a single [$className] from a table, using the provided [where]')
+          '/// Returns the first matching [$className] matching the given query parameters.\n'
+          '/// \n'
+          '/// Use [where] to specify which items to include in the return value.\n'
+          '/// If none is specified, all items will be returned.\n'
+          '///\n'
+          '/// To specify the order use [orderBy] or [orderByList]\n'
+          '/// when sorting by multiple columns.\n'
+          '///\n'
+          '/// [offset] defines how many items to skip, after which the next one will be picked.')
       ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
@@ -402,7 +419,7 @@ class BuildRepositoryClass {
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..docs.add(
-        '/// Find a single [$className] by its [id] or null if no such row exists.',
+        '/// Finds a single [$className] by its [id] or null if no such row exists.',
       )
       ..name = 'findById'
       ..returns = TypeReference(
@@ -548,7 +565,7 @@ class BuildRepositoryClass {
     return Method((methodBuilder) {
       methodBuilder
         ..docs.add(
-            '/// Update all [$className]s in the list and returns the updated rows. If\n'
+            '/// Updates all [$className]s in the list and returns the updated rows. If\n'
             '/// [columns] is provided, only those columns will be updated. Defaults to\n'
             '/// all columns.\n'
             '/// This is an atomic operation, meaning that if one of the rows fails to\n'
@@ -929,7 +946,7 @@ class BuildRepositoryClass {
 
       methodBuilder
         ..docs
-            .add('/// Set the `${field.name}` values on the [$classFieldName]')
+            .add('/// Sets the `${field.name}` values on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1003,7 +1020,7 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
-        ..docs.add('/// Set the `${field.name}` on the [$classFieldName]')
+        ..docs.add('/// Sets the `${field.name}` on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1071,7 +1088,7 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
-        ..docs.add('/// Set the `${field.name}` on the [$classFieldName]')
+        ..docs.add('/// Sets the `${field.name}` on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1285,7 +1302,7 @@ class BuildRepositoryClass {
 
       methodBuilder
         ..docs.add(
-            '/// Remove the `${field.name}` field from the [$classFieldName]')
+            '/// Removes the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1354,7 +1371,7 @@ class BuildRepositoryClass {
 
       methodBuilder
         ..docs.add(
-            '/// Remove the `${field.name}` field from the [$classFieldName]')
+            '/// Removes the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1414,7 +1431,7 @@ class BuildRepositoryClass {
 
       methodBuilder
         ..docs.add(
-            '/// Remove the `${field.name}` field from the [$classFieldName]')
+            '/// Removes the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {

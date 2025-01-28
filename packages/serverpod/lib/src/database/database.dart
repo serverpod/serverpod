@@ -39,10 +39,19 @@ class Database {
   })  : _session = session,
         _databaseConnection = DatabaseConnection(poolManager);
 
-  /// Find a list of [TableRow]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [$TableRow]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after with [limit] (or all)
+  /// items are read from the database.
   Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -67,7 +76,15 @@ class Database {
     );
   }
 
-  /// Find a single [TableRow] from a table, using the provided [where]
+  /// Returns the first matching [TableRow] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -90,10 +107,12 @@ class Database {
     );
   }
 
-  /// Find a single [TableRow] by its [id] or null if no such row exists. It's
+  /// Finds a single [TableRow] by its [id] or null if no such row exists. It's
   /// often useful to cast the object returned.
   ///
-  ///     var myRow = session.db.findById<MyClass>(myId);
+  /// ```dart
+  /// var myRow = session.db.findById<MyClass>(myId);
+  /// ```
   Future<T?> findById<T extends TableRow>(
     int id, {
     Transaction? transaction,
@@ -108,7 +127,7 @@ class Database {
     );
   }
 
-  /// Update all [TableRow]s in the list and returns the updated rows. If
+  /// Updates all [TableRow]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fail to
