@@ -727,6 +727,8 @@ void main() {
     var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
     var duration = const Duration(seconds: 1);
     var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+    var uri =
+        Uri.parse('https://docs.serverpod.dev/contribute#working-on-serverpod');
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -816,6 +818,16 @@ void main() {
 
     test('Type null UuidValue', () async {
       var result = await client.basicTypes.testUuid(null);
+      expect(result, isNull);
+    });
+
+    test('Type Uri', () async {
+      var result = await client.basicTypes.testUri(uri);
+      expect(result, equals(uri));
+    });
+
+    test('Type null Uri', () async {
+      var result = await client.basicTypes.testUri(null);
       expect(result, isNull);
     });
   });
