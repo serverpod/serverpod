@@ -59,8 +59,6 @@ void main() {
 
     var retrieved = await cache.get<SimpleData>(key);
     expect(retrieved?.num, equals(0));
-
-    expect(cache.localSize, equals(1));
   });
 
   test(
@@ -79,8 +77,6 @@ void main() {
 
     var retrieved = await cache.get<SimpleData>(key);
     expect(retrieved, isNull);
-
-    expect(cache.localSize, equals(0));
   });
 
   test(
@@ -95,8 +91,6 @@ void main() {
 
     var retrieved = await cache.get<SimpleData>(key);
     expect(retrieved?.num, equals(1));
-
-    expect(cache.localSize, equals(1));
   });
 
   test(
@@ -135,7 +129,14 @@ void main() {
     retrieved = await cache.get<SimpleData>('entry:$middleId');
     expect(retrieved, isNull);
 
-    expect(cache.localSize, equals(cacheMaxSize - 1));
+    for (var i = 0; i < cacheMaxSize; i++) {
+      if (i == middleId) {
+        continue;
+      }
+
+      retrieved = await cache.get<SimpleData>('entry:$i');
+      expect(retrieved, isNotNull);
+    }
   });
 
   test(
@@ -279,7 +280,6 @@ void main() {
 
     var value = await cache.get<SimpleData>(cacheKey);
     expect(value, isNull);
-    expect(cache.localSize, equals(0));
   });
 
   test(
