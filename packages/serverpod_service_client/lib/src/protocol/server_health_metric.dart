@@ -72,6 +72,9 @@ abstract class ServerHealthMetric implements _i1.SerializableModel {
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -121,6 +124,9 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,

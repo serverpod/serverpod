@@ -56,6 +56,9 @@ abstract class EnumDefaultMix implements _i1.SerializableModel {
 
   _i2.ByNameEnum byNameEnumDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnumDefaultMix copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
@@ -98,6 +101,9 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
               byNameEnumDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnumDefaultMix copyWith({
     Object? id = _Undefined,

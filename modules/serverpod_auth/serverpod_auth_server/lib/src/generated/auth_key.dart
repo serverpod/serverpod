@@ -70,6 +70,9 @@ abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [AuthKey]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   AuthKey copyWith({
     int? id,
     int? userId,
@@ -151,6 +154,9 @@ class _AuthKeyImpl extends AuthKey {
           method: method,
         );
 
+  /// Returns a shallow copy of this [AuthKey]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   AuthKey copyWith({
     Object? id = _Undefined,

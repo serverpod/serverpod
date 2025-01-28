@@ -73,6 +73,9 @@ abstract class ObjectWithEnum
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
@@ -158,6 +161,9 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
           enumListList: enumListList,
         );
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,

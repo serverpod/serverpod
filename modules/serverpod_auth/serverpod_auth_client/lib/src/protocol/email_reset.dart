@@ -51,6 +51,9 @@ abstract class EmailReset implements _i1.SerializableModel {
   /// The expiration time for the password reset.
   DateTime expiration;
 
+  /// Returns a shallow copy of this [EmailReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -88,6 +91,9 @@ class _EmailResetImpl extends EmailReset {
           expiration: expiration,
         );
 
+  /// Returns a shallow copy of this [EmailReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailReset copyWith({
     Object? id = _Undefined,

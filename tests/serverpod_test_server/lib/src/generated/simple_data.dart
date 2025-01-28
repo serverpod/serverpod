@@ -45,6 +45,9 @@ abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleData copyWith({
     int? id,
     int? num,
@@ -106,6 +109,9 @@ class _SimpleDataImpl extends SimpleData {
           num: num,
         );
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleData copyWith({
     Object? id = _Undefined,

@@ -50,6 +50,9 @@ abstract class GoogleRefreshToken
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -116,6 +119,9 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
           refreshToken: refreshToken,
         );
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   GoogleRefreshToken copyWith({
     Object? id = _Undefined,

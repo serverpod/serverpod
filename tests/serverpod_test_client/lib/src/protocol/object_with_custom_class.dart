@@ -51,6 +51,9 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
   _i2.CustomClassWithProtocolSerializationMethod
       customClassWithProtocolSerializationMethod;
 
+  /// Returns a shallow copy of this [ObjectWithCustomClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?
         customClassWithoutProtocolSerialization,
@@ -94,6 +97,9 @@ class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
               customClassWithProtocolSerializationMethod,
         );
 
+  /// Returns a shallow copy of this [ObjectWithCustomClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?

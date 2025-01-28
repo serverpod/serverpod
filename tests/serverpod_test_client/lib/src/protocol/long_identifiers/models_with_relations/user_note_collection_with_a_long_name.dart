@@ -48,6 +48,9 @@ abstract class UserNoteCollectionWithALongName
 
   List<_i2.UserNoteWithALongName>? notes;
 
+  /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserNoteCollectionWithALongName copyWith({
     int? id,
     String? name,
@@ -82,6 +85,9 @@ class _UserNoteCollectionWithALongNameImpl
           notes: notes,
         );
 
+  /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserNoteCollectionWithALongName copyWith({
     Object? id = _Undefined,

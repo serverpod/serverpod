@@ -34,6 +34,9 @@ abstract class SealedOtherChild extends _i1.SealedParent
 
   int sealedOtherChildField;
 
+  /// Returns a shallow copy of this [SealedOtherChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   SealedOtherChild copyWith({
     int? sealedInt,
     String? sealedString,
@@ -74,6 +77,9 @@ class _SealedOtherChildImpl extends SealedOtherChild {
           sealedOtherChildField: sealedOtherChildField,
         );
 
+  /// Returns a shallow copy of this [SealedOtherChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   @override
   SealedOtherChild copyWith({
     int? sealedInt,

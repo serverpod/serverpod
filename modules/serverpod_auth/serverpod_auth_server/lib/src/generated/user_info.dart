@@ -92,6 +92,9 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -188,6 +191,9 @@ class _UserInfoImpl extends UserInfo {
           blocked: blocked,
         );
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,

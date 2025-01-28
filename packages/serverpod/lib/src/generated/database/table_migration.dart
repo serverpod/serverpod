@@ -108,6 +108,9 @@ abstract class TableMigration
 
   List<_i6.DatabaseMigrationWarning> warnings;
 
+  /// Returns a shallow copy of this [TableMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TableMigration copyWith({
     String? name,
     String? dartName,
@@ -199,6 +202,9 @@ class _TableMigrationImpl extends TableMigration {
           warnings: warnings,
         );
 
+  /// Returns a shallow copy of this [TableMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TableMigration copyWith({
     String? name,

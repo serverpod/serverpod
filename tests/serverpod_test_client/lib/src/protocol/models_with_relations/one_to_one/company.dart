@@ -50,6 +50,9 @@ abstract class Company implements _i1.SerializableModel {
 
   _i2.Town? town;
 
+  /// Returns a shallow copy of this [Company]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Company copyWith({
     int? id,
     String? name,
@@ -87,6 +90,9 @@ class _CompanyImpl extends Company {
           town: town,
         );
 
+  /// Returns a shallow copy of this [Company]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Company copyWith({
     Object? id = _Undefined,

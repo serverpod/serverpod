@@ -51,6 +51,9 @@ abstract class UserNoteCollection
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserNoteCollection]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserNoteCollection copyWith({
     int? id,
     String? name,
@@ -123,6 +126,9 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
           userNotesPropertyName: userNotesPropertyName,
         );
 
+  /// Returns a shallow copy of this [UserNoteCollection]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserNoteCollection copyWith({
     Object? id = _Undefined,

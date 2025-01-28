@@ -89,6 +89,9 @@ abstract class LogSettings implements _i1.SerializableModel {
   /// The duration in seconds for a query to be considered slow.
   double slowQueryDuration;
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
@@ -148,6 +151,9 @@ class _LogSettingsImpl extends LogSettings {
           slowQueryDuration: slowQueryDuration,
         );
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogSettings copyWith({
     _i2.LogLevel? logLevel,

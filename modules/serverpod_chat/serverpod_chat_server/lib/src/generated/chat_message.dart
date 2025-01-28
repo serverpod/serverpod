@@ -99,6 +99,9 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessage copyWith({
     int? id,
     String? channel,
@@ -203,6 +206,9 @@ class _ChatMessageImpl extends ChatMessage {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessage copyWith({
     Object? id = _Undefined,

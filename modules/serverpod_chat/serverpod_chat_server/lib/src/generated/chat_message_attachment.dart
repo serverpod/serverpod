@@ -62,6 +62,9 @@ abstract class ChatMessageAttachment
   /// The height of the image preview, if available.
   int? previewHeight;
 
+  /// Returns a shallow copy of this [ChatMessageAttachment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessageAttachment copyWith({
     String? fileName,
     String? url,
@@ -119,6 +122,9 @@ class _ChatMessageAttachmentImpl extends ChatMessageAttachment {
           previewHeight: previewHeight,
         );
 
+  /// Returns a shallow copy of this [ChatMessageAttachment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessageAttachment copyWith({
     String? fileName,

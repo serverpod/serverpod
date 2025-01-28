@@ -58,6 +58,9 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   /// Access key for retrieving a private file.
   String authKey;
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -99,6 +102,9 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
           authKey: authKey,
         );
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,

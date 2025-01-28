@@ -45,6 +45,9 @@ abstract class EmptyModelRelationItem
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EmptyModelRelationItem]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmptyModelRelationItem copyWith({
     int? id,
     String? name,
@@ -109,6 +112,9 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
           name: name,
         );
 
+  /// Returns a shallow copy of this [EmptyModelRelationItem]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmptyModelRelationItem copyWith({
     Object? id = _Undefined,

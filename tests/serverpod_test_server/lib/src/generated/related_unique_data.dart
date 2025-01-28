@@ -56,6 +56,9 @@ abstract class RelatedUniqueData
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [RelatedUniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
@@ -127,6 +130,9 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
           number: number,
         );
 
+  /// Returns a shallow copy of this [RelatedUniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,

@@ -73,6 +73,9 @@ abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -122,6 +125,9 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,

@@ -64,6 +64,9 @@ abstract class EmailCreateAccountRequest
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
@@ -140,6 +143,9 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
           verificationCode: verificationCode,
         );
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailCreateAccountRequest copyWith({
     Object? id = _Undefined,

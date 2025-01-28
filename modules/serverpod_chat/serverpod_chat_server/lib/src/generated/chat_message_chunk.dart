@@ -46,6 +46,9 @@ abstract class ChatMessageChunk
   /// True if there are more chat messages to fetch from this channel.
   bool hasOlderMessages;
 
+  /// Returns a shallow copy of this [ChatMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessageChunk copyWith({
     String? channel,
     List<_i2.ChatMessage>? messages,
@@ -86,6 +89,9 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
           hasOlderMessages: hasOlderMessages,
         );
 
+  /// Returns a shallow copy of this [ChatMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessageChunk copyWith({
     String? channel,

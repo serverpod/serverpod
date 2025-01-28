@@ -49,6 +49,9 @@ abstract class DoubleDefault
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DoubleDefault copyWith({
     int? id,
     double? doubleDefault,
@@ -115,6 +118,9 @@ class _DoubleDefaultImpl extends DoubleDefault {
           doubleDefaultNull: doubleDefaultNull,
         );
 
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DoubleDefault copyWith({
     Object? id = _Undefined,

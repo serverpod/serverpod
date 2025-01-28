@@ -25,6 +25,9 @@ abstract class ScopeNoneFields implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
+  /// Returns a shallow copy of this [ScopeNoneFields]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
@@ -42,6 +45,9 @@ class _Undefined {}
 class _ScopeNoneFieldsImpl extends ScopeNoneFields {
   _ScopeNoneFieldsImpl({int? id}) : super._(id: id);
 
+  /// Returns a shallow copy of this [ScopeNoneFields]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ScopeNoneFields copyWith({Object? id = _Undefined}) {
     return ScopeNoneFields(id: id is int? ? id : this.id);

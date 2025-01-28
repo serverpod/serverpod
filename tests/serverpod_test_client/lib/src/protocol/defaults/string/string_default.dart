@@ -42,6 +42,9 @@ abstract class StringDefault implements _i1.SerializableModel {
 
   String? stringDefaultNull;
 
+  /// Returns a shallow copy of this [StringDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   StringDefault copyWith({
     int? id,
     String? stringDefault,
@@ -75,6 +78,9 @@ class _StringDefaultImpl extends StringDefault {
           stringDefaultNull: stringDefaultNull,
         );
 
+  /// Returns a shallow copy of this [StringDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   StringDefault copyWith({
     Object? id = _Undefined,

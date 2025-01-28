@@ -79,6 +79,9 @@ abstract class CloudStorageEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -165,6 +168,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
           verified: verified,
         );
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,

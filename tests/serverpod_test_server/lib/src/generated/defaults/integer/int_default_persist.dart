@@ -42,6 +42,9 @@ abstract class IntDefaultPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [IntDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IntDefaultPersist copyWith({
     int? id,
     int? intDefaultPersist,
@@ -103,6 +106,9 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
           intDefaultPersist: intDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [IntDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IntDefaultPersist copyWith({
     Object? id = _Undefined,

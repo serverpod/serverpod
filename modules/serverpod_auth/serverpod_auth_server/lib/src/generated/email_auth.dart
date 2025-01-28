@@ -55,6 +55,9 @@ abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -126,6 +129,9 @@ class _EmailAuthImpl extends EmailAuth {
           hash: hash,
         );
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailAuth copyWith({
     Object? id = _Undefined,

@@ -1,14 +1,13 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
-
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -138,8 +137,12 @@ void main() {
           expect(copyWithMethod?.returnType?.toSource(), testClassName);
         }, skip: copyWithMethod == null);
 
+        test('annotated with @useResult', () {
+          expect(copyWithMethod?.metadata.first.toSource(), '@_i1.useResult');
+        }, skip: copyWithMethod == null);
+
         test('annotated with @override', () {
-          expect(copyWithMethod?.metadata.first.toSource(), '@override');
+          expect(copyWithMethod?.metadata.elementAt(1).toSource(), '@override');
         }, skip: copyWithMethod == null);
 
         test(

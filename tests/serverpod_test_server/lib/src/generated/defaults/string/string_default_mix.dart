@@ -60,6 +60,9 @@ abstract class StringDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [StringDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   StringDefaultMix copyWith({
     int? id,
     String? stringDefaultAndDefaultModel,
@@ -134,6 +137,9 @@ class _StringDefaultMixImpl extends StringDefaultMix {
               stringDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [StringDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   StringDefaultMix copyWith({
     Object? id = _Undefined,

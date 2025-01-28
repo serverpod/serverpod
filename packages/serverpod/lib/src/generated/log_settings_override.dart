@@ -52,6 +52,9 @@ abstract class LogSettingsOverride
   /// Log settings override.
   _i2.LogSettings logSettings;
 
+  /// Returns a shallow copy of this [LogSettingsOverride]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogSettingsOverride copyWith({
     String? module,
     String? endpoint,
@@ -99,6 +102,9 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
           logSettings: logSettings,
         );
 
+  /// Returns a shallow copy of this [LogSettingsOverride]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogSettingsOverride copyWith({
     Object? module = _Undefined,

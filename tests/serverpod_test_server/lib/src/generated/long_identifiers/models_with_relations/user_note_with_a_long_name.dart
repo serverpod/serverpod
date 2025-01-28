@@ -45,6 +45,9 @@ abstract class UserNoteWithALongName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserNoteWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserNoteWithALongName copyWith({
     int? id,
     String? name,
@@ -110,6 +113,9 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
           name: name,
         );
 
+  /// Returns a shallow copy of this [UserNoteWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserNoteWithALongName copyWith({
     Object? id = _Undefined,

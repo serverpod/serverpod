@@ -44,6 +44,9 @@ abstract class ObjectWithByteData
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithByteData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithByteData copyWith({
     int? id,
     _i2.ByteData? byteData,
@@ -105,6 +108,9 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
           byteData: byteData,
         );
 
+  /// Returns a shallow copy of this [ObjectWithByteData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithByteData copyWith({
     Object? id = _Undefined,

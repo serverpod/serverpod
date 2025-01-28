@@ -78,6 +78,9 @@ abstract class ServerHealthMetric
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -164,6 +167,9 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,

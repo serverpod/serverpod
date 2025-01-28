@@ -58,6 +58,9 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
   /// analyzing the database.
   String? dartType;
 
+  /// Returns a shallow copy of this [ColumnDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ColumnDefinition copyWith({
     String? name,
     _i2.ColumnType? columnType,
@@ -99,6 +102,9 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
           dartType: dartType,
         );
 
+  /// Returns a shallow copy of this [ColumnDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ColumnDefinition copyWith({
     String? name,

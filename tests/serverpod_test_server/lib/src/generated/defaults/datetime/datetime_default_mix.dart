@@ -61,6 +61,9 @@ abstract class DateTimeDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -137,6 +140,9 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
               dateTimeDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,

@@ -47,6 +47,9 @@ abstract class ExceptionWithData
 
   int? someNullableField;
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
@@ -84,6 +87,9 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
           someNullableField: someNullableField,
         );
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ExceptionWithData copyWith({
     String? message,

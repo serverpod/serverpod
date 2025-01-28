@@ -45,6 +45,9 @@ abstract class SimpleDateTime
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -106,6 +109,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
           dateTime: dateTime,
         );
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,

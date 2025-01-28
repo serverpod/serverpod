@@ -36,6 +36,9 @@ abstract class ChatJoinChannel implements _i1.SerializableModel {
   /// The name of the user.
   String? userName;
 
+  /// Returns a shallow copy of this [ChatJoinChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatJoinChannel copyWith({
     String? channel,
     String? userName,
@@ -65,6 +68,9 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
           userName: userName,
         );
 
+  /// Returns a shallow copy of this [ChatJoinChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatJoinChannel copyWith({
     String? channel,

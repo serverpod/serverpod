@@ -46,6 +46,9 @@ abstract class FilterConstraint
 
   String? value2;
 
+  /// Returns a shallow copy of this [FilterConstraint]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   FilterConstraint copyWith({
     _i2.FilterConstraintType? type,
     String? column,
@@ -93,6 +96,9 @@ class _FilterConstraintImpl extends FilterConstraint {
           value2: value2,
         );
 
+  /// Returns a shallow copy of this [FilterConstraint]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   FilterConstraint copyWith({
     _i2.FilterConstraintType? type,

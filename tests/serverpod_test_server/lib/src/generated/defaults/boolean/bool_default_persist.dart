@@ -49,6 +49,9 @@ abstract class BoolDefaultPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [BoolDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BoolDefaultPersist copyWith({
     int? id,
     bool? boolDefaultPersistTrue,
@@ -119,6 +122,9 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
           boolDefaultPersistFalse: boolDefaultPersistFalse,
         );
 
+  /// Returns a shallow copy of this [BoolDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BoolDefaultPersist copyWith({
     Object? id = _Undefined,

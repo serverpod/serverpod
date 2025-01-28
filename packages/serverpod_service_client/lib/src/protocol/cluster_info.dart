@@ -30,6 +30,9 @@ abstract class ClusterInfo implements _i1.SerializableModel {
   /// List of servers in the cluster.
   List<_i2.ClusterServerInfo> servers;
 
+  /// Returns a shallow copy of this [ClusterInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
@@ -46,6 +49,9 @@ class _ClusterInfoImpl extends ClusterInfo {
   _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
       : super._(servers: servers);
 
+  /// Returns a shallow copy of this [ClusterInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
     return ClusterInfo(

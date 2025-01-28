@@ -55,6 +55,9 @@ abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Comment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Comment copyWith({
     int? id,
     String? description,
@@ -126,6 +129,9 @@ class _CommentImpl extends Comment {
           order: order,
         );
 
+  /// Returns a shallow copy of this [Comment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Comment copyWith({
     Object? id = _Undefined,

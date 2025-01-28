@@ -40,6 +40,9 @@ abstract class IndexElementDefinition
   /// Depending on the [type], this is either a column name or an expression.
   String definition;
 
+  /// Returns a shallow copy of this [IndexElementDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IndexElementDefinition copyWith({
     _i2.IndexElementDefinitionType? type,
     String? definition,
@@ -75,6 +78,9 @@ class _IndexElementDefinitionImpl extends IndexElementDefinition {
           definition: definition,
         );
 
+  /// Returns a shallow copy of this [IndexElementDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IndexElementDefinition copyWith({
     _i2.IndexElementDefinitionType? type,

@@ -63,6 +63,9 @@ abstract class DateTimeDefaultModel
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DateTimeDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DateTimeDefaultModel copyWith({
     int? id,
     DateTime? dateTimeDefaultModelNow,
@@ -136,6 +139,9 @@ class _DateTimeDefaultModelImpl extends DateTimeDefaultModel {
           dateTimeDefaultModelStrNull: dateTimeDefaultModelStrNull,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DateTimeDefaultModel copyWith({
     Object? id = _Undefined,

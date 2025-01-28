@@ -59,6 +59,9 @@ abstract class DatabaseMigrationVersion
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseMigrationVersion copyWith({
     int? id,
     String? module,
@@ -130,6 +133,9 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
           timestamp: timestamp,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseMigrationVersion copyWith({
     Object? id = _Undefined,

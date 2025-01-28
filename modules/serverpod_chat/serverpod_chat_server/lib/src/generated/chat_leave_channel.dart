@@ -25,6 +25,9 @@ abstract class ChatLeaveChannel
   /// The name of the channel to leave.
   String channel;
 
+  /// Returns a shallow copy of this [ChatLeaveChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatLeaveChannel copyWith({String? channel});
   @override
   Map<String, dynamic> toJson() {
@@ -45,6 +48,9 @@ abstract class ChatLeaveChannel
 class _ChatLeaveChannelImpl extends ChatLeaveChannel {
   _ChatLeaveChannelImpl({required String channel}) : super._(channel: channel);
 
+  /// Returns a shallow copy of this [ChatLeaveChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatLeaveChannel copyWith({String? channel}) {
     return ChatLeaveChannel(channel: channel ?? this.channel);

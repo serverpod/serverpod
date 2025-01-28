@@ -63,6 +63,9 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Team]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Team copyWith({
     int? id,
     String? name,
@@ -147,6 +150,9 @@ class _TeamImpl extends Team {
           players: players,
         );
 
+  /// Returns a shallow copy of this [Team]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Team copyWith({
     Object? id = _Undefined,

@@ -57,6 +57,9 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Person]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Person copyWith({
     int? id,
     String? name,
@@ -131,6 +134,9 @@ class _PersonImpl extends Person {
           organization: organization,
         );
 
+  /// Returns a shallow copy of this [Person]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Person copyWith({
     Object? id = _Undefined,

@@ -21,6 +21,9 @@ abstract class ServerOnlyClassField implements _i1.SerializableModel {
     return ServerOnlyClassField();
   }
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerOnlyClassField copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -36,6 +39,9 @@ abstract class ServerOnlyClassField implements _i1.SerializableModel {
 class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   _ServerOnlyClassFieldImpl() : super._();
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerOnlyClassField copyWith() {
     return ServerOnlyClassField();

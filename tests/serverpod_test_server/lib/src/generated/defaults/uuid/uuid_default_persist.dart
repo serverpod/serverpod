@@ -54,6 +54,9 @@ abstract class UuidDefaultPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefaultPersist copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
@@ -124,6 +127,9 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
           uuidDefaultPersistStr: uuidDefaultPersistStr,
         );
 
+  /// Returns a shallow copy of this [UuidDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,

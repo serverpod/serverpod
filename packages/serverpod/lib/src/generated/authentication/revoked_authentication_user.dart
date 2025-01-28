@@ -23,6 +23,9 @@ abstract class RevokedAuthenticationUser
     return RevokedAuthenticationUser();
   }
 
+  /// Returns a shallow copy of this [RevokedAuthenticationUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RevokedAuthenticationUser copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -43,6 +46,9 @@ abstract class RevokedAuthenticationUser
 class _RevokedAuthenticationUserImpl extends RevokedAuthenticationUser {
   _RevokedAuthenticationUserImpl() : super._();
 
+  /// Returns a shallow copy of this [RevokedAuthenticationUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RevokedAuthenticationUser copyWith() {
     return RevokedAuthenticationUser();

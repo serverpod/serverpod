@@ -50,6 +50,9 @@ abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Arena copyWith({
     int? id,
     String? name,
@@ -116,6 +119,9 @@ class _ArenaImpl extends Arena {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,

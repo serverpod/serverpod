@@ -55,6 +55,9 @@ abstract class Town implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Town]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Town copyWith({
     int? id,
     String? name,
@@ -126,6 +129,9 @@ class _TownImpl extends Town {
           mayor: mayor,
         );
 
+  /// Returns a shallow copy of this [Town]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Town copyWith({
     Object? id = _Undefined,

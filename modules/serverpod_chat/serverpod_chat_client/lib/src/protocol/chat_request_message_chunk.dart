@@ -37,6 +37,9 @@ abstract class ChatRequestMessageChunk implements _i1.SerializableModel {
   /// The id of the last read message.
   int lastMessageId;
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatRequestMessageChunk copyWith({
     String? channel,
     int? lastMessageId,
@@ -64,6 +67,9 @@ class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
           lastMessageId: lastMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatRequestMessageChunk copyWith({
     String? channel,

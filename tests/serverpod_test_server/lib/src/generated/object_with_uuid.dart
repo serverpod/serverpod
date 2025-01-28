@@ -50,6 +50,9 @@ abstract class ObjectWithUuid
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -116,6 +119,9 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
           uuidNullable: uuidNullable,
         );
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithUuid copyWith({
     Object? id = _Undefined,

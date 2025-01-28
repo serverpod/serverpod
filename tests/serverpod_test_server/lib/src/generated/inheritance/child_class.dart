@@ -39,7 +39,10 @@ abstract class ChildClass extends _i1.ParentClass
 
   int childField;
 
+  /// Returns a shallow copy of this [ChildClass]
+  /// with some or all fields replaced by the given arguments.
   @override
+  @_i2.useResult
   ChildClass copyWith({
     Object? id,
     String? grandParentField,
@@ -87,6 +90,9 @@ class _ChildClassImpl extends ChildClass {
           childField: childField,
         );
 
+  /// Returns a shallow copy of this [ChildClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   @override
   ChildClass copyWith({
     Object? id = _Undefined,

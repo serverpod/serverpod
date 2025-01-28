@@ -64,6 +64,9 @@ abstract class CloudStorageDirectUploadEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -140,6 +143,9 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
           authKey: authKey,
         );
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,

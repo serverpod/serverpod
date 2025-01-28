@@ -114,6 +114,9 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   /// Timestamp of the last time this record was modified.
   DateTime touched;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -192,6 +195,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

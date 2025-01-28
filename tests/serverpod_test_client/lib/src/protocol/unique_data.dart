@@ -41,6 +41,9 @@ abstract class UniqueData implements _i1.SerializableModel {
 
   String email;
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UniqueData copyWith({
     int? id,
     int? number,
@@ -74,6 +77,9 @@ class _UniqueDataImpl extends UniqueData {
           email: email,
         );
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UniqueData copyWith({
     Object? id = _Undefined,

@@ -22,6 +22,9 @@ class GrandparentClass
 
   String grandParentField;
 
+  /// Returns a shallow copy of this [GrandparentClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   GrandparentClass copyWith({String? grandParentField}) {
     return GrandparentClass(
         grandParentField: grandParentField ?? this.grandParentField);

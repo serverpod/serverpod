@@ -24,6 +24,9 @@ abstract class DefaultServerOnlyClass implements _i1.SerializableModel {
 
   String foo;
 
+  /// Returns a shallow copy of this [DefaultServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DefaultServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
@@ -39,6 +42,9 @@ abstract class DefaultServerOnlyClass implements _i1.SerializableModel {
 class _DefaultServerOnlyClassImpl extends DefaultServerOnlyClass {
   _DefaultServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 
+  /// Returns a shallow copy of this [DefaultServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DefaultServerOnlyClass copyWith({String? foo}) {
     return DefaultServerOnlyClass(foo: foo ?? this.foo);

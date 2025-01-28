@@ -49,6 +49,9 @@ abstract class BoolDefaultModel implements _i1.SerializableModel {
 
   bool boolDefaultModelNullFalse;
 
+  /// Returns a shallow copy of this [BoolDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BoolDefaultModel copyWith({
     int? id,
     bool? boolDefaultModelTrue,
@@ -86,6 +89,9 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
           boolDefaultModelNullFalse: boolDefaultModelNullFalse,
         );
 
+  /// Returns a shallow copy of this [BoolDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BoolDefaultModel copyWith({
     Object? id = _Undefined,

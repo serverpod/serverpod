@@ -46,6 +46,9 @@ abstract class CachesInfo implements _i1.SerializableModel {
   /// Information about the global cache.
   _i2.CacheInfo global;
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
@@ -77,6 +80,9 @@ class _CachesInfoImpl extends CachesInfo {
           global: global,
         );
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CachesInfo copyWith({
     _i2.CacheInfo? local,

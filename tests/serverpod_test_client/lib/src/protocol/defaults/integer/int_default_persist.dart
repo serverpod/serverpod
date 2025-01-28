@@ -36,6 +36,9 @@ abstract class IntDefaultPersist implements _i1.SerializableModel {
 
   int? intDefaultPersist;
 
+  /// Returns a shallow copy of this [IntDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IntDefaultPersist copyWith({
     int? id,
     int? intDefaultPersist,
@@ -65,6 +68,9 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
           intDefaultPersist: intDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [IntDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IntDefaultPersist copyWith({
     Object? id = _Undefined,

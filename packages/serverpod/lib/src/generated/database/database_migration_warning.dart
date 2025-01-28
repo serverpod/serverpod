@@ -54,6 +54,9 @@ abstract class DatabaseMigrationWarning
 
   bool destrucive;
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
     String? message,
@@ -104,6 +107,9 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
           destrucive: destrucive,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,

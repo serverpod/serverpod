@@ -31,6 +31,9 @@ abstract class SessionLogResult
   /// The list of SessionLogInfo.
   List<_i2.SessionLogInfo> sessionLog;
 
+  /// Returns a shallow copy of this [SessionLogResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
@@ -54,6 +57,9 @@ class _SessionLogResultImpl extends SessionLogResult {
   _SessionLogResultImpl({required List<_i2.SessionLogInfo> sessionLog})
       : super._(sessionLog: sessionLog);
 
+  /// Returns a shallow copy of this [SessionLogResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(

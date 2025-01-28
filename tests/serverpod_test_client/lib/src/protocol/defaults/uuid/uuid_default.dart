@@ -65,6 +65,9 @@ abstract class UuidDefault implements _i1.SerializableModel {
 
   _i1.UuidValue? uuidDefaultStrNull;
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefault copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
@@ -108,6 +111,9 @@ class _UuidDefaultImpl extends UuidDefault {
           uuidDefaultStrNull: uuidDefaultStrNull,
         );
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefault copyWith({
     Object? id = _Undefined,

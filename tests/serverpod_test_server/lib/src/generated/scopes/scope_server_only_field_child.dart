@@ -51,7 +51,10 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
 
   String childFoo;
 
+  /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
+  /// with some or all fields replaced by the given arguments.
   @override
+  @_i2.useResult
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope,
     Object? serverOnlyScope,
@@ -98,6 +101,9 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
           childFoo: childFoo,
         );
 
+  /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   @override
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope = _Undefined,

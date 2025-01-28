@@ -51,6 +51,9 @@ abstract class EmailFailedSignIn implements _i1.SerializableModel {
   /// The IP address of the sign in attempt.
   String ipAddress;
 
+  /// Returns a shallow copy of this [EmailFailedSignIn]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailFailedSignIn copyWith({
     int? id,
     String? email,
@@ -88,6 +91,9 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
           ipAddress: ipAddress,
         );
 
+  /// Returns a shallow copy of this [EmailFailedSignIn]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailFailedSignIn copyWith({
     Object? id = _Undefined,

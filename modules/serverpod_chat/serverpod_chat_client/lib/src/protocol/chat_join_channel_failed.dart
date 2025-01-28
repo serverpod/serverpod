@@ -37,6 +37,9 @@ abstract class ChatJoinChannelFailed implements _i1.SerializableModel {
   /// The reason of failure.
   String reason;
 
+  /// Returns a shallow copy of this [ChatJoinChannelFailed]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatJoinChannelFailed copyWith({
     String? channel,
     String? reason,
@@ -64,6 +67,9 @@ class _ChatJoinChannelFailedImpl extends ChatJoinChannelFailed {
           reason: reason,
         );
 
+  /// Returns a shallow copy of this [ChatJoinChannelFailed]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatJoinChannelFailed copyWith({
     String? channel,

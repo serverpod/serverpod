@@ -58,6 +58,9 @@ abstract class IntDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IntDefaultMix copyWith({
     int? id,
     int? intDefaultAndDefaultModel,
@@ -129,6 +132,9 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IntDefaultMix copyWith({
     Object? id = _Undefined,

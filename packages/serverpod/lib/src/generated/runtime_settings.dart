@@ -68,6 +68,9 @@ abstract class RuntimeSettings
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
@@ -146,6 +149,9 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
           logMalformedCalls: logMalformedCalls,
         );
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,

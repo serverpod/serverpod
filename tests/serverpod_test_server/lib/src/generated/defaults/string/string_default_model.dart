@@ -51,6 +51,9 @@ abstract class StringDefaultModel
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [StringDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   StringDefaultModel copyWith({
     int? id,
     String? stringDefaultModel,
@@ -117,6 +120,9 @@ class _StringDefaultModelImpl extends StringDefaultModel {
           stringDefaultModelNull: stringDefaultModelNull,
         );
 
+  /// Returns a shallow copy of this [StringDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   StringDefaultModel copyWith({
     Object? id = _Undefined,

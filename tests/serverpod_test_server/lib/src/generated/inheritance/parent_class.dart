@@ -40,6 +40,9 @@ class ParentClass extends _i1.GrandparentClass
   @override
   _i2.Table get table => t;
 
+  /// Returns a shallow copy of this [ParentClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   ParentClass copyWith({
     Object? id = _Undefined,
     String? grandParentField,

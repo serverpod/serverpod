@@ -56,6 +56,9 @@ abstract class ChatReadMessage
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatReadMessage copyWith({
     int? id,
     String? channel,
@@ -127,6 +130,9 @@ class _ChatReadMessageImpl extends ChatReadMessage {
           lastReadMessageId: lastReadMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatReadMessage copyWith({
     Object? id = _Undefined,

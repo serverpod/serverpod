@@ -35,6 +35,9 @@ class ParentClass extends _i1.GrandparentClass
 
   String parentField;
 
+  /// Returns a shallow copy of this [ParentClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   ParentClass copyWith({
     Object? id = _Undefined,
     String? grandParentField,

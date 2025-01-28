@@ -68,6 +68,9 @@ abstract class FutureCallEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -149,6 +152,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           identifier: identifier,
         );
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   FutureCallEntry copyWith({
     Object? id = _Undefined,

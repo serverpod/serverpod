@@ -71,6 +71,9 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnumDefault copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
@@ -151,6 +154,9 @@ class _EnumDefaultImpl extends EnumDefault {
           byIndexEnumDefaultNull: byIndexEnumDefaultNull,
         );
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnumDefault copyWith({
     Object? id = _Undefined,

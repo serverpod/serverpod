@@ -65,6 +65,9 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
   /// failed.
   _i3.AuthenticationFailReason? failReason;
 
+  /// Returns a shallow copy of this [AuthenticationResponse]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   AuthenticationResponse copyWith({
     bool? success,
     String? key,
@@ -106,6 +109,9 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
           failReason: failReason,
         );
 
+  /// Returns a shallow copy of this [AuthenticationResponse]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   AuthenticationResponse copyWith({
     bool? success,

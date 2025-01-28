@@ -102,6 +102,9 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Types]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Types copyWith({
     int? id,
     int? anInt,
@@ -210,6 +213,9 @@ class _TypesImpl extends Types {
           aStringifiedEnum: aStringifiedEnum,
         );
 
+  /// Returns a shallow copy of this [Types]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Types copyWith({
     Object? id = _Undefined,

@@ -38,6 +38,9 @@ abstract class ServerpodSqlException
 
   String sql;
 
+  /// Returns a shallow copy of this [ServerpodSqlException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerpodSqlException copyWith({
     String? message,
     String? sql,
@@ -73,6 +76,9 @@ class _ServerpodSqlExceptionImpl extends ServerpodSqlException {
           sql: sql,
         );
 
+  /// Returns a shallow copy of this [ServerpodSqlException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerpodSqlException copyWith({
     String? message,

@@ -70,6 +70,9 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefault copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
@@ -150,6 +153,9 @@ class _UuidDefaultImpl extends UuidDefault {
           uuidDefaultStrNull: uuidDefaultStrNull,
         );
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefault copyWith({
     Object? id = _Undefined,

@@ -62,6 +62,9 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
   /// True if malformed calls should be logged.
   bool logMalformedCalls;
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
@@ -104,6 +107,9 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
           logMalformedCalls: logMalformedCalls,
         );
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,

@@ -52,6 +52,9 @@ abstract class ObjectFieldScopes
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
@@ -122,6 +125,9 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
           database: database,
         );
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectFieldScopes copyWith({
     Object? id = _Undefined,

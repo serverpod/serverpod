@@ -58,6 +58,9 @@ abstract class MultipleMaxFieldName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [MultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MultipleMaxFieldName copyWith({
     int? id,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -136,6 +139,9 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
               thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
         );
 
+  /// Returns a shallow copy of this [MultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MultipleMaxFieldName copyWith({
     Object? id = _Undefined,

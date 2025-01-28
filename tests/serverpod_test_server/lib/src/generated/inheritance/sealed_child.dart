@@ -28,6 +28,9 @@ class SealedChild extends _i1.SealedParent
 
   int? nullableInt;
 
+  /// Returns a shallow copy of this [SealedChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   SealedChild copyWith({
     int? sealedInt,
     String? sealedString,

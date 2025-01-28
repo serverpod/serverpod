@@ -44,6 +44,9 @@ abstract class LongImplicitIdField
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [LongImplicitIdField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LongImplicitIdField copyWith({
     int? id,
     String? name,
@@ -109,6 +112,9 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
           name: name,
         );
 
+  /// Returns a shallow copy of this [LongImplicitIdField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LongImplicitIdField copyWith({
     Object? id = _Undefined,

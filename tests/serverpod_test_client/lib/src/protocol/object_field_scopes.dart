@@ -41,6 +41,9 @@ abstract class ObjectFieldScopes implements _i1.SerializableModel {
 
   String? api;
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
@@ -74,6 +77,9 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
           api: api,
         );
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectFieldScopes copyWith({
     Object? id = _Undefined,

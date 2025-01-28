@@ -92,6 +92,9 @@ abstract class TableDefinition
   /// Null, if this is unknown.
   bool? managed;
 
+  /// Returns a shallow copy of this [TableDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TableDefinition copyWith({
     String? name,
     String? dartName,
@@ -165,6 +168,9 @@ class _TableDefinitionImpl extends TableDefinition {
           managed: managed,
         );
 
+  /// Returns a shallow copy of this [TableDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TableDefinition copyWith({
     String? name,

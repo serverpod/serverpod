@@ -52,6 +52,9 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
 
   int intDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IntDefaultMix copyWith({
     int? id,
     int? intDefaultAndDefaultModel,
@@ -89,6 +92,9 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IntDefaultMix copyWith({
     Object? id = _Undefined,

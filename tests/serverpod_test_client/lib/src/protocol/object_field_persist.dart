@@ -50,6 +50,9 @@ abstract class ObjectFieldPersist implements _i1.SerializableModel {
 
   _i2.SimpleData? data;
 
+  /// Returns a shallow copy of this [ObjectFieldPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
@@ -87,6 +90,9 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
           data: data,
         );
 
+  /// Returns a shallow copy of this [ObjectFieldPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,

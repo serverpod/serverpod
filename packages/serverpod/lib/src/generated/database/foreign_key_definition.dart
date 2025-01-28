@@ -89,6 +89,9 @@ abstract class ForeignKeyDefinition
   /// The match type of the foreign key
   _i3.ForeignKeyMatchType? matchType;
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
@@ -156,6 +159,9 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
           matchType: matchType,
         );
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ForeignKeyDefinition copyWith({
     String? constraintName,

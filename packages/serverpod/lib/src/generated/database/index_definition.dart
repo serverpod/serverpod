@@ -72,6 +72,9 @@ abstract class IndexDefinition
   /// The predicate of this partial index, if it is one.
   String? predicate;
 
+  /// Returns a shallow copy of this [IndexDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IndexDefinition copyWith({
     String? indexName,
     String? tableSpace,
@@ -134,6 +137,9 @@ class _IndexDefinitionImpl extends IndexDefinition {
           predicate: predicate,
         );
 
+  /// Returns a shallow copy of this [IndexDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IndexDefinition copyWith({
     String? indexName,

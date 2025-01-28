@@ -60,6 +60,9 @@ abstract class PersonWithLongTableName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [PersonWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   PersonWithLongTableName copyWith({
     int? id,
     String? name,
@@ -137,6 +140,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
           organization: organization,
         );
 
+  /// Returns a shallow copy of this [PersonWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   PersonWithLongTableName copyWith({
     Object? id = _Undefined,

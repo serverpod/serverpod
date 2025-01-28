@@ -74,6 +74,9 @@ abstract class UuidDefaultModel
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefaultModel copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
@@ -154,6 +157,9 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
           uuidDefaultModelStrNull: uuidDefaultModelStrNull,
         );
 
+  /// Returns a shallow copy of this [UuidDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefaultModel copyWith({
     Object? id = _Undefined,

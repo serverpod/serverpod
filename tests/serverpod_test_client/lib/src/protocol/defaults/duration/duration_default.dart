@@ -60,6 +60,9 @@ abstract class DurationDefault implements _i1.SerializableModel {
 
   Duration? durationDefaultNull;
 
+  /// Returns a shallow copy of this [DurationDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DurationDefault copyWith({
     int? id,
     Duration? durationDefault,
@@ -94,6 +97,9 @@ class _DurationDefaultImpl extends DurationDefault {
           durationDefaultNull: durationDefaultNull,
         );
 
+  /// Returns a shallow copy of this [DurationDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DurationDefault copyWith({
     Object? id = _Undefined,

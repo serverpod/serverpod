@@ -54,6 +54,9 @@ abstract class UserInfoPublic implements _i1.SerializableModel {
   /// URL to the user's avatar.
   String? imageUrl;
 
+  /// Returns a shallow copy of this [UserInfoPublic]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserInfoPublic copyWith({
     int? id,
     String? userName,
@@ -95,6 +98,9 @@ class _UserInfoPublicImpl extends UserInfoPublic {
           imageUrl: imageUrl,
         );
 
+  /// Returns a shallow copy of this [UserInfoPublic]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserInfoPublic copyWith({
     Object? id = _Undefined,

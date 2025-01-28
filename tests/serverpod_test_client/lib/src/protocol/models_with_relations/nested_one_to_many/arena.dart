@@ -45,6 +45,9 @@ abstract class Arena implements _i1.SerializableModel {
 
   _i2.Team? team;
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Arena copyWith({
     int? id,
     String? name,
@@ -78,6 +81,9 @@ class _ArenaImpl extends Arena {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,

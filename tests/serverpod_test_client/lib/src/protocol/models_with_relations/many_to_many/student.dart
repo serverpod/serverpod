@@ -44,6 +44,9 @@ abstract class Student implements _i1.SerializableModel {
 
   List<_i2.Enrollment>? enrollments;
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Student copyWith({
     int? id,
     String? name,
@@ -78,6 +81,9 @@ class _StudentImpl extends Student {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Student copyWith({
     Object? id = _Undefined,

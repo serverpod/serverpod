@@ -49,6 +49,9 @@ abstract class Course implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Course]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Course copyWith({
     int? id,
     String? name,
@@ -118,6 +121,9 @@ class _CourseImpl extends Course {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [Course]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Course copyWith({
     Object? id = _Undefined,

@@ -62,6 +62,9 @@ abstract class EnumDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnumDefaultMix copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
@@ -141,6 +144,9 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
               byNameEnumDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnumDefaultMix copyWith({
     Object? id = _Undefined,

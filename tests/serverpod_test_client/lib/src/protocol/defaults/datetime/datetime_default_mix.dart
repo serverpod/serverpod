@@ -55,6 +55,9 @@ abstract class DateTimeDefaultMix implements _i1.SerializableModel {
 
   DateTime dateTimeDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -95,6 +98,9 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
               dateTimeDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,

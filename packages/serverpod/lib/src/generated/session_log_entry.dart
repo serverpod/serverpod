@@ -120,6 +120,9 @@ abstract class SessionLogEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -243,6 +246,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

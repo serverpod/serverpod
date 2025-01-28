@@ -67,6 +67,9 @@ abstract class SessionLogFilter
   /// Last session id to start the list of logs from. Used for pagination.
   int? lastSessionLogId;
 
+  /// Returns a shallow copy of this [SessionLogFilter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogFilter copyWith({
     String? endpoint,
     String? method,
@@ -129,6 +132,9 @@ class _SessionLogFilterImpl extends SessionLogFilter {
           lastSessionLogId: lastSessionLogId,
         );
 
+  /// Returns a shallow copy of this [SessionLogFilter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogFilter copyWith({
     Object? endpoint = _Undefined,

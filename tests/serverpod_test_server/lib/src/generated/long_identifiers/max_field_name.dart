@@ -45,6 +45,9 @@ abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [MaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MaxFieldName copyWith({
     int? id,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -110,6 +113,9 @@ class _MaxFieldNameImpl extends MaxFieldName {
               thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
         );
 
+  /// Returns a shallow copy of this [MaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MaxFieldName copyWith({
     Object? id = _Undefined,

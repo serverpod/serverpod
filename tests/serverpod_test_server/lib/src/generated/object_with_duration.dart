@@ -43,6 +43,9 @@ abstract class ObjectWithDuration
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithDuration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
@@ -104,6 +107,9 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
           duration: duration,
         );
 
+  /// Returns a shallow copy of this [ObjectWithDuration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithDuration copyWith({
     Object? id = _Undefined,

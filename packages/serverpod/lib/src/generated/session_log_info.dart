@@ -60,6 +60,9 @@ abstract class SessionLogInfo
   /// List of messages sent during the session.
   List<_i5.MessageLogEntry> messages;
 
+  /// Returns a shallow copy of this [SessionLogInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
     List<_i3.QueryLogEntry>? queries,
@@ -105,6 +108,9 @@ class _SessionLogInfoImpl extends SessionLogInfo {
           messages: messages,
         );
 
+  /// Returns a shallow copy of this [SessionLogInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,

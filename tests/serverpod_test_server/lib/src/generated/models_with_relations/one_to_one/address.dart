@@ -55,6 +55,9 @@ abstract class Address implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Address copyWith({
     int? id,
     String? street,
@@ -126,6 +129,9 @@ class _AddressImpl extends Address {
           inhabitant: inhabitant,
         );
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,

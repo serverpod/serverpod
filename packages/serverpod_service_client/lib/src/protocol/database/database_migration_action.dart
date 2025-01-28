@@ -54,6 +54,9 @@ abstract class DatabaseMigrationAction implements _i1.SerializableModel {
 
   _i4.TableDefinition? createTable;
 
+  /// Returns a shallow copy of this [DatabaseMigrationAction]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,
     String? deleteTable,
@@ -91,6 +94,9 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
           createTable: createTable,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationAction]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,

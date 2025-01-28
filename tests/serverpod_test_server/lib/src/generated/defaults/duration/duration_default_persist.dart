@@ -47,6 +47,9 @@ abstract class DurationDefaultPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DurationDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DurationDefaultPersist copyWith({
     int? id,
     Duration? durationDefaultPersist,
@@ -110,6 +113,9 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
           durationDefaultPersist: durationDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DurationDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DurationDefaultPersist copyWith({
     Object? id = _Undefined,

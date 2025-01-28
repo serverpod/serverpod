@@ -45,6 +45,9 @@ abstract class ReadWriteTestEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ReadWriteTestEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
@@ -106,6 +109,9 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
           number: number,
         );
 
+  /// Returns a shallow copy of this [ReadWriteTestEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ReadWriteTestEntry copyWith({
     Object? id = _Undefined,

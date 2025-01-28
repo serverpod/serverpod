@@ -44,6 +44,9 @@ abstract class DoubleDefaultPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DoubleDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DoubleDefaultPersist copyWith({
     int? id,
     double? doubleDefaultPersist,
@@ -107,6 +110,9 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
           doubleDefaultPersist: doubleDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DoubleDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DoubleDefaultPersist copyWith({
     Object? id = _Undefined,

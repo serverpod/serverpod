@@ -51,6 +51,9 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
 
   _i3.ByIndexEnum? byIndexEnumDefaultPersist;
 
+  /// Returns a shallow copy of this [EnumDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnumDefaultPersist copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultPersist,
@@ -86,6 +89,9 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
           byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [EnumDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnumDefaultPersist copyWith({
     Object? id = _Undefined,

@@ -23,6 +23,9 @@ abstract class ServerOnlyClass
 
   String foo;
 
+  /// Returns a shallow copy of this [ServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
@@ -43,6 +46,9 @@ abstract class ServerOnlyClass
 class _ServerOnlyClassImpl extends ServerOnlyClass {
   _ServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 
+  /// Returns a shallow copy of this [ServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerOnlyClass copyWith({String? foo}) {
     return ServerOnlyClass(foo: foo ?? this.foo);

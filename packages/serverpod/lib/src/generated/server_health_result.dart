@@ -45,6 +45,9 @@ abstract class ServerHealthResult
   /// List of connection metrics.
   List<_i3.ServerHealthConnectionInfo> connectionInfos;
 
+  /// Returns a shallow copy of this [ServerHealthResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,
     List<_i3.ServerHealthConnectionInfo>? connectionInfos,
@@ -81,6 +84,9 @@ class _ServerHealthResultImpl extends ServerHealthResult {
           connectionInfos: connectionInfos,
         );
 
+  /// Returns a shallow copy of this [ServerHealthResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,

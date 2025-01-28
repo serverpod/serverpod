@@ -94,6 +94,9 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
   /// used for sorting the query log.
   int order;
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   QueryLogEntry copyWith({
     int? id,
     String? serverId,
@@ -159,6 +162,9 @@ class _QueryLogEntryImpl extends QueryLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   QueryLogEntry copyWith({
     Object? id = _Undefined,

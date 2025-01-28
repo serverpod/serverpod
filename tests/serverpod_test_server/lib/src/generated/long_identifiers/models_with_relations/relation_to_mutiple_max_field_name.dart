@@ -53,6 +53,9 @@ abstract class RelationToMultipleMaxFieldName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RelationToMultipleMaxFieldName copyWith({
     int? id,
     String? name,
@@ -126,6 +129,9 @@ class _RelationToMultipleMaxFieldNameImpl
           multipleMaxFieldNames: multipleMaxFieldNames,
         );
 
+  /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RelationToMultipleMaxFieldName copyWith({
     Object? id = _Undefined,

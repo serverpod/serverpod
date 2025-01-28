@@ -359,6 +359,9 @@ abstract class Nullability implements _i1.SerializableModel {
 
   Map<String, int?>? aNullableMapWithNullableInts;
 
+  /// Returns a shallow copy of this [Nullability]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Nullability copyWith({
     int? anInt,
     int? aNullableInt,
@@ -599,6 +602,9 @@ class _NullabilityImpl extends Nullability {
           aNullableMapWithNullableInts: aNullableMapWithNullableInts,
         );
 
+  /// Returns a shallow copy of this [Nullability]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Nullability copyWith({
     int? anInt,

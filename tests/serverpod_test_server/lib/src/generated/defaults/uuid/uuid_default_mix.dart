@@ -60,6 +60,9 @@ abstract class UuidDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefaultMix copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultAndDefaultModel,
@@ -133,6 +136,9 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
           uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefaultMix copyWith({
     Object? id = _Undefined,

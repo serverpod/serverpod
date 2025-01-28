@@ -56,6 +56,9 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
 
   DateTime? dateTimeDefaultStrNull;
 
+  /// Returns a shallow copy of this [DateTimeDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DateTimeDefault copyWith({
     int? id,
     DateTime? dateTimeDefaultNow,
@@ -94,6 +97,9 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
           dateTimeDefaultStrNull: dateTimeDefaultStrNull,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DateTimeDefault copyWith({
     Object? id = _Undefined,

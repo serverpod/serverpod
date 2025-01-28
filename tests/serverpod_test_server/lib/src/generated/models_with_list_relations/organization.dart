@@ -63,6 +63,9 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Organization copyWith({
     int? id,
     String? name,
@@ -147,6 +150,9 @@ class _OrganizationImpl extends Organization {
           city: city,
         );
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,

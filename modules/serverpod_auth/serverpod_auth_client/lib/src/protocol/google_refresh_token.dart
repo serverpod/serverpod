@@ -44,6 +44,9 @@ abstract class GoogleRefreshToken implements _i1.SerializableModel {
   /// The token itself.
   String refreshToken;
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -77,6 +80,9 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
           refreshToken: refreshToken,
         );
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   GoogleRefreshToken copyWith({
     Object? id = _Undefined,

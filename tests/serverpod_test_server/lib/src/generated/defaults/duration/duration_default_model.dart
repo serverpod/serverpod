@@ -68,6 +68,9 @@ abstract class DurationDefaultModel
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DurationDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DurationDefaultModel copyWith({
     int? id,
     Duration? durationDefaultModel,
@@ -136,6 +139,9 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
           durationDefaultModelNull: durationDefaultModelNull,
         );
 
+  /// Returns a shallow copy of this [DurationDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DurationDefaultModel copyWith({
     Object? id = _Undefined,

@@ -68,6 +68,9 @@ abstract class OrganizationWithLongTableName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [OrganizationWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   OrganizationWithLongTableName copyWith({
     int? id,
     String? name,
@@ -152,6 +155,9 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
           city: city,
         );
 
+  /// Returns a shallow copy of this [OrganizationWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   OrganizationWithLongTableName copyWith({
     Object? id = _Undefined,

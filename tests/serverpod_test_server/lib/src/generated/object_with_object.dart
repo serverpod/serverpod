@@ -128,6 +128,9 @@ abstract class ObjectWithObject
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithObject]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithObject copyWith({
     int? id,
     _i2.SimpleData? data,
@@ -260,6 +263,9 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
           nestedDataMap: nestedDataMap,
         );
 
+  /// Returns a shallow copy of this [ObjectWithObject]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithObject copyWith({
     Object? id = _Undefined,

@@ -55,6 +55,9 @@ abstract class Player implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Player]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Player copyWith({
     int? id,
     String? name,
@@ -126,6 +129,9 @@ class _PlayerImpl extends Player {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Player]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Player copyWith({
     Object? id = _Undefined,

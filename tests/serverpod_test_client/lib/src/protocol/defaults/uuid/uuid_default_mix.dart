@@ -54,6 +54,9 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
 
   _i1.UuidValue uuidDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UuidDefaultMix copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultAndDefaultModel,
@@ -92,6 +95,9 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
           uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UuidDefaultMix copyWith({
     Object? id = _Undefined,

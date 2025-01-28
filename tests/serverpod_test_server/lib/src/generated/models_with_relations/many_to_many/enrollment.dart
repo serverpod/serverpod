@@ -64,6 +64,9 @@ abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Enrollment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
@@ -146,6 +149,9 @@ class _EnrollmentImpl extends Enrollment {
           course: course,
         );
 
+  /// Returns a shallow copy of this [Enrollment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,

@@ -39,6 +39,9 @@ abstract class ReadWriteTestEntry implements _i1.SerializableModel {
   /// A random number, to verify that the write/read was performed correctly.
   int number;
 
+  /// Returns a shallow copy of this [ReadWriteTestEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
@@ -68,6 +71,9 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
           number: number,
         );
 
+  /// Returns a shallow copy of this [ReadWriteTestEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ReadWriteTestEntry copyWith({
     Object? id = _Undefined,
