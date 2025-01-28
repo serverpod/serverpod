@@ -222,7 +222,16 @@ class BuildRepositoryClass {
           '/// all items matching the query will be returned.\n'
           '///\n'
           '/// [offset] defines how many items to skip, after which [limit] (or all)\n'
-          '/// items are read from the database.')
+          '/// items are read from the database.\n'
+          '///\n'
+          '/// ```dart\n'
+          '/// var persons = await Persons.db.find(\n'
+          '///   session,\n'
+          '///   where: (t) => t.lastName.equals(\'Jones\'),\n'
+          '///   orderBy: (t) => t.firstName,\n'
+          '///   limit: 100,\n'
+          '/// );\n'
+          '/// ```')
       ..name = 'find'
       ..returns = TypeReference(
         (r) => r
@@ -330,7 +339,15 @@ class BuildRepositoryClass {
           '/// To specify the order use [orderBy] or [orderByList]\n'
           '/// when sorting by multiple columns.\n'
           '///\n'
-          '/// [offset] defines how many items to skip, after which the next one will be picked.')
+          '/// [offset] defines how many items to skip, after which the next one will be picked.\n'
+          '///\n'
+          '/// ```dart\n'
+          '/// var youngestPerson = await Persons.db.findFirstRow(\n'
+          '///   session,\n'
+          '///   where: (t) => t.lastName.equals(\'Jones\'),\n'
+          '///   orderBy: (t) => t.age,\n'
+          '/// );\n'
+          '/// ```')
       ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
