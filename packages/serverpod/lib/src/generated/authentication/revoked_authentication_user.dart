@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Message sent when all authentication for a user is revoked.
 abstract class RevokedAuthenticationUser
@@ -26,7 +25,7 @@ abstract class RevokedAuthenticationUser
 
   /// Returns a shallow copy of this [RevokedAuthenticationUser]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   RevokedAuthenticationUser copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +48,7 @@ class _RevokedAuthenticationUserImpl extends RevokedAuthenticationUser {
 
   /// Returns a shallow copy of this [RevokedAuthenticationUser]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   RevokedAuthenticationUser copyWith() {
     return RevokedAuthenticationUser();

@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class ObjectWithParent
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -45,7 +44,7 @@ abstract class ObjectWithParent
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectWithParent copyWith({
     int? id,
     int? other,
@@ -109,7 +108,7 @@ class _ObjectWithParentImpl extends ObjectWithParent {
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectWithParent copyWith({
     Object? id = _Undefined,

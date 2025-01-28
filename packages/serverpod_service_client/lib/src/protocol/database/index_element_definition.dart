@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/index_element_definition_type.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// Defines an element of an index.
 abstract class IndexElementDefinition implements _i1.SerializableModel {
@@ -42,7 +41,7 @@ abstract class IndexElementDefinition implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [IndexElementDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   IndexElementDefinition copyWith({
     _i2.IndexElementDefinitionType? type,
     String? definition,
@@ -72,7 +71,7 @@ class _IndexElementDefinitionImpl extends IndexElementDefinition {
 
   /// Returns a shallow copy of this [IndexElementDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   IndexElementDefinition copyWith({
     _i2.IndexElementDefinitionType? type,

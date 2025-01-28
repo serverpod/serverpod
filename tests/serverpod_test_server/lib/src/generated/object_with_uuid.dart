@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class ObjectWithUuid
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -53,7 +52,7 @@ abstract class ObjectWithUuid
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -122,7 +121,7 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectWithUuid copyWith({
     Object? id = _Undefined,

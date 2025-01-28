@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class BulkDataException
     implements
@@ -40,7 +39,7 @@ abstract class BulkDataException
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   BulkDataException copyWith({
     String? message,
     String? query,
@@ -80,7 +79,7 @@ class _BulkDataExceptionImpl extends BulkDataException {
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   BulkDataException copyWith({
     String? message,

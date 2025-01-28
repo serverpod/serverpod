@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ChildWithDefault extends _i1.ParentWithDefault
     implements _i2.SerializableModel {
@@ -45,7 +44,7 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.
   @override
-  @useResult
+  @_i2.useResult
   ChildWithDefault copyWith({
     String? name,
     int? parentDefault,
@@ -83,7 +82,7 @@ class _ChildWithDefaultImpl extends ChildWithDefault {
 
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i2.useResult
   @override
   ChildWithDefault copyWith({
     String? name,

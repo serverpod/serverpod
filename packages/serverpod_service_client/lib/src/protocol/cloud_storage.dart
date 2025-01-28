@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
-import 'package:meta/meta.dart';
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry implements _i1.SerializableModel {
@@ -76,7 +75,7 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -128,7 +127,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,

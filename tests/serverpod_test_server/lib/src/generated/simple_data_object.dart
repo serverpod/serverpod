@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class SimpleDataObject
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -30,7 +29,7 @@ abstract class SimpleDataObject
 
   /// Returns a shallow copy of this [SimpleDataObject]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   SimpleDataObject copyWith({_i2.SimpleData? object});
   @override
   Map<String, dynamic> toJson() {
@@ -54,7 +53,7 @@ class _SimpleDataObjectImpl extends SimpleDataObject {
 
   /// Returns a shallow copy of this [SimpleDataObject]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   SimpleDataObject copyWith({_i2.SimpleData? object}) {
     return SimpleDataObject(object: object ?? this.object.copyWith());

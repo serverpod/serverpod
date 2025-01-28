@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Log entry for a session.
 abstract class SessionLogEntry implements _i1.SerializableModel {
@@ -117,7 +116,7 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -198,7 +197,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

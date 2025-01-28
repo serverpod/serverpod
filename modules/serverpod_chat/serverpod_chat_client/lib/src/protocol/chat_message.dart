@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 import 'chat_message_attachment.dart' as _i3;
-import 'package:meta/meta.dart';
 
 /// A chat message.
 abstract class ChatMessage implements _i1.SerializableModel {
@@ -97,7 +96,7 @@ abstract class ChatMessage implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatMessage]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatMessage copyWith({
     int? id,
     String? channel,
@@ -162,7 +161,7 @@ class _ChatMessageImpl extends ChatMessage {
 
   /// Returns a shallow copy of this [ChatMessage]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatMessage copyWith({
     Object? id = _Undefined,

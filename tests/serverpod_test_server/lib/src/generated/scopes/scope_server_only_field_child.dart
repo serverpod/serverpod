@@ -13,7 +13,6 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import '../types.dart' as _i3;
 import '../scopes/scope_server_only_field.dart' as _i4;
-import 'package:meta/meta.dart';
 
 abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     implements _i2.SerializableModel, _i2.ProtocolSerialization {
@@ -55,7 +54,7 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
   /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
   /// with some or all fields replaced by the given arguments.
   @override
-  @useResult
+  @_i2.useResult
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope,
     Object? serverOnlyScope,
@@ -104,7 +103,7 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
 
   /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i2.useResult
   @override
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope = _Undefined,

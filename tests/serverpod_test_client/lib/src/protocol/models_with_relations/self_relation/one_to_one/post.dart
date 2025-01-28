@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Post implements _i1.SerializableModel {
   Post._({
@@ -62,7 +61,7 @@ abstract class Post implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Post copyWith({
     int? id,
     String? content,
@@ -106,7 +105,7 @@ class _PostImpl extends Post {
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,

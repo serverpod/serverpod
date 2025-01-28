@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// The log filter is used when searching for specific log entries.
 abstract class SessionLogFilter implements _i1.SerializableModel {
@@ -69,7 +68,7 @@ abstract class SessionLogFilter implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   SessionLogFilter copyWith({
     String? endpoint,
     String? method,
@@ -121,7 +120,7 @@ class _SessionLogFilterImpl extends SessionLogFilter {
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   SessionLogFilter copyWith({
     Object? endpoint = _Undefined,

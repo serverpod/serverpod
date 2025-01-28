@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Message sent when authentication scopes for a user are revoked.
 abstract class RevokedAuthenticationScope
@@ -32,7 +31,7 @@ abstract class RevokedAuthenticationScope
 
   /// Returns a shallow copy of this [RevokedAuthenticationScope]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   RevokedAuthenticationScope copyWith({List<String>? scopes});
   @override
   Map<String, dynamic> toJson() {
@@ -56,7 +55,7 @@ class _RevokedAuthenticationScopeImpl extends RevokedAuthenticationScope {
 
   /// Returns a shallow copy of this [RevokedAuthenticationScope]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   RevokedAuthenticationScope copyWith({List<String>? scopes}) {
     return RevokedAuthenticationScope(

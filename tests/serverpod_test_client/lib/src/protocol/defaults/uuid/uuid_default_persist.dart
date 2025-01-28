@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class UuidDefaultPersist implements _i1.SerializableModel {
   UuidDefaultPersist._({
@@ -51,7 +50,7 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   UuidDefaultPersist copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
@@ -89,7 +88,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,

@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Authentication info for Sign in with Apple.
 abstract class AppleAuthInfo implements _i1.SerializableModel {
@@ -63,7 +62,7 @@ abstract class AppleAuthInfo implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AppleAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
@@ -111,7 +110,7 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
 
   /// Returns a shallow copy of this [AppleAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   AppleAuthInfo copyWith({
     String? userIdentifier,

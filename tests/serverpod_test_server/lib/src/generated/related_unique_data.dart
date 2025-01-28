@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class RelatedUniqueData
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -59,7 +58,7 @@ abstract class RelatedUniqueData
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
@@ -133,7 +132,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,

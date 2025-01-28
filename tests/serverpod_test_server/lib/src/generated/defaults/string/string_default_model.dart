@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class StringDefaultModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -54,7 +53,7 @@ abstract class StringDefaultModel
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   StringDefaultModel copyWith({
     int? id,
     String? stringDefaultModel,
@@ -123,7 +122,7 @@ class _StringDefaultModelImpl extends StringDefaultModel {
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   StringDefaultModel copyWith({
     Object? id = _Undefined,

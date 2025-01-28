@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey implements _i1.SerializableModel {
@@ -68,7 +67,7 @@ abstract class AuthKey implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   AuthKey copyWith({
     int? id,
     int? userId,
@@ -116,7 +115,7 @@ class _AuthKeyImpl extends AuthKey {
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   AuthKey copyWith({
     Object? id = _Undefined,

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'chat_message_attachment.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// A chat message post request.
 abstract class ChatMessagePost
@@ -56,7 +55,7 @@ abstract class ChatMessagePost
 
   /// Returns a shallow copy of this [ChatMessagePost]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatMessagePost copyWith({
     String? channel,
     String? message,
@@ -109,7 +108,7 @@ class _ChatMessagePostImpl extends ChatMessagePost {
 
   /// Returns a shallow copy of this [ChatMessagePost]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatMessagePost copyWith({
     String? channel,

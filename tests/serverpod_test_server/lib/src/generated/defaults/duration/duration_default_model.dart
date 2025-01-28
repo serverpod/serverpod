@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class DurationDefaultModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -71,7 +70,7 @@ abstract class DurationDefaultModel
 
   /// Returns a shallow copy of this [DurationDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   DurationDefaultModel copyWith({
     int? id,
     Duration? durationDefaultModel,
@@ -142,7 +141,7 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
 
   /// Returns a shallow copy of this [DurationDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   DurationDefaultModel copyWith({
     Object? id = _Undefined,

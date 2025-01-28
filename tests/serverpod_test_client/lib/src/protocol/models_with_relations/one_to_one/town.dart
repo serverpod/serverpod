@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Town implements _i1.SerializableModel {
   Town._({
@@ -53,7 +52,7 @@ abstract class Town implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Town copyWith({
     int? id,
     String? name,
@@ -93,7 +92,7 @@ class _TownImpl extends Town {
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Town copyWith({
     Object? id = _Undefined,

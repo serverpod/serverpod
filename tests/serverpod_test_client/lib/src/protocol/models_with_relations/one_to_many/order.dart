@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class Order implements _i1.SerializableModel {
   Order._({
@@ -61,7 +60,7 @@ abstract class Order implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Order copyWith({
     int? id,
     String? description,
@@ -106,7 +105,7 @@ class _OrderImpl extends Order {
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Order copyWith({
     Object? id = _Undefined,

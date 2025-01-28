@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// An attachment to a chat message. Typically an image or a file.
 abstract class ChatMessageAttachment implements _i1.SerializableModel {
@@ -64,7 +63,7 @@ abstract class ChatMessageAttachment implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatMessageAttachment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatMessageAttachment copyWith({
     String? fileName,
     String? url,
@@ -112,7 +111,7 @@ class _ChatMessageAttachmentImpl extends ChatMessageAttachment {
 
   /// Returns a shallow copy of this [ChatMessageAttachment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatMessageAttachment copyWith({
     String? fileName,

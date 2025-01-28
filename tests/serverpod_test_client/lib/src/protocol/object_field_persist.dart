@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ObjectFieldPersist implements _i1.SerializableModel {
   ObjectFieldPersist._({
@@ -53,7 +52,7 @@ abstract class ObjectFieldPersist implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
@@ -93,7 +92,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,

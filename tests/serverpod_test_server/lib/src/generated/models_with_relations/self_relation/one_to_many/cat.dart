@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
   Cat._({
@@ -66,7 +65,7 @@ abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Cat copyWith({
     int? id,
     String? name,
@@ -153,7 +152,7 @@ class _CatImpl extends Cat {
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Cat copyWith({
     Object? id = _Undefined,

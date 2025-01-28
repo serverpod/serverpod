@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/index_element_definition.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
@@ -75,7 +74,7 @@ abstract class IndexDefinition
 
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   IndexDefinition copyWith({
     String? indexName,
     String? tableSpace,
@@ -140,7 +139,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
 
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   IndexDefinition copyWith({
     String? indexName,

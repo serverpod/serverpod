@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Message to notify the server that messages have been read.
 abstract class ChatReadMessage implements _i1.SerializableModel {
@@ -53,7 +52,7 @@ abstract class ChatReadMessage implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatReadMessage]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatReadMessage copyWith({
     int? id,
     String? channel,
@@ -93,7 +92,7 @@ class _ChatReadMessageImpl extends ChatReadMessage {
 
   /// Returns a shallow copy of this [ChatReadMessage]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatReadMessage copyWith({
     Object? id = _Undefined,

@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
-import 'package:meta/meta.dart';
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
@@ -66,7 +65,7 @@ abstract class DatabaseDefinitions
 
   /// Returns a shallow copy of this [DatabaseDefinitions]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,
     List<_i2.TableDefinition>? live,
@@ -118,7 +117,7 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
 
   /// Returns a shallow copy of this [DatabaseDefinitions]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,

@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Represents a chat channel.
 abstract class Channel implements _i1.SerializableModel {
@@ -47,7 +46,7 @@ abstract class Channel implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Channel copyWith({
     int? id,
     String? name,
@@ -83,7 +82,7 @@ class _ChannelImpl extends Channel {
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Channel copyWith({
     Object? id = _Undefined,

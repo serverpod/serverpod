@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Database bindings for a Google refresh token.
 abstract class GoogleRefreshToken
@@ -53,7 +52,7 @@ abstract class GoogleRefreshToken
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -122,7 +121,7 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   GoogleRefreshToken copyWith({
     Object? id = _Undefined,

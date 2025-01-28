@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ObjectWithEnum
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -76,7 +75,7 @@ abstract class ObjectWithEnum
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
@@ -164,7 +163,7 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ObjectWithByteData implements _i1.SerializableModel {
   ObjectWithByteData._({
@@ -41,7 +40,7 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectWithByteData copyWith({
     int? id,
     _i2.ByteData? byteData,
@@ -73,7 +72,7 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectWithByteData copyWith({
     Object? id = _Undefined,

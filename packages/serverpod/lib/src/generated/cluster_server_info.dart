@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Information about a single server in a cluster.
 abstract class ClusterServerInfo
@@ -29,7 +28,7 @@ abstract class ClusterServerInfo
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
@@ -53,7 +52,7 @@ class _ClusterServerInfoImpl extends ClusterServerInfo {
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ClusterServerInfo copyWith({String? serverId}) {
     return ClusterServerInfo(serverId: serverId ?? this.serverId);

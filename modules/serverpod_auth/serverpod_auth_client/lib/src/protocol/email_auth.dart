@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Database bindings for a sign in with email.
 abstract class EmailAuth implements _i1.SerializableModel {
@@ -53,7 +52,7 @@ abstract class EmailAuth implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -93,7 +92,7 @@ class _EmailAuthImpl extends EmailAuth {
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EmailAuth copyWith({
     Object? id = _Undefined,

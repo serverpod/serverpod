@@ -73,10 +73,6 @@ class SerializableModelLibraryGenerator {
             from: p.dirname(classDefinition.filePath),
           );
           libraryBuilder.directives.add(Directive.partOf(topNodePath));
-        } else if (!(classDefinition.isSealedTopNode &&
-            classDefinition.childClasses.isEmpty)) {
-          libraryBuilder.directives
-              .insert(0, Directive.import('package:meta/meta.dart'));
         }
 
         libraryBuilder.body.addAll([
@@ -486,7 +482,8 @@ class SerializableModelLibraryGenerator {
       methodBuilder
         ..docs.add('/// Returns a shallow copy of this [$className]\n'
             '/// with some or all fields replaced by the given arguments.')
-        ..annotations.add(const CodeExpression(Code('useResult')))
+        ..annotations
+            .add(refer('useResult', serverpodUrl(serverCode)).expression)
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
@@ -508,7 +505,8 @@ class SerializableModelLibraryGenerator {
         m.docs.add(
             '/// Returns a shallow copy of this [${classDefinition.className}] \n'
             '/// with some or all fields replaced by the given arguments.');
-        m.annotations.add(const CodeExpression(Code('useResult')));
+        m.annotations
+            .add(refer('useResult', serverpodUrl(serverCode)).expression);
         if (!classDefinition.isParentClass) {
           m.annotations.add(refer('override'));
         }

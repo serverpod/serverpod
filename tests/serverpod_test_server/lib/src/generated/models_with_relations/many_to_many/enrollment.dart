@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/student.dart' as _i2;
 import '../../models_with_relations/many_to_many/course.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   Enrollment._({
@@ -67,7 +66,7 @@ abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
@@ -152,7 +151,7 @@ class _EnrollmentImpl extends Enrollment {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,

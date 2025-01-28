@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class IntDefaultMix implements _i1.SerializableModel {
   IntDefaultMix._({
@@ -55,7 +54,7 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [IntDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   IntDefaultMix copyWith({
     int? id,
     int? intDefaultAndDefaultModel,
@@ -95,7 +94,7 @@ class _IntDefaultMixImpl extends IntDefaultMix {
 
   /// Returns a shallow copy of this [IntDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   IntDefaultMix copyWith({
     Object? id = _Undefined,

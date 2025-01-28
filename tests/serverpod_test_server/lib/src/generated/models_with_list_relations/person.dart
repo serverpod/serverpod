@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
   Person._({
@@ -60,7 +59,7 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Person copyWith({
     int? id,
     String? name,
@@ -137,7 +136,7 @@ class _PersonImpl extends Person {
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Person copyWith({
     Object? id = _Undefined,

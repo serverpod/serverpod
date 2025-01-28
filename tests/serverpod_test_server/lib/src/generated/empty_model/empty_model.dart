@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class EmptyModel
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -24,7 +23,7 @@ abstract class EmptyModel
 
   /// Returns a shallow copy of this [EmptyModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EmptyModel copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -47,7 +46,7 @@ class _EmptyModelImpl extends EmptyModel {
 
   /// Returns a shallow copy of this [EmptyModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EmptyModel copyWith() {
     return EmptyModel();

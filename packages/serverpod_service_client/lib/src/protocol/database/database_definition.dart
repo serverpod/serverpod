@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
-import 'package:meta/meta.dart';
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition implements _i1.SerializableModel {
@@ -66,7 +65,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   DatabaseDefinition copyWith({
     String? name,
     String? moduleName,
@@ -111,7 +110,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,

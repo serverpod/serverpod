@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_entry.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// A list of log entries, used to return logging data.
 abstract class LogResult implements _i1.SerializableModel {
@@ -31,7 +30,7 @@ abstract class LogResult implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [LogResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   LogResult copyWith({List<_i2.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
@@ -50,7 +49,7 @@ class _LogResultImpl extends LogResult {
 
   /// Returns a shallow copy of this [LogResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   LogResult copyWith({List<_i2.LogEntry>? entries}) {
     return LogResult(

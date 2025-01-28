@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
     as _i2;
-import 'package:meta/meta.dart';
 
 abstract class LongImplicitIdFieldCollection
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -61,7 +60,7 @@ abstract class LongImplicitIdFieldCollection
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   LongImplicitIdFieldCollection copyWith({
     int? id,
     String? name,
@@ -143,7 +142,7 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   LongImplicitIdFieldCollection copyWith({
     Object? id = _Undefined,

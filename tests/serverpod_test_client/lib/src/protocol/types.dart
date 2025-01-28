@@ -13,7 +13,6 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
-import 'package:meta/meta.dart';
 
 abstract class Types implements _i1.SerializableModel {
   Types._({
@@ -100,7 +99,7 @@ abstract class Types implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Types copyWith({
     int? id,
     int? anInt,
@@ -169,7 +168,7 @@ class _TypesImpl extends Types {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Types copyWith({
     Object? id = _Undefined,

@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import 'package:uuid/uuid.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class DefaultException
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -99,7 +98,7 @@ abstract class DefaultException
 
   /// Returns a shallow copy of this [DefaultException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   DefaultException copyWith({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
@@ -161,7 +160,7 @@ class _DefaultExceptionImpl extends DefaultException {
 
   /// Returns a shallow copy of this [DefaultException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   DefaultException copyWith({
     bool? defaultBoolean,

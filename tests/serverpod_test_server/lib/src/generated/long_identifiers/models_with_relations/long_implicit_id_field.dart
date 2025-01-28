@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class LongImplicitIdField
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -47,7 +46,7 @@ abstract class LongImplicitIdField
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   LongImplicitIdField copyWith({
     int? id,
     String? name,
@@ -115,7 +114,7 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   LongImplicitIdField copyWith({
     Object? id = _Undefined,

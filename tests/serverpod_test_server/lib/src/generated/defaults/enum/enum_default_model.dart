@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class EnumDefaultModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -79,7 +78,7 @@ abstract class EnumDefaultModel
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EnumDefaultModel copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
@@ -162,7 +161,7 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EnumDefaultModel copyWith({
     Object? id = _Undefined,

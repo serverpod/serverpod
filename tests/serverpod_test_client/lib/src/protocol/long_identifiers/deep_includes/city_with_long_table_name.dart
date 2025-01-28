@@ -14,7 +14,6 @@ import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
     as _i2;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i3;
-import 'package:meta/meta.dart';
 
 abstract class CityWithLongTableName implements _i1.SerializableModel {
   CityWithLongTableName._({
@@ -60,7 +59,7 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   CityWithLongTableName copyWith({
     int? id,
     String? name,
@@ -102,7 +101,7 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   CityWithLongTableName copyWith({
     Object? id = _Undefined,

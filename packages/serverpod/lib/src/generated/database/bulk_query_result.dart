@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/bulk_query_column_description.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class BulkQueryResult
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -52,7 +51,7 @@ abstract class BulkQueryResult
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   BulkQueryResult copyWith({
     List<_i2.BulkQueryColumnDescription>? headers,
     String? data,
@@ -100,7 +99,7 @@ class _BulkQueryResultImpl extends BulkQueryResult {
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   BulkQueryResult copyWith({
     List<_i2.BulkQueryColumnDescription>? headers,

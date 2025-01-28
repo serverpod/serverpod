@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
   Student._({
@@ -52,7 +51,7 @@ abstract class Student implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Student copyWith({
     int? id,
     String? name,
@@ -124,7 +123,7 @@ class _StudentImpl extends Student {
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Student copyWith({
     Object? id = _Undefined,

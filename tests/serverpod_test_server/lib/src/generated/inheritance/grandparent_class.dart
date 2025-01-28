@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 class GrandparentClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -25,7 +24,7 @@ class GrandparentClass
 
   /// Returns a shallow copy of this [GrandparentClass]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   GrandparentClass copyWith({String? grandParentField}) {
     return GrandparentClass(
         grandParentField: grandParentField ?? this.grandParentField);

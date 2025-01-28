@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
   City._({
@@ -60,7 +59,7 @@ abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   City copyWith({
     int? id,
     String? name,
@@ -145,7 +144,7 @@ class _CityImpl extends City {
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   City copyWith({
     Object? id = _Undefined,

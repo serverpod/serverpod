@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class IntDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -45,7 +44,7 @@ abstract class IntDefaultPersist
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   IntDefaultPersist copyWith({
     int? id,
     int? intDefaultPersist,
@@ -109,7 +108,7 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   IntDefaultPersist copyWith({
     Object? id = _Undefined,

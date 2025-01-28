@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'session_log_info.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// A list of SessionLogInfo.
 abstract class SessionLogResult
@@ -34,7 +33,7 @@ abstract class SessionLogResult
 
   /// Returns a shallow copy of this [SessionLogResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
@@ -60,7 +59,7 @@ class _SessionLogResultImpl extends SessionLogResult {
 
   /// Returns a shallow copy of this [SessionLogResult]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(

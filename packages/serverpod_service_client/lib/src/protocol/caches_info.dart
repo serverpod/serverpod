@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'cache_info.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// High level information about the caches.
 abstract class CachesInfo implements _i1.SerializableModel {
@@ -49,7 +48,7 @@ abstract class CachesInfo implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [CachesInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
@@ -83,7 +82,7 @@ class _CachesInfoImpl extends CachesInfo {
 
   /// Returns a shallow copy of this [CachesInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   CachesInfo copyWith({
     _i2.CacheInfo? local,

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'chat_message.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// A chunk of chat messages.
 abstract class ChatMessageChunk implements _i1.SerializableModel {
@@ -48,7 +47,7 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatMessageChunk]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatMessageChunk copyWith({
     String? channel,
     List<_i2.ChatMessage>? messages,
@@ -82,7 +81,7 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
 
   /// Returns a shallow copy of this [ChatMessageChunk]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatMessageChunk copyWith({
     String? channel,

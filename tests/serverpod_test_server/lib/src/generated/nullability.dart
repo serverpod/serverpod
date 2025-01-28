@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'simple_data.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class Nullability
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -363,7 +362,7 @@ abstract class Nullability
 
   /// Returns a shallow copy of this [Nullability]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Nullability copyWith({
     int? anInt,
     int? aNullableInt,
@@ -692,7 +691,7 @@ class _NullabilityImpl extends Nullability {
 
   /// Returns a shallow copy of this [Nullability]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Nullability copyWith({
     int? anInt,

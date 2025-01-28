@@ -14,7 +14,6 @@ import 'session_log_entry.dart' as _i2;
 import 'query_log_entry.dart' as _i3;
 import 'log_entry.dart' as _i4;
 import 'message_log_entry.dart' as _i5;
-import 'package:meta/meta.dart';
 
 /// Compounded information about a session log.
 abstract class SessionLogInfo
@@ -63,7 +62,7 @@ abstract class SessionLogInfo
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
     List<_i3.QueryLogEntry>? queries,
@@ -111,7 +110,7 @@ class _SessionLogInfoImpl extends SessionLogInfo {
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,

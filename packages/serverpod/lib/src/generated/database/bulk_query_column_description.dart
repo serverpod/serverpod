@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class BulkQueryColumnDescription
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -29,7 +28,7 @@ abstract class BulkQueryColumnDescription
 
   /// Returns a shallow copy of this [BulkQueryColumnDescription]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -52,7 +51,7 @@ class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
 
   /// Returns a shallow copy of this [BulkQueryColumnDescription]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   BulkQueryColumnDescription copyWith({String? name}) {
     return BulkQueryColumnDescription(name: name ?? this.name);

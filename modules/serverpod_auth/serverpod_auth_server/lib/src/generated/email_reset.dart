@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Database bindings for an email reset.
 abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -59,7 +58,7 @@ abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -133,7 +132,7 @@ class _EmailResetImpl extends EmailReset {
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EmailReset copyWith({
     Object? id = _Undefined,

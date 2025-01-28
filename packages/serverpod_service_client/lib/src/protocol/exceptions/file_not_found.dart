@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class FileNotFoundException
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -29,7 +28,7 @@ abstract class FileNotFoundException
 
   /// Returns a shallow copy of this [FileNotFoundException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   FileNotFoundException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
@@ -48,7 +47,7 @@ class _FileNotFoundExceptionImpl extends FileNotFoundException {
 
   /// Returns a shallow copy of this [FileNotFoundException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   FileNotFoundException copyWith({String? message}) {
     return FileNotFoundException(message: message ?? this.message);

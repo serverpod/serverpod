@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/column_type.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// The definition of a (desired) column in the database.
 abstract class ColumnDefinition implements _i1.SerializableModel {
@@ -61,7 +60,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ColumnDefinition copyWith({
     String? name,
     _i2.ColumnType? columnType,
@@ -105,7 +104,7 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
 
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ColumnDefinition copyWith({
     String? name,

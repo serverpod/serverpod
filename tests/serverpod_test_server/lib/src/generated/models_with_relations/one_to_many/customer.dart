@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Customer implements _i1.TableRow, _i1.ProtocolSerialization {
   Customer._({
@@ -52,7 +51,7 @@ abstract class Customer implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Customer copyWith({
     int? id,
     String? name,
@@ -123,7 +122,7 @@ class _CustomerImpl extends Customer {
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Customer copyWith({
     Object? id = _Undefined,

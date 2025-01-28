@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_level.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// Log settings for the server.
 abstract class LogSettings implements _i1.SerializableModel {
@@ -92,7 +91,7 @@ abstract class LogSettings implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
@@ -154,7 +153,7 @@ class _LogSettingsImpl extends LogSettings {
 
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   LogSettings copyWith({
     _i2.LogLevel? logLevel,

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ObjectWithObject
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -131,7 +130,7 @@ abstract class ObjectWithObject
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ObjectWithObject copyWith({
     int? id,
     _i2.SimpleData? data,
@@ -266,7 +265,7 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ObjectWithObject copyWith({
     Object? id = _Undefined,

@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class EnumDefault implements _i1.SerializableModel {
   EnumDefault._({
@@ -69,7 +68,7 @@ abstract class EnumDefault implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EnumDefault copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
@@ -115,7 +114,7 @@ class _EnumDefaultImpl extends EnumDefault {
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EnumDefault copyWith({
     Object? id = _Undefined,

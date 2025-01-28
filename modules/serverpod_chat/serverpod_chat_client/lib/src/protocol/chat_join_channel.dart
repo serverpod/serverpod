@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// A message indicating an attempt to join a channel.
 abstract class ChatJoinChannel implements _i1.SerializableModel {
@@ -39,7 +38,7 @@ abstract class ChatJoinChannel implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ChatJoinChannel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatJoinChannel copyWith({
     String? channel,
     String? userName,
@@ -71,7 +70,7 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
 
   /// Returns a shallow copy of this [ChatJoinChannel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatJoinChannel copyWith({
     String? channel,

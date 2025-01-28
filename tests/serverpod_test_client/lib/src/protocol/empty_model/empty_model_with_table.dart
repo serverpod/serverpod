@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class EmptyModelWithTable implements _i1.SerializableModel {
   EmptyModelWithTable._({this.id});
@@ -28,7 +27,7 @@ abstract class EmptyModelWithTable implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [EmptyModelWithTable]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
@@ -48,7 +47,7 @@ class _EmptyModelWithTableImpl extends EmptyModelWithTable {
 
   /// Returns a shallow copy of this [EmptyModelWithTable]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EmptyModelWithTable copyWith({Object? id = _Undefined}) {
     return EmptyModelWithTable(id: id is int? ? id : this.id);

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_settings.dart' as _i2;
-import 'package:meta/meta.dart';
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
@@ -54,7 +53,7 @@ abstract class LogSettingsOverride implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [LogSettingsOverride]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   LogSettingsOverride copyWith({
     String? module,
     String? endpoint,
@@ -94,7 +93,7 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
 
   /// Returns a shallow copy of this [LogSettingsOverride]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   LogSettingsOverride copyWith({
     Object? module = _Undefined,

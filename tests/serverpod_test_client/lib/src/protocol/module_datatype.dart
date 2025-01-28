@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i2;
-import 'package:meta/meta.dart';
 
 abstract class ModuleDatatype implements _i1.SerializableModel {
   ModuleDatatype._({
@@ -49,7 +48,7 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ModuleDatatype copyWith({
     _i2.ModuleClass? model,
     List<_i2.ModuleClass>? list,
@@ -83,7 +82,7 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
 
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ModuleDatatype copyWith({
     _i2.ModuleClass? model,

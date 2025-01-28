@@ -12,7 +12,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
-import 'package:meta/meta.dart';
 
 abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   Team._({
@@ -66,7 +65,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Team copyWith({
     int? id,
     String? name,
@@ -153,7 +152,7 @@ class _TeamImpl extends Team {
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Team copyWith({
     Object? id = _Undefined,

@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// A description for uploading an attachment.
 abstract class ChatMessageAttachmentUploadDescription
@@ -42,7 +41,7 @@ abstract class ChatMessageAttachmentUploadDescription
 
   /// Returns a shallow copy of this [ChatMessageAttachmentUploadDescription]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   ChatMessageAttachmentUploadDescription copyWith({
     String? filePath,
     String? uploadDescription,
@@ -73,7 +72,7 @@ class _ChatMessageAttachmentUploadDescriptionImpl
 
   /// Returns a shallow copy of this [ChatMessageAttachmentUploadDescription]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   ChatMessageAttachmentUploadDescription copyWith({
     String? filePath,

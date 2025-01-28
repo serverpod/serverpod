@@ -12,7 +12,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'user_info.dart' as _i2;
 import 'authentication_fail_reason.dart' as _i3;
-import 'package:meta/meta.dart';
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse implements _i1.SerializableModel {
@@ -68,7 +67,7 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [AuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   AuthenticationResponse copyWith({
     bool? success,
     String? key,
@@ -112,7 +111,7 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
 
   /// Returns a shallow copy of this [AuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   AuthenticationResponse copyWith({
     bool? success,

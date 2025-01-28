@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:meta/meta.dart';
 
 class ParentClass extends _i1.GrandparentClass
     implements _i2.SerializableModel {
@@ -38,7 +37,7 @@ class ParentClass extends _i1.GrandparentClass
 
   /// Returns a shallow copy of this [ParentClass]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i2.useResult
   ParentClass copyWith({
     Object? id = _Undefined,
     String? grandParentField,

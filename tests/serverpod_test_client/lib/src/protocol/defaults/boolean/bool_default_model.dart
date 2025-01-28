@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class BoolDefaultModel implements _i1.SerializableModel {
   BoolDefaultModel._({
@@ -52,7 +51,7 @@ abstract class BoolDefaultModel implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   BoolDefaultModel copyWith({
     int? id,
     bool? boolDefaultModelTrue,
@@ -92,7 +91,7 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   BoolDefaultModel copyWith({
     Object? id = _Undefined,

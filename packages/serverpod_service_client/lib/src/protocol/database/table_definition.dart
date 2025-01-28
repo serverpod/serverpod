@@ -13,7 +13,6 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/column_definition.dart' as _i2;
 import '../database/foreign_key_definition.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
-import 'package:meta/meta.dart';
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition implements _i1.SerializableModel {
@@ -94,7 +93,7 @@ abstract class TableDefinition implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   TableDefinition copyWith({
     String? name,
     String? dartName,
@@ -154,7 +153,7 @@ class _TableDefinitionImpl extends TableDefinition {
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   TableDefinition copyWith({
     String? name,

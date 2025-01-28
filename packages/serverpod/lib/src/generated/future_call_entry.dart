@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry
@@ -71,7 +70,7 @@ abstract class FutureCallEntry
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -155,7 +154,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   FutureCallEntry copyWith({
     Object? id = _Undefined,

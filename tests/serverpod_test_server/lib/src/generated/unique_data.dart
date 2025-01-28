@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   UniqueData._({
@@ -49,7 +48,7 @@ abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   UniqueData copyWith({
     int? id,
     int? number,
@@ -118,7 +117,7 @@ class _UniqueDataImpl extends UniqueData {
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   UniqueData copyWith({
     Object? id = _Undefined,

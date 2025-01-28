@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
@@ -60,7 +59,7 @@ abstract class EmailFailedSignIn
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   EmailFailedSignIn copyWith({
     int? id,
     String? email,
@@ -134,7 +133,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   EmailFailedSignIn copyWith({
     Object? id = _Undefined,

@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Comment implements _i1.SerializableModel {
   Comment._({
@@ -53,7 +52,7 @@ abstract class Comment implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Comment copyWith({
     int? id,
     String? description,
@@ -93,7 +92,7 @@ class _CommentImpl extends Comment {
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Comment copyWith({
     Object? id = _Undefined,

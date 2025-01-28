@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:meta/meta.dart';
 
 abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   Arena._({
@@ -53,7 +52,7 @@ abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   Arena copyWith({
     int? id,
     String? name,
@@ -122,7 +121,7 @@ class _ArenaImpl extends Arena {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,

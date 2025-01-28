@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:meta/meta.dart';
 
 abstract class AccessDeniedException
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -29,7 +28,7 @@ abstract class AccessDeniedException
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
@@ -48,7 +47,7 @@ class _AccessDeniedExceptionImpl extends AccessDeniedException {
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   AccessDeniedException copyWith({String? message}) {
     return AccessDeniedException(message: message ?? this.message);

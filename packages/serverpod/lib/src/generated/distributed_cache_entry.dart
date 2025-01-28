@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart';
 
 /// An entry in the distributed cache.
 abstract class DistributedCacheEntry
@@ -30,7 +29,7 @@ abstract class DistributedCacheEntry
 
   /// Returns a shallow copy of this [DistributedCacheEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
@@ -53,7 +52,7 @@ class _DistributedCacheEntryImpl extends DistributedCacheEntry {
 
   /// Returns a shallow copy of this [DistributedCacheEntry]
   /// with some or all fields replaced by the given arguments.
-  @useResult
+  @_i1.useResult
   @override
   DistributedCacheEntry copyWith({String? data}) {
     return DistributedCacheEntry(data: data ?? this.data);
