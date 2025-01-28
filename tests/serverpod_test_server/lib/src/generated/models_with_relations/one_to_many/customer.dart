@@ -238,10 +238,19 @@ class CustomerRepository {
 
   final detachRow = const CustomerDetachRowRepository._();
 
-  /// Find a list of [Customer]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Customer]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Customer>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -265,7 +274,15 @@ class CustomerRepository {
     );
   }
 
-  /// Find a single [Customer] from a table, using the provided [where]
+  /// Returns the first matching [Customer] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Customer?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -287,7 +304,7 @@ class CustomerRepository {
     );
   }
 
-  /// Find a single [Customer] by its [id] or null if no such row exists.
+  /// Finds a single [Customer] by its [id] or null if no such row exists.
   Future<Customer?> findById(
     _i1.Session session,
     int id, {
@@ -327,7 +344,7 @@ class CustomerRepository {
     );
   }
 
-  /// Update all [Customer]s in the list and returns the updated rows. If
+  /// Updates all [Customer]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -418,7 +435,7 @@ class CustomerRepository {
 class CustomerAttachRepository {
   const CustomerAttachRepository._();
 
-  /// Set the `orders` values on the [customer]
+  /// Sets the `orders` values on the [customer]
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -444,7 +461,7 @@ class CustomerAttachRepository {
 class CustomerAttachRowRepository {
   const CustomerAttachRowRepository._();
 
-  /// Set the `orders` on the [customer]
+  /// Sets the `orders` on the [customer]
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -470,7 +487,7 @@ class CustomerAttachRowRepository {
 class CustomerDetachRepository {
   const CustomerDetachRepository._();
 
-  /// Remove the `orders` field from the [Order]
+  /// Removes the `orders` field from the [Order]
   Future<void> orders(
     _i1.Session session,
     List<_i2.Order> order, {
@@ -492,7 +509,7 @@ class CustomerDetachRepository {
 class CustomerDetachRowRepository {
   const CustomerDetachRowRepository._();
 
-  /// Remove the `orders` field from the [Order]
+  /// Removes the `orders` field from the [Order]
   Future<void> orders(
     _i1.Session session,
     _i2.Order order, {

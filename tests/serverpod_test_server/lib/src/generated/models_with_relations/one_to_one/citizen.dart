@@ -339,10 +339,19 @@ class CitizenRepository {
 
   final detachRow = const CitizenDetachRowRepository._();
 
-  /// Find a list of [Citizen]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Citizen]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Citizen>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
@@ -366,7 +375,15 @@ class CitizenRepository {
     );
   }
 
-  /// Find a single [Citizen] from a table, using the provided [where]
+  /// Returns the first matching [Citizen] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Citizen?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
@@ -388,7 +405,7 @@ class CitizenRepository {
     );
   }
 
-  /// Find a single [Citizen] by its [id] or null if no such row exists.
+  /// Finds a single [Citizen] by its [id] or null if no such row exists.
   Future<Citizen?> findById(
     _i1.Session session,
     int id, {
@@ -428,7 +445,7 @@ class CitizenRepository {
     );
   }
 
-  /// Update all [Citizen]s in the list and returns the updated rows. If
+  /// Updates all [Citizen]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -519,7 +536,7 @@ class CitizenRepository {
 class CitizenAttachRowRepository {
   const CitizenAttachRowRepository._();
 
-  /// Set the `address` on the [citizen]
+  /// Sets the `address` on the [citizen]
   Future<void> address(
     _i1.Session session,
     Citizen citizen,
@@ -541,7 +558,7 @@ class CitizenAttachRowRepository {
     );
   }
 
-  /// Set the `company` on the [citizen]
+  /// Sets the `company` on the [citizen]
   Future<void> company(
     _i1.Session session,
     Citizen citizen,
@@ -563,7 +580,7 @@ class CitizenAttachRowRepository {
     );
   }
 
-  /// Set the `oldCompany` on the [citizen]
+  /// Sets the `oldCompany` on the [citizen]
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen,
@@ -589,7 +606,7 @@ class CitizenAttachRowRepository {
 class CitizenDetachRowRepository {
   const CitizenDetachRowRepository._();
 
-  /// Remove the `address` field from the [citizen]
+  /// Removes the `address` field from the [citizen]
   Future<void> address(
     _i1.Session session,
     Citizen citizen, {
@@ -615,7 +632,7 @@ class CitizenDetachRowRepository {
     );
   }
 
-  /// Remove the `oldCompany` field from the [citizen]
+  /// Removes the `oldCompany` field from the [citizen]
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen, {

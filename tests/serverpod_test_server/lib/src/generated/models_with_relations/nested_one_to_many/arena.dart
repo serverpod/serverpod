@@ -211,10 +211,19 @@ class ArenaRepository {
 
   final detachRow = const ArenaDetachRowRepository._();
 
-  /// Find a list of [Arena]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Arena]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Arena>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -238,7 +247,15 @@ class ArenaRepository {
     );
   }
 
-  /// Find a single [Arena] from a table, using the provided [where]
+  /// Returns the first matching [Arena] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Arena?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -260,7 +277,7 @@ class ArenaRepository {
     );
   }
 
-  /// Find a single [Arena] by its [id] or null if no such row exists.
+  /// Finds a single [Arena] by its [id] or null if no such row exists.
   Future<Arena?> findById(
     _i1.Session session,
     int id, {
@@ -300,7 +317,7 @@ class ArenaRepository {
     );
   }
 
-  /// Update all [Arena]s in the list and returns the updated rows. If
+  /// Updates all [Arena]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -391,7 +408,7 @@ class ArenaRepository {
 class ArenaAttachRowRepository {
   const ArenaAttachRowRepository._();
 
-  /// Set the `team` on the [arena]
+  /// Sets the `team` on the [arena]
   Future<void> team(
     _i1.Session session,
     Arena arena,
@@ -417,7 +434,7 @@ class ArenaAttachRowRepository {
 class ArenaDetachRowRepository {
   const ArenaDetachRowRepository._();
 
-  /// Remove the `team` field from the [arena]
+  /// Removes the `team` field from the [arena]
   Future<void> team(
     _i1.Session session,
     Arena arena, {

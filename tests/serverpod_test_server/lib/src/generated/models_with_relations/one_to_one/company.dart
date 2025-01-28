@@ -228,10 +228,19 @@ class CompanyRepository {
 
   final attachRow = const CompanyAttachRowRepository._();
 
-  /// Find a list of [Company]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Company]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Company>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
@@ -255,7 +264,15 @@ class CompanyRepository {
     );
   }
 
-  /// Find a single [Company] from a table, using the provided [where]
+  /// Returns the first matching [Company] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Company?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
@@ -277,7 +294,7 @@ class CompanyRepository {
     );
   }
 
-  /// Find a single [Company] by its [id] or null if no such row exists.
+  /// Finds a single [Company] by its [id] or null if no such row exists.
   Future<Company?> findById(
     _i1.Session session,
     int id, {
@@ -317,7 +334,7 @@ class CompanyRepository {
     );
   }
 
-  /// Update all [Company]s in the list and returns the updated rows. If
+  /// Updates all [Company]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -408,7 +425,7 @@ class CompanyRepository {
 class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
-  /// Set the `town` on the [company]
+  /// Sets the `town` on the [company]
   Future<void> town(
     _i1.Session session,
     Company company,

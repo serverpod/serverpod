@@ -282,10 +282,19 @@ class PersonRepository {
 
   final detachRow = const PersonDetachRowRepository._();
 
-  /// Find a list of [Person]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Person]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Person>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
@@ -309,7 +318,15 @@ class PersonRepository {
     );
   }
 
-  /// Find a single [Person] from a table, using the provided [where]
+  /// Returns the first matching [Person] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Person?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
@@ -331,7 +348,7 @@ class PersonRepository {
     );
   }
 
-  /// Find a single [Person] by its [id] or null if no such row exists.
+  /// Finds a single [Person] by its [id] or null if no such row exists.
   Future<Person?> findById(
     _i1.Session session,
     int id, {
@@ -371,7 +388,7 @@ class PersonRepository {
     );
   }
 
-  /// Update all [Person]s in the list and returns the updated rows. If
+  /// Updates all [Person]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -462,7 +479,7 @@ class PersonRepository {
 class PersonAttachRowRepository {
   const PersonAttachRowRepository._();
 
-  /// Set the `organization` on the [person]
+  /// Sets the `organization` on the [person]
   Future<void> organization(
     _i1.Session session,
     Person person,
@@ -488,7 +505,7 @@ class PersonAttachRowRepository {
 class PersonDetachRowRepository {
   const PersonDetachRowRepository._();
 
-  /// Remove the `organization` field from the [person]
+  /// Removes the `organization` field from the [person]
   Future<void> organization(
     _i1.Session session,
     Person person, {

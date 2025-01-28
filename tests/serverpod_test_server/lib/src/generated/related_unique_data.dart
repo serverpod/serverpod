@@ -232,10 +232,19 @@ class RelatedUniqueDataRepository {
 
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
-  /// Find a list of [RelatedUniqueData]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [RelatedUniqueData]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -259,7 +268,15 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  /// Find a single [RelatedUniqueData] from a table, using the provided [where]
+  /// Returns the first matching [RelatedUniqueData] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -281,7 +298,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  /// Find a single [RelatedUniqueData] by its [id] or null if no such row exists.
+  /// Finds a single [RelatedUniqueData] by its [id] or null if no such row exists.
   Future<RelatedUniqueData?> findById(
     _i1.Session session,
     int id, {
@@ -321,7 +338,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  /// Update all [RelatedUniqueData]s in the list and returns the updated rows. If
+  /// Updates all [RelatedUniqueData]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -412,7 +429,7 @@ class RelatedUniqueDataRepository {
 class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
-  /// Set the `uniqueData` on the [relatedUniqueData]
+  /// Sets the `uniqueData` on the [relatedUniqueData]
   Future<void> uniqueData(
     _i1.Session session,
     RelatedUniqueData relatedUniqueData,

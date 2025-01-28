@@ -297,10 +297,19 @@ class PersonWithLongTableNameRepository {
 
   final detachRow = const PersonWithLongTableNameDetachRowRepository._();
 
-  /// Find a list of [PersonWithLongTableName]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [PersonWithLongTableName]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<PersonWithLongTableName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -324,7 +333,15 @@ class PersonWithLongTableNameRepository {
     );
   }
 
-  /// Find a single [PersonWithLongTableName] from a table, using the provided [where]
+  /// Returns the first matching [PersonWithLongTableName] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<PersonWithLongTableName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -346,7 +363,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
-  /// Find a single [PersonWithLongTableName] by its [id] or null if no such row exists.
+  /// Finds a single [PersonWithLongTableName] by its [id] or null if no such row exists.
   Future<PersonWithLongTableName?> findById(
     _i1.Session session,
     int id, {
@@ -386,7 +403,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
-  /// Update all [PersonWithLongTableName]s in the list and returns the updated rows. If
+  /// Updates all [PersonWithLongTableName]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -477,7 +494,7 @@ class PersonWithLongTableNameRepository {
 class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
-  /// Set the `organization` on the [personWithLongTableName]
+  /// Sets the `organization` on the [personWithLongTableName]
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personWithLongTableName,
@@ -504,7 +521,7 @@ class PersonWithLongTableNameAttachRowRepository {
 class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
-  /// Remove the `organization` field from the [personwithlongtablename]
+  /// Removes the `organization` field from the [personwithlongtablename]
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personwithlongtablename, {

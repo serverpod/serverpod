@@ -303,10 +303,19 @@ class OrderRepository {
 
   final attachRow = const OrderAttachRowRepository._();
 
-  /// Find a list of [Order]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Order]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Order>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
@@ -330,7 +339,15 @@ class OrderRepository {
     );
   }
 
-  /// Find a single [Order] from a table, using the provided [where]
+  /// Returns the first matching [Order] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Order?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
@@ -352,7 +369,7 @@ class OrderRepository {
     );
   }
 
-  /// Find a single [Order] by its [id] or null if no such row exists.
+  /// Finds a single [Order] by its [id] or null if no such row exists.
   Future<Order?> findById(
     _i1.Session session,
     int id, {
@@ -392,7 +409,7 @@ class OrderRepository {
     );
   }
 
-  /// Update all [Order]s in the list and returns the updated rows. If
+  /// Updates all [Order]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -483,7 +500,7 @@ class OrderRepository {
 class OrderAttachRepository {
   const OrderAttachRepository._();
 
-  /// Set the `comments` values on the [order]
+  /// Sets the `comments` values on the [order]
   Future<void> comments(
     _i1.Session session,
     Order order,
@@ -509,7 +526,7 @@ class OrderAttachRepository {
 class OrderAttachRowRepository {
   const OrderAttachRowRepository._();
 
-  /// Set the `customer` on the [order]
+  /// Sets the `customer` on the [order]
   Future<void> customer(
     _i1.Session session,
     Order order,
@@ -531,7 +548,7 @@ class OrderAttachRowRepository {
     );
   }
 
-  /// Set the `comments` on the [order]
+  /// Sets the `comments` on the [order]
   Future<void> comments(
     _i1.Session session,
     Order order,

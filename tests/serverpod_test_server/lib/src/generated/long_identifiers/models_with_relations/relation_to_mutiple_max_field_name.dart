@@ -253,10 +253,19 @@ class RelationToMultipleMaxFieldNameRepository {
 
   final detachRow = const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
-  /// Find a list of [RelationToMultipleMaxFieldName]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [RelationToMultipleMaxFieldName]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<RelationToMultipleMaxFieldName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -280,7 +289,15 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  /// Find a single [RelationToMultipleMaxFieldName] from a table, using the provided [where]
+  /// Returns the first matching [RelationToMultipleMaxFieldName] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<RelationToMultipleMaxFieldName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -302,7 +319,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  /// Find a single [RelationToMultipleMaxFieldName] by its [id] or null if no such row exists.
+  /// Finds a single [RelationToMultipleMaxFieldName] by its [id] or null if no such row exists.
   Future<RelationToMultipleMaxFieldName?> findById(
     _i1.Session session,
     int id, {
@@ -342,7 +359,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  /// Update all [RelationToMultipleMaxFieldName]s in the list and returns the updated rows. If
+  /// Updates all [RelationToMultipleMaxFieldName]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -434,7 +451,7 @@ class RelationToMultipleMaxFieldNameRepository {
 class RelationToMultipleMaxFieldNameAttachRepository {
   const RelationToMultipleMaxFieldNameAttachRepository._();
 
-  /// Set the `multipleMaxFieldNames` values on the [relationToMultipleMaxFieldName]
+  /// Sets the `multipleMaxFieldNames` values on the [relationToMultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -469,7 +486,7 @@ class RelationToMultipleMaxFieldNameAttachRepository {
 class RelationToMultipleMaxFieldNameAttachRowRepository {
   const RelationToMultipleMaxFieldNameAttachRowRepository._();
 
-  /// Set the `multipleMaxFieldNames` on the [relationToMultipleMaxFieldName]
+  /// Sets the `multipleMaxFieldNames` on the [relationToMultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -502,7 +519,7 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
 class RelationToMultipleMaxFieldNameDetachRepository {
   const RelationToMultipleMaxFieldNameDetachRepository._();
 
-  /// Remove the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
+  /// Removes the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
@@ -533,7 +550,7 @@ class RelationToMultipleMaxFieldNameDetachRepository {
 class RelationToMultipleMaxFieldNameDetachRowRepository {
   const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
-  /// Remove the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
+  /// Removes the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     _i2.MultipleMaxFieldName multipleMaxFieldName, {

@@ -249,10 +249,19 @@ class UserNoteCollectionWithALongNameRepository {
   final detachRow =
       const UserNoteCollectionWithALongNameDetachRowRepository._();
 
-  /// Find a list of [UserNoteCollectionWithALongName]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [UserNoteCollectionWithALongName]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<UserNoteCollectionWithALongName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
@@ -276,7 +285,15 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
-  /// Find a single [UserNoteCollectionWithALongName] from a table, using the provided [where]
+  /// Returns the first matching [UserNoteCollectionWithALongName] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<UserNoteCollectionWithALongName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
@@ -298,7 +315,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
-  /// Find a single [UserNoteCollectionWithALongName] by its [id] or null if no such row exists.
+  /// Finds a single [UserNoteCollectionWithALongName] by its [id] or null if no such row exists.
   Future<UserNoteCollectionWithALongName?> findById(
     _i1.Session session,
     int id, {
@@ -338,7 +355,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
-  /// Update all [UserNoteCollectionWithALongName]s in the list and returns the updated rows. If
+  /// Updates all [UserNoteCollectionWithALongName]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -430,7 +447,7 @@ class UserNoteCollectionWithALongNameRepository {
 class UserNoteCollectionWithALongNameAttachRepository {
   const UserNoteCollectionWithALongNameAttachRepository._();
 
-  /// Set the `notes` values on the [userNoteCollectionWithALongName]
+  /// Sets the `notes` values on the [userNoteCollectionWithALongName]
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -465,7 +482,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
 class UserNoteCollectionWithALongNameAttachRowRepository {
   const UserNoteCollectionWithALongNameAttachRowRepository._();
 
-  /// Set the `notes` on the [userNoteCollectionWithALongName]
+  /// Sets the `notes` on the [userNoteCollectionWithALongName]
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -498,7 +515,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
 class UserNoteCollectionWithALongNameDetachRepository {
   const UserNoteCollectionWithALongNameDetachRepository._();
 
-  /// Remove the `notes` field from the [UserNoteWithALongName]
+  /// Removes the `notes` field from the [UserNoteWithALongName]
   Future<void> notes(
     _i1.Session session,
     List<_i2.UserNoteWithALongName> userNoteWithALongName, {
@@ -529,7 +546,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
 class UserNoteCollectionWithALongNameDetachRowRepository {
   const UserNoteCollectionWithALongNameDetachRowRepository._();
 
-  /// Remove the `notes` field from the [UserNoteWithALongName]
+  /// Removes the `notes` field from the [UserNoteWithALongName]
   Future<void> notes(
     _i1.Session session,
     _i2.UserNoteWithALongName userNoteWithALongName, {

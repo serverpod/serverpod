@@ -235,10 +235,19 @@ class StudentRepository {
 
   final attachRow = const StudentAttachRowRepository._();
 
-  /// Find a list of [Student]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [Student]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
   Future<List<Student>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
@@ -262,7 +271,15 @@ class StudentRepository {
     );
   }
 
-  /// Find a single [Student] from a table, using the provided [where]
+  /// Returns the first matching [Student] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<Student?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
@@ -284,7 +301,7 @@ class StudentRepository {
     );
   }
 
-  /// Find a single [Student] by its [id] or null if no such row exists.
+  /// Finds a single [Student] by its [id] or null if no such row exists.
   Future<Student?> findById(
     _i1.Session session,
     int id, {
@@ -324,7 +341,7 @@ class StudentRepository {
     );
   }
 
-  /// Update all [Student]s in the list and returns the updated rows. If
+  /// Updates all [Student]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
@@ -415,7 +432,7 @@ class StudentRepository {
 class StudentAttachRepository {
   const StudentAttachRepository._();
 
-  /// Set the `enrollments` values on the [student]
+  /// Sets the `enrollments` values on the [student]
   Future<void> enrollments(
     _i1.Session session,
     Student student,
@@ -442,7 +459,7 @@ class StudentAttachRepository {
 class StudentAttachRowRepository {
   const StudentAttachRowRepository._();
 
-  /// Set the `enrollments` on the [student]
+  /// Sets the `enrollments` on the [student]
   Future<void> enrollments(
     _i1.Session session,
     Student student,
