@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Log entry for a session.
 abstract class SessionLogEntry
@@ -120,6 +121,9 @@ abstract class SessionLogEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -243,6 +247,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

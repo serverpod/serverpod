@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition
@@ -64,6 +65,9 @@ abstract class DatabaseDefinition
   /// The version of the database definition.
   int migrationApiVersion;
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DatabaseDefinition copyWith({
     String? name,
     String? moduleName,
@@ -118,6 +122,9 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
           migrationApiVersion: migrationApiVersion,
         );
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,

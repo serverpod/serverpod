@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Message to notify the server that messages have been read.
 abstract class ChatReadMessage
@@ -56,6 +57,9 @@ abstract class ChatReadMessage
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatReadMessage copyWith({
     int? id,
     String? channel,
@@ -127,6 +131,9 @@ class _ChatReadMessageImpl extends ChatReadMessage {
           lastReadMessageId: lastReadMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatReadMessage copyWith({
     Object? id = _Undefined,

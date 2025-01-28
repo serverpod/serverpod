@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Student implements _i1.SerializableModel {
   Student._({
@@ -44,6 +45,9 @@ abstract class Student implements _i1.SerializableModel {
 
   List<_i2.Enrollment>? enrollments;
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Student copyWith({
     int? id,
     String? name,
@@ -78,6 +82,9 @@ class _StudentImpl extends Student {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Student copyWith({
     Object? id = _Undefined,

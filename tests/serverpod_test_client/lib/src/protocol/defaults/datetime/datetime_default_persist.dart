@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DateTimeDefaultPersist implements _i1.SerializableModel {
   DateTimeDefaultPersist._({
@@ -50,6 +51,9 @@ abstract class DateTimeDefaultPersist implements _i1.SerializableModel {
 
   DateTime? dateTimeDefaultPersistStr;
 
+  /// Returns a shallow copy of this [DateTimeDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DateTimeDefaultPersist copyWith({
     int? id,
     DateTime? dateTimeDefaultPersistNow,
@@ -85,6 +89,9 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
           dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DateTimeDefaultPersist copyWith({
     Object? id = _Undefined,

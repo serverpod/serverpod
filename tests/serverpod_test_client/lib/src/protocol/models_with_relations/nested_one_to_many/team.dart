@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
+import 'package:meta/meta.dart';
 
 abstract class Team implements _i1.SerializableModel {
   Team._({
@@ -58,6 +59,9 @@ abstract class Team implements _i1.SerializableModel {
 
   List<_i3.Player>? players;
 
+  /// Returns a shallow copy of this [Team]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Team copyWith({
     int? id,
     String? name,
@@ -100,6 +104,9 @@ class _TeamImpl extends Team {
           players: players,
         );
 
+  /// Returns a shallow copy of this [Team]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Team copyWith({
     Object? id = _Undefined,

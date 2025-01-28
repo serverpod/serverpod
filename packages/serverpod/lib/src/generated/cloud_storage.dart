@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'package:meta/meta.dart';
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
@@ -79,6 +80,9 @@ abstract class CloudStorageEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -165,6 +169,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
           verified: verified,
         );
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,

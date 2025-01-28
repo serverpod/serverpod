@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
   BulkQueryColumnDescription._({required this.name});
@@ -25,6 +26,9 @@ abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
 
   String name;
 
+  /// Returns a shallow copy of this [BulkQueryColumnDescription]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -40,6 +44,9 @@ abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
   _BulkQueryColumnDescriptionImpl({required String name}) : super._(name: name);
 
+  /// Returns a shallow copy of this [BulkQueryColumnDescription]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   BulkQueryColumnDescription copyWith({String? name}) {
     return BulkQueryColumnDescription(name: name ?? this.name);

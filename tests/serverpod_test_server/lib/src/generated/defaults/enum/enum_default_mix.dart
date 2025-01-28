@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class EnumDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -62,6 +63,9 @@ abstract class EnumDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   EnumDefaultMix copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
@@ -141,6 +145,9 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
               byNameEnumDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [EnumDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   EnumDefaultMix copyWith({
     Object? id = _Undefined,

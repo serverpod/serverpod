@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Just some simple data.
 abstract class SimpleDateTime
@@ -45,6 +46,9 @@ abstract class SimpleDateTime
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -106,6 +110,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
           dateTime: dateTime,
         );
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,

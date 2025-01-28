@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithParent implements _i1.SerializableModel {
   ObjectWithParent._({
@@ -36,6 +37,9 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
 
   int other;
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithParent copyWith({
     int? id,
     int? other,
@@ -65,6 +69,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
           other: other,
         );
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithParent copyWith({
     Object? id = _Undefined,

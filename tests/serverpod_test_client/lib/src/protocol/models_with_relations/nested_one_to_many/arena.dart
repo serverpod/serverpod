@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Arena implements _i1.SerializableModel {
   Arena._({
@@ -45,6 +46,9 @@ abstract class Arena implements _i1.SerializableModel {
 
   _i2.Team? team;
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Arena copyWith({
     int? id,
     String? name,
@@ -78,6 +82,9 @@ class _ArenaImpl extends Arena {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,

@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
   Company._({
@@ -55,6 +56,9 @@ abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Company]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Company copyWith({
     int? id,
     String? name,
@@ -126,6 +130,9 @@ class _CompanyImpl extends Company {
           town: town,
         );
 
+  /// Returns a shallow copy of this [Company]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Company copyWith({
     Object? id = _Undefined,

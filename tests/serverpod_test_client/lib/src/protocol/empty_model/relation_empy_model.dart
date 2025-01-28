@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class RelationEmptyModel implements _i1.SerializableModel {
   RelationEmptyModel._({
@@ -40,6 +41,9 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
 
   List<_i2.EmptyModelRelationItem>? items;
 
+  /// Returns a shallow copy of this [RelationEmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   RelationEmptyModel copyWith({
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
@@ -69,6 +73,9 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
           items: items,
         );
 
+  /// Returns a shallow copy of this [RelationEmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   RelationEmptyModel copyWith({
     Object? id = _Undefined,

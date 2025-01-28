@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/foreign_key_action.dart' as _i2;
 import '../database/foreign_key_match_type.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition
@@ -89,6 +90,9 @@ abstract class ForeignKeyDefinition
   /// The match type of the foreign key
   _i3.ForeignKeyMatchType? matchType;
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
@@ -156,6 +160,9 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
           matchType: matchType,
         );
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ForeignKeyDefinition copyWith({
     String? constraintName,

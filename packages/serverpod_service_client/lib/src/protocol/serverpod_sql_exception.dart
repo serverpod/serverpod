@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ServerpodSqlException
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -35,6 +36,9 @@ abstract class ServerpodSqlException
 
   String sql;
 
+  /// Returns a shallow copy of this [ServerpodSqlException]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ServerpodSqlException copyWith({
     String? message,
     String? sql,
@@ -62,6 +66,9 @@ class _ServerpodSqlExceptionImpl extends ServerpodSqlException {
           sql: sql,
         );
 
+  /// Returns a shallow copy of this [ServerpodSqlException]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ServerpodSqlException copyWith({
     String? message,

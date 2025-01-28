@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// A log entry for a message sent in a streaming session.
 abstract class MessageLogEntry implements _i1.SerializableModel {
@@ -94,6 +95,9 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
   /// Used for sorting the message log.
   int order;
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -159,6 +163,9 @@ class _MessageLogEntryImpl extends MessageLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,

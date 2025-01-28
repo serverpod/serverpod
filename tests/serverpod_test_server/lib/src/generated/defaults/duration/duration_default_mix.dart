@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DurationDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -79,6 +80,9 @@ abstract class DurationDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DurationDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DurationDefaultMix copyWith({
     int? id,
     Duration? durationDefaultAndDefaultModel,
@@ -155,6 +159,9 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
               durationDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DurationDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DurationDefaultMix copyWith({
     Object? id = _Undefined,

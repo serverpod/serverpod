@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Just some simple data.
 abstract class SimpleDateTime implements _i1.SerializableModel {
@@ -39,6 +40,9 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -68,6 +72,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
           dateTime: dateTime,
         );
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,

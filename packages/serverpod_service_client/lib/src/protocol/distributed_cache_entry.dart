@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// An entry in the distributed cache.
 abstract class DistributedCacheEntry implements _i1.SerializableModel {
@@ -26,6 +27,9 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
   /// The cached data.
   String data;
 
+  /// Returns a shallow copy of this [DistributedCacheEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
@@ -41,6 +45,9 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
 class _DistributedCacheEntryImpl extends DistributedCacheEntry {
   _DistributedCacheEntryImpl({required String data}) : super._(data: data);
 
+  /// Returns a shallow copy of this [DistributedCacheEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DistributedCacheEntry copyWith({String? data}) {
     return DistributedCacheEntry(data: data ?? this.data);

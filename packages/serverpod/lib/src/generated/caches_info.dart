@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'cache_info.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// High level information about the caches.
 abstract class CachesInfo
@@ -47,6 +48,9 @@ abstract class CachesInfo
   /// Information about the global cache.
   _i2.CacheInfo global;
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
@@ -87,6 +91,9 @@ class _CachesInfoImpl extends CachesInfo {
           global: global,
         );
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   CachesInfo copyWith({
     _i2.CacheInfo? local,

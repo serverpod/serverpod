@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../scopes/serverOnly/server_only_class.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ServerOnlyClassField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -43,6 +44,9 @@ abstract class ServerOnlyClassField
 
   Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap;
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ServerOnlyClassField copyWith({
     List<_i2.ServerOnlyClass>? serverOnlyClassList,
     Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
@@ -81,6 +85,9 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
           serverOnlyClassMap: serverOnlyClassMap,
         );
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ServerOnlyClassField copyWith({
     Object? serverOnlyClassList = _Undefined,

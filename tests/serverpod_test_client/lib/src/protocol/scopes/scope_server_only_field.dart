@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../types.dart' as _i2;
 import '../scopes/scope_server_only_field.dart' as _i3;
+import 'package:meta/meta.dart';
 
 class ScopeServerOnlyField implements _i1.SerializableModel {
   ScopeServerOnlyField({
@@ -37,6 +38,9 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
 
   _i3.ScopeServerOnlyField? nested;
 
+  /// Returns a shallow copy of this [ScopeServerOnlyField]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ScopeServerOnlyField copyWith({
     Object? allScope = _Undefined,
     Object? nested = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class IntDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -58,6 +59,9 @@ abstract class IntDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   IntDefaultMix copyWith({
     int? id,
     int? intDefaultAndDefaultModel,
@@ -129,6 +133,9 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [IntDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   IntDefaultMix copyWith({
     Object? id = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// A message indicating an attempt to join a channel.
 abstract class ChatJoinChannel
@@ -37,6 +38,9 @@ abstract class ChatJoinChannel
   /// The name of the user.
   String? userName;
 
+  /// Returns a shallow copy of this [ChatJoinChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatJoinChannel copyWith({
     String? channel,
     String? userName,
@@ -74,6 +78,9 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
           userName: userName,
         );
 
+  /// Returns a shallow copy of this [ChatJoinChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatJoinChannel copyWith({
     String? channel,

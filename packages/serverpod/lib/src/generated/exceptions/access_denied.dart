@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class AccessDeniedException
     implements
@@ -29,6 +30,9 @@ abstract class AccessDeniedException
 
   String message;
 
+  /// Returns a shallow copy of this [AccessDeniedException]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
@@ -50,6 +54,9 @@ class _AccessDeniedExceptionImpl extends AccessDeniedException {
   _AccessDeniedExceptionImpl({required String message})
       : super._(message: message);
 
+  /// Returns a shallow copy of this [AccessDeniedException]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   AccessDeniedException copyWith({String? message}) {
     return AccessDeniedException(message: message ?? this.message);

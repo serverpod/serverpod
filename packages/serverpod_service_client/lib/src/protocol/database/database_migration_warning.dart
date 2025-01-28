@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/database_migration_warning_type.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
   DatabaseMigrationWarning._({
@@ -53,6 +54,9 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
 
   bool destrucive;
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
     String? message,
@@ -92,6 +96,9 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
           destrucive: destrucive,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,

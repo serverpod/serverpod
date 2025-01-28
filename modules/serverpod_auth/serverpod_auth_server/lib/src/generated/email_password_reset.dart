@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Information about an email password reset.
 abstract class EmailPasswordReset
@@ -37,6 +38,9 @@ abstract class EmailPasswordReset
   /// The email of the user.
   String email;
 
+  /// Returns a shallow copy of this [EmailPasswordReset]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   EmailPasswordReset copyWith({
     String? userName,
     String? email,
@@ -74,6 +78,9 @@ class _EmailPasswordResetImpl extends EmailPasswordReset {
           email: email,
         );
 
+  /// Returns a shallow copy of this [EmailPasswordReset]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   EmailPasswordReset copyWith({
     Object? userName = _Undefined,

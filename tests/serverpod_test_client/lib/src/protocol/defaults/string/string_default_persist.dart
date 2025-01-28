@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class StringDefaultPersist implements _i1.SerializableModel {
   StringDefaultPersist._({
@@ -98,6 +99,9 @@ abstract class StringDefaultPersist implements _i1.SerializableModel {
 
   String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
 
+  /// Returns a shallow copy of this [StringDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   StringDefaultPersist copyWith({
     int? id,
     String? stringDefaultPersist,
@@ -184,6 +188,9 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
               stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
         );
 
+  /// Returns a shallow copy of this [StringDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   StringDefaultPersist copyWith({
     Object? id = _Undefined,

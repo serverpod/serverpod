@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'chat_message.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// A chunk of chat messages.
 abstract class ChatMessageChunk
@@ -46,6 +47,9 @@ abstract class ChatMessageChunk
   /// True if there are more chat messages to fetch from this channel.
   bool hasOlderMessages;
 
+  /// Returns a shallow copy of this [ChatMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatMessageChunk copyWith({
     String? channel,
     List<_i2.ChatMessage>? messages,
@@ -86,6 +90,9 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
           hasOlderMessages: hasOlderMessages,
         );
 
+  /// Returns a shallow copy of this [ChatMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatMessageChunk copyWith({
     String? channel,

@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   Comment._({
@@ -55,6 +56,9 @@ abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Comment]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Comment copyWith({
     int? id,
     String? description,
@@ -126,6 +130,9 @@ class _CommentImpl extends Comment {
           order: order,
         );
 
+  /// Returns a shallow copy of this [Comment]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Comment copyWith({
     Object? id = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Database bindings for a sign in with email.
 abstract class EmailAuth implements _i1.SerializableModel {
@@ -50,6 +51,9 @@ abstract class EmailAuth implements _i1.SerializableModel {
   /// The hashed password of the user.
   String hash;
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -87,6 +91,9 @@ class _EmailAuthImpl extends EmailAuth {
           hash: hash,
         );
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   EmailAuth copyWith({
     Object? id = _Undefined,

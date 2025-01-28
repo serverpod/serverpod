@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   Post._({
@@ -64,6 +65,9 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Post copyWith({
     int? id,
     String? content,
@@ -146,6 +150,9 @@ class _PostImpl extends Post {
           next: next,
         );
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Post copyWith({
     Object? id = _Undefined,

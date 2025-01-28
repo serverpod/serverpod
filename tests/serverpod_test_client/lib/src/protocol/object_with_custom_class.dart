@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithCustomClass implements _i1.SerializableModel {
   ObjectWithCustomClass._({
@@ -51,6 +52,9 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
   _i2.CustomClassWithProtocolSerializationMethod
       customClassWithProtocolSerializationMethod;
 
+  /// Returns a shallow copy of this [ObjectWithCustomClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?
         customClassWithoutProtocolSerialization,
@@ -94,6 +98,9 @@ class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
               customClassWithProtocolSerializationMethod,
         );
 
+  /// Returns a shallow copy of this [ObjectWithCustomClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithCustomClass copyWith({
     _i2.CustomClassWithoutProtocolSerialization?

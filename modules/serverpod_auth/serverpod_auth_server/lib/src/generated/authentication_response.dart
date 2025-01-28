@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'user_info.dart' as _i2;
 import 'authentication_fail_reason.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse
@@ -66,6 +67,9 @@ abstract class AuthenticationResponse
   /// failed.
   _i3.AuthenticationFailReason? failReason;
 
+  /// Returns a shallow copy of this [AuthenticationResponse]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   AuthenticationResponse copyWith({
     bool? success,
     String? key,
@@ -118,6 +122,9 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
           failReason: failReason,
         );
 
+  /// Returns a shallow copy of this [AuthenticationResponse]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   AuthenticationResponse copyWith({
     bool? success,

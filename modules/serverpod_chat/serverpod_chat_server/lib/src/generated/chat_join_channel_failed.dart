@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Message being sent if a user failed to join a channel.
 abstract class ChatJoinChannelFailed
@@ -38,6 +39,9 @@ abstract class ChatJoinChannelFailed
   /// The reason of failure.
   String reason;
 
+  /// Returns a shallow copy of this [ChatJoinChannelFailed]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatJoinChannelFailed copyWith({
     String? channel,
     String? reason,
@@ -73,6 +77,9 @@ class _ChatJoinChannelFailedImpl extends ChatJoinChannelFailed {
           reason: reason,
         );
 
+  /// Returns a shallow copy of this [ChatJoinChannelFailed]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatJoinChannelFailed copyWith({
     String? channel,

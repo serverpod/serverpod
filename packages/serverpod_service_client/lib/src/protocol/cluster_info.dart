@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'cluster_server_info.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// Information about a cluster of servers.
 abstract class ClusterInfo implements _i1.SerializableModel {
@@ -30,6 +31,9 @@ abstract class ClusterInfo implements _i1.SerializableModel {
   /// List of servers in the cluster.
   List<_i2.ClusterServerInfo> servers;
 
+  /// Returns a shallow copy of this [ClusterInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
@@ -46,6 +50,9 @@ class _ClusterInfoImpl extends ClusterInfo {
   _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
       : super._(servers: servers);
 
+  /// Returns a shallow copy of this [ClusterInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
     return ClusterInfo(

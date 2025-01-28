@@ -1,7 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
@@ -74,6 +73,10 @@ class SerializableModelLibraryGenerator {
             from: p.dirname(classDefinition.filePath),
           );
           libraryBuilder.directives.add(Directive.partOf(topNodePath));
+        } else if (!(classDefinition.isSealedTopNode &&
+            classDefinition.childClasses.isEmpty)) {
+          libraryBuilder.directives
+              .insert(0, Directive.import('package:meta/meta.dart'));
         }
 
         libraryBuilder.body.addAll([
@@ -481,6 +484,9 @@ class SerializableModelLibraryGenerator {
       }
 
       methodBuilder
+        ..docs.add('/// Returns a shallow copy of this [$className]\n'
+            '/// with some or all fields replaced by the given arguments.')
+        ..annotations.add(const CodeExpression(Code('useResult')))
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
@@ -499,6 +505,10 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) {
         m.name = 'copyWith';
+        m.docs.add(
+            '/// Returns a shallow copy of this [${classDefinition.className}] \n'
+            '/// with some or all fields replaced by the given arguments.');
+        m.annotations.add(const CodeExpression(Code('useResult')));
         if (!classDefinition.isParentClass) {
           m.annotations.add(refer('override'));
         }

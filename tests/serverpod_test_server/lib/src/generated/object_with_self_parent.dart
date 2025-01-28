@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithSelfParent
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -43,6 +44,9 @@ abstract class ObjectWithSelfParent
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithSelfParent]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithSelfParent copyWith({
     int? id,
     int? other,
@@ -104,6 +108,9 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
           other: other,
         );
 
+  /// Returns a shallow copy of this [ObjectWithSelfParent]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithSelfParent copyWith({
     Object? id = _Undefined,

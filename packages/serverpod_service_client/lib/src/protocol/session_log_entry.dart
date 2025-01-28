@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Log entry for a session.
 abstract class SessionLogEntry implements _i1.SerializableModel {
@@ -114,6 +115,9 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   /// Timestamp of the last time this record was modified.
   DateTime touched;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -192,6 +196,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

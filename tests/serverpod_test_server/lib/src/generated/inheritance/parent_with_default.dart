@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 class ParentWithDefault
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -29,6 +30,9 @@ class ParentWithDefault
 
   int parentDefault;
 
+  /// Returns a shallow copy of this [ParentWithDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ParentWithDefault copyWith({
     String? name,
     int? parentDefault,

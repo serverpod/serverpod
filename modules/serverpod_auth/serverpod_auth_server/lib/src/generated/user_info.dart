@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
@@ -92,6 +93,9 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -188,6 +192,9 @@ class _UserInfoImpl extends UserInfo {
           blocked: blocked,
         );
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,

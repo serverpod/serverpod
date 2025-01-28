@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class BulkData
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -36,6 +37,9 @@ abstract class BulkData
 
   String data;
 
+  /// Returns a shallow copy of this [BulkData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   BulkData copyWith({
     _i2.TableDefinition? tableDefinition,
     String? data,
@@ -71,6 +75,9 @@ class _BulkDataImpl extends BulkData {
           data: data,
         );
 
+  /// Returns a shallow copy of this [BulkData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   BulkData copyWith({
     _i2.TableDefinition? tableDefinition,

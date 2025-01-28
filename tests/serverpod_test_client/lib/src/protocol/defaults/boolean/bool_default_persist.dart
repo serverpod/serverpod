@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class BoolDefaultPersist implements _i1.SerializableModel {
   BoolDefaultPersist._({
@@ -43,6 +44,9 @@ abstract class BoolDefaultPersist implements _i1.SerializableModel {
 
   bool? boolDefaultPersistFalse;
 
+  /// Returns a shallow copy of this [BoolDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   BoolDefaultPersist copyWith({
     int? id,
     bool? boolDefaultPersistTrue,
@@ -78,6 +82,9 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
           boolDefaultPersistFalse: boolDefaultPersistFalse,
         );
 
+  /// Returns a shallow copy of this [BoolDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   BoolDefaultPersist copyWith({
     Object? id = _Undefined,

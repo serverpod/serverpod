@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Message to request a new chunk of messages from the server.
 abstract class ChatRequestMessageChunk
@@ -38,6 +39,9 @@ abstract class ChatRequestMessageChunk
   /// The id of the last read message.
   int lastMessageId;
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatRequestMessageChunk copyWith({
     String? channel,
     int? lastMessageId,
@@ -73,6 +77,9 @@ class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
           lastMessageId: lastMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatRequestMessageChunk copyWith({
     String? channel,

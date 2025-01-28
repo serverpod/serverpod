@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ExceptionWithData
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -47,6 +48,9 @@ abstract class ExceptionWithData
 
   int? someNullableField;
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
@@ -84,6 +88,9 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
           someNullableField: someNullableField,
         );
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ExceptionWithData copyWith({
     String? message,

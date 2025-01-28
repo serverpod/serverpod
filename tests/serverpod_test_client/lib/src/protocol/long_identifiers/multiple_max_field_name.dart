@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class MultipleMaxFieldName implements _i1.SerializableModel {
   MultipleMaxFieldName._({
@@ -50,6 +51,9 @@ abstract class MultipleMaxFieldName implements _i1.SerializableModel {
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2;
 
+  /// Returns a shallow copy of this [MultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MultipleMaxFieldName copyWith({
     int? id,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -89,6 +93,9 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
               thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
         );
 
+  /// Returns a shallow copy of this [MultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MultipleMaxFieldName copyWith({
     Object? id = _Undefined,

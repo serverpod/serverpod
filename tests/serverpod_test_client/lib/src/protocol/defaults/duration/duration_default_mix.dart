@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DurationDefaultMix implements _i1.SerializableModel {
   DurationDefaultMix._({
@@ -73,6 +74,9 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
 
   Duration durationDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [DurationDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DurationDefaultMix copyWith({
     int? id,
     Duration? durationDefaultAndDefaultModel,
@@ -113,6 +117,9 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
               durationDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DurationDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DurationDefaultMix copyWith({
     Object? id = _Undefined,

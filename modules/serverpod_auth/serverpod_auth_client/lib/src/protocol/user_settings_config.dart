@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// User settings.
 abstract class UserSettingsConfig implements _i1.SerializableModel {
@@ -54,6 +55,9 @@ abstract class UserSettingsConfig implements _i1.SerializableModel {
   /// True if the user should be able to upload a new user image.
   bool canEditUserImage;
 
+  /// Returns a shallow copy of this [UserSettingsConfig]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
@@ -93,6 +97,9 @@ class _UserSettingsConfigImpl extends UserSettingsConfig {
           canEditUserImage: canEditUserImage,
         );
 
+  /// Returns a shallow copy of this [UserSettingsConfig]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserSettingsConfig copyWith({
     bool? canSeeUserName,

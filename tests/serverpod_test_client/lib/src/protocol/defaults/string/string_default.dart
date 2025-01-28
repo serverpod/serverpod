@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class StringDefault implements _i1.SerializableModel {
   StringDefault._({
@@ -42,6 +43,9 @@ abstract class StringDefault implements _i1.SerializableModel {
 
   String? stringDefaultNull;
 
+  /// Returns a shallow copy of this [StringDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   StringDefault copyWith({
     int? id,
     String? stringDefault,
@@ -75,6 +79,9 @@ class _StringDefaultImpl extends StringDefault {
           stringDefaultNull: stringDefaultNull,
         );
 
+  /// Returns a shallow copy of this [StringDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   StringDefault copyWith({
     Object? id = _Undefined,

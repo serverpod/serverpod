@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Address implements _i1.SerializableModel {
   Address._({
@@ -50,6 +51,9 @@ abstract class Address implements _i1.SerializableModel {
 
   _i2.Citizen? inhabitant;
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Address copyWith({
     int? id,
     String? street,
@@ -87,6 +91,9 @@ class _AddressImpl extends Address {
           inhabitant: inhabitant,
         );
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Address copyWith({
     Object? id = _Undefined,

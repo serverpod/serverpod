@@ -13,6 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/database_migration_action_type.dart' as _i2;
 import '../database/table_migration.dart' as _i3;
 import '../database/table_definition.dart' as _i4;
+import 'package:meta/meta.dart';
 
 abstract class DatabaseMigrationAction
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -55,6 +56,9 @@ abstract class DatabaseMigrationAction
 
   _i4.TableDefinition? createTable;
 
+  /// Returns a shallow copy of this [DatabaseMigrationAction]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,
     String? deleteTable,
@@ -102,6 +106,9 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
           createTable: createTable,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationAction]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DatabaseMigrationAction copyWith({
     _i2.DatabaseMigrationActionType? type,

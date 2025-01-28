@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Person implements _i1.SerializableModel {
   Person._({
@@ -50,6 +51,9 @@ abstract class Person implements _i1.SerializableModel {
 
   _i2.Organization? organization;
 
+  /// Returns a shallow copy of this [Person]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Person copyWith({
     int? id,
     String? name,
@@ -87,6 +91,9 @@ class _PersonImpl extends Person {
           organization: organization,
         );
 
+  /// Returns a shallow copy of this [Person]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Person copyWith({
     Object? id = _Undefined,

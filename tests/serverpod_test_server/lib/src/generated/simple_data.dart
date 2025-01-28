@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Just some simple data.
 abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -45,6 +46,9 @@ abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   SimpleData copyWith({
     int? id,
     int? num,
@@ -106,6 +110,9 @@ class _SimpleDataImpl extends SimpleData {
           num: num,
         );
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   SimpleData copyWith({
     Object? id = _Undefined,

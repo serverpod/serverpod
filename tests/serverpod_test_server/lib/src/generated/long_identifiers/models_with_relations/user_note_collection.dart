@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class UserNoteCollection
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -51,6 +52,9 @@ abstract class UserNoteCollection
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserNoteCollection]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserNoteCollection copyWith({
     int? id,
     String? name,
@@ -123,6 +127,9 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
           userNotesPropertyName: userNotesPropertyName,
         );
 
+  /// Returns a shallow copy of this [UserNoteCollection]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserNoteCollection copyWith({
     Object? id = _Undefined,

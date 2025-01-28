@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DateTimeDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -61,6 +62,9 @@ abstract class DateTimeDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -137,6 +141,9 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
               dateTimeDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,

@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/database_migration_action.dart' as _i2;
 import '../database/database_migration_warning.dart' as _i3;
+import 'package:meta/meta.dart';
 
 abstract class DatabaseMigration implements _i1.SerializableModel {
   DatabaseMigration._({
@@ -46,6 +47,9 @@ abstract class DatabaseMigration implements _i1.SerializableModel {
 
   int migrationApiVersion;
 
+  /// Returns a shallow copy of this [DatabaseMigration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i3.DatabaseMigrationWarning>? warnings,
@@ -77,6 +81,9 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
           migrationApiVersion: migrationApiVersion,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,

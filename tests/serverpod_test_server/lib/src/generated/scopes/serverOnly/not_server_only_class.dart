@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class NotServerOnlyClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -23,6 +24,9 @@ abstract class NotServerOnlyClass
 
   String foo;
 
+  /// Returns a shallow copy of this [NotServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   NotServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
@@ -43,6 +47,9 @@ abstract class NotServerOnlyClass
 class _NotServerOnlyClassImpl extends NotServerOnlyClass {
   _NotServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 
+  /// Returns a shallow copy of this [NotServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   NotServerOnlyClass copyWith({String? foo}) {
     return NotServerOnlyClass(foo: foo ?? this.foo);

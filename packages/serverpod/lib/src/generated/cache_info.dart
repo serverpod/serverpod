@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Provides high level information about a cache.
 abstract class CacheInfo
@@ -45,6 +46,9 @@ abstract class CacheInfo
   /// Optional list of keys used by the cache.
   List<String>? keys;
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
@@ -87,6 +91,9 @@ class _CacheInfoImpl extends CacheInfo {
           keys: keys,
         );
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   CacheInfo copyWith({
     int? numEntries,

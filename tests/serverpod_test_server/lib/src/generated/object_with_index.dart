@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithIndex
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -47,6 +48,9 @@ abstract class ObjectWithIndex
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -113,6 +117,9 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
           indexed2: indexed2,
         );
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithIndex copyWith({
     Object? id = _Undefined,

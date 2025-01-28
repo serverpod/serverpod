@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_level.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry implements _i1.SerializableModel {
@@ -93,6 +94,9 @@ abstract class LogEntry implements _i1.SerializableModel {
   /// The order of this log entry, used for sorting.
   int order;
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   LogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -158,6 +162,9 @@ class _LogEntryImpl extends LogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   LogEntry copyWith({
     Object? id = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ModuleClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -34,6 +35,9 @@ abstract class ModuleClass
 
   int data;
 
+  /// Returns a shallow copy of this [ModuleClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ModuleClass copyWith({
     String? name,
     int? data,
@@ -69,6 +73,9 @@ class _ModuleClassImpl extends ModuleClass {
           data: data,
         );
 
+  /// Returns a shallow copy of this [ModuleClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ModuleClass copyWith({
     String? name,

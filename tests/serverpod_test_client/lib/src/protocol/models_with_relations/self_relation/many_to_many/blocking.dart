@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Blocking implements _i1.SerializableModel {
   Blocking._({
@@ -59,6 +60,9 @@ abstract class Blocking implements _i1.SerializableModel {
 
   _i2.Member? blockedBy;
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
@@ -100,6 +104,9 @@ class _BlockingImpl extends Blocking {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,

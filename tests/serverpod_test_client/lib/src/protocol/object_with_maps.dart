@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithMaps implements _i1.SerializableModel {
   ObjectWithMaps._({
@@ -155,6 +156,9 @@ abstract class ObjectWithMaps implements _i1.SerializableModel {
 
   Map<int, int> intIntMap;
 
+  /// Returns a shallow copy of this [ObjectWithMaps]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithMaps copyWith({
     Map<String, _i2.SimpleData>? dataMap,
     Map<String, int>? intMap,
@@ -239,6 +243,9 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
           intIntMap: intIntMap,
         );
 
+  /// Returns a shallow copy of this [ObjectWithMaps]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithMaps copyWith({
     Map<String, _i2.SimpleData>? dataMap,

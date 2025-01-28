@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'chat_message_chunk.dart' as _i2;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// A message passed to a user when it joins a channel.
 abstract class ChatJoinedChannel implements _i1.SerializableModel {
@@ -52,6 +53,9 @@ abstract class ChatJoinedChannel implements _i1.SerializableModel {
   /// The user info of the user who joined the channel.
   _i3.UserInfo userInfo;
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatJoinedChannel copyWith({
     String? channel,
     _i2.ChatMessageChunk? initialMessageChunk,
@@ -87,6 +91,9 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
           userInfo: userInfo,
         );
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatJoinedChannel copyWith({
     String? channel,

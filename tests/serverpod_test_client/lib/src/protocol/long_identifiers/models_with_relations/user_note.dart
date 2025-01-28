@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class UserNote implements _i1.SerializableModel {
   UserNote._({
@@ -36,6 +37,9 @@ abstract class UserNote implements _i1.SerializableModel {
 
   String name;
 
+  /// Returns a shallow copy of this [UserNote]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserNote copyWith({
     int? id,
     String? name,
@@ -65,6 +69,9 @@ class _UserNoteImpl extends UserNote {
           name: name,
         );
 
+  /// Returns a shallow copy of this [UserNote]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserNote copyWith({
     Object? id = _Undefined,

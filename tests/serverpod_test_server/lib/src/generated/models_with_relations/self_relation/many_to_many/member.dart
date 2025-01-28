@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
+import 'package:meta/meta.dart';
 
 abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   Member._({
@@ -57,6 +58,9 @@ abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Member copyWith({
     int? id,
     String? name,
@@ -139,6 +143,9 @@ class _MemberImpl extends Member {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Member copyWith({
     Object? id = _Undefined,

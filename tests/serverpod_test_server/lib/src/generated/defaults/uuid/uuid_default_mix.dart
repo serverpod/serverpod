@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class UuidDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -60,6 +61,9 @@ abstract class UuidDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UuidDefaultMix copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultAndDefaultModel,
@@ -133,6 +137,9 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
           uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UuidDefaultMix copyWith({
     Object? id = _Undefined,

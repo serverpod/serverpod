@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ScopeNoneFields implements _i1.SerializableModel {
   ScopeNoneFields._({this.id});
@@ -25,6 +26,9 @@ abstract class ScopeNoneFields implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
+  /// Returns a shallow copy of this [ScopeNoneFields]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
@@ -42,6 +46,9 @@ class _Undefined {}
 class _ScopeNoneFieldsImpl extends ScopeNoneFields {
   _ScopeNoneFieldsImpl({int? id}) : super._(id: id);
 
+  /// Returns a shallow copy of this [ScopeNoneFields]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ScopeNoneFields copyWith({Object? id = _Undefined}) {
     return ScopeNoneFields(id: id is int? ? id : this.id);

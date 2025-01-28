@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:meta/meta.dart';
 
 abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefault._({
@@ -71,6 +72,9 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   EnumDefault copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
@@ -151,6 +155,9 @@ class _EnumDefaultImpl extends EnumDefault {
           byIndexEnumDefaultNull: byIndexEnumDefaultNull,
         );
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   EnumDefault copyWith({
     Object? id = _Undefined,

@@ -14,6 +14,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
+import 'package:meta/meta.dart';
 
 abstract class TypesList implements _i1.SerializableModel {
   TypesList._({
@@ -121,6 +122,9 @@ abstract class TypesList implements _i1.SerializableModel {
 
   List<List<_i5.Types>>? aList;
 
+  /// Returns a shallow copy of this [TypesList]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   TypesList copyWith({
     List<int>? anInt,
     List<bool>? aBool,
@@ -205,6 +209,9 @@ class _TypesListImpl extends TypesList {
           aList: aList,
         );
 
+  /// Returns a shallow copy of this [TypesList]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   TypesList copyWith({
     Object? anInt = _Undefined,

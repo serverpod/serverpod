@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'server_health_metric.dart' as _i2;
 import 'server_health_connection_info.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Information about health and connection metrics.
 abstract class ServerHealthResult
@@ -45,6 +46,9 @@ abstract class ServerHealthResult
   /// List of connection metrics.
   List<_i3.ServerHealthConnectionInfo> connectionInfos;
 
+  /// Returns a shallow copy of this [ServerHealthResult]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,
     List<_i3.ServerHealthConnectionInfo>? connectionInfos,
@@ -81,6 +85,9 @@ class _ServerHealthResultImpl extends ServerHealthResult {
           connectionInfos: connectionInfos,
         );
 
+  /// Returns a shallow copy of this [ServerHealthResult]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ServerHealthResult copyWith({
     List<_i2.ServerHealthMetric>? metrics,

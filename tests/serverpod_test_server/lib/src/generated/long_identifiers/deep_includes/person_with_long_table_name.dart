@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i2;
+import 'package:meta/meta.dart';
 
 abstract class PersonWithLongTableName
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -60,6 +61,9 @@ abstract class PersonWithLongTableName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [PersonWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   PersonWithLongTableName copyWith({
     int? id,
     String? name,
@@ -137,6 +141,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
           organization: organization,
         );
 
+  /// Returns a shallow copy of this [PersonWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   PersonWithLongTableName copyWith({
     Object? id = _Undefined,

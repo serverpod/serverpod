@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
   MaxFieldName._({
@@ -45,6 +46,9 @@ abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [MaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MaxFieldName copyWith({
     int? id,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -110,6 +114,9 @@ class _MaxFieldNameImpl extends MaxFieldName {
               thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
         );
 
+  /// Returns a shallow copy of this [MaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MaxFieldName copyWith({
     Object? id = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class StringDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -60,6 +61,9 @@ abstract class StringDefaultMix
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [StringDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   StringDefaultMix copyWith({
     int? id,
     String? stringDefaultAndDefaultModel,
@@ -134,6 +138,9 @@ class _StringDefaultMixImpl extends StringDefaultMix {
               stringDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [StringDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   StringDefaultMix copyWith({
     Object? id = _Undefined,

@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ObjectFieldPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -56,6 +57,9 @@ abstract class ObjectFieldPersist
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectFieldPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
@@ -127,6 +131,9 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
           data: data,
         );
 
+  /// Returns a shallow copy of this [ObjectFieldPersist]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,

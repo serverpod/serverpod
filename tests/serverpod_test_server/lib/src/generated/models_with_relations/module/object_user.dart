@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectUser._({
@@ -55,6 +56,9 @@ abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectUser]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectUser copyWith({
     int? id,
     String? name,
@@ -126,6 +130,9 @@ class _ObjectUserImpl extends ObjectUser {
           userInfo: userInfo,
         );
 
+  /// Returns a shallow copy of this [ObjectUser]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectUser copyWith({
     Object? id = _Undefined,

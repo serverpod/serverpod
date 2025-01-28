@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class UserNoteWithALongName
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -45,6 +46,9 @@ abstract class UserNoteWithALongName
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UserNoteWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserNoteWithALongName copyWith({
     int? id,
     String? name,
@@ -110,6 +114,9 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
           name: name,
         );
 
+  /// Returns a shallow copy of this [UserNoteWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserNoteWithALongName copyWith({
     Object? id = _Undefined,

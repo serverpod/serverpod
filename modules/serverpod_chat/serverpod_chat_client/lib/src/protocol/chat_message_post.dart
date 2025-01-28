@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'chat_message_attachment.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// A chat message post request.
 abstract class ChatMessagePost implements _i1.SerializableModel {
@@ -52,6 +53,9 @@ abstract class ChatMessagePost implements _i1.SerializableModel {
   /// List of attachments associated with this message.
   List<_i2.ChatMessageAttachment>? attachments;
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatMessagePost copyWith({
     String? channel,
     String? message,
@@ -90,6 +94,9 @@ class _ChatMessagePostImpl extends ChatMessagePost {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatMessagePost copyWith({
     String? channel,

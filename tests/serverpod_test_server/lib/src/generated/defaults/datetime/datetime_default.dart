@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DateTimeDefault
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -62,6 +63,9 @@ abstract class DateTimeDefault
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [DateTimeDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DateTimeDefault copyWith({
     int? id,
     DateTime? dateTimeDefaultNow,
@@ -135,6 +139,9 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
           dateTimeDefaultStrNull: dateTimeDefaultStrNull,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DateTimeDefault copyWith({
     Object? id = _Undefined,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithDuration implements _i1.SerializableModel {
   ObjectWithDuration._({
@@ -37,6 +38,9 @@ abstract class ObjectWithDuration implements _i1.SerializableModel {
 
   Duration duration;
 
+  /// Returns a shallow copy of this [ObjectWithDuration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
@@ -66,6 +70,9 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
           duration: duration,
         );
 
+  /// Returns a shallow copy of this [ObjectWithDuration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithDuration copyWith({
     Object? id = _Undefined,

@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ChildClass extends _i1.ParentClass
     implements _i2.SerializableModel, _i2.ProtocolSerialization {
@@ -39,7 +40,10 @@ abstract class ChildClass extends _i1.ParentClass
 
   int childField;
 
+  /// Returns a shallow copy of this [ChildClass]
+  /// with some or all fields replaced by the given arguments.
   @override
+  @useResult
   ChildClass copyWith({
     Object? id,
     String? grandParentField,
@@ -87,6 +91,9 @@ class _ChildClassImpl extends ChildClass {
           childField: childField,
         );
 
+  /// Returns a shallow copy of this [ChildClass]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChildClass copyWith({
     Object? id = _Undefined,

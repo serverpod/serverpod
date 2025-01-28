@@ -15,6 +15,7 @@ import '../database/column_migration.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
 import '../database/foreign_key_definition.dart' as _i5;
 import '../database/database_migration_warning.dart' as _i6;
+import 'package:meta/meta.dart';
 
 abstract class TableMigration
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -108,6 +109,9 @@ abstract class TableMigration
 
   List<_i6.DatabaseMigrationWarning> warnings;
 
+  /// Returns a shallow copy of this [TableMigration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   TableMigration copyWith({
     String? name,
     String? dartName,
@@ -199,6 +203,9 @@ class _TableMigrationImpl extends TableMigration {
           warnings: warnings,
         );
 
+  /// Returns a shallow copy of this [TableMigration]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   TableMigration copyWith({
     String? name,

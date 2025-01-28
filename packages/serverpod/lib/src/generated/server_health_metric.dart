@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
@@ -78,6 +79,9 @@ abstract class ServerHealthMetric
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -164,6 +168,9 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,

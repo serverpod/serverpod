@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// A log entry for a message sent in a streaming session.
 abstract class MessageLogEntry
@@ -100,6 +101,9 @@ abstract class MessageLogEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -206,6 +210,9 @@ class _MessageLogEntryImpl extends MessageLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,

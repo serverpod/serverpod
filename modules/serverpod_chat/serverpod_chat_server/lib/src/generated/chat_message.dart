@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'chat_message_attachment.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// A chat message.
 abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -99,6 +100,9 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatMessage copyWith({
     int? id,
     String? channel,
@@ -203,6 +207,9 @@ class _ChatMessageImpl extends ChatMessage {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatMessage copyWith({
     Object? id = _Undefined,

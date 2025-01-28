@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
@@ -79,6 +80,9 @@ abstract class ServerHealthConnectionInfo
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -165,6 +169,9 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,

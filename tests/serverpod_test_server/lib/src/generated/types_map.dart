@@ -14,6 +14,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
+import 'package:meta/meta.dart';
 
 abstract class TypesMap
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -291,6 +292,9 @@ abstract class TypesMap
 
   Map<String, List<_i5.Types>>? aListValue;
 
+  /// Returns a shallow copy of this [TypesMap]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   TypesMap copyWith({
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
@@ -508,6 +512,9 @@ class _TypesMapImpl extends TypesMap {
           aListValue: aListValue,
         );
 
+  /// Returns a shallow copy of this [TypesMap]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   TypesMap copyWith({
     Object? anIntKey = _Undefined,

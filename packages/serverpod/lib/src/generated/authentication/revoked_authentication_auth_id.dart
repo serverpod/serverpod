@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Message sent when an authentication key id is revoked.
 abstract class RevokedAuthenticationAuthId
@@ -27,6 +28,9 @@ abstract class RevokedAuthenticationAuthId
 
   String authId;
 
+  /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   RevokedAuthenticationAuthId copyWith({String? authId});
   @override
   Map<String, dynamic> toJson() {
@@ -48,6 +52,9 @@ class _RevokedAuthenticationAuthIdImpl extends RevokedAuthenticationAuthId {
   _RevokedAuthenticationAuthIdImpl({required String authId})
       : super._(authId: authId);
 
+  /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   RevokedAuthenticationAuthId copyWith({String? authId}) {
     return RevokedAuthenticationAuthId(authId: authId ?? this.authId);

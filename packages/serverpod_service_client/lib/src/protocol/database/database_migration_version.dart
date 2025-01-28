@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
@@ -53,6 +54,9 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
   /// The timestamp of the migration. Only set if the migration is applied.
   DateTime? timestamp;
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DatabaseMigrationVersion copyWith({
     int? id,
     String? module,
@@ -90,6 +94,9 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
           timestamp: timestamp,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DatabaseMigrationVersion copyWith({
     Object? id = _Undefined,

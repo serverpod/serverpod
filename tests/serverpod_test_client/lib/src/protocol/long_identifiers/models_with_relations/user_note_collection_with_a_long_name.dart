@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
     as _i2;
+import 'package:meta/meta.dart';
 
 abstract class UserNoteCollectionWithALongName
     implements _i1.SerializableModel {
@@ -48,6 +49,9 @@ abstract class UserNoteCollectionWithALongName
 
   List<_i2.UserNoteWithALongName>? notes;
 
+  /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserNoteCollectionWithALongName copyWith({
     int? id,
     String? name,
@@ -82,6 +86,9 @@ class _UserNoteCollectionWithALongNameImpl
           notes: notes,
         );
 
+  /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserNoteCollectionWithALongName copyWith({
     Object? id = _Undefined,

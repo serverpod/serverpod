@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'log_settings.dart' as _i2;
 import 'log_settings_override.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
@@ -68,6 +69,9 @@ abstract class RuntimeSettings
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
@@ -146,6 +150,9 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
           logMalformedCalls: logMalformedCalls,
         );
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,

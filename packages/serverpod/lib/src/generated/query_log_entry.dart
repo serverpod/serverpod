@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// A log entry for a database query.
 abstract class QueryLogEntry
@@ -100,6 +101,9 @@ abstract class QueryLogEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   QueryLogEntry copyWith({
     int? id,
     String? serverId,
@@ -206,6 +210,9 @@ class _QueryLogEntryImpl extends QueryLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   QueryLogEntry copyWith({
     Object? id = _Undefined,

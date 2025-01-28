@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Information about a user that can safely be publicly accessible.
 abstract class UserInfoPublic
@@ -55,6 +56,9 @@ abstract class UserInfoPublic
   /// URL to the user's avatar.
   String? imageUrl;
 
+  /// Returns a shallow copy of this [UserInfoPublic]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UserInfoPublic copyWith({
     int? id,
     String? userName,
@@ -107,6 +111,9 @@ class _UserInfoPublicImpl extends UserInfoPublic {
           imageUrl: imageUrl,
         );
 
+  /// Returns a shallow copy of this [UserInfoPublic]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UserInfoPublic copyWith({
     Object? id = _Undefined,

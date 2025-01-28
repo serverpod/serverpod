@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithUuid implements _i1.SerializableModel {
   ObjectWithUuid._({
@@ -44,6 +45,9 @@ abstract class ObjectWithUuid implements _i1.SerializableModel {
 
   _i1.UuidValue? uuidNullable;
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -77,6 +81,9 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
           uuidNullable: uuidNullable,
         );
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithUuid copyWith({
     Object? id = _Undefined,

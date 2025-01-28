@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Information about a server method.
 abstract class MethodInfo implements _i1.SerializableModel {
@@ -44,6 +45,9 @@ abstract class MethodInfo implements _i1.SerializableModel {
   /// The name of this method.
   String method;
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MethodInfo copyWith({
     int? id,
     String? endpoint,
@@ -77,6 +81,9 @@ class _MethodInfoImpl extends MethodInfo {
           method: method,
         );
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MethodInfo copyWith({
     Object? id = _Undefined,

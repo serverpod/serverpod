@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/index_element_definition.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
@@ -72,6 +73,9 @@ abstract class IndexDefinition
   /// The predicate of this partial index, if it is one.
   String? predicate;
 
+  /// Returns a shallow copy of this [IndexDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   IndexDefinition copyWith({
     String? indexName,
     String? tableSpace,
@@ -134,6 +138,9 @@ class _IndexDefinitionImpl extends IndexDefinition {
           predicate: predicate,
         );
 
+  /// Returns a shallow copy of this [IndexDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   IndexDefinition copyWith({
     String? indexName,

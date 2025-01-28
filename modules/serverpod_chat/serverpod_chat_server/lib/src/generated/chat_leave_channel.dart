@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Indicates that a user wants to leave a channel.
 abstract class ChatLeaveChannel
@@ -25,6 +26,9 @@ abstract class ChatLeaveChannel
   /// The name of the channel to leave.
   String channel;
 
+  /// Returns a shallow copy of this [ChatLeaveChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ChatLeaveChannel copyWith({String? channel});
   @override
   Map<String, dynamic> toJson() {
@@ -45,6 +49,9 @@ abstract class ChatLeaveChannel
 class _ChatLeaveChannelImpl extends ChatLeaveChannel {
   _ChatLeaveChannelImpl({required String channel}) : super._(channel: channel);
 
+  /// Returns a shallow copy of this [ChatLeaveChannel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ChatLeaveChannel copyWith({String? channel}) {
     return ChatLeaveChannel(channel: channel ?? this.channel);

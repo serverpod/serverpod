@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class RelationToMultipleMaxFieldName implements _i1.SerializableModel {
   RelationToMultipleMaxFieldName._({
@@ -47,6 +48,9 @@ abstract class RelationToMultipleMaxFieldName implements _i1.SerializableModel {
 
   List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames;
 
+  /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   RelationToMultipleMaxFieldName copyWith({
     int? id,
     String? name,
@@ -83,6 +87,9 @@ class _RelationToMultipleMaxFieldNameImpl
           multipleMaxFieldNames: multipleMaxFieldNames,
         );
 
+  /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   RelationToMultipleMaxFieldName copyWith({
     Object? id = _Undefined,

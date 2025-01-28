@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/city.dart' as _i3;
+import 'package:meta/meta.dart';
 
 abstract class Organization implements _i1.SerializableModel {
   Organization._({
@@ -58,6 +59,9 @@ abstract class Organization implements _i1.SerializableModel {
 
   _i3.City? city;
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   Organization copyWith({
     int? id,
     String? name,
@@ -100,6 +104,9 @@ class _OrganizationImpl extends Organization {
           city: city,
         );
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,

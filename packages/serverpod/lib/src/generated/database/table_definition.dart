@@ -13,6 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/column_definition.dart' as _i2;
 import '../database/foreign_key_definition.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
+import 'package:meta/meta.dart';
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition
@@ -92,6 +93,9 @@ abstract class TableDefinition
   /// Null, if this is unknown.
   bool? managed;
 
+  /// Returns a shallow copy of this [TableDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   TableDefinition copyWith({
     String? name,
     String? dartName,
@@ -165,6 +169,9 @@ class _TableDefinitionImpl extends TableDefinition {
           managed: managed,
         );
 
+  /// Returns a shallow copy of this [TableDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   TableDefinition copyWith({
     String? name,

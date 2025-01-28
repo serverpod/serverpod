@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class ObjectFieldScopes
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -52,6 +53,9 @@ abstract class ObjectFieldScopes
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
@@ -122,6 +126,9 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
           database: database,
         );
 
+  /// Returns a shallow copy of this [ObjectFieldScopes]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectFieldScopes copyWith({
     Object? id = _Undefined,

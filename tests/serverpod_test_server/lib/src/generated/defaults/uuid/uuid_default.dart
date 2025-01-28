@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   UuidDefault._({
@@ -70,6 +71,9 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   UuidDefault copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
@@ -150,6 +154,9 @@ class _UuidDefaultImpl extends UuidDefault {
           uuidDefaultStrNull: uuidDefaultStrNull,
         );
 
+  /// Returns a shallow copy of this [UuidDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   UuidDefault copyWith({
     Object? id = _Undefined,

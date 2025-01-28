@@ -12,6 +12,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_settings.dart' as _i2;
 import 'log_settings_override.dart' as _i3;
+import 'package:meta/meta.dart';
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings implements _i1.SerializableModel {
@@ -62,6 +63,9 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
   /// True if malformed calls should be logged.
   bool logMalformedCalls;
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
@@ -104,6 +108,9 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
           logMalformedCalls: logMalformedCalls,
         );
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,

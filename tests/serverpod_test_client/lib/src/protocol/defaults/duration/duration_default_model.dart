@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DurationDefaultModel implements _i1.SerializableModel {
   DurationDefaultModel._({
@@ -62,6 +63,9 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
 
   Duration? durationDefaultModelNull;
 
+  /// Returns a shallow copy of this [DurationDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DurationDefaultModel copyWith({
     int? id,
     Duration? durationDefaultModel,
@@ -96,6 +100,9 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
           durationDefaultModelNull: durationDefaultModelNull,
         );
 
+  /// Returns a shallow copy of this [DurationDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DurationDefaultModel copyWith({
     Object? id = _Undefined,

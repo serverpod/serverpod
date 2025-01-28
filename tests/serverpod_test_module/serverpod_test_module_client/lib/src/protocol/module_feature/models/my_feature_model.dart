@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class MyModuleFeatureModel implements _i1.SerializableModel {
   MyModuleFeatureModel._({required this.name});
@@ -24,6 +25,9 @@ abstract class MyModuleFeatureModel implements _i1.SerializableModel {
 
   String name;
 
+  /// Returns a shallow copy of this [MyModuleFeatureModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   MyModuleFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -39,6 +43,9 @@ abstract class MyModuleFeatureModel implements _i1.SerializableModel {
 class _MyModuleFeatureModelImpl extends MyModuleFeatureModel {
   _MyModuleFeatureModelImpl({required String name}) : super._(name: name);
 
+  /// Returns a shallow copy of this [MyModuleFeatureModel]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   MyModuleFeatureModel copyWith({String? name}) {
     return MyModuleFeatureModel(name: name ?? this.name);

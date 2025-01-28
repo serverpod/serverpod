@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Authentication info for Sign in with Apple.
 abstract class AppleAuthInfo
@@ -61,6 +62,9 @@ abstract class AppleAuthInfo
   /// Authorization code associated with the sign in.
   String authorizationCode;
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
@@ -118,6 +122,9 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
           authorizationCode: authorizationCode,
         );
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   AppleAuthInfo copyWith({
     String? userIdentifier,

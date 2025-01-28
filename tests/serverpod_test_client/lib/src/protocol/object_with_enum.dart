@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'test_enum.dart' as _i2;
+import 'package:meta/meta.dart';
 
 abstract class ObjectWithEnum implements _i1.SerializableModel {
   ObjectWithEnum._({
@@ -67,6 +68,9 @@ abstract class ObjectWithEnum implements _i1.SerializableModel {
 
   List<List<_i2.TestEnum>> enumListList;
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
@@ -114,6 +118,9 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
           enumListList: enumListList,
         );
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,

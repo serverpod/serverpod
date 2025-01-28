@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
@@ -58,6 +59,9 @@ abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   /// The verification code sent to the user.
   String verificationCode;
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
@@ -99,6 +103,9 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
           verificationCode: verificationCode,
         );
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   EmailCreateAccountRequest copyWith({
     Object? id = _Undefined,

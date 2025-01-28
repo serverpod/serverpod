@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'log_level.dart' as _i2;
+import 'package:meta/meta.dart';
 
 /// Log settings for the server.
 abstract class LogSettings
@@ -90,6 +91,9 @@ abstract class LogSettings
   /// The duration in seconds for a query to be considered slow.
   double slowQueryDuration;
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
@@ -165,6 +169,9 @@ class _LogSettingsImpl extends LogSettings {
           slowQueryDuration: slowQueryDuration,
         );
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   LogSettings copyWith({
     _i2.LogLevel? logLevel,

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart';
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry
@@ -64,6 +65,9 @@ abstract class CloudStorageDirectUploadEntry
   @override
   _i1.Table get table => t;
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -140,6 +144,9 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
           authKey: authKey,
         );
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,

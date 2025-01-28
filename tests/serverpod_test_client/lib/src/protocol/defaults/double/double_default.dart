@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart';
 
 abstract class DoubleDefault implements _i1.SerializableModel {
   DoubleDefault._({
@@ -43,6 +44,9 @@ abstract class DoubleDefault implements _i1.SerializableModel {
 
   double? doubleDefaultNull;
 
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   DoubleDefault copyWith({
     int? id,
     double? doubleDefault,
@@ -76,6 +80,9 @@ class _DoubleDefaultImpl extends DoubleDefault {
           doubleDefaultNull: doubleDefaultNull,
         );
 
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @useResult
   @override
   DoubleDefault copyWith({
     Object? id = _Undefined,
