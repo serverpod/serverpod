@@ -103,7 +103,7 @@ class WebServer {
   }
 
   void _handleRequest(HttpRequest request) async {
-    if (serverpod.runMode == 'production') {
+    if (serverpod.runMode == ServerpodRunMode.production) {
       request.response.headers.add('Strict-Transport-Security',
           'max-age=63072000; includeSubDomains; preload');
     }
@@ -164,7 +164,8 @@ class WebServer {
       logError(e, stackTrace: stackTrace);
 
       request.response.statusCode = HttpStatus.internalServerError;
-      request.response.write('$e');
+      request.response.write('Internal Server Error');
+
       await request.response.close();
     }
     return true;
