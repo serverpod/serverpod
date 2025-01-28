@@ -1,6 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:serverpod_serialization/src/serialization.dart';
 import 'package:test/test.dart';
-import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 class _TestProtocol extends SerializationManager {}
@@ -247,6 +248,36 @@ void main() {
       var encoded = protocol.encodeWithType(uuid);
       var decoded = protocol.decodeWithType(encoded);
       expect(decoded, uuid);
+    },
+  );
+
+  test(
+    'Given a Uri when encoding and decoding with type then output matches input',
+    () {
+      Uri uri = Uri.parse('https://docs.serverpod.dev/contribute');
+      var encoded = protocol.encodeWithType(uri);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, uri);
+    },
+  );
+
+  test(
+    'Given a non-null nullable Uri when encoding and decoding with type then output matches input',
+    () {
+      Uri? uri = Uri.parse('https://docs.serverpod.dev/contribute');
+      var encoded = protocol.encodeWithType(uri);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, uri);
+    },
+  );
+
+  test(
+    'Given a null nullable Uri when encoding and decoding with type then output matches input',
+    () {
+      Uri? uri;
+      var encoded = protocol.encodeWithType(uri);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, uri);
     },
   );
 }
