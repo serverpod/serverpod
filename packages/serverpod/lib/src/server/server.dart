@@ -130,22 +130,17 @@ class Server {
           ),
         _ => HttpServer.bind(InternetAddress.anyIPv6, port),
       };
-    } catch (e) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '
-        'may already be in use.',
-      );
-      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+    } catch (e, stackTrace) {
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Failed to bind socket, port $port may already be in use.');
       return false;
     }
 
     try {
       _runServer(httpServer);
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. Failed to run server.');
       return false;
     }
 
@@ -171,10 +166,8 @@ class Server {
         _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. httpSever.listen failed.');
     }
 
     stdout.writeln('$name stopped');
@@ -186,11 +179,13 @@ class Server {
     await Future.sync(() {
       return _handleRequest(request);
     }).catchError((e, stackTrace) async {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} Internal server error. _handleRequest failed with exception.',
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Internal server error. _handleRequest failed with exception.',
+        httpRequest: request,
       );
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+
       request.response.statusCode = HttpStatus.internalServerError;
       return request.response.close();
     });
@@ -209,11 +204,15 @@ class Server {
 
     try {
       uri = request.requestedUri;
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Specific log for this?
-        stderr.writeln(
-            'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Malformed call, invalid uri from '
+              '${request.connectionInfo!.remoteAddress.address}',
+          httpRequest: request,
+        );
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -291,10 +290,13 @@ class Server {
         await request.response.close();
         return;
       } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Internal server error. Failed to read body of request.',
+          httpRequest: request,
+        );
+
         request.response.statusCode = HttpStatus.badRequest;
         await request.response.close();
         return;
@@ -568,6 +570,20 @@ class Server {
     await Future.wait(webSocketCompletions);
 
     _running = false;
+  }
+
+  Future<void> _reportFrameworkException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+    HttpRequest? httpRequest,
+  }) async {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
   }
 }
 
