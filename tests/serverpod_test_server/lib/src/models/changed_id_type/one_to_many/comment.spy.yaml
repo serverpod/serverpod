@@ -1,6 +1,6 @@
 class: CommentInt
 table: comment_int
-idType: int
 fields:
+  id: int
   description: String
   order: OrderUuid?, relation(name=order_comments, onDelete=Cascade)

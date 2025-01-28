@@ -1,6 +1,6 @@
 class: TownInt
 table: town_int
-idType: int
 fields:
+  id: int
   name: String
   mayor: CitizenInt?, relation(optional)

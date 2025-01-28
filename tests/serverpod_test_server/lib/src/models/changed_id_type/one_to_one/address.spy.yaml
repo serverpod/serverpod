@@ -1,7 +1,7 @@
 class: AddressUuid
 table: address_uuid
-idType: uuidV4
 fields:
+  id: UuidValue, default=random
   street: String
   inhabitantId: int?
   inhabitant: CitizenInt?, relation(name=citizen_address, field=inhabitantId, onDelete=Cascade)

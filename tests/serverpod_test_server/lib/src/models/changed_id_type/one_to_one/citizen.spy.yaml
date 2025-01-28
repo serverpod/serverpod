@@ -1,7 +1,7 @@
 class: CitizenInt
 table: citizen_int
-idType: int
 fields:
+  id: int
   name: String
   address: AddressUuid?, relation(name=citizen_address)
   company: CompanyUuid?, relation

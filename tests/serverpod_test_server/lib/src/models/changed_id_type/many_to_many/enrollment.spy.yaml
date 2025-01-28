@@ -1,7 +1,7 @@
 class: EnrollmentInt
 table: enrollment_int
-idType: int
 fields:
+  id: int
   student: StudentUuid?, relation(name=student_enrollments, onDelete=Cascade)
   course: CourseUuid?, relation(name=course_enrollments, onDelete=Cascade)
 
