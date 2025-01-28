@@ -221,6 +221,10 @@ class RelationEmptyModelRepository {
 
   final detachRow = const RelationEmptyModelDetachRowRepository._();
 
+  /// Find a list of [RelationEmptyModel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<RelationEmptyModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
@@ -244,6 +248,7 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Find a single [RelationEmptyModel] from a table, using the provided [where]
   Future<RelationEmptyModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
@@ -265,6 +270,7 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Find a single [RelationEmptyModel] by its [id] or null if no such row exists.
   Future<RelationEmptyModel?> findById(
     _i1.Session session,
     int id, {
@@ -278,6 +284,9 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Inserts all [RelationEmptyModel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RelationEmptyModel>> insert(
     _i1.Session session,
     List<RelationEmptyModel> rows, {
@@ -289,6 +298,7 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Inserts a single [RelationEmptyModel] and returns the inserted row.
   Future<RelationEmptyModel> insertRow(
     _i1.Session session,
     RelationEmptyModel row, {
@@ -300,6 +310,11 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Update all [RelationEmptyModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RelationEmptyModel>> update(
     _i1.Session session,
     List<RelationEmptyModel> rows, {
@@ -313,6 +328,9 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Updates a single [RelationEmptyModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RelationEmptyModel> updateRow(
     _i1.Session session,
     RelationEmptyModel row, {
@@ -326,6 +344,9 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Deletes all [RelationEmptyModel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<RelationEmptyModel>> delete(
     _i1.Session session,
     List<RelationEmptyModel> rows, {
@@ -337,6 +358,7 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Deletes a single [RelationEmptyModel].
   Future<RelationEmptyModel> deleteRow(
     _i1.Session session,
     RelationEmptyModel row, {
@@ -348,6 +370,7 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<RelationEmptyModel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
@@ -359,6 +382,8 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
@@ -376,6 +401,7 @@ class RelationEmptyModelRepository {
 class RelationEmptyModelAttachRepository {
   const RelationEmptyModelAttachRepository._();
 
+  /// Set the `items` values on the [relationEmptyModel]
   Future<void> items(
     _i1.Session session,
     RelationEmptyModel relationEmptyModel,
@@ -410,6 +436,7 @@ class RelationEmptyModelAttachRepository {
 class RelationEmptyModelAttachRowRepository {
   const RelationEmptyModelAttachRowRepository._();
 
+  /// Set the `items` on the [relationEmptyModel]
   Future<void> items(
     _i1.Session session,
     RelationEmptyModel relationEmptyModel,
@@ -441,6 +468,7 @@ class RelationEmptyModelAttachRowRepository {
 class RelationEmptyModelDetachRepository {
   const RelationEmptyModelDetachRepository._();
 
+  /// Remove the `items` field from the [EmptyModelRelationItem]
   Future<void> items(
     _i1.Session session,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
@@ -470,6 +498,7 @@ class RelationEmptyModelDetachRepository {
 class RelationEmptyModelDetachRowRepository {
   const RelationEmptyModelDetachRowRepository._();
 
+  /// Remove the `items` field from the [EmptyModelRelationItem]
   Future<void> items(
     _i1.Session session,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {

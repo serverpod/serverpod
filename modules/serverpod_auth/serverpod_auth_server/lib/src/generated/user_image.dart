@@ -210,6 +210,10 @@ class UserImageIncludeList extends _i1.IncludeList {
 class UserImageRepository {
   const UserImageRepository._();
 
+  /// Find a list of [UserImage]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UserImage>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
@@ -231,6 +235,7 @@ class UserImageRepository {
     );
   }
 
+  /// Find a single [UserImage] from a table, using the provided [where]
   Future<UserImage?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
@@ -250,6 +255,7 @@ class UserImageRepository {
     );
   }
 
+  /// Find a single [UserImage] by its [id] or null if no such row exists.
   Future<UserImage?> findById(
     _i1.Session session,
     int id, {
@@ -261,6 +267,9 @@ class UserImageRepository {
     );
   }
 
+  /// Inserts all [UserImage]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UserImage>> insert(
     _i1.Session session,
     List<UserImage> rows, {
@@ -272,6 +281,7 @@ class UserImageRepository {
     );
   }
 
+  /// Inserts a single [UserImage] and returns the inserted row.
   Future<UserImage> insertRow(
     _i1.Session session,
     UserImage row, {
@@ -283,6 +293,11 @@ class UserImageRepository {
     );
   }
 
+  /// Update all [UserImage]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UserImage>> update(
     _i1.Session session,
     List<UserImage> rows, {
@@ -296,6 +311,9 @@ class UserImageRepository {
     );
   }
 
+  /// Updates a single [UserImage]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UserImage> updateRow(
     _i1.Session session,
     UserImage row, {
@@ -309,6 +327,9 @@ class UserImageRepository {
     );
   }
 
+  /// Deletes all [UserImage]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UserImage>> delete(
     _i1.Session session,
     List<UserImage> rows, {
@@ -320,6 +341,7 @@ class UserImageRepository {
     );
   }
 
+  /// Deletes a single [UserImage].
   Future<UserImage> deleteRow(
     _i1.Session session,
     UserImage row, {
@@ -331,6 +353,7 @@ class UserImageRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UserImage>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
@@ -342,6 +365,8 @@ class UserImageRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,

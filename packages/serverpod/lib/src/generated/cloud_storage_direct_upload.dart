@@ -234,6 +234,10 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
 class CloudStorageDirectUploadEntryRepository {
   const CloudStorageDirectUploadEntryRepository._();
 
+  /// Find a list of [CloudStorageDirectUploadEntry]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<CloudStorageDirectUploadEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
@@ -255,6 +259,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Find a single [CloudStorageDirectUploadEntry] from a table, using the provided [where]
   Future<CloudStorageDirectUploadEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
@@ -274,6 +279,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Find a single [CloudStorageDirectUploadEntry] by its [id] or null if no such row exists.
   Future<CloudStorageDirectUploadEntry?> findById(
     _i1.Session session,
     int id, {
@@ -285,6 +291,9 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Inserts all [CloudStorageDirectUploadEntry]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<CloudStorageDirectUploadEntry>> insert(
     _i1.Session session,
     List<CloudStorageDirectUploadEntry> rows, {
@@ -296,6 +305,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Inserts a single [CloudStorageDirectUploadEntry] and returns the inserted row.
   Future<CloudStorageDirectUploadEntry> insertRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
@@ -307,6 +317,11 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Update all [CloudStorageDirectUploadEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<CloudStorageDirectUploadEntry>> update(
     _i1.Session session,
     List<CloudStorageDirectUploadEntry> rows, {
@@ -320,6 +335,9 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Updates a single [CloudStorageDirectUploadEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<CloudStorageDirectUploadEntry> updateRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
@@ -333,6 +351,9 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Deletes all [CloudStorageDirectUploadEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<CloudStorageDirectUploadEntry>> delete(
     _i1.Session session,
     List<CloudStorageDirectUploadEntry> rows, {
@@ -344,6 +365,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Deletes a single [CloudStorageDirectUploadEntry].
   Future<CloudStorageDirectUploadEntry> deleteRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
@@ -355,6 +377,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<CloudStorageDirectUploadEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
@@ -367,6 +390,8 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,

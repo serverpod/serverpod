@@ -160,6 +160,10 @@ class ParentClassIncludeList extends _i2.IncludeList {
 class ParentClassRepository {
   const ParentClassRepository._();
 
+  /// Find a list of [ParentClass]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ParentClass>> find(
     _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
@@ -181,6 +185,7 @@ class ParentClassRepository {
     );
   }
 
+  /// Find a single [ParentClass] from a table, using the provided [where]
   Future<ParentClass?> findFirstRow(
     _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
@@ -200,6 +205,7 @@ class ParentClassRepository {
     );
   }
 
+  /// Find a single [ParentClass] by its [id] or null if no such row exists.
   Future<ParentClass?> findById(
     _i2.Session session,
     int id, {
@@ -211,6 +217,9 @@ class ParentClassRepository {
     );
   }
 
+  /// Inserts all [ParentClass]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ParentClass>> insert(
     _i2.Session session,
     List<ParentClass> rows, {
@@ -222,6 +231,7 @@ class ParentClassRepository {
     );
   }
 
+  /// Inserts a single [ParentClass] and returns the inserted row.
   Future<ParentClass> insertRow(
     _i2.Session session,
     ParentClass row, {
@@ -233,6 +243,11 @@ class ParentClassRepository {
     );
   }
 
+  /// Update all [ParentClass]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ParentClass>> update(
     _i2.Session session,
     List<ParentClass> rows, {
@@ -246,6 +261,9 @@ class ParentClassRepository {
     );
   }
 
+  /// Updates a single [ParentClass]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ParentClass> updateRow(
     _i2.Session session,
     ParentClass row, {
@@ -259,6 +277,9 @@ class ParentClassRepository {
     );
   }
 
+  /// Deletes all [ParentClass]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ParentClass>> delete(
     _i2.Session session,
     List<ParentClass> rows, {
@@ -270,6 +291,7 @@ class ParentClassRepository {
     );
   }
 
+  /// Deletes a single [ParentClass].
   Future<ParentClass> deleteRow(
     _i2.Session session,
     ParentClass row, {
@@ -281,6 +303,7 @@ class ParentClassRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ParentClass>> deleteWhere(
     _i2.Session session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
@@ -292,6 +315,8 @@ class ParentClassRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,

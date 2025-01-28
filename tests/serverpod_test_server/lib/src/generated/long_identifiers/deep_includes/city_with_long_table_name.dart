@@ -322,6 +322,10 @@ class CityWithLongTableNameRepository {
 
   final detachRow = const CityWithLongTableNameDetachRowRepository._();
 
+  /// Find a list of [CityWithLongTableName]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<CityWithLongTableName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
@@ -345,6 +349,7 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Find a single [CityWithLongTableName] from a table, using the provided [where]
   Future<CityWithLongTableName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
@@ -366,6 +371,7 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Find a single [CityWithLongTableName] by its [id] or null if no such row exists.
   Future<CityWithLongTableName?> findById(
     _i1.Session session,
     int id, {
@@ -379,6 +385,9 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Inserts all [CityWithLongTableName]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<CityWithLongTableName>> insert(
     _i1.Session session,
     List<CityWithLongTableName> rows, {
@@ -390,6 +399,7 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Inserts a single [CityWithLongTableName] and returns the inserted row.
   Future<CityWithLongTableName> insertRow(
     _i1.Session session,
     CityWithLongTableName row, {
@@ -401,6 +411,11 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Update all [CityWithLongTableName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<CityWithLongTableName>> update(
     _i1.Session session,
     List<CityWithLongTableName> rows, {
@@ -414,6 +429,9 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [CityWithLongTableName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<CityWithLongTableName> updateRow(
     _i1.Session session,
     CityWithLongTableName row, {
@@ -427,6 +445,9 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all [CityWithLongTableName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<CityWithLongTableName>> delete(
     _i1.Session session,
     List<CityWithLongTableName> rows, {
@@ -438,6 +459,7 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Deletes a single [CityWithLongTableName].
   Future<CityWithLongTableName> deleteRow(
     _i1.Session session,
     CityWithLongTableName row, {
@@ -449,6 +471,7 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<CityWithLongTableName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
@@ -460,6 +483,8 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
@@ -477,6 +502,7 @@ class CityWithLongTableNameRepository {
 class CityWithLongTableNameAttachRepository {
   const CityWithLongTableNameAttachRepository._();
 
+  /// Set the `citizens` values on the [cityWithLongTableName]
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -507,6 +533,7 @@ class CityWithLongTableNameAttachRepository {
     );
   }
 
+  /// Set the `organizations` values on the [cityWithLongTableName]
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -534,6 +561,7 @@ class CityWithLongTableNameAttachRepository {
 class CityWithLongTableNameAttachRowRepository {
   const CityWithLongTableNameAttachRowRepository._();
 
+  /// Set the `citizens` on the [cityWithLongTableName]
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -562,6 +590,7 @@ class CityWithLongTableNameAttachRowRepository {
     );
   }
 
+  /// Set the `organizations` on the [cityWithLongTableName]
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -588,6 +617,7 @@ class CityWithLongTableNameAttachRowRepository {
 class CityWithLongTableNameDetachRepository {
   const CityWithLongTableNameDetachRepository._();
 
+  /// Remove the `citizens` field from the [PersonWithLongTableName]
   Future<void> citizens(
     _i1.Session session,
     List<_i2.PersonWithLongTableName> personWithLongTableName, {
@@ -614,6 +644,7 @@ class CityWithLongTableNameDetachRepository {
     );
   }
 
+  /// Remove the `organizations` field from the [OrganizationWithLongTableName]
   Future<void> organizations(
     _i1.Session session,
     List<_i3.OrganizationWithLongTableName> organizationWithLongTableName, {
@@ -637,6 +668,7 @@ class CityWithLongTableNameDetachRepository {
 class CityWithLongTableNameDetachRowRepository {
   const CityWithLongTableNameDetachRowRepository._();
 
+  /// Remove the `citizens` field from the [PersonWithLongTableName]
   Future<void> citizens(
     _i1.Session session,
     _i2.PersonWithLongTableName personWithLongTableName, {
@@ -660,6 +692,7 @@ class CityWithLongTableNameDetachRowRepository {
     );
   }
 
+  /// Remove the `organizations` field from the [OrganizationWithLongTableName]
   Future<void> organizations(
     _i1.Session session,
     _i3.OrganizationWithLongTableName organizationWithLongTableName, {

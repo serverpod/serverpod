@@ -249,6 +249,10 @@ class UserNoteCollectionWithALongNameRepository {
   final detachRow =
       const UserNoteCollectionWithALongNameDetachRowRepository._();
 
+  /// Find a list of [UserNoteCollectionWithALongName]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UserNoteCollectionWithALongName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
@@ -272,6 +276,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Find a single [UserNoteCollectionWithALongName] from a table, using the provided [where]
   Future<UserNoteCollectionWithALongName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
@@ -293,6 +298,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Find a single [UserNoteCollectionWithALongName] by its [id] or null if no such row exists.
   Future<UserNoteCollectionWithALongName?> findById(
     _i1.Session session,
     int id, {
@@ -306,6 +312,9 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Inserts all [UserNoteCollectionWithALongName]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UserNoteCollectionWithALongName>> insert(
     _i1.Session session,
     List<UserNoteCollectionWithALongName> rows, {
@@ -317,6 +326,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Inserts a single [UserNoteCollectionWithALongName] and returns the inserted row.
   Future<UserNoteCollectionWithALongName> insertRow(
     _i1.Session session,
     UserNoteCollectionWithALongName row, {
@@ -328,6 +338,11 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Update all [UserNoteCollectionWithALongName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UserNoteCollectionWithALongName>> update(
     _i1.Session session,
     List<UserNoteCollectionWithALongName> rows, {
@@ -341,6 +356,9 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Updates a single [UserNoteCollectionWithALongName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UserNoteCollectionWithALongName> updateRow(
     _i1.Session session,
     UserNoteCollectionWithALongName row, {
@@ -354,6 +372,9 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Deletes all [UserNoteCollectionWithALongName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UserNoteCollectionWithALongName>> delete(
     _i1.Session session,
     List<UserNoteCollectionWithALongName> rows, {
@@ -365,6 +386,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Deletes a single [UserNoteCollectionWithALongName].
   Future<UserNoteCollectionWithALongName> deleteRow(
     _i1.Session session,
     UserNoteCollectionWithALongName row, {
@@ -376,6 +398,7 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UserNoteCollectionWithALongName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
@@ -388,6 +411,8 @@ class UserNoteCollectionWithALongNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
@@ -405,6 +430,7 @@ class UserNoteCollectionWithALongNameRepository {
 class UserNoteCollectionWithALongNameAttachRepository {
   const UserNoteCollectionWithALongNameAttachRepository._();
 
+  /// Set the `notes` values on the [userNoteCollectionWithALongName]
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -439,6 +465,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
 class UserNoteCollectionWithALongNameAttachRowRepository {
   const UserNoteCollectionWithALongNameAttachRowRepository._();
 
+  /// Set the `notes` on the [userNoteCollectionWithALongName]
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -471,6 +498,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
 class UserNoteCollectionWithALongNameDetachRepository {
   const UserNoteCollectionWithALongNameDetachRepository._();
 
+  /// Remove the `notes` field from the [UserNoteWithALongName]
   Future<void> notes(
     _i1.Session session,
     List<_i2.UserNoteWithALongName> userNoteWithALongName, {
@@ -501,6 +529,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
 class UserNoteCollectionWithALongNameDetachRowRepository {
   const UserNoteCollectionWithALongNameDetachRowRepository._();
 
+  /// Remove the `notes` field from the [UserNoteWithALongName]
   Future<void> notes(
     _i1.Session session,
     _i2.UserNoteWithALongName userNoteWithALongName, {

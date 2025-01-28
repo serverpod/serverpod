@@ -211,6 +211,10 @@ class ChatReadMessageIncludeList extends _i1.IncludeList {
 class ChatReadMessageRepository {
   const ChatReadMessageRepository._();
 
+  /// Find a list of [ChatReadMessage]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ChatReadMessage>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
@@ -232,6 +236,7 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Find a single [ChatReadMessage] from a table, using the provided [where]
   Future<ChatReadMessage?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
@@ -251,6 +256,7 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Find a single [ChatReadMessage] by its [id] or null if no such row exists.
   Future<ChatReadMessage?> findById(
     _i1.Session session,
     int id, {
@@ -262,6 +268,9 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Inserts all [ChatReadMessage]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ChatReadMessage>> insert(
     _i1.Session session,
     List<ChatReadMessage> rows, {
@@ -273,6 +282,7 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Inserts a single [ChatReadMessage] and returns the inserted row.
   Future<ChatReadMessage> insertRow(
     _i1.Session session,
     ChatReadMessage row, {
@@ -284,6 +294,11 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Update all [ChatReadMessage]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ChatReadMessage>> update(
     _i1.Session session,
     List<ChatReadMessage> rows, {
@@ -297,6 +312,9 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Updates a single [ChatReadMessage]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ChatReadMessage> updateRow(
     _i1.Session session,
     ChatReadMessage row, {
@@ -310,6 +328,9 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Deletes all [ChatReadMessage]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ChatReadMessage>> delete(
     _i1.Session session,
     List<ChatReadMessage> rows, {
@@ -321,6 +342,7 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Deletes a single [ChatReadMessage].
   Future<ChatReadMessage> deleteRow(
     _i1.Session session,
     ChatReadMessage row, {
@@ -332,6 +354,7 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ChatReadMessage>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
@@ -343,6 +366,8 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,

@@ -207,6 +207,10 @@ class EnumDefaultPersistIncludeList extends _i1.IncludeList {
 class EnumDefaultPersistRepository {
   const EnumDefaultPersistRepository._();
 
+  /// Find a list of [EnumDefaultPersist]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EnumDefaultPersist>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
@@ -228,6 +232,7 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Find a single [EnumDefaultPersist] from a table, using the provided [where]
   Future<EnumDefaultPersist?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
@@ -247,6 +252,7 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Find a single [EnumDefaultPersist] by its [id] or null if no such row exists.
   Future<EnumDefaultPersist?> findById(
     _i1.Session session,
     int id, {
@@ -258,6 +264,9 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Inserts all [EnumDefaultPersist]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EnumDefaultPersist>> insert(
     _i1.Session session,
     List<EnumDefaultPersist> rows, {
@@ -269,6 +278,7 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Inserts a single [EnumDefaultPersist] and returns the inserted row.
   Future<EnumDefaultPersist> insertRow(
     _i1.Session session,
     EnumDefaultPersist row, {
@@ -280,6 +290,11 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Update all [EnumDefaultPersist]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EnumDefaultPersist>> update(
     _i1.Session session,
     List<EnumDefaultPersist> rows, {
@@ -293,6 +308,9 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultPersist]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EnumDefaultPersist> updateRow(
     _i1.Session session,
     EnumDefaultPersist row, {
@@ -306,6 +324,9 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Deletes all [EnumDefaultPersist]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefaultPersist>> delete(
     _i1.Session session,
     List<EnumDefaultPersist> rows, {
@@ -317,6 +338,7 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Deletes a single [EnumDefaultPersist].
   Future<EnumDefaultPersist> deleteRow(
     _i1.Session session,
     EnumDefaultPersist row, {
@@ -328,6 +350,7 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EnumDefaultPersist>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
@@ -339,6 +362,8 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,

@@ -311,6 +311,10 @@ class CityRepository {
 
   final detachRow = const CityDetachRowRepository._();
 
+  /// Find a list of [City]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<City>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
@@ -334,6 +338,7 @@ class CityRepository {
     );
   }
 
+  /// Find a single [City] from a table, using the provided [where]
   Future<City?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
@@ -355,6 +360,7 @@ class CityRepository {
     );
   }
 
+  /// Find a single [City] by its [id] or null if no such row exists.
   Future<City?> findById(
     _i1.Session session,
     int id, {
@@ -368,6 +374,9 @@ class CityRepository {
     );
   }
 
+  /// Inserts all [City]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<City>> insert(
     _i1.Session session,
     List<City> rows, {
@@ -379,6 +388,7 @@ class CityRepository {
     );
   }
 
+  /// Inserts a single [City] and returns the inserted row.
   Future<City> insertRow(
     _i1.Session session,
     City row, {
@@ -390,6 +400,11 @@ class CityRepository {
     );
   }
 
+  /// Update all [City]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<City>> update(
     _i1.Session session,
     List<City> rows, {
@@ -403,6 +418,9 @@ class CityRepository {
     );
   }
 
+  /// Updates a single [City]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<City> updateRow(
     _i1.Session session,
     City row, {
@@ -416,6 +434,9 @@ class CityRepository {
     );
   }
 
+  /// Deletes all [City]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<City>> delete(
     _i1.Session session,
     List<City> rows, {
@@ -427,6 +448,7 @@ class CityRepository {
     );
   }
 
+  /// Deletes a single [City].
   Future<City> deleteRow(
     _i1.Session session,
     City row, {
@@ -438,6 +460,7 @@ class CityRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<City>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CityTable> where,
@@ -449,6 +472,8 @@ class CityRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
@@ -466,6 +491,7 @@ class CityRepository {
 class CityAttachRepository {
   const CityAttachRepository._();
 
+  /// Set the `citizens` values on the [city]
   Future<void> citizens(
     _i1.Session session,
     City city,
@@ -492,6 +518,7 @@ class CityAttachRepository {
     );
   }
 
+  /// Set the `organizations` values on the [city]
   Future<void> organizations(
     _i1.Session session,
     City city,
@@ -518,6 +545,7 @@ class CityAttachRepository {
 class CityAttachRowRepository {
   const CityAttachRowRepository._();
 
+  /// Set the `citizens` on the [city]
   Future<void> citizens(
     _i1.Session session,
     City city,
@@ -542,6 +570,7 @@ class CityAttachRowRepository {
     );
   }
 
+  /// Set the `organizations` on the [city]
   Future<void> organizations(
     _i1.Session session,
     City city,
@@ -567,6 +596,7 @@ class CityAttachRowRepository {
 class CityDetachRepository {
   const CityDetachRepository._();
 
+  /// Remove the `citizens` field from the [Person]
   Future<void> citizens(
     _i1.Session session,
     List<_i2.Person> person, {
@@ -589,6 +619,7 @@ class CityDetachRepository {
     );
   }
 
+  /// Remove the `organizations` field from the [Organization]
   Future<void> organizations(
     _i1.Session session,
     List<_i3.Organization> organization, {
@@ -611,6 +642,7 @@ class CityDetachRepository {
 class CityDetachRowRepository {
   const CityDetachRowRepository._();
 
+  /// Remove the `citizens` field from the [Person]
   Future<void> citizens(
     _i1.Session session,
     _i2.Person person, {
@@ -631,6 +663,7 @@ class CityDetachRowRepository {
     );
   }
 
+  /// Remove the `organizations` field from the [Organization]
   Future<void> organizations(
     _i1.Session session,
     _i3.Organization organization, {

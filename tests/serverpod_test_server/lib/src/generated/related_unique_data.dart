@@ -232,6 +232,10 @@ class RelatedUniqueDataRepository {
 
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
+  /// Find a list of [RelatedUniqueData]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -255,6 +259,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Find a single [RelatedUniqueData] from a table, using the provided [where]
   Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -276,6 +281,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Find a single [RelatedUniqueData] by its [id] or null if no such row exists.
   Future<RelatedUniqueData?> findById(
     _i1.Session session,
     int id, {
@@ -289,6 +295,9 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Inserts all [RelatedUniqueData]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RelatedUniqueData>> insert(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
@@ -300,6 +309,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Inserts a single [RelatedUniqueData] and returns the inserted row.
   Future<RelatedUniqueData> insertRow(
     _i1.Session session,
     RelatedUniqueData row, {
@@ -311,6 +321,11 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Update all [RelatedUniqueData]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RelatedUniqueData>> update(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
@@ -324,6 +339,9 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Updates a single [RelatedUniqueData]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RelatedUniqueData> updateRow(
     _i1.Session session,
     RelatedUniqueData row, {
@@ -337,6 +355,9 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Deletes all [RelatedUniqueData]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<RelatedUniqueData>> delete(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
@@ -348,6 +369,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Deletes a single [RelatedUniqueData].
   Future<RelatedUniqueData> deleteRow(
     _i1.Session session,
     RelatedUniqueData row, {
@@ -359,6 +381,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<RelatedUniqueData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
@@ -370,6 +393,8 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -387,6 +412,7 @@ class RelatedUniqueDataRepository {
 class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
+  /// Set the `uniqueData` on the [relatedUniqueData]
   Future<void> uniqueData(
     _i1.Session session,
     RelatedUniqueData relatedUniqueData,

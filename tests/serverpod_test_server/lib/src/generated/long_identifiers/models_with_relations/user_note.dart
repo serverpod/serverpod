@@ -214,6 +214,10 @@ class UserNoteIncludeList extends _i1.IncludeList {
 class UserNoteRepository {
   const UserNoteRepository._();
 
+  /// Find a list of [UserNote]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UserNote>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
@@ -235,6 +239,7 @@ class UserNoteRepository {
     );
   }
 
+  /// Find a single [UserNote] from a table, using the provided [where]
   Future<UserNote?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
@@ -254,6 +259,7 @@ class UserNoteRepository {
     );
   }
 
+  /// Find a single [UserNote] by its [id] or null if no such row exists.
   Future<UserNote?> findById(
     _i1.Session session,
     int id, {
@@ -265,6 +271,9 @@ class UserNoteRepository {
     );
   }
 
+  /// Inserts all [UserNote]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UserNote>> insert(
     _i1.Session session,
     List<UserNote> rows, {
@@ -276,6 +285,7 @@ class UserNoteRepository {
     );
   }
 
+  /// Inserts a single [UserNote] and returns the inserted row.
   Future<UserNote> insertRow(
     _i1.Session session,
     UserNote row, {
@@ -287,6 +297,11 @@ class UserNoteRepository {
     );
   }
 
+  /// Update all [UserNote]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UserNote>> update(
     _i1.Session session,
     List<UserNote> rows, {
@@ -300,6 +315,9 @@ class UserNoteRepository {
     );
   }
 
+  /// Updates a single [UserNote]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UserNote> updateRow(
     _i1.Session session,
     UserNote row, {
@@ -313,6 +331,9 @@ class UserNoteRepository {
     );
   }
 
+  /// Deletes all [UserNote]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UserNote>> delete(
     _i1.Session session,
     List<UserNote> rows, {
@@ -324,6 +345,7 @@ class UserNoteRepository {
     );
   }
 
+  /// Deletes a single [UserNote].
   Future<UserNote> deleteRow(
     _i1.Session session,
     UserNote row, {
@@ -335,6 +357,7 @@ class UserNoteRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UserNote>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
@@ -346,6 +369,8 @@ class UserNoteRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,

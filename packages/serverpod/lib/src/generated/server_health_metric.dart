@@ -279,6 +279,10 @@ class ServerHealthMetricIncludeList extends _i1.IncludeList {
 class ServerHealthMetricRepository {
   const ServerHealthMetricRepository._();
 
+  /// Find a list of [ServerHealthMetric]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ServerHealthMetric>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
@@ -300,6 +304,7 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Find a single [ServerHealthMetric] from a table, using the provided [where]
   Future<ServerHealthMetric?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
@@ -319,6 +324,7 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Find a single [ServerHealthMetric] by its [id] or null if no such row exists.
   Future<ServerHealthMetric?> findById(
     _i1.Session session,
     int id, {
@@ -330,6 +336,9 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Inserts all [ServerHealthMetric]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ServerHealthMetric>> insert(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
@@ -341,6 +350,7 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Inserts a single [ServerHealthMetric] and returns the inserted row.
   Future<ServerHealthMetric> insertRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -352,6 +362,11 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Update all [ServerHealthMetric]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ServerHealthMetric>> update(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
@@ -365,6 +380,9 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Updates a single [ServerHealthMetric]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ServerHealthMetric> updateRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -378,6 +396,9 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Deletes all [ServerHealthMetric]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ServerHealthMetric>> delete(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
@@ -389,6 +410,7 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Deletes a single [ServerHealthMetric].
   Future<ServerHealthMetric> deleteRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -400,6 +422,7 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ServerHealthMetric>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
@@ -411,6 +434,8 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,

@@ -216,6 +216,10 @@ class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
 class LongImplicitIdFieldRepository {
   const LongImplicitIdFieldRepository._();
 
+  /// Find a list of [LongImplicitIdField]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<LongImplicitIdField>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
@@ -237,6 +241,7 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Find a single [LongImplicitIdField] from a table, using the provided [where]
   Future<LongImplicitIdField?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
@@ -256,6 +261,7 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Find a single [LongImplicitIdField] by its [id] or null if no such row exists.
   Future<LongImplicitIdField?> findById(
     _i1.Session session,
     int id, {
@@ -267,6 +273,9 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Inserts all [LongImplicitIdField]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<LongImplicitIdField>> insert(
     _i1.Session session,
     List<LongImplicitIdField> rows, {
@@ -278,6 +287,7 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Inserts a single [LongImplicitIdField] and returns the inserted row.
   Future<LongImplicitIdField> insertRow(
     _i1.Session session,
     LongImplicitIdField row, {
@@ -289,6 +299,11 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Update all [LongImplicitIdField]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<LongImplicitIdField>> update(
     _i1.Session session,
     List<LongImplicitIdField> rows, {
@@ -302,6 +317,9 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Updates a single [LongImplicitIdField]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<LongImplicitIdField> updateRow(
     _i1.Session session,
     LongImplicitIdField row, {
@@ -315,6 +333,9 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Deletes all [LongImplicitIdField]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<LongImplicitIdField>> delete(
     _i1.Session session,
     List<LongImplicitIdField> rows, {
@@ -326,6 +347,7 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Deletes a single [LongImplicitIdField].
   Future<LongImplicitIdField> deleteRow(
     _i1.Session session,
     LongImplicitIdField row, {
@@ -337,6 +359,7 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<LongImplicitIdField>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
@@ -348,6 +371,8 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,

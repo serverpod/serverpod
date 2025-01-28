@@ -277,6 +277,10 @@ class EnrollmentRepository {
 
   final attachRow = const EnrollmentAttachRowRepository._();
 
+  /// Find a list of [Enrollment]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Enrollment>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
@@ -300,6 +304,7 @@ class EnrollmentRepository {
     );
   }
 
+  /// Find a single [Enrollment] from a table, using the provided [where]
   Future<Enrollment?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
@@ -321,6 +326,7 @@ class EnrollmentRepository {
     );
   }
 
+  /// Find a single [Enrollment] by its [id] or null if no such row exists.
   Future<Enrollment?> findById(
     _i1.Session session,
     int id, {
@@ -334,6 +340,9 @@ class EnrollmentRepository {
     );
   }
 
+  /// Inserts all [Enrollment]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Enrollment>> insert(
     _i1.Session session,
     List<Enrollment> rows, {
@@ -345,6 +354,7 @@ class EnrollmentRepository {
     );
   }
 
+  /// Inserts a single [Enrollment] and returns the inserted row.
   Future<Enrollment> insertRow(
     _i1.Session session,
     Enrollment row, {
@@ -356,6 +366,11 @@ class EnrollmentRepository {
     );
   }
 
+  /// Update all [Enrollment]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Enrollment>> update(
     _i1.Session session,
     List<Enrollment> rows, {
@@ -369,6 +384,9 @@ class EnrollmentRepository {
     );
   }
 
+  /// Updates a single [Enrollment]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Enrollment> updateRow(
     _i1.Session session,
     Enrollment row, {
@@ -382,6 +400,9 @@ class EnrollmentRepository {
     );
   }
 
+  /// Deletes all [Enrollment]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Enrollment>> delete(
     _i1.Session session,
     List<Enrollment> rows, {
@@ -393,6 +414,7 @@ class EnrollmentRepository {
     );
   }
 
+  /// Deletes a single [Enrollment].
   Future<Enrollment> deleteRow(
     _i1.Session session,
     Enrollment row, {
@@ -404,6 +426,7 @@ class EnrollmentRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Enrollment>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EnrollmentTable> where,
@@ -415,6 +438,8 @@ class EnrollmentRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
@@ -432,6 +457,7 @@ class EnrollmentRepository {
 class EnrollmentAttachRowRepository {
   const EnrollmentAttachRowRepository._();
 
+  /// Set the `student` on the [enrollment]
   Future<void> student(
     _i1.Session session,
     Enrollment enrollment,
@@ -453,6 +479,7 @@ class EnrollmentAttachRowRepository {
     );
   }
 
+  /// Set the `course` on the [enrollment]
   Future<void> course(
     _i1.Session session,
     Enrollment enrollment,

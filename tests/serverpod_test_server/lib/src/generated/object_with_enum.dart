@@ -262,6 +262,10 @@ class ObjectWithEnumIncludeList extends _i1.IncludeList {
 class ObjectWithEnumRepository {
   const ObjectWithEnumRepository._();
 
+  /// Find a list of [ObjectWithEnum]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ObjectWithEnum>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
@@ -283,6 +287,7 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Find a single [ObjectWithEnum] from a table, using the provided [where]
   Future<ObjectWithEnum?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
@@ -302,6 +307,7 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Find a single [ObjectWithEnum] by its [id] or null if no such row exists.
   Future<ObjectWithEnum?> findById(
     _i1.Session session,
     int id, {
@@ -313,6 +319,9 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Inserts all [ObjectWithEnum]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectWithEnum>> insert(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
@@ -324,6 +333,7 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Inserts a single [ObjectWithEnum] and returns the inserted row.
   Future<ObjectWithEnum> insertRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -335,6 +345,11 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Update all [ObjectWithEnum]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithEnum>> update(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
@@ -348,6 +363,9 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Updates a single [ObjectWithEnum]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithEnum> updateRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -361,6 +379,9 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Deletes all [ObjectWithEnum]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithEnum>> delete(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
@@ -372,6 +393,7 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Deletes a single [ObjectWithEnum].
   Future<ObjectWithEnum> deleteRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -383,6 +405,7 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithEnum>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
@@ -394,6 +417,8 @@ class ObjectWithEnumRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,

@@ -297,6 +297,10 @@ class PersonWithLongTableNameRepository {
 
   final detachRow = const PersonWithLongTableNameDetachRowRepository._();
 
+  /// Find a list of [PersonWithLongTableName]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<PersonWithLongTableName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -320,6 +324,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Find a single [PersonWithLongTableName] from a table, using the provided [where]
   Future<PersonWithLongTableName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -341,6 +346,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Find a single [PersonWithLongTableName] by its [id] or null if no such row exists.
   Future<PersonWithLongTableName?> findById(
     _i1.Session session,
     int id, {
@@ -354,6 +360,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Inserts all [PersonWithLongTableName]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<PersonWithLongTableName>> insert(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -365,6 +374,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Inserts a single [PersonWithLongTableName] and returns the inserted row.
   Future<PersonWithLongTableName> insertRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -376,6 +386,11 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Update all [PersonWithLongTableName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<PersonWithLongTableName>> update(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -389,6 +404,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [PersonWithLongTableName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<PersonWithLongTableName> updateRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -402,6 +420,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all [PersonWithLongTableName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<PersonWithLongTableName>> delete(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -413,6 +434,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes a single [PersonWithLongTableName].
   Future<PersonWithLongTableName> deleteRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -424,6 +446,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<PersonWithLongTableName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
@@ -435,6 +458,8 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -452,6 +477,7 @@ class PersonWithLongTableNameRepository {
 class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
+  /// Set the `organization` on the [personWithLongTableName]
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personWithLongTableName,
@@ -478,6 +504,7 @@ class PersonWithLongTableNameAttachRowRepository {
 class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
+  /// Remove the `organization` field from the [personwithlongtablename]
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personwithlongtablename, {

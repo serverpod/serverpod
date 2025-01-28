@@ -167,6 +167,10 @@ class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
 class ObjectWithSelfParentRepository {
   const ObjectWithSelfParentRepository._();
 
+  /// Find a list of [ObjectWithSelfParent]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ObjectWithSelfParent>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
@@ -188,6 +192,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Find a single [ObjectWithSelfParent] from a table, using the provided [where]
   Future<ObjectWithSelfParent?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
@@ -207,6 +212,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Find a single [ObjectWithSelfParent] by its [id] or null if no such row exists.
   Future<ObjectWithSelfParent?> findById(
     _i1.Session session,
     int id, {
@@ -218,6 +224,9 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Inserts all [ObjectWithSelfParent]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectWithSelfParent>> insert(
     _i1.Session session,
     List<ObjectWithSelfParent> rows, {
@@ -229,6 +238,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Inserts a single [ObjectWithSelfParent] and returns the inserted row.
   Future<ObjectWithSelfParent> insertRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -240,6 +250,11 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Update all [ObjectWithSelfParent]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithSelfParent>> update(
     _i1.Session session,
     List<ObjectWithSelfParent> rows, {
@@ -253,6 +268,9 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Updates a single [ObjectWithSelfParent]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithSelfParent> updateRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -266,6 +284,9 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Deletes all [ObjectWithSelfParent]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithSelfParent>> delete(
     _i1.Session session,
     List<ObjectWithSelfParent> rows, {
@@ -277,6 +298,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Deletes a single [ObjectWithSelfParent].
   Future<ObjectWithSelfParent> deleteRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -288,6 +310,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithSelfParent>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
@@ -299,6 +322,8 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,

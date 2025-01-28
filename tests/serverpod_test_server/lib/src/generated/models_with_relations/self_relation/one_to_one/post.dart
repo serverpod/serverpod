@@ -279,6 +279,10 @@ class PostRepository {
 
   final detachRow = const PostDetachRowRepository._();
 
+  /// Find a list of [Post]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Post>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
@@ -302,6 +306,7 @@ class PostRepository {
     );
   }
 
+  /// Find a single [Post] from a table, using the provided [where]
   Future<Post?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
@@ -323,6 +328,7 @@ class PostRepository {
     );
   }
 
+  /// Find a single [Post] by its [id] or null if no such row exists.
   Future<Post?> findById(
     _i1.Session session,
     int id, {
@@ -336,6 +342,9 @@ class PostRepository {
     );
   }
 
+  /// Inserts all [Post]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Post>> insert(
     _i1.Session session,
     List<Post> rows, {
@@ -347,6 +356,7 @@ class PostRepository {
     );
   }
 
+  /// Inserts a single [Post] and returns the inserted row.
   Future<Post> insertRow(
     _i1.Session session,
     Post row, {
@@ -358,6 +368,11 @@ class PostRepository {
     );
   }
 
+  /// Update all [Post]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Post>> update(
     _i1.Session session,
     List<Post> rows, {
@@ -371,6 +386,9 @@ class PostRepository {
     );
   }
 
+  /// Updates a single [Post]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Post> updateRow(
     _i1.Session session,
     Post row, {
@@ -384,6 +402,9 @@ class PostRepository {
     );
   }
 
+  /// Deletes all [Post]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Post>> delete(
     _i1.Session session,
     List<Post> rows, {
@@ -395,6 +416,7 @@ class PostRepository {
     );
   }
 
+  /// Deletes a single [Post].
   Future<Post> deleteRow(
     _i1.Session session,
     Post row, {
@@ -406,6 +428,7 @@ class PostRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Post>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
@@ -417,6 +440,8 @@ class PostRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
@@ -434,6 +459,7 @@ class PostRepository {
 class PostAttachRowRepository {
   const PostAttachRowRepository._();
 
+  /// Set the `previous` on the [post]
   Future<void> previous(
     _i1.Session session,
     Post post,
@@ -455,6 +481,7 @@ class PostAttachRowRepository {
     );
   }
 
+  /// Set the `next` on the [post]
   Future<void> next(
     _i1.Session session,
     Post post,
@@ -480,6 +507,7 @@ class PostAttachRowRepository {
 class PostDetachRowRepository {
   const PostDetachRowRepository._();
 
+  /// Remove the `previous` field from the [post]
   Future<void> previous(
     _i1.Session session,
     Post post, {
@@ -505,6 +533,7 @@ class PostDetachRowRepository {
     );
   }
 
+  /// Remove the `next` field from the [post]
   Future<void> next(
     _i1.Session session,
     Post post, {

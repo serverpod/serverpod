@@ -196,6 +196,10 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
 class ObjectFieldScopesRepository {
   const ObjectFieldScopesRepository._();
 
+  /// Find a list of [ObjectFieldScopes]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ObjectFieldScopes>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
@@ -217,6 +221,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Find a single [ObjectFieldScopes] from a table, using the provided [where]
   Future<ObjectFieldScopes?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
@@ -236,6 +241,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Find a single [ObjectFieldScopes] by its [id] or null if no such row exists.
   Future<ObjectFieldScopes?> findById(
     _i1.Session session,
     int id, {
@@ -247,6 +253,9 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Inserts all [ObjectFieldScopes]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectFieldScopes>> insert(
     _i1.Session session,
     List<ObjectFieldScopes> rows, {
@@ -258,6 +267,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Inserts a single [ObjectFieldScopes] and returns the inserted row.
   Future<ObjectFieldScopes> insertRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -269,6 +279,11 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Update all [ObjectFieldScopes]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectFieldScopes>> update(
     _i1.Session session,
     List<ObjectFieldScopes> rows, {
@@ -282,6 +297,9 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Updates a single [ObjectFieldScopes]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectFieldScopes> updateRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -295,6 +313,9 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Deletes all [ObjectFieldScopes]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectFieldScopes>> delete(
     _i1.Session session,
     List<ObjectFieldScopes> rows, {
@@ -306,6 +327,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Deletes a single [ObjectFieldScopes].
   Future<ObjectFieldScopes> deleteRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -317,6 +339,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectFieldScopes>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
@@ -328,6 +351,8 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,

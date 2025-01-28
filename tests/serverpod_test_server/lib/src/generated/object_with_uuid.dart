@@ -189,6 +189,10 @@ class ObjectWithUuidIncludeList extends _i1.IncludeList {
 class ObjectWithUuidRepository {
   const ObjectWithUuidRepository._();
 
+  /// Find a list of [ObjectWithUuid]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ObjectWithUuid>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
@@ -210,6 +214,7 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Find a single [ObjectWithUuid] from a table, using the provided [where]
   Future<ObjectWithUuid?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
@@ -229,6 +234,7 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Find a single [ObjectWithUuid] by its [id] or null if no such row exists.
   Future<ObjectWithUuid?> findById(
     _i1.Session session,
     int id, {
@@ -240,6 +246,9 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Inserts all [ObjectWithUuid]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectWithUuid>> insert(
     _i1.Session session,
     List<ObjectWithUuid> rows, {
@@ -251,6 +260,7 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Inserts a single [ObjectWithUuid] and returns the inserted row.
   Future<ObjectWithUuid> insertRow(
     _i1.Session session,
     ObjectWithUuid row, {
@@ -262,6 +272,11 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Update all [ObjectWithUuid]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithUuid>> update(
     _i1.Session session,
     List<ObjectWithUuid> rows, {
@@ -275,6 +290,9 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Updates a single [ObjectWithUuid]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithUuid> updateRow(
     _i1.Session session,
     ObjectWithUuid row, {
@@ -288,6 +306,9 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Deletes all [ObjectWithUuid]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithUuid>> delete(
     _i1.Session session,
     List<ObjectWithUuid> rows, {
@@ -299,6 +320,7 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Deletes a single [ObjectWithUuid].
   Future<ObjectWithUuid> deleteRow(
     _i1.Session session,
     ObjectWithUuid row, {
@@ -310,6 +332,7 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithUuid>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
@@ -321,6 +344,8 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,

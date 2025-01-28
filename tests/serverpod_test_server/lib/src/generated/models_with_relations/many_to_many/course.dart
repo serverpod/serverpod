@@ -239,6 +239,10 @@ class CourseRepository {
 
   final detachRow = const CourseDetachRowRepository._();
 
+  /// Find a list of [Course]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Course>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
@@ -262,6 +266,7 @@ class CourseRepository {
     );
   }
 
+  /// Find a single [Course] from a table, using the provided [where]
   Future<Course?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
@@ -283,6 +288,7 @@ class CourseRepository {
     );
   }
 
+  /// Find a single [Course] by its [id] or null if no such row exists.
   Future<Course?> findById(
     _i1.Session session,
     int id, {
@@ -296,6 +302,9 @@ class CourseRepository {
     );
   }
 
+  /// Inserts all [Course]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Course>> insert(
     _i1.Session session,
     List<Course> rows, {
@@ -307,6 +316,7 @@ class CourseRepository {
     );
   }
 
+  /// Inserts a single [Course] and returns the inserted row.
   Future<Course> insertRow(
     _i1.Session session,
     Course row, {
@@ -318,6 +328,11 @@ class CourseRepository {
     );
   }
 
+  /// Update all [Course]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Course>> update(
     _i1.Session session,
     List<Course> rows, {
@@ -331,6 +346,9 @@ class CourseRepository {
     );
   }
 
+  /// Updates a single [Course]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Course> updateRow(
     _i1.Session session,
     Course row, {
@@ -344,6 +362,9 @@ class CourseRepository {
     );
   }
 
+  /// Deletes all [Course]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Course>> delete(
     _i1.Session session,
     List<Course> rows, {
@@ -355,6 +376,7 @@ class CourseRepository {
     );
   }
 
+  /// Deletes a single [Course].
   Future<Course> deleteRow(
     _i1.Session session,
     Course row, {
@@ -366,6 +388,7 @@ class CourseRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Course>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
@@ -377,6 +400,8 @@ class CourseRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
@@ -394,6 +419,7 @@ class CourseRepository {
 class CourseAttachRepository {
   const CourseAttachRepository._();
 
+  /// Set the `enrollments` values on the [course]
   Future<void> enrollments(
     _i1.Session session,
     Course course,
@@ -420,6 +446,7 @@ class CourseAttachRepository {
 class CourseAttachRowRepository {
   const CourseAttachRowRepository._();
 
+  /// Set the `enrollments` on the [course]
   Future<void> enrollments(
     _i1.Session session,
     Course course,
@@ -445,6 +472,7 @@ class CourseAttachRowRepository {
 class CourseDetachRepository {
   const CourseDetachRepository._();
 
+  /// Remove the `enrollments` field from the [Enrollment]
   Future<void> enrollments(
     _i1.Session session,
     List<_i2.Enrollment> enrollment, {
@@ -467,6 +495,7 @@ class CourseDetachRepository {
 class CourseDetachRowRepository {
   const CourseDetachRowRepository._();
 
+  /// Remove the `enrollments` field from the [Enrollment]
   Future<void> enrollments(
     _i1.Session session,
     _i2.Enrollment enrollment, {

@@ -177,6 +177,10 @@ class MaxFieldNameIncludeList extends _i1.IncludeList {
 class MaxFieldNameRepository {
   const MaxFieldNameRepository._();
 
+  /// Find a list of [MaxFieldName]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<MaxFieldName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
@@ -198,6 +202,7 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Find a single [MaxFieldName] from a table, using the provided [where]
   Future<MaxFieldName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
@@ -217,6 +222,7 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Find a single [MaxFieldName] by its [id] or null if no such row exists.
   Future<MaxFieldName?> findById(
     _i1.Session session,
     int id, {
@@ -228,6 +234,9 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Inserts all [MaxFieldName]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<MaxFieldName>> insert(
     _i1.Session session,
     List<MaxFieldName> rows, {
@@ -239,6 +248,7 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Inserts a single [MaxFieldName] and returns the inserted row.
   Future<MaxFieldName> insertRow(
     _i1.Session session,
     MaxFieldName row, {
@@ -250,6 +260,11 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Update all [MaxFieldName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<MaxFieldName>> update(
     _i1.Session session,
     List<MaxFieldName> rows, {
@@ -263,6 +278,9 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Updates a single [MaxFieldName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<MaxFieldName> updateRow(
     _i1.Session session,
     MaxFieldName row, {
@@ -276,6 +294,9 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Deletes all [MaxFieldName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<MaxFieldName>> delete(
     _i1.Session session,
     List<MaxFieldName> rows, {
@@ -287,6 +308,7 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Deletes a single [MaxFieldName].
   Future<MaxFieldName> deleteRow(
     _i1.Session session,
     MaxFieldName row, {
@@ -298,6 +320,7 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<MaxFieldName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
@@ -309,6 +332,8 @@ class MaxFieldNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,

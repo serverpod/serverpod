@@ -124,6 +124,10 @@ class EmptyModelWithTableIncludeList extends _i1.IncludeList {
 class EmptyModelWithTableRepository {
   const EmptyModelWithTableRepository._();
 
+  /// Find a list of [EmptyModelWithTable]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EmptyModelWithTable>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
@@ -145,6 +149,7 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Find a single [EmptyModelWithTable] from a table, using the provided [where]
   Future<EmptyModelWithTable?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
@@ -164,6 +169,7 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Find a single [EmptyModelWithTable] by its [id] or null if no such row exists.
   Future<EmptyModelWithTable?> findById(
     _i1.Session session,
     int id, {
@@ -175,6 +181,9 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Inserts all [EmptyModelWithTable]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EmptyModelWithTable>> insert(
     _i1.Session session,
     List<EmptyModelWithTable> rows, {
@@ -186,6 +195,7 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Inserts a single [EmptyModelWithTable] and returns the inserted row.
   Future<EmptyModelWithTable> insertRow(
     _i1.Session session,
     EmptyModelWithTable row, {
@@ -197,6 +207,11 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Update all [EmptyModelWithTable]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EmptyModelWithTable>> update(
     _i1.Session session,
     List<EmptyModelWithTable> rows, {
@@ -210,6 +225,9 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Updates a single [EmptyModelWithTable]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EmptyModelWithTable> updateRow(
     _i1.Session session,
     EmptyModelWithTable row, {
@@ -223,6 +241,9 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Deletes all [EmptyModelWithTable]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EmptyModelWithTable>> delete(
     _i1.Session session,
     List<EmptyModelWithTable> rows, {
@@ -234,6 +255,7 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Deletes a single [EmptyModelWithTable].
   Future<EmptyModelWithTable> deleteRow(
     _i1.Session session,
     EmptyModelWithTable row, {
@@ -245,6 +267,7 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EmptyModelWithTable>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
@@ -256,6 +279,8 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,

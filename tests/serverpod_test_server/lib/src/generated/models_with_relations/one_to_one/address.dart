@@ -231,6 +231,10 @@ class AddressRepository {
 
   final detachRow = const AddressDetachRowRepository._();
 
+  /// Find a list of [Address]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Address>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
@@ -254,6 +258,7 @@ class AddressRepository {
     );
   }
 
+  /// Find a single [Address] from a table, using the provided [where]
   Future<Address?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
@@ -275,6 +280,7 @@ class AddressRepository {
     );
   }
 
+  /// Find a single [Address] by its [id] or null if no such row exists.
   Future<Address?> findById(
     _i1.Session session,
     int id, {
@@ -288,6 +294,9 @@ class AddressRepository {
     );
   }
 
+  /// Inserts all [Address]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Address>> insert(
     _i1.Session session,
     List<Address> rows, {
@@ -299,6 +308,7 @@ class AddressRepository {
     );
   }
 
+  /// Inserts a single [Address] and returns the inserted row.
   Future<Address> insertRow(
     _i1.Session session,
     Address row, {
@@ -310,6 +320,11 @@ class AddressRepository {
     );
   }
 
+  /// Update all [Address]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Address>> update(
     _i1.Session session,
     List<Address> rows, {
@@ -323,6 +338,9 @@ class AddressRepository {
     );
   }
 
+  /// Updates a single [Address]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Address> updateRow(
     _i1.Session session,
     Address row, {
@@ -336,6 +354,9 @@ class AddressRepository {
     );
   }
 
+  /// Deletes all [Address]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Address>> delete(
     _i1.Session session,
     List<Address> rows, {
@@ -347,6 +368,7 @@ class AddressRepository {
     );
   }
 
+  /// Deletes a single [Address].
   Future<Address> deleteRow(
     _i1.Session session,
     Address row, {
@@ -358,6 +380,7 @@ class AddressRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Address>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
@@ -369,6 +392,8 @@ class AddressRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
@@ -386,6 +411,7 @@ class AddressRepository {
 class AddressAttachRowRepository {
   const AddressAttachRowRepository._();
 
+  /// Set the `inhabitant` on the [address]
   Future<void> inhabitant(
     _i1.Session session,
     Address address,
@@ -411,6 +437,7 @@ class AddressAttachRowRepository {
 class AddressDetachRowRepository {
   const AddressDetachRowRepository._();
 
+  /// Remove the `inhabitant` field from the [address]
   Future<void> inhabitant(
     _i1.Session session,
     Address address, {

@@ -230,6 +230,10 @@ class PlayerRepository {
 
   final detachRow = const PlayerDetachRowRepository._();
 
+  /// Find a list of [Player]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Player>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
@@ -253,6 +257,7 @@ class PlayerRepository {
     );
   }
 
+  /// Find a single [Player] from a table, using the provided [where]
   Future<Player?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
@@ -274,6 +279,7 @@ class PlayerRepository {
     );
   }
 
+  /// Find a single [Player] by its [id] or null if no such row exists.
   Future<Player?> findById(
     _i1.Session session,
     int id, {
@@ -287,6 +293,9 @@ class PlayerRepository {
     );
   }
 
+  /// Inserts all [Player]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Player>> insert(
     _i1.Session session,
     List<Player> rows, {
@@ -298,6 +307,7 @@ class PlayerRepository {
     );
   }
 
+  /// Inserts a single [Player] and returns the inserted row.
   Future<Player> insertRow(
     _i1.Session session,
     Player row, {
@@ -309,6 +319,11 @@ class PlayerRepository {
     );
   }
 
+  /// Update all [Player]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Player>> update(
     _i1.Session session,
     List<Player> rows, {
@@ -322,6 +337,9 @@ class PlayerRepository {
     );
   }
 
+  /// Updates a single [Player]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Player> updateRow(
     _i1.Session session,
     Player row, {
@@ -335,6 +353,9 @@ class PlayerRepository {
     );
   }
 
+  /// Deletes all [Player]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Player>> delete(
     _i1.Session session,
     List<Player> rows, {
@@ -346,6 +367,7 @@ class PlayerRepository {
     );
   }
 
+  /// Deletes a single [Player].
   Future<Player> deleteRow(
     _i1.Session session,
     Player row, {
@@ -357,6 +379,7 @@ class PlayerRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Player>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
@@ -368,6 +391,8 @@ class PlayerRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
@@ -385,6 +410,7 @@ class PlayerRepository {
 class PlayerAttachRowRepository {
   const PlayerAttachRowRepository._();
 
+  /// Set the `team` on the [player]
   Future<void> team(
     _i1.Session session,
     Player player,
@@ -410,6 +436,7 @@ class PlayerAttachRowRepository {
 class PlayerDetachRowRepository {
   const PlayerDetachRowRepository._();
 
+  /// Remove the `team` field from the [player]
   Future<void> team(
     _i1.Session session,
     Player player, {

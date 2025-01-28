@@ -306,6 +306,10 @@ class TeamRepository {
 
   final detachRow = const TeamDetachRowRepository._();
 
+  /// Find a list of [Team]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Team>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
@@ -329,6 +333,7 @@ class TeamRepository {
     );
   }
 
+  /// Find a single [Team] from a table, using the provided [where]
   Future<Team?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
@@ -350,6 +355,7 @@ class TeamRepository {
     );
   }
 
+  /// Find a single [Team] by its [id] or null if no such row exists.
   Future<Team?> findById(
     _i1.Session session,
     int id, {
@@ -363,6 +369,9 @@ class TeamRepository {
     );
   }
 
+  /// Inserts all [Team]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Team>> insert(
     _i1.Session session,
     List<Team> rows, {
@@ -374,6 +383,7 @@ class TeamRepository {
     );
   }
 
+  /// Inserts a single [Team] and returns the inserted row.
   Future<Team> insertRow(
     _i1.Session session,
     Team row, {
@@ -385,6 +395,11 @@ class TeamRepository {
     );
   }
 
+  /// Update all [Team]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Team>> update(
     _i1.Session session,
     List<Team> rows, {
@@ -398,6 +413,9 @@ class TeamRepository {
     );
   }
 
+  /// Updates a single [Team]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Team> updateRow(
     _i1.Session session,
     Team row, {
@@ -411,6 +429,9 @@ class TeamRepository {
     );
   }
 
+  /// Deletes all [Team]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Team>> delete(
     _i1.Session session,
     List<Team> rows, {
@@ -422,6 +443,7 @@ class TeamRepository {
     );
   }
 
+  /// Deletes a single [Team].
   Future<Team> deleteRow(
     _i1.Session session,
     Team row, {
@@ -433,6 +455,7 @@ class TeamRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Team>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<TeamTable> where,
@@ -444,6 +467,8 @@ class TeamRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
@@ -461,6 +486,7 @@ class TeamRepository {
 class TeamAttachRepository {
   const TeamAttachRepository._();
 
+  /// Set the `players` values on the [team]
   Future<void> players(
     _i1.Session session,
     Team team,
@@ -486,6 +512,7 @@ class TeamAttachRepository {
 class TeamAttachRowRepository {
   const TeamAttachRowRepository._();
 
+  /// Set the `arena` on the [team]
   Future<void> arena(
     _i1.Session session,
     Team team,
@@ -507,6 +534,7 @@ class TeamAttachRowRepository {
     );
   }
 
+  /// Set the `players` on the [team]
   Future<void> players(
     _i1.Session session,
     Team team,
@@ -532,6 +560,7 @@ class TeamAttachRowRepository {
 class TeamDetachRepository {
   const TeamDetachRepository._();
 
+  /// Remove the `players` field from the [Player]
   Future<void> players(
     _i1.Session session,
     List<_i3.Player> player, {
@@ -553,6 +582,7 @@ class TeamDetachRepository {
 class TeamDetachRowRepository {
   const TeamDetachRowRepository._();
 
+  /// Remove the `arena` field from the [team]
   Future<void> arena(
     _i1.Session session,
     Team team, {
@@ -570,6 +600,7 @@ class TeamDetachRowRepository {
     );
   }
 
+  /// Remove the `players` field from the [Player]
   Future<void> players(
     _i1.Session session,
     _i3.Player player, {

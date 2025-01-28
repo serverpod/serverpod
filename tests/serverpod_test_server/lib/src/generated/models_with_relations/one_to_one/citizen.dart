@@ -339,6 +339,10 @@ class CitizenRepository {
 
   final detachRow = const CitizenDetachRowRepository._();
 
+  /// Find a list of [Citizen]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Citizen>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
@@ -362,6 +366,7 @@ class CitizenRepository {
     );
   }
 
+  /// Find a single [Citizen] from a table, using the provided [where]
   Future<Citizen?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
@@ -383,6 +388,7 @@ class CitizenRepository {
     );
   }
 
+  /// Find a single [Citizen] by its [id] or null if no such row exists.
   Future<Citizen?> findById(
     _i1.Session session,
     int id, {
@@ -396,6 +402,9 @@ class CitizenRepository {
     );
   }
 
+  /// Inserts all [Citizen]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Citizen>> insert(
     _i1.Session session,
     List<Citizen> rows, {
@@ -407,6 +416,7 @@ class CitizenRepository {
     );
   }
 
+  /// Inserts a single [Citizen] and returns the inserted row.
   Future<Citizen> insertRow(
     _i1.Session session,
     Citizen row, {
@@ -418,6 +428,11 @@ class CitizenRepository {
     );
   }
 
+  /// Update all [Citizen]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Citizen>> update(
     _i1.Session session,
     List<Citizen> rows, {
@@ -431,6 +446,9 @@ class CitizenRepository {
     );
   }
 
+  /// Updates a single [Citizen]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Citizen> updateRow(
     _i1.Session session,
     Citizen row, {
@@ -444,6 +462,9 @@ class CitizenRepository {
     );
   }
 
+  /// Deletes all [Citizen]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Citizen>> delete(
     _i1.Session session,
     List<Citizen> rows, {
@@ -455,6 +476,7 @@ class CitizenRepository {
     );
   }
 
+  /// Deletes a single [Citizen].
   Future<Citizen> deleteRow(
     _i1.Session session,
     Citizen row, {
@@ -466,6 +488,7 @@ class CitizenRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Citizen>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
@@ -477,6 +500,8 @@ class CitizenRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
@@ -494,6 +519,7 @@ class CitizenRepository {
 class CitizenAttachRowRepository {
   const CitizenAttachRowRepository._();
 
+  /// Set the `address` on the [citizen]
   Future<void> address(
     _i1.Session session,
     Citizen citizen,
@@ -515,6 +541,7 @@ class CitizenAttachRowRepository {
     );
   }
 
+  /// Set the `company` on the [citizen]
   Future<void> company(
     _i1.Session session,
     Citizen citizen,
@@ -536,6 +563,7 @@ class CitizenAttachRowRepository {
     );
   }
 
+  /// Set the `oldCompany` on the [citizen]
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen,
@@ -561,6 +589,7 @@ class CitizenAttachRowRepository {
 class CitizenDetachRowRepository {
   const CitizenDetachRowRepository._();
 
+  /// Remove the `address` field from the [citizen]
   Future<void> address(
     _i1.Session session,
     Citizen citizen, {
@@ -586,6 +615,7 @@ class CitizenDetachRowRepository {
     );
   }
 
+  /// Remove the `oldCompany` field from the [citizen]
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen, {

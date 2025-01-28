@@ -238,6 +238,10 @@ class CustomerRepository {
 
   final detachRow = const CustomerDetachRowRepository._();
 
+  /// Find a list of [Customer]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Customer>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -261,6 +265,7 @@ class CustomerRepository {
     );
   }
 
+  /// Find a single [Customer] from a table, using the provided [where]
   Future<Customer?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -282,6 +287,7 @@ class CustomerRepository {
     );
   }
 
+  /// Find a single [Customer] by its [id] or null if no such row exists.
   Future<Customer?> findById(
     _i1.Session session,
     int id, {
@@ -295,6 +301,9 @@ class CustomerRepository {
     );
   }
 
+  /// Inserts all [Customer]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Customer>> insert(
     _i1.Session session,
     List<Customer> rows, {
@@ -306,6 +315,7 @@ class CustomerRepository {
     );
   }
 
+  /// Inserts a single [Customer] and returns the inserted row.
   Future<Customer> insertRow(
     _i1.Session session,
     Customer row, {
@@ -317,6 +327,11 @@ class CustomerRepository {
     );
   }
 
+  /// Update all [Customer]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Customer>> update(
     _i1.Session session,
     List<Customer> rows, {
@@ -330,6 +345,9 @@ class CustomerRepository {
     );
   }
 
+  /// Updates a single [Customer]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Customer> updateRow(
     _i1.Session session,
     Customer row, {
@@ -343,6 +361,9 @@ class CustomerRepository {
     );
   }
 
+  /// Deletes all [Customer]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Customer>> delete(
     _i1.Session session,
     List<Customer> rows, {
@@ -354,6 +375,7 @@ class CustomerRepository {
     );
   }
 
+  /// Deletes a single [Customer].
   Future<Customer> deleteRow(
     _i1.Session session,
     Customer row, {
@@ -365,6 +387,7 @@ class CustomerRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Customer>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
@@ -376,6 +399,8 @@ class CustomerRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
@@ -393,6 +418,7 @@ class CustomerRepository {
 class CustomerAttachRepository {
   const CustomerAttachRepository._();
 
+  /// Set the `orders` values on the [customer]
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -418,6 +444,7 @@ class CustomerAttachRepository {
 class CustomerAttachRowRepository {
   const CustomerAttachRowRepository._();
 
+  /// Set the `orders` on the [customer]
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -443,6 +470,7 @@ class CustomerAttachRowRepository {
 class CustomerDetachRepository {
   const CustomerDetachRepository._();
 
+  /// Remove the `orders` field from the [Order]
   Future<void> orders(
     _i1.Session session,
     List<_i2.Order> order, {
@@ -464,6 +492,7 @@ class CustomerDetachRepository {
 class CustomerDetachRowRepository {
   const CustomerDetachRowRepository._();
 
+  /// Remove the `orders` field from the [Order]
   Future<void> orders(
     _i1.Session session,
     _i2.Order order, {

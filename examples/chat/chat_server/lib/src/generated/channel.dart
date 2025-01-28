@@ -188,6 +188,10 @@ class ChannelIncludeList extends _i1.IncludeList {
 class ChannelRepository {
   const ChannelRepository._();
 
+  /// Find a list of [Channel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Channel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
@@ -209,6 +213,7 @@ class ChannelRepository {
     );
   }
 
+  /// Find a single [Channel] from a table, using the provided [where]
   Future<Channel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
@@ -228,6 +233,7 @@ class ChannelRepository {
     );
   }
 
+  /// Find a single [Channel] by its [id] or null if no such row exists.
   Future<Channel?> findById(
     _i1.Session session,
     int id, {
@@ -239,6 +245,9 @@ class ChannelRepository {
     );
   }
 
+  /// Inserts all [Channel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Channel>> insert(
     _i1.Session session,
     List<Channel> rows, {
@@ -250,6 +259,7 @@ class ChannelRepository {
     );
   }
 
+  /// Inserts a single [Channel] and returns the inserted row.
   Future<Channel> insertRow(
     _i1.Session session,
     Channel row, {
@@ -261,6 +271,11 @@ class ChannelRepository {
     );
   }
 
+  /// Update all [Channel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Channel>> update(
     _i1.Session session,
     List<Channel> rows, {
@@ -274,6 +289,9 @@ class ChannelRepository {
     );
   }
 
+  /// Updates a single [Channel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Channel> updateRow(
     _i1.Session session,
     Channel row, {
@@ -287,6 +305,9 @@ class ChannelRepository {
     );
   }
 
+  /// Deletes all [Channel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Channel>> delete(
     _i1.Session session,
     List<Channel> rows, {
@@ -298,6 +319,7 @@ class ChannelRepository {
     );
   }
 
+  /// Deletes a single [Channel].
   Future<Channel> deleteRow(
     _i1.Session session,
     Channel row, {
@@ -309,6 +331,7 @@ class ChannelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Channel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
@@ -320,6 +343,8 @@ class ChannelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,

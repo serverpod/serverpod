@@ -210,6 +210,10 @@ class EmailAuthIncludeList extends _i1.IncludeList {
 class EmailAuthRepository {
   const EmailAuthRepository._();
 
+  /// Find a list of [EmailAuth]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EmailAuth>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
@@ -231,6 +235,7 @@ class EmailAuthRepository {
     );
   }
 
+  /// Find a single [EmailAuth] from a table, using the provided [where]
   Future<EmailAuth?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
@@ -250,6 +255,7 @@ class EmailAuthRepository {
     );
   }
 
+  /// Find a single [EmailAuth] by its [id] or null if no such row exists.
   Future<EmailAuth?> findById(
     _i1.Session session,
     int id, {
@@ -261,6 +267,9 @@ class EmailAuthRepository {
     );
   }
 
+  /// Inserts all [EmailAuth]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EmailAuth>> insert(
     _i1.Session session,
     List<EmailAuth> rows, {
@@ -272,6 +281,7 @@ class EmailAuthRepository {
     );
   }
 
+  /// Inserts a single [EmailAuth] and returns the inserted row.
   Future<EmailAuth> insertRow(
     _i1.Session session,
     EmailAuth row, {
@@ -283,6 +293,11 @@ class EmailAuthRepository {
     );
   }
 
+  /// Update all [EmailAuth]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EmailAuth>> update(
     _i1.Session session,
     List<EmailAuth> rows, {
@@ -296,6 +311,9 @@ class EmailAuthRepository {
     );
   }
 
+  /// Updates a single [EmailAuth]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EmailAuth> updateRow(
     _i1.Session session,
     EmailAuth row, {
@@ -309,6 +327,9 @@ class EmailAuthRepository {
     );
   }
 
+  /// Deletes all [EmailAuth]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EmailAuth>> delete(
     _i1.Session session,
     List<EmailAuth> rows, {
@@ -320,6 +341,7 @@ class EmailAuthRepository {
     );
   }
 
+  /// Deletes a single [EmailAuth].
   Future<EmailAuth> deleteRow(
     _i1.Session session,
     EmailAuth row, {
@@ -331,6 +353,7 @@ class EmailAuthRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EmailAuth>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
@@ -342,6 +365,8 @@ class EmailAuthRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,

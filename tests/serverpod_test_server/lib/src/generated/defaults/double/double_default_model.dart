@@ -189,6 +189,10 @@ class DoubleDefaultModelIncludeList extends _i1.IncludeList {
 class DoubleDefaultModelRepository {
   const DoubleDefaultModelRepository._();
 
+  /// Find a list of [DoubleDefaultModel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<DoubleDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
@@ -210,6 +214,7 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Find a single [DoubleDefaultModel] from a table, using the provided [where]
   Future<DoubleDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
@@ -229,6 +234,7 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Find a single [DoubleDefaultModel] by its [id] or null if no such row exists.
   Future<DoubleDefaultModel?> findById(
     _i1.Session session,
     int id, {
@@ -240,6 +246,9 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Inserts all [DoubleDefaultModel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<DoubleDefaultModel>> insert(
     _i1.Session session,
     List<DoubleDefaultModel> rows, {
@@ -251,6 +260,7 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Inserts a single [DoubleDefaultModel] and returns the inserted row.
   Future<DoubleDefaultModel> insertRow(
     _i1.Session session,
     DoubleDefaultModel row, {
@@ -262,6 +272,11 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Update all [DoubleDefaultModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<DoubleDefaultModel>> update(
     _i1.Session session,
     List<DoubleDefaultModel> rows, {
@@ -275,6 +290,9 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Updates a single [DoubleDefaultModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<DoubleDefaultModel> updateRow(
     _i1.Session session,
     DoubleDefaultModel row, {
@@ -288,6 +306,9 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Deletes all [DoubleDefaultModel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<DoubleDefaultModel>> delete(
     _i1.Session session,
     List<DoubleDefaultModel> rows, {
@@ -299,6 +320,7 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Deletes a single [DoubleDefaultModel].
   Future<DoubleDefaultModel> deleteRow(
     _i1.Session session,
     DoubleDefaultModel row, {
@@ -310,6 +332,7 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<DoubleDefaultModel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
@@ -321,6 +344,8 @@ class DoubleDefaultModelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,

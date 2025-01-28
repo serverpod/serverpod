@@ -209,6 +209,11 @@ class BuildRepositoryClass {
   Method _buildFindMethod(String className,
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..docs.add(
+          '/// Find a list of [$className]s from a table, using the provided [where]\n'
+          '/// expression, optionally using [limit], [offset], and [orderBy]. To order by\n'
+          '/// multiple columns, use [orderByList]. If [where] is omitted, all rows in\n'
+          '/// the table will be returned.')
       ..name = 'find'
       ..returns = TypeReference(
         (r) => r
@@ -307,6 +312,8 @@ class BuildRepositoryClass {
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
+      ..docs.add(
+          '/// Find a single [$className] from a table, using the provided [where]')
       ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
@@ -394,6 +401,9 @@ class BuildRepositoryClass {
   Method _buildFindByIdMethod(String className,
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..docs.add(
+        '/// Find a single [$className] by its [id] or null if no such row exists.',
+      )
       ..name = 'findById'
       ..returns = TypeReference(
         (r) => r
@@ -447,6 +457,10 @@ class BuildRepositoryClass {
   Method _buildInsertMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Inserts all [$className]s in the list and returns the inserted rows.\n'
+            '/// This is an atomic operation, meaning that if one of the rows fails to\n'
+            '/// insert, none of the rows will be inserted.')
         ..name = 'insert'
         ..returns = TypeReference(
           (r) => r
@@ -489,6 +503,8 @@ class BuildRepositoryClass {
   Method _buildInsertRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Inserts a single [$className] and returns the inserted row.')
         ..name = 'insertRow'
         ..returns = TypeReference(
           (r) => r
@@ -531,6 +547,12 @@ class BuildRepositoryClass {
   Method _buildUpdateMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Update all [$className]s in the list and returns the updated rows. If\n'
+            '/// [columns] is provided, only those columns will be updated. Defaults to\n'
+            '/// all columns.\n'
+            '/// This is an atomic operation, meaning that if one of the rows fails to\n'
+            '/// update, none of the rows will be updated.')
         ..name = 'update'
         ..returns = TypeReference(
           (r) => r
@@ -583,6 +605,10 @@ class BuildRepositoryClass {
   Method _buildUpdateRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Updates a single [$className]. The row needs to have its id set.\n'
+            '/// Optionally, a list of [columns] can be provided to only update those\n'
+            '/// columns. Defaults to all columns.')
         ..name = 'updateRow'
         ..returns = TypeReference(
           (r) => r
@@ -635,6 +661,10 @@ class BuildRepositoryClass {
   Method _buildDeleteMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Deletes all [$className]s in the list and returns the deleted rows.\n'
+            '/// This is an atomic operation, meaning that if one of the rows fail to\n'
+            '/// be deleted, none of the rows will be deleted.')
         ..name = 'delete'
         ..returns = TypeReference(
           (r) => r
@@ -685,6 +715,7 @@ class BuildRepositoryClass {
   Method _buildDeleteRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('/// Deletes a single [$className].')
         ..name = 'deleteRow'
         ..returns = TypeReference(
           (r) => r
@@ -729,6 +760,7 @@ class BuildRepositoryClass {
   Method _buildDeleteWhereMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('/// Deletes all rows matching the [where] expression.')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
           (r) => r
@@ -784,6 +816,9 @@ class BuildRepositoryClass {
   Method _buildCountMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(
+            '/// Counts the number of rows matching the [where] expression. If omitted,\n'
+            '/// will return the count of all rows in the table.')
         ..name = 'count'
         ..returns = TypeReference(
           (r) => r
@@ -893,6 +928,8 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
+        ..docs
+            .add('/// Set the `${field.name}` values on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -966,6 +1003,7 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
+        ..docs.add('/// Set the `${field.name}` on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1033,6 +1071,7 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add('/// Set the `${field.name}` on the [$classFieldName]')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1245,6 +1284,8 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add(
+            '/// Remove the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1312,6 +1353,8 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add(
+            '/// Remove the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1370,6 +1413,8 @@ class BuildRepositoryClass {
       (relation as ObjectRelationDefinition);
 
       methodBuilder
+        ..docs.add(
+            '/// Remove the `${field.name}` field from the [$classFieldName]')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {

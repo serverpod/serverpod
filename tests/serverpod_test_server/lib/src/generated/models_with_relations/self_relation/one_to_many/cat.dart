@@ -306,6 +306,10 @@ class CatRepository {
 
   final detachRow = const CatDetachRowRepository._();
 
+  /// Find a list of [Cat]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Cat>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -329,6 +333,7 @@ class CatRepository {
     );
   }
 
+  /// Find a single [Cat] from a table, using the provided [where]
   Future<Cat?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -350,6 +355,7 @@ class CatRepository {
     );
   }
 
+  /// Find a single [Cat] by its [id] or null if no such row exists.
   Future<Cat?> findById(
     _i1.Session session,
     int id, {
@@ -363,6 +369,9 @@ class CatRepository {
     );
   }
 
+  /// Inserts all [Cat]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Cat>> insert(
     _i1.Session session,
     List<Cat> rows, {
@@ -374,6 +383,7 @@ class CatRepository {
     );
   }
 
+  /// Inserts a single [Cat] and returns the inserted row.
   Future<Cat> insertRow(
     _i1.Session session,
     Cat row, {
@@ -385,6 +395,11 @@ class CatRepository {
     );
   }
 
+  /// Update all [Cat]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Cat>> update(
     _i1.Session session,
     List<Cat> rows, {
@@ -398,6 +413,9 @@ class CatRepository {
     );
   }
 
+  /// Updates a single [Cat]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Cat> updateRow(
     _i1.Session session,
     Cat row, {
@@ -411,6 +429,9 @@ class CatRepository {
     );
   }
 
+  /// Deletes all [Cat]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Cat>> delete(
     _i1.Session session,
     List<Cat> rows, {
@@ -422,6 +443,7 @@ class CatRepository {
     );
   }
 
+  /// Deletes a single [Cat].
   Future<Cat> deleteRow(
     _i1.Session session,
     Cat row, {
@@ -433,6 +455,7 @@ class CatRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Cat>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
@@ -444,6 +467,8 @@ class CatRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -461,6 +486,7 @@ class CatRepository {
 class CatAttachRepository {
   const CatAttachRepository._();
 
+  /// Set the `kittens` values on the [cat]
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -487,6 +513,7 @@ class CatAttachRepository {
 class CatAttachRowRepository {
   const CatAttachRowRepository._();
 
+  /// Set the `mother` on the [cat]
   Future<void> mother(
     _i1.Session session,
     Cat cat,
@@ -508,6 +535,7 @@ class CatAttachRowRepository {
     );
   }
 
+  /// Set the `kittens` on the [cat]
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -533,6 +561,7 @@ class CatAttachRowRepository {
 class CatDetachRepository {
   const CatDetachRepository._();
 
+  /// Remove the `kittens` field from the [Cat]
   Future<void> kittens(
     _i1.Session session,
     List<_i2.Cat> cat, {
@@ -554,6 +583,7 @@ class CatDetachRepository {
 class CatDetachRowRepository {
   const CatDetachRowRepository._();
 
+  /// Remove the `mother` field from the [cat]
   Future<void> mother(
     _i1.Session session,
     Cat cat, {
@@ -571,6 +601,7 @@ class CatDetachRowRepository {
     );
   }
 
+  /// Remove the `kittens` field from the [Cat]
   Future<void> kittens(
     _i1.Session session,
     _i2.Cat cat, {

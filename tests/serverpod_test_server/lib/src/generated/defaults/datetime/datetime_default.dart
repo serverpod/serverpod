@@ -221,6 +221,10 @@ class DateTimeDefaultIncludeList extends _i1.IncludeList {
 class DateTimeDefaultRepository {
   const DateTimeDefaultRepository._();
 
+  /// Find a list of [DateTimeDefault]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<DateTimeDefault>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? where,
@@ -242,6 +246,7 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Find a single [DateTimeDefault] from a table, using the provided [where]
   Future<DateTimeDefault?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? where,
@@ -261,6 +266,7 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Find a single [DateTimeDefault] by its [id] or null if no such row exists.
   Future<DateTimeDefault?> findById(
     _i1.Session session,
     int id, {
@@ -272,6 +278,9 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Inserts all [DateTimeDefault]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<DateTimeDefault>> insert(
     _i1.Session session,
     List<DateTimeDefault> rows, {
@@ -283,6 +292,7 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Inserts a single [DateTimeDefault] and returns the inserted row.
   Future<DateTimeDefault> insertRow(
     _i1.Session session,
     DateTimeDefault row, {
@@ -294,6 +304,11 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Update all [DateTimeDefault]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<DateTimeDefault>> update(
     _i1.Session session,
     List<DateTimeDefault> rows, {
@@ -307,6 +322,9 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Updates a single [DateTimeDefault]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<DateTimeDefault> updateRow(
     _i1.Session session,
     DateTimeDefault row, {
@@ -320,6 +338,9 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Deletes all [DateTimeDefault]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<DateTimeDefault>> delete(
     _i1.Session session,
     List<DateTimeDefault> rows, {
@@ -331,6 +352,7 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Deletes a single [DateTimeDefault].
   Future<DateTimeDefault> deleteRow(
     _i1.Session session,
     DateTimeDefault row, {
@@ -342,6 +364,7 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<DateTimeDefault>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
@@ -353,6 +376,8 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? where,

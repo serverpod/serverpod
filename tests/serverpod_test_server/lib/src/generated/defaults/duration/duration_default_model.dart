@@ -210,6 +210,10 @@ class DurationDefaultModelIncludeList extends _i1.IncludeList {
 class DurationDefaultModelRepository {
   const DurationDefaultModelRepository._();
 
+  /// Find a list of [DurationDefaultModel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<DurationDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? where,
@@ -231,6 +235,7 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Find a single [DurationDefaultModel] from a table, using the provided [where]
   Future<DurationDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? where,
@@ -250,6 +255,7 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Find a single [DurationDefaultModel] by its [id] or null if no such row exists.
   Future<DurationDefaultModel?> findById(
     _i1.Session session,
     int id, {
@@ -261,6 +267,9 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Inserts all [DurationDefaultModel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<DurationDefaultModel>> insert(
     _i1.Session session,
     List<DurationDefaultModel> rows, {
@@ -272,6 +281,7 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Inserts a single [DurationDefaultModel] and returns the inserted row.
   Future<DurationDefaultModel> insertRow(
     _i1.Session session,
     DurationDefaultModel row, {
@@ -283,6 +293,11 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Update all [DurationDefaultModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<DurationDefaultModel>> update(
     _i1.Session session,
     List<DurationDefaultModel> rows, {
@@ -296,6 +311,9 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Updates a single [DurationDefaultModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<DurationDefaultModel> updateRow(
     _i1.Session session,
     DurationDefaultModel row, {
@@ -309,6 +327,9 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Deletes all [DurationDefaultModel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<DurationDefaultModel>> delete(
     _i1.Session session,
     List<DurationDefaultModel> rows, {
@@ -320,6 +341,7 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Deletes a single [DurationDefaultModel].
   Future<DurationDefaultModel> deleteRow(
     _i1.Session session,
     DurationDefaultModel row, {
@@ -331,6 +353,7 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<DurationDefaultModel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DurationDefaultModelTable> where,
@@ -342,6 +365,8 @@ class DurationDefaultModelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? where,

@@ -278,6 +278,10 @@ class BlockingRepository {
 
   final attachRow = const BlockingAttachRowRepository._();
 
+  /// Find a list of [Blocking]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Blocking>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
@@ -301,6 +305,7 @@ class BlockingRepository {
     );
   }
 
+  /// Find a single [Blocking] from a table, using the provided [where]
   Future<Blocking?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
@@ -322,6 +327,7 @@ class BlockingRepository {
     );
   }
 
+  /// Find a single [Blocking] by its [id] or null if no such row exists.
   Future<Blocking?> findById(
     _i1.Session session,
     int id, {
@@ -335,6 +341,9 @@ class BlockingRepository {
     );
   }
 
+  /// Inserts all [Blocking]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Blocking>> insert(
     _i1.Session session,
     List<Blocking> rows, {
@@ -346,6 +355,7 @@ class BlockingRepository {
     );
   }
 
+  /// Inserts a single [Blocking] and returns the inserted row.
   Future<Blocking> insertRow(
     _i1.Session session,
     Blocking row, {
@@ -357,6 +367,11 @@ class BlockingRepository {
     );
   }
 
+  /// Update all [Blocking]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Blocking>> update(
     _i1.Session session,
     List<Blocking> rows, {
@@ -370,6 +385,9 @@ class BlockingRepository {
     );
   }
 
+  /// Updates a single [Blocking]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Blocking> updateRow(
     _i1.Session session,
     Blocking row, {
@@ -383,6 +401,9 @@ class BlockingRepository {
     );
   }
 
+  /// Deletes all [Blocking]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Blocking>> delete(
     _i1.Session session,
     List<Blocking> rows, {
@@ -394,6 +415,7 @@ class BlockingRepository {
     );
   }
 
+  /// Deletes a single [Blocking].
   Future<Blocking> deleteRow(
     _i1.Session session,
     Blocking row, {
@@ -405,6 +427,7 @@ class BlockingRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Blocking>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
@@ -416,6 +439,8 @@ class BlockingRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
@@ -433,6 +458,7 @@ class BlockingRepository {
 class BlockingAttachRowRepository {
   const BlockingAttachRowRepository._();
 
+  /// Set the `blocked` on the [blocking]
   Future<void> blocked(
     _i1.Session session,
     Blocking blocking,
@@ -454,6 +480,7 @@ class BlockingAttachRowRepository {
     );
   }
 
+  /// Set the `blockedBy` on the [blocking]
   Future<void> blockedBy(
     _i1.Session session,
     Blocking blocking,

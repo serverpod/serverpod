@@ -220,6 +220,10 @@ class UuidDefaultMixIncludeList extends _i1.IncludeList {
 class UuidDefaultMixRepository {
   const UuidDefaultMixRepository._();
 
+  /// Find a list of [UuidDefaultMix]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UuidDefaultMix>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
@@ -241,6 +245,7 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Find a single [UuidDefaultMix] from a table, using the provided [where]
   Future<UuidDefaultMix?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
@@ -260,6 +265,7 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Find a single [UuidDefaultMix] by its [id] or null if no such row exists.
   Future<UuidDefaultMix?> findById(
     _i1.Session session,
     int id, {
@@ -271,6 +277,9 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Inserts all [UuidDefaultMix]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UuidDefaultMix>> insert(
     _i1.Session session,
     List<UuidDefaultMix> rows, {
@@ -282,6 +291,7 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Inserts a single [UuidDefaultMix] and returns the inserted row.
   Future<UuidDefaultMix> insertRow(
     _i1.Session session,
     UuidDefaultMix row, {
@@ -293,6 +303,11 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Update all [UuidDefaultMix]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UuidDefaultMix>> update(
     _i1.Session session,
     List<UuidDefaultMix> rows, {
@@ -306,6 +321,9 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Updates a single [UuidDefaultMix]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UuidDefaultMix> updateRow(
     _i1.Session session,
     UuidDefaultMix row, {
@@ -319,6 +337,9 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Deletes all [UuidDefaultMix]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UuidDefaultMix>> delete(
     _i1.Session session,
     List<UuidDefaultMix> rows, {
@@ -330,6 +351,7 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Deletes a single [UuidDefaultMix].
   Future<UuidDefaultMix> deleteRow(
     _i1.Session session,
     UuidDefaultMix row, {
@@ -341,6 +363,7 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UuidDefaultMix>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
@@ -352,6 +375,8 @@ class UuidDefaultMixRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,

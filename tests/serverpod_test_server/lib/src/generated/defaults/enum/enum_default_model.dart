@@ -257,6 +257,10 @@ class EnumDefaultModelIncludeList extends _i1.IncludeList {
 class EnumDefaultModelRepository {
   const EnumDefaultModelRepository._();
 
+  /// Find a list of [EnumDefaultModel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EnumDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,
@@ -278,6 +282,7 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Find a single [EnumDefaultModel] from a table, using the provided [where]
   Future<EnumDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,
@@ -297,6 +302,7 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Find a single [EnumDefaultModel] by its [id] or null if no such row exists.
   Future<EnumDefaultModel?> findById(
     _i1.Session session,
     int id, {
@@ -308,6 +314,9 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Inserts all [EnumDefaultModel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EnumDefaultModel>> insert(
     _i1.Session session,
     List<EnumDefaultModel> rows, {
@@ -319,6 +328,7 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Inserts a single [EnumDefaultModel] and returns the inserted row.
   Future<EnumDefaultModel> insertRow(
     _i1.Session session,
     EnumDefaultModel row, {
@@ -330,6 +340,11 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Update all [EnumDefaultModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EnumDefaultModel>> update(
     _i1.Session session,
     List<EnumDefaultModel> rows, {
@@ -343,6 +358,9 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EnumDefaultModel> updateRow(
     _i1.Session session,
     EnumDefaultModel row, {
@@ -356,6 +374,9 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Deletes all [EnumDefaultModel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefaultModel>> delete(
     _i1.Session session,
     List<EnumDefaultModel> rows, {
@@ -367,6 +388,7 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Deletes a single [EnumDefaultModel].
   Future<EnumDefaultModel> deleteRow(
     _i1.Session session,
     EnumDefaultModel row, {
@@ -378,6 +400,7 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EnumDefaultModel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EnumDefaultModelTable> where,
@@ -389,6 +412,8 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,

@@ -307,6 +307,10 @@ class MemberRepository {
 
   final attachRow = const MemberAttachRowRepository._();
 
+  /// Find a list of [Member]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Member>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -330,6 +334,7 @@ class MemberRepository {
     );
   }
 
+  /// Find a single [Member] from a table, using the provided [where]
   Future<Member?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -351,6 +356,7 @@ class MemberRepository {
     );
   }
 
+  /// Find a single [Member] by its [id] or null if no such row exists.
   Future<Member?> findById(
     _i1.Session session,
     int id, {
@@ -364,6 +370,9 @@ class MemberRepository {
     );
   }
 
+  /// Inserts all [Member]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Member>> insert(
     _i1.Session session,
     List<Member> rows, {
@@ -375,6 +384,7 @@ class MemberRepository {
     );
   }
 
+  /// Inserts a single [Member] and returns the inserted row.
   Future<Member> insertRow(
     _i1.Session session,
     Member row, {
@@ -386,6 +396,11 @@ class MemberRepository {
     );
   }
 
+  /// Update all [Member]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Member>> update(
     _i1.Session session,
     List<Member> rows, {
@@ -399,6 +414,9 @@ class MemberRepository {
     );
   }
 
+  /// Updates a single [Member]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Member> updateRow(
     _i1.Session session,
     Member row, {
@@ -412,6 +430,9 @@ class MemberRepository {
     );
   }
 
+  /// Deletes all [Member]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Member>> delete(
     _i1.Session session,
     List<Member> rows, {
@@ -423,6 +444,7 @@ class MemberRepository {
     );
   }
 
+  /// Deletes a single [Member].
   Future<Member> deleteRow(
     _i1.Session session,
     Member row, {
@@ -434,6 +456,7 @@ class MemberRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Member>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MemberTable> where,
@@ -445,6 +468,8 @@ class MemberRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -462,6 +487,7 @@ class MemberRepository {
 class MemberAttachRepository {
   const MemberAttachRepository._();
 
+  /// Set the `blocking` values on the [member]
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -484,6 +510,7 @@ class MemberAttachRepository {
     );
   }
 
+  /// Set the `blockedBy` values on the [member]
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
@@ -510,6 +537,7 @@ class MemberAttachRepository {
 class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
+  /// Set the `blocking` on the [member]
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -531,6 +559,7 @@ class MemberAttachRowRepository {
     );
   }
 
+  /// Set the `blockedBy` on the [member]
   Future<void> blockedBy(
     _i1.Session session,
     Member member,

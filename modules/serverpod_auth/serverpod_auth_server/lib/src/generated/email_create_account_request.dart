@@ -234,6 +234,10 @@ class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
 class EmailCreateAccountRequestRepository {
   const EmailCreateAccountRequestRepository._();
 
+  /// Find a list of [EmailCreateAccountRequest]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EmailCreateAccountRequest>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
@@ -255,6 +259,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Find a single [EmailCreateAccountRequest] from a table, using the provided [where]
   Future<EmailCreateAccountRequest?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
@@ -274,6 +279,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Find a single [EmailCreateAccountRequest] by its [id] or null if no such row exists.
   Future<EmailCreateAccountRequest?> findById(
     _i1.Session session,
     int id, {
@@ -285,6 +291,9 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Inserts all [EmailCreateAccountRequest]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EmailCreateAccountRequest>> insert(
     _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
@@ -296,6 +305,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Inserts a single [EmailCreateAccountRequest] and returns the inserted row.
   Future<EmailCreateAccountRequest> insertRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
@@ -307,6 +317,11 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Update all [EmailCreateAccountRequest]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EmailCreateAccountRequest>> update(
     _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
@@ -320,6 +335,9 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Updates a single [EmailCreateAccountRequest]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EmailCreateAccountRequest> updateRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
@@ -333,6 +351,9 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Deletes all [EmailCreateAccountRequest]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EmailCreateAccountRequest>> delete(
     _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
@@ -344,6 +365,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Deletes a single [EmailCreateAccountRequest].
   Future<EmailCreateAccountRequest> deleteRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
@@ -355,6 +377,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EmailCreateAccountRequest>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
@@ -366,6 +389,8 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,

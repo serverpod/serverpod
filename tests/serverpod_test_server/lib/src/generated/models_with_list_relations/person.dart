@@ -282,6 +282,10 @@ class PersonRepository {
 
   final detachRow = const PersonDetachRowRepository._();
 
+  /// Find a list of [Person]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Person>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
@@ -305,6 +309,7 @@ class PersonRepository {
     );
   }
 
+  /// Find a single [Person] from a table, using the provided [where]
   Future<Person?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
@@ -326,6 +331,7 @@ class PersonRepository {
     );
   }
 
+  /// Find a single [Person] by its [id] or null if no such row exists.
   Future<Person?> findById(
     _i1.Session session,
     int id, {
@@ -339,6 +345,9 @@ class PersonRepository {
     );
   }
 
+  /// Inserts all [Person]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Person>> insert(
     _i1.Session session,
     List<Person> rows, {
@@ -350,6 +359,7 @@ class PersonRepository {
     );
   }
 
+  /// Inserts a single [Person] and returns the inserted row.
   Future<Person> insertRow(
     _i1.Session session,
     Person row, {
@@ -361,6 +371,11 @@ class PersonRepository {
     );
   }
 
+  /// Update all [Person]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Person>> update(
     _i1.Session session,
     List<Person> rows, {
@@ -374,6 +389,9 @@ class PersonRepository {
     );
   }
 
+  /// Updates a single [Person]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Person> updateRow(
     _i1.Session session,
     Person row, {
@@ -387,6 +405,9 @@ class PersonRepository {
     );
   }
 
+  /// Deletes all [Person]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Person>> delete(
     _i1.Session session,
     List<Person> rows, {
@@ -398,6 +419,7 @@ class PersonRepository {
     );
   }
 
+  /// Deletes a single [Person].
   Future<Person> deleteRow(
     _i1.Session session,
     Person row, {
@@ -409,6 +431,7 @@ class PersonRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Person>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<PersonTable> where,
@@ -420,6 +443,8 @@ class PersonRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
@@ -437,6 +462,7 @@ class PersonRepository {
 class PersonAttachRowRepository {
   const PersonAttachRowRepository._();
 
+  /// Set the `organization` on the [person]
   Future<void> organization(
     _i1.Session session,
     Person person,
@@ -462,6 +488,7 @@ class PersonAttachRowRepository {
 class PersonDetachRowRepository {
   const PersonDetachRowRepository._();
 
+  /// Remove the `organization` field from the [person]
   Future<void> organization(
     _i1.Session session,
     Person person, {

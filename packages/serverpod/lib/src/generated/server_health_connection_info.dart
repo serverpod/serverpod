@@ -280,6 +280,10 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
 class ServerHealthConnectionInfoRepository {
   const ServerHealthConnectionInfoRepository._();
 
+  /// Find a list of [ServerHealthConnectionInfo]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ServerHealthConnectionInfo>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
@@ -301,6 +305,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Find a single [ServerHealthConnectionInfo] from a table, using the provided [where]
   Future<ServerHealthConnectionInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
@@ -320,6 +325,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Find a single [ServerHealthConnectionInfo] by its [id] or null if no such row exists.
   Future<ServerHealthConnectionInfo?> findById(
     _i1.Session session,
     int id, {
@@ -331,6 +337,9 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Inserts all [ServerHealthConnectionInfo]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ServerHealthConnectionInfo>> insert(
     _i1.Session session,
     List<ServerHealthConnectionInfo> rows, {
@@ -342,6 +351,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Inserts a single [ServerHealthConnectionInfo] and returns the inserted row.
   Future<ServerHealthConnectionInfo> insertRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
@@ -353,6 +363,11 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Update all [ServerHealthConnectionInfo]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ServerHealthConnectionInfo>> update(
     _i1.Session session,
     List<ServerHealthConnectionInfo> rows, {
@@ -366,6 +381,9 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Updates a single [ServerHealthConnectionInfo]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ServerHealthConnectionInfo> updateRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
@@ -379,6 +397,9 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Deletes all [ServerHealthConnectionInfo]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ServerHealthConnectionInfo>> delete(
     _i1.Session session,
     List<ServerHealthConnectionInfo> rows, {
@@ -390,6 +411,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Deletes a single [ServerHealthConnectionInfo].
   Future<ServerHealthConnectionInfo> deleteRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
@@ -401,6 +423,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ServerHealthConnectionInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
@@ -412,6 +435,8 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,

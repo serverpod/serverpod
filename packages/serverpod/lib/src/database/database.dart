@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
-import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
@@ -145,7 +145,7 @@ class Database {
   }
 
   /// Inserts all [TableRow]s in the list and returns the inserted rows.
-  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
@@ -173,7 +173,7 @@ class Database {
   }
 
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
-  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {

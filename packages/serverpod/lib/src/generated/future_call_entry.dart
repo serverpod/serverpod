@@ -255,6 +255,10 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
 class FutureCallEntryRepository {
   const FutureCallEntryRepository._();
 
+  /// Find a list of [FutureCallEntry]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<FutureCallEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
@@ -276,6 +280,7 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Find a single [FutureCallEntry] from a table, using the provided [where]
   Future<FutureCallEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
@@ -295,6 +300,7 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Find a single [FutureCallEntry] by its [id] or null if no such row exists.
   Future<FutureCallEntry?> findById(
     _i1.Session session,
     int id, {
@@ -306,6 +312,9 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Inserts all [FutureCallEntry]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<FutureCallEntry>> insert(
     _i1.Session session,
     List<FutureCallEntry> rows, {
@@ -317,6 +326,7 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Inserts a single [FutureCallEntry] and returns the inserted row.
   Future<FutureCallEntry> insertRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -328,6 +338,11 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Update all [FutureCallEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<FutureCallEntry>> update(
     _i1.Session session,
     List<FutureCallEntry> rows, {
@@ -341,6 +356,9 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Updates a single [FutureCallEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<FutureCallEntry> updateRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -354,6 +372,9 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Deletes all [FutureCallEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<FutureCallEntry>> delete(
     _i1.Session session,
     List<FutureCallEntry> rows, {
@@ -365,6 +386,7 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Deletes a single [FutureCallEntry].
   Future<FutureCallEntry> deleteRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -376,6 +398,7 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<FutureCallEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
@@ -387,6 +410,8 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,

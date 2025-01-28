@@ -448,6 +448,10 @@ class ObjectWithObjectIncludeList extends _i1.IncludeList {
 class ObjectWithObjectRepository {
   const ObjectWithObjectRepository._();
 
+  /// Find a list of [ObjectWithObject]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<ObjectWithObject>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
@@ -469,6 +473,7 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Find a single [ObjectWithObject] from a table, using the provided [where]
   Future<ObjectWithObject?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
@@ -488,6 +493,7 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Find a single [ObjectWithObject] by its [id] or null if no such row exists.
   Future<ObjectWithObject?> findById(
     _i1.Session session,
     int id, {
@@ -499,6 +505,9 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Inserts all [ObjectWithObject]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectWithObject>> insert(
     _i1.Session session,
     List<ObjectWithObject> rows, {
@@ -510,6 +519,7 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Inserts a single [ObjectWithObject] and returns the inserted row.
   Future<ObjectWithObject> insertRow(
     _i1.Session session,
     ObjectWithObject row, {
@@ -521,6 +531,11 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Update all [ObjectWithObject]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithObject>> update(
     _i1.Session session,
     List<ObjectWithObject> rows, {
@@ -534,6 +549,9 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Updates a single [ObjectWithObject]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithObject> updateRow(
     _i1.Session session,
     ObjectWithObject row, {
@@ -547,6 +565,9 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Deletes all [ObjectWithObject]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithObject>> delete(
     _i1.Session session,
     List<ObjectWithObject> rows, {
@@ -558,6 +579,7 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Deletes a single [ObjectWithObject].
   Future<ObjectWithObject> deleteRow(
     _i1.Session session,
     ObjectWithObject row, {
@@ -569,6 +591,7 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithObject>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
@@ -580,6 +603,8 @@ class ObjectWithObjectRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,

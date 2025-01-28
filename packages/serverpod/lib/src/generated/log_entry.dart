@@ -358,6 +358,10 @@ class LogEntryIncludeList extends _i1.IncludeList {
 class LogEntryRepository {
   const LogEntryRepository._();
 
+  /// Find a list of [LogEntry]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<LogEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
@@ -379,6 +383,7 @@ class LogEntryRepository {
     );
   }
 
+  /// Find a single [LogEntry] from a table, using the provided [where]
   Future<LogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
@@ -398,6 +403,7 @@ class LogEntryRepository {
     );
   }
 
+  /// Find a single [LogEntry] by its [id] or null if no such row exists.
   Future<LogEntry?> findById(
     _i1.Session session,
     int id, {
@@ -409,6 +415,9 @@ class LogEntryRepository {
     );
   }
 
+  /// Inserts all [LogEntry]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<LogEntry>> insert(
     _i1.Session session,
     List<LogEntry> rows, {
@@ -420,6 +429,7 @@ class LogEntryRepository {
     );
   }
 
+  /// Inserts a single [LogEntry] and returns the inserted row.
   Future<LogEntry> insertRow(
     _i1.Session session,
     LogEntry row, {
@@ -431,6 +441,11 @@ class LogEntryRepository {
     );
   }
 
+  /// Update all [LogEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<LogEntry>> update(
     _i1.Session session,
     List<LogEntry> rows, {
@@ -444,6 +459,9 @@ class LogEntryRepository {
     );
   }
 
+  /// Updates a single [LogEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<LogEntry> updateRow(
     _i1.Session session,
     LogEntry row, {
@@ -457,6 +475,9 @@ class LogEntryRepository {
     );
   }
 
+  /// Deletes all [LogEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<LogEntry>> delete(
     _i1.Session session,
     List<LogEntry> rows, {
@@ -468,6 +489,7 @@ class LogEntryRepository {
     );
   }
 
+  /// Deletes a single [LogEntry].
   Future<LogEntry> deleteRow(
     _i1.Session session,
     LogEntry row, {
@@ -479,6 +501,7 @@ class LogEntryRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<LogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
@@ -490,6 +513,8 @@ class LogEntryRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,

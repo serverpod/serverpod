@@ -243,6 +243,10 @@ class DurationDefaultMixIncludeList extends _i1.IncludeList {
 class DurationDefaultMixRepository {
   const DurationDefaultMixRepository._();
 
+  /// Find a list of [DurationDefaultMix]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<DurationDefaultMix>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
@@ -264,6 +268,7 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Find a single [DurationDefaultMix] from a table, using the provided [where]
   Future<DurationDefaultMix?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
@@ -283,6 +288,7 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Find a single [DurationDefaultMix] by its [id] or null if no such row exists.
   Future<DurationDefaultMix?> findById(
     _i1.Session session,
     int id, {
@@ -294,6 +300,9 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Inserts all [DurationDefaultMix]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<DurationDefaultMix>> insert(
     _i1.Session session,
     List<DurationDefaultMix> rows, {
@@ -305,6 +314,7 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Inserts a single [DurationDefaultMix] and returns the inserted row.
   Future<DurationDefaultMix> insertRow(
     _i1.Session session,
     DurationDefaultMix row, {
@@ -316,6 +326,11 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Update all [DurationDefaultMix]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<DurationDefaultMix>> update(
     _i1.Session session,
     List<DurationDefaultMix> rows, {
@@ -329,6 +344,9 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Updates a single [DurationDefaultMix]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<DurationDefaultMix> updateRow(
     _i1.Session session,
     DurationDefaultMix row, {
@@ -342,6 +360,9 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Deletes all [DurationDefaultMix]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<DurationDefaultMix>> delete(
     _i1.Session session,
     List<DurationDefaultMix> rows, {
@@ -353,6 +374,7 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Deletes a single [DurationDefaultMix].
   Future<DurationDefaultMix> deleteRow(
     _i1.Session session,
     DurationDefaultMix row, {
@@ -364,6 +386,7 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<DurationDefaultMix>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
@@ -375,6 +398,8 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,

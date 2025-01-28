@@ -209,6 +209,10 @@ class BoolDefaultModelIncludeList extends _i1.IncludeList {
 class BoolDefaultModelRepository {
   const BoolDefaultModelRepository._();
 
+  /// Find a list of [BoolDefaultModel]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<BoolDefaultModel>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
@@ -230,6 +234,7 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Find a single [BoolDefaultModel] from a table, using the provided [where]
   Future<BoolDefaultModel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
@@ -249,6 +254,7 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Find a single [BoolDefaultModel] by its [id] or null if no such row exists.
   Future<BoolDefaultModel?> findById(
     _i1.Session session,
     int id, {
@@ -260,6 +266,9 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Inserts all [BoolDefaultModel]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<BoolDefaultModel>> insert(
     _i1.Session session,
     List<BoolDefaultModel> rows, {
@@ -271,6 +280,7 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Inserts a single [BoolDefaultModel] and returns the inserted row.
   Future<BoolDefaultModel> insertRow(
     _i1.Session session,
     BoolDefaultModel row, {
@@ -282,6 +292,11 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Update all [BoolDefaultModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<BoolDefaultModel>> update(
     _i1.Session session,
     List<BoolDefaultModel> rows, {
@@ -295,6 +310,9 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Updates a single [BoolDefaultModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<BoolDefaultModel> updateRow(
     _i1.Session session,
     BoolDefaultModel row, {
@@ -308,6 +326,9 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Deletes all [BoolDefaultModel]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<BoolDefaultModel>> delete(
     _i1.Session session,
     List<BoolDefaultModel> rows, {
@@ -319,6 +340,7 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Deletes a single [BoolDefaultModel].
   Future<BoolDefaultModel> deleteRow(
     _i1.Session session,
     BoolDefaultModel row, {
@@ -330,6 +352,7 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<BoolDefaultModel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
@@ -341,6 +364,8 @@ class BoolDefaultModelRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,

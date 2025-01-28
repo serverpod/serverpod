@@ -183,6 +183,10 @@ class UniqueDataIncludeList extends _i1.IncludeList {
 class UniqueDataRepository {
   const UniqueDataRepository._();
 
+  /// Find a list of [UniqueData]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
@@ -204,6 +208,7 @@ class UniqueDataRepository {
     );
   }
 
+  /// Find a single [UniqueData] from a table, using the provided [where]
   Future<UniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
@@ -223,6 +228,7 @@ class UniqueDataRepository {
     );
   }
 
+  /// Find a single [UniqueData] by its [id] or null if no such row exists.
   Future<UniqueData?> findById(
     _i1.Session session,
     int id, {
@@ -234,6 +240,9 @@ class UniqueDataRepository {
     );
   }
 
+  /// Inserts all [UniqueData]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UniqueData>> insert(
     _i1.Session session,
     List<UniqueData> rows, {
@@ -245,6 +254,7 @@ class UniqueDataRepository {
     );
   }
 
+  /// Inserts a single [UniqueData] and returns the inserted row.
   Future<UniqueData> insertRow(
     _i1.Session session,
     UniqueData row, {
@@ -256,6 +266,11 @@ class UniqueDataRepository {
     );
   }
 
+  /// Update all [UniqueData]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UniqueData>> update(
     _i1.Session session,
     List<UniqueData> rows, {
@@ -269,6 +284,9 @@ class UniqueDataRepository {
     );
   }
 
+  /// Updates a single [UniqueData]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UniqueData> updateRow(
     _i1.Session session,
     UniqueData row, {
@@ -282,6 +300,9 @@ class UniqueDataRepository {
     );
   }
 
+  /// Deletes all [UniqueData]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UniqueData>> delete(
     _i1.Session session,
     List<UniqueData> rows, {
@@ -293,6 +314,7 @@ class UniqueDataRepository {
     );
   }
 
+  /// Deletes a single [UniqueData].
   Future<UniqueData> deleteRow(
     _i1.Session session,
     UniqueData row, {
@@ -304,6 +326,7 @@ class UniqueDataRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UniqueData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
@@ -315,6 +338,8 @@ class UniqueDataRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,

@@ -362,6 +362,10 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
 class MessageLogEntryRepository {
   const MessageLogEntryRepository._();
 
+  /// Find a list of [MessageLogEntry]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<MessageLogEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
@@ -383,6 +387,7 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Find a single [MessageLogEntry] from a table, using the provided [where]
   Future<MessageLogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
@@ -402,6 +407,7 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Find a single [MessageLogEntry] by its [id] or null if no such row exists.
   Future<MessageLogEntry?> findById(
     _i1.Session session,
     int id, {
@@ -413,6 +419,9 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Inserts all [MessageLogEntry]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<MessageLogEntry>> insert(
     _i1.Session session,
     List<MessageLogEntry> rows, {
@@ -424,6 +433,7 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Inserts a single [MessageLogEntry] and returns the inserted row.
   Future<MessageLogEntry> insertRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -435,6 +445,11 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Update all [MessageLogEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<MessageLogEntry>> update(
     _i1.Session session,
     List<MessageLogEntry> rows, {
@@ -448,6 +463,9 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Updates a single [MessageLogEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<MessageLogEntry> updateRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -461,6 +479,9 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Deletes all [MessageLogEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<MessageLogEntry>> delete(
     _i1.Session session,
     List<MessageLogEntry> rows, {
@@ -472,6 +493,7 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Deletes a single [MessageLogEntry].
   Future<MessageLogEntry> deleteRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -483,6 +505,7 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<MessageLogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
@@ -494,6 +517,8 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,

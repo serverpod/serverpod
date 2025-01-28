@@ -211,6 +211,10 @@ class ArenaRepository {
 
   final detachRow = const ArenaDetachRowRepository._();
 
+  /// Find a list of [Arena]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Arena>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -234,6 +238,7 @@ class ArenaRepository {
     );
   }
 
+  /// Find a single [Arena] from a table, using the provided [where]
   Future<Arena?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -255,6 +260,7 @@ class ArenaRepository {
     );
   }
 
+  /// Find a single [Arena] by its [id] or null if no such row exists.
   Future<Arena?> findById(
     _i1.Session session,
     int id, {
@@ -268,6 +274,9 @@ class ArenaRepository {
     );
   }
 
+  /// Inserts all [Arena]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Arena>> insert(
     _i1.Session session,
     List<Arena> rows, {
@@ -279,6 +288,7 @@ class ArenaRepository {
     );
   }
 
+  /// Inserts a single [Arena] and returns the inserted row.
   Future<Arena> insertRow(
     _i1.Session session,
     Arena row, {
@@ -290,6 +300,11 @@ class ArenaRepository {
     );
   }
 
+  /// Update all [Arena]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Arena>> update(
     _i1.Session session,
     List<Arena> rows, {
@@ -303,6 +318,9 @@ class ArenaRepository {
     );
   }
 
+  /// Updates a single [Arena]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Arena> updateRow(
     _i1.Session session,
     Arena row, {
@@ -316,6 +334,9 @@ class ArenaRepository {
     );
   }
 
+  /// Deletes all [Arena]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Arena>> delete(
     _i1.Session session,
     List<Arena> rows, {
@@ -327,6 +348,7 @@ class ArenaRepository {
     );
   }
 
+  /// Deletes a single [Arena].
   Future<Arena> deleteRow(
     _i1.Session session,
     Arena row, {
@@ -338,6 +360,7 @@ class ArenaRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Arena>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
@@ -349,6 +372,8 @@ class ArenaRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -366,6 +391,7 @@ class ArenaRepository {
 class ArenaAttachRowRepository {
   const ArenaAttachRowRepository._();
 
+  /// Set the `team` on the [arena]
   Future<void> team(
     _i1.Session session,
     Arena arena,
@@ -391,6 +417,7 @@ class ArenaAttachRowRepository {
 class ArenaDetachRowRepository {
   const ArenaDetachRowRepository._();
 
+  /// Remove the `team` field from the [arena]
   Future<void> team(
     _i1.Session session,
     Arena arena, {

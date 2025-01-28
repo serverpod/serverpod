@@ -173,6 +173,10 @@ class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
 class DoubleDefaultPersistRepository {
   const DoubleDefaultPersistRepository._();
 
+  /// Find a list of [DoubleDefaultPersist]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<DoubleDefaultPersist>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
@@ -194,6 +198,7 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Find a single [DoubleDefaultPersist] from a table, using the provided [where]
   Future<DoubleDefaultPersist?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
@@ -213,6 +218,7 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Find a single [DoubleDefaultPersist] by its [id] or null if no such row exists.
   Future<DoubleDefaultPersist?> findById(
     _i1.Session session,
     int id, {
@@ -224,6 +230,9 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Inserts all [DoubleDefaultPersist]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<DoubleDefaultPersist>> insert(
     _i1.Session session,
     List<DoubleDefaultPersist> rows, {
@@ -235,6 +244,7 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Inserts a single [DoubleDefaultPersist] and returns the inserted row.
   Future<DoubleDefaultPersist> insertRow(
     _i1.Session session,
     DoubleDefaultPersist row, {
@@ -246,6 +256,11 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Update all [DoubleDefaultPersist]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<DoubleDefaultPersist>> update(
     _i1.Session session,
     List<DoubleDefaultPersist> rows, {
@@ -259,6 +274,9 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [DoubleDefaultPersist]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<DoubleDefaultPersist> updateRow(
     _i1.Session session,
     DoubleDefaultPersist row, {
@@ -272,6 +290,9 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Deletes all [DoubleDefaultPersist]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<DoubleDefaultPersist>> delete(
     _i1.Session session,
     List<DoubleDefaultPersist> rows, {
@@ -283,6 +304,7 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Deletes a single [DoubleDefaultPersist].
   Future<DoubleDefaultPersist> deleteRow(
     _i1.Session session,
     DoubleDefaultPersist row, {
@@ -294,6 +316,7 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<DoubleDefaultPersist>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
@@ -305,6 +328,8 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,

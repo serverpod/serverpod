@@ -249,6 +249,10 @@ class UserNoteCollectionRepository {
 
   final detachRow = const UserNoteCollectionDetachRowRepository._();
 
+  /// Find a list of [UserNoteCollection]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UserNoteCollection>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
@@ -272,6 +276,7 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Find a single [UserNoteCollection] from a table, using the provided [where]
   Future<UserNoteCollection?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
@@ -293,6 +298,7 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Find a single [UserNoteCollection] by its [id] or null if no such row exists.
   Future<UserNoteCollection?> findById(
     _i1.Session session,
     int id, {
@@ -306,6 +312,9 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Inserts all [UserNoteCollection]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UserNoteCollection>> insert(
     _i1.Session session,
     List<UserNoteCollection> rows, {
@@ -317,6 +326,7 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Inserts a single [UserNoteCollection] and returns the inserted row.
   Future<UserNoteCollection> insertRow(
     _i1.Session session,
     UserNoteCollection row, {
@@ -328,6 +338,11 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Update all [UserNoteCollection]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UserNoteCollection>> update(
     _i1.Session session,
     List<UserNoteCollection> rows, {
@@ -341,6 +356,9 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Updates a single [UserNoteCollection]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UserNoteCollection> updateRow(
     _i1.Session session,
     UserNoteCollection row, {
@@ -354,6 +372,9 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Deletes all [UserNoteCollection]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UserNoteCollection>> delete(
     _i1.Session session,
     List<UserNoteCollection> rows, {
@@ -365,6 +386,7 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Deletes a single [UserNoteCollection].
   Future<UserNoteCollection> deleteRow(
     _i1.Session session,
     UserNoteCollection row, {
@@ -376,6 +398,7 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UserNoteCollection>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
@@ -387,6 +410,8 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
@@ -404,6 +429,7 @@ class UserNoteCollectionRepository {
 class UserNoteCollectionAttachRepository {
   const UserNoteCollectionAttachRepository._();
 
+  /// Set the `userNotesPropertyName` values on the [userNoteCollection]
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
@@ -438,6 +464,7 @@ class UserNoteCollectionAttachRepository {
 class UserNoteCollectionAttachRowRepository {
   const UserNoteCollectionAttachRowRepository._();
 
+  /// Set the `userNotesPropertyName` on the [userNoteCollection]
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
@@ -470,6 +497,7 @@ class UserNoteCollectionAttachRowRepository {
 class UserNoteCollectionDetachRepository {
   const UserNoteCollectionDetachRepository._();
 
+  /// Remove the `userNotesPropertyName` field from the [UserNote]
   Future<void> userNotesPropertyName(
     _i1.Session session,
     List<_i2.UserNote> userNote, {
@@ -500,6 +528,7 @@ class UserNoteCollectionDetachRepository {
 class UserNoteCollectionDetachRowRepository {
   const UserNoteCollectionDetachRowRepository._();
 
+  /// Remove the `userNotesPropertyName` field from the [UserNote]
   Future<void> userNotesPropertyName(
     _i1.Session session,
     _i2.UserNote userNote, {

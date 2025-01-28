@@ -189,6 +189,10 @@ class MethodInfoIncludeList extends _i1.IncludeList {
 class MethodInfoRepository {
   const MethodInfoRepository._();
 
+  /// Find a list of [MethodInfo]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<MethodInfo>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -210,6 +214,7 @@ class MethodInfoRepository {
     );
   }
 
+  /// Find a single [MethodInfo] from a table, using the provided [where]
   Future<MethodInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -229,6 +234,7 @@ class MethodInfoRepository {
     );
   }
 
+  /// Find a single [MethodInfo] by its [id] or null if no such row exists.
   Future<MethodInfo?> findById(
     _i1.Session session,
     int id, {
@@ -240,6 +246,9 @@ class MethodInfoRepository {
     );
   }
 
+  /// Inserts all [MethodInfo]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<MethodInfo>> insert(
     _i1.Session session,
     List<MethodInfo> rows, {
@@ -251,6 +260,7 @@ class MethodInfoRepository {
     );
   }
 
+  /// Inserts a single [MethodInfo] and returns the inserted row.
   Future<MethodInfo> insertRow(
     _i1.Session session,
     MethodInfo row, {
@@ -262,6 +272,11 @@ class MethodInfoRepository {
     );
   }
 
+  /// Update all [MethodInfo]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<MethodInfo>> update(
     _i1.Session session,
     List<MethodInfo> rows, {
@@ -275,6 +290,9 @@ class MethodInfoRepository {
     );
   }
 
+  /// Updates a single [MethodInfo]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<MethodInfo> updateRow(
     _i1.Session session,
     MethodInfo row, {
@@ -288,6 +306,9 @@ class MethodInfoRepository {
     );
   }
 
+  /// Deletes all [MethodInfo]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<MethodInfo>> delete(
     _i1.Session session,
     List<MethodInfo> rows, {
@@ -299,6 +320,7 @@ class MethodInfoRepository {
     );
   }
 
+  /// Deletes a single [MethodInfo].
   Future<MethodInfo> deleteRow(
     _i1.Session session,
     MethodInfo row, {
@@ -310,6 +332,7 @@ class MethodInfoRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<MethodInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
@@ -321,6 +344,8 @@ class MethodInfoRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,

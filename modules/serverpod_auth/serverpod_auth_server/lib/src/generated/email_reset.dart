@@ -211,6 +211,10 @@ class EmailResetIncludeList extends _i1.IncludeList {
 class EmailResetRepository {
   const EmailResetRepository._();
 
+  /// Find a list of [EmailReset]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<EmailReset>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
@@ -232,6 +236,7 @@ class EmailResetRepository {
     );
   }
 
+  /// Find a single [EmailReset] from a table, using the provided [where]
   Future<EmailReset?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
@@ -251,6 +256,7 @@ class EmailResetRepository {
     );
   }
 
+  /// Find a single [EmailReset] by its [id] or null if no such row exists.
   Future<EmailReset?> findById(
     _i1.Session session,
     int id, {
@@ -262,6 +268,9 @@ class EmailResetRepository {
     );
   }
 
+  /// Inserts all [EmailReset]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EmailReset>> insert(
     _i1.Session session,
     List<EmailReset> rows, {
@@ -273,6 +282,7 @@ class EmailResetRepository {
     );
   }
 
+  /// Inserts a single [EmailReset] and returns the inserted row.
   Future<EmailReset> insertRow(
     _i1.Session session,
     EmailReset row, {
@@ -284,6 +294,11 @@ class EmailResetRepository {
     );
   }
 
+  /// Update all [EmailReset]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EmailReset>> update(
     _i1.Session session,
     List<EmailReset> rows, {
@@ -297,6 +312,9 @@ class EmailResetRepository {
     );
   }
 
+  /// Updates a single [EmailReset]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EmailReset> updateRow(
     _i1.Session session,
     EmailReset row, {
@@ -310,6 +328,9 @@ class EmailResetRepository {
     );
   }
 
+  /// Deletes all [EmailReset]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EmailReset>> delete(
     _i1.Session session,
     List<EmailReset> rows, {
@@ -321,6 +342,7 @@ class EmailResetRepository {
     );
   }
 
+  /// Deletes a single [EmailReset].
   Future<EmailReset> deleteRow(
     _i1.Session session,
     EmailReset row, {
@@ -332,6 +354,7 @@ class EmailResetRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EmailReset>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
@@ -343,6 +366,8 @@ class EmailResetRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,

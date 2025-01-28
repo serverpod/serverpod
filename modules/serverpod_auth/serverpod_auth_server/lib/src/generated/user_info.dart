@@ -323,6 +323,10 @@ class UserInfoIncludeList extends _i1.IncludeList {
 class UserInfoRepository {
   const UserInfoRepository._();
 
+  /// Find a list of [UserInfo]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<UserInfo>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
@@ -344,6 +348,7 @@ class UserInfoRepository {
     );
   }
 
+  /// Find a single [UserInfo] from a table, using the provided [where]
   Future<UserInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
@@ -363,6 +368,7 @@ class UserInfoRepository {
     );
   }
 
+  /// Find a single [UserInfo] by its [id] or null if no such row exists.
   Future<UserInfo?> findById(
     _i1.Session session,
     int id, {
@@ -374,6 +380,9 @@ class UserInfoRepository {
     );
   }
 
+  /// Inserts all [UserInfo]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UserInfo>> insert(
     _i1.Session session,
     List<UserInfo> rows, {
@@ -385,6 +394,7 @@ class UserInfoRepository {
     );
   }
 
+  /// Inserts a single [UserInfo] and returns the inserted row.
   Future<UserInfo> insertRow(
     _i1.Session session,
     UserInfo row, {
@@ -396,6 +406,11 @@ class UserInfoRepository {
     );
   }
 
+  /// Update all [UserInfo]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UserInfo>> update(
     _i1.Session session,
     List<UserInfo> rows, {
@@ -409,6 +424,9 @@ class UserInfoRepository {
     );
   }
 
+  /// Updates a single [UserInfo]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UserInfo> updateRow(
     _i1.Session session,
     UserInfo row, {
@@ -422,6 +440,9 @@ class UserInfoRepository {
     );
   }
 
+  /// Deletes all [UserInfo]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<UserInfo>> delete(
     _i1.Session session,
     List<UserInfo> rows, {
@@ -433,6 +454,7 @@ class UserInfoRepository {
     );
   }
 
+  /// Deletes a single [UserInfo].
   Future<UserInfo> deleteRow(
     _i1.Session session,
     UserInfo row, {
@@ -444,6 +466,7 @@ class UserInfoRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<UserInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
@@ -455,6 +478,8 @@ class UserInfoRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,

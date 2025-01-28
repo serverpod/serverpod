@@ -216,6 +216,10 @@ class BoolDefaultMixIncludeList extends _i1.IncludeList {
 class BoolDefaultMixRepository {
   const BoolDefaultMixRepository._();
 
+  /// Find a list of [BoolDefaultMix]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<BoolDefaultMix>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
@@ -237,6 +241,7 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Find a single [BoolDefaultMix] from a table, using the provided [where]
   Future<BoolDefaultMix?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
@@ -256,6 +261,7 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Find a single [BoolDefaultMix] by its [id] or null if no such row exists.
   Future<BoolDefaultMix?> findById(
     _i1.Session session,
     int id, {
@@ -267,6 +273,9 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Inserts all [BoolDefaultMix]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<BoolDefaultMix>> insert(
     _i1.Session session,
     List<BoolDefaultMix> rows, {
@@ -278,6 +287,7 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Inserts a single [BoolDefaultMix] and returns the inserted row.
   Future<BoolDefaultMix> insertRow(
     _i1.Session session,
     BoolDefaultMix row, {
@@ -289,6 +299,11 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Update all [BoolDefaultMix]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<BoolDefaultMix>> update(
     _i1.Session session,
     List<BoolDefaultMix> rows, {
@@ -302,6 +317,9 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Updates a single [BoolDefaultMix]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<BoolDefaultMix> updateRow(
     _i1.Session session,
     BoolDefaultMix row, {
@@ -315,6 +333,9 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Deletes all [BoolDefaultMix]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<BoolDefaultMix>> delete(
     _i1.Session session,
     List<BoolDefaultMix> rows, {
@@ -326,6 +347,7 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Deletes a single [BoolDefaultMix].
   Future<BoolDefaultMix> deleteRow(
     _i1.Session session,
     BoolDefaultMix row, {
@@ -337,6 +359,7 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<BoolDefaultMix>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
@@ -348,6 +371,8 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,

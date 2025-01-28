@@ -228,6 +228,10 @@ class CompanyRepository {
 
   final attachRow = const CompanyAttachRowRepository._();
 
+  /// Find a list of [Company]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<Company>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
@@ -251,6 +255,7 @@ class CompanyRepository {
     );
   }
 
+  /// Find a single [Company] from a table, using the provided [where]
   Future<Company?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
@@ -272,6 +277,7 @@ class CompanyRepository {
     );
   }
 
+  /// Find a single [Company] by its [id] or null if no such row exists.
   Future<Company?> findById(
     _i1.Session session,
     int id, {
@@ -285,6 +291,9 @@ class CompanyRepository {
     );
   }
 
+  /// Inserts all [Company]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Company>> insert(
     _i1.Session session,
     List<Company> rows, {
@@ -296,6 +305,7 @@ class CompanyRepository {
     );
   }
 
+  /// Inserts a single [Company] and returns the inserted row.
   Future<Company> insertRow(
     _i1.Session session,
     Company row, {
@@ -307,6 +317,11 @@ class CompanyRepository {
     );
   }
 
+  /// Update all [Company]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Company>> update(
     _i1.Session session,
     List<Company> rows, {
@@ -320,6 +335,9 @@ class CompanyRepository {
     );
   }
 
+  /// Updates a single [Company]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Company> updateRow(
     _i1.Session session,
     Company row, {
@@ -333,6 +351,9 @@ class CompanyRepository {
     );
   }
 
+  /// Deletes all [Company]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Company>> delete(
     _i1.Session session,
     List<Company> rows, {
@@ -344,6 +365,7 @@ class CompanyRepository {
     );
   }
 
+  /// Deletes a single [Company].
   Future<Company> deleteRow(
     _i1.Session session,
     Company row, {
@@ -355,6 +377,7 @@ class CompanyRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Company>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CompanyTable> where,
@@ -366,6 +389,8 @@ class CompanyRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
@@ -383,6 +408,7 @@ class CompanyRepository {
 class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
+  /// Set the `town` on the [company]
   Future<void> town(
     _i1.Session session,
     Company company,

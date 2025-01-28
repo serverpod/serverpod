@@ -253,6 +253,10 @@ class RelationToMultipleMaxFieldNameRepository {
 
   final detachRow = const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
+  /// Find a list of [RelationToMultipleMaxFieldName]s from a table, using the provided [where]
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, use [orderByList]. If [where] is omitted, all rows in
+  /// the table will be returned.
   Future<List<RelationToMultipleMaxFieldName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -276,6 +280,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Find a single [RelationToMultipleMaxFieldName] from a table, using the provided [where]
   Future<RelationToMultipleMaxFieldName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -297,6 +302,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Find a single [RelationToMultipleMaxFieldName] by its [id] or null if no such row exists.
   Future<RelationToMultipleMaxFieldName?> findById(
     _i1.Session session,
     int id, {
@@ -310,6 +316,9 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Inserts all [RelationToMultipleMaxFieldName]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RelationToMultipleMaxFieldName>> insert(
     _i1.Session session,
     List<RelationToMultipleMaxFieldName> rows, {
@@ -321,6 +330,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Inserts a single [RelationToMultipleMaxFieldName] and returns the inserted row.
   Future<RelationToMultipleMaxFieldName> insertRow(
     _i1.Session session,
     RelationToMultipleMaxFieldName row, {
@@ -332,6 +342,11 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Update all [RelationToMultipleMaxFieldName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RelationToMultipleMaxFieldName>> update(
     _i1.Session session,
     List<RelationToMultipleMaxFieldName> rows, {
@@ -345,6 +360,9 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Updates a single [RelationToMultipleMaxFieldName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RelationToMultipleMaxFieldName> updateRow(
     _i1.Session session,
     RelationToMultipleMaxFieldName row, {
@@ -358,6 +376,9 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Deletes all [RelationToMultipleMaxFieldName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<RelationToMultipleMaxFieldName>> delete(
     _i1.Session session,
     List<RelationToMultipleMaxFieldName> rows, {
@@ -369,6 +390,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Deletes a single [RelationToMultipleMaxFieldName].
   Future<RelationToMultipleMaxFieldName> deleteRow(
     _i1.Session session,
     RelationToMultipleMaxFieldName row, {
@@ -380,6 +402,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<RelationToMultipleMaxFieldName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
@@ -392,6 +415,8 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -409,6 +434,7 @@ class RelationToMultipleMaxFieldNameRepository {
 class RelationToMultipleMaxFieldNameAttachRepository {
   const RelationToMultipleMaxFieldNameAttachRepository._();
 
+  /// Set the `multipleMaxFieldNames` values on the [relationToMultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -443,6 +469,7 @@ class RelationToMultipleMaxFieldNameAttachRepository {
 class RelationToMultipleMaxFieldNameAttachRowRepository {
   const RelationToMultipleMaxFieldNameAttachRowRepository._();
 
+  /// Set the `multipleMaxFieldNames` on the [relationToMultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -475,6 +502,7 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
 class RelationToMultipleMaxFieldNameDetachRepository {
   const RelationToMultipleMaxFieldNameDetachRepository._();
 
+  /// Remove the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
@@ -505,6 +533,7 @@ class RelationToMultipleMaxFieldNameDetachRepository {
 class RelationToMultipleMaxFieldNameDetachRowRepository {
   const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
+  /// Remove the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     _i2.MultipleMaxFieldName multipleMaxFieldName, {
