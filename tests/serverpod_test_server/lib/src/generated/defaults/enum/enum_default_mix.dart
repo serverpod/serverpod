@@ -239,6 +239,28 @@ class EnumDefaultMixIncludeList extends _i1.IncludeList {
 class EnumDefaultMixRepository {
   const EnumDefaultMixRepository._();
 
+  /// Returns a list of [EnumDefaultMix]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<EnumDefaultMix>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
@@ -260,6 +282,23 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Returns the first matching [EnumDefaultMix] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<EnumDefaultMix?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
@@ -279,6 +318,7 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Finds a single [EnumDefaultMix] by its [id] or null if no such row exists.
   Future<EnumDefaultMix?> findById(
     _i1.Session session,
     int id, {
@@ -290,6 +330,12 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Inserts all [EnumDefaultMix]s in the list and returns the inserted rows.
+  ///
+  /// The returned [EnumDefaultMix]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<EnumDefaultMix>> insert(
     _i1.Session session,
     List<EnumDefaultMix> rows, {
@@ -301,6 +347,9 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Inserts a single [EnumDefaultMix] and returns the inserted row.
+  ///
+  /// The returned [EnumDefaultMix] will have its `id` field set.
   Future<EnumDefaultMix> insertRow(
     _i1.Session session,
     EnumDefaultMix row, {
@@ -312,6 +361,11 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Updates all [EnumDefaultMix]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<EnumDefaultMix>> update(
     _i1.Session session,
     List<EnumDefaultMix> rows, {
@@ -325,6 +379,9 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultMix]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<EnumDefaultMix> updateRow(
     _i1.Session session,
     EnumDefaultMix row, {
@@ -338,6 +395,9 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Deletes all [EnumDefaultMix]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefaultMix>> delete(
     _i1.Session session,
     List<EnumDefaultMix> rows, {
@@ -349,6 +409,7 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Deletes a single [EnumDefaultMix].
   Future<EnumDefaultMix> deleteRow(
     _i1.Session session,
     EnumDefaultMix row, {
@@ -360,6 +421,7 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<EnumDefaultMix>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
@@ -371,6 +433,8 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,

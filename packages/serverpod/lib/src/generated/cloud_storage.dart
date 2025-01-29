@@ -285,6 +285,28 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
 class CloudStorageEntryRepository {
   const CloudStorageEntryRepository._();
 
+  /// Returns a list of [CloudStorageEntry]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<CloudStorageEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
@@ -306,6 +328,23 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Returns the first matching [CloudStorageEntry] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<CloudStorageEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
@@ -325,6 +364,7 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Finds a single [CloudStorageEntry] by its [id] or null if no such row exists.
   Future<CloudStorageEntry?> findById(
     _i1.Session session,
     int id, {
@@ -336,6 +376,12 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Inserts all [CloudStorageEntry]s in the list and returns the inserted rows.
+  ///
+  /// The returned [CloudStorageEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<CloudStorageEntry>> insert(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
@@ -347,6 +393,9 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Inserts a single [CloudStorageEntry] and returns the inserted row.
+  ///
+  /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry> insertRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -358,6 +407,11 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Updates all [CloudStorageEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<CloudStorageEntry>> update(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
@@ -371,6 +425,9 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Updates a single [CloudStorageEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<CloudStorageEntry> updateRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -384,6 +441,9 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Deletes all [CloudStorageEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<CloudStorageEntry>> delete(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
@@ -395,6 +455,7 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Deletes a single [CloudStorageEntry].
   Future<CloudStorageEntry> deleteRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -406,6 +467,7 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<CloudStorageEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
@@ -417,6 +479,8 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,

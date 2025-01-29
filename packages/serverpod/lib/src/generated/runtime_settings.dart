@@ -247,6 +247,28 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
 class RuntimeSettingsRepository {
   const RuntimeSettingsRepository._();
 
+  /// Returns a list of [RuntimeSettings]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<RuntimeSettings>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
@@ -268,6 +290,23 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Returns the first matching [RuntimeSettings] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<RuntimeSettings?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
@@ -287,6 +326,7 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Finds a single [RuntimeSettings] by its [id] or null if no such row exists.
   Future<RuntimeSettings?> findById(
     _i1.Session session,
     int id, {
@@ -298,6 +338,12 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Inserts all [RuntimeSettings]s in the list and returns the inserted rows.
+  ///
+  /// The returned [RuntimeSettings]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RuntimeSettings>> insert(
     _i1.Session session,
     List<RuntimeSettings> rows, {
@@ -309,6 +355,9 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Inserts a single [RuntimeSettings] and returns the inserted row.
+  ///
+  /// The returned [RuntimeSettings] will have its `id` field set.
   Future<RuntimeSettings> insertRow(
     _i1.Session session,
     RuntimeSettings row, {
@@ -320,6 +369,11 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Updates all [RuntimeSettings]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RuntimeSettings>> update(
     _i1.Session session,
     List<RuntimeSettings> rows, {
@@ -333,6 +387,9 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Updates a single [RuntimeSettings]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RuntimeSettings> updateRow(
     _i1.Session session,
     RuntimeSettings row, {
@@ -346,6 +403,9 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Deletes all [RuntimeSettings]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<RuntimeSettings>> delete(
     _i1.Session session,
     List<RuntimeSettings> rows, {
@@ -357,6 +417,7 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Deletes a single [RuntimeSettings].
   Future<RuntimeSettings> deleteRow(
     _i1.Session session,
     RuntimeSettings row, {
@@ -368,6 +429,7 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<RuntimeSettings>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
@@ -379,6 +441,8 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,

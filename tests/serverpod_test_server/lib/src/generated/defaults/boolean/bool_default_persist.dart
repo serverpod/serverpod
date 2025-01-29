@@ -203,6 +203,28 @@ class BoolDefaultPersistIncludeList extends _i1.IncludeList {
 class BoolDefaultPersistRepository {
   const BoolDefaultPersistRepository._();
 
+  /// Returns a list of [BoolDefaultPersist]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<BoolDefaultPersist>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
@@ -224,6 +246,23 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Returns the first matching [BoolDefaultPersist] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<BoolDefaultPersist?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
@@ -243,6 +282,7 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Finds a single [BoolDefaultPersist] by its [id] or null if no such row exists.
   Future<BoolDefaultPersist?> findById(
     _i1.Session session,
     int id, {
@@ -254,6 +294,12 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Inserts all [BoolDefaultPersist]s in the list and returns the inserted rows.
+  ///
+  /// The returned [BoolDefaultPersist]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<BoolDefaultPersist>> insert(
     _i1.Session session,
     List<BoolDefaultPersist> rows, {
@@ -265,6 +311,9 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Inserts a single [BoolDefaultPersist] and returns the inserted row.
+  ///
+  /// The returned [BoolDefaultPersist] will have its `id` field set.
   Future<BoolDefaultPersist> insertRow(
     _i1.Session session,
     BoolDefaultPersist row, {
@@ -276,6 +325,11 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Updates all [BoolDefaultPersist]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<BoolDefaultPersist>> update(
     _i1.Session session,
     List<BoolDefaultPersist> rows, {
@@ -289,6 +343,9 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [BoolDefaultPersist]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<BoolDefaultPersist> updateRow(
     _i1.Session session,
     BoolDefaultPersist row, {
@@ -302,6 +359,9 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Deletes all [BoolDefaultPersist]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<BoolDefaultPersist>> delete(
     _i1.Session session,
     List<BoolDefaultPersist> rows, {
@@ -313,6 +373,7 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Deletes a single [BoolDefaultPersist].
   Future<BoolDefaultPersist> deleteRow(
     _i1.Session session,
     BoolDefaultPersist row, {
@@ -324,6 +385,7 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<BoolDefaultPersist>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
@@ -335,6 +397,8 @@ class BoolDefaultPersistRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,

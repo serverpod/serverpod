@@ -313,6 +313,28 @@ class MemberRepository {
 
   final attachRow = const MemberAttachRowRepository._();
 
+  /// Returns a list of [Member]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Member>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -336,6 +358,23 @@ class MemberRepository {
     );
   }
 
+  /// Returns the first matching [Member] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Member?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -357,6 +396,7 @@ class MemberRepository {
     );
   }
 
+  /// Finds a single [Member] by its [id] or null if no such row exists.
   Future<Member?> findById(
     _i1.Session session,
     int id, {
@@ -370,6 +410,12 @@ class MemberRepository {
     );
   }
 
+  /// Inserts all [Member]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Member]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Member>> insert(
     _i1.Session session,
     List<Member> rows, {
@@ -381,6 +427,9 @@ class MemberRepository {
     );
   }
 
+  /// Inserts a single [Member] and returns the inserted row.
+  ///
+  /// The returned [Member] will have its `id` field set.
   Future<Member> insertRow(
     _i1.Session session,
     Member row, {
@@ -392,6 +441,11 @@ class MemberRepository {
     );
   }
 
+  /// Updates all [Member]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Member>> update(
     _i1.Session session,
     List<Member> rows, {
@@ -405,6 +459,9 @@ class MemberRepository {
     );
   }
 
+  /// Updates a single [Member]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Member> updateRow(
     _i1.Session session,
     Member row, {
@@ -418,6 +475,9 @@ class MemberRepository {
     );
   }
 
+  /// Deletes all [Member]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Member>> delete(
     _i1.Session session,
     List<Member> rows, {
@@ -429,6 +489,7 @@ class MemberRepository {
     );
   }
 
+  /// Deletes a single [Member].
   Future<Member> deleteRow(
     _i1.Session session,
     Member row, {
@@ -440,6 +501,7 @@ class MemberRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Member>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MemberTable> where,
@@ -451,6 +513,8 @@ class MemberRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -468,6 +532,8 @@ class MemberRepository {
 class MemberAttachRepository {
   const MemberAttachRepository._();
 
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -490,6 +556,8 @@ class MemberAttachRepository {
     );
   }
 
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
@@ -516,6 +584,8 @@ class MemberAttachRepository {
 class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -537,6 +607,8 @@ class MemberAttachRowRepository {
     );
   }
 
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,

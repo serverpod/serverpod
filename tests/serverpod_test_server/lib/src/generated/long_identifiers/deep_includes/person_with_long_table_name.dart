@@ -303,6 +303,28 @@ class PersonWithLongTableNameRepository {
 
   final detachRow = const PersonWithLongTableNameDetachRowRepository._();
 
+  /// Returns a list of [PersonWithLongTableName]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<PersonWithLongTableName>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -326,6 +348,23 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Returns the first matching [PersonWithLongTableName] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<PersonWithLongTableName?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -347,6 +386,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Finds a single [PersonWithLongTableName] by its [id] or null if no such row exists.
   Future<PersonWithLongTableName?> findById(
     _i1.Session session,
     int id, {
@@ -360,6 +400,12 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Inserts all [PersonWithLongTableName]s in the list and returns the inserted rows.
+  ///
+  /// The returned [PersonWithLongTableName]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<PersonWithLongTableName>> insert(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -371,6 +417,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Inserts a single [PersonWithLongTableName] and returns the inserted row.
+  ///
+  /// The returned [PersonWithLongTableName] will have its `id` field set.
   Future<PersonWithLongTableName> insertRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -382,6 +431,11 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Updates all [PersonWithLongTableName]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<PersonWithLongTableName>> update(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -395,6 +449,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [PersonWithLongTableName]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<PersonWithLongTableName> updateRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -408,6 +465,9 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all [PersonWithLongTableName]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<PersonWithLongTableName>> delete(
     _i1.Session session,
     List<PersonWithLongTableName> rows, {
@@ -419,6 +479,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes a single [PersonWithLongTableName].
   Future<PersonWithLongTableName> deleteRow(
     _i1.Session session,
     PersonWithLongTableName row, {
@@ -430,6 +491,7 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<PersonWithLongTableName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
@@ -441,6 +503,8 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
@@ -458,6 +522,8 @@ class PersonWithLongTableNameRepository {
 class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
+  /// Creates a relation between the given [PersonWithLongTableName] and [OrganizationWithLongTableName]
+  /// by setting the [PersonWithLongTableName]'s foreign key `organizationId` to refer to the [OrganizationWithLongTableName].
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personWithLongTableName,
@@ -484,6 +550,11 @@ class PersonWithLongTableNameAttachRowRepository {
 class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
+  /// Detaches the relation between this [PersonWithLongTableName] and the [OrganizationWithLongTableName] set in `organization`
+  /// by setting the [PersonWithLongTableName]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personwithlongtablename, {

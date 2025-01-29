@@ -312,6 +312,28 @@ class CatRepository {
 
   final detachRow = const CatDetachRowRepository._();
 
+  /// Returns a list of [Cat]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Cat>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -335,6 +357,23 @@ class CatRepository {
     );
   }
 
+  /// Returns the first matching [Cat] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Cat?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -356,6 +395,7 @@ class CatRepository {
     );
   }
 
+  /// Finds a single [Cat] by its [id] or null if no such row exists.
   Future<Cat?> findById(
     _i1.Session session,
     int id, {
@@ -369,6 +409,12 @@ class CatRepository {
     );
   }
 
+  /// Inserts all [Cat]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Cat]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Cat>> insert(
     _i1.Session session,
     List<Cat> rows, {
@@ -380,6 +426,9 @@ class CatRepository {
     );
   }
 
+  /// Inserts a single [Cat] and returns the inserted row.
+  ///
+  /// The returned [Cat] will have its `id` field set.
   Future<Cat> insertRow(
     _i1.Session session,
     Cat row, {
@@ -391,6 +440,11 @@ class CatRepository {
     );
   }
 
+  /// Updates all [Cat]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Cat>> update(
     _i1.Session session,
     List<Cat> rows, {
@@ -404,6 +458,9 @@ class CatRepository {
     );
   }
 
+  /// Updates a single [Cat]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Cat> updateRow(
     _i1.Session session,
     Cat row, {
@@ -417,6 +474,9 @@ class CatRepository {
     );
   }
 
+  /// Deletes all [Cat]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<Cat>> delete(
     _i1.Session session,
     List<Cat> rows, {
@@ -428,6 +488,7 @@ class CatRepository {
     );
   }
 
+  /// Deletes a single [Cat].
   Future<Cat> deleteRow(
     _i1.Session session,
     Cat row, {
@@ -439,6 +500,7 @@ class CatRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<Cat>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
@@ -450,6 +512,8 @@ class CatRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
@@ -467,6 +531,8 @@ class CatRepository {
 class CatAttachRepository {
   const CatAttachRepository._();
 
+  /// Creates a relation between this [Cat] and the given [Cat]s
+  /// by setting each [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -493,6 +559,8 @@ class CatAttachRepository {
 class CatAttachRowRepository {
   const CatAttachRowRepository._();
 
+  /// Creates a relation between the given [Cat] and [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to refer to the [Cat].
   Future<void> mother(
     _i1.Session session,
     Cat cat,
@@ -514,6 +582,8 @@ class CatAttachRowRepository {
     );
   }
 
+  /// Creates a relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -539,6 +609,11 @@ class CatAttachRowRepository {
 class CatDetachRepository {
   const CatDetachRepository._();
 
+  /// Detaches the relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> kittens(
     _i1.Session session,
     List<_i2.Cat> cat, {
@@ -560,6 +635,11 @@ class CatDetachRepository {
 class CatDetachRowRepository {
   const CatDetachRowRepository._();
 
+  /// Detaches the relation between this [Cat] and the [Cat] set in `mother`
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> mother(
     _i1.Session session,
     Cat cat, {
@@ -577,6 +657,11 @@ class CatDetachRowRepository {
     );
   }
 
+  /// Detaches the relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> kittens(
     _i1.Session session,
     _i2.Cat cat, {

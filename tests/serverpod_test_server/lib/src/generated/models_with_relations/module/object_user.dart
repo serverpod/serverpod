@@ -235,6 +235,28 @@ class ObjectUserRepository {
 
   final attachRow = const ObjectUserAttachRowRepository._();
 
+  /// Returns a list of [ObjectUser]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<ObjectUser>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectUserTable>? where,
@@ -258,6 +280,23 @@ class ObjectUserRepository {
     );
   }
 
+  /// Returns the first matching [ObjectUser] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<ObjectUser?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectUserTable>? where,
@@ -279,6 +318,7 @@ class ObjectUserRepository {
     );
   }
 
+  /// Finds a single [ObjectUser] by its [id] or null if no such row exists.
   Future<ObjectUser?> findById(
     _i1.Session session,
     int id, {
@@ -292,6 +332,12 @@ class ObjectUserRepository {
     );
   }
 
+  /// Inserts all [ObjectUser]s in the list and returns the inserted rows.
+  ///
+  /// The returned [ObjectUser]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectUser>> insert(
     _i1.Session session,
     List<ObjectUser> rows, {
@@ -303,6 +349,9 @@ class ObjectUserRepository {
     );
   }
 
+  /// Inserts a single [ObjectUser] and returns the inserted row.
+  ///
+  /// The returned [ObjectUser] will have its `id` field set.
   Future<ObjectUser> insertRow(
     _i1.Session session,
     ObjectUser row, {
@@ -314,6 +363,11 @@ class ObjectUserRepository {
     );
   }
 
+  /// Updates all [ObjectUser]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectUser>> update(
     _i1.Session session,
     List<ObjectUser> rows, {
@@ -327,6 +381,9 @@ class ObjectUserRepository {
     );
   }
 
+  /// Updates a single [ObjectUser]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectUser> updateRow(
     _i1.Session session,
     ObjectUser row, {
@@ -340,6 +397,9 @@ class ObjectUserRepository {
     );
   }
 
+  /// Deletes all [ObjectUser]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectUser>> delete(
     _i1.Session session,
     List<ObjectUser> rows, {
@@ -351,6 +411,7 @@ class ObjectUserRepository {
     );
   }
 
+  /// Deletes a single [ObjectUser].
   Future<ObjectUser> deleteRow(
     _i1.Session session,
     ObjectUser row, {
@@ -362,6 +423,7 @@ class ObjectUserRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<ObjectUser>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
@@ -373,6 +435,8 @@ class ObjectUserRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectUserTable>? where,
@@ -390,6 +454,8 @@ class ObjectUserRepository {
 class ObjectUserAttachRowRepository {
   const ObjectUserAttachRowRepository._();
 
+  /// Creates a relation between the given [ObjectUser] and [UserInfo]
+  /// by setting the [ObjectUser]'s foreign key `userInfoId` to refer to the [UserInfo].
   Future<void> userInfo(
     _i1.Session session,
     ObjectUser objectUser,
