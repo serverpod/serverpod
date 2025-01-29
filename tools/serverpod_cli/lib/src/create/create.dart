@@ -419,8 +419,7 @@ void _copyServerUpgrade(
         ),
         Replacement(
           slotName: 'defaultIdType: int\n',
-          replacement:
-              defaultIdType != null
+          replacement: defaultIdType != null
               ? 'defaultIdType: ${defaultIdType.aliases.first}\n'
               : '',
         ),

@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 12))
+library;
 
 import 'dart:io';
 
@@ -78,7 +79,9 @@ void main() {
         .forEach((d) {
       try {
         d.deleteSync(recursive: true);
-      } catch (e) {}
+      } catch (e) {
+        // Ignore tear down errors.
+      }
     });
   });
 
