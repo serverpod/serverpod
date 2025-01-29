@@ -1323,8 +1323,12 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
-        ..docs.add(
-            '/// Removes the `${field.name}` field from the [$classFieldName]')
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the given [$classFieldName]
+/// by setting the [$classFieldName]'s foreign key `${relation.foreignFieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1392,8 +1396,12 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
-        ..docs.add(
-            '/// Removes the `${field.name}` field from the [$classFieldName]')
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the given [$classFieldName]
+/// by setting the [$classFieldName]'s foreign key `${relation.foreignFieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1448,12 +1456,15 @@ class BuildRepositoryClass {
       var classFieldName = className.toCamelCase(isLowerCamelCase: true);
       var fieldName = field.name;
 
-      var relation = field.relation;
-      (relation as ObjectRelationDefinition);
+      var relation = field.relation as ObjectRelationDefinition;
 
       methodBuilder
-        ..docs.add(
-            '/// Removes the `${field.name}` field from the [$classFieldName]')
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the [${field.type.className}] set in `${field.name}`
+/// by setting the [$className]'s foreign key `${relation.fieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
