@@ -38,4 +38,8 @@ class BasicTypesEndpoint extends Endpoint {
   Future<Uri?> testUri(Session session, Uri? value) async {
     return value;
   }
+
+  Future<BigInt?> testBigInt(Session session, BigInt? value) async {
+    return value;
+  }
 }
