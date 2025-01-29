@@ -126,6 +126,30 @@ void main() {
     });
   });
 
+  group(
+      'When calling the create command with defaultIdType set to an inexistent type and the experimental flag set.',
+      () {
+    var (projectName, projectPath) = createTempProjectName();
+    var serverPath = projectPath.serverPath;
+    var args = [
+      'create',
+      projectName,
+      '--experimental-features=changeIdType',
+      '--defaultIdType',
+      'ABC',
+    ];
+
+    test('then the command does not run.', () async {
+      try {
+        await fixture.runner.run(args);
+      } on ExitException catch (e) {
+        expect(e.exitCode, ExitCodeType.commandNotFound.exitCode);
+      }
+
+      expect(serverPath.existsSync(), isFalse);
+    });
+  });
+
   for (var idType in SupportedIdType.all) {
     var idTypeAlias = idType.aliases.first;
 
