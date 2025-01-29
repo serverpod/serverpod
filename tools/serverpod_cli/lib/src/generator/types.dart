@@ -277,6 +277,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
+    if (className == 'BigInt') return 'text';
 
     return 'json';
   }
@@ -299,6 +300,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
+    if (className == 'BigInt') return 'ColumnBigInt';
 
     return 'ColumnSerializable';
   }
@@ -495,6 +497,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.string;
       case ValueType.uuidValue:
         return DefaultValueAllowedType.uuidValue;
+      case ValueType.bigInt:
+        return DefaultValueAllowedType.bigInt;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
       case ValueType.isEnum:
@@ -599,6 +603,7 @@ enum DefaultValueAllowedType {
   double,
   string,
   uuidValue,
+  bigInt,
   duration,
   isEnum,
 }
