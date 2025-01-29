@@ -31,6 +31,8 @@ abstract class Nullability implements _i1.SerializableModel {
     this.aNullableDuration,
     required this.aUuid,
     this.aNullableUuid,
+    required this.aBigInt,
+    this.aNullableBigInt,
     required this.anObject,
     this.aNullableObject,
     required this.anIntList,
@@ -57,6 +59,10 @@ abstract class Nullability implements _i1.SerializableModel {
     this.aNullableUuidList,
     required this.aListWithNullableUuids,
     this.aNullableListWithNullableUuids,
+    required this.aBigIntList,
+    this.aNullableBigIntList,
+    required this.aListWithNullableBigInts,
+    this.aNullableListWithNullableBigInts,
     required this.anIntMap,
     this.aNullableIntMap,
     required this.aMapWithNullableInts,
@@ -80,6 +86,8 @@ abstract class Nullability implements _i1.SerializableModel {
     Duration? aNullableDuration,
     required _i1.UuidValue aUuid,
     _i1.UuidValue? aNullableUuid,
+    required BigInt aBigInt,
+    BigInt? aNullableBigInt,
     required _i3.SimpleData anObject,
     _i3.SimpleData? aNullableObject,
     required List<int> anIntList,
@@ -106,6 +114,10 @@ abstract class Nullability implements _i1.SerializableModel {
     List<_i1.UuidValue>? aNullableUuidList,
     required List<_i1.UuidValue?> aListWithNullableUuids,
     List<_i1.UuidValue?>? aNullableListWithNullableUuids,
+    required List<BigInt> aBigIntList,
+    List<BigInt>? aNullableBigIntList,
+    required List<BigInt?> aListWithNullableBigInts,
+    List<BigInt?>? aNullableListWithNullableBigInts,
     required Map<String, int> anIntMap,
     Map<String, int>? aNullableIntMap,
     required Map<String, int?> aMapWithNullableInts,
@@ -146,6 +158,11 @@ abstract class Nullability implements _i1.SerializableModel {
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['aNullableUuid']),
+      aBigInt: _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+      aNullableBigInt: jsonSerialization['aNullableBigInt'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['aNullableBigInt']),
       anObject: _i3.SimpleData.fromJson(
           (jsonSerialization['anObject'] as Map<String, dynamic>)),
       aNullableObject: jsonSerialization['aNullableObject'] == null
@@ -244,6 +261,21 @@ abstract class Nullability implements _i1.SerializableModel {
               ?.map((e) =>
                   e == null ? null : _i1.UuidValueJsonExtension.fromJson(e))
               .toList(),
+      aBigIntList: (jsonSerialization['aBigIntList'] as List)
+          .map((e) => _i1.BigIntJsonExtension.fromJson(e))
+          .toList(),
+      aNullableBigIntList: (jsonSerialization['aNullableBigIntList'] as List?)
+          ?.map((e) => _i1.BigIntJsonExtension.fromJson(e))
+          .toList(),
+      aListWithNullableBigInts: (jsonSerialization['aListWithNullableBigInts']
+              as List)
+          .map((e) => e == null ? null : _i1.BigIntJsonExtension.fromJson(e))
+          .toList(),
+      aNullableListWithNullableBigInts:
+          (jsonSerialization['aNullableListWithNullableBigInts'] as List?)
+              ?.map(
+                  (e) => e == null ? null : _i1.BigIntJsonExtension.fromJson(e))
+              .toList(),
       anIntMap: (jsonSerialization['anIntMap'] as Map).map((k, v) => MapEntry(
             k as String,
             v as int,
@@ -299,6 +331,10 @@ abstract class Nullability implements _i1.SerializableModel {
 
   _i1.UuidValue? aNullableUuid;
 
+  BigInt aBigInt;
+
+  BigInt? aNullableBigInt;
+
   _i3.SimpleData anObject;
 
   _i3.SimpleData? aNullableObject;
@@ -351,6 +387,14 @@ abstract class Nullability implements _i1.SerializableModel {
 
   List<_i1.UuidValue?>? aNullableListWithNullableUuids;
 
+  List<BigInt> aBigIntList;
+
+  List<BigInt>? aNullableBigIntList;
+
+  List<BigInt?> aListWithNullableBigInts;
+
+  List<BigInt?>? aNullableListWithNullableBigInts;
+
   Map<String, int> anIntMap;
 
   Map<String, int>? aNullableIntMap;
@@ -379,6 +423,8 @@ abstract class Nullability implements _i1.SerializableModel {
     Duration? aNullableDuration,
     _i1.UuidValue? aUuid,
     _i1.UuidValue? aNullableUuid,
+    BigInt? aBigInt,
+    BigInt? aNullableBigInt,
     _i3.SimpleData? anObject,
     _i3.SimpleData? aNullableObject,
     List<int>? anIntList,
@@ -405,6 +451,10 @@ abstract class Nullability implements _i1.SerializableModel {
     List<_i1.UuidValue>? aNullableUuidList,
     List<_i1.UuidValue?>? aListWithNullableUuids,
     List<_i1.UuidValue?>? aNullableListWithNullableUuids,
+    List<BigInt>? aBigIntList,
+    List<BigInt>? aNullableBigIntList,
+    List<BigInt?>? aListWithNullableBigInts,
+    List<BigInt?>? aNullableListWithNullableBigInts,
     Map<String, int>? anIntMap,
     Map<String, int>? aNullableIntMap,
     Map<String, int?>? aMapWithNullableInts,
@@ -432,6 +482,8 @@ abstract class Nullability implements _i1.SerializableModel {
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
+      'aBigInt': aBigInt.toJson(),
+      if (aNullableBigInt != null) 'aNullableBigInt': aNullableBigInt?.toJson(),
       'anObject': anObject.toJson(),
       if (aNullableObject != null) 'aNullableObject': aNullableObject?.toJson(),
       'anIntList': anIntList.toJson(),
@@ -486,6 +538,15 @@ abstract class Nullability implements _i1.SerializableModel {
       if (aNullableListWithNullableUuids != null)
         'aNullableListWithNullableUuids': aNullableListWithNullableUuids
             ?.toJson(valueToJson: (v) => v?.toJson()),
+      'aBigIntList': aBigIntList.toJson(valueToJson: (v) => v.toJson()),
+      if (aNullableBigIntList != null)
+        'aNullableBigIntList':
+            aNullableBigIntList?.toJson(valueToJson: (v) => v.toJson()),
+      'aListWithNullableBigInts':
+          aListWithNullableBigInts.toJson(valueToJson: (v) => v?.toJson()),
+      if (aNullableListWithNullableBigInts != null)
+        'aNullableListWithNullableBigInts': aNullableListWithNullableBigInts
+            ?.toJson(valueToJson: (v) => v?.toJson()),
       'anIntMap': anIntMap.toJson(),
       if (aNullableIntMap != null) 'aNullableIntMap': aNullableIntMap?.toJson(),
       'aMapWithNullableInts': aMapWithNullableInts.toJson(),
@@ -520,6 +581,8 @@ class _NullabilityImpl extends Nullability {
     Duration? aNullableDuration,
     required _i1.UuidValue aUuid,
     _i1.UuidValue? aNullableUuid,
+    required BigInt aBigInt,
+    BigInt? aNullableBigInt,
     required _i3.SimpleData anObject,
     _i3.SimpleData? aNullableObject,
     required List<int> anIntList,
@@ -546,6 +609,10 @@ class _NullabilityImpl extends Nullability {
     List<_i1.UuidValue>? aNullableUuidList,
     required List<_i1.UuidValue?> aListWithNullableUuids,
     List<_i1.UuidValue?>? aNullableListWithNullableUuids,
+    required List<BigInt> aBigIntList,
+    List<BigInt>? aNullableBigIntList,
+    required List<BigInt?> aListWithNullableBigInts,
+    List<BigInt?>? aNullableListWithNullableBigInts,
     required Map<String, int> anIntMap,
     Map<String, int>? aNullableIntMap,
     required Map<String, int?> aMapWithNullableInts,
@@ -567,6 +634,8 @@ class _NullabilityImpl extends Nullability {
           aNullableDuration: aNullableDuration,
           aUuid: aUuid,
           aNullableUuid: aNullableUuid,
+          aBigInt: aBigInt,
+          aNullableBigInt: aNullableBigInt,
           anObject: anObject,
           aNullableObject: aNullableObject,
           anIntList: anIntList,
@@ -596,6 +665,10 @@ class _NullabilityImpl extends Nullability {
           aNullableUuidList: aNullableUuidList,
           aListWithNullableUuids: aListWithNullableUuids,
           aNullableListWithNullableUuids: aNullableListWithNullableUuids,
+          aBigIntList: aBigIntList,
+          aNullableBigIntList: aNullableBigIntList,
+          aListWithNullableBigInts: aListWithNullableBigInts,
+          aNullableListWithNullableBigInts: aNullableListWithNullableBigInts,
           anIntMap: anIntMap,
           aNullableIntMap: aNullableIntMap,
           aMapWithNullableInts: aMapWithNullableInts,
@@ -623,6 +696,8 @@ class _NullabilityImpl extends Nullability {
     Object? aNullableDuration = _Undefined,
     _i1.UuidValue? aUuid,
     Object? aNullableUuid = _Undefined,
+    BigInt? aBigInt,
+    Object? aNullableBigInt = _Undefined,
     _i3.SimpleData? anObject,
     Object? aNullableObject = _Undefined,
     List<int>? anIntList,
@@ -649,6 +724,10 @@ class _NullabilityImpl extends Nullability {
     Object? aNullableUuidList = _Undefined,
     List<_i1.UuidValue?>? aListWithNullableUuids,
     Object? aNullableListWithNullableUuids = _Undefined,
+    List<BigInt>? aBigIntList,
+    Object? aNullableBigIntList = _Undefined,
+    List<BigInt?>? aListWithNullableBigInts,
+    Object? aNullableListWithNullableBigInts = _Undefined,
     Map<String, int>? anIntMap,
     Object? aNullableIntMap = _Undefined,
     Map<String, int?>? aMapWithNullableInts,
@@ -681,6 +760,9 @@ class _NullabilityImpl extends Nullability {
       aUuid: aUuid ?? this.aUuid,
       aNullableUuid:
           aNullableUuid is _i1.UuidValue? ? aNullableUuid : this.aNullableUuid,
+      aBigInt: aBigInt ?? this.aBigInt,
+      aNullableBigInt:
+          aNullableBigInt is BigInt? ? aNullableBigInt : this.aNullableBigInt,
       anObject: anObject ?? this.anObject.copyWith(),
       aNullableObject: aNullableObject is _i3.SimpleData?
           ? aNullableObject
@@ -755,6 +837,16 @@ class _NullabilityImpl extends Nullability {
           aNullableListWithNullableUuids is List<_i1.UuidValue?>?
               ? aNullableListWithNullableUuids
               : this.aNullableListWithNullableUuids?.map((e0) => e0).toList(),
+      aBigIntList: aBigIntList ?? this.aBigIntList.map((e0) => e0).toList(),
+      aNullableBigIntList: aNullableBigIntList is List<BigInt>?
+          ? aNullableBigIntList
+          : this.aNullableBigIntList?.map((e0) => e0).toList(),
+      aListWithNullableBigInts: aListWithNullableBigInts ??
+          this.aListWithNullableBigInts.map((e0) => e0).toList(),
+      aNullableListWithNullableBigInts:
+          aNullableListWithNullableBigInts is List<BigInt?>?
+              ? aNullableListWithNullableBigInts
+              : this.aNullableListWithNullableBigInts?.map((e0) => e0).toList(),
       anIntMap: anIntMap ??
           this.anIntMap.map((
                 key0,

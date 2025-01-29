@@ -1269,6 +1269,24 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i1.UuidValue?>(e)).toList()
           : null) as dynamic;
     }
+    if (t == List<BigInt>) {
+      return (data as List).map((e) => deserialize<BigInt>(e)).toList()
+          as dynamic;
+    }
+    if (t == _i1.getType<List<BigInt>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<BigInt>(e)).toList()
+          : null) as dynamic;
+    }
+    if (t == List<BigInt?>) {
+      return (data as List).map((e) => deserialize<BigInt?>(e)).toList()
+          as dynamic;
+    }
+    if (t == _i1.getType<List<BigInt?>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<BigInt?>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == Map<String, int>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
@@ -1465,6 +1483,11 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
           : null) as dynamic;
     }
+    if (t == _i1.getType<List<BigInt>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<BigInt>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == _i1.getType<List<_i112.TestEnum>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i112.TestEnum>(e)).toList()
@@ -1554,6 +1577,12 @@ class Protocol extends _i1.SerializationManager {
               deserialize<_i1.UuidValue>(e['k']), deserialize<String>(e['v']))))
           : null) as dynamic;
     }
+    if (t == _i1.getType<Map<BigInt, String>?>()) {
+      return (data != null
+          ? Map.fromEntries((data as List).map((e) => MapEntry(
+              deserialize<BigInt>(e['k']), deserialize<String>(e['v']))))
+          : null) as dynamic;
+    }
     if (t == _i1.getType<Map<_i112.TestEnum, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
@@ -1639,6 +1668,12 @@ class Protocol extends _i1.SerializationManager {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Map<String, BigInt>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) =>
+              MapEntry(deserialize<String>(k), deserialize<BigInt>(v)))
           : null) as dynamic;
     }
     if (t == _i1.getType<Map<String, _i112.TestEnum>?>()) {
