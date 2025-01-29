@@ -967,8 +967,9 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
-        ..docs
-            .add('/// Sets the `${field.name}` values on the [$classFieldName]')
+        ..docs.add('''
+/// Creates a relation between this [$className] and the given [${field.type.generics.first.className}]s
+/// by setting each [${field.type.generics.first.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1042,7 +1043,9 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
-        ..docs.add('/// Sets the `${field.name}` on the [$classFieldName]')
+        ..docs.add('''
+/// Creates a relation between this [$className] and the given [${field.type.generics.first.className}]
+/// by setting the [${field.type.generics.first.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1110,7 +1113,9 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
-        ..docs.add('/// Sets the `${field.name}` on the [$classFieldName]')
+        ..docs.add('''
+/// Creates a relation between the given [$className] and [${field.type.className}]
+/// by setting the [$className]'s foreign key `${relation.fieldName}` to refer to the [${field.type.className}].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
