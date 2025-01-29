@@ -98,6 +98,34 @@ void main() {
   });
 
   test(
+      'Given a BigInt as a key in a map when serializing and unpacking the original object remains unchanged.',
+      () {
+    var object = TypesMap(aBigIntKey: {BigInt.two: 'value'});
+
+    var encodedString = SerializationManager.encode(object);
+    var typesMap = Protocol().decode<TypesMap>(encodedString);
+
+    expect(
+      typesMap.aBigIntKey?.entries.first.key,
+      BigInt.two,
+    );
+  });
+
+  test(
+      'Given a BigInt as a value in a map when serializing and unpacking the original object remains unchanged.',
+      () {
+    var object = TypesMap(aBigIntValue: {'2': BigInt.two});
+
+    var encodedString = SerializationManager.encode(object);
+    var typesMap = Protocol().decode<TypesMap>(encodedString);
+
+    expect(
+      typesMap.aBigIntValue?['2'],
+      BigInt.two,
+    );
+  });
+
+  test(
       'Given a ByteData as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var intList = Uint8List(8);

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:test/test.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:test/test.dart';
 
 ByteData createByteData() {
   var ints = Uint8List(256);
@@ -141,6 +141,9 @@ void main() {
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
         ],
+        aBigInt: BigInt.one,
+        aBigIntList: [],
+        aListWithNullableBigInts: [],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -291,6 +294,12 @@ void main() {
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
         ],
+        aBigInt: BigInt.one,
+        aBigIntList: [BigInt.one, BigInt.two],
+        aListWithNullableBigInts: [BigInt.one, null],
+        aNullableBigIntList: [BigInt.one],
+        aNullableBigInt: BigInt.one,
+        aNullableListWithNullableBigInts: [BigInt.one, null],
       );
 
       var s = SerializationManager.encode(nullability);
@@ -359,6 +368,13 @@ void main() {
       expect(unpacked.aNullableListWithNullableUuids![0],
           equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.aNullableListWithNullableUuids![1], isNull);
+
+      expect(unpacked.aBigInt, BigInt.one);
+      expect(unpacked.aBigIntList, [BigInt.one, BigInt.two]);
+      expect(unpacked.aListWithNullableBigInts, [BigInt.one, null]);
+      expect(unpacked.aNullableBigIntList, [BigInt.one]);
+      expect(unpacked.aNullableBigInt, BigInt.one);
+      expect(unpacked.aNullableListWithNullableBigInts, [BigInt.one, null]);
     });
 
     test('Map types', () {

@@ -228,6 +228,26 @@ void main() {
   });
 
   test(
+      'Given a class with a List<BigInt> when calling toJson the entire nested structure is converted.',
+      () {
+    var object = TypesList(
+      aBigInt: [
+        BigInt.parse('-12345678901234567890'),
+        BigInt.parse('18446744073709551615'),
+      ],
+    );
+
+    var jsonMap = object.toJson();
+
+    expect(jsonMap, {
+      'aBigInt': [
+        '-12345678901234567890',
+        '18446744073709551615',
+      ],
+    });
+  });
+
+  test(
       'Given a class with a List with a nested enum serialized by index when calling toJson the entire nested structure is converted.',
       () {
     var object = TypesList(
