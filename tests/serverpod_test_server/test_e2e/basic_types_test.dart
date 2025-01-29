@@ -148,4 +148,20 @@ void main() {
     var result = await client.basicTypes.testUri(null);
     expect(result, isNull);
   });
+
+  test(
+      'Given the test server, when a `BigInt`` is sent to the server, then it is returned verbatim',
+      () async {
+    var bigInt = BigInt.parse('-12345678901234567890');
+
+    var result = await client.basicTypes.testBigInt(bigInt);
+    expect(result, equals(bigInt));
+  });
+
+  test(
+      'Given the test server, when a `null` `BigInt?` is sent to the server, then `null` is returned',
+      () async {
+    var result = await client.basicTypes.testBigInt(null);
+    expect(result, isNull);
+  });
 }
