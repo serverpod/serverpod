@@ -39,7 +39,7 @@ class Database {
   })  : _session = session,
         _databaseConnection = DatabaseConnection(poolManager);
 
-  /// Returns a list of [$TableRow]s matching the given query parameters.
+  /// Returns a list of [TableRow]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
