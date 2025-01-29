@@ -420,7 +420,9 @@ void _copyServerUpgrade(
         Replacement(
           slotName: 'defaultIdType: int\n',
           replacement:
-              defaultIdType != null ? 'defaultIdType: $defaultIdType\n' : '',
+              defaultIdType != null
+              ? 'defaultIdType: ${defaultIdType.aliases.first}\n'
+              : '',
         ),
       ],
       fileNameReplacements: [
