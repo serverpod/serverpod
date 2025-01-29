@@ -513,19 +513,38 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
+        await serverpod.exceptionHandler.call(
+          ExceptionEvent(
+            Exception('Session was not created'),
+            StackTrace.current,
+          ),
+          OriginSpace.framework,
+          context: contextFromHttpRequest(this, request),
+        );
+
         return ResultInternalServerError(
             'Session was not created', StackTrace.current, 0);
       }
 
-      var result = await methodCallContext.method.call(
-        session,
-        methodCallContext.arguments,
-      );
+      try {
+        var result = await methodCallContext.method.call(
+          session,
+          methodCallContext.arguments,
+        );
 
-      return ResultSuccess(
-        result,
-        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
-      );
+        return ResultSuccess(
+          result,
+          sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+        );
+      } catch (e, stackTrace) {
+        await serverpod.exceptionHandler.call(
+          ExceptionEvent(e, stackTrace),
+          OriginSpace.application,
+          context: contextFromSession(session, httpRequest: request),
+        );
+
+        rethrow;
+      }
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
     } on InvalidEndpointMethodTypeException catch (e) {
@@ -583,6 +602,12 @@ class Server {
     }
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
+
+    await serverpod.exceptionHandler.call(
+      ExceptionEvent(e, stackTrace, message: message),
+      OriginSpace.framework,
+      context: contextFromServer(this),
+    );
   }
 }
 

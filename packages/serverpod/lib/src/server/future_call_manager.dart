@@ -134,13 +134,27 @@ class FutureCallManager {
           await call.invoke(futureCallSession, object);
           await futureCallSession.close();
         } catch (e, stackTrace) {
+          await _server.serverpod.exceptionHandler.call(
+            ExceptionEvent(e, stackTrace),
+            OriginSpace.application,
+            context: contextFromSession(futureCallSession),
+          );
+
           await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
       }
     } catch (e, stackTrace) {
       // Most likely we lost connection to the database
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
+      var message =
+          'Internal server error. Failed to connect to database in future call manager.';
+
+      await _server.serverpod.exceptionHandler.call(
+        ExceptionEvent(e, stackTrace, message: message),
+        OriginSpace.framework,
+        context: contextFromServer(_server),
+      );
+
+      stderr.writeln('${DateTime.now().toUtc()} $message');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');

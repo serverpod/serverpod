@@ -28,6 +28,44 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
   DateTime timestamp,
 );
 
+/// Container for a list of [EventHandler]s that will be run concurrently.
+class _EventHandlers implements EventHandlerCallable {
+  final List<EventHandler> handlers;
+
+  /// Timeout that applies to each event handler.
+  /// Since they are run concurrently this is effectively the total timeout for a call.
+  final _timeout = const Duration(seconds: 3);
+
+  /// Creates a new [_EventHandlers] with the specified list of handlers.
+  _EventHandlers(this.handlers);
+
+  @override
+  Future<void> call(
+    ServerpodEvent event,
+    OriginSpace space, {
+    required EventContext context,
+  }) async {
+    var futures = handlers
+        .map((handler) => handler(event, space, context: context))
+        .map((future) => future.timeout(_timeout));
+
+    try {
+      await futures.wait;
+    } on ParallelWaitError catch (e) {
+      var errors = e.errors;
+      if (errors is Iterable<AsyncError?>) {
+        for (var error in errors) {
+          if (error != null) {
+            stderr.writeln('Error in event handler: $error');
+          }
+        }
+      } else {
+        stderr.writeln('Error in an event handler: $errors');
+      }
+    }
+  }
+}
+
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
@@ -77,6 +115,9 @@ class Serverpod {
   /// check remotely if all services the server is depending on is up and
   /// running.
   final HealthCheckHandler? healthCheckHandler;
+
+  /// [EventHandler] for optional custom exception handling.
+  final EventHandler exceptionHandler;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -288,8 +329,31 @@ class Serverpod {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
+    List<EventHandler> exceptionHandlers = const [],
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
+  }) : exceptionHandler = _EventHandlers(exceptionHandlers).call {
+    try {
+      _initializeServerpod(
+        args,
+        config: config,
+      );
+    } catch (e, stackTrace) {
+      exceptionHandler(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: EventContext(
+          serverName: 'Serverpod', // can't guarantee that server is set
+          serverId: serverId,
+          serverRunMode: 'unknown', // can't guarantee that _runMode is set
+        ),
+      );
+    }
+  }
+
+  void _initializeServerpod(
+    List<String> args, {
+    ServerpodConfig? config,
   }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',

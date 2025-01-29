@@ -59,9 +59,13 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
 
       dbResponseTime =
           DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    } catch (e, stackTrace) {
+      await pod.exceptionHandler.call(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: contextFromServer(pod.server),
+      );
     }
-    // ignore: empty_catches
-    catch (e) {}
   }
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
