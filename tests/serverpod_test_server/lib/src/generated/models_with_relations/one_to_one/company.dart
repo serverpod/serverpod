@@ -447,7 +447,8 @@ class CompanyRepository {
 class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
-  /// Sets the `town` on the [company]
+  /// Creates a relation between the given [Company] and [Town]
+  /// by setting the [Company]'s foreign key `townId` to refer to the [Town].
   Future<void> town(
     _i1.Session session,
     Company company,

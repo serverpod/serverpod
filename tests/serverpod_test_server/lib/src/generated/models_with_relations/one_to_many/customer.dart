@@ -457,7 +457,8 @@ class CustomerRepository {
 class CustomerAttachRepository {
   const CustomerAttachRepository._();
 
-  /// Sets the `orders` values on the [customer]
+  /// Creates a relation between this [Customer] and the given [Order]s
+  /// by setting each [Order]'s foreign key `customerId` to refer to this [Customer].
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -483,7 +484,8 @@ class CustomerAttachRepository {
 class CustomerAttachRowRepository {
   const CustomerAttachRowRepository._();
 
-  /// Sets the `orders` on the [customer]
+  /// Creates a relation between this [Customer] and the given [Order]
+  /// by setting the [Order]'s foreign key `customerId` to refer to this [Customer].
   Future<void> orders(
     _i1.Session session,
     Customer customer,
@@ -509,7 +511,11 @@ class CustomerAttachRowRepository {
 class CustomerDetachRepository {
   const CustomerDetachRepository._();
 
-  /// Removes the `orders` field from the [Order]
+  /// Detaches the relation between this [Customer] and the given [Order]
+  /// by setting the [Order]'s foreign key `customerId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> orders(
     _i1.Session session,
     List<_i2.Order> order, {
@@ -531,7 +537,11 @@ class CustomerDetachRepository {
 class CustomerDetachRowRepository {
   const CustomerDetachRowRepository._();
 
-  /// Removes the `orders` field from the [Order]
+  /// Detaches the relation between this [Customer] and the given [Order]
+  /// by setting the [Order]'s foreign key `customerId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> orders(
     _i1.Session session,
     _i2.Order order, {

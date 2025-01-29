@@ -468,7 +468,8 @@ class UserNoteCollectionRepository {
 class UserNoteCollectionAttachRepository {
   const UserNoteCollectionAttachRepository._();
 
-  /// Sets the `userNotesPropertyName` values on the [userNoteCollection]
+  /// Creates a relation between this [UserNoteCollection] and the given [UserNote]s
+  /// by setting each [UserNote]'s foreign key `_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId` to refer to this [UserNoteCollection].
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
@@ -503,7 +504,8 @@ class UserNoteCollectionAttachRepository {
 class UserNoteCollectionAttachRowRepository {
   const UserNoteCollectionAttachRowRepository._();
 
-  /// Sets the `userNotesPropertyName` on the [userNoteCollection]
+  /// Creates a relation between this [UserNoteCollection] and the given [UserNote]
+  /// by setting the [UserNote]'s foreign key `_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId` to refer to this [UserNoteCollection].
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
@@ -536,7 +538,11 @@ class UserNoteCollectionAttachRowRepository {
 class UserNoteCollectionDetachRepository {
   const UserNoteCollectionDetachRepository._();
 
-  /// Removes the `userNotesPropertyName` field from the [UserNote]
+  /// Detaches the relation between this [UserNoteCollection] and the given [UserNote]
+  /// by setting the [UserNote]'s foreign key `_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> userNotesPropertyName(
     _i1.Session session,
     List<_i2.UserNote> userNote, {
@@ -567,7 +573,11 @@ class UserNoteCollectionDetachRepository {
 class UserNoteCollectionDetachRowRepository {
   const UserNoteCollectionDetachRowRepository._();
 
-  /// Removes the `userNotesPropertyName` field from the [UserNote]
+  /// Detaches the relation between this [UserNoteCollection] and the given [UserNote]
+  /// by setting the [UserNote]'s foreign key `_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> userNotesPropertyName(
     _i1.Session session,
     _i2.UserNote userNote, {

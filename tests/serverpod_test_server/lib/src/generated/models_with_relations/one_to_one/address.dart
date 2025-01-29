@@ -450,7 +450,8 @@ class AddressRepository {
 class AddressAttachRowRepository {
   const AddressAttachRowRepository._();
 
-  /// Sets the `inhabitant` on the [address]
+  /// Creates a relation between the given [Address] and [Citizen]
+  /// by setting the [Address]'s foreign key `inhabitantId` to refer to the [Citizen].
   Future<void> inhabitant(
     _i1.Session session,
     Address address,
@@ -476,7 +477,11 @@ class AddressAttachRowRepository {
 class AddressDetachRowRepository {
   const AddressDetachRowRepository._();
 
-  /// Removes the `inhabitant` field from the [address]
+  /// Detaches the relation between this [Address] and the [Citizen] set in `inhabitant`
+  /// by setting the [Address]'s foreign key `inhabitantId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> inhabitant(
     _i1.Session session,
     Address address, {

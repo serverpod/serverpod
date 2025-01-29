@@ -501,7 +501,8 @@ class PersonRepository {
 class PersonAttachRowRepository {
   const PersonAttachRowRepository._();
 
-  /// Sets the `organization` on the [person]
+  /// Creates a relation between the given [Person] and [Organization]
+  /// by setting the [Person]'s foreign key `organizationId` to refer to the [Organization].
   Future<void> organization(
     _i1.Session session,
     Person person,
@@ -527,7 +528,11 @@ class PersonAttachRowRepository {
 class PersonDetachRowRepository {
   const PersonDetachRowRepository._();
 
-  /// Removes the `organization` field from the [person]
+  /// Detaches the relation between this [Person] and the [Organization] set in `organization`
+  /// by setting the [Person]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organization(
     _i1.Session session,
     Person person, {

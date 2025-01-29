@@ -525,7 +525,8 @@ class TeamRepository {
 class TeamAttachRepository {
   const TeamAttachRepository._();
 
-  /// Sets the `players` values on the [team]
+  /// Creates a relation between this [Team] and the given [Player]s
+  /// by setting each [Player]'s foreign key `teamId` to refer to this [Team].
   Future<void> players(
     _i1.Session session,
     Team team,
@@ -551,7 +552,8 @@ class TeamAttachRepository {
 class TeamAttachRowRepository {
   const TeamAttachRowRepository._();
 
-  /// Sets the `arena` on the [team]
+  /// Creates a relation between the given [Team] and [Arena]
+  /// by setting the [Team]'s foreign key `arenaId` to refer to the [Arena].
   Future<void> arena(
     _i1.Session session,
     Team team,
@@ -573,7 +575,8 @@ class TeamAttachRowRepository {
     );
   }
 
-  /// Sets the `players` on the [team]
+  /// Creates a relation between this [Team] and the given [Player]
+  /// by setting the [Player]'s foreign key `teamId` to refer to this [Team].
   Future<void> players(
     _i1.Session session,
     Team team,
@@ -599,7 +602,11 @@ class TeamAttachRowRepository {
 class TeamDetachRepository {
   const TeamDetachRepository._();
 
-  /// Removes the `players` field from the [Player]
+  /// Detaches the relation between this [Team] and the given [Player]
+  /// by setting the [Player]'s foreign key `teamId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> players(
     _i1.Session session,
     List<_i3.Player> player, {
@@ -621,7 +628,11 @@ class TeamDetachRepository {
 class TeamDetachRowRepository {
   const TeamDetachRowRepository._();
 
-  /// Removes the `arena` field from the [team]
+  /// Detaches the relation between this [Team] and the [Arena] set in `arena`
+  /// by setting the [Team]'s foreign key `arenaId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> arena(
     _i1.Session session,
     Team team, {
@@ -639,7 +650,11 @@ class TeamDetachRowRepository {
     );
   }
 
-  /// Removes the `players` field from the [Player]
+  /// Detaches the relation between this [Team] and the given [Player]
+  /// by setting the [Player]'s foreign key `teamId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> players(
     _i1.Session session,
     _i3.Player player, {

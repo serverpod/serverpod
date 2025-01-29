@@ -451,7 +451,8 @@ class RelatedUniqueDataRepository {
 class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
-  /// Sets the `uniqueData` on the [relatedUniqueData]
+  /// Creates a relation between the given [RelatedUniqueData] and [UniqueData]
+  /// by setting the [RelatedUniqueData]'s foreign key `uniqueDataId` to refer to the [UniqueData].
   Future<void> uniqueData(
     _i1.Session session,
     RelatedUniqueData relatedUniqueData,

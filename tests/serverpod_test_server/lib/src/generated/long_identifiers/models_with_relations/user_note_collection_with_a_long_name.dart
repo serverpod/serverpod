@@ -469,7 +469,8 @@ class UserNoteCollectionWithALongNameRepository {
 class UserNoteCollectionWithALongNameAttachRepository {
   const UserNoteCollectionWithALongNameAttachRepository._();
 
-  /// Sets the `notes` values on the [userNoteCollectionWithALongName]
+  /// Creates a relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]s
+  /// by setting each [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to refer to this [UserNoteCollectionWithALongName].
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -504,7 +505,8 @@ class UserNoteCollectionWithALongNameAttachRepository {
 class UserNoteCollectionWithALongNameAttachRowRepository {
   const UserNoteCollectionWithALongNameAttachRowRepository._();
 
-  /// Sets the `notes` on the [userNoteCollectionWithALongName]
+  /// Creates a relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]
+  /// by setting the [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to refer to this [UserNoteCollectionWithALongName].
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
@@ -537,7 +539,11 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
 class UserNoteCollectionWithALongNameDetachRepository {
   const UserNoteCollectionWithALongNameDetachRepository._();
 
-  /// Removes the `notes` field from the [UserNoteWithALongName]
+  /// Detaches the relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]
+  /// by setting the [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> notes(
     _i1.Session session,
     List<_i2.UserNoteWithALongName> userNoteWithALongName, {
@@ -568,7 +574,11 @@ class UserNoteCollectionWithALongNameDetachRepository {
 class UserNoteCollectionWithALongNameDetachRowRepository {
   const UserNoteCollectionWithALongNameDetachRowRepository._();
 
-  /// Removes the `notes` field from the [UserNoteWithALongName]
+  /// Detaches the relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]
+  /// by setting the [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> notes(
     _i1.Session session,
     _i2.UserNoteWithALongName userNoteWithALongName, {

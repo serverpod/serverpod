@@ -448,7 +448,8 @@ class ObjectUserRepository {
 class ObjectUserAttachRowRepository {
   const ObjectUserAttachRowRepository._();
 
-  /// Sets the `userInfo` on the [objectUser]
+  /// Creates a relation between the given [ObjectUser] and [UserInfo]
+  /// by setting the [ObjectUser]'s foreign key `userInfoId` to refer to the [UserInfo].
   Future<void> userInfo(
     _i1.Session session,
     ObjectUser objectUser,

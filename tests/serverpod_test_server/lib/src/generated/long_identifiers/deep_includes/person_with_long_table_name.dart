@@ -516,7 +516,8 @@ class PersonWithLongTableNameRepository {
 class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
-  /// Sets the `organization` on the [personWithLongTableName]
+  /// Creates a relation between the given [PersonWithLongTableName] and [OrganizationWithLongTableName]
+  /// by setting the [PersonWithLongTableName]'s foreign key `organizationId` to refer to the [OrganizationWithLongTableName].
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personWithLongTableName,
@@ -543,7 +544,11 @@ class PersonWithLongTableNameAttachRowRepository {
 class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
-  /// Removes the `organization` field from the [personwithlongtablename]
+  /// Detaches the relation between this [PersonWithLongTableName] and the [OrganizationWithLongTableName] set in `organization`
+  /// by setting the [PersonWithLongTableName]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organization(
     _i1.Session session,
     PersonWithLongTableName personwithlongtablename, {

@@ -497,7 +497,8 @@ class BlockingRepository {
 class BlockingAttachRowRepository {
   const BlockingAttachRowRepository._();
 
-  /// Sets the `blocked` on the [blocking]
+  /// Creates a relation between the given [Blocking] and [Member]
+  /// by setting the [Blocking]'s foreign key `blockedId` to refer to the [Member].
   Future<void> blocked(
     _i1.Session session,
     Blocking blocking,
@@ -519,7 +520,8 @@ class BlockingAttachRowRepository {
     );
   }
 
-  /// Sets the `blockedBy` on the [blocking]
+  /// Creates a relation between the given [Blocking] and [Member]
+  /// by setting the [Blocking]'s foreign key `blockedById` to refer to the [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Blocking blocking,

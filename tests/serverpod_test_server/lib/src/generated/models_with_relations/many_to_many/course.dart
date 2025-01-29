@@ -458,7 +458,8 @@ class CourseRepository {
 class CourseAttachRepository {
   const CourseAttachRepository._();
 
-  /// Sets the `enrollments` values on the [course]
+  /// Creates a relation between this [Course] and the given [Enrollment]s
+  /// by setting each [Enrollment]'s foreign key `courseId` to refer to this [Course].
   Future<void> enrollments(
     _i1.Session session,
     Course course,
@@ -485,7 +486,8 @@ class CourseAttachRepository {
 class CourseAttachRowRepository {
   const CourseAttachRowRepository._();
 
-  /// Sets the `enrollments` on the [course]
+  /// Creates a relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to refer to this [Course].
   Future<void> enrollments(
     _i1.Session session,
     Course course,
@@ -511,7 +513,11 @@ class CourseAttachRowRepository {
 class CourseDetachRepository {
   const CourseDetachRepository._();
 
-  /// Removes the `enrollments` field from the [Enrollment]
+  /// Detaches the relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> enrollments(
     _i1.Session session,
     List<_i2.Enrollment> enrollment, {
@@ -534,7 +540,11 @@ class CourseDetachRepository {
 class CourseDetachRowRepository {
   const CourseDetachRowRepository._();
 
-  /// Removes the `enrollments` field from the [Enrollment]
+  /// Detaches the relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> enrollments(
     _i1.Session session,
     _i2.Enrollment enrollment, {

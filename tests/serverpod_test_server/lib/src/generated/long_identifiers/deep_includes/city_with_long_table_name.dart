@@ -541,7 +541,8 @@ class CityWithLongTableNameRepository {
 class CityWithLongTableNameAttachRepository {
   const CityWithLongTableNameAttachRepository._();
 
-  /// Sets the `citizens` values on the [cityWithLongTableName]
+  /// Creates a relation between this [CityWithLongTableName] and the given [PersonWithLongTableName]s
+  /// by setting each [PersonWithLongTableName]'s foreign key `_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id` to refer to this [CityWithLongTableName].
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -572,7 +573,8 @@ class CityWithLongTableNameAttachRepository {
     );
   }
 
-  /// Sets the `organizations` values on the [cityWithLongTableName]
+  /// Creates a relation between this [CityWithLongTableName] and the given [OrganizationWithLongTableName]s
+  /// by setting each [OrganizationWithLongTableName]'s foreign key `cityId` to refer to this [CityWithLongTableName].
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -600,7 +602,8 @@ class CityWithLongTableNameAttachRepository {
 class CityWithLongTableNameAttachRowRepository {
   const CityWithLongTableNameAttachRowRepository._();
 
-  /// Sets the `citizens` on the [cityWithLongTableName]
+  /// Creates a relation between this [CityWithLongTableName] and the given [PersonWithLongTableName]
+  /// by setting the [PersonWithLongTableName]'s foreign key `_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id` to refer to this [CityWithLongTableName].
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -629,7 +632,8 @@ class CityWithLongTableNameAttachRowRepository {
     );
   }
 
-  /// Sets the `organizations` on the [cityWithLongTableName]
+  /// Creates a relation between this [CityWithLongTableName] and the given [OrganizationWithLongTableName]
+  /// by setting the [OrganizationWithLongTableName]'s foreign key `cityId` to refer to this [CityWithLongTableName].
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
@@ -656,7 +660,11 @@ class CityWithLongTableNameAttachRowRepository {
 class CityWithLongTableNameDetachRepository {
   const CityWithLongTableNameDetachRepository._();
 
-  /// Removes the `citizens` field from the [PersonWithLongTableName]
+  /// Detaches the relation between this [CityWithLongTableName] and the given [PersonWithLongTableName]
+  /// by setting the [PersonWithLongTableName]'s foreign key `_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> citizens(
     _i1.Session session,
     List<_i2.PersonWithLongTableName> personWithLongTableName, {
@@ -683,7 +691,11 @@ class CityWithLongTableNameDetachRepository {
     );
   }
 
-  /// Removes the `organizations` field from the [OrganizationWithLongTableName]
+  /// Detaches the relation between this [CityWithLongTableName] and the given [OrganizationWithLongTableName]
+  /// by setting the [OrganizationWithLongTableName]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organizations(
     _i1.Session session,
     List<_i3.OrganizationWithLongTableName> organizationWithLongTableName, {
@@ -707,7 +719,11 @@ class CityWithLongTableNameDetachRepository {
 class CityWithLongTableNameDetachRowRepository {
   const CityWithLongTableNameDetachRowRepository._();
 
-  /// Removes the `citizens` field from the [PersonWithLongTableName]
+  /// Detaches the relation between this [CityWithLongTableName] and the given [PersonWithLongTableName]
+  /// by setting the [PersonWithLongTableName]'s foreign key `_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> citizens(
     _i1.Session session,
     _i2.PersonWithLongTableName personWithLongTableName, {
@@ -731,7 +747,11 @@ class CityWithLongTableNameDetachRowRepository {
     );
   }
 
-  /// Removes the `organizations` field from the [OrganizationWithLongTableName]
+  /// Detaches the relation between this [CityWithLongTableName] and the given [OrganizationWithLongTableName]
+  /// by setting the [OrganizationWithLongTableName]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organizations(
     _i1.Session session,
     _i3.OrganizationWithLongTableName organizationWithLongTableName, {

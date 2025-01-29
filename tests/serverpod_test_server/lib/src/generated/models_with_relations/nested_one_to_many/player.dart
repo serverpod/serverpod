@@ -449,7 +449,8 @@ class PlayerRepository {
 class PlayerAttachRowRepository {
   const PlayerAttachRowRepository._();
 
-  /// Sets the `team` on the [player]
+  /// Creates a relation between the given [Player] and [Team]
+  /// by setting the [Player]'s foreign key `teamId` to refer to the [Team].
   Future<void> team(
     _i1.Session session,
     Player player,
@@ -475,7 +476,11 @@ class PlayerAttachRowRepository {
 class PlayerDetachRowRepository {
   const PlayerDetachRowRepository._();
 
-  /// Removes the `team` field from the [player]
+  /// Detaches the relation between this [Player] and the [Team] set in `team`
+  /// by setting the [Player]'s foreign key `teamId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> team(
     _i1.Session session,
     Player player, {

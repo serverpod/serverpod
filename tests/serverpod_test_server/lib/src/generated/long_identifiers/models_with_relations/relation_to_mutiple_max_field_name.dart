@@ -473,7 +473,8 @@ class RelationToMultipleMaxFieldNameRepository {
 class RelationToMultipleMaxFieldNameAttachRepository {
   const RelationToMultipleMaxFieldNameAttachRepository._();
 
-  /// Sets the `multipleMaxFieldNames` values on the [relationToMultipleMaxFieldName]
+  /// Creates a relation between this [RelationToMultipleMaxFieldName] and the given [MultipleMaxFieldName]s
+  /// by setting each [MultipleMaxFieldName]'s foreign key `_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId` to refer to this [RelationToMultipleMaxFieldName].
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -508,7 +509,8 @@ class RelationToMultipleMaxFieldNameAttachRepository {
 class RelationToMultipleMaxFieldNameAttachRowRepository {
   const RelationToMultipleMaxFieldNameAttachRowRepository._();
 
-  /// Sets the `multipleMaxFieldNames` on the [relationToMultipleMaxFieldName]
+  /// Creates a relation between this [RelationToMultipleMaxFieldName] and the given [MultipleMaxFieldName]
+  /// by setting the [MultipleMaxFieldName]'s foreign key `_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId` to refer to this [RelationToMultipleMaxFieldName].
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
@@ -541,7 +543,11 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
 class RelationToMultipleMaxFieldNameDetachRepository {
   const RelationToMultipleMaxFieldNameDetachRepository._();
 
-  /// Removes the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
+  /// Detaches the relation between this [RelationToMultipleMaxFieldName] and the given [MultipleMaxFieldName]
+  /// by setting the [MultipleMaxFieldName]'s foreign key `_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
@@ -572,7 +578,11 @@ class RelationToMultipleMaxFieldNameDetachRepository {
 class RelationToMultipleMaxFieldNameDetachRowRepository {
   const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
-  /// Removes the `multipleMaxFieldNames` field from the [MultipleMaxFieldName]
+  /// Detaches the relation between this [RelationToMultipleMaxFieldName] and the given [MultipleMaxFieldName]
+  /// by setting the [MultipleMaxFieldName]'s foreign key `_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     _i2.MultipleMaxFieldName multipleMaxFieldName, {

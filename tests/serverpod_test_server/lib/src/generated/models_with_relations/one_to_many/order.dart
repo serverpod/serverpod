@@ -522,7 +522,8 @@ class OrderRepository {
 class OrderAttachRepository {
   const OrderAttachRepository._();
 
-  /// Sets the `comments` values on the [order]
+  /// Creates a relation between this [Order] and the given [Comment]s
+  /// by setting each [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
     _i1.Session session,
     Order order,
@@ -548,7 +549,8 @@ class OrderAttachRepository {
 class OrderAttachRowRepository {
   const OrderAttachRowRepository._();
 
-  /// Sets the `customer` on the [order]
+  /// Creates a relation between the given [Order] and [Customer]
+  /// by setting the [Order]'s foreign key `customerId` to refer to the [Customer].
   Future<void> customer(
     _i1.Session session,
     Order order,
@@ -570,7 +572,8 @@ class OrderAttachRowRepository {
     );
   }
 
-  /// Sets the `comments` on the [order]
+  /// Creates a relation between this [Order] and the given [Comment]
+  /// by setting the [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
     _i1.Session session,
     Order order,

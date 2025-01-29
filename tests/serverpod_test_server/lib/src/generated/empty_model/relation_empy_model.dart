@@ -440,7 +440,8 @@ class RelationEmptyModelRepository {
 class RelationEmptyModelAttachRepository {
   const RelationEmptyModelAttachRepository._();
 
-  /// Sets the `items` values on the [relationEmptyModel]
+  /// Creates a relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]s
+  /// by setting each [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to refer to this [RelationEmptyModel].
   Future<void> items(
     _i1.Session session,
     RelationEmptyModel relationEmptyModel,
@@ -475,7 +476,8 @@ class RelationEmptyModelAttachRepository {
 class RelationEmptyModelAttachRowRepository {
   const RelationEmptyModelAttachRowRepository._();
 
-  /// Sets the `items` on the [relationEmptyModel]
+  /// Creates a relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]
+  /// by setting the [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to refer to this [RelationEmptyModel].
   Future<void> items(
     _i1.Session session,
     RelationEmptyModel relationEmptyModel,
@@ -507,7 +509,11 @@ class RelationEmptyModelAttachRowRepository {
 class RelationEmptyModelDetachRepository {
   const RelationEmptyModelDetachRepository._();
 
-  /// Removes the `items` field from the [EmptyModelRelationItem]
+  /// Detaches the relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]
+  /// by setting the [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> items(
     _i1.Session session,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
@@ -537,7 +543,11 @@ class RelationEmptyModelDetachRepository {
 class RelationEmptyModelDetachRowRepository {
   const RelationEmptyModelDetachRowRepository._();
 
-  /// Removes the `items` field from the [EmptyModelRelationItem]
+  /// Detaches the relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]
+  /// by setting the [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> items(
     _i1.Session session,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {

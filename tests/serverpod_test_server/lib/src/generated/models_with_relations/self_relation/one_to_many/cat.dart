@@ -525,7 +525,8 @@ class CatRepository {
 class CatAttachRepository {
   const CatAttachRepository._();
 
-  /// Sets the `kittens` values on the [cat]
+  /// Creates a relation between this [Cat] and the given [Cat]s
+  /// by setting each [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -552,7 +553,8 @@ class CatAttachRepository {
 class CatAttachRowRepository {
   const CatAttachRowRepository._();
 
-  /// Sets the `mother` on the [cat]
+  /// Creates a relation between the given [Cat] and [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to refer to the [Cat].
   Future<void> mother(
     _i1.Session session,
     Cat cat,
@@ -574,7 +576,8 @@ class CatAttachRowRepository {
     );
   }
 
-  /// Sets the `kittens` on the [cat]
+  /// Creates a relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
@@ -600,7 +603,11 @@ class CatAttachRowRepository {
 class CatDetachRepository {
   const CatDetachRepository._();
 
-  /// Removes the `kittens` field from the [Cat]
+  /// Detaches the relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> kittens(
     _i1.Session session,
     List<_i2.Cat> cat, {
@@ -622,7 +629,11 @@ class CatDetachRepository {
 class CatDetachRowRepository {
   const CatDetachRowRepository._();
 
-  /// Removes the `mother` field from the [cat]
+  /// Detaches the relation between this [Cat] and the [Cat] set in `mother`
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> mother(
     _i1.Session session,
     Cat cat, {
@@ -640,7 +651,11 @@ class CatDetachRowRepository {
     );
   }
 
-  /// Removes the `kittens` field from the [Cat]
+  /// Detaches the relation between this [Cat] and the given [Cat]
+  /// by setting the [Cat]'s foreign key `motherId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> kittens(
     _i1.Session session,
     _i2.Cat cat, {

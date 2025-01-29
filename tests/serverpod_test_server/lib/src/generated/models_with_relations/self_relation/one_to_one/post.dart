@@ -498,7 +498,8 @@ class PostRepository {
 class PostAttachRowRepository {
   const PostAttachRowRepository._();
 
-  /// Sets the `previous` on the [post]
+  /// Creates a relation between the given [Post] and [Post]
+  /// by setting the [Post]'s foreign key `id` to refer to the [Post].
   Future<void> previous(
     _i1.Session session,
     Post post,
@@ -520,7 +521,8 @@ class PostAttachRowRepository {
     );
   }
 
-  /// Sets the `next` on the [post]
+  /// Creates a relation between the given [Post] and [Post]
+  /// by setting the [Post]'s foreign key `nextId` to refer to the [Post].
   Future<void> next(
     _i1.Session session,
     Post post,
@@ -546,7 +548,11 @@ class PostAttachRowRepository {
 class PostDetachRowRepository {
   const PostDetachRowRepository._();
 
-  /// Removes the `previous` field from the [post]
+  /// Detaches the relation between this [Post] and the [Post] set in `previous`
+  /// by setting the [Post]'s foreign key `id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> previous(
     _i1.Session session,
     Post post, {
@@ -572,7 +578,11 @@ class PostDetachRowRepository {
     );
   }
 
-  /// Removes the `next` field from the [post]
+  /// Detaches the relation between this [Post] and the [Post] set in `next`
+  /// by setting the [Post]'s foreign key `nextId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> next(
     _i1.Session session,
     Post post, {

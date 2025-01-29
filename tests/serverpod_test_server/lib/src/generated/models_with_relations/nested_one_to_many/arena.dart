@@ -430,7 +430,8 @@ class ArenaRepository {
 class ArenaAttachRowRepository {
   const ArenaAttachRowRepository._();
 
-  /// Sets the `team` on the [arena]
+  /// Creates a relation between the given [Arena] and [Team]
+  /// by setting the [Arena]'s foreign key `id` to refer to the [Team].
   Future<void> team(
     _i1.Session session,
     Arena arena,
@@ -456,7 +457,11 @@ class ArenaAttachRowRepository {
 class ArenaDetachRowRepository {
   const ArenaDetachRowRepository._();
 
-  /// Removes the `team` field from the [arena]
+  /// Detaches the relation between this [Arena] and the [Team] set in `team`
+  /// by setting the [Arena]'s foreign key `id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> team(
     _i1.Session session,
     Arena arena, {

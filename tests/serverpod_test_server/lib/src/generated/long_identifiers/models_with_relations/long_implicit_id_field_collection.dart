@@ -506,7 +506,8 @@ class LongImplicitIdFieldCollectionRepository {
 class LongImplicitIdFieldCollectionAttachRepository {
   const LongImplicitIdFieldCollectionAttachRepository._();
 
-  /// Sets the `thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa` values on the [longImplicitIdFieldCollection]
+  /// Creates a relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]s
+  /// by setting each [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to refer to this [LongImplicitIdFieldCollection].
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
@@ -541,7 +542,8 @@ class LongImplicitIdFieldCollectionAttachRepository {
 class LongImplicitIdFieldCollectionAttachRowRepository {
   const LongImplicitIdFieldCollectionAttachRowRepository._();
 
-  /// Sets the `thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa` on the [longImplicitIdFieldCollection]
+  /// Creates a relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]
+  /// by setting the [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to refer to this [LongImplicitIdFieldCollection].
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
@@ -574,7 +576,11 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
 class LongImplicitIdFieldCollectionDetachRepository {
   const LongImplicitIdFieldCollectionDetachRepository._();
 
-  /// Removes the `thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa` field from the [LongImplicitIdField]
+  /// Detaches the relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]
+  /// by setting the [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     List<_i2.LongImplicitIdField> longImplicitIdField, {
@@ -605,7 +611,11 @@ class LongImplicitIdFieldCollectionDetachRepository {
 class LongImplicitIdFieldCollectionDetachRowRepository {
   const LongImplicitIdFieldCollectionDetachRowRepository._();
 
-  /// Removes the `thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa` field from the [LongImplicitIdField]
+  /// Detaches the relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]
+  /// by setting the [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     _i2.LongImplicitIdField longImplicitIdField, {

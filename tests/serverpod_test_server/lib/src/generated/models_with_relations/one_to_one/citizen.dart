@@ -558,7 +558,8 @@ class CitizenRepository {
 class CitizenAttachRowRepository {
   const CitizenAttachRowRepository._();
 
-  /// Sets the `address` on the [citizen]
+  /// Creates a relation between the given [Citizen] and [Address]
+  /// by setting the [Citizen]'s foreign key `id` to refer to the [Address].
   Future<void> address(
     _i1.Session session,
     Citizen citizen,
@@ -580,7 +581,8 @@ class CitizenAttachRowRepository {
     );
   }
 
-  /// Sets the `company` on the [citizen]
+  /// Creates a relation between the given [Citizen] and [Company]
+  /// by setting the [Citizen]'s foreign key `companyId` to refer to the [Company].
   Future<void> company(
     _i1.Session session,
     Citizen citizen,
@@ -602,7 +604,8 @@ class CitizenAttachRowRepository {
     );
   }
 
-  /// Sets the `oldCompany` on the [citizen]
+  /// Creates a relation between the given [Citizen] and [Company]
+  /// by setting the [Citizen]'s foreign key `oldCompanyId` to refer to the [Company].
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen,
@@ -628,7 +631,11 @@ class CitizenAttachRowRepository {
 class CitizenDetachRowRepository {
   const CitizenDetachRowRepository._();
 
-  /// Removes the `address` field from the [citizen]
+  /// Detaches the relation between this [Citizen] and the [Address] set in `address`
+  /// by setting the [Citizen]'s foreign key `id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> address(
     _i1.Session session,
     Citizen citizen, {
@@ -654,7 +661,11 @@ class CitizenDetachRowRepository {
     );
   }
 
-  /// Removes the `oldCompany` field from the [citizen]
+  /// Detaches the relation between this [Citizen] and the [Company] set in `oldCompany`
+  /// by setting the [Citizen]'s foreign key `oldCompanyId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen, {

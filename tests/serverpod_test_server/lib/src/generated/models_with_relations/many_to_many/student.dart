@@ -454,7 +454,8 @@ class StudentRepository {
 class StudentAttachRepository {
   const StudentAttachRepository._();
 
-  /// Sets the `enrollments` values on the [student]
+  /// Creates a relation between this [Student] and the given [Enrollment]s
+  /// by setting each [Enrollment]'s foreign key `studentId` to refer to this [Student].
   Future<void> enrollments(
     _i1.Session session,
     Student student,
@@ -481,7 +482,8 @@ class StudentAttachRepository {
 class StudentAttachRowRepository {
   const StudentAttachRowRepository._();
 
-  /// Sets the `enrollments` on the [student]
+  /// Creates a relation between this [Student] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `studentId` to refer to this [Student].
   Future<void> enrollments(
     _i1.Session session,
     Student student,

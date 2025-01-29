@@ -447,7 +447,8 @@ class CommentRepository {
 class CommentAttachRowRepository {
   const CommentAttachRowRepository._();
 
-  /// Sets the `order` on the [comment]
+  /// Creates a relation between the given [Comment] and [Order]
+  /// by setting the [Comment]'s foreign key `orderId` to refer to the [Order].
   Future<void> order(
     _i1.Session session,
     Comment comment,

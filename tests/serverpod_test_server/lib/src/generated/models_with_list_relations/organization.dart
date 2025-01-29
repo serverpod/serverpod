@@ -525,7 +525,8 @@ class OrganizationRepository {
 class OrganizationAttachRepository {
   const OrganizationAttachRepository._();
 
-  /// Sets the `people` values on the [organization]
+  /// Creates a relation between this [Organization] and the given [Person]s
+  /// by setting each [Person]'s foreign key `organizationId` to refer to this [Organization].
   Future<void> people(
     _i1.Session session,
     Organization organization,
@@ -552,7 +553,8 @@ class OrganizationAttachRepository {
 class OrganizationAttachRowRepository {
   const OrganizationAttachRowRepository._();
 
-  /// Sets the `city` on the [organization]
+  /// Creates a relation between the given [Organization] and [City]
+  /// by setting the [Organization]'s foreign key `cityId` to refer to the [City].
   Future<void> city(
     _i1.Session session,
     Organization organization,
@@ -574,7 +576,8 @@ class OrganizationAttachRowRepository {
     );
   }
 
-  /// Sets the `people` on the [organization]
+  /// Creates a relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to refer to this [Organization].
   Future<void> people(
     _i1.Session session,
     Organization organization,
@@ -600,7 +603,11 @@ class OrganizationAttachRowRepository {
 class OrganizationDetachRepository {
   const OrganizationDetachRepository._();
 
-  /// Removes the `people` field from the [Person]
+  /// Detaches the relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> people(
     _i1.Session session,
     List<_i2.Person> person, {
@@ -622,7 +629,11 @@ class OrganizationDetachRepository {
 class OrganizationDetachRowRepository {
   const OrganizationDetachRowRepository._();
 
-  /// Removes the `city` field from the [organization]
+  /// Detaches the relation between this [Organization] and the [City] set in `city`
+  /// by setting the [Organization]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> city(
     _i1.Session session,
     Organization organization, {
@@ -640,7 +651,11 @@ class OrganizationDetachRowRepository {
     );
   }
 
-  /// Removes the `people` field from the [Person]
+  /// Detaches the relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> people(
     _i1.Session session,
     _i2.Person person, {

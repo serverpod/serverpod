@@ -526,7 +526,8 @@ class MemberRepository {
 class MemberAttachRepository {
   const MemberAttachRepository._();
 
-  /// Sets the `blocking` values on the [member]
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -549,7 +550,8 @@ class MemberAttachRepository {
     );
   }
 
-  /// Sets the `blockedBy` values on the [member]
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
@@ -576,7 +578,8 @@ class MemberAttachRepository {
 class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
-  /// Sets the `blocking` on the [member]
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
@@ -598,7 +601,8 @@ class MemberAttachRowRepository {
     );
   }
 
-  /// Sets the `blockedBy` on the [member]
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,

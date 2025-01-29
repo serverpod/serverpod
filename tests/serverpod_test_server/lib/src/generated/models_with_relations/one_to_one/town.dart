@@ -449,7 +449,8 @@ class TownRepository {
 class TownAttachRowRepository {
   const TownAttachRowRepository._();
 
-  /// Sets the `mayor` on the [town]
+  /// Creates a relation between the given [Town] and [Citizen]
+  /// by setting the [Town]'s foreign key `mayorId` to refer to the [Citizen].
   Future<void> mayor(
     _i1.Session session,
     Town town,
@@ -475,7 +476,11 @@ class TownAttachRowRepository {
 class TownDetachRowRepository {
   const TownDetachRowRepository._();
 
-  /// Removes the `mayor` field from the [town]
+  /// Detaches the relation between this [Town] and the [Citizen] set in `mayor`
+  /// by setting the [Town]'s foreign key `mayorId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> mayor(
     _i1.Session session,
     Town town, {

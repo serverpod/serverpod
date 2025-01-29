@@ -530,7 +530,8 @@ class CityRepository {
 class CityAttachRepository {
   const CityAttachRepository._();
 
-  /// Sets the `citizens` values on the [city]
+  /// Creates a relation between this [City] and the given [Person]s
+  /// by setting each [Person]'s foreign key `_cityCitizensCityId` to refer to this [City].
   Future<void> citizens(
     _i1.Session session,
     City city,
@@ -557,7 +558,8 @@ class CityAttachRepository {
     );
   }
 
-  /// Sets the `organizations` values on the [city]
+  /// Creates a relation between this [City] and the given [Organization]s
+  /// by setting each [Organization]'s foreign key `cityId` to refer to this [City].
   Future<void> organizations(
     _i1.Session session,
     City city,
@@ -584,7 +586,8 @@ class CityAttachRepository {
 class CityAttachRowRepository {
   const CityAttachRowRepository._();
 
-  /// Sets the `citizens` on the [city]
+  /// Creates a relation between this [City] and the given [Person]
+  /// by setting the [Person]'s foreign key `_cityCitizensCityId` to refer to this [City].
   Future<void> citizens(
     _i1.Session session,
     City city,
@@ -609,7 +612,8 @@ class CityAttachRowRepository {
     );
   }
 
-  /// Sets the `organizations` on the [city]
+  /// Creates a relation between this [City] and the given [Organization]
+  /// by setting the [Organization]'s foreign key `cityId` to refer to this [City].
   Future<void> organizations(
     _i1.Session session,
     City city,
@@ -635,7 +639,11 @@ class CityAttachRowRepository {
 class CityDetachRepository {
   const CityDetachRepository._();
 
-  /// Removes the `citizens` field from the [Person]
+  /// Detaches the relation between this [City] and the given [Person]
+  /// by setting the [Person]'s foreign key `_cityCitizensCityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> citizens(
     _i1.Session session,
     List<_i2.Person> person, {
@@ -658,7 +666,11 @@ class CityDetachRepository {
     );
   }
 
-  /// Removes the `organizations` field from the [Organization]
+  /// Detaches the relation between this [City] and the given [Organization]
+  /// by setting the [Organization]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organizations(
     _i1.Session session,
     List<_i3.Organization> organization, {
@@ -681,7 +693,11 @@ class CityDetachRepository {
 class CityDetachRowRepository {
   const CityDetachRowRepository._();
 
-  /// Removes the `citizens` field from the [Person]
+  /// Detaches the relation between this [City] and the given [Person]
+  /// by setting the [Person]'s foreign key `_cityCitizensCityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> citizens(
     _i1.Session session,
     _i2.Person person, {
@@ -702,7 +718,11 @@ class CityDetachRowRepository {
     );
   }
 
-  /// Removes the `organizations` field from the [Organization]
+  /// Detaches the relation between this [City] and the given [Organization]
+  /// by setting the [Organization]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> organizations(
     _i1.Session session,
     _i3.Organization organization, {
