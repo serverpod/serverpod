@@ -180,6 +180,8 @@ class TestEndpoints {
 
   late final _RedisEndpoint redis;
 
+  late final _SecurityContextEndpoint securityContext;
+
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
 
   late final _ServerOnlyScopedFieldChildModelEndpoint
@@ -326,6 +328,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     redis = _RedisEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    securityContext = _SecurityContextEndpoint(
       endpoints,
       serializationManager,
     );
@@ -7161,6 +7167,43 @@ class _RedisEndpoint {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _SecurityContextEndpoint {
+  _SecurityContextEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> testEndpoint(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'securityContext',
+        method: 'testEndpoint',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'securityContext',
+          methodName: 'testEndpoint',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

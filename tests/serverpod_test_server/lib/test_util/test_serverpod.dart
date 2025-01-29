@@ -22,6 +22,9 @@ class IntegrationTestServer extends TestServerpod {
   static Serverpod create({
     ServerpodConfig? config,
     AuthenticationHandler? authenticationHandler,
+    SecurityContext? apiServerSecurityContext,
+    SecurityContext? webServerSecurityContext,
+    SecurityContext? insightsServerSecurityContext,
   }) {
     return Serverpod(
       _integrationTestFlags,
@@ -30,6 +33,9 @@ class IntegrationTestServer extends TestServerpod {
       config: config,
       authenticationHandler:
           authenticationHandler ?? auth.authenticationHandler,
+      apiServerSecurityContext: apiServerSecurityContext,
+      webServerSecurityContext: webServerSecurityContext,
+      insightsServerSecurityContext: insightsServerSecurityContext,
     );
   }
 }
