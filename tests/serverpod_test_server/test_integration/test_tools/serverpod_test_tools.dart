@@ -913,6 +913,35 @@ class _BasicTypesEndpoint {
       }
     });
   }
+
+  _i3.Future<BigInt?> testBigInt(
+    _i1.TestSessionBuilder sessionBuilder,
+    BigInt? value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'basicTypes',
+        method: 'testBigInt',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypes',
+          methodName: 'testBigInt',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<BigInt?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _CloudStorageEndpoint {

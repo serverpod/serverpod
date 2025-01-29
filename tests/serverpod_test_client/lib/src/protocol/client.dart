@@ -202,6 +202,13 @@ class EndpointBasicTypes extends _i1.EndpointRef {
         'testUri',
         {'value': value},
       );
+
+  _i2.Future<BigInt?> testBigInt(BigInt? value) =>
+      caller.callServerEndpoint<BigInt?>(
+        'basicTypes',
+        'testBigInt',
+        {'value': value},
+      );
 }
 
 /// {@category Endpoint}
