@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:sentry/sentry.dart';
+// import 'package:sentry/sentry.dart';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
@@ -70,16 +70,16 @@ Future<void> _initSentrySdk(final Serverpod pod) async {
   // SENTRY_RELEASE
   // SENTRY_ENVIRONMENT
 
-  final environmentType = pod.runMode.toLowerCase();
+  // final environmentType = pod.runMode.toLowerCase();
 
-  await Sentry.init(
-    (final options) => options
-      ..dsn =
-          'https://6c64648b94d5221bc1ef287cef162dc1@o4508681651421184.ingest.de.sentry.io/4508681657122896'
-      ..release = '${parsedPubspec.name}@${parsedPubspec.version}'
-      ..environment = environmentType
-      ..tracesSampleRate = 1.0,
-  );
+  // await Sentry.init(
+  //   (final options) => options
+  //     ..dsn =
+  //         'https://6c64648b94d5221bc1ef287cef162dc1@o4508681651421184.ingest.de.sentry.io/4508681657122896'
+  //     ..release = '${parsedPubspec.name}@${parsedPubspec.version}'
+  //     ..environment = environmentType
+  //     ..tracesSampleRate = 1.0,
+  // );
 }
 
 class SentryExceptionHandler implements ExceptionHandlerCallable {
@@ -91,21 +91,21 @@ class SentryExceptionHandler implements ExceptionHandlerCallable {
     OriginSpace space, {
     required EventContext context,
   }) async {
-    await Sentry.captureException(
-      event.exception,
-      stackTrace: event.stackTrace,
-      withScope: (scope) {
-        scope.setTag('serverpod', 'serverpod-test-server');
-        scope.setTag('origin-space', space.toString());
+    // await Sentry.captureException(
+    //   event.exception,
+    //   stackTrace: event.stackTrace,
+    //   withScope: (scope) {
+    //     scope.setTag('serverpod', 'serverpod-test-server');
+    //     scope.setTag('origin-space', space.toString());
 
-        var message = event.message;
-        if (message != null) scope.setTag('event-message', message);
+    //     var message = event.message;
+    //     if (message != null) scope.setTag('event-message', message);
 
-        context.toMap().forEach((key, value) {
-          scope.setTag('context-$key', value);
-        });
-      },
-    );
+    //     context.toMap().forEach((key, value) {
+    //       scope.setTag('context-$key', value);
+    //     });
+    //   },
+    // );
   }
 }
 
