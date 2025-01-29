@@ -313,6 +313,7 @@ const extensionSerializedTypes = [
   'ByteData',
   'Duration',
   'UuidValue',
+  'BigInt',
   'Map',
   'List',
 ];

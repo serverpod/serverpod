@@ -472,6 +472,7 @@ class TypeDefinition {
     if (className == 'Duration') return ValueType.duration;
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
+    if (className == 'BigInt') return ValueType.bigInt;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -479,7 +480,7 @@ class TypeDefinition {
     return ValueType.classType;
   }
 
-  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  /// Returns [DefaultValueAllowedType] only for fields that are allowed to have defaults
   DefaultValueAllowedType? get defaultValueType {
     switch (valueType) {
       case ValueType.dateTime:
@@ -583,6 +584,7 @@ enum ValueType {
   duration,
   byteData,
   uuidValue,
+  bigInt,
   list,
   set,
   map,
