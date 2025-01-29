@@ -8,15 +8,6 @@ void main() {
   var client = Client(serverUrl);
 
   test(
-      'Given the test server, when the global int is set to 10 and 1 is added, then 11 is returned',
-      () async {
-    await client.simple.setGlobalInt(10);
-    await client.simple.addToGlobalInt();
-    var value = await client.simple.getGlobalInt();
-    expect(value, equals(11));
-  });
-
-  test(
       'Given the test server, when an int is sent to the server, then it is returned verbatim',
       () async {
     var result = await client.basicTypes.testInt(10);

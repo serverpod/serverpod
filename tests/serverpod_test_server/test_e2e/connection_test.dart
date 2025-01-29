@@ -22,6 +22,15 @@ void main() {
   var client = Client(serverUrl);
 
   group('Calls', () {
+    test(
+        'Given the test server, when the global int is set to 10 and 1 is added, then 11 is returned',
+        () async {
+      await client.simple.setGlobalInt(10);
+      await client.simple.addToGlobalInt();
+      var value = await client.simple.getGlobalInt();
+      expect(value, equals(11));
+    });
+
     test('Named parameters basic call', () async {
       var result = await client.namedParameters.namedParametersMethod(
         namedInt: 42,
