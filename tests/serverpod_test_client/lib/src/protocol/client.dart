@@ -196,6 +196,12 @@ class EndpointBasicTypes extends _i1.EndpointRef {
         'testUuid',
         {'value': value},
       );
+
+  _i2.Future<Uri?> testUri(Uri? value) => caller.callServerEndpoint<Uri?>(
+        'basicTypes',
+        'testUri',
+        {'value': value},
+      );
 }
 
 /// {@category Endpoint}

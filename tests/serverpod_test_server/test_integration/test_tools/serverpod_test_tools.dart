@@ -884,6 +884,35 @@ class _BasicTypesEndpoint {
       }
     });
   }
+
+  _i3.Future<Uri?> testUri(
+    _i1.TestSessionBuilder sessionBuilder,
+    Uri? value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'basicTypes',
+        method: 'testUri',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypes',
+          methodName: 'testUri',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Uri?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _CloudStorageEndpoint {

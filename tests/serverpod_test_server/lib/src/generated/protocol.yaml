@@ -17,6 +17,7 @@ basicTypes:
   - testByteData:
   - testDuration:
   - testUuid:
+  - testUri:
 cloudStorage:
   - reset:
   - storePublicFile:
