@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/shared/environment.dart' as env;
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -51,17 +52,18 @@ extension PathExtensions on FileSystemEntity {
   Directory get serverPath => Directory(this.path) / '${name}_server';
 }
 
-const projectsPrefix = 'project_';
+const projectsPrefix = 'temp_proj_dir_';
 final rootPath = path.join(Directory.current.path, '..', '..');
-final tempPath = path.join(rootPath, 'temp');
 
 (String, Directory) createTempProjectName() {
   var uuid = const Uuid().v4().replaceAll('-', '');
   var projectName = '$projectsPrefix$uuid';
-  return (projectName, Directory(path.join(tempPath, projectName)));
+  var projectPath = Directory(path.join(Directory.current.path, projectName));
+  return (projectName, projectPath);
 }
 
 void main() {
+  initializeLoggerWith(VoidLogger());
   env.serverpodHome = rootPath;
 
   late TestFixture fixture;
@@ -69,13 +71,8 @@ void main() {
     fixture = createTestFixture();
   });
 
-  setUpAll(() {
-    Directory(tempPath).createSync();
-    Directory.current = tempPath;
-  });
-
   tearDownAll(() {
-    Directory(tempPath)
+    Directory.current
         .listSync()
         .where((d) => d.name.startsWith(projectsPrefix))
         .forEach((d) {
