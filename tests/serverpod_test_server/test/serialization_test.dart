@@ -98,6 +98,21 @@ void main() {
   });
 
   test(
+      'Given a Uri as a key in a map when serializing and unpacking the original object remains unchanged.',
+      () {
+    var object =
+        TypesMap(aUriKey: {Uri.parse('https://serverpod.dev'): 'value'});
+
+    var encodedString = SerializationManager.encode(object);
+    var typesMap = Protocol().decode<TypesMap>(encodedString);
+
+    expect(
+      typesMap.aUriKey?.entries.first.key,
+      Uri.parse('https://serverpod.dev'),
+    );
+  });
+
+  test(
       'Given a ByteData as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var intList = Uint8List(8);

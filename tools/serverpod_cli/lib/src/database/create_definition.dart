@@ -158,8 +158,7 @@ String? _getColumnDefault(
       }
       return '${_escapeSqlString(defaultValue)}::uuid';
     case DefaultValueAllowedType.uri:
-      var parsedUrl = Uri.parse(defaultValue);
-      return "'${parsedUrl.toString()}'::text";
+      return '${_escapeSqlString(defaultValue)}::text';
     case DefaultValueAllowedType.duration:
       Duration parsedDuration = parseDuration(defaultValue);
       return '${parsedDuration.toJson()}';

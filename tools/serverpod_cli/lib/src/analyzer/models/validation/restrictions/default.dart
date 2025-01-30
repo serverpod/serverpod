@@ -332,22 +332,76 @@ class DefaultValueRestriction extends ValueRestriction {
     return errors;
   }
 
-  List<SourceSpanSeverityException> uriValueValidation(
+  List<SourceSpanSeverityException> _uriValueValidation(
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is Uri) return [];
-
     var errors = <SourceSpanSeverityException>[];
 
-    if (value is! String || value.isEmpty || Uri.tryParse(value) == null) {
+    if (value is Uri) {
+      return [];
+    }
+
+    String invalidValueError =
+        'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
+
+    if (value is! String || value.isEmpty) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid BigInt (e.g., "$key"=\'http://serverpod.dev/\').',
+          invalidValueError,
           span,
         ),
       );
       return errors;
+    }
+
+    bool invalidDefaultValue = value != defaultUuidValueRandom &&
+        !value.startsWith("'") &&
+        !value.startsWith('"');
+
+    if (invalidDefaultValue) {
+      errors.add(
+        SourceSpanSeverityException(
+          invalidValueError,
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    if (value == defaultUuidValueRandom) return [];
+
+    bool validSingleQuote = isValidSingleQuote(value);
+    bool validDoubleQuote = isValidDoubleQuote(value);
+
+    if (value.startsWith("'") && !validSingleQuote) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" must be a quoted string (e.g., "$key"=\'http://serverpod.dev\').',
+          span,
+        ),
+      );
+      return errors;
+    } else if (value.startsWith('"') && !validDoubleQuote) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" must be a quoted string (e.g., "$key"="http://serverpod.dev").',
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    /// Extract the actual Uri string by removing quotes
+    String uriString = value.substring(1, value.length - 1);
+    var isValid = Uri.tryParse(uriString) != null;
+    if (!isValid) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid Uri (e.g., \'http://serverpod.dev\').',
+          span,
+        ),
+      );
     }
 
     return errors;

@@ -1243,7 +1243,7 @@ class SerializableModelLibraryGenerator {
       case DefaultValueAllowedType.uri:
         return refer(field.type.className)
             .property('parse')
-            .call([literalString(defaultValue)]).code;
+            .call([CodeExpression(Code(defaultValue))]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).call([], {
