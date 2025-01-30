@@ -38,17 +38,17 @@ class PathCacheMaxAge {
     required this.maxAge,
   });
 
-bool _shouldCache(String path) {
-  var pattern = pathPattern;
+  bool _shouldCache(String path) {
+    var pattern = pathPattern;
 
-  if (pattern is String) {
-    return path == pattern;
-  } else if (pattern is RegExp) {
-    return pattern.hasMatch(path);
+    if (pattern is String) {
+      return path == pattern;
+    } else if (pattern is RegExp) {
+      return pattern.hasMatch(path);
+    }
+
+    return false;
   }
-
-  return false;
-}
 }
 
 /// Route for serving a directory of static files.
@@ -61,7 +61,6 @@ class RouteStaticDirectory extends Route {
 
   /// The path to serve as the root path ('/'), e.g. '/index.html'.
   final String? serveAsRootPath;
-
 
   /// A regular expression that will be used to determine if a path should not
   /// be cached.
