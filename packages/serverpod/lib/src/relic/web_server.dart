@@ -20,10 +20,15 @@ class WebServer {
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
+  /// Security context if the web server is running over https.
+  final SecurityContext? _securityContext;
+
   /// Creates a new webserver.
   WebServer({
     required this.serverpod,
-  }) : serverId = serverpod.serverId {
+    SecurityContext? securityContext,
+  })  : serverId = serverpod.serverId,
+        _securityContext = securityContext {
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -63,7 +68,18 @@ class WebServer {
     }
 
     try {
-      _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
+      var context = _securityContext;
+      _httpServer = await switch (context) {
+        SecurityContext() => HttpServer.bindSecure(
+            InternetAddress.anyIPv6,
+            _port,
+            context,
+          ),
+        _ => HttpServer.bind(
+            InternetAddress.anyIPv6,
+            _port,
+          ),
+      };
     } catch (e) {
       stderr.writeln(
         '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
