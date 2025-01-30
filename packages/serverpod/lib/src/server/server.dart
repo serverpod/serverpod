@@ -63,7 +63,7 @@ class Server {
   final String name;
 
   /// Security context if the server is running over https.
-  final SecurityContext? securityContext;
+  final SecurityContext? _securityContext;
 
   /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
@@ -107,28 +107,29 @@ class Server {
     required this.authenticationHandler,
     String? name,
     required this.caches,
-    this.securityContext,
+    SecurityContext? securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
-        _databasePoolManager = databasePoolManager;
+        _databasePoolManager = databasePoolManager,
+        _securityContext = securityContext;
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     HttpServer httpServer;
     try {
-      if (securityContext != null) {
-        httpServer = await HttpServer.bindSecure(
-          InternetAddress.anyIPv6,
-          port,
-          securityContext!,
-        );
-      } else {
-        httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
-      }
+      var context = _securityContext;
+      httpServer = await switch (context) {
+        SecurityContext() => HttpServer.bindSecure(
+            InternetAddress.anyIPv6,
+            port,
+            context,
+          ),
+        _ => HttpServer.bind(InternetAddress.anyIPv6, port),
+      };
     } catch (e) {
       stderr.writeln(
         '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '

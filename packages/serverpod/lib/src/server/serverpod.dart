@@ -281,7 +281,7 @@ class Serverpod {
   };
 
   /// Security context if the insights server is running over https.
-  final SecurityContext? insightsServerSecurityContext;
+  final SecurityContextConfig? _securityContextConfig;
 
   /// Creates a new Serverpod.
   Serverpod(
@@ -293,10 +293,8 @@ class Serverpod {
     this.healthCheckHandler,
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
-    SecurityContext? apiServerSecurityContext,
-    SecurityContext? webServerSecurityContext,
-    this.insightsServerSecurityContext,
-  }) {
+    SecurityContextConfig? securityContextConfig,
+  }) : _securityContextConfig = securityContextConfig {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
@@ -387,7 +385,7 @@ class Serverpod {
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
-      securityContext: apiServerSecurityContext,
+      securityContext: _securityContextConfig?.apiServer,
     );
     endpoints.initializeEndpoints(server);
 
@@ -411,7 +409,7 @@ class Serverpod {
     if (Features.enableWebServer()) {
       _webServer = WebServer(
         serverpod: this,
-        securityContext: webServerSecurityContext,
+        securityContext: _securityContextConfig?.webServer,
       );
     }
 
@@ -683,7 +681,7 @@ class Serverpod {
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
-      securityContext: insightsServerSecurityContext,
+      securityContext: _securityContextConfig?.insightsServer,
     );
     endpoints.initializeEndpoints(_serviceServer!);
 
