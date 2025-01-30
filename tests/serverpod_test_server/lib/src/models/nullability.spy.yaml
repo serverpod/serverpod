@@ -24,9 +24,6 @@ fields:
   aUuid: UuidValue
   aNullableUuid: UuidValue?
 
-  aBigInt: BigInt
-  aNullableBigInt: BigInt?
-
   anObject: SimpleData
   aNullableObject: SimpleData?
 
@@ -59,11 +56,6 @@ fields:
   aNullableUuidList: List<UuidValue>?
   aListWithNullableUuids: List<UuidValue?>
   aNullableListWithNullableUuids: List<UuidValue?>?
-
-  aBigIntList: List<BigInt>
-  aNullableBigIntList: List<BigInt>?
-  aListWithNullableBigInts: List<BigInt?>
-  aNullableListWithNullableBigInts: List<BigInt?>?
 
   anIntMap: Map<String,int>
   aNullableIntMap: Map<String,int>?
