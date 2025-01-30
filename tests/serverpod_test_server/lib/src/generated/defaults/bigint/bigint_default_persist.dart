@@ -15,23 +15,23 @@ abstract class BigIntDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   BigIntDefaultPersist._({
     this.id,
-    this.bitIntDefaultPersistStr,
+    this.bigIntDefaultPersistStr,
   });
 
   factory BigIntDefaultPersist({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   }) = _BigIntDefaultPersistImpl;
 
   factory BigIntDefaultPersist.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return BigIntDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      bitIntDefaultPersistStr:
-          jsonSerialization['bitIntDefaultPersistStr'] == null
+      bigIntDefaultPersistStr:
+          jsonSerialization['bigIntDefaultPersistStr'] == null
               ? null
               : _i1.BigIntJsonExtension.fromJson(
-                  jsonSerialization['bitIntDefaultPersistStr']),
+                  jsonSerialization['bigIntDefaultPersistStr']),
     );
   }
 
@@ -42,7 +42,7 @@ abstract class BigIntDefaultPersist
   @override
   int? id;
 
-  BigInt? bitIntDefaultPersistStr;
+  BigInt? bigIntDefaultPersistStr;
 
   @override
   _i1.Table get table => t;
@@ -52,14 +52,14 @@ abstract class BigIntDefaultPersist
   @_i1.useResult
   BigIntDefaultPersist copyWith({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      if (bitIntDefaultPersistStr != null)
-        'bitIntDefaultPersistStr': bitIntDefaultPersistStr?.toJson(),
+      if (bigIntDefaultPersistStr != null)
+        'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),
     };
   }
 
@@ -67,8 +67,8 @@ abstract class BigIntDefaultPersist
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      if (bitIntDefaultPersistStr != null)
-        'bitIntDefaultPersistStr': bitIntDefaultPersistStr?.toJson(),
+      if (bigIntDefaultPersistStr != null)
+        'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),
     };
   }
 
@@ -107,10 +107,10 @@ class _Undefined {}
 class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   _BigIntDefaultPersistImpl({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   }) : super._(
           id: id,
-          bitIntDefaultPersistStr: bitIntDefaultPersistStr,
+          bigIntDefaultPersistStr: bigIntDefaultPersistStr,
         );
 
   /// Returns a shallow copy of this [BigIntDefaultPersist]
@@ -119,13 +119,13 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   @override
   BigIntDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? bitIntDefaultPersistStr = _Undefined,
+    Object? bigIntDefaultPersistStr = _Undefined,
   }) {
     return BigIntDefaultPersist(
       id: id is int? ? id : this.id,
-      bitIntDefaultPersistStr: bitIntDefaultPersistStr is BigInt?
-          ? bitIntDefaultPersistStr
-          : this.bitIntDefaultPersistStr,
+      bigIntDefaultPersistStr: bigIntDefaultPersistStr is BigInt?
+          ? bigIntDefaultPersistStr
+          : this.bigIntDefaultPersistStr,
     );
   }
 }
@@ -133,19 +133,19 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
 class BigIntDefaultPersistTable extends _i1.Table {
   BigIntDefaultPersistTable({super.tableRelation})
       : super(tableName: 'bigint_default_persist') {
-    bitIntDefaultPersistStr = _i1.ColumnBigInt(
-      'bitIntDefaultPersistStr',
+    bigIntDefaultPersistStr = _i1.ColumnBigInt(
+      'bigIntDefaultPersistStr',
       this,
       hasDefault: true,
     );
   }
 
-  late final _i1.ColumnBigInt bitIntDefaultPersistStr;
+  late final _i1.ColumnBigInt bigIntDefaultPersistStr;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        bitIntDefaultPersistStr,
+        bigIntDefaultPersistStr,
       ];
 }
 

@@ -14,23 +14,23 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   BigIntDefaultPersist._({
     this.id,
-    this.bitIntDefaultPersistStr,
+    this.bigIntDefaultPersistStr,
   });
 
   factory BigIntDefaultPersist({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   }) = _BigIntDefaultPersistImpl;
 
   factory BigIntDefaultPersist.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return BigIntDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      bitIntDefaultPersistStr:
-          jsonSerialization['bitIntDefaultPersistStr'] == null
+      bigIntDefaultPersistStr:
+          jsonSerialization['bigIntDefaultPersistStr'] == null
               ? null
               : _i1.BigIntJsonExtension.fromJson(
-                  jsonSerialization['bitIntDefaultPersistStr']),
+                  jsonSerialization['bigIntDefaultPersistStr']),
     );
   }
 
@@ -39,21 +39,21 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  BigInt? bitIntDefaultPersistStr;
+  BigInt? bigIntDefaultPersistStr;
 
   /// Returns a shallow copy of this [BigIntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   BigIntDefaultPersist copyWith({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      if (bitIntDefaultPersistStr != null)
-        'bitIntDefaultPersistStr': bitIntDefaultPersistStr?.toJson(),
+      if (bigIntDefaultPersistStr != null)
+        'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),
     };
   }
 
@@ -68,10 +68,10 @@ class _Undefined {}
 class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   _BigIntDefaultPersistImpl({
     int? id,
-    BigInt? bitIntDefaultPersistStr,
+    BigInt? bigIntDefaultPersistStr,
   }) : super._(
           id: id,
-          bitIntDefaultPersistStr: bitIntDefaultPersistStr,
+          bigIntDefaultPersistStr: bigIntDefaultPersistStr,
         );
 
   /// Returns a shallow copy of this [BigIntDefaultPersist]
@@ -80,13 +80,13 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   @override
   BigIntDefaultPersist copyWith({
     Object? id = _Undefined,
-    Object? bitIntDefaultPersistStr = _Undefined,
+    Object? bigIntDefaultPersistStr = _Undefined,
   }) {
     return BigIntDefaultPersist(
       id: id is int? ? id : this.id,
-      bitIntDefaultPersistStr: bitIntDefaultPersistStr is BigInt?
-          ? bitIntDefaultPersistStr
-          : this.bitIntDefaultPersistStr,
+      bigIntDefaultPersistStr: bigIntDefaultPersistStr is BigInt?
+          ? bigIntDefaultPersistStr
+          : this.bigIntDefaultPersistStr,
     );
   }
 }

@@ -545,7 +545,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'bigint_default_persist_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'bitIntDefaultPersistStr',
+          name: 'bigIntDefaultPersistStr',
           columnType: _i2.ColumnType.text,
           isNullable: true,
           dartType: 'BigInt?',
