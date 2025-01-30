@@ -6,19 +6,20 @@ import 'package:serverpod_test_server/src/web/routes/root.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-void main() {
-  const certificatePath = 'test_integration/ssl/test_certificate.pem';
-  const keyPath = 'test_integration/ssl/test_key.pem';
+import 'ssl/ssl_cert.dart';
 
-  group('Given a api server', () {
+void main() {
+  group('Given an api server', () {
     group('with a security context', () {
+      late SecurityContext securityContext;
       late Serverpod serverpod;
 
       setUpAll(() async {
+        securityContext = _createSecurityContext();
         serverpod = IntegrationTestServer.create(
-          apiServerSecurityContext: SecurityContext()
-            ..useCertificateChain(certificatePath)
-            ..usePrivateKey(keyPath),
+          securityContextConfig: SecurityContextConfig(
+            apiServer: securityContext,
+          ),
         );
 
         await serverpod.start();
@@ -28,16 +29,10 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over https', () {
-        expect(serverpod.server.securityContext, isNotNull);
-      });
-
       test('then server can be accessed over https', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('https://localhost:8080'),
+        HttpClientRequest request =
+            await HttpClient(context: securityContext).getUrl(
+          Uri.https('localhost:${serverpod.server.port}'),
         );
         var response = await request.close();
 
@@ -45,11 +40,8 @@ void main() {
       });
 
       test('then server cannot be accessed over http', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8080'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.server.port}'),
         );
 
         expect(
@@ -74,15 +66,9 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over http', () {
-        expect(serverpod.server.securityContext, isNull);
-      });
-
       test('then server can be accessed over http', () async {
-        var client = HttpClient();
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8080'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.server.port}'),
         );
 
         var response = await request.close();
@@ -95,7 +81,7 @@ void main() {
 
         expect(
           () async => await await client.getUrl(
-            Uri.parse('https://localhost:8080'),
+            Uri.https('localhost:${serverpod.server.port}'),
           ),
           throwsA(isA<HandshakeException>()),
         );
@@ -105,13 +91,15 @@ void main() {
 
   group('Given a insights server', () {
     group('with a security context', () {
+      late SecurityContext securityContext;
       late Serverpod serverpod;
 
       setUpAll(() async {
+        securityContext = _createSecurityContext();
         serverpod = IntegrationTestServer.create(
-          insightsServerSecurityContext: SecurityContext()
-            ..useCertificateChain(certificatePath)
-            ..usePrivateKey(keyPath),
+          securityContextConfig: SecurityContextConfig(
+            insightsServer: securityContext,
+          ),
         );
 
         await serverpod.start();
@@ -121,16 +109,10 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over https', () {
-        expect(serverpod.serviceServer.securityContext, isNotNull);
-      });
-
       test('then server can be accessed over https', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('https://localhost:8081'),
+        HttpClientRequest request =
+            await HttpClient(context: securityContext).getUrl(
+          Uri.https('localhost:${serverpod.serviceServer.httpServer.port}'),
         );
         var response = await request.close();
 
@@ -138,11 +120,8 @@ void main() {
       });
 
       test('then server cannot be accessed over http', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8081'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.serviceServer.httpServer.port}'),
         );
 
         expect(
@@ -167,15 +146,9 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over http', () {
-        expect(serverpod.serviceServer.securityContext, isNull);
-      });
-
       test('then server can be accessed over http', () async {
-        var client = HttpClient();
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8081'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.serviceServer.httpServer.port}'),
         );
 
         var response = await request.close();
@@ -184,11 +157,9 @@ void main() {
       });
 
       test('then server cannot be accessed over https', () async {
-        var client = HttpClient();
-
         expect(
-          () async => await await client.getUrl(
-            Uri.parse('https://localhost:8081'),
+          () async => await HttpClient().getUrl(
+            Uri.https('localhost:${serverpod.serviceServer.httpServer.port}'),
           ),
           throwsA(isA<HandshakeException>()),
         );
@@ -198,13 +169,15 @@ void main() {
 
   group('Given a web server', () {
     group('with a security context', () {
+      late SecurityContext securityContext;
       late Serverpod serverpod;
 
       setUpAll(() async {
+        securityContext = _createSecurityContext();
         serverpod = IntegrationTestServer.create(
-          webServerSecurityContext: SecurityContext()
-            ..useCertificateChain(certificatePath)
-            ..usePrivateKey(keyPath),
+          securityContextConfig: SecurityContextConfig(
+            webServer: securityContext,
+          ),
         );
         serverpod.webServer.addRoute(RouteRoot(), '/');
         await serverpod.start();
@@ -214,16 +187,10 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over https', () {
-        expect(serverpod.webServer.securityContext, isNotNull);
-      });
-
       test('then server can be accessed over https', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('https://localhost:8082'),
+        HttpClientRequest request =
+            await HttpClient(context: securityContext).getUrl(
+          Uri.https('localhost:${serverpod.webServer.httpServer.port}'),
         );
         var response = await request.close();
 
@@ -231,11 +198,8 @@ void main() {
       });
 
       test('then server cannot be accessed over http', () async {
-        var client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8082'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.webServer.httpServer.port}'),
         );
 
         expect(
@@ -248,9 +212,11 @@ void main() {
     });
 
     group('without a security context', () {
+      late SecurityContext securityContext;
       late Serverpod serverpod;
 
       setUpAll(() async {
+        securityContext = _createSecurityContext();
         serverpod = IntegrationTestServer.create();
 
         serverpod.webServer.addRoute(RouteRoot(), '/');
@@ -261,15 +227,9 @@ void main() {
         await serverpod.shutdown(exitProcess: false);
       });
 
-      test('then server is running over http', () {
-        expect(serverpod.server.securityContext, isNull);
-      });
-
       test('then server can be accessed over http', () async {
-        var client = HttpClient();
-
-        HttpClientRequest request = await client.getUrl(
-          Uri.parse('http://localhost:8082'),
+        HttpClientRequest request = await HttpClient().getUrl(
+          Uri.http('localhost:${serverpod.webServer.httpServer.port}'),
         );
 
         var response = await request.close();
@@ -278,15 +238,21 @@ void main() {
       });
 
       test('then server cannot be accessed over https', () async {
-        var client = HttpClient();
-
         expect(
-          () async => await await client.getUrl(
-            Uri.parse('https://localhost:8082'),
+          () async => await HttpClient(context: securityContext).getUrl(
+            Uri.https('localhost:${serverpod.webServer.httpServer.port}'),
           ),
           throwsA(isA<HandshakeException>()),
         );
       });
     });
   });
+}
+
+SecurityContext _createSecurityContext() {
+  SecurityContext context = SecurityContext(withTrustedRoots: false);
+  context.setTrustedCertificatesBytes(certChainBytes);
+  context.useCertificateChainBytes(certChainBytes);
+  context.usePrivateKeyBytes(certKeyBytes, password: 'dartdart');
+  return context;
 }
