@@ -188,7 +188,7 @@ class WebServer {
       stackTrace: stackTrace,
     );
 
-    await serverpod.exceptionHandler.call(
+    serverpod.submitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space,
       context: session != null

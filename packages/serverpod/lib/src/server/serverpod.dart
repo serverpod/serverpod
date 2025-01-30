@@ -28,30 +28,37 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
   DateTime timestamp,
 );
 
-/// Container for a list of [EventHandler]s that will be run concurrently.
-class _EventHandlers implements EventHandlerCallable {
+/// Container for a list of [EventHandler]s
+/// that will run concurrently with each other
+/// and asynchronously with the caller.
+class _EventHandlers implements EventHandler {
   final List<EventHandler> handlers;
 
-  /// Timeout that applies to each event handler.
-  /// Since they are run concurrently this is effectively the total timeout for a call.
-  final _timeout = const Duration(seconds: 3);
+  /// If set, this timeout is applied to each event handler invocation.
+  final Duration? timeout;
 
   /// Creates a new [_EventHandlers] with the specified list of handlers.
-  _EventHandlers(this.handlers);
+  const _EventHandlers(
+    this.handlers, {
+    this.timeout,
+  });
 
   @override
-  Future<void> call(
+  void handleEvent(
     ServerpodEvent event,
     OriginSpace space, {
     required EventContext context,
-  }) async {
-    var futures = handlers
-        .map((handler) => handler(event, space, context: context))
-        .map((future) => future.timeout(_timeout));
+  }) {
+    var futures = handlers.map((handler) => Future(
+          () => handler.handleEvent(event, space, context: context),
+        ));
 
-    try {
-      await futures.wait;
-    } on ParallelWaitError catch (e) {
+    var to = timeout;
+    if (to != null) {
+      futures = futures.map((future) => future.timeout(to));
+    }
+
+    futures.wait.onError((ParallelWaitError e, stackTrace) {
       var errors = e.errors;
       if (errors is Iterable<AsyncError?>) {
         for (var error in errors) {
@@ -62,7 +69,8 @@ class _EventHandlers implements EventHandlerCallable {
       } else {
         stderr.writeln('Error in an event handler: $errors');
       }
-    }
+      return e.values;
+    });
   }
 }
 
@@ -117,7 +125,7 @@ class Serverpod {
   final HealthCheckHandler? healthCheckHandler;
 
   /// [EventHandler] for optional custom exception handling.
-  final EventHandler exceptionHandler;
+  final EventHandler _eventHandler;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -329,17 +337,20 @@ class Serverpod {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
-    List<EventHandler> exceptionHandlers = const [],
+    List<EventHandler> eventHandlers = const [],
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
-  }) : exceptionHandler = _EventHandlers(exceptionHandlers).call {
+  }) : _eventHandler = _EventHandlers(
+          eventHandlers,
+          timeout: const Duration(seconds: 30),
+        ) {
     try {
       _initializeServerpod(
         args,
         config: config,
       );
     } catch (e, stackTrace) {
-      exceptionHandler(
+      submitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.framework,
         context: EventContext(
@@ -872,6 +883,16 @@ class Serverpod {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
+  }
+
+  /// Submits an event to registered event handlers.
+  /// They will execute asynchrously.
+  void submitEvent(
+    ServerpodEvent event,
+    OriginSpace space, {
+    required EventContext context,
+  }) {
+    return _eventHandler.handleEvent(event, space, context: context);
   }
 
   /// Establishes a connection to the database. This method will retry

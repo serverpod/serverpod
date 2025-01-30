@@ -141,6 +141,14 @@ class MethodStreamContext extends MethodContext {
   }
 }
 
+EventContext contextFromServer(Server server) {
+  return EventContext(
+    serverName: server.name,
+    serverId: server.serverId,
+    serverRunMode: server.runMode,
+  );
+}
+
 ClientCallContext contextFromHttpRequest(
   Server server,
   HttpRequest httpRequest,

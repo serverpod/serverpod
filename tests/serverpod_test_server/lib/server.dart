@@ -22,9 +22,9 @@ void run(List<String> args) async {
     Protocol(),
     Endpoints(),
     authenticationHandler: auth.authenticationHandler,
-    exceptionHandlers: [
-      ExceptionEventHandler(SentryExceptionHandler()),
-      ExceptionEventHandler(PrintingExceptionHandler()),
+    eventHandlers: [
+      SentryExceptionHandler(),
+      AsEventHandler(_printExceptionEvent),
     ],
   );
 
@@ -82,11 +82,9 @@ Future<void> _initSentrySdk(final Serverpod pod) async {
   // );
 }
 
-class SentryExceptionHandler implements ExceptionHandlerCallable {
-  SentryExceptionHandler();
-
+class SentryExceptionHandler extends ExceptionHandler {
   @override
-  Future<void> call(
+  Future<void> handleTypedEvent(
     ExceptionEvent event,
     OriginSpace space, {
     required EventContext context,
@@ -109,19 +107,14 @@ class SentryExceptionHandler implements ExceptionHandlerCallable {
   }
 }
 
-class PrintingExceptionHandler implements ExceptionHandlerCallable {
-  PrintingExceptionHandler();
-
-  @override
-  Future<void> call(
-    ExceptionEvent event,
-    OriginSpace space, {
-    required EventContext context,
-  }) async {
-    stderr.writeln(
-      '@@@@@@@@@@@@@@@@@@@@@@ ${event.exception}'
-      ' $space'
-      ' $context',
-    );
-  }
+Future<void> _printExceptionEvent(
+  ExceptionEvent event,
+  OriginSpace space, {
+  required EventContext context,
+}) async {
+  stderr.writeln(
+    '@@@@@@@@@@@@@@@@@@@@@@ ${event.exception}'
+    ' $space'
+    ' $context',
+  );
 }

@@ -513,7 +513,7 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
-        await serverpod.exceptionHandler.call(
+        serverpod.submitEvent(
           ExceptionEvent(
             Exception('Session was not created'),
             StackTrace.current,
@@ -537,7 +537,7 @@ class Server {
           sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
         );
       } catch (e, stackTrace) {
-        await serverpod.exceptionHandler.call(
+        serverpod.submitEvent(
           ExceptionEvent(e, stackTrace),
           OriginSpace.application,
           context: contextFromSession(session, httpRequest: request),
@@ -603,7 +603,7 @@ class Server {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
-    await serverpod.exceptionHandler.call(
+    serverpod.submitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       OriginSpace.framework,
       context: contextFromServer(this),
