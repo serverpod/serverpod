@@ -14,7 +14,7 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for "bitIntDefaultPersistStr", then the field value should match the provided value',
+        'when an object of the class is created with a specific value for "bigIntDefaultPersistStr", then the field value should match the provided value',
         () {
           var bigInt = BigInt.one;
           var object = BigIntDefaultPersist(
