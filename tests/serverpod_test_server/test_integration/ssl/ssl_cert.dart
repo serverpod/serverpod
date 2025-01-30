@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-List<int> certChainBytes = utf8.encode('''
+abstract final class Certificate {
+  static final List<int> certChainBytes = utf8.encode('''
 -----BEGIN CERTIFICATE-----
 MIIDZDCCAkygAwIBAgIBATANBgkqhkiG9w0BAQsFADAgMR4wHAYDVQQDDBVpbnRl
 cm1lZGlhdGVhdXRob3JpdHkwHhcNMTUxMDI3MTAyNjM1WhcNMjUxMDI0MTAyNjM1
@@ -62,7 +63,7 @@ hGiCpWlwziW2xLV1l2qSRLko2kIafLZP18N0ThM9zKbU5ps9NgFOf//wqSGtLaE=
 -----END CERTIFICATE-----
 ''');
 
-List<int> certKeyBytes = utf8.encode('''
+  static final List<int> certKeyBytes = utf8.encode('''
 -----BEGIN ENCRYPTED PRIVATE KEY-----
 MIIE4zAcBgoqhkiG9w0BDAEBMA4ECBMCjlg8JYZ4AgIIAASCBMFd9cBoZ5xcTock
 AVQcg/HzYJtMceKn1gtMDdC7mmXuyN0shoxhG4BpQInHkFARL+nenesXFxEm4X5e
@@ -93,3 +94,4 @@ s0HRA2VwF/0ypU3OKERM1Ua5NSkTgvnnVTlV9GO90Tkn5v4fxdl8NzIuJLyGguTP
 Xc0tRM34Lg==
 -----END ENCRYPTED PRIVATE KEY-----
 ''');
+}

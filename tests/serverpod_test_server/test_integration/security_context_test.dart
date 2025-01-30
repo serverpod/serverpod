@@ -251,8 +251,8 @@ void main() {
 
 SecurityContext _createSecurityContext() {
   SecurityContext context = SecurityContext(withTrustedRoots: false);
-  context.setTrustedCertificatesBytes(certChainBytes);
-  context.useCertificateChainBytes(certChainBytes);
-  context.usePrivateKeyBytes(certKeyBytes, password: 'dartdart');
+  context.setTrustedCertificatesBytes(Certificate.certChainBytes);
+  context.useCertificateChainBytes(Certificate.certChainBytes);
+  context.usePrivateKeyBytes(Certificate.certKeyBytes, password: 'dartdart');
   return context;
 }
