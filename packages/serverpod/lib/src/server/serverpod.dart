@@ -28,6 +28,52 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
   DateTime timestamp,
 );
 
+/// Container for a list of [EventHandler]s
+/// that will run concurrently with each other
+/// and asynchronously with the caller.
+class _EventHandlers implements EventHandler {
+  final List<EventHandler> handlers;
+
+  /// If set, this timeout is applied to each event handler invocation.
+  final Duration? timeout;
+
+  /// Creates a new [_EventHandlers] with the specified list of handlers.
+  const _EventHandlers(
+    this.handlers, {
+    this.timeout,
+  });
+
+  @override
+  void handleEvent(
+    ServerpodEvent event,
+    OriginSpace space, {
+    required EventContext context,
+  }) {
+    var futures = handlers.map((handler) => Future(
+          () => handler.handleEvent(event, space, context: context),
+        ));
+
+    var to = timeout;
+    if (to != null) {
+      futures = futures.map((future) => future.timeout(to));
+    }
+
+    futures.wait.onError((ParallelWaitError e, stackTrace) {
+      var errors = e.errors;
+      if (errors is Iterable<AsyncError?>) {
+        for (var error in errors) {
+          if (error != null) {
+            stderr.writeln('Error in event handler: $error');
+          }
+        }
+      } else {
+        stderr.writeln('Error in an event handler: $errors');
+      }
+      return e.values;
+    });
+  }
+}
+
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
@@ -77,6 +123,9 @@ class Serverpod {
   /// check remotely if all services the server is depending on is up and
   /// running.
   final HealthCheckHandler? healthCheckHandler;
+
+  /// [EventHandler] for optional custom exception handling.
+  final EventHandler _eventHandler;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -288,8 +337,34 @@ class Serverpod {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
+    List<EventHandler> eventHandlers = const [],
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
+  }) : _eventHandler = _EventHandlers(
+          eventHandlers,
+          timeout: const Duration(seconds: 30),
+        ) {
+    try {
+      _initializeServerpod(
+        args,
+        config: config,
+      );
+    } catch (e, stackTrace) {
+      submitEvent(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: EventContext(
+          serverName: 'Serverpod', // can't guarantee that server is set
+          serverId: serverId,
+          serverRunMode: 'unknown', // can't guarantee that _runMode is set
+        ),
+      );
+    }
+  }
+
+  void _initializeServerpod(
+    List<String> args, {
+    ServerpodConfig? config,
   }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
@@ -808,6 +883,16 @@ class Serverpod {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
+  }
+
+  /// Submits an event to registered event handlers.
+  /// They will execute asynchrously.
+  void submitEvent(
+    ServerpodEvent event,
+    OriginSpace space, {
+    required EventContext context,
+  }) {
+    return _eventHandler.handleEvent(event, space, context: context);
   }
 
   /// Establishes a connection to the database. This method will retry
