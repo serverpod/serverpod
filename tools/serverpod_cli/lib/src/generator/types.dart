@@ -277,6 +277,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
+    if (className == 'Uri') return 'text';
 
     return 'json';
   }
@@ -299,6 +300,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
+    if (className == 'Uri') return 'ColumnUri';
 
     return 'ColumnSerializable';
   }
@@ -470,6 +472,7 @@ class TypeDefinition {
     if (className == 'bool') return ValueType.bool;
     if (className == 'DateTime') return ValueType.dateTime;
     if (className == 'Duration') return ValueType.duration;
+    if (className == 'Uri') return ValueType.uri;
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'List') return ValueType.list;
@@ -492,6 +495,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.double;
       case ValueType.string:
         return DefaultValueAllowedType.string;
+      case ValueType.uri:
+        return DefaultValueAllowedType.uri;
       case ValueType.uuidValue:
         return DefaultValueAllowedType.uuidValue;
       case ValueType.duration:
@@ -587,7 +592,8 @@ enum ValueType {
   set,
   map,
   isEnum,
-  classType;
+  classType,
+  uri;
 }
 
 enum DefaultValueAllowedType {
@@ -598,5 +604,6 @@ enum DefaultValueAllowedType {
   string,
   uuidValue,
   duration,
+  uri,
   isEnum,
 }

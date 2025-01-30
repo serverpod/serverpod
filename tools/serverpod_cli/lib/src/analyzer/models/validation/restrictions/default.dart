@@ -49,6 +49,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _durationValidation(value, span);
       case DefaultValueAllowedType.isEnum:
         return _enumValidation(value, span, field);
+      case DefaultValueAllowedType.uri:
+        return _uriValueValidation(value, span);
     }
   }
 
@@ -321,6 +323,27 @@ class DefaultValueRestriction extends ValueRestriction {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid duration in the format "Xd Xh Xmin Xs Xms" (e.g., "$key"=1d 2h 30min 45s 100ms).',
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> uriValueValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is Uri) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String || value.isEmpty || Uri.tryParse(value) == null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid BigInt (e.g., "$key"=\'http://serverpod.dev/\').',
           span,
         ),
       );

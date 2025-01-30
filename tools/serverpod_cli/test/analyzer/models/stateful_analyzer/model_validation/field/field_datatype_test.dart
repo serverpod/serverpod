@@ -18,6 +18,7 @@ void main() {
       'DateTime',
       'Duration',
       'UuidValue',
+      'Uri',
       'List<String>',
       'List<String>?',
       'List<String?>?',

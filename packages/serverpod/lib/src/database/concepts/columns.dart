@@ -224,6 +224,20 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
   Expression _encodeValueForQuery(UuidValue value) => EscapedExpression(value);
 }
 
+/// A [Column] holding [Uri].
+class ColumnUri extends _ValueOperatorColumn<Uri>
+    with _NullableColumnDefaultOperations<Uri> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnUri(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Uri value) => EscapedExpression(value);
+}
+
 /// A [Column] holding an [int].
 class ColumnInt extends _ValueOperatorColumn<int>
     with _NullableColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
