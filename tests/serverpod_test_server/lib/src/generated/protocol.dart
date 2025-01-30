@@ -5967,24 +5967,6 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<_i1.UuidValue?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<BigInt>) {
-      return (data as List).map((e) => deserialize<BigInt>(e)).toList()
-          as dynamic;
-    }
-    if (t == _i1.getType<List<BigInt>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<BigInt>(e)).toList()
-          : null) as dynamic;
-    }
-    if (t == List<BigInt?>) {
-      return (data as List).map((e) => deserialize<BigInt?>(e)).toList()
-          as dynamic;
-    }
-    if (t == _i1.getType<List<BigInt?>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<BigInt?>(e)).toList()
-          : null) as dynamic;
-    }
     if (t == Map<String, int>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
