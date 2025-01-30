@@ -33,7 +33,7 @@ CREATE TABLE "bigint_default_model" (
 --
 CREATE TABLE "bigint_default_persist" (
     "id" bigserial PRIMARY KEY,
-    "bitIntDefaultPersistStr" text DEFAULT '1234567890123456789099999999'::text
+    "bigIntDefaultPersistStr" text DEFAULT '1234567890123456789099999999'::text
 );
 
 --
@@ -45,9 +45,9 @@ ALTER TABLE "types" ADD COLUMN "aBigInt" text;
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250129192143150', now())
+    VALUES ('serverpod_test', '20250130095232958', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250129192143150', "timestamp" = now();
+    DO UPDATE SET "version" = '20250130095232958', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

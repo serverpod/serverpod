@@ -165,7 +165,7 @@
             "dartType": "int?"
           },
           {
-            "name": "bitIntDefaultPersistStr",
+            "name": "bigIntDefaultPersistStr",
             "columnType": 0,
             "isNullable": true,
             "columnDefault": "'1234567890123456789099999999'::text",
