@@ -23,16 +23,21 @@ final _contentTypeMapping = <String, ContentType>{
 /// A path pattern to match, and the max age that paths that match the pattern
 /// should be cached for, in seconds.
 class PathCacheMaxAge {
+  /// The path pattern to match.
   final Pattern pathPattern;
-  final int maxAge;
+
+  /// The max age that paths that match the pattern should be cached for, in
+  /// seconds.
+  final Duration maxAge;
 
   /// A value for [maxAge] that indicates that the path should not be cached.
-  static const noCache = 0;
+  static const Duration noCache = Duration.zero;
 
   /// A value for [maxAge] that indicates that the path should be cached for
   /// one year.
-  static const oneYear = 31536000;
+  static const Duration oneYear = Duration(days: 365);
 
+  /// Creates a new [PathCacheMaxAge] with the given [pathPattern] and [maxAge].
   PathCacheMaxAge({
     required this.pathPattern,
     required this.maxAge,
@@ -132,12 +137,12 @@ class RouteStaticDirectory extends Route {
       // Set Cache-Control header
       request.response.headers.set(
         'Cache-Control',
-        pathCacheMaxAge == 0
+        pathCacheMaxAge == PathCacheMaxAge.noCache
             // Don't cache this path
             ? 'max-age=0, s-maxage=0, no-cache, no-store'
             // Cache for the specified amount of time, or the default
             // of one year if no pattern matched
-            : 'max-age=$pathCacheMaxAge',
+            : 'max-age=${pathCacheMaxAge.inSeconds}',
       );
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
