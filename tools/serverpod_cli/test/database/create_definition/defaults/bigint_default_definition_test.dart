@@ -73,29 +73,6 @@ void main() {
         [],
       );
 
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
       test('then the last column should not have a default value', () {
         var table = databaseDefinition.tables.first;
         var column = table.columns.last;
@@ -124,31 +101,8 @@ void main() {
         [],
       );
 
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
       test('then the last column should have the correct default value', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.columnDefault,
@@ -157,7 +111,7 @@ void main() {
       });
 
       test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.isNullable,
@@ -183,31 +137,8 @@ void main() {
         [],
       );
 
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
       test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.columnDefault,
@@ -216,7 +147,7 @@ void main() {
       });
 
       test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.isNullable,
@@ -243,31 +174,8 @@ void main() {
         [],
       );
 
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
       test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.columnDefault,
@@ -294,31 +202,8 @@ void main() {
         [],
       );
 
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
       test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.columnDefault,
@@ -327,7 +212,7 @@ void main() {
       });
 
       test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
+        var table = databaseDefinition.tables.single;
         var column = table.columns.last;
         expect(
           column.isNullable,
