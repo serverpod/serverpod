@@ -6175,6 +6175,11 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
           : null) as dynamic;
     }
+    if (t == _i1.getType<List<Uri>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<Uri>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == _i1.getType<List<_i121.TestEnum>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i121.TestEnum>(e)).toList()
