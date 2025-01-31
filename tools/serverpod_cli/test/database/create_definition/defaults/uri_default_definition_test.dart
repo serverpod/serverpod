@@ -9,7 +9,9 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', false)
-          .withDefaults(defaultPersistValue: 'https://serverpod.dev/')
+          .withDefaults(
+              defaultPersistValue:
+                  '\'https://serverpod.dev/defaultPersistValue\'')
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -51,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'https://serverpod.dev/\'::text',
+          '\'https://serverpod.dev/defaultPersistValue\'::text',
         );
       });
     });
@@ -110,7 +112,9 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', true)
-          .withDefaults(defaultPersistValue: 'https://serverpod.dev/')
+          .withDefaults(
+              defaultPersistValue:
+                  '\'https://serverpod.dev/defaultPersistValue\'')
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -152,7 +156,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'https://serverpod.dev/\'::text',
+          '\'https://serverpod.dev/defaultPersistValue\'::text',
         );
       });
 
@@ -168,8 +172,8 @@ void main() {
 
     group('when the field is nullable and has no "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
-          .withName('uuid')
-          .withTypeDefinition('UuidValue', true)
+          .withName('uri')
+          .withTypeDefinition('Uri', true)
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -227,10 +231,10 @@ void main() {
 
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
-          .withName('uuid')
-          .withTypeDefinition('UuidValue', false)
+          .withName('uri')
+          .withTypeDefinition('Uri', false)
           .withDefaults(
-              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
+              defaultModelValue: '\'https://serverpod.dev/defaultModelValue\'')
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -281,7 +285,8 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeDefinition('Uri', true)
-          .withDefaults(defaultModelValue: 'https://serverpod.dev/')
+          .withDefaults(
+              defaultModelValue: 'https://serverpod.dev/defaultModelValue')
           .build();
 
       var model = ClassDefinitionBuilder()
