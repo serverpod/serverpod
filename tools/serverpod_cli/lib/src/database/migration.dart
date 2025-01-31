@@ -57,7 +57,12 @@ DatabaseMigration generateDatabaseMigration({
       );
     } else {
       // Table exists in src and dst
-      var diff = generateTableMigration(srcTable, dstTable, warnings);
+      var diff = generateTableMigration(
+        srcTable,
+        dstTable,
+        warnings,
+        deleteTables,
+      );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
         actions.add(
@@ -86,30 +91,6 @@ DatabaseMigration generateDatabaseMigration({
     }
   }
 
-  var tablesToBeDeleted = actions
-      .where((action) => action.type == DatabaseMigrationActionType.deleteTable)
-      .map((action) => action.deleteTable!)
-      .toSet();
-
-  for (var action in actions) {
-    if (action.type == DatabaseMigrationActionType.alterTable) {
-      for (var fkToDelete in action.alterTable!.deleteForeignKeys.toList()) {
-        var targetTable = sourceTables
-            .map((srcTable) =>
-                srcTable.findForeignKeyDefinitionNamed(fkToDelete))
-            .nonNulls
-            .firstOrNull
-            ?.referenceTable;
-
-        if (tablesToBeDeleted.contains(targetTable)) {
-          // no need to remove "$fkToDelete" as table "$targetTable" will already be deleted from the table DELETE CASCADE
-
-          action.alterTable!.deleteForeignKeys.remove(fkToDelete);
-        }
-      }
-    }
-  }
-
   return DatabaseMigration(
     actions: actions,
     warnings: warnings,
@@ -121,6 +102,7 @@ TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
   List<DatabaseMigrationWarning> warnings,
+  List<String> deleteTables,
 ) {
   // Find added columns
   var addColumns = <ColumnDefinition>[];
@@ -271,7 +253,9 @@ TableMigration? generateTableMigration(
       continue;
     }
     if (!srcKey.like(dstKey)) {
-      deleteForeignKeys.add(srcKey.constraintName);
+      if (!deleteTables.contains(srcKey.referenceTable)) {
+        deleteForeignKeys.add(srcKey.constraintName);
+      }
       addForeignKeys.add(dstKey);
     }
   }
