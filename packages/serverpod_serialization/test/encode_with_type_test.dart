@@ -1,6 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'dart:typed_data';
 
 class _TestProtocol extends SerializationManager {}
 
@@ -210,6 +211,30 @@ void main() {
       () {
     UuidValue? uuid;
     var typeName = protocol.encodeWithType(uuid);
+    expect(typeName, '{"className":"null","data":null}');
+  });
+
+  test(
+      'Given a Uri when encoding then output is the type name and value as a JSON string',
+      () {
+    Uri uri = Uri.parse('https://serverpod.dev');
+    var typeName = protocol.encodeWithType(uri);
+    expect(typeName, '{"className":"Uri","data":"https://serverpod.dev"}');
+  });
+
+  test(
+      'Given a non-null nullable Uri when encoding then output is the type name and value as a JSON string',
+      () {
+    Uri? uri = Uri.parse('https://serverpod.dev');
+    var typeName = protocol.encodeWithType(uri);
+    expect(typeName, '{"className":"Uri","data":"https://serverpod.dev"}');
+  });
+
+  test(
+      'Given a null nullable Uri when encoding then output is \'null\' for both the type name and data as a JSON string',
+      () {
+    Uri? uri;
+    var typeName = protocol.encodeWithType(uri);
     expect(typeName, '{"className":"null","data":null}');
   });
 }
