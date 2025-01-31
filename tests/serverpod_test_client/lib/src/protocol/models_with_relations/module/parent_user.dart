@@ -41,6 +41,9 @@ abstract class ParentUser implements _i1.SerializableModel {
 
   int? userInfoId;
 
+  /// Returns a shallow copy of this [ParentUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ParentUser copyWith({
     int? id,
     String? name,
@@ -74,6 +77,9 @@ class _ParentUserImpl extends ParentUser {
           userInfoId: userInfoId,
         );
 
+  /// Returns a shallow copy of this [ParentUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ParentUser copyWith({
     Object? id = _Undefined,

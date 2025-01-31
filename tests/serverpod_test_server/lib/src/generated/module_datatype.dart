@@ -47,6 +47,9 @@ abstract class ModuleDatatype
 
   Map<String, _i2.ModuleClass> map;
 
+  /// Returns a shallow copy of this [ModuleDatatype]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ModuleDatatype copyWith({
     _i2.ModuleClass? model,
     List<_i2.ModuleClass>? list,
@@ -87,6 +90,9 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
           map: map,
         );
 
+  /// Returns a shallow copy of this [ModuleDatatype]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ModuleDatatype copyWith({
     _i2.ModuleClass? model,

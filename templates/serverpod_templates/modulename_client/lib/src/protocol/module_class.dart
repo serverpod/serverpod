@@ -33,6 +33,9 @@ abstract class ModuleClass implements _i1.SerializableModel {
 
   int data;
 
+  /// Returns a shallow copy of this [ModuleClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ModuleClass copyWith({
     String? name,
     int? data,
@@ -60,6 +63,9 @@ class _ModuleClassImpl extends ModuleClass {
           data: data,
         );
 
+  /// Returns a shallow copy of this [ModuleClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ModuleClass copyWith({
     String? name,

@@ -290,6 +290,9 @@ abstract class TypesMap implements _i1.SerializableModel {
 
   Map<String, List<_i5.Types>>? aListValue;
 
+  /// Returns a shallow copy of this [TypesMap]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TypesMap copyWith({
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
@@ -442,6 +445,9 @@ class _TypesMapImpl extends TypesMap {
           aListValue: aListValue,
         );
 
+  /// Returns a shallow copy of this [TypesMap]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TypesMap copyWith({
     Object? anIntKey = _Undefined,

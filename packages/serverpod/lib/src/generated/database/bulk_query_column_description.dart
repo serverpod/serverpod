@@ -26,6 +26,9 @@ abstract class BulkQueryColumnDescription
 
   String name;
 
+  /// Returns a shallow copy of this [BulkQueryColumnDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -46,6 +49,9 @@ abstract class BulkQueryColumnDescription
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
   _BulkQueryColumnDescriptionImpl({required String name}) : super._(name: name);
 
+  /// Returns a shallow copy of this [BulkQueryColumnDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BulkQueryColumnDescription copyWith({String? name}) {
     return BulkQueryColumnDescription(name: name ?? this.name);

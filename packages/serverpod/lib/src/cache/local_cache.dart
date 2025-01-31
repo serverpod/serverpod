@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -10,6 +12,10 @@ class LocalCache extends Cache {
   final List<_KeyListKey> _keyList = <_KeyListKey>[];
   final Map<String, _CacheEntry> _entries = <String, _CacheEntry>{};
   final Map<String, Set<String>> _groups = <String, Set<String>>{};
+
+  /// New cache values currently being computed by a [CacheMissHandler]
+  // The future values in here must not be resolved (at which state the value should just be in the cache), but just pending
+  final _inProgressCacheValues = <String, Future<SerializableModel?>>{};
 
   /// Creates a new [LocalCache].
   LocalCache(super.maxEntries, super.serializationManager);
@@ -70,7 +76,7 @@ class LocalCache extends Cache {
 
     if (entry == null) return false;
 
-    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+    if (entry.isExpired) {
       await invalidateKey(key);
       return false;
     }
@@ -81,24 +87,46 @@ class LocalCache extends Cache {
   @override
   Future<T?> get<T extends SerializableModel>(
     String key, [
+    /// Handler to generate a new value in case there is no active value in the cache
+    ///
+    /// In case a value computation from a previous [get] call is already running, the caller will receive the value from
+    /// that call and the `cacheMissHandler` from this call will not be invoked.
     CacheMissHandler<T>? cacheMissHandler,
   ]) async {
     var entry = _entries[key];
 
-    if (entry != null &&
-        (entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
-      await invalidateKey(key);
-      return null;
+    if (entry != null) {
+      if (entry.isExpired) {
+        await invalidateKey(key);
+      } else {
+        return serializationManager.decode<T>(entry.serializedObject);
+      }
     }
 
-    if (entry != null) {
-      return serializationManager.decode<T>(entry.serializedObject);
+    var pendingEntry = _inProgressCacheValues[key];
+    if (pendingEntry != null) {
+      return (await pendingEntry) as T;
     }
 
     if (cacheMissHandler == null) return null;
 
-    var value = await cacheMissHandler.valueProvider();
-    if (value == null) return null;
+    T? value;
+    var completer = Completer<T?>();
+    try {
+      _inProgressCacheValues[key] = completer.future;
+
+      value = await cacheMissHandler.valueProvider();
+
+      completer.complete(value);
+
+      if (value == null) return null;
+    } catch (e, stackTrace) {
+      completer.completeError(e, stackTrace);
+
+      rethrow;
+    } finally {
+      unawaited(_inProgressCacheValues.remove(key));
+    }
 
     await put(
       key,
@@ -193,6 +221,11 @@ class _CacheEntry {
     required this.serializedObject,
     this.lifetime,
   }) : creationTime = DateTime.now();
+
+  bool get isExpired {
+    var expirationTime = this.expirationTime;
+    return expirationTime != null && expirationTime.isBefore(DateTime.now());
+  }
 }
 
 class _KeyListKey {

@@ -39,15 +39,15 @@ enum ForeignKeyAction implements _i1.SerializableModel {
   static ForeignKeyAction fromJson(int index) {
     switch (index) {
       case 0:
-        return setNull;
+        return ForeignKeyAction.setNull;
       case 1:
-        return setDefault;
+        return ForeignKeyAction.setDefault;
       case 2:
-        return restrict;
+        return ForeignKeyAction.restrict;
       case 3:
-        return noAction;
+        return ForeignKeyAction.noAction;
       case 4:
-        return cascade;
+        return ForeignKeyAction.cascade;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ForeignKeyAction"');

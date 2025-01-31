@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class BasicDatabase extends Endpoint {
   Future<void> deleteAllSimpleTestData(Session session) async {

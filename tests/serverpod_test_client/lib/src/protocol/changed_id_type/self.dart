@@ -85,6 +85,9 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
 
   List<_i2.ChangedIdTypeSelf>? children;
 
+  /// Returns a shallow copy of this [ChangedIdTypeSelf]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChangedIdTypeSelf copyWith({
     _i1.UuidValue? id,
     String? name,
@@ -139,6 +142,9 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
           children: children,
         );
 
+  /// Returns a shallow copy of this [ChangedIdTypeSelf]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChangedIdTypeSelf copyWith({
     Object? id = _Undefined,

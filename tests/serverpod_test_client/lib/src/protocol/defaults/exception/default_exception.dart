@@ -96,6 +96,9 @@ abstract class DefaultException
 
   String defaultMixField;
 
+  /// Returns a shallow copy of this [DefaultException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DefaultException copyWith({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
@@ -155,6 +158,9 @@ class _DefaultExceptionImpl extends DefaultException {
           defaultMixField: defaultMixField,
         );
 
+  /// Returns a shallow copy of this [DefaultException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DefaultException copyWith({
     bool? defaultBoolean,

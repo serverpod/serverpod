@@ -50,6 +50,9 @@ abstract class Address implements _i1.SerializableModel {
 
   _i2.Citizen? inhabitant;
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Address copyWith({
     int? id,
     String? street,
@@ -87,6 +90,9 @@ class _AddressImpl extends Address {
           inhabitant: inhabitant,
         );
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,

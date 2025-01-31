@@ -54,6 +54,9 @@ abstract class DoubleDefaultMix implements _i1.SerializableModel {
 
   double doubleDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [DoubleDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DoubleDefaultMix copyWith({
     int? id,
     double? doubleDefaultAndDefaultModel,
@@ -93,6 +96,9 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
               doubleDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [DoubleDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DoubleDefaultMix copyWith({
     Object? id = _Undefined,

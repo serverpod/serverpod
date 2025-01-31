@@ -18,9 +18,9 @@ enum DefaultServerOnlyEnum implements _i1.SerializableModel {
   static DefaultServerOnlyEnum fromJson(int index) {
     switch (index) {
       case 0:
-        return foo;
+        return DefaultServerOnlyEnum.foo;
       case 1:
-        return bar;
+        return DefaultServerOnlyEnum.bar;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "DefaultServerOnlyEnum"');

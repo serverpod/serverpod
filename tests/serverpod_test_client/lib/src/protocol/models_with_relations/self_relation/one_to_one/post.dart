@@ -59,6 +59,9 @@ abstract class Post implements _i1.SerializableModel {
 
   _i2.Post? next;
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Post copyWith({
     int? id,
     String? content,
@@ -100,6 +103,9 @@ class _PostImpl extends Post {
           next: next,
         );
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,

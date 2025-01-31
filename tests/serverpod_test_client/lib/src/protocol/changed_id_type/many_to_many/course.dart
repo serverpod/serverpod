@@ -46,6 +46,9 @@ abstract class CourseUuid implements _i1.SerializableModel {
 
   List<_i2.EnrollmentInt>? enrollments;
 
+  /// Returns a shallow copy of this [CourseUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CourseUuid copyWith({
     _i1.UuidValue? id,
     String? name,
@@ -80,6 +83,9 @@ class _CourseUuidImpl extends CourseUuid {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [CourseUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CourseUuid copyWith({
     Object? id = _Undefined,

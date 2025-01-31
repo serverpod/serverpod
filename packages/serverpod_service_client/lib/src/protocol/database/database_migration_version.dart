@@ -53,6 +53,9 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
   /// The timestamp of the migration. Only set if the migration is applied.
   DateTime? timestamp;
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseMigrationVersion copyWith({
     int? id,
     String? module,
@@ -90,6 +93,9 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
           timestamp: timestamp,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseMigrationVersion copyWith({
     Object? id = _Undefined,

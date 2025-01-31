@@ -44,6 +44,9 @@ abstract class DoubleDefaultModel implements _i1.SerializableModel {
 
   double doubleDefaultModelNull;
 
+  /// Returns a shallow copy of this [DoubleDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DoubleDefaultModel copyWith({
     int? id,
     double? doubleDefaultModel,
@@ -77,6 +80,9 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
           doubleDefaultModelNull: doubleDefaultModelNull,
         );
 
+  /// Returns a shallow copy of this [DoubleDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DoubleDefaultModel copyWith({
     Object? id = _Undefined,

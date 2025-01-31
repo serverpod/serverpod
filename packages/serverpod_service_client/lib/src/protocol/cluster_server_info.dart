@@ -25,6 +25,9 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
   /// The id of the server.
   String serverId;
 
+  /// Returns a shallow copy of this [ClusterServerInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
@@ -41,6 +44,9 @@ class _ClusterServerInfoImpl extends ClusterServerInfo {
   _ClusterServerInfoImpl({required String serverId})
       : super._(serverId: serverId);
 
+  /// Returns a shallow copy of this [ClusterServerInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ClusterServerInfo copyWith({String? serverId}) {
     return ClusterServerInfo(serverId: serverId ?? this.serverId);

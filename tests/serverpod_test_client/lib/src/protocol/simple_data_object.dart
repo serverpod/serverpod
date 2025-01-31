@@ -26,6 +26,9 @@ abstract class SimpleDataObject implements _i1.SerializableModel {
 
   _i2.SimpleData object;
 
+  /// Returns a shallow copy of this [SimpleDataObject]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDataObject copyWith({_i2.SimpleData? object});
   @override
   Map<String, dynamic> toJson() {
@@ -42,6 +45,9 @@ class _SimpleDataObjectImpl extends SimpleDataObject {
   _SimpleDataObjectImpl({required _i2.SimpleData object})
       : super._(object: object);
 
+  /// Returns a shallow copy of this [SimpleDataObject]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDataObject copyWith({_i2.SimpleData? object}) {
     return SimpleDataObject(object: object ?? this.object.copyWith());

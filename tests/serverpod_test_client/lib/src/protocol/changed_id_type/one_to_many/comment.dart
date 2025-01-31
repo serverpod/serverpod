@@ -51,6 +51,9 @@ abstract class CommentInt implements _i1.SerializableModel {
 
   _i2.OrderUuid? order;
 
+  /// Returns a shallow copy of this [CommentInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CommentInt copyWith({
     int? id,
     String? description,
@@ -88,6 +91,9 @@ class _CommentIntImpl extends CommentInt {
           order: order,
         );
 
+  /// Returns a shallow copy of this [CommentInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CommentInt copyWith({
     Object? id = _Undefined,

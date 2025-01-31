@@ -52,6 +52,9 @@ abstract class Member implements _i1.SerializableModel {
 
   List<_i2.Blocking>? blockedBy;
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Member copyWith({
     int? id,
     String? name,
@@ -91,6 +94,9 @@ class _MemberImpl extends Member {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Member copyWith({
     Object? id = _Undefined,

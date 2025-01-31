@@ -52,6 +52,9 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   List<_i2.LongImplicitIdField>?
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
+  /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LongImplicitIdFieldCollection copyWith({
     int? id,
     String? name,
@@ -91,6 +94,9 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
               thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
         );
 
+  /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LongImplicitIdFieldCollection copyWith({
     Object? id = _Undefined,

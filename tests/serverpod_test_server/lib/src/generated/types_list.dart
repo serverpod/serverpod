@@ -122,6 +122,9 @@ abstract class TypesList
 
   List<List<_i5.Types>>? aList;
 
+  /// Returns a shallow copy of this [TypesList]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TypesList copyWith({
     List<int>? anInt,
     List<bool>? aBool,
@@ -238,6 +241,9 @@ class _TypesListImpl extends TypesList {
           aList: aList,
         );
 
+  /// Returns a shallow copy of this [TypesList]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TypesList copyWith({
     Object? anInt = _Undefined,

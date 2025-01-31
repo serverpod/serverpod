@@ -52,6 +52,9 @@ abstract class CompanyUuid implements _i1.SerializableModel {
 
   _i2.TownInt? town;
 
+  /// Returns a shallow copy of this [CompanyUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CompanyUuid copyWith({
     _i1.UuidValue? id,
     String? name,
@@ -89,6 +92,9 @@ class _CompanyUuidImpl extends CompanyUuid {
           town: town,
         );
 
+  /// Returns a shallow copy of this [CompanyUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CompanyUuid copyWith({
     Object? id = _Undefined,

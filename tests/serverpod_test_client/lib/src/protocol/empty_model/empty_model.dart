@@ -20,6 +20,9 @@ abstract class EmptyModel implements _i1.SerializableModel {
     return EmptyModel();
   }
 
+  /// Returns a shallow copy of this [EmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmptyModel copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -35,6 +38,9 @@ abstract class EmptyModel implements _i1.SerializableModel {
 class _EmptyModelImpl extends EmptyModel {
   _EmptyModelImpl() : super._();
 
+  /// Returns a shallow copy of this [EmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmptyModel copyWith() {
     return EmptyModel();

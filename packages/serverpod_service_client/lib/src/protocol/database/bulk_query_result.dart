@@ -48,6 +48,9 @@ abstract class BulkQueryResult implements _i1.SerializableModel {
 
   Duration duration;
 
+  /// Returns a shallow copy of this [BulkQueryResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BulkQueryResult copyWith({
     List<_i2.BulkQueryColumnDescription>? headers,
     String? data,
@@ -83,6 +86,9 @@ class _BulkQueryResultImpl extends BulkQueryResult {
           duration: duration,
         );
 
+  /// Returns a shallow copy of this [BulkQueryResult]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BulkQueryResult copyWith({
     List<_i2.BulkQueryColumnDescription>? headers,

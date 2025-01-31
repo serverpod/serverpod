@@ -61,6 +61,9 @@ abstract class AppleAuthInfo
   /// Authorization code associated with the sign in.
   String authorizationCode;
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
@@ -118,6 +121,9 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
           authorizationCode: authorizationCode,
         );
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   AppleAuthInfo copyWith({
     String? userIdentifier,

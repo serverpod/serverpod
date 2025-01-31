@@ -47,6 +47,9 @@ abstract class ArenaUuid implements _i1.SerializableModel {
 
   _i2.TeamInt? team;
 
+  /// Returns a shallow copy of this [ArenaUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ArenaUuid copyWith({
     _i1.UuidValue? id,
     String? name,
@@ -80,6 +83,9 @@ class _ArenaUuidImpl extends ArenaUuid {
           team: team,
         );
 
+  /// Returns a shallow copy of this [ArenaUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ArenaUuid copyWith({
     Object? id = _Undefined,

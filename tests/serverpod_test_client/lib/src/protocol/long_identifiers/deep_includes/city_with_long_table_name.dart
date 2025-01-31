@@ -57,6 +57,9 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
 
   List<_i3.OrganizationWithLongTableName>? organizations;
 
+  /// Returns a shallow copy of this [CityWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CityWithLongTableName copyWith({
     int? id,
     String? name,
@@ -96,6 +99,9 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
           organizations: organizations,
         );
 
+  /// Returns a shallow copy of this [CityWithLongTableName]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CityWithLongTableName copyWith({
     Object? id = _Undefined,

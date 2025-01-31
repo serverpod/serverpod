@@ -48,6 +48,9 @@ abstract class ColumnMigration implements _i1.SerializableModel {
 
   String? newDefault;
 
+  /// Returns a shallow copy of this [ColumnMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ColumnMigration copyWith({
     String? columnName,
     bool? addNullable,
@@ -89,6 +92,9 @@ class _ColumnMigrationImpl extends ColumnMigration {
           newDefault: newDefault,
         );
 
+  /// Returns a shallow copy of this [ColumnMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ColumnMigration copyWith({
     String? columnName,

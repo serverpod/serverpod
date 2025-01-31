@@ -42,6 +42,9 @@ abstract class IntDefault implements _i1.SerializableModel {
 
   int? intDefaultNull;
 
+  /// Returns a shallow copy of this [IntDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   IntDefault copyWith({
     int? id,
     int? intDefault,
@@ -75,6 +78,9 @@ class _IntDefaultImpl extends IntDefault {
           intDefaultNull: intDefaultNull,
         );
 
+  /// Returns a shallow copy of this [IntDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   IntDefault copyWith({
     Object? id = _Undefined,

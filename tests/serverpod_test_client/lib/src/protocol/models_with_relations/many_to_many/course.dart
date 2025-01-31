@@ -44,6 +44,9 @@ abstract class Course implements _i1.SerializableModel {
 
   List<_i2.Enrollment>? enrollments;
 
+  /// Returns a shallow copy of this [Course]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Course copyWith({
     int? id,
     String? name,
@@ -78,6 +81,9 @@ class _CourseImpl extends Course {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [Course]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Course copyWith({
     Object? id = _Undefined,

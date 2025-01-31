@@ -27,6 +27,9 @@ abstract class DistributedCacheEntry
   /// The cached data.
   String data;
 
+  /// Returns a shallow copy of this [DistributedCacheEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
@@ -47,6 +50,9 @@ abstract class DistributedCacheEntry
 class _DistributedCacheEntryImpl extends DistributedCacheEntry {
   _DistributedCacheEntryImpl({required String data}) : super._(data: data);
 
+  /// Returns a shallow copy of this [DistributedCacheEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DistributedCacheEntry copyWith({String? data}) {
     return DistributedCacheEntry(data: data ?? this.data);

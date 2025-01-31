@@ -38,7 +38,10 @@ abstract class SealedGrandChild extends _i1.SealedChild
 
   String sealedGrandchildField;
 
+  /// Returns a shallow copy of this [SealedGrandChild]
+  /// with some or all fields replaced by the given arguments.
   @override
+  @_i2.useResult
   SealedGrandChild copyWith({
     int? sealedInt,
     String? sealedString,
@@ -84,6 +87,9 @@ class _SealedGrandChildImpl extends SealedGrandChild {
           sealedGrandchildField: sealedGrandchildField,
         );
 
+  /// Returns a shallow copy of this [SealedGrandChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   @override
   SealedGrandChild copyWith({
     int? sealedInt,

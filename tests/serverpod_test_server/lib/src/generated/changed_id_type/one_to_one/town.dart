@@ -55,6 +55,9 @@ abstract class TownInt implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   @override
   _i1.Table<int> get table => t;
 
+  /// Returns a shallow copy of this [TownInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TownInt copyWith({
     int? id,
     String? name,
@@ -126,6 +129,9 @@ class _TownIntImpl extends TownInt {
           mayor: mayor,
         );
 
+  /// Returns a shallow copy of this [TownInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TownInt copyWith({
     Object? id = _Undefined,
@@ -230,6 +236,28 @@ class TownIntRepository {
 
   final detachRow = const TownIntDetachRowRepository._();
 
+  /// Returns a list of [TownInt]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<TownInt>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TownIntTable>? where,
@@ -253,6 +281,23 @@ class TownIntRepository {
     );
   }
 
+  /// Returns the first matching [TownInt] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<TownInt?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TownIntTable>? where,
@@ -274,6 +319,7 @@ class TownIntRepository {
     );
   }
 
+  /// Finds a single [TownInt] by its [id] or null if no such row exists.
   Future<TownInt?> findById(
     _i1.Session session,
     int id, {
@@ -287,6 +333,12 @@ class TownIntRepository {
     );
   }
 
+  /// Inserts all [TownInt]s in the list and returns the inserted rows.
+  ///
+  /// The returned [TownInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<TownInt>> insert(
     _i1.Session session,
     List<TownInt> rows, {
@@ -298,6 +350,9 @@ class TownIntRepository {
     );
   }
 
+  /// Inserts a single [TownInt] and returns the inserted row.
+  ///
+  /// The returned [TownInt] will have its `id` field set.
   Future<TownInt> insertRow(
     _i1.Session session,
     TownInt row, {
@@ -309,6 +364,11 @@ class TownIntRepository {
     );
   }
 
+  /// Updates all [TownInt]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<TownInt>> update(
     _i1.Session session,
     List<TownInt> rows, {
@@ -322,6 +382,9 @@ class TownIntRepository {
     );
   }
 
+  /// Updates a single [TownInt]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<TownInt> updateRow(
     _i1.Session session,
     TownInt row, {
@@ -335,6 +398,9 @@ class TownIntRepository {
     );
   }
 
+  /// Deletes all [TownInt]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<TownInt>> delete(
     _i1.Session session,
     List<TownInt> rows, {
@@ -346,6 +412,7 @@ class TownIntRepository {
     );
   }
 
+  /// Deletes a single [TownInt].
   Future<TownInt> deleteRow(
     _i1.Session session,
     TownInt row, {
@@ -357,6 +424,7 @@ class TownIntRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<TownInt>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<TownIntTable> where,
@@ -368,6 +436,8 @@ class TownIntRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TownIntTable>? where,
@@ -385,6 +455,8 @@ class TownIntRepository {
 class TownIntAttachRowRepository {
   const TownIntAttachRowRepository._();
 
+  /// Creates a relation between the given [TownInt] and [CitizenInt]
+  /// by setting the [TownInt]'s foreign key `mayorId` to refer to the [CitizenInt].
   Future<void> mayor(
     _i1.Session session,
     TownInt townInt,
@@ -410,6 +482,11 @@ class TownIntAttachRowRepository {
 class TownIntDetachRowRepository {
   const TownIntDetachRowRepository._();
 
+  /// Detaches the relation between this [TownInt] and the [CitizenInt] set in `mayor`
+  /// by setting the [TownInt]'s foreign key `mayorId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> mayor(
     _i1.Session session,
     TownInt townint, {

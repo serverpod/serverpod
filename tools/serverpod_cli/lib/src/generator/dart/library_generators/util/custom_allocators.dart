@@ -14,10 +14,11 @@ class ImportCollector {
     }
 
     var absolutePath = p.join(p.dirname(currentPath), topNodePath);
-    return p.relative(
-      absolutePath,
-      from: p.dirname(basePath),
-    );
+    var relativePath = p.relative(absolutePath, from: p.dirname(basePath));
+
+    // If on Windows, top level paths could appear with backslashes and break
+    // the import clause, such as `import '..\protocol.dart' as _i1;`.
+    return p.split(relativePath).join('/');
   }
 
   int getOrCreateAlias(String topNodePath, String currentPath) {

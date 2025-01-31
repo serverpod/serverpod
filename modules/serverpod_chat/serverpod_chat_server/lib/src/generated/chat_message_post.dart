@@ -53,6 +53,9 @@ abstract class ChatMessagePost
   /// List of attachments associated with this message.
   List<_i2.ChatMessageAttachment>? attachments;
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessagePost copyWith({
     String? channel,
     String? message,
@@ -103,6 +106,9 @@ class _ChatMessagePostImpl extends ChatMessagePost {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessagePost copyWith({
     String? channel,

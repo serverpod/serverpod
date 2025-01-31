@@ -15,7 +15,11 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "${defaultBuildTask}"
+			"preLaunchTask": "${defaultBuildTask}",
+			"env": {
+				"PATH": "${env:PATH}",
+				"SERVERPOD_HOME": "${env:SERVERPOD_HOME}"
+			  }
 		},
 		{
 			"name": "Extension Tests",

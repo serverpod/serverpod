@@ -36,6 +36,9 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
 
   int other;
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithParent copyWith({
     int? id,
     int? other,
@@ -65,6 +68,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
           other: other,
         );
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithParent copyWith({
     Object? id = _Undefined,

@@ -94,6 +94,9 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
   /// Used for sorting the message log.
   int order;
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -159,6 +162,9 @@ class _MessageLogEntryImpl extends MessageLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,

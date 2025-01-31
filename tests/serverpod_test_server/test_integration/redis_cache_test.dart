@@ -18,7 +18,10 @@ void main() async {
 
   tearDown(() async => await cache.clear());
 
-  test('Put and get object', () async {
+  test(
+      'Given an object is stored in the cache '
+      'when it is retrieved '
+      'then the correct object is returned', () async {
     var entry = SimpleData(num: 0);
 
     await cache.put('entry', entry);
@@ -32,7 +35,10 @@ void main() async {
     expect(retrieved!.num, equals(0));
   });
 
-  test('Put and get object with lifetime', () async {
+  test(
+      'Given an object is stored in the cache with a lifetime '
+      'when the lifetime expires '
+      'then the object is no longer retrievable', () async {
     var entry = SimpleData(num: 0);
 
     await cache.put('entry', entry,
@@ -45,7 +51,10 @@ void main() async {
     expect(retrieved, isNull);
   });
 
-  test('Put multiple with same key', () async {
+  test(
+      'Given multiple objects are stored with the same key '
+      'when a new object is added '
+      'then the last object overwrites the previous one', () async {
     var entryA = SimpleData(num: 0);
     var entryB = SimpleData(num: 1);
 
@@ -56,7 +65,10 @@ void main() async {
     expect(retrieved!.num, equals(1));
   });
 
-  test('Invalidate key', () async {
+  test(
+      'Given a key is invalidated '
+      'when the key is retrieved '
+      'then the object is no longer retrievable', () async {
     await cache.put('entry:1337', SimpleData(num: 1337));
 
     await cache.invalidateKey('entry:1337');
@@ -64,14 +76,17 @@ void main() async {
     expect(retrieved, isNull);
   });
 
-  test('get object not in cache then null is returned', () async {
+  test(
+      'Given an object is not in the cache '
+      'when it is retrieved '
+      'then null is returned', () async {
     var retrieved = await cache.get<SimpleData>('invalidEntry');
     expect(retrieved, isNull);
   });
 
   group(
-      'get object not in cache when cacheMissHandler is specified to return object',
-      () {
+      'Given an object is not in the cache and a cache miss handler '
+      'is specified to return an object', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -81,19 +96,24 @@ void main() async {
       );
     });
 
-    test('then object from cacheMissHandler is returned', () {
+    test(
+        'when the object is retrieved '
+        'then the cache miss handler returns the correct object', () {
       expect(retrieved?.num, equals(1337));
     });
 
-    test('then cacheMissHandler value is retrievable from the cache', () async {
+    test(
+        'when the object is retrieved again '
+        'then the cache miss handler value is retrievable from the cache',
+        () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value?.num, equals(1337));
     });
   });
 
   group(
-      'get object not in cache when cache miss handler is specified to return null',
-      () {
+      'Given an object is not in the cache and '
+      'the cache miss handler returns null', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -102,17 +122,24 @@ void main() async {
         CacheMissHandler(() async => null),
       );
     });
-    test('then null is returned', () {
+
+    test(
+        'when the object is retrieved '
+        'then null is returned', () {
       expect(retrieved, isNull);
     });
 
-    test('then no value is set in cache', () async {
+    test(
+        'when the object is retrieved again '
+        'then no value is set in the cache', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value, isNull);
     });
   });
 
-  group('get object already in cache when cacheMissHandler is specified', () {
+  group(
+      'Given an object is already in the cache '
+      'and a cache miss handler is specified', () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -123,18 +150,21 @@ void main() async {
       );
     });
 
-    test('then object already in cache is returned', () {
+    test(
+        'when the object is retrieved '
+        'then the object already in the cache is returned', () {
       expect(retrieved?.num, equals(1));
     });
 
-    test('then object already in cache is still retrievable from the cache',
-        () async {
+    test(
+        'when the object is retrieved again '
+        'then the object in the cache is still retrievable', () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value?.num, equals(1));
     });
   });
 
-  group('Given listener registered on channel', () {
+  group('Given listener registered on a channel', () {
     const channelName = 'testChannel';
     var messageSent = SimpleData(num: 1337);
     late Completer<SimpleData?> messageCompleter;
@@ -153,8 +183,21 @@ void main() async {
       session.messages.removeListener(channelName, listener);
     });
 
-    test('when global message is published to channel then message is received',
-        () async {
+    test(
+        'when a global message is published to the channel '
+        'then postMessage returns true', () async {
+      final result = await session.messages.postMessage(
+        channelName,
+        messageSent,
+        global: true,
+      );
+
+      expect(result, isTrue);
+    });
+
+    test(
+        'when a global message is published to the channel '
+        'then the message is received', () async {
       await session.messages.postMessage(
         channelName,
         messageSent,
@@ -170,8 +213,9 @@ void main() async {
       expect(messageReceived?.num, messageSent.num);
     });
 
-    test('when global message is published to channel confirmation is received',
-        () async {
+    test(
+        'when a global message is published to the channel '
+        'then confirmation is received', () async {
       var published = await session.messages.postMessage(
         channelName,
         messageSent,
@@ -181,23 +225,23 @@ void main() async {
       expect(published, true);
     });
 
-    group('when global message is published to different channel ', () {
+    group('when a global message is published to a different channel', () {
       var uniqueChannelName = Uuid().v4();
       late Completer<SimpleData?> uniqueChannelMessageCompleter;
-      MessageCentralListenerCallback uniqueCannelListener = (message) {
+      MessageCentralListenerCallback uniqueChannelListener = (message) {
         if (message is SimpleData) {
           uniqueChannelMessageCompleter.complete(message);
         }
       };
 
       setUp(() async {
-        session.messages.addListener(uniqueChannelName, uniqueCannelListener);
+        session.messages.addListener(uniqueChannelName, uniqueChannelListener);
         uniqueChannelMessageCompleter = Completer();
       });
 
       tearDown(() async {
         session.messages
-            .removeListener(uniqueChannelName, uniqueCannelListener);
+            .removeListener(uniqueChannelName, uniqueChannelListener);
       });
 
       test('then no message is received', () async {
@@ -214,7 +258,6 @@ void main() async {
         );
         expect(uniqueChannelMessageReceived, isNotNull);
 
-        /// Ensure that the message was not received on the original channel
         expectLater(
           messageCompleter.future.timeout(
             Duration(milliseconds: 100),
@@ -225,8 +268,8 @@ void main() async {
     });
 
     test(
-        'when global message is published to channel with no listeners then publish is still successful',
-        () async {
+        'when a global message is published to a channel with no listeners '
+        'then the publish is still successful', () async {
       var uniqueChannelName = Uuid().v4();
       var published = await session.messages.postMessage(
         uniqueChannelName,
@@ -238,10 +281,10 @@ void main() async {
     });
   });
 
-  group('Given stopped redis controller', () {
+  group('Given a stopped Redis controller', () {
     setUp(() async {
       var controller = session.serverpod.redisController;
-      assert(controller != null, 'Expected redis controller to be not null');
+      assert(controller != null, 'Expected Redis controller to be not null');
       if (controller != null) {
         await controller.stop();
       }
@@ -249,13 +292,13 @@ void main() async {
 
     tearDown(() async {
       var controller = session.serverpod.redisController;
-      assert(controller != null, 'Expected redis controller to be not null');
+      assert(controller != null, 'Expected Redis controller to be not null');
       if (controller != null) {
         await controller.start();
       }
     });
 
-    test('when publishing global message then publish fails', () async {
+    test('when publishing a global message then the publish fails', () async {
       var published = await session.messages.postMessage(
         'testChannel',
         SimpleData(num: 1337),
@@ -266,12 +309,12 @@ void main() async {
     });
   });
 
-  group('Given null redis controller', () {
+  group('Given a null Redis controller', () {
     final tempController = session.serverpod.redisController;
     setUp(() async {
       assert(
         session.serverpod.redisController != null,
-        'Expected redis controller to be not null',
+        'Expected Redis controller to be not null',
       );
       session.serverpod.redisController = null;
     });
@@ -279,19 +322,26 @@ void main() async {
     tearDown(() async {
       assert(
         session.serverpod.redisController == null,
-        'Expected redis controller to be null',
+        'Expected Redis controller to be null',
       );
       session.serverpod.redisController = tempController;
     });
 
-    test('when publishing global message then state error is thrown', () async {
+    test('when publishing a global message then a state error is thrown',
+        () async {
       expectLater(
         () async => await session.messages.postMessage(
           'testChannel',
           SimpleData(num: 1337),
           global: true,
         ),
-        throwsStateError,
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            'Redis needs to be enabled to use this method',
+          ),
+        ),
       );
     });
   });

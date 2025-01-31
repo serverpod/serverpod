@@ -87,6 +87,9 @@ abstract class UserInfo implements _i1.SerializableModel {
   /// True if the user is blocked from signing in.
   bool blocked;
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -144,6 +147,9 @@ class _UserInfoImpl extends UserInfo {
           blocked: blocked,
         );
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,

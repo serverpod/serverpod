@@ -45,6 +45,9 @@ abstract class SimpleDateTime
   @override
   _i1.Table<int> get table => t;
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -106,6 +109,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
           dateTime: dateTime,
         );
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,
@@ -170,6 +176,28 @@ class SimpleDateTimeIncludeList extends _i1.IncludeList {
 class SimpleDateTimeRepository {
   const SimpleDateTimeRepository._();
 
+  /// Returns a list of [SimpleDateTime]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<SimpleDateTime>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
@@ -191,6 +219,23 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Returns the first matching [SimpleDateTime] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<SimpleDateTime?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
@@ -210,6 +255,7 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Finds a single [SimpleDateTime] by its [id] or null if no such row exists.
   Future<SimpleDateTime?> findById(
     _i1.Session session,
     int id, {
@@ -221,6 +267,12 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Inserts all [SimpleDateTime]s in the list and returns the inserted rows.
+  ///
+  /// The returned [SimpleDateTime]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<SimpleDateTime>> insert(
     _i1.Session session,
     List<SimpleDateTime> rows, {
@@ -232,6 +284,9 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Inserts a single [SimpleDateTime] and returns the inserted row.
+  ///
+  /// The returned [SimpleDateTime] will have its `id` field set.
   Future<SimpleDateTime> insertRow(
     _i1.Session session,
     SimpleDateTime row, {
@@ -243,6 +298,11 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Updates all [SimpleDateTime]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<SimpleDateTime>> update(
     _i1.Session session,
     List<SimpleDateTime> rows, {
@@ -256,6 +316,9 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Updates a single [SimpleDateTime]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<SimpleDateTime> updateRow(
     _i1.Session session,
     SimpleDateTime row, {
@@ -269,6 +332,9 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Deletes all [SimpleDateTime]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<SimpleDateTime>> delete(
     _i1.Session session,
     List<SimpleDateTime> rows, {
@@ -280,6 +346,7 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Deletes a single [SimpleDateTime].
   Future<SimpleDateTime> deleteRow(
     _i1.Session session,
     SimpleDateTime row, {
@@ -291,6 +358,7 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<SimpleDateTime>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
@@ -302,6 +370,8 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,

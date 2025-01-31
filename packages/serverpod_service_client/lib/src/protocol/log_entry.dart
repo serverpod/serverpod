@@ -93,6 +93,9 @@ abstract class LogEntry implements _i1.SerializableModel {
   /// The order of this log entry, used for sorting.
   int order;
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -158,6 +161,9 @@ class _LogEntryImpl extends LogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogEntry copyWith({
     Object? id = _Undefined,

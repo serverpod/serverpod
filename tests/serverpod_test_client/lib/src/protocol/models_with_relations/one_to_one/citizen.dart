@@ -72,6 +72,9 @@ abstract class Citizen implements _i1.SerializableModel {
 
   _i3.Company? oldCompany;
 
+  /// Returns a shallow copy of this [Citizen]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Citizen copyWith({
     int? id,
     String? name,
@@ -121,6 +124,9 @@ class _CitizenImpl extends Citizen {
           oldCompany: oldCompany,
         );
 
+  /// Returns a shallow copy of this [Citizen]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Citizen copyWith({
     Object? id = _Undefined,

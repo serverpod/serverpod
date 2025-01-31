@@ -44,6 +44,9 @@ abstract class CustomerInt implements _i1.SerializableModel {
 
   List<_i2.OrderUuid>? orders;
 
+  /// Returns a shallow copy of this [CustomerInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CustomerInt copyWith({
     int? id,
     String? name,
@@ -78,6 +81,9 @@ class _CustomerIntImpl extends CustomerInt {
           orders: orders,
         );
 
+  /// Returns a shallow copy of this [CustomerInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CustomerInt copyWith({
     Object? id = _Undefined,

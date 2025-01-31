@@ -182,8 +182,8 @@ class Restrictions {
       ];
     }
 
-    var classesByName = parsedModels.classNames[className]?.where(
-        (model) => model.moduleAlias == documentDefinition?.moduleAlias);
+    var classesByName = parsedModels.classNames[className]?.where((model) =>
+        model.type.moduleAlias == documentDefinition?.type.moduleAlias);
 
     if (classesByName != null && classesByName.length > 1) {
       return [
@@ -322,7 +322,7 @@ class Restrictions {
       ];
     }
 
-    if (parentClass.moduleAlias != defaultModuleAlias) {
+    if (parentClass.type.moduleAlias != defaultModuleAlias) {
       return [
         SourceSpanSeverityException(
           'You can only extend classes from your own project.',
@@ -759,6 +759,17 @@ class Restrictions {
       ));
     }
 
+    if (!AnalyzeChecker.isFieldDefined(content)) {
+      var isOptional = AnalyzeChecker.isOptionalDefined(content);
+      var isServerOnly = field.scope == ModelFieldScopeDefinition.serverOnly;
+      if (isServerOnly && !isOptional) {
+        errors.add(SourceSpanSeverityException(
+          'The relation with scope "${field.scope.name}" requires the relation to be optional.',
+          span,
+        ));
+      }
+    }
+
     return errors;
   }
 
@@ -1088,7 +1099,7 @@ class Restrictions {
           .firstOrNull;
 
       if (referenceClass != null &&
-          referenceClass.moduleAlias != definition.moduleAlias) {
+          referenceClass.type.moduleAlias != definition.type.moduleAlias) {
         return [
           SourceSpanSeverityException(
             'A List relation is not allowed on module tables.',
@@ -1467,7 +1478,7 @@ class Restrictions {
 
     if (referenceClasses.isNotEmpty) {
       var moduleAlias = type.moduleAlias;
-      return referenceClasses.any((e) => e.moduleAlias == moduleAlias);
+      return referenceClasses.any((e) => e.type.moduleAlias == moduleAlias);
     }
 
     return true;

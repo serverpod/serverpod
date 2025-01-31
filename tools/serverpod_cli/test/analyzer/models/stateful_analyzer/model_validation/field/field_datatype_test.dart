@@ -171,7 +171,7 @@ fields:
       test('then field projectModelDefinition type is the project model', () {
         expect(
           testClassDefinition
-              ?.fields.first.type.projectModelDefinition?.moduleAlias,
+              ?.fields.first.type.projectModelDefinition?.type.moduleAlias,
           'protocol',
         );
 
@@ -1144,60 +1144,110 @@ fields:
     );
   });
 
-  test(
-      'Given a class with a type starting with package: then do no type checking on the type and no errors are reported.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+  group('Given a class with a type starting with package: ', () {
+    test('then do no type checking on the type and no errors are reported.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             name: package:serverpod_cli/src/lib/example.dart:Example
           ''',
-      ).build()
-    ];
+        ).build()
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but one was generated.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type moduleAlias is set to null.', () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: package:serverpod_cli/src/lib/example.dart:Example
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var parsedModels = analyzer.validateAll();
+      var model = parsedModels.first as ClassDefinition;
+      var field = model.fields.first;
+
+      expect(field.type.moduleAlias, null);
+    });
   });
 
-  test(
-      'Given a class with a type starting with project: then do no type checking on the type and no errors are reported.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+  group('Given a class with a type starting with project: ', () {
+    test('then do no type checking on the type and no errors are reported.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             name: project:src/lib/example.dart:Example
           ''',
-      ).build()
-    ];
+        ).build()
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but one was generated.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type moduleAlias is set to null.', () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: project:src/lib/example.dart:Example
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var parsedModels = analyzer.validateAll();
+      var model = parsedModels.first as ClassDefinition;
+      var field = model.fields.first;
+
+      expect(field.type.moduleAlias, null);
+    });
   });
 
   group('Given a class with a type set to the class name of a custom type', () {

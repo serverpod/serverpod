@@ -42,6 +42,9 @@ abstract class Filter implements _i1.SerializableModel {
 
   List<_i2.FilterConstraint> constraints;
 
+  /// Returns a shallow copy of this [Filter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Filter copyWith({
     String? name,
     String? table,
@@ -73,6 +76,9 @@ class _FilterImpl extends Filter {
           constraints: constraints,
         );
 
+  /// Returns a shallow copy of this [Filter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Filter copyWith({
     String? name,

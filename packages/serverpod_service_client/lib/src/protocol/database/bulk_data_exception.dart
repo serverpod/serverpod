@@ -34,6 +34,9 @@ abstract class BulkDataException
 
   String? query;
 
+  /// Returns a shallow copy of this [BulkDataException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BulkDataException copyWith({
     String? message,
     String? query,
@@ -63,6 +66,9 @@ class _BulkDataExceptionImpl extends BulkDataException {
           query: query,
         );
 
+  /// Returns a shallow copy of this [BulkDataException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BulkDataException copyWith({
     String? message,

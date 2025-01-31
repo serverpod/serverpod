@@ -61,6 +61,9 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
 
   _i3.CourseUuid? course;
 
+  /// Returns a shallow copy of this [EnrollmentInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnrollmentInt copyWith({
     int? id,
     _i1.UuidValue? studentId,
@@ -102,6 +105,9 @@ class _EnrollmentIntImpl extends EnrollmentInt {
           course: course,
         );
 
+  /// Returns a shallow copy of this [EnrollmentInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnrollmentInt copyWith({
     Object? id = _Undefined,

@@ -62,6 +62,9 @@ abstract class DatabaseDefinitions implements _i1.SerializableModel {
   /// The latest available migrations that can be applied.
   List<_i3.DatabaseMigrationVersion> latestAvailableMigrations;
 
+  /// Returns a shallow copy of this [DatabaseDefinitions]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,
     List<_i2.TableDefinition>? live,
@@ -99,6 +102,9 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
           latestAvailableMigrations: latestAvailableMigrations,
         );
 
+  /// Returns a shallow copy of this [DatabaseDefinitions]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,

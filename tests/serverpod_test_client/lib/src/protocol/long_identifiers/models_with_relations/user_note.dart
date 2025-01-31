@@ -36,6 +36,9 @@ abstract class UserNote implements _i1.SerializableModel {
 
   String name;
 
+  /// Returns a shallow copy of this [UserNote]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserNote copyWith({
     int? id,
     String? name,
@@ -65,6 +68,9 @@ class _UserNoteImpl extends UserNote {
           name: name,
         );
 
+  /// Returns a shallow copy of this [UserNote]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserNote copyWith({
     Object? id = _Undefined,

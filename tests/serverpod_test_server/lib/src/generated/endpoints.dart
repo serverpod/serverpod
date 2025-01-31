@@ -631,6 +631,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
+        'testUri': _i1.MethodConnector(
+          name: 'testUri',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<Uri?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicTypes'] as _i4.BasicTypesEndpoint).testUri(
+            session,
+            params['value'],
+          ),
+        ),
       },
     );
     connectors['cloudStorage'] = _i1.EndpointConnector(

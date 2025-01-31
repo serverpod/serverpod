@@ -44,6 +44,9 @@ abstract class MethodInfo implements _i1.SerializableModel {
   /// The name of this method.
   String method;
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MethodInfo copyWith({
     int? id,
     String? endpoint,
@@ -77,6 +80,9 @@ class _MethodInfoImpl extends MethodInfo {
           method: method,
         );
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MethodInfo copyWith({
     Object? id = _Undefined,

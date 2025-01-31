@@ -98,6 +98,9 @@ abstract class StringDefaultPersist implements _i1.SerializableModel {
 
   String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
 
+  /// Returns a shallow copy of this [StringDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   StringDefaultPersist copyWith({
     int? id,
     String? stringDefaultPersist,
@@ -184,6 +187,9 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
               stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
         );
 
+  /// Returns a shallow copy of this [StringDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   StringDefaultPersist copyWith({
     Object? id = _Undefined,

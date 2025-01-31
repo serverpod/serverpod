@@ -22,6 +22,9 @@ abstract class NotServerOnlyClass implements _i1.SerializableModel {
 
   String foo;
 
+  /// Returns a shallow copy of this [NotServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   NotServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
@@ -37,6 +40,9 @@ abstract class NotServerOnlyClass implements _i1.SerializableModel {
 class _NotServerOnlyClassImpl extends NotServerOnlyClass {
   _NotServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 
+  /// Returns a shallow copy of this [NotServerOnlyClass]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   NotServerOnlyClass copyWith({String? foo}) {
     return NotServerOnlyClass(foo: foo ?? this.foo);

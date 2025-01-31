@@ -28,6 +28,9 @@ abstract class SimpleDataList
 
   List<_i2.SimpleData> rows;
 
+  /// Returns a shallow copy of this [SimpleDataList]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
@@ -49,6 +52,9 @@ class _SimpleDataListImpl extends SimpleDataList {
   _SimpleDataListImpl({required List<_i2.SimpleData> rows})
       : super._(rows: rows);
 
+  /// Returns a shallow copy of this [SimpleDataList]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
     return SimpleDataList(

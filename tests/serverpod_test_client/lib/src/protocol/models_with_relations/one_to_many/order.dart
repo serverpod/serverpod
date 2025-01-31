@@ -58,6 +58,9 @@ abstract class Order implements _i1.SerializableModel {
 
   List<_i3.Comment>? comments;
 
+  /// Returns a shallow copy of this [Order]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Order copyWith({
     int? id,
     String? description,
@@ -100,6 +103,9 @@ class _OrderImpl extends Order {
           comments: comments,
         );
 
+  /// Returns a shallow copy of this [Order]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Order copyWith({
     Object? id = _Undefined,

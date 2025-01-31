@@ -60,6 +60,9 @@ abstract class OrderUuid implements _i1.SerializableModel {
 
   List<_i3.CommentInt>? comments;
 
+  /// Returns a shallow copy of this [OrderUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   OrderUuid copyWith({
     _i1.UuidValue? id,
     String? description,
@@ -102,6 +105,9 @@ class _OrderUuidImpl extends OrderUuid {
           comments: comments,
         );
 
+  /// Returns a shallow copy of this [OrderUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   OrderUuid copyWith({
     Object? id = _Undefined,

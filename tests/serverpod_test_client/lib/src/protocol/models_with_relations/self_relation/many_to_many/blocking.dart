@@ -59,6 +59,9 @@ abstract class Blocking implements _i1.SerializableModel {
 
   _i2.Member? blockedBy;
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
@@ -100,6 +103,9 @@ class _BlockingImpl extends Blocking {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,

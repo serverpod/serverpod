@@ -44,6 +44,9 @@ abstract class Channel implements _i1.SerializableModel {
   /// The id of the channel.
   String channel;
 
+  /// Returns a shallow copy of this [Channel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Channel copyWith({
     int? id,
     String? name,
@@ -77,6 +80,9 @@ class _ChannelImpl extends Channel {
           channel: channel,
         );
 
+  /// Returns a shallow copy of this [Channel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Channel copyWith({
     Object? id = _Undefined,

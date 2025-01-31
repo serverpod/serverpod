@@ -22,6 +22,15 @@ void main() {
   var client = Client(serverUrl);
 
   group('Calls', () {
+    test(
+        'Given the test server, when the global int is set to 10 and 1 is added, then 11 is returned',
+        () async {
+      await client.simple.setGlobalInt(10);
+      await client.simple.addToGlobalInt();
+      var value = await client.simple.getGlobalInt();
+      expect(value, equals(11));
+    });
+
     test('Named parameters basic call', () async {
       var result = await client.namedParameters.namedParametersMethod(
         namedInt: 42,
@@ -719,103 +728,6 @@ void main() {
 
       result = await client.customTypes.returnFreezedCustomClassNullable(null);
 
-      expect(result, isNull);
-    });
-  });
-
-  group('Basic types', () {
-    var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
-    var duration = const Duration(seconds: 1);
-    var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
-
-    test('Simple calls', () async {
-      await client.simple.setGlobalInt(10);
-      await client.simple.addToGlobalInt();
-      var value = await client.simple.getGlobalInt();
-      expect(value, equals(11));
-    });
-
-    test('Type int', () async {
-      var result = await client.basicTypes.testInt(10);
-      expect(result, equals(10));
-    });
-
-    test('Type null int', () async {
-      var result = await client.basicTypes.testInt(null);
-      expect(result, isNull);
-    });
-
-    test('Type double', () async {
-      var result = await client.basicTypes.testDouble(10.0);
-      expect(result, equals(10.0));
-    });
-
-    test('Type null double', () async {
-      var result = await client.basicTypes.testDouble(null);
-      expect(result, isNull);
-    });
-
-    test('Type bool', () async {
-      var result = await client.basicTypes.testBool(true);
-      expect(result, equals(true));
-    });
-
-    test('Type null bool', () async {
-      var result = await client.basicTypes.testBool(null);
-      expect(result, isNull);
-    });
-
-    test('Type String', () async {
-      var result = await client.basicTypes.testString('test');
-      expect(result, 'test');
-    });
-
-    test('Type String with value \'null\'', () async {
-      var result = await client.basicTypes.testString('null');
-      expect(result, 'null');
-    });
-
-    test('Type null String', () async {
-      var result = await client.basicTypes.testString(null);
-      expect(result, isNull);
-    });
-
-    test('Type DateTime', () async {
-      var result = await client.basicTypes.testDateTime(dateTime);
-      expect(result!, equals(dateTime));
-    });
-
-    test('Type null DateTime', () async {
-      var result = await client.basicTypes.testDateTime(null);
-      expect(result, isNull);
-    });
-
-    test('Type ByteData', () async {
-      var result = await client.basicTypes.testByteData(createByteData());
-      expect(result!.lengthInBytes, equals(256));
-    });
-
-    test('Type null ByteData', () async {
-      var result = await client.basicTypes.testByteData(null);
-      expect(result, isNull);
-    });
-    test('Type Duration', () async {
-      var result = await client.basicTypes.testDuration(duration);
-      expect(result, equals(duration));
-    });
-
-    test('Type null Duration', () async {
-      var result = await client.basicTypes.testDuration(null);
-      expect(result, isNull);
-    });
-
-    test('Type UuidValue', () async {
-      var result = await client.basicTypes.testUuid(uuid);
-      expect(result, equals(uuid));
-    });
-
-    test('Type null UuidValue', () async {
-      var result = await client.basicTypes.testUuid(null);
       expect(result, isNull);
     });
   });

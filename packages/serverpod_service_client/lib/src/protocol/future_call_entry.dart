@@ -62,6 +62,9 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -107,6 +110,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           identifier: identifier,
         );
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   FutureCallEntry copyWith({
     Object? id = _Undefined,

@@ -52,6 +52,9 @@ abstract class BoolDefaultMix implements _i1.SerializableModel {
 
   bool boolDefaultModelAndDefaultPersist;
 
+  /// Returns a shallow copy of this [BoolDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BoolDefaultMix copyWith({
     int? id,
     bool? boolDefaultAndDefaultModel,
@@ -89,6 +92,9 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
           boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
         );
 
+  /// Returns a shallow copy of this [BoolDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BoolDefaultMix copyWith({
     Object? id = _Undefined,

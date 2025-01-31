@@ -52,6 +52,9 @@ abstract class AddressUuid implements _i1.SerializableModel {
 
   _i2.CitizenInt? inhabitant;
 
+  /// Returns a shallow copy of this [AddressUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   AddressUuid copyWith({
     _i1.UuidValue? id,
     String? street,
@@ -89,6 +92,9 @@ class _AddressUuidImpl extends AddressUuid {
           inhabitant: inhabitant,
         );
 
+  /// Returns a shallow copy of this [AddressUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   AddressUuid copyWith({
     Object? id = _Undefined,

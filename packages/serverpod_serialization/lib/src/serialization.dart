@@ -119,6 +119,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<UuidValue>(t)) {
       if (data == null) return null as T;
       return UuidValueJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<Uri>(t)) {
+      if (data == null) return null as T;
+      return Uri.parse(data) as T;
     }
 
     throw DeserializationTypeNotFoundException(
@@ -146,7 +149,10 @@ abstract class SerializationManager {
       return 'Duration';
     } else if (data is UuidValue) {
       return 'UuidValue';
+    } else if (data is Uri) {
+      return 'Uri';
     }
+
     return null;
   }
 
@@ -172,6 +178,8 @@ abstract class SerializationManager {
         return deserialize<Duration>(data['data']);
       case 'UuidValue':
         return deserialize<UuidValue>(data['data']);
+      case 'Uri':
+        return deserialize<Uri>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -213,6 +221,8 @@ abstract class SerializationManager {
           return nonEncodable.inMilliseconds;
         } else if (nonEncodable is UuidValue) {
           return nonEncodable.uuid;
+        } else if (nonEncodable is Uri) {
+          return nonEncodable.toString();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})

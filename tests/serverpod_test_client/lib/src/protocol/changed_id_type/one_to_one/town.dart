@@ -50,6 +50,9 @@ abstract class TownInt implements _i1.SerializableModel {
 
   _i2.CitizenInt? mayor;
 
+  /// Returns a shallow copy of this [TownInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TownInt copyWith({
     int? id,
     String? name,
@@ -87,6 +90,9 @@ class _TownIntImpl extends TownInt {
           mayor: mayor,
         );
 
+  /// Returns a shallow copy of this [TownInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TownInt copyWith({
     Object? id = _Undefined,

@@ -58,6 +58,9 @@ abstract class Cat implements _i1.SerializableModel {
 
   List<_i2.Cat>? kittens;
 
+  /// Returns a shallow copy of this [Cat]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Cat copyWith({
     int? id,
     String? name,
@@ -100,6 +103,9 @@ class _CatImpl extends Cat {
           kittens: kittens,
         );
 
+  /// Returns a shallow copy of this [Cat]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Cat copyWith({
     Object? id = _Undefined,

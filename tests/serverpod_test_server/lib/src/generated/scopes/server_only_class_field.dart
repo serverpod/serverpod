@@ -43,6 +43,9 @@ abstract class ServerOnlyClassField
 
   Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap;
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerOnlyClassField copyWith({
     List<_i2.ServerOnlyClass>? serverOnlyClassList,
     Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
@@ -81,6 +84,9 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
           serverOnlyClassMap: serverOnlyClassMap,
         );
 
+  /// Returns a shallow copy of this [ServerOnlyClassField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerOnlyClassField copyWith({
     Object? serverOnlyClassList = _Undefined,

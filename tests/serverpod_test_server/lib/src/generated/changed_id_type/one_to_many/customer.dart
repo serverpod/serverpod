@@ -50,6 +50,9 @@ abstract class CustomerInt
   @override
   _i1.Table<int> get table => t;
 
+  /// Returns a shallow copy of this [CustomerInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CustomerInt copyWith({
     int? id,
     String? name,
@@ -118,6 +121,9 @@ class _CustomerIntImpl extends CustomerInt {
           orders: orders,
         );
 
+  /// Returns a shallow copy of this [CustomerInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CustomerInt copyWith({
     Object? id = _Undefined,
@@ -239,6 +245,28 @@ class CustomerIntRepository {
 
   final detachRow = const CustomerIntDetachRowRepository._();
 
+  /// Returns a list of [CustomerInt]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<CustomerInt>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerIntTable>? where,
@@ -262,6 +290,23 @@ class CustomerIntRepository {
     );
   }
 
+  /// Returns the first matching [CustomerInt] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<CustomerInt?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerIntTable>? where,
@@ -283,6 +328,7 @@ class CustomerIntRepository {
     );
   }
 
+  /// Finds a single [CustomerInt] by its [id] or null if no such row exists.
   Future<CustomerInt?> findById(
     _i1.Session session,
     int id, {
@@ -296,6 +342,12 @@ class CustomerIntRepository {
     );
   }
 
+  /// Inserts all [CustomerInt]s in the list and returns the inserted rows.
+  ///
+  /// The returned [CustomerInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<CustomerInt>> insert(
     _i1.Session session,
     List<CustomerInt> rows, {
@@ -307,6 +359,9 @@ class CustomerIntRepository {
     );
   }
 
+  /// Inserts a single [CustomerInt] and returns the inserted row.
+  ///
+  /// The returned [CustomerInt] will have its `id` field set.
   Future<CustomerInt> insertRow(
     _i1.Session session,
     CustomerInt row, {
@@ -318,6 +373,11 @@ class CustomerIntRepository {
     );
   }
 
+  /// Updates all [CustomerInt]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<CustomerInt>> update(
     _i1.Session session,
     List<CustomerInt> rows, {
@@ -331,6 +391,9 @@ class CustomerIntRepository {
     );
   }
 
+  /// Updates a single [CustomerInt]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<CustomerInt> updateRow(
     _i1.Session session,
     CustomerInt row, {
@@ -344,6 +407,9 @@ class CustomerIntRepository {
     );
   }
 
+  /// Deletes all [CustomerInt]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<CustomerInt>> delete(
     _i1.Session session,
     List<CustomerInt> rows, {
@@ -355,6 +421,7 @@ class CustomerIntRepository {
     );
   }
 
+  /// Deletes a single [CustomerInt].
   Future<CustomerInt> deleteRow(
     _i1.Session session,
     CustomerInt row, {
@@ -366,6 +433,7 @@ class CustomerIntRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<CustomerInt>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
@@ -377,6 +445,8 @@ class CustomerIntRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerIntTable>? where,
@@ -394,6 +464,8 @@ class CustomerIntRepository {
 class CustomerIntAttachRepository {
   const CustomerIntAttachRepository._();
 
+  /// Creates a relation between this [CustomerInt] and the given [OrderUuid]s
+  /// by setting each [OrderUuid]'s foreign key `customerId` to refer to this [CustomerInt].
   Future<void> orders(
     _i1.Session session,
     CustomerInt customerInt,
@@ -420,6 +492,8 @@ class CustomerIntAttachRepository {
 class CustomerIntAttachRowRepository {
   const CustomerIntAttachRowRepository._();
 
+  /// Creates a relation between this [CustomerInt] and the given [OrderUuid]
+  /// by setting the [OrderUuid]'s foreign key `customerId` to refer to this [CustomerInt].
   Future<void> orders(
     _i1.Session session,
     CustomerInt customerInt,
@@ -445,6 +519,11 @@ class CustomerIntAttachRowRepository {
 class CustomerIntDetachRepository {
   const CustomerIntDetachRepository._();
 
+  /// Detaches the relation between this [CustomerInt] and the given [OrderUuid]
+  /// by setting the [OrderUuid]'s foreign key `customerId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> orders(
     _i1.Session session,
     List<_i2.OrderUuid> orderUuid, {
@@ -467,6 +546,11 @@ class CustomerIntDetachRepository {
 class CustomerIntDetachRowRepository {
   const CustomerIntDetachRowRepository._();
 
+  /// Detaches the relation between this [CustomerInt] and the given [OrderUuid]
+  /// by setting the [OrderUuid]'s foreign key `customerId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> orders(
     _i1.Session session,
     _i2.OrderUuid orderUuid, {

@@ -54,6 +54,9 @@ abstract class UserSettingsConfig implements _i1.SerializableModel {
   /// True if the user should be able to upload a new user image.
   bool canEditUserImage;
 
+  /// Returns a shallow copy of this [UserSettingsConfig]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
@@ -93,6 +96,9 @@ class _UserSettingsConfigImpl extends UserSettingsConfig {
           canEditUserImage: canEditUserImage,
         );
 
+  /// Returns a shallow copy of this [UserSettingsConfig]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserSettingsConfig copyWith({
     bool? canSeeUserName,

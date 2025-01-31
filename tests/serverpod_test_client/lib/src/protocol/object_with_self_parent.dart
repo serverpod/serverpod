@@ -37,6 +37,9 @@ abstract class ObjectWithSelfParent implements _i1.SerializableModel {
 
   int? other;
 
+  /// Returns a shallow copy of this [ObjectWithSelfParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithSelfParent copyWith({
     int? id,
     int? other,
@@ -66,6 +69,9 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
           other: other,
         );
 
+  /// Returns a shallow copy of this [ObjectWithSelfParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithSelfParent copyWith({
     Object? id = _Undefined,

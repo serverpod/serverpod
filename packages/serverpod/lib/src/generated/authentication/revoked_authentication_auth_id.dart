@@ -27,6 +27,9 @@ abstract class RevokedAuthenticationAuthId
 
   String authId;
 
+  /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RevokedAuthenticationAuthId copyWith({String? authId});
   @override
   Map<String, dynamic> toJson() {
@@ -48,6 +51,9 @@ class _RevokedAuthenticationAuthIdImpl extends RevokedAuthenticationAuthId {
   _RevokedAuthenticationAuthIdImpl({required String authId})
       : super._(authId: authId);
 
+  /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RevokedAuthenticationAuthId copyWith({String? authId}) {
     return RevokedAuthenticationAuthId(authId: authId ?? this.authId);

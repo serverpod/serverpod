@@ -40,7 +40,7 @@ class ModelParser {
     var extendsClass = _parseExtendsClass(documentContents);
 
     var classType = parseType(
-      '$defaultModuleAlias:$className',
+      '${protocolSource.moduleAlias}:$className',
       extraClasses: extraClasses,
     );
 
@@ -62,7 +62,6 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     return ClassDefinition(
-      moduleAlias: protocolSource.moduleAlias,
       className: className,
       isSealed: isSealed,
       extendsClass: extendsClass,
@@ -97,12 +96,11 @@ class ModelParser {
     var serializeAs = _parseSerializedAs(documentContents);
     var values = _parseEnumValues(documentContents, docsExtractor);
     var enumType = parseType(
-      '$defaultModuleAlias:$className',
+      '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
     );
 
     var enumDef = EnumDefinition(
-      moduleAlias: protocolSource.moduleAlias,
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,

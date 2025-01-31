@@ -50,6 +50,9 @@ abstract class ObjectUser implements _i1.SerializableModel {
 
   _i2.UserInfo? userInfo;
 
+  /// Returns a shallow copy of this [ObjectUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectUser copyWith({
     int? id,
     String? name,
@@ -87,6 +90,9 @@ class _ObjectUserImpl extends ObjectUser {
           userInfo: userInfo,
         );
 
+  /// Returns a shallow copy of this [ObjectUser]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectUser copyWith({
     Object? id = _Undefined,

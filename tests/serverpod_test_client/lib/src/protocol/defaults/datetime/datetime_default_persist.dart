@@ -50,6 +50,9 @@ abstract class DateTimeDefaultPersist implements _i1.SerializableModel {
 
   DateTime? dateTimeDefaultPersistStr;
 
+  /// Returns a shallow copy of this [DateTimeDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DateTimeDefaultPersist copyWith({
     int? id,
     DateTime? dateTimeDefaultPersistNow,
@@ -85,6 +88,9 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
           dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
         );
 
+  /// Returns a shallow copy of this [DateTimeDefaultPersist]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DateTimeDefaultPersist copyWith({
     Object? id = _Undefined,

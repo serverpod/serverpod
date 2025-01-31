@@ -637,6 +637,35 @@ fields:
     });
   });
 
+  test(
+      'Given a class with a `List` relation missing the target type, when the analyzer is invoked, then it will return an error pointing to the false definition and not generate any classes',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Basket
+        fields:
+          items: List, relation
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    expect(definitions, isEmpty);
+
+    expect(
+      collector.errors.map((e) => e.message),
+      contains(matches('List type must have one generic type defined')),
+    );
+  });
+
   group('Given a class with a List json field without a relation', () {
     var models = [
       ModelSourceBuilder().withYaml(

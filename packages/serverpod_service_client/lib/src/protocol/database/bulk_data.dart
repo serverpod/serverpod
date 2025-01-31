@@ -35,6 +35,9 @@ abstract class BulkData implements _i1.SerializableModel {
 
   String data;
 
+  /// Returns a shallow copy of this [BulkData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BulkData copyWith({
     _i2.TableDefinition? tableDefinition,
     String? data,
@@ -62,6 +65,9 @@ class _BulkDataImpl extends BulkData {
           data: data,
         );
 
+  /// Returns a shallow copy of this [BulkData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BulkData copyWith({
     _i2.TableDefinition? tableDefinition,

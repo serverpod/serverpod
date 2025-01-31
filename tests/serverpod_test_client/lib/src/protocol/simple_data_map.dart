@@ -28,6 +28,9 @@ abstract class SimpleDataMap implements _i1.SerializableModel {
 
   Map<String, _i2.SimpleData> data;
 
+  /// Returns a shallow copy of this [SimpleDataMap]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data});
   @override
   Map<String, dynamic> toJson() {
@@ -44,6 +47,9 @@ class _SimpleDataMapImpl extends SimpleDataMap {
   _SimpleDataMapImpl({required Map<String, _i2.SimpleData> data})
       : super._(data: data);
 
+  /// Returns a shallow copy of this [SimpleDataMap]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data}) {
     return SimpleDataMap(

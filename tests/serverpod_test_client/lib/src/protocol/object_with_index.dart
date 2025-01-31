@@ -41,6 +41,9 @@ abstract class ObjectWithIndex implements _i1.SerializableModel {
 
   int indexed2;
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -74,6 +77,9 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
           indexed2: indexed2,
         );
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithIndex copyWith({
     Object? id = _Undefined,

@@ -60,6 +60,9 @@ abstract class TeamInt implements _i1.SerializableModel {
 
   List<_i3.PlayerUuid>? players;
 
+  /// Returns a shallow copy of this [TeamInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   TeamInt copyWith({
     int? id,
     String? name,
@@ -102,6 +105,9 @@ class _TeamIntImpl extends TeamInt {
           players: players,
         );
 
+  /// Returns a shallow copy of this [TeamInt]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   TeamInt copyWith({
     Object? id = _Undefined,

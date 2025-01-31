@@ -50,6 +50,9 @@ abstract class UserImage implements _i1.SerializableModel {
   /// The URL to the image.
   String url;
 
+  /// Returns a shallow copy of this [UserImage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserImage copyWith({
     int? id,
     int? userId,
@@ -87,6 +90,9 @@ class _UserImageImpl extends UserImage {
           url: url,
         );
 
+  /// Returns a shallow copy of this [UserImage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserImage copyWith({
     Object? id = _Undefined,

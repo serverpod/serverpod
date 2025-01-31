@@ -64,6 +64,9 @@ abstract class DatabaseDefinition
   /// The version of the database definition.
   int migrationApiVersion;
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseDefinition copyWith({
     String? name,
     String? moduleName,
@@ -118,6 +121,9 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
           migrationApiVersion: migrationApiVersion,
         );
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,

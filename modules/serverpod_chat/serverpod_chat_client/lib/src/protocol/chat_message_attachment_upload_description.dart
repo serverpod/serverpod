@@ -39,6 +39,9 @@ abstract class ChatMessageAttachmentUploadDescription
   /// the upload.
   String uploadDescription;
 
+  /// Returns a shallow copy of this [ChatMessageAttachmentUploadDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessageAttachmentUploadDescription copyWith({
     String? filePath,
     String? uploadDescription,
@@ -67,6 +70,9 @@ class _ChatMessageAttachmentUploadDescriptionImpl
           uploadDescription: uploadDescription,
         );
 
+  /// Returns a shallow copy of this [ChatMessageAttachmentUploadDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessageAttachmentUploadDescription copyWith({
     String? filePath,

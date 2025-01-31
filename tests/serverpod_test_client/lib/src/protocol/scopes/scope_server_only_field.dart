@@ -37,6 +37,9 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
 
   _i3.ScopeServerOnlyField? nested;
 
+  /// Returns a shallow copy of this [ScopeServerOnlyField]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ScopeServerOnlyField copyWith({
     Object? allScope = _Undefined,
     Object? nested = _Undefined,

@@ -66,6 +66,9 @@ abstract class EnumDefault implements _i1.SerializableModel {
 
   _i3.ByIndexEnum? byIndexEnumDefaultNull;
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EnumDefault copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
@@ -109,6 +112,9 @@ class _EnumDefaultImpl extends EnumDefault {
           byIndexEnumDefaultNull: byIndexEnumDefaultNull,
         );
 
+  /// Returns a shallow copy of this [EnumDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EnumDefault copyWith({
     Object? id = _Undefined,

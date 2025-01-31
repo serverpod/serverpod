@@ -53,6 +53,9 @@ abstract class ChatJoinedChannel
   /// The user info of the user who joined the channel.
   _i3.UserInfo userInfo;
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatJoinedChannel copyWith({
     String? channel,
     _i2.ChatMessageChunk? initialMessageChunk,
@@ -98,6 +101,9 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
           userInfo: userInfo,
         );
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatJoinedChannel copyWith({
     String? channel,

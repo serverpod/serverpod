@@ -66,6 +66,9 @@ abstract class OrderUuid
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
+  /// Returns a shallow copy of this [OrderUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   OrderUuid copyWith({
     _i1.UuidValue? id,
     String? description,
@@ -150,6 +153,9 @@ class _OrderUuidImpl extends OrderUuid {
           comments: comments,
         );
 
+  /// Returns a shallow copy of this [OrderUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   OrderUuid copyWith({
     Object? id = _Undefined,
@@ -306,6 +312,28 @@ class OrderUuidRepository {
 
   final attachRow = const OrderUuidAttachRowRepository._();
 
+  /// Returns a list of [OrderUuid]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<OrderUuid>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderUuidTable>? where,
@@ -329,6 +357,23 @@ class OrderUuidRepository {
     );
   }
 
+  /// Returns the first matching [OrderUuid] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<OrderUuid?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderUuidTable>? where,
@@ -350,6 +395,7 @@ class OrderUuidRepository {
     );
   }
 
+  /// Finds a single [OrderUuid] by its [id] or null if no such row exists.
   Future<OrderUuid?> findById(
     _i1.Session session,
     _i1.UuidValue id, {
@@ -363,6 +409,12 @@ class OrderUuidRepository {
     );
   }
 
+  /// Inserts all [OrderUuid]s in the list and returns the inserted rows.
+  ///
+  /// The returned [OrderUuid]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<OrderUuid>> insert(
     _i1.Session session,
     List<OrderUuid> rows, {
@@ -374,6 +426,9 @@ class OrderUuidRepository {
     );
   }
 
+  /// Inserts a single [OrderUuid] and returns the inserted row.
+  ///
+  /// The returned [OrderUuid] will have its `id` field set.
   Future<OrderUuid> insertRow(
     _i1.Session session,
     OrderUuid row, {
@@ -385,6 +440,11 @@ class OrderUuidRepository {
     );
   }
 
+  /// Updates all [OrderUuid]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<OrderUuid>> update(
     _i1.Session session,
     List<OrderUuid> rows, {
@@ -398,6 +458,9 @@ class OrderUuidRepository {
     );
   }
 
+  /// Updates a single [OrderUuid]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<OrderUuid> updateRow(
     _i1.Session session,
     OrderUuid row, {
@@ -411,6 +474,9 @@ class OrderUuidRepository {
     );
   }
 
+  /// Deletes all [OrderUuid]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<OrderUuid>> delete(
     _i1.Session session,
     List<OrderUuid> rows, {
@@ -422,6 +488,7 @@ class OrderUuidRepository {
     );
   }
 
+  /// Deletes a single [OrderUuid].
   Future<OrderUuid> deleteRow(
     _i1.Session session,
     OrderUuid row, {
@@ -433,6 +500,7 @@ class OrderUuidRepository {
     );
   }
 
+  /// Deletes all rows matching the [where] expression.
   Future<List<OrderUuid>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
@@ -444,6 +512,8 @@ class OrderUuidRepository {
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderUuidTable>? where,
@@ -461,6 +531,8 @@ class OrderUuidRepository {
 class OrderUuidAttachRepository {
   const OrderUuidAttachRepository._();
 
+  /// Creates a relation between this [OrderUuid] and the given [CommentInt]s
+  /// by setting each [CommentInt]'s foreign key `orderId` to refer to this [OrderUuid].
   Future<void> comments(
     _i1.Session session,
     OrderUuid orderUuid,
@@ -487,6 +559,8 @@ class OrderUuidAttachRepository {
 class OrderUuidAttachRowRepository {
   const OrderUuidAttachRowRepository._();
 
+  /// Creates a relation between the given [OrderUuid] and [CustomerInt]
+  /// by setting the [OrderUuid]'s foreign key `customerId` to refer to the [CustomerInt].
   Future<void> customer(
     _i1.Session session,
     OrderUuid orderUuid,
@@ -508,6 +582,8 @@ class OrderUuidAttachRowRepository {
     );
   }
 
+  /// Creates a relation between this [OrderUuid] and the given [CommentInt]
+  /// by setting the [CommentInt]'s foreign key `orderId` to refer to this [OrderUuid].
   Future<void> comments(
     _i1.Session session,
     OrderUuid orderUuid,

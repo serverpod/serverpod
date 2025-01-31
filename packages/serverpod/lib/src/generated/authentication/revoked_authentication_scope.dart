@@ -29,6 +29,9 @@ abstract class RevokedAuthenticationScope
 
   List<String> scopes;
 
+  /// Returns a shallow copy of this [RevokedAuthenticationScope]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RevokedAuthenticationScope copyWith({List<String>? scopes});
   @override
   Map<String, dynamic> toJson() {
@@ -50,6 +53,9 @@ class _RevokedAuthenticationScopeImpl extends RevokedAuthenticationScope {
   _RevokedAuthenticationScopeImpl({required List<String> scopes})
       : super._(scopes: scopes);
 
+  /// Returns a shallow copy of this [RevokedAuthenticationScope]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RevokedAuthenticationScope copyWith({List<String>? scopes}) {
     return RevokedAuthenticationScope(

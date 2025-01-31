@@ -26,6 +26,9 @@ abstract class FileNotFoundException
 
   String message;
 
+  /// Returns a shallow copy of this [FileNotFoundException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   FileNotFoundException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
@@ -42,6 +45,9 @@ class _FileNotFoundExceptionImpl extends FileNotFoundException {
   _FileNotFoundExceptionImpl({required String message})
       : super._(message: message);
 
+  /// Returns a shallow copy of this [FileNotFoundException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   FileNotFoundException copyWith({String? message}) {
     return FileNotFoundException(message: message ?? this.message);

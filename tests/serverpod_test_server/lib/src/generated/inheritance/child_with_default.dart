@@ -41,7 +41,10 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
 
   int childDefault;
 
+  /// Returns a shallow copy of this [ChildWithDefault]
+  /// with some or all fields replaced by the given arguments.
   @override
+  @_i2.useResult
   ChildWithDefault copyWith({
     String? name,
     int? parentDefault,
@@ -87,6 +90,9 @@ class _ChildWithDefaultImpl extends ChildWithDefault {
           childDefault: childDefault,
         );
 
+  /// Returns a shallow copy of this [ChildWithDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
   @override
   ChildWithDefault copyWith({
     String? name,

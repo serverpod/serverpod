@@ -156,6 +156,9 @@ abstract class ObjectWithMaps
 
   Map<int, int> intIntMap;
 
+  /// Returns a shallow copy of this [ObjectWithMaps]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithMaps copyWith({
     Map<String, _i2.SimpleData>? dataMap,
     Map<String, int>? intMap,
@@ -266,6 +269,9 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
           intIntMap: intIntMap,
         );
 
+  /// Returns a shallow copy of this [ObjectWithMaps]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithMaps copyWith({
     Map<String, _i2.SimpleData>? dataMap,

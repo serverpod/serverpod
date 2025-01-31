@@ -44,6 +44,9 @@ abstract class CacheInfo implements _i1.SerializableModel {
   /// Optional list of keys used by the cache.
   List<String>? keys;
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
@@ -77,6 +80,9 @@ class _CacheInfoImpl extends CacheInfo {
           keys: keys,
         );
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CacheInfo copyWith({
     int? numEntries,

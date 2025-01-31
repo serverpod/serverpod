@@ -52,6 +52,9 @@ abstract class PlayerUuid implements _i1.SerializableModel {
 
   _i2.TeamInt? team;
 
+  /// Returns a shallow copy of this [PlayerUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   PlayerUuid copyWith({
     _i1.UuidValue? id,
     String? name,
@@ -89,6 +92,9 @@ class _PlayerUuidImpl extends PlayerUuid {
           team: team,
         );
 
+  /// Returns a shallow copy of this [PlayerUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   PlayerUuid copyWith({
     Object? id = _Undefined,

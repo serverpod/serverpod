@@ -37,6 +37,9 @@ abstract class EmailPasswordReset
   /// The email of the user.
   String email;
 
+  /// Returns a shallow copy of this [EmailPasswordReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailPasswordReset copyWith({
     String? userName,
     String? email,
@@ -74,6 +77,9 @@ class _EmailPasswordResetImpl extends EmailPasswordReset {
           email: email,
         );
 
+  /// Returns a shallow copy of this [EmailPasswordReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailPasswordReset copyWith({
     Object? userName = _Undefined,

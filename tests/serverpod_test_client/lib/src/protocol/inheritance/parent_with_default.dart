@@ -28,6 +28,9 @@ class ParentWithDefault implements _i1.SerializableModel {
 
   int parentDefault;
 
+  /// Returns a shallow copy of this [ParentWithDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ParentWithDefault copyWith({
     String? name,
     int? parentDefault,

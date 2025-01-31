@@ -40,6 +40,9 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
 
   List<_i2.EmptyModelRelationItem>? items;
 
+  /// Returns a shallow copy of this [RelationEmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RelationEmptyModel copyWith({
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
@@ -69,6 +72,9 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
           items: items,
         );
 
+  /// Returns a shallow copy of this [RelationEmptyModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RelationEmptyModel copyWith({
     Object? id = _Undefined,
