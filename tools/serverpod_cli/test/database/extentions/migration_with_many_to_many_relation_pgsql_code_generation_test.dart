@@ -10,40 +10,25 @@ import '../../generator/dart/client_code_generator/class_constructors_test.dart'
 
 void main() {
   test(
-      'Given a table that is not managed by serverpod that changes to be managed',
+      'Given a table that is referenced by another one, when it is renamed, then the migration code should not drop the foreign key twice',
       () {
     DatabaseDefinition sourceDefinition;
     {
       var models = [
-        ModelSourceBuilder().withFileName('course').withYaml(
+        ModelSourceBuilder().withFileName('target').withYaml(
           '''
-class: Course
-table: course
+class: Target
+table: target
 fields:
   name: String
-  enrollments: List<Enrollment>?, relation(name=course_enrollments)
           ''',
         ).build(),
-        ModelSourceBuilder().withFileName('student').withYaml(
+        ModelSourceBuilder().withFileName('source').withYaml(
           '''
-class: Student
-table: student
+class: Source
+table: source
 fields:
-  name: String
-  enrollments: List<Enrollment>?, relation(name=student_enrollments)
-          ''',
-        ).build(),
-        ModelSourceBuilder().withFileName('enrollment').withYaml(
-          '''
-class: Enrollment
-table: enrollment
-fields:
-  student: Student?, relation(name=student_enrollments)
-  course: Course?, relation(name=course_enrollments)
-indexes:
-  enrollment_index_idx:
-    fields: studentId, courseId
-    unique: true
+  target: Target?, relation
           ''',
         ).build(),
       ];
@@ -59,38 +44,23 @@ indexes:
     }
 
     DatabaseDefinition
-        targetDefinition; // renames table `student` to `custom_student`
+        targetDefinition; // renames table `target` to `target_new`
     {
       var models = [
-        ModelSourceBuilder().withFileName('course').withYaml(
+        ModelSourceBuilder().withFileName('target').withYaml(
           '''
-class: Course
-table: course
+class: Target
+table: target_new
 fields:
   name: String
-  enrollments: List<Enrollment>?, relation(name=course_enrollments)
           ''',
         ).build(),
-        ModelSourceBuilder().withFileName('student').withYaml(
+        ModelSourceBuilder().withFileName('source').withYaml(
           '''
-class: Student
-table: custom_student
+class: Source
+table: source
 fields:
-  name: String
-  enrollments: List<Enrollment>?, relation(name=student_enrollments)
-          ''',
-        ).build(),
-        ModelSourceBuilder().withFileName('enrollment').withYaml(
-          '''
-class: Enrollment
-table: enrollment
-fields:
-  student: Student?, relation(name=student_enrollments)
-  course: Course?, relation(name=course_enrollments)
-indexes:
-  enrollment_index_idx:
-    fields: studentId, courseId
-    unique: true
+  target: Target?, relation
           ''',
         ).build(),
       ];
@@ -115,7 +85,7 @@ indexes:
 
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
-    expect(psql, isNot(contains('DROP CONSTRAINT "enrollment_fk_0"')));
-    expect(psql, contains('ADD CONSTRAINT "enrollment_fk_0"'));
+    expect(psql, isNot(contains('DROP CONSTRAINT "source_fk_0"')));
+    expect(psql, contains('ADD CONSTRAINT "source_fk_0"'));
   });
 }
