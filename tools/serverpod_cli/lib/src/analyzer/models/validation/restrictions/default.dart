@@ -315,7 +315,7 @@ class DefaultValueRestriction extends ValueRestriction {
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is Duration) return [];
+    if (value is BigInt) return [];
 
     var errors = <SourceSpanSeverityException>[];
 
