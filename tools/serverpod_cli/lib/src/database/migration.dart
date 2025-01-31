@@ -1,5 +1,6 @@
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 import 'extensions.dart';
 
 DatabaseMigration generateDatabaseMigration({
@@ -81,6 +82,30 @@ DatabaseMigration generateDatabaseMigration({
             alterTable: diff,
           ),
         );
+      }
+    }
+  }
+
+  var tablesToBeDeleted = actions
+      .where((action) => action.type == DatabaseMigrationActionType.deleteTable)
+      .map((action) => action.deleteTable!)
+      .toSet();
+
+  for (var action in actions) {
+    if (action.type == DatabaseMigrationActionType.alterTable) {
+      for (var fkToDelete in action.alterTable!.deleteForeignKeys.toList()) {
+        var targetTable = sourceTables
+            .map((srcTable) =>
+                srcTable.findForeignKeyDefinitionNamed(fkToDelete))
+            .nonNulls
+            .firstOrNull
+            ?.referenceTable;
+
+        if (tablesToBeDeleted.contains(targetTable)) {
+          // no need to remove "$fkToDelete" as table "$targetTable" will already be deleted from the table DELETE CASCADE
+
+          action.alterTable!.deleteForeignKeys.remove(fkToDelete);
+        }
       }
     }
   }
