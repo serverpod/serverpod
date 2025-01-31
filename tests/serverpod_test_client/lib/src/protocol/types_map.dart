@@ -25,6 +25,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     this.aByteDataKey,
     this.aDurationKey,
     this.aUuidKey,
+    this.aUriKey,
     this.anEnumKey,
     this.aStringifiedEnumKey,
     this.anObjectKey,
@@ -38,6 +39,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     this.aByteDataValue,
     this.aDurationValue,
     this.aUuidValue,
+    this.aUriValue,
     this.anEnumValue,
     this.aStringifiedEnumValue,
     this.anObjectValue,
@@ -54,6 +56,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<_i2.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
+    Map<Uri, String>? aUriKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -67,6 +70,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<String, _i2.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, Uri>? aUriValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -119,6 +123,10 @@ abstract class TypesMap implements _i1.SerializableModel {
                     _i1.UuidValueJsonExtension.fromJson(e['k']):
                         e['v'] as String
                   }),
+      aUriKey: (jsonSerialization['aUriKey'] as List?)?.fold<Map<Uri, String>>(
+          {},
+          (t, e) =>
+              {...t, _i1.UriJsonExtension.fromJson(e['k']): e['v'] as String}),
       anEnumKey: (jsonSerialization['anEnumKey'] as List?)
           ?.fold<Map<_i3.TestEnum, String>>(
               {},
@@ -204,6 +212,11 @@ abstract class TypesMap implements _i1.SerializableModel {
                 k as String,
                 _i1.UuidValueJsonExtension.fromJson(v),
               )),
+      aUriValue:
+          (jsonSerialization['aUriValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.UriJsonExtension.fromJson(v),
+              )),
       anEnumValue:
           (jsonSerialization['anEnumValue'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
@@ -254,6 +267,8 @@ abstract class TypesMap implements _i1.SerializableModel {
 
   Map<_i1.UuidValue, String>? aUuidKey;
 
+  Map<Uri, String>? aUriKey;
+
   Map<_i3.TestEnum, String>? anEnumKey;
 
   Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey;
@@ -280,6 +295,8 @@ abstract class TypesMap implements _i1.SerializableModel {
 
   Map<String, _i1.UuidValue>? aUuidValue;
 
+  Map<String, Uri>? aUriValue;
+
   Map<String, _i3.TestEnum>? anEnumValue;
 
   Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue;
@@ -302,6 +319,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<_i2.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
+    Map<Uri, String>? aUriKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -315,6 +333,7 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<String, _i2.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, Uri>? aUriValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -336,6 +355,8 @@ abstract class TypesMap implements _i1.SerializableModel {
         'aDurationKey': aDurationKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aUuidKey != null)
         'aUuidKey': aUuidKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aUriKey != null)
+        'aUriKey': aUriKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anEnumKey != null)
         'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aStringifiedEnumKey != null)
@@ -364,6 +385,8 @@ abstract class TypesMap implements _i1.SerializableModel {
             aDurationValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aUuidValue != null)
         'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aUriValue != null)
+        'aUriValue': aUriValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anEnumValue != null)
         'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnumValue != null)
@@ -398,6 +421,7 @@ class _TypesMapImpl extends TypesMap {
     Map<_i2.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
+    Map<Uri, String>? aUriKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -411,6 +435,7 @@ class _TypesMapImpl extends TypesMap {
     Map<String, _i2.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, Uri>? aUriValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -425,6 +450,7 @@ class _TypesMapImpl extends TypesMap {
           aByteDataKey: aByteDataKey,
           aDurationKey: aDurationKey,
           aUuidKey: aUuidKey,
+          aUriKey: aUriKey,
           anEnumKey: anEnumKey,
           aStringifiedEnumKey: aStringifiedEnumKey,
           anObjectKey: anObjectKey,
@@ -438,6 +464,7 @@ class _TypesMapImpl extends TypesMap {
           aByteDataValue: aByteDataValue,
           aDurationValue: aDurationValue,
           aUuidValue: aUuidValue,
+          aUriValue: aUriValue,
           anEnumValue: anEnumValue,
           aStringifiedEnumValue: aStringifiedEnumValue,
           anObjectValue: anObjectValue,
@@ -458,6 +485,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aByteDataKey = _Undefined,
     Object? aDurationKey = _Undefined,
     Object? aUuidKey = _Undefined,
+    Object? aUriKey = _Undefined,
     Object? anEnumKey = _Undefined,
     Object? aStringifiedEnumKey = _Undefined,
     Object? anObjectKey = _Undefined,
@@ -471,6 +499,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aByteDataValue = _Undefined,
     Object? aDurationValue = _Undefined,
     Object? aUuidValue = _Undefined,
+    Object? aUriValue = _Undefined,
     Object? anEnumValue = _Undefined,
     Object? aStringifiedEnumValue = _Undefined,
     Object? anObjectValue = _Undefined,
@@ -551,6 +580,16 @@ class _TypesMapImpl extends TypesMap {
       aUuidKey: aUuidKey is Map<_i1.UuidValue, String>?
           ? aUuidKey
           : this.aUuidKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aUriKey: aUriKey is Map<Uri, String>?
+          ? aUriKey
+          : this.aUriKey?.map((
                 key0,
                 value0,
               ) =>
@@ -689,6 +728,16 @@ class _TypesMapImpl extends TypesMap {
       aUuidValue: aUuidValue is Map<String, _i1.UuidValue>?
           ? aUuidValue
           : this.aUuidValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aUriValue: aUriValue is Map<String, Uri>?
+          ? aUriValue
+          : this.aUriValue?.map((
                 key0,
                 value0,
               ) =>
