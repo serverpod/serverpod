@@ -282,6 +282,37 @@ void main() {
     });
   });
 
+  group('Given a class with nullable BigInt field, ', () {
+    test(
+        'when deserializing from JSON with a Big string, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aBigInt': '-12345678901234567890'}).aBigInt,
+        BigInt.parse('-12345678901234567890'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a BigInt object, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({
+          'aBigInt': BigInt.parse('12345678901234567890'),
+        }).aBigInt,
+        BigInt.parse('12345678901234567890'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        Types.fromJson({'aBigInt': null}).aBigInt,
+        isNull,
+      );
+    });
+  });
+
   group('Given a class with a nullable ByteData field, ', () {
     test(
         'when deserializing from JSON with a base64-encoded string, then the result matches the expected value',
