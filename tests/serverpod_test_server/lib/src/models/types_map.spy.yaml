@@ -1,4 +1,5 @@
 class: TypesMap
+table: types_map
 fields:
   # keys
   anIntKey: Map<int, String>?

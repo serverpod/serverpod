@@ -1,6 +1,5 @@
 class: ObjectWithCustomClass
 fields:
-    customClassWithoutProtocolSerialization: CustomClassWithoutProtocolSerialization,
-    customClassWithProtocolSerialization: CustomClassWithProtocolSerialization,
-    customClassWithProtocolSerializationMethod: CustomClassWithProtocolSerializationMethod,
-        
+  customClassWithoutProtocolSerialization: CustomClassWithoutProtocolSerialization,
+  customClassWithProtocolSerialization: CustomClassWithProtocolSerialization,
+  customClassWithProtocolSerializationMethod: CustomClassWithProtocolSerializationMethod,
