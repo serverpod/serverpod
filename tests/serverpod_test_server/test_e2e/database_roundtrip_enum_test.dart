@@ -53,7 +53,7 @@ void main() {
   });
 
   test(
-      'Given a nullable enum llist when sending and writing it to the database then the returned value is unmodified',
+      'Given a nullable enum list when sending and writing it to the database then the returned value is unmodified',
       () async {
     var object = ObjectWithEnumBuilder().withNullableEnumList(
       [TestEnum.one, null, TestEnum.three],
