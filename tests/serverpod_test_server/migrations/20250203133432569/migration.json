@@ -1,0 +1,196 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "types_map",
+        "dartName": "TypesMap",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('types_map_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "anIntKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<int,String>?"
+          },
+          {
+            "name": "aBoolKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<bool,String>?"
+          },
+          {
+            "name": "aDoubleKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<double,String>?"
+          },
+          {
+            "name": "aDateTimeKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<DateTime,String>?"
+          },
+          {
+            "name": "aStringKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,String>?"
+          },
+          {
+            "name": "aByteDataKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<dart:typed_data:ByteData,String>?"
+          },
+          {
+            "name": "aDurationKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<Duration,String>?"
+          },
+          {
+            "name": "aUuidKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<UuidValue,String>?"
+          },
+          {
+            "name": "anEnumKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<protocol:TestEnum,String>?"
+          },
+          {
+            "name": "aStringifiedEnumKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<protocol:TestEnumStringified,String>?"
+          },
+          {
+            "name": "anObjectKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<protocol:Types,String>?"
+          },
+          {
+            "name": "aMapKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<Map<protocol:Types,String>,String>?"
+          },
+          {
+            "name": "aListKey",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<List<protocol:Types>,String>?"
+          },
+          {
+            "name": "anIntValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,int>?"
+          },
+          {
+            "name": "aBoolValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,bool>?"
+          },
+          {
+            "name": "aDoubleValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,double>?"
+          },
+          {
+            "name": "aDateTimeValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,DateTime>?"
+          },
+          {
+            "name": "aStringValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,String>?"
+          },
+          {
+            "name": "aByteDataValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,dart:typed_data:ByteData>?"
+          },
+          {
+            "name": "aDurationValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,Duration>?"
+          },
+          {
+            "name": "aUuidValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,UuidValue>?"
+          },
+          {
+            "name": "anEnumValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,protocol:TestEnum>?"
+          },
+          {
+            "name": "aStringifiedEnumValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,protocol:TestEnumStringified>?"
+          },
+          {
+            "name": "anObjectValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,protocol:Types>?"
+          },
+          {
+            "name": "aMapValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,Map<String,protocol:Types>>?"
+          },
+          {
+            "name": "aListValue",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,List<protocol:Types>>?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "types_map_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

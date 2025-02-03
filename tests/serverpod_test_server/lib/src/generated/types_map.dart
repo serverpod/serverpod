@@ -15,9 +15,9 @@ import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
 
-abstract class TypesMap
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+abstract class TypesMap implements _i1.TableRow, _i1.ProtocolSerialization {
   TypesMap._({
+    this.id,
     this.anIntKey,
     this.aBoolKey,
     this.aDoubleKey,
@@ -47,6 +47,7 @@ abstract class TypesMap
   });
 
   factory TypesMap({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -77,6 +78,7 @@ abstract class TypesMap
 
   factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesMap(
+      id: jsonSerialization['id'] as int?,
       anIntKey: (jsonSerialization['anIntKey'] as List?)
           ?.fold<Map<int, String>>(
               {}, (t, e) => {...t, e['k'] as int: e['v'] as String}),
@@ -239,6 +241,13 @@ abstract class TypesMap
     );
   }
 
+  static final t = TypesMapTable();
+
+  static const db = TypesMapRepository._();
+
+  @override
+  int? id;
+
   Map<int, String>? anIntKey;
 
   Map<bool, String>? aBoolKey;
@@ -291,10 +300,14 @@ abstract class TypesMap
 
   Map<String, List<_i5.Types>>? aListValue;
 
+  @override
+  _i1.Table get table => t;
+
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   TypesMap copyWith({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -325,6 +338,7 @@ abstract class TypesMap
   @override
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
       if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),
@@ -384,6 +398,7 @@ abstract class TypesMap
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      if (id != null) 'id': id,
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
       if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),
@@ -446,6 +461,30 @@ abstract class TypesMap
     };
   }
 
+  static TypesMapInclude include() {
+    return TypesMapInclude._();
+  }
+
+  static TypesMapIncludeList includeList({
+    _i1.WhereExpressionBuilder<TypesMapTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TypesMapTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<TypesMapTable>? orderByList,
+    TypesMapInclude? include,
+  }) {
+    return TypesMapIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TypesMap.t),
+      orderDescending: orderDescending,
+      orderByList: orderByList?.call(TypesMap.t),
+      include: include,
+    );
+  }
+
   @override
   String toString() {
     return _i1.SerializationManager.encode(this);
@@ -456,6 +495,7 @@ class _Undefined {}
 
 class _TypesMapImpl extends TypesMap {
   _TypesMapImpl({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -483,6 +523,7 @@ class _TypesMapImpl extends TypesMap {
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
   }) : super._(
+          id: id,
           anIntKey: anIntKey,
           aBoolKey: aBoolKey,
           aDoubleKey: aDoubleKey,
@@ -516,6 +557,7 @@ class _TypesMapImpl extends TypesMap {
   @_i1.useResult
   @override
   TypesMap copyWith({
+    Object? id = _Undefined,
     Object? anIntKey = _Undefined,
     Object? aBoolKey = _Undefined,
     Object? aDoubleKey = _Undefined,
@@ -544,6 +586,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aListValue = _Undefined,
   }) {
     return TypesMap(
+      id: id is int? ? id : this.id,
       anIntKey: anIntKey is Map<int, String>?
           ? anIntKey
           : this.anIntKey?.map((
@@ -820,6 +863,441 @@ class _TypesMapImpl extends TypesMap {
                     key0,
                     value0.map((e1) => e1.copyWith()).toList(),
                   )),
+    );
+  }
+}
+
+class TypesMapTable extends _i1.Table {
+  TypesMapTable({super.tableRelation}) : super(tableName: 'types_map') {
+    anIntKey = _i1.ColumnSerializable(
+      'anIntKey',
+      this,
+    );
+    aBoolKey = _i1.ColumnSerializable(
+      'aBoolKey',
+      this,
+    );
+    aDoubleKey = _i1.ColumnSerializable(
+      'aDoubleKey',
+      this,
+    );
+    aDateTimeKey = _i1.ColumnSerializable(
+      'aDateTimeKey',
+      this,
+    );
+    aStringKey = _i1.ColumnSerializable(
+      'aStringKey',
+      this,
+    );
+    aByteDataKey = _i1.ColumnSerializable(
+      'aByteDataKey',
+      this,
+    );
+    aDurationKey = _i1.ColumnSerializable(
+      'aDurationKey',
+      this,
+    );
+    aUuidKey = _i1.ColumnSerializable(
+      'aUuidKey',
+      this,
+    );
+    anEnumKey = _i1.ColumnSerializable(
+      'anEnumKey',
+      this,
+    );
+    aStringifiedEnumKey = _i1.ColumnSerializable(
+      'aStringifiedEnumKey',
+      this,
+    );
+    anObjectKey = _i1.ColumnSerializable(
+      'anObjectKey',
+      this,
+    );
+    aMapKey = _i1.ColumnSerializable(
+      'aMapKey',
+      this,
+    );
+    aListKey = _i1.ColumnSerializable(
+      'aListKey',
+      this,
+    );
+    anIntValue = _i1.ColumnSerializable(
+      'anIntValue',
+      this,
+    );
+    aBoolValue = _i1.ColumnSerializable(
+      'aBoolValue',
+      this,
+    );
+    aDoubleValue = _i1.ColumnSerializable(
+      'aDoubleValue',
+      this,
+    );
+    aDateTimeValue = _i1.ColumnSerializable(
+      'aDateTimeValue',
+      this,
+    );
+    aStringValue = _i1.ColumnSerializable(
+      'aStringValue',
+      this,
+    );
+    aByteDataValue = _i1.ColumnSerializable(
+      'aByteDataValue',
+      this,
+    );
+    aDurationValue = _i1.ColumnSerializable(
+      'aDurationValue',
+      this,
+    );
+    aUuidValue = _i1.ColumnSerializable(
+      'aUuidValue',
+      this,
+    );
+    anEnumValue = _i1.ColumnSerializable(
+      'anEnumValue',
+      this,
+    );
+    aStringifiedEnumValue = _i1.ColumnSerializable(
+      'aStringifiedEnumValue',
+      this,
+    );
+    anObjectValue = _i1.ColumnSerializable(
+      'anObjectValue',
+      this,
+    );
+    aMapValue = _i1.ColumnSerializable(
+      'aMapValue',
+      this,
+    );
+    aListValue = _i1.ColumnSerializable(
+      'aListValue',
+      this,
+    );
+  }
+
+  late final _i1.ColumnSerializable anIntKey;
+
+  late final _i1.ColumnSerializable aBoolKey;
+
+  late final _i1.ColumnSerializable aDoubleKey;
+
+  late final _i1.ColumnSerializable aDateTimeKey;
+
+  late final _i1.ColumnSerializable aStringKey;
+
+  late final _i1.ColumnSerializable aByteDataKey;
+
+  late final _i1.ColumnSerializable aDurationKey;
+
+  late final _i1.ColumnSerializable aUuidKey;
+
+  late final _i1.ColumnSerializable anEnumKey;
+
+  late final _i1.ColumnSerializable aStringifiedEnumKey;
+
+  late final _i1.ColumnSerializable anObjectKey;
+
+  late final _i1.ColumnSerializable aMapKey;
+
+  late final _i1.ColumnSerializable aListKey;
+
+  late final _i1.ColumnSerializable anIntValue;
+
+  late final _i1.ColumnSerializable aBoolValue;
+
+  late final _i1.ColumnSerializable aDoubleValue;
+
+  late final _i1.ColumnSerializable aDateTimeValue;
+
+  late final _i1.ColumnSerializable aStringValue;
+
+  late final _i1.ColumnSerializable aByteDataValue;
+
+  late final _i1.ColumnSerializable aDurationValue;
+
+  late final _i1.ColumnSerializable aUuidValue;
+
+  late final _i1.ColumnSerializable anEnumValue;
+
+  late final _i1.ColumnSerializable aStringifiedEnumValue;
+
+  late final _i1.ColumnSerializable anObjectValue;
+
+  late final _i1.ColumnSerializable aMapValue;
+
+  late final _i1.ColumnSerializable aListValue;
+
+  @override
+  List<_i1.Column> get columns => [
+        id,
+        anIntKey,
+        aBoolKey,
+        aDoubleKey,
+        aDateTimeKey,
+        aStringKey,
+        aByteDataKey,
+        aDurationKey,
+        aUuidKey,
+        anEnumKey,
+        aStringifiedEnumKey,
+        anObjectKey,
+        aMapKey,
+        aListKey,
+        anIntValue,
+        aBoolValue,
+        aDoubleValue,
+        aDateTimeValue,
+        aStringValue,
+        aByteDataValue,
+        aDurationValue,
+        aUuidValue,
+        anEnumValue,
+        aStringifiedEnumValue,
+        anObjectValue,
+        aMapValue,
+        aListValue,
+      ];
+}
+
+class TypesMapInclude extends _i1.IncludeObject {
+  TypesMapInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => TypesMap.t;
+}
+
+class TypesMapIncludeList extends _i1.IncludeList {
+  TypesMapIncludeList._({
+    _i1.WhereExpressionBuilder<TypesMapTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(TypesMap.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => TypesMap.t;
+}
+
+class TypesMapRepository {
+  const TypesMapRepository._();
+
+  /// Returns a list of [TypesMap]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<TypesMap>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<TypesMapTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TypesMapTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<TypesMapTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<TypesMap>(
+      where: where?.call(TypesMap.t),
+      orderBy: orderBy?.call(TypesMap.t),
+      orderByList: orderByList?.call(TypesMap.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  /// Returns the first matching [TypesMap] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<TypesMap?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<TypesMapTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<TypesMapTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<TypesMapTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<TypesMap>(
+      where: where?.call(TypesMap.t),
+      orderBy: orderBy?.call(TypesMap.t),
+      orderByList: orderByList?.call(TypesMap.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  /// Finds a single [TypesMap] by its [id] or null if no such row exists.
+  Future<TypesMap?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<TypesMap>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  /// Inserts all [TypesMap]s in the list and returns the inserted rows.
+  ///
+  /// The returned [TypesMap]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  Future<List<TypesMap>> insert(
+    _i1.Session session,
+    List<TypesMap> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<TypesMap>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  /// Inserts a single [TypesMap] and returns the inserted row.
+  ///
+  /// The returned [TypesMap] will have its `id` field set.
+  Future<TypesMap> insertRow(
+    _i1.Session session,
+    TypesMap row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<TypesMap>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [TypesMap]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<TypesMap>> update(
+    _i1.Session session,
+    List<TypesMap> rows, {
+    _i1.ColumnSelections<TypesMapTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<TypesMap>(
+      rows,
+      columns: columns?.call(TypesMap.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [TypesMap]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<TypesMap> updateRow(
+    _i1.Session session,
+    TypesMap row, {
+    _i1.ColumnSelections<TypesMapTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<TypesMap>(
+      row,
+      columns: columns?.call(TypesMap.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [TypesMap]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<TypesMap>> delete(
+    _i1.Session session,
+    List<TypesMap> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<TypesMap>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [TypesMap].
+  Future<TypesMap> deleteRow(
+    _i1.Session session,
+    TypesMap row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<TypesMap>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  Future<List<TypesMap>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<TypesMapTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<TypesMap>(
+      where: where(TypesMap.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<TypesMapTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<TypesMap>(
+      where: where?.call(TypesMap.t),
+      limit: limit,
+      transaction: transaction,
     );
   }
 }

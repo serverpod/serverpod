@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -782,5 +783,68 @@ void main() async {
 
       expect(updated.first.anEnum, equals(TestEnum.one));
     });
+  });
+
+  test(
+      'Given an entry in the database, when updating a map field with an empty map via a raw query, then it can be read out again',
+      () async {
+    var initialObject = TypesMap(anIntKey: {100: 'one hundred'});
+
+    var inserted = await TypesMap.db.insertRow(session, initialObject);
+
+    expect(inserted.anIntKey, hasLength(1));
+
+    var newAnIntKey = <int, String>{};
+
+    var updateResult = await session.db.unsafeQuery(
+      'UPDATE "${TypesMap.t.tableName}" SET'
+      ' "${TypesMap.t.anIntKey.columnName}" = @anIntKey '
+      ' WHERE "${TypesMap.t.id.columnName}" = @id',
+      parameters: QueryParameters.named(
+        {
+          'id': inserted.id!,
+          'anIntKey': SerializationManager.encode(newAnIntKey),
+          // 'anIntKey': SerializationManager.encode(
+          //   newAnIntKey.isEmpty ? <Map<String, dynamic>>[] : newAnIntKey,
+          // ),
+        },
+      ),
+    );
+
+    expect(updateResult.affectedRowCount, 1);
+
+    var readLater = await TypesMap.db.findById(session, inserted.id!);
+
+    expect(readLater!.anIntKey, isEmpty);
+  });
+
+  test(
+      'Given an entry in the database, when updating a map field with a new map via a raw query, then it can be read out again',
+      () async {
+    var initialObject = TypesMap(anIntKey: {100: 'one hundred'});
+
+    var inserted = await TypesMap.db.insertRow(session, initialObject);
+
+    expect(inserted.anIntKey, hasLength(1));
+
+    var newMap = <int, String>{2: 'two', 3: 'three'};
+
+    var updateResult = await session.db.unsafeQuery(
+      'UPDATE "${TypesMap.t.tableName}" SET'
+      ' "${TypesMap.t.anIntKey.columnName}" = @anIntKey '
+      ' WHERE "${TypesMap.t.id.columnName}" = @id',
+      parameters: QueryParameters.named(
+        {
+          'id': inserted.id!,
+          'anIntKey': SerializationManager.encode(newMap),
+        },
+      ),
+    );
+
+    expect(updateResult.affectedRowCount, 1);
+
+    var readLater = await TypesMap.db.findById(session, inserted.id!);
+
+    expect(readLater!.anIntKey, hasLength(2));
   });
 }
