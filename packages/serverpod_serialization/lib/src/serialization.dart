@@ -232,6 +232,8 @@ abstract class SerializationManager {
           return nonEncodable.toString();
         } else if (nonEncodable is BigInt) {
           return nonEncodable.toString();
+        } else if (nonEncodable is Set) {
+          return nonEncodable.toList();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
@@ -316,6 +318,7 @@ const extensionSerializedTypes = [
   'BigInt',
   'Map',
   'List',
+  'Set',
 ];
 
 extension<K, V> on Map<K, V> {
