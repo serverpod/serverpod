@@ -12,6 +12,7 @@ void main() async {
   tearDown(() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
     await SimpleData.db.deleteWhere(session, where: (_) => Constant.bool(true));
+    await Types.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
   test(
@@ -249,7 +250,14 @@ void main() async {
       inserted.id!,
     );
 
-    expect(retrieved?.aByteData!.buffer.asUint8List().toList(), [1, 2, 3]);
+    expect(
+      Uint8List.view(
+        retrieved!.aByteData!.buffer,
+        retrieved.aByteData!.offsetInBytes,
+        retrieved.aByteData!.lengthInBytes,
+      ).toList(),
+      [1, 2, 3],
+    );
   });
 
   test(
