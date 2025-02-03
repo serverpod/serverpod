@@ -233,7 +233,7 @@ void main() async {
   });
 
   test(
-      'Given an object with a `ByteDate` field, when it\'s stored in the database, then it can be read out again',
+      'Given an object with a `ByteData` field, when it\'s stored in the database, then it can be read out again',
       () async {
     var object = Types(
       aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
