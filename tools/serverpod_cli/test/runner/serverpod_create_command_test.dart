@@ -106,7 +106,7 @@ void main() {
 
       test('have no defaultIdType key.', () {
         var contents = generatorConfigPath.readAsStringSync();
-        expect(contents.contains('defaultIdType: int'), isFalse);
+        expect(contents, isNot(contains('defaultIdType: int')));
       });
     });
   });
@@ -185,7 +185,7 @@ void main() {
 
         test('with the defaultIdType key set to $idTypeAlias.', () {
           var contents = generatorConfigPath.readAsStringSync();
-          expect(contents.contains('defaultIdType: $idTypeAlias'), isTrue);
+          expect(contents, contains('defaultIdType: $idTypeAlias'));
         });
       });
     });
