@@ -4262,6 +4262,194 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'types_map',
+      dartName: 'TypesMap',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'types_map_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anIntKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<int,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aBoolKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<bool,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDoubleKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<double,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDateTimeKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<DateTime,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aStringKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aByteDataKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<dart:typed_data:ByteData,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDurationKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<Duration,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aUuidKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<UuidValue,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anEnumKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<protocol:TestEnum,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aStringifiedEnumKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<protocol:TestEnumStringified,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anObjectKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<protocol:Types,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aMapKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<Map<protocol:Types,String>,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aListKey',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<List<protocol:Types>,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anIntValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,int>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aBoolValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,bool>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDoubleValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,double>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDateTimeValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,DateTime>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aStringValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,String>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aByteDataValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,dart:typed_data:ByteData>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aDurationValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,Duration>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aUuidValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,UuidValue>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anEnumValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,protocol:TestEnum>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aStringifiedEnumValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,protocol:TestEnumStringified>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'anObjectValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,protocol:Types>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aMapValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,Map<String,protocol:Types>>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aListValue',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'Map<String,List<protocol:Types>>?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'types_map_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'unique_data',
       dartName: 'UniqueData',
       schema: 'public',
@@ -7518,6 +7706,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i116.SimpleDateTime.t;
       case _i119.Types:
         return _i119.Types.t;
+      case _i121.TypesMap:
+        return _i121.TypesMap.t;
       case _i122.UniqueData:
         return _i122.UniqueData.t;
     }

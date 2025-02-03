@@ -17,6 +17,7 @@ import 'types.dart' as _i5;
 
 abstract class TypesMap implements _i1.SerializableModel {
   TypesMap._({
+    this.id,
     this.anIntKey,
     this.aBoolKey,
     this.aDoubleKey,
@@ -46,6 +47,7 @@ abstract class TypesMap implements _i1.SerializableModel {
   });
 
   factory TypesMap({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -76,6 +78,7 @@ abstract class TypesMap implements _i1.SerializableModel {
 
   factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesMap(
+      id: jsonSerialization['id'] as int?,
       anIntKey: (jsonSerialization['anIntKey'] as List?)
           ?.fold<Map<int, String>>(
               {}, (t, e) => {...t, e['k'] as int: e['v'] as String}),
@@ -238,6 +241,11 @@ abstract class TypesMap implements _i1.SerializableModel {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
   Map<int, String>? anIntKey;
 
   Map<bool, String>? aBoolKey;
@@ -294,6 +302,7 @@ abstract class TypesMap implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   TypesMap copyWith({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -324,6 +333,7 @@ abstract class TypesMap implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
       if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),
@@ -390,6 +400,7 @@ class _Undefined {}
 
 class _TypesMapImpl extends TypesMap {
   _TypesMapImpl({
+    int? id,
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
@@ -417,6 +428,7 @@ class _TypesMapImpl extends TypesMap {
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
   }) : super._(
+          id: id,
           anIntKey: anIntKey,
           aBoolKey: aBoolKey,
           aDoubleKey: aDoubleKey,
@@ -450,6 +462,7 @@ class _TypesMapImpl extends TypesMap {
   @_i1.useResult
   @override
   TypesMap copyWith({
+    Object? id = _Undefined,
     Object? anIntKey = _Undefined,
     Object? aBoolKey = _Undefined,
     Object? aDoubleKey = _Undefined,
@@ -478,6 +491,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aListValue = _Undefined,
   }) {
     return TypesMap(
+      id: id is int? ? id : this.id,
       anIntKey: anIntKey is Map<int, String>?
           ? anIntKey
           : this.anIntKey?.map((
