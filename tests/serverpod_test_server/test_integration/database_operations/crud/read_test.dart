@@ -144,10 +144,10 @@ void main() async {
   test(
       'Given an object with a `bool` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(aBool: true);
+    var object = Types(aBool: true);
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -161,12 +161,12 @@ void main() async {
   test(
       'Given an object with an `int` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       anInt: 99,
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -180,12 +180,12 @@ void main() async {
   test(
       'Given an object with a `double` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aDouble: 1.23,
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -199,12 +199,12 @@ void main() async {
   test(
       'Given an object with a `DateTime` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aDateTime: DateTime.utc(2024, 12, 24, 23, 30),
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -218,10 +218,10 @@ void main() async {
   test(
       'Given an object with a `String` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(aString: 'Lorem ipsum');
+    var object = Types(aString: 'Lorem ipsum');
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -235,12 +235,13 @@ void main() async {
   test(
       'Given an object with a `ByteDate` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
     );
+
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -254,12 +255,12 @@ void main() async {
   test(
       'Given an object with a `Duration` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aDuration: Duration(hours: 1, minutes: 2, seconds: 3),
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -273,12 +274,12 @@ void main() async {
   test(
       'Given an object with a `UUID` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aUuid: UuidValue.fromString('b1e66000-1cc3-4ead-a4ab-a548e2047d3a'),
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -295,12 +296,12 @@ void main() async {
   test(
       'Given an object with a `BigInt` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aBigInt: BigInt.two,
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -317,12 +318,12 @@ void main() async {
   test(
       'Given an object with an `enum` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       anEnum: TestEnum.two,
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
@@ -339,12 +340,12 @@ void main() async {
   test(
       'Given an object with a stringified `enum` field, when it\'s stored in the database, then it can be read out again',
       () async {
-    var emptyModel = Types(
+    var object = Types(
       aStringifiedEnum: TestEnumStringified.three,
     );
     var inserted = await Types.db.insertRow(
       session,
-      emptyModel,
+      object,
     );
 
     var retrieved = await Types.db.findById(
