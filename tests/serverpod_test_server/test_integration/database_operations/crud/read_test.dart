@@ -229,7 +229,7 @@ void main() async {
       inserted.id!,
     );
 
-    expect(retrieved!.aString, 'Lorem Ipsum');
+    expect(retrieved!.aString, 'Lorem ipsum');
   });
 
   test(
@@ -248,7 +248,7 @@ void main() async {
       inserted.id!,
     );
 
-    expect(retrieved?.aByteData!.buffer.asInt8List(), [1, 2, 3]);
+    expect(retrieved?.aByteData!.buffer.asUint8List().toList(), [1, 2, 3]);
   });
 
   test(
@@ -268,25 +268,6 @@ void main() async {
     );
 
     expect(retrieved?.aDuration, Duration(hours: 1, minutes: 2, seconds: 3));
-  });
-
-  test(
-      'Given an object with a `UUID` field, when it\'s stored in the database, then it can be read out again',
-      () async {
-    var emptyModel = Types(
-      aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
-    );
-    var inserted = await Types.db.insertRow(
-      session,
-      emptyModel,
-    );
-
-    var retrieved = await Types.db.findById(
-      session,
-      inserted.id!,
-    );
-
-    expect(retrieved?.aByteData!.buffer.asInt8List(), [1, 2, 3]);
   });
 
   test(

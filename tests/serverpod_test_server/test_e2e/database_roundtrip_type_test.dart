@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
@@ -22,8 +24,6 @@ void main() {
       expect(newCount, equals(count! + 1));
     });
 
-    // TODO: Support ByteData in database store
-
     test(
         'When sending an object with a `bool` field, then it\'s written to the database and can be read later',
         () async {
@@ -39,6 +39,23 @@ void main() {
 
       expect(storedTypes!.id, equals(types.id));
       expect(storedTypes.aBool, equals(true));
+    });
+
+    test(
+        'When sending an object with a `ByteData` field, then it\'s written to the database and can be read later',
+        () async {
+      var types = Types(
+        aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+      );
+
+      types = await client.basicDatabase.insertTypes(types);
+      expect(types.id, isNotNull);
+
+      var storedTypes = await client.basicDatabase.getTypes(types.id!);
+      expect(storedTypes, isNotNull);
+
+      expect(storedTypes!.id, equals(types.id));
+      expect(storedTypes.aByteData?.buffer.asUint8List().toList(), [1, 2, 3]);
     });
 
     test(
@@ -153,7 +170,6 @@ void main() {
         () async {
       var bigInt = BigInt.parse('18446744073709551615999');
 
-      // TODO: Support ByteData in database store
       var types = Types(
         aBigInt: bigInt,
       );
