@@ -10,7 +10,7 @@ import '../../generator/dart/client_code_generator/class_constructors_test.dart'
 
 void main() {
   test(
-      'Given a table that is referenced by another one, when it is renamed, then the migration code should not drop the foreign key twice',
+      'Given a table that is referenced by another one, when it is renamed, then the migration code should drop both tables and recreate them in a working order',
       () {
     DatabaseDefinition sourceDefinition;
     {
@@ -85,7 +85,21 @@ fields:
 
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
-    expect(psql, isNot(contains('DROP CONSTRAINT "source_fk_0"')));
-    expect(psql, contains('ADD CONSTRAINT "source_fk_0"'));
+    var dropTableSourceIndex = psql.indexOf('DROP TABLE "source"');
+    var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
+    var createTableSourceIndex = psql.indexOf('CREATE TABLE "source"');
+    var createTableTargetIndex = psql.indexOf('CREATE TABLE "target_new"');
+    var addForegeinKeyIndex = psql.indexOf('ADD CONSTRAINT "source_fk_0"');
+
+    expect(dropTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(createTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(createTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(addForegeinKeyIndex, greaterThanOrEqualTo(0));
+
+    expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
+    expect(dropTableTargetIndex, lessThan(createTableSourceIndex));
+    expect(createTableSourceIndex, lessThan(createTableTargetIndex));
+    expect(createTableTargetIndex, lessThan(addForegeinKeyIndex));
   });
 }

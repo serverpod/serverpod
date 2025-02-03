@@ -68,7 +68,7 @@ extension TableComparisons on TableDefinition {
   }
 
   bool like(TableDefinition other) {
-    var diff = generateTableMigration(this, other, [], []);
+    var diff = generateTableMigration(this, other, []);
     return diff != null &&
         diff.isEmpty &&
         other.name == name &&

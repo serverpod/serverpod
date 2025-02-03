@@ -12,14 +12,26 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find deleted tables
   var deleteTables = <String>[];
-  var sourceTables = databaseSource.tables.where((table) => table.isManaged);
+  var sourceTables =
+      databaseSource.tables.where((table) => table.isManaged).toList();
   var targetTables = databaseTarget.tables.where((table) => table.isManaged);
 
-  for (var srcTable in sourceTables) {
-    if (!databaseTarget.containsTableNamed(srcTable.name)) {
-      deleteTables.add(srcTable.name);
+  for (var i = 0; i < sourceTables.length; i++) {
+    var srcTable = sourceTables[i];
+
+    if (!databaseTarget.containsTableNamed(srcTable.name) ||
+        srcTable.foreignKeys.any(
+            (foreignKey) => deleteTables.contains(foreignKey.referenceTable))) {
+      if (!deleteTables.contains(srcTable.name)) {
+        deleteTables.add(srcTable.name);
+
+        // Start the loop over, as an earlier table might point to the newly deleted
+        // table, and thus also needs to get dropped now.
+        i = -1; // loop will add +1 again, making this 0
+      }
     }
   }
+
   for (var tableName in deleteTables.reversed) {
     actions.add(
       DatabaseMigrationAction(
@@ -44,12 +56,14 @@ DatabaseMigration generateDatabaseMigration({
         (table) => table?.name == dstTable.name,
         orElse: () => null);
 
-    if (srcTable == null || srcTable.managed == false) {
+    if (srcTable == null ||
+        srcTable.managed == false ||
+        deleteTables.contains(srcTable.name)) {
       // Added table
 
       actions.add(
         DatabaseMigrationAction(
-          type: srcTable == null
+          type: srcTable == null || deleteTables.contains(srcTable.name)
               ? DatabaseMigrationActionType.createTable
               : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
@@ -57,12 +71,7 @@ DatabaseMigration generateDatabaseMigration({
       );
     } else {
       // Table exists in src and dst
-      var diff = generateTableMigration(
-        srcTable,
-        dstTable,
-        warnings,
-        deleteTables,
-      );
+      var diff = generateTableMigration(srcTable, dstTable, warnings);
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
         actions.add(
@@ -102,7 +111,6 @@ TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
   List<DatabaseMigrationWarning> warnings,
-  List<String> deleteTables,
 ) {
   // Find added columns
   var addColumns = <ColumnDefinition>[];
@@ -253,9 +261,8 @@ TableMigration? generateTableMigration(
       continue;
     }
     if (!srcKey.like(dstKey)) {
-      if (!deleteTables.contains(srcKey.referenceTable)) {
-        deleteForeignKeys.add(srcKey.constraintName);
-      }
+      deleteForeignKeys.add(srcKey.constraintName);
+
       addForeignKeys.add(dstKey);
     }
   }
