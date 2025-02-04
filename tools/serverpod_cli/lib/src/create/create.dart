@@ -418,9 +418,9 @@ void _copyServerUpgrade(
           replacement: generateRandomString(),
         ),
         Replacement(
-          slotName: 'defaultIdType: int\n',
+          slotName: 'defaultIdType: int',
           replacement: defaultIdType != null
-              ? 'defaultIdType: ${defaultIdType.aliases.first}\n'
+              ? 'defaultIdType: ${defaultIdType.aliases.first}'
               : '',
         ),
       ],
