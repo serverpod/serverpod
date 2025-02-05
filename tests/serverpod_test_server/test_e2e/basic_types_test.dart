@@ -133,7 +133,7 @@ void main() {
   });
 
   test(
-      'Given the test server, when a `Uri`` is sent to the server, then it is returned verbatim',
+      'Given the test server, when a `Uri` is sent to the server, then it is returned verbatim',
       () async {
     var uri =
         Uri.parse('https://docs.serverpod.dev/contribute#working-on-serverpod');
@@ -150,7 +150,7 @@ void main() {
   });
 
   test(
-      'Given the test server, when a `BigInt`` is sent to the server, then it is returned verbatim',
+      'Given the test server, when a `BigInt` is sent to the server, then it is returned verbatim',
       () async {
     var bigInt = BigInt.parse('-12345678901234567890');
 
