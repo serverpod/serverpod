@@ -3,20 +3,20 @@ import 'package:test/test.dart';
 
 void main() {
   group('Locate modules', () {
-    test('moduleNameFromServerPackageName', () {
-      var moduleName = moduleNameFromServerPackageName('test_server');
+    test('moduleNameFromServerPackageName', () async{
+      var moduleName = await moduleNameFromServerPackageName('test_server');
       expect(moduleName, 'test');
 
-      moduleName = moduleNameFromServerPackageName('test2_server');
+      moduleName = await moduleNameFromServerPackageName('test2_server');
       expect(moduleName, 'test2');
 
-      moduleName = moduleNameFromServerPackageName('serverpod');
+      moduleName = await moduleNameFromServerPackageName('serverpod');
       expect(moduleName, 'serverpod');
 
-      moduleName = moduleNameFromServerPackageName('test_server-1.1.1');
+      moduleName = await moduleNameFromServerPackageName('test_server-1.1.1');
       expect(moduleName, 'test');
 
-      moduleName = moduleNameFromServerPackageName('serverpod-1.1.1');
+      moduleName = await moduleNameFromServerPackageName('serverpod-1.1.1');
       expect(moduleName, 'serverpod');
     });
   });

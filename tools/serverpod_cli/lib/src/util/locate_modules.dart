@@ -29,7 +29,7 @@ Future<List<ModuleConfig>?> locateModules({
             packageName != 'serverpod') {
           continue;
         }
-        var moduleName = moduleNameFromServerPackageName(packageName);
+        var moduleName = await moduleNameFromServerPackageName(packageName);
 
         var packageSrcRoot = packageInfo.packageUriRoot;
         var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
@@ -159,14 +159,37 @@ Future<List<Uri>> locateAllModulePaths({
   return paths;
 }
 
-String moduleNameFromServerPackageName(String packageDirName) {
+Future<String> moduleNameFromServerPackageName(String packageDirName, [List<String> pathSegments = const []]) async{
   var packageName = packageDirName.split('-').first;
 
   if (packageName == 'serverpod') {
     return 'serverpod';
   }
+
   if (!packageName.endsWith(_serverSuffix)) {
+    log.warning("Hint: Found a server package that doesn't end with a suffix of $_serverSuffix: $packageName\n Please make sure that all server packages end with $_serverSuffix.");
+    if(pathSegments.isNotEmpty && await isServerPackage(pathSegments)) {
+      log.info('Assuming package is a server package based on config/generator.yaml');
+      return packageName;
+    }
     throw Exception('Not a server package ($packageName)');
   }
   return packageName.substring(0, packageName.length - _serverSuffix.length);
+}
+
+Future<bool> isServerPackage(List<String> pathSegments) async{
+  //Check whether the package is a server package based on the generator.yaml file
+  //here we are verifying the type of the package
+  //if the type is server then we can assume that the package is a server package
+  var generateConfigSegments = List<String>.from(pathSegments)
+    ..addAll(['config', 'generator.yaml']);
+  var generatorConfigUri = Uri.parse(path.joinAll(generateConfigSegments));
+  log.info('Reading generator config from: $generatorConfigUri');
+  var generatorConfigFile = File.fromUri(generatorConfigUri);
+  if(!await generatorConfigFile.exists()) {
+    return false;
+  }
+
+  var config = loadYaml(await generatorConfigFile.readAsString()) as Map;
+  return config['type'] == 'server';
 }
