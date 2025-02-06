@@ -185,6 +185,25 @@ void main() {
     });
 
     test(
+        'When sending an object with a `Uri` field, then it\'s written to the database and can be read later',
+        () async {
+      var uri = Uri.parse('https://serverpod.dev');
+
+      var types = Types(
+        aUri: uri,
+      );
+
+      types = await client.basicDatabase.insertTypes(types);
+      expect(types.id, isNotNull);
+
+      var storedTypes = await client.basicDatabase.getTypes(types.id!);
+      expect(storedTypes, isNotNull);
+
+      expect(storedTypes!.id, equals(types.id));
+      expect(storedTypes.aUri, equals(uri));
+    });
+
+    test(
         'When writing an object with fields set to `null` (by default), then an object with `null` fields is returned',
         () async {
       var types = Types();
