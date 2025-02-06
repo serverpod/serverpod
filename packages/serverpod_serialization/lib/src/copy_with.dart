@@ -35,4 +35,5 @@ const _nonMutableTypes = [
   Duration,
   UuidValue,
   Uri,
+  BigInt,
 ];

@@ -237,4 +237,28 @@ void main() {
     var typeName = protocol.encodeWithType(uri);
     expect(typeName, '{"className":"null","data":null}');
   });
+
+  test(
+      'Given a BigInt when encoding then output is the type name and value as a JSON string',
+      () {
+    BigInt bigInt = BigInt.parse('-1');
+    var typeName = protocol.encodeWithType(bigInt);
+    expect(typeName, '{"className":"BigInt","data":"-1"}');
+  });
+
+  test(
+      'Given a non-null nullable BigInt when encoding then output is the type name and value as a JSON string',
+      () {
+    BigInt? uuid = BigInt.parse('-1');
+    var typeName = protocol.encodeWithType(uuid);
+    expect(typeName, '{"className":"BigInt","data":"-1"}');
+  });
+
+  test(
+      'Given a null nullable BigInt when encoding then output is \'null\' for both the type name and data as a JSON string',
+      () {
+    BigInt? uuid;
+    var typeName = protocol.encodeWithType(uuid);
+    expect(typeName, '{"className":"null","data":null}');
+  });
 }

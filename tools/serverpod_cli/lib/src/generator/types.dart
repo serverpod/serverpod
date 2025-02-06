@@ -278,6 +278,7 @@ class TypeDefinition {
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
     if (className == 'Uri') return 'text';
+    if (className == 'BigInt') return 'text';
 
     return 'json';
   }
@@ -301,6 +302,7 @@ class TypeDefinition {
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
     if (className == 'Uri') return 'ColumnUri';
+    if (className == 'BigInt') return 'ColumnBigInt';
 
     return 'ColumnSerializable';
   }
@@ -475,6 +477,7 @@ class TypeDefinition {
     if (className == 'Uri') return ValueType.uri;
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
+    if (className == 'BigInt') return ValueType.bigInt;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -482,7 +485,7 @@ class TypeDefinition {
     return ValueType.classType;
   }
 
-  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  /// Returns [DefaultValueAllowedType] only for fields that are allowed to have defaults
   DefaultValueAllowedType? get defaultValueType {
     switch (valueType) {
       case ValueType.dateTime:
@@ -499,6 +502,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.uri;
       case ValueType.uuidValue:
         return DefaultValueAllowedType.uuidValue;
+      case ValueType.bigInt:
+        return DefaultValueAllowedType.bigInt;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
       case ValueType.isEnum:
@@ -588,6 +593,7 @@ enum ValueType {
   duration,
   byteData,
   uuidValue,
+  bigInt,
   list,
   set,
   map,
@@ -603,6 +609,7 @@ enum DefaultValueAllowedType {
   double,
   string,
   uuidValue,
+  bigInt,
   duration,
   uri,
   isEnum,

@@ -128,6 +128,8 @@ class TestEndpoints {
 
   late final _BasicTypesEndpoint basicTypes;
 
+  late final _BasicTypesStreamingEndpoint basicTypesStreaming;
+
   late final _CloudStorageEndpoint cloudStorage;
 
   late final _S3CloudStorageEndpoint s3CloudStorage;
@@ -222,6 +224,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     basicTypes = _BasicTypesEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    basicTypesStreaming = _BasicTypesStreamingEndpoint(
       endpoints,
       serializationManager,
     );
@@ -912,6 +918,366 @@ class _BasicTypesEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+
+  _i3.Future<BigInt?> testBigInt(
+    _i1.TestSessionBuilder sessionBuilder,
+    BigInt? value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'basicTypes',
+        method: 'testBigInt',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypes',
+          methodName: 'testBigInt',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<BigInt?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _BasicTypesStreamingEndpoint {
+  _BasicTypesStreamingEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Stream<int?> testInt(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<int?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<int?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testInt',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testInt',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<double?> testDouble(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<double?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<double?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testDouble',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testDouble',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<bool?> testBool(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<bool?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<bool?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testBool',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testBool',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<DateTime?> testDateTime(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<DateTime?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<DateTime?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testDateTime',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testDateTime',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<String?> testString(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<String?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<String?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testString',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testString',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<_i5.ByteData?> testByteData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<_i5.ByteData?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i5.ByteData?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testByteData',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testByteData',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<Duration?> testDuration(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<Duration?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Duration?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testDuration',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testDuration',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<_i6.UuidValue?> testUuid(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<_i6.UuidValue?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i6.UuidValue?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testUuid',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testUuid',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<Uri?> testUri(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<Uri?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Uri?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testUri',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testUri',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<BigInt?> testBigInt(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<BigInt?> value,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<BigInt?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'basicTypesStreaming',
+          method: 'testBigInt',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'basicTypesStreaming',
+          methodName: 'testBigInt',
+          arguments: {},
+          requestedInputStreams: ['value'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'value': value},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
   }
 }
 

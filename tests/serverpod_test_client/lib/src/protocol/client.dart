@@ -202,6 +202,103 @@ class EndpointBasicTypes extends _i1.EndpointRef {
         'testUri',
         {'value': value},
       );
+
+  _i2.Future<BigInt?> testBigInt(BigInt? value) =>
+      caller.callServerEndpoint<BigInt?>(
+        'basicTypes',
+        'testBigInt',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointBasicTypesStreaming extends _i1.EndpointRef {
+  EndpointBasicTypesStreaming(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'basicTypesStreaming';
+
+  _i2.Stream<int?> testInt(_i2.Stream<int?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
+        'basicTypesStreaming',
+        'testInt',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<double?> testDouble(_i2.Stream<double?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<double?>, double?>(
+        'basicTypesStreaming',
+        'testDouble',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<bool?> testBool(_i2.Stream<bool?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool?>, bool?>(
+        'basicTypesStreaming',
+        'testBool',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<DateTime?> testDateTime(_i2.Stream<DateTime?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<DateTime?>, DateTime?>(
+        'basicTypesStreaming',
+        'testDateTime',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<String?> testString(_i2.Stream<String?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String?>, String?>(
+        'basicTypesStreaming',
+        'testString',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<_i4.ByteData?> testByteData(_i2.Stream<_i4.ByteData?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i4.ByteData?>,
+          _i4.ByteData?>(
+        'basicTypesStreaming',
+        'testByteData',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<Duration?> testDuration(_i2.Stream<Duration?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<Duration?>, Duration?>(
+        'basicTypesStreaming',
+        'testDuration',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<_i5.UuidValue?> testUuid(_i2.Stream<_i5.UuidValue?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i5.UuidValue?>,
+          _i5.UuidValue?>(
+        'basicTypesStreaming',
+        'testUuid',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<Uri?> testUri(_i2.Stream<Uri?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<Uri?>, Uri?>(
+        'basicTypesStreaming',
+        'testUri',
+        {},
+        {'value': value},
+      );
+
+  _i2.Stream<BigInt?> testBigInt(_i2.Stream<BigInt?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<BigInt?>, BigInt?>(
+        'basicTypesStreaming',
+        'testBigInt',
+        {},
+        {'value': value},
+      );
 }
 
 /// {@category Endpoint}
@@ -2490,6 +2587,7 @@ class Client extends _i1.ServerpodClientShared {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);
     basicTypes = EndpointBasicTypes(this);
+    basicTypesStreaming = EndpointBasicTypesStreaming(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
     customClassProtocol = EndpointCustomClassProtocol(this);
@@ -2537,6 +2635,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointAuthentication authentication;
 
   late final EndpointBasicTypes basicTypes;
+
+  late final EndpointBasicTypesStreaming basicTypesStreaming;
 
   late final EndpointCloudStorage cloudStorage;
 
@@ -2622,6 +2722,7 @@ class Client extends _i1.ServerpodClientShared {
         'asyncTasks': asyncTasks,
         'authentication': authentication,
         'basicTypes': basicTypes,
+        'basicTypesStreaming': basicTypesStreaming,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
         'customClassProtocol': customClassProtocol,

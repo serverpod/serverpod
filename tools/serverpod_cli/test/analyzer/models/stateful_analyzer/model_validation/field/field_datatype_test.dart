@@ -19,6 +19,7 @@ void main() {
       'Duration',
       'UuidValue',
       'Uri',
+      'BigInt',
       'List<String>',
       'List<String>?',
       'List<String?>?',

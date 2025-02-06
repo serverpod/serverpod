@@ -1354,6 +1354,7 @@ class Restrictions {
     'Duration',
     'UuidValue',
     'Uri',
+    'BigInt',
     'ByteData',
     'List',
     'Map',

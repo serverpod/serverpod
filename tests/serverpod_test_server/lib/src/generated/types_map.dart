@@ -27,6 +27,7 @@ abstract class TypesMap
     this.aDurationKey,
     this.aUuidKey,
     this.aUriKey,
+    this.aBigIntKey,
     this.anEnumKey,
     this.aStringifiedEnumKey,
     this.anObjectKey,
@@ -41,6 +42,7 @@ abstract class TypesMap
     this.aDurationValue,
     this.aUuidValue,
     this.aUriValue,
+    this.aBigIntValue,
     this.anEnumValue,
     this.aStringifiedEnumValue,
     this.anObjectValue,
@@ -58,6 +60,7 @@ abstract class TypesMap
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
+    Map<BigInt, String>? aBigIntKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -72,6 +75,7 @@ abstract class TypesMap
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
+    Map<String, BigInt>? aBigIntValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -128,6 +132,13 @@ abstract class TypesMap
           {},
           (t, e) =>
               {...t, _i1.UriJsonExtension.fromJson(e['k']): e['v'] as String}),
+      aBigIntKey: (jsonSerialization['aBigIntKey'] as List?)
+          ?.fold<Map<BigInt, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i1.BigIntJsonExtension.fromJson(e['k']): e['v'] as String
+                  }),
       anEnumKey: (jsonSerialization['anEnumKey'] as List?)
           ?.fold<Map<_i3.TestEnum, String>>(
               {},
@@ -218,6 +229,11 @@ abstract class TypesMap
                 k as String,
                 _i1.UriJsonExtension.fromJson(v),
               )),
+      aBigIntValue:
+          (jsonSerialization['aBigIntValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.BigIntJsonExtension.fromJson(v),
+              )),
       anEnumValue:
           (jsonSerialization['anEnumValue'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
@@ -270,6 +286,8 @@ abstract class TypesMap
 
   Map<Uri, String>? aUriKey;
 
+  Map<BigInt, String>? aBigIntKey;
+
   Map<_i3.TestEnum, String>? anEnumKey;
 
   Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey;
@@ -298,6 +316,8 @@ abstract class TypesMap
 
   Map<String, Uri>? aUriValue;
 
+  Map<String, BigInt>? aBigIntValue;
+
   Map<String, _i3.TestEnum>? anEnumValue;
 
   Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue;
@@ -321,6 +341,7 @@ abstract class TypesMap
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
+    Map<BigInt, String>? aBigIntKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -335,6 +356,7 @@ abstract class TypesMap
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
+    Map<String, BigInt>? aBigIntValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -358,6 +380,8 @@ abstract class TypesMap
         'aUuidKey': aUuidKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aUriKey != null)
         'aUriKey': aUriKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aBigIntKey != null)
+        'aBigIntKey': aBigIntKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anEnumKey != null)
         'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aStringifiedEnumKey != null)
@@ -388,6 +412,8 @@ abstract class TypesMap
         'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aUriValue != null)
         'aUriValue': aUriValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aBigIntValue != null)
+        'aBigIntValue': aBigIntValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anEnumValue != null)
         'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnumValue != null)
@@ -421,6 +447,8 @@ abstract class TypesMap
         'aUuidKey': aUuidKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aUriKey != null)
         'aUriKey': aUriKey?.toJson(keyToJson: (k) => k.toJson()),
+      if (aBigIntKey != null)
+        'aBigIntKey': aBigIntKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anEnumKey != null)
         'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aStringifiedEnumKey != null)
@@ -454,6 +482,8 @@ abstract class TypesMap
         'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aUriValue != null)
         'aUriValue': aUriValue?.toJson(valueToJson: (v) => v.toJson()),
+      if (aBigIntValue != null)
+        'aBigIntValue': aBigIntValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anEnumValue != null)
         'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnumValue != null)
@@ -492,6 +522,7 @@ class _TypesMapImpl extends TypesMap {
     Map<Duration, String>? aDurationKey,
     Map<_i1.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
+    Map<BigInt, String>? aBigIntKey,
     Map<_i3.TestEnum, String>? anEnumKey,
     Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
     Map<_i5.Types, String>? anObjectKey,
@@ -506,6 +537,7 @@ class _TypesMapImpl extends TypesMap {
     Map<String, Duration>? aDurationValue,
     Map<String, _i1.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
+    Map<String, BigInt>? aBigIntValue,
     Map<String, _i3.TestEnum>? anEnumValue,
     Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
     Map<String, _i5.Types>? anObjectValue,
@@ -521,6 +553,7 @@ class _TypesMapImpl extends TypesMap {
           aDurationKey: aDurationKey,
           aUuidKey: aUuidKey,
           aUriKey: aUriKey,
+          aBigIntKey: aBigIntKey,
           anEnumKey: anEnumKey,
           aStringifiedEnumKey: aStringifiedEnumKey,
           anObjectKey: anObjectKey,
@@ -535,6 +568,7 @@ class _TypesMapImpl extends TypesMap {
           aDurationValue: aDurationValue,
           aUuidValue: aUuidValue,
           aUriValue: aUriValue,
+          aBigIntValue: aBigIntValue,
           anEnumValue: anEnumValue,
           aStringifiedEnumValue: aStringifiedEnumValue,
           anObjectValue: anObjectValue,
@@ -556,6 +590,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aDurationKey = _Undefined,
     Object? aUuidKey = _Undefined,
     Object? aUriKey = _Undefined,
+    Object? aBigIntKey = _Undefined,
     Object? anEnumKey = _Undefined,
     Object? aStringifiedEnumKey = _Undefined,
     Object? anObjectKey = _Undefined,
@@ -570,6 +605,7 @@ class _TypesMapImpl extends TypesMap {
     Object? aDurationValue = _Undefined,
     Object? aUuidValue = _Undefined,
     Object? aUriValue = _Undefined,
+    Object? aBigIntValue = _Undefined,
     Object? anEnumValue = _Undefined,
     Object? aStringifiedEnumValue = _Undefined,
     Object? anObjectValue = _Undefined,
@@ -660,6 +696,16 @@ class _TypesMapImpl extends TypesMap {
       aUriKey: aUriKey is Map<Uri, String>?
           ? aUriKey
           : this.aUriKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aBigIntKey: aBigIntKey is Map<BigInt, String>?
+          ? aBigIntKey
+          : this.aBigIntKey?.map((
                 key0,
                 value0,
               ) =>
@@ -808,6 +854,16 @@ class _TypesMapImpl extends TypesMap {
       aUriValue: aUriValue is Map<String, Uri>?
           ? aUriValue
           : this.aUriValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aBigIntValue: aBigIntValue is Map<String, BigInt>?
+          ? aBigIntValue
+          : this.aBigIntValue?.map((
                 key0,
                 value0,
               ) =>

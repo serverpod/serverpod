@@ -238,6 +238,20 @@ class ColumnUri extends _ValueOperatorColumn<Uri>
   Expression _encodeValueForQuery(Uri value) => EscapedExpression(value);
 }
 
+/// A [Column] holding [BigInt].
+class ColumnBigInt extends _ValueOperatorColumn<BigInt>
+    with _NullableColumnDefaultOperations<BigInt> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnBigInt(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(BigInt value) => EscapedExpression(value);
+}
+
 /// A [Column] holding an [int].
 class ColumnInt extends _ValueOperatorColumn<int>
     with _NullableColumnDefaultOperations<int>, _ColumnNumberOperations<int> {

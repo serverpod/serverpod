@@ -30,6 +30,8 @@ class ValueEncoder extends PostgresTextEncoder {
       return "'${input.uuid}'";
     } else if (input is Uri) {
       return "'${input.toString()}'";
+    } else if (input is BigInt) {
+      return '\'${input.toString()}\'';
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {

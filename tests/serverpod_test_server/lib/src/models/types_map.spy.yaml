@@ -10,6 +10,7 @@ fields:
   aDurationKey: Map<Duration, String>?
   aUuidKey: Map<UuidValue, String>?
   aUriKey: Map<Uri, String>?
+  aBigIntKey: Map<BigInt, String>?
   anEnumKey: Map<TestEnum, String>?
   aStringifiedEnumKey: Map<TestEnumStringified, String>?
   anObjectKey: Map<Types, String>?
@@ -25,6 +26,7 @@ fields:
   aDurationValue: Map<String, Duration>?
   aUuidValue: Map<String, UuidValue>?
   aUriValue: Map<String, Uri>?
+  aBigIntValue: Map<String, BigInt>?
   anEnumValue: Map<String, TestEnum>?
   aStringifiedEnumValue: Map<String, TestEnumStringified>?
   anObjectValue: Map<String, Types>?
