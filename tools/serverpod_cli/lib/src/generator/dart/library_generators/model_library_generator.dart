@@ -1240,6 +1240,10 @@ class SerializableModelLibraryGenerator {
         return refer(field.type.className, serverpodUrl(serverCode))
             .property('fromString')
             .call([CodeExpression(Code(defaultValue))]).code;
+      case DefaultValueAllowedType.bigInt:
+        return refer(field.type.className)
+            .property('parse')
+            .call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).call([], {

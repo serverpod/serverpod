@@ -1,0 +1,218 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "bigint_default",
+        "dartName": "BigIntDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('bigint_default_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "bigintDefaultStr",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'-1234567890123456789099999999'::text",
+            "dartType": "BigInt"
+          },
+          {
+            "name": "bigintDefaultStrNull",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'1234567890123456789099999999'::text",
+            "dartType": "BigInt?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "bigint_default_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "bigint_default_mix",
+        "dartName": "BigIntDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('bigint_default_mix_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "bigIntDefaultAndDefaultModel",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'1'::text",
+            "dartType": "BigInt"
+          },
+          {
+            "name": "bigIntDefaultAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'12345678901234567890'::text",
+            "dartType": "BigInt"
+          },
+          {
+            "name": "bigIntDefaultModelAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'-1234567890123456789099999999'::text",
+            "dartType": "BigInt"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "bigint_default_mix_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "bigint_default_model",
+        "dartName": "BigIntDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('bigint_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "bigIntDefaultModelStr",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "BigInt"
+          },
+          {
+            "name": "bigIntDefaultModelStrNull",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "BigInt?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "bigint_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "bigint_default_persist",
+        "dartName": "BigIntDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('bigint_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "bigIntDefaultPersistStr",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'1234567890123456789099999999'::text",
+            "dartType": "BigInt?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "bigint_default_persist_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "types",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "aBigInt",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "BigInt?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

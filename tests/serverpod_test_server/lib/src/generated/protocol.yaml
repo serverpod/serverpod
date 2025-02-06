@@ -18,6 +18,18 @@ basicTypes:
   - testDuration:
   - testUuid:
   - testUri:
+  - testBigInt:
+basicTypesStreaming:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+  - testByteData:
+  - testDuration:
+  - testUuid:
+  - testUri:
+  - testBigInt:
 cloudStorage:
   - reset:
   - storePublicFile:

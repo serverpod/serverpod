@@ -9,5 +9,6 @@ fields:
   aByteData: ByteData?
   aDuration: Duration?
   aUuid: UuidValue?
+  aBigInt: BigInt?
   anEnum: TestEnum?
   aStringifiedEnum: TestEnumStringified?

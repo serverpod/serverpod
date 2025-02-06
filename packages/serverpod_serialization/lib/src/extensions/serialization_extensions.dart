@@ -41,6 +41,19 @@ extension UuidValueJsonExtension on UuidValue {
   String toJson() => uuid;
 }
 
+/// Expose toJson on BigInt
+/// Expose static fromJson builder
+extension BigIntJsonExtension on BigInt {
+  /// Returns a deserialized version of the [BigInt].
+  static BigInt fromJson(dynamic value) {
+    if (value is BigInt) return value;
+    return BigInt.parse(value as String);
+  }
+
+  /// Returns a serialized version of the [BigInt] as a [String].
+  String toJson() => toString();
+}
+
 /// Expose toJson on ByteData
 /// Expose static fromJson builder
 extension ByteDataJsonExtension on ByteData {

@@ -45,6 +45,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _stringValidation(value, span);
       case DefaultValueAllowedType.uuidValue:
         return _uuidValueValidation(value, span);
+      case DefaultValueAllowedType.bigInt:
+        return _bigIntValueValidation(value, span);
       case DefaultValueAllowedType.duration:
         return _durationValidation(value, span);
       case DefaultValueAllowedType.isEnum:
@@ -304,6 +306,27 @@ class DefaultValueRestriction extends ValueRestriction {
           span,
         ),
       );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _bigIntValueValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is BigInt) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String || value.isEmpty || BigInt.tryParse(value) == null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid BigInt (e.g., "$key"=\'1234567890\').',
+          span,
+        ),
+      );
+      return errors;
     }
 
     return errors;

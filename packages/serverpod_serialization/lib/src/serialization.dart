@@ -122,6 +122,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
+    } else if (_isNullableType<BigInt>(t)) {
+      if (data == null) return null as T;
+      return BigInt.parse(data) as T;
     }
 
     throw DeserializationTypeNotFoundException(
@@ -151,6 +154,8 @@ abstract class SerializationManager {
       return 'UuidValue';
     } else if (data is Uri) {
       return 'Uri';
+    } else if (data is BigInt) {
+      return 'BigInt';
     }
 
     return null;
@@ -180,6 +185,8 @@ abstract class SerializationManager {
         return deserialize<UuidValue>(data['data']);
       case 'Uri':
         return deserialize<Uri>(data['data']);
+      case 'BigInt':
+        return deserialize<BigInt>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -222,6 +229,8 @@ abstract class SerializationManager {
         } else if (nonEncodable is UuidValue) {
           return nonEncodable.uuid;
         } else if (nonEncodable is Uri) {
+          return nonEncodable.toString();
+        } else if (nonEncodable is BigInt) {
           return nonEncodable.toString();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
@@ -304,6 +313,7 @@ const extensionSerializedTypes = [
   'ByteData',
   'Duration',
   'UuidValue',
+  'BigInt',
   'Map',
   'List',
 ];

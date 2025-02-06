@@ -280,4 +280,34 @@ void main() {
       expect(decoded, uri);
     },
   );
+
+  test(
+    'Given a BigInt when encoding and decoding with type then output matches input',
+    () {
+      BigInt bigInt = BigInt.parse('12345678901234567890');
+      var encoded = protocol.encodeWithType(bigInt);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bigInt);
+    },
+  );
+
+  test(
+    'Given a non-null nullable BigInt when encoding and decoding with type then output matches input',
+    () {
+      BigInt? bigInt = BigInt.parse('-12345678901234567890');
+      var encoded = protocol.encodeWithType(bigInt);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bigInt);
+    },
+  );
+
+  test(
+    'Given a null nullable BigInt when encoding and decoding with type then output matches input',
+    () {
+      BigInt? bigInt;
+      var encoded = protocol.encodeWithType(bigInt);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bigInt);
+    },
+  );
 }

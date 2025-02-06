@@ -114,6 +114,21 @@ void main() {
     });
 
     test(
+        'Given an object with an BigInt and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var bigInt = BigInt.one;
+
+      var types = Types(aBigInt: bigInt);
+      var typesCopy = types.copyWith();
+      types.aBigInt = BigInt.two;
+
+      expect(
+        typesCopy.aBigInt,
+        BigInt.one,
+      );
+    });
+
+    test(
         'Given an object with an DateTime and a copy of that object when mutating the original then the copy is unmodified.',
         () {
       var dateTime = DateTime.fromMillisecondsSinceEpoch(1000);

@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid_value.dart';
 
 void main() async {
   var session = await IntegrationTestServer().session();
@@ -9,6 +12,7 @@ void main() async {
   tearDown(() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
     await SimpleData.db.deleteWhere(session, where: (_) => Constant.bool(true));
+    await Types.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
   test(
@@ -136,5 +140,227 @@ void main() async {
 
     expect(retrieved, isNotNull);
     expect(inserted.id, retrieved!.id);
+  });
+
+  test(
+      'Given an object with a `bool` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(aBool: true);
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved!.aBool, true);
+  });
+
+  test(
+      'Given an object with an `int` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      anInt: 99,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved!.anInt, 99);
+  });
+
+  test(
+      'Given an object with a `double` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aDouble: 1.23,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved!.aDouble, 1.23);
+  });
+
+  test(
+      'Given an object with a `DateTime` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aDateTime: DateTime.utc(2024, 12, 24, 23, 30),
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved!.aDateTime, DateTime.utc(2024, 12, 24, 23, 30));
+  });
+
+  test(
+      'Given an object with a `String` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(aString: 'Lorem ipsum');
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved!.aString, 'Lorem ipsum');
+  });
+
+  test(
+      'Given an object with a `ByteData` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+    );
+
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      Uint8List.view(
+        retrieved!.aByteData!.buffer,
+        retrieved.aByteData!.offsetInBytes,
+        retrieved.aByteData!.lengthInBytes,
+      ).toList(),
+      [1, 2, 3],
+    );
+  });
+
+  test(
+      'Given an object with a `Duration` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aDuration: Duration(hours: 1, minutes: 2, seconds: 3),
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved?.aDuration, Duration(hours: 1, minutes: 2, seconds: 3));
+  });
+
+  test(
+      'Given an object with a `UUID` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aUuid: UuidValue.fromString('b1e66000-1cc3-4ead-a4ab-a548e2047d3a'),
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      retrieved?.aUuid,
+      UuidValue.fromString('b1e66000-1cc3-4ead-a4ab-a548e2047d3a'),
+    );
+  });
+
+  test(
+      'Given an object with a `BigInt` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aBigInt: BigInt.two,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      retrieved?.aBigInt,
+      BigInt.two,
+    );
+  });
+
+  test(
+      'Given an object with an `enum` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      anEnum: TestEnum.two,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      retrieved?.anEnum,
+      TestEnum.two,
+    );
+  });
+
+  test(
+      'Given an object with a stringified `enum` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aStringifiedEnum: TestEnumStringified.three,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved?.aStringifiedEnum, TestEnumStringified.three);
   });
 }

@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableModel].
 DatabaseDefinition createDatabaseDefinitionFromModels(
@@ -157,6 +157,9 @@ String? _getColumnDefault(
         return 'gen_random_uuid()';
       }
       return '${_escapeSqlString(defaultValue)}::uuid';
+    case DefaultValueAllowedType.bigInt:
+      var parsedBigInt = BigInt.parse(defaultValue);
+      return "'${parsedBigInt.toString()}'::text";
     case DefaultValueAllowedType.duration:
       Duration parsedDuration = parseDuration(defaultValue);
       return '${parsedDuration.toJson()}';
