@@ -302,6 +302,30 @@ void main() async {
   });
 
   test(
+      'Given an object with a `Uri` field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var uri = Uri.parse('https://serverpod.dev');
+
+    var object = Types(
+      aUri: uri,
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      retrieved?.aUri,
+      uri,
+    );
+  });
+
+  test(
       'Given an object with a `BigInt` field, when it\'s stored in the database, then it can be read out again',
       () async {
     var object = Types(
