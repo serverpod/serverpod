@@ -166,7 +166,8 @@ String moduleNameFromServerPackageName(String packageDirName) {
     return 'serverpod';
   }
   if (!packageName.endsWith(_serverSuffix)) {
-    throw Exception('Not a server package ($packageName)');
+    throw LocateModuleNameFromServerPackageNameException(
+        packageName: packageName);
   }
   return packageName.substring(0, packageName.length - _serverSuffix.length);
 }
