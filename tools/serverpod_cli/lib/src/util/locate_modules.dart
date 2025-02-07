@@ -186,10 +186,16 @@ Future<bool> isServerPackage(List<String> pathSegments) async {
   //if the type is server then we can assume that the package is a server package
   var generateConfigSegments = List<String>.from(pathSegments)
     ..addAll(['config', 'generator.yaml']);
-  var generatorConfigUri = Uri.parse(path.joinAll(generateConfigSegments));
+  var filePath = path.joinAll(generateConfigSegments);
+  // Ensure the filePath is absolute; if not, adjust accordingly:
+  if (!path.isAbsolute(filePath)) {
+    filePath = '/$filePath';
+  }
+  var generatorConfigUri = Uri.file(filePath);
   log.info('Reading generator config from: $generatorConfigUri');
   var generatorConfigFile = File.fromUri(generatorConfigUri);
   if (!await generatorConfigFile.exists()) {
+    log.info('config/generator.yaml file not found');
     return false;
   }
 
