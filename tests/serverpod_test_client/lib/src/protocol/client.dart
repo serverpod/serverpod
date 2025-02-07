@@ -2188,6 +2188,173 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointSetParameters extends _i1.EndpointRef {
+  EndpointSetParameters(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'setParameters';
+
+  _i2.Future<Set<int>> returnIntSet(Set<int> set) =>
+      caller.callServerEndpoint<Set<int>>(
+        'setParameters',
+        'returnIntSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<Set<int>>> returnIntSetSet(Set<Set<int>> set) =>
+      caller.callServerEndpoint<Set<Set<int>>>(
+        'setParameters',
+        'returnIntSetSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<List<int>>> returnIntListSet(Set<List<int>> set) =>
+      caller.callServerEndpoint<Set<List<int>>>(
+        'setParameters',
+        'returnIntListSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<int>?> returnIntSetNullable(Set<int>? set) =>
+      caller.callServerEndpoint<Set<int>?>(
+        'setParameters',
+        'returnIntSetNullable',
+        {'set': set},
+      );
+
+  _i2.Future<Set<Set<int>?>> returnIntSetNullableSet(Set<Set<int>?> set) =>
+      caller.callServerEndpoint<Set<Set<int>?>>(
+        'setParameters',
+        'returnIntSetNullableSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<Set<int>>?> returnIntSetSetNullable(Set<Set<int>>? set) =>
+      caller.callServerEndpoint<Set<Set<int>>?>(
+        'setParameters',
+        'returnIntSetSetNullable',
+        {'set': set},
+      );
+
+  _i2.Future<Set<int?>> returnIntSetNullableInts(Set<int?> set) =>
+      caller.callServerEndpoint<Set<int?>>(
+        'setParameters',
+        'returnIntSetNullableInts',
+        {'set': set},
+      );
+
+  _i2.Future<Set<int?>?> returnNullableIntSetNullableInts(Set<int?>? set) =>
+      caller.callServerEndpoint<Set<int?>?>(
+        'setParameters',
+        'returnNullableIntSetNullableInts',
+        {'set': set},
+      );
+
+  _i2.Future<Set<double>> returnDoubleSet(Set<double> set) =>
+      caller.callServerEndpoint<Set<double>>(
+        'setParameters',
+        'returnDoubleSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<double?>> returnDoubleSetNullableDoubles(Set<double?> set) =>
+      caller.callServerEndpoint<Set<double?>>(
+        'setParameters',
+        'returnDoubleSetNullableDoubles',
+        {'set': set},
+      );
+
+  _i2.Future<Set<bool>> returnBoolSet(Set<bool> set) =>
+      caller.callServerEndpoint<Set<bool>>(
+        'setParameters',
+        'returnBoolSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<bool?>> returnBoolSetNullableBools(Set<bool?> set) =>
+      caller.callServerEndpoint<Set<bool?>>(
+        'setParameters',
+        'returnBoolSetNullableBools',
+        {'set': set},
+      );
+
+  _i2.Future<Set<String>> returnStringSet(Set<String> set) =>
+      caller.callServerEndpoint<Set<String>>(
+        'setParameters',
+        'returnStringSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<String?>> returnStringSetNullableStrings(Set<String?> set) =>
+      caller.callServerEndpoint<Set<String?>>(
+        'setParameters',
+        'returnStringSetNullableStrings',
+        {'set': set},
+      );
+
+  _i2.Future<Set<DateTime>> returnDateTimeSet(Set<DateTime> set) =>
+      caller.callServerEndpoint<Set<DateTime>>(
+        'setParameters',
+        'returnDateTimeSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<DateTime?>> returnDateTimeSetNullableDateTimes(
+          Set<DateTime?> set) =>
+      caller.callServerEndpoint<Set<DateTime?>>(
+        'setParameters',
+        'returnDateTimeSetNullableDateTimes',
+        {'set': set},
+      );
+
+  _i2.Future<Set<_i4.ByteData>> returnByteDataSet(Set<_i4.ByteData> set) =>
+      caller.callServerEndpoint<Set<_i4.ByteData>>(
+        'setParameters',
+        'returnByteDataSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<_i4.ByteData?>> returnByteDataSetNullableByteDatas(
+          Set<_i4.ByteData?> set) =>
+      caller.callServerEndpoint<Set<_i4.ByteData?>>(
+        'setParameters',
+        'returnByteDataSetNullableByteDatas',
+        {'set': set},
+      );
+
+  _i2.Future<Set<_i10.SimpleData>> returnSimpleDataSet(
+          Set<_i10.SimpleData> set) =>
+      caller.callServerEndpoint<Set<_i10.SimpleData>>(
+        'setParameters',
+        'returnSimpleDataSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<_i10.SimpleData?>> returnSimpleDataSetNullableSimpleData(
+          Set<_i10.SimpleData?> set) =>
+      caller.callServerEndpoint<Set<_i10.SimpleData?>>(
+        'setParameters',
+        'returnSimpleDataSetNullableSimpleData',
+        {'set': set},
+      );
+
+  _i2.Future<Set<Duration>> returnDurationSet(Set<Duration> set) =>
+      caller.callServerEndpoint<Set<Duration>>(
+        'setParameters',
+        'returnDurationSet',
+        {'set': set},
+      );
+
+  _i2.Future<Set<Duration?>> returnDurationSetNullableDurations(
+          Set<Duration?> set) =>
+      caller.callServerEndpoint<Set<Duration?>>(
+        'setParameters',
+        'returnDurationSetNullableDurations',
+        {'set': set},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSignInRequired extends _i1.EndpointRef {
   EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
@@ -2617,6 +2784,7 @@ class Client extends _i1.ServerpodClientShared {
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     serverOnlyScopedFieldChildModel =
         EndpointServerOnlyScopedFieldChildModel(this);
+    setParameters = EndpointSetParameters(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
@@ -2695,6 +2863,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointServerOnlyScopedFieldChildModel
       serverOnlyScopedFieldChildModel;
 
+  late final EndpointSetParameters setParameters;
+
   late final EndpointSignInRequired signInRequired;
 
   late final EndpointAdminScopeRequired adminScopeRequired;
@@ -2751,6 +2921,7 @@ class Client extends _i1.ServerpodClientShared {
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
+        'setParameters': setParameters,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,
         'simple': simple,

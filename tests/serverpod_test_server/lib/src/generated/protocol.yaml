@@ -264,6 +264,29 @@ serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
 serverOnlyScopedFieldChildModel:
   - getProtocolField:
+setParameters:
+  - returnIntSet:
+  - returnIntSetSet:
+  - returnIntListSet:
+  - returnIntSetNullable:
+  - returnIntSetNullableSet:
+  - returnIntSetSetNullable:
+  - returnIntSetNullableInts:
+  - returnNullableIntSetNullableInts:
+  - returnDoubleSet:
+  - returnDoubleSetNullableDoubles:
+  - returnBoolSet:
+  - returnBoolSetNullableBools:
+  - returnStringSet:
+  - returnStringSetNullableStrings:
+  - returnDateTimeSet:
+  - returnDateTimeSetNullableDateTimes:
+  - returnByteDataSet:
+  - returnByteDataSetNullableByteDatas:
+  - returnSimpleDataSet:
+  - returnSimpleDataSetNullableSimpleData:
+  - returnDurationSet:
+  - returnDurationSetNullableDurations:
 signInRequired:
   - testMethod:
 adminScopeRequired:

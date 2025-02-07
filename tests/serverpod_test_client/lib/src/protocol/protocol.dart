@@ -2013,6 +2013,120 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
+    if (t == Set<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toSet() as dynamic;
+    }
+    if (t == Set<Set<int>>) {
+      return (data as List).map((e) => deserialize<Set<int>>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<List<int>>) {
+      return (data as List).map((e) => deserialize<List<int>>(e)).toSet()
+          as dynamic;
+    }
+    if (t == _i1.getType<Set<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Set<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == Set<Set<int>?>) {
+      return (data as List).map((e) => deserialize<Set<int>?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == _i1.getType<Set<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Set<int>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Set<Set<int>>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<Set<int>>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Set<Set<int>>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<Set<int>>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == Set<int?>) {
+      return (data as List).map((e) => deserialize<int?>(e)).toSet() as dynamic;
+    }
+    if (t == _i1.getType<Set<int?>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int?>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<Set<int?>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<int?>(e)).toSet()
+          : null) as dynamic;
+    }
+    if (t == Set<double>) {
+      return (data as List).map((e) => deserialize<double>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<double?>) {
+      return (data as List).map((e) => deserialize<double?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<bool>) {
+      return (data as List).map((e) => deserialize<bool>(e)).toSet() as dynamic;
+    }
+    if (t == Set<bool?>) {
+      return (data as List).map((e) => deserialize<bool?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<String?>) {
+      return (data as List).map((e) => deserialize<String?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<DateTime>) {
+      return (data as List).map((e) => deserialize<DateTime>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<DateTime?>) {
+      return (data as List).map((e) => deserialize<DateTime?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<_i124.ByteData>) {
+      return (data as List).map((e) => deserialize<_i124.ByteData>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<_i124.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i124.ByteData?>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<_i126.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i126.SimpleData>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<_i126.SimpleData?>) {
+      return (data as List)
+          .map((e) => deserialize<_i126.SimpleData?>(e))
+          .toSet() as dynamic;
+    }
+    if (t == Set<Duration>) {
+      return (data as List).map((e) => deserialize<Duration>(e)).toSet()
+          as dynamic;
+    }
+    if (t == Set<Duration?>) {
+      return (data as List).map((e) => deserialize<Duration?>(e)).toSet()
+          as dynamic;
+    }
     if (t == _i125.CustomClass) {
       return _i125.CustomClass.fromJson(data) as T;
     }
