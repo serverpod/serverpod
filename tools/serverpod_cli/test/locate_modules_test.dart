@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Locate modules', () {
-    test('moduleNameFromServerPackageName', () async{
+    test('moduleNameFromServerPackageName', () async {
       var moduleName = await moduleNameFromServerPackageName('test_server');
       expect(moduleName, 'test');
 

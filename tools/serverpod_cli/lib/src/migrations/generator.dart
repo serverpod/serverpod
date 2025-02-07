@@ -334,10 +334,13 @@ class MigrationGenerator {
     var selectedPaths = (await Future.wait(
       modulePaths.map((modulePath) async {
         var moduleName = await _extractModuleNameFromPath(modulePath);
-        return selectedModules.any((module) => module.name == moduleName)? modulePath
+        return selectedModules.any((module) => module.name == moduleName)
+            ? modulePath
             : null;
       }),
-    )).whereType<Uri>().toList();
+    ))
+        .whereType<Uri>()
+        .toList();
 
     var moduleMigrationVersions = <MigrationVersion>[];
 
@@ -388,9 +391,10 @@ class MigrationGenerator {
     );
   }
 
-  Future<String> _extractModuleNameFromPath(Uri path) async{
+  Future<String> _extractModuleNameFromPath(Uri path) async {
     var packageName = path.pathSegments.last;
-    return await moduleNameFromServerPackageName(packageName, path.pathSegments);
+    return await moduleNameFromServerPackageName(
+        packageName, path.pathSegments);
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
