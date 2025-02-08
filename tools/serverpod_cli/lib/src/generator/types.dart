@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -56,9 +57,11 @@ class TypeDefinition {
   bool get isSerializedByExtension =>
       extensionSerializedTypes.contains(className);
 
-  bool get isListType => className == 'List';
+  bool get isListType => className == ListKeyword.className;
 
-  bool get isMapType => className == 'Map';
+  bool get isSetType => className == SetKeyword.className;
+
+  bool get isMapType => className == MapKeyword.className;
 
   bool get isIdType => className == 'int';
 
@@ -321,7 +324,9 @@ class TypeDefinition {
     bool serverCode, {
     required GeneratorConfig config,
   }) {
-    if ((className == 'List' || className == 'Set') && generics.length == 1) {
+    if ((className == ListKeyword.className ||
+            className == SetKeyword.className) &&
+        generics.length == 1) {
       return [
         MapEntry(
           nullable
@@ -350,7 +355,7 @@ class TypeDefinition {
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
       ];
-    } else if (className == 'Map' && generics.length == 2) {
+    } else if (className == MapKeyword.className && generics.length == 2) {
       return [
         MapEntry(
           nullable

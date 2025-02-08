@@ -1,0 +1,16 @@
+class: TypesSet
+fields:
+  anInt: Set<int>?
+  aBool: Set<bool>?
+  aDouble: Set<double>?
+  aDateTime: Set<DateTime>?
+  aString: Set<String>?
+  aByteData: Set<ByteData>?
+  aDuration: Set<Duration>?
+  aUuid: Set<UuidValue>?
+  aBigInt: Set<BigInt>?
+  anEnum: Set<TestEnum>?
+  aStringifiedEnum: Set<TestEnumStringified>?
+  anObject: Set<Types>?
+  aMap: Set<Map<String, Types>>?
+  aList: Set<List<Types>>?

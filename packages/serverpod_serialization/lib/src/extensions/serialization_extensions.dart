@@ -119,3 +119,13 @@ extension ListJsonExtension<T> on List<T> {
     return map<dynamic>(valueToJson).toList();
   }
 }
+
+/// Expose toJson on Set
+extension SetJsonExtension<T> on Set<T> {
+  /// Returns a serialized version of the [Set] with values serialized.
+  List<dynamic> toJson({dynamic Function(T)? valueToJson}) {
+    if (valueToJson == null) return toList();
+
+    return map<dynamic>(valueToJson).toList();
+  }
+}

@@ -266,7 +266,8 @@ Expression _buildListOrSetTypeFromJson(
     Block.of([
       valueExpression
           .asA(CodeExpression(
-            Code('${isList ? 'List' : 'Set'}${type.nullable ? '?' : ''}'),
+            // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
+            Code('List${type.nullable ? '?' : ''}'),
           ))
           .code,
       Code('${type.nullable ? '?' : ''}.map((e) => '),
@@ -278,7 +279,7 @@ Expression _buildListOrSetTypeFromJson(
         classDefinition,
         mapExpression: refer('e'),
       ).code,
-      Code(')${isList ? '.toList()' : ''}'),
+      Code(')${isList ? '.toList()' : '.toSet()'}'),
     ]),
   );
 }

@@ -8,6 +8,11 @@ class MapKeyword {
   static const className = 'Map';
 }
 
+class SetKeyword {
+  static const className = 'Set';
+  static const toSet = 'toSet';
+}
+
 class Keyword {
   static const mapFunctionName = 'map';
   static const thisKeyword = 'this';
