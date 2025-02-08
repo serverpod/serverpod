@@ -378,22 +378,23 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    var errors = <SourceSpanSeverityException>[];
     var definition = documentDefinition;
 
-    if (definition is! ClassDefinition) return errors;
+    if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field == null) return errors;
+    if (field == null) return [];
 
     if (field.type.isIdType) {
-      errors.add(SourceSpanSeverityException(
-        'The "optional" property should be omitted on id fields.',
-        span,
-      ));
+      return [
+        SourceSpanSeverityException(
+          'The "optional" property should be omitted on id fields.',
+          span,
+        ),
+      ];
     }
 
-    return errors;
+    return [];
   }
 
   List<SourceSpanSeverityException> validateTableIndexName(

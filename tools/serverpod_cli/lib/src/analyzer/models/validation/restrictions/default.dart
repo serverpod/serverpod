@@ -319,19 +319,16 @@ class DefaultValueRestriction extends ValueRestriction {
   ) {
     if (value is BigInt) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
     if (value is! String || value.isEmpty || BigInt.tryParse(value) == null) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           'The "$key" value must be a valid BigInt (e.g., "$key"=\'1234567890\').',
           span,
         ),
-      );
-      return errors;
+      ];
     }
 
-    return errors;
+    return [];
   }
 
   List<SourceSpanSeverityException> _durationValidation(
@@ -359,8 +356,6 @@ class DefaultValueRestriction extends ValueRestriction {
     dynamic value,
     SourceSpan? span,
   ) {
-    var errors = <SourceSpanSeverityException>[];
-
     if (value is Uri) {
       return [];
     }
@@ -369,13 +364,12 @@ class DefaultValueRestriction extends ValueRestriction {
         'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
 
     if (value is! String || value.isEmpty) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           invalidValueError,
           span,
         ),
-      );
-      return errors;
+      ];
     }
 
     bool invalidDefaultValue = value != defaultUuidValueRandom &&
@@ -383,13 +377,12 @@ class DefaultValueRestriction extends ValueRestriction {
         !value.startsWith('"');
 
     if (invalidDefaultValue) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           invalidValueError,
           span,
         ),
-      );
-      return errors;
+      ];
     }
 
     if (value == defaultUuidValueRandom) return [];
@@ -398,36 +391,34 @@ class DefaultValueRestriction extends ValueRestriction {
     bool validDoubleQuote = isValidDoubleQuote(value);
 
     if (value.startsWith("'") && !validSingleQuote) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           'The "$key" must be a quoted string (e.g., "$key"=\'http://serverpod.dev\').',
           span,
         ),
-      );
-      return errors;
+      ];
     } else if (value.startsWith('"') && !validDoubleQuote) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           'The "$key" must be a quoted string (e.g., "$key"="http://serverpod.dev").',
           span,
         ),
-      );
-      return errors;
+      ];
     }
 
     /// Extract the actual Uri string by removing quotes
     String uriString = value.substring(1, value.length - 1);
     var isValid = Uri.tryParse(uriString) != null;
     if (!isValid) {
-      errors.add(
+      return [
         SourceSpanSeverityException(
           'The "$key" value must be a valid Uri (e.g., \'http://serverpod.dev\').',
           span,
         ),
-      );
+      ];
     }
 
-    return errors;
+    return [];
   }
 
   List<SourceSpanSeverityException> _enumValidation(
