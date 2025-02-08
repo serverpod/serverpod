@@ -9,12 +9,16 @@ class SetParametersEndpoint extends Endpoint {
   }
 
   Future<Set<Set<int>>> returnIntSetSet(
-      Session session, Set<Set<int>> set) async {
+    Session session,
+    Set<Set<int>> set,
+  ) async {
     return set;
   }
 
   Future<Set<List<int>>> returnIntListSet(
-      Session session, Set<List<int>> set) async {
+    Session session,
+    Set<List<int>> set,
+  ) async {
     return set;
   }
 
