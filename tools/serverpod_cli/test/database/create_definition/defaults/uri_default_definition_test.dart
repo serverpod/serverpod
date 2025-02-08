@@ -10,8 +10,8 @@ void main() {
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .withDefaults(
-              defaultPersistValue:
-                  '\'https://serverpod.dev/defaultPersistValue\'')
+            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+          )
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -53,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'https://serverpod.dev/defaultPersistValue\'::text',
+          "'https://serverpod.dev/defaultPersistValue'::text",
         );
       });
     });
@@ -114,7 +114,7 @@ void main() {
           .withTypeDefinition('Uri', true)
           .withDefaults(
               defaultPersistValue:
-                  '\'https://serverpod.dev/defaultPersistValue\'')
+                  "'https://serverpod.dev/defaultPersistValue'")
           .build();
 
       var model = ClassDefinitionBuilder()
@@ -156,7 +156,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'https://serverpod.dev/defaultPersistValue\'::text',
+          "'https://serverpod.dev/defaultPersistValue'::text",
         );
       });
 
@@ -234,7 +234,7 @@ void main() {
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .withDefaults(
-              defaultModelValue: '\'https://serverpod.dev/defaultModelValue\'')
+              defaultModelValue: "'https://serverpod.dev/defaultModelValue'")
           .build();
 
       var model = ClassDefinitionBuilder()

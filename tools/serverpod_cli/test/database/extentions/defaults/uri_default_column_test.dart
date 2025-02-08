@@ -27,7 +27,7 @@ void main() {
         name: 'uriDefault',
         columnType: ColumnType.text,
         isNullable: false,
-        columnDefault: '\'https://serverpod.dev\'',
+        columnDefault: "'https://serverpod.dev'",
         dartType: 'Uri',
       );
 
@@ -64,7 +64,7 @@ void main() {
         name: 'uriNullableDefault',
         columnType: ColumnType.text,
         isNullable: true,
-        columnDefault: '\'https://serverpod.dev\'',
+        columnDefault: "'https://serverpod.dev'",
         dartType: 'Uri',
       );
 
