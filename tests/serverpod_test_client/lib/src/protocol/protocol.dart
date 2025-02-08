@@ -1106,258 +1106,250 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List)
               .map((e) => deserialize<_i48.EmptyModelRelationItem>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == _i1.getType<List<_i60.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i60.PersonWithLongTableName>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i59.OrganizationWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i59.OrganizationWithLongTableName>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i60.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i60.PersonWithLongTableName>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i62.LongImplicitIdField>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i62.LongImplicitIdField>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i69.MultipleMaxFieldName>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i69.MultipleMaxFieldName>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i65.UserNote>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i65.UserNote>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i68.UserNoteWithALongName>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i68.UserNoteWithALongName>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i72.Person>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i72.Person>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i71.Organization>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i71.Organization>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i72.Person>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i72.Person>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i74.Enrollment>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i74.Enrollment>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i74.Enrollment>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i74.Enrollment>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i79.Player>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i79.Player>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i83.Order>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i83.Order>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i81.Comment>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i81.Comment>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i88.Blocking>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i88.Blocking>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i88.Blocking>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i88.Blocking>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i90.Cat>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i90.Cat>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i127.ModuleClass>) {
       return (data as List)
           .map((e) => deserialize<_i127.ModuleClass>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == Map<String, _i127.ModuleClass>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i127.ModuleClass>(v)))
-          as dynamic;
+          deserialize<String>(k), deserialize<_i127.ModuleClass>(v))) as T;
     }
     if (t == List<int>) {
-      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<int?>) {
-      return (data as List).map((e) => deserialize<int?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<int?>(e)).toList() as T;
     }
     if (t == _i1.getType<List<int?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i115.SimpleData>) {
       return (data as List)
           .map((e) => deserialize<_i115.SimpleData>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == _i1.getType<List<_i115.SimpleData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i115.SimpleData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i115.SimpleData?>) {
       return (data as List)
           .map((e) => deserialize<_i115.SimpleData?>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == _i1.getType<List<_i115.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i115.SimpleData?>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<DateTime>) {
-      return (data as List).map((e) => deserialize<DateTime>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<DateTime>(e)).toList() as T;
     }
     if (t == _i1.getType<List<DateTime>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<DateTime>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<DateTime?>) {
-      return (data as List).map((e) => deserialize<DateTime?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<DateTime?>(e)).toList() as T;
     }
     if (t == _i1.getType<List<DateTime?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<DateTime?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i128.ByteData>) {
       return (data as List).map((e) => deserialize<_i128.ByteData>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<_i128.ByteData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i128.ByteData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i128.ByteData?>) {
       return (data as List).map((e) => deserialize<_i128.ByteData?>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<_i128.ByteData?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i128.ByteData?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<Duration>) {
-      return (data as List).map((e) => deserialize<Duration>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<Duration>(e)).toList() as T;
     }
     if (t == _i1.getType<List<Duration>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<Duration>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<Duration?>) {
-      return (data as List).map((e) => deserialize<Duration?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<Duration?>(e)).toList() as T;
     }
     if (t == _i1.getType<List<Duration?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<Duration?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i1.UuidValue>) {
       return (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<_i1.UuidValue>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i1.UuidValue?>) {
       return (data as List).map((e) => deserialize<_i1.UuidValue?>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<_i1.UuidValue?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i1.UuidValue?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<String, int>) {
       return (data as Map).map(
-              (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          as dynamic;
+          (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v))) as T;
     }
     if (t == _i1.getType<Map<String, int>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<String, int?>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<Map<String, int?>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i129.CustomClassWithoutProtocolSerialization) {
       return _i129.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
@@ -1371,696 +1363,667 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == List<_i120.TestEnum>) {
       return (data as List).map((e) => deserialize<_i120.TestEnum>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == List<_i120.TestEnum?>) {
       return (data as List).map((e) => deserialize<_i120.TestEnum?>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == List<List<_i120.TestEnum>>) {
       return (data as List)
           .map((e) => deserialize<List<_i120.TestEnum>>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == Map<String, _i115.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i115.SimpleData>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i115.SimpleData>(v))) as T;
     }
     if (t == Map<String, String>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<String>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<String>(v))) as T;
     }
     if (t == Map<String, DateTime>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<DateTime>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<DateTime>(v))) as T;
     }
     if (t == Map<String, _i128.ByteData>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i128.ByteData>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, Duration>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<Duration>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<Duration>(v))) as T;
     }
     if (t == Map<String, _i1.UuidValue>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v))) as T;
     }
     if (t == Map<String, _i115.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i115.SimpleData?>(v)))
-          as dynamic;
+          deserialize<String>(k), deserialize<_i115.SimpleData?>(v))) as T;
     }
     if (t == Map<String, String?>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<String?>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<String?>(v))) as T;
     }
     if (t == Map<String, DateTime?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<DateTime?>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
     if (t == Map<String, _i128.ByteData?>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i128.ByteData?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, Duration?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
     if (t == Map<String, _i1.UuidValue?>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<int, int>) {
       return Map.fromEntries((data as List).map((e) =>
-              MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
-          as dynamic;
+          MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v'])))) as T;
     }
     if (t == _i1.getType<List<_i115.SimpleData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i115.SimpleData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i115.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i115.SimpleData?>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<List<_i115.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<List<_i115.SimpleData>>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t ==
         _i1.getType<Map<String, List<List<Map<int, _i115.SimpleData>>?>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
               deserialize<List<List<Map<int, _i115.SimpleData>>?>>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<List<Map<int, _i115.SimpleData>>?>) {
       return (data as List)
           .map((e) => deserialize<List<Map<int, _i115.SimpleData>>?>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == _i1.getType<List<Map<int, _i115.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<Map<int, _i115.SimpleData>>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<int, _i115.SimpleData>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<int>(e['k']), deserialize<_i115.SimpleData>(e['v']))))
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<Map<String, Map<int, _i115.SimpleData>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
               deserialize<Map<int, _i115.SimpleData>>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<bool>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<bool>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<double>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<double>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<DateTime>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<DateTime>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i128.ByteData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i128.ByteData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<Duration>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<Duration>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i1.UuidValue>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<Uri>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<Uri>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<BigInt>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<BigInt>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i120.TestEnum>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i120.TestEnum>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i121.TestEnumStringified>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i121.TestEnumStringified>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i122.Types>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i122.Types>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<Map<String, _i122.Types>>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<Map<String, _i122.Types>>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<String, _i122.Types>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i122.Types>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<_i122.Types>(v))) as T;
     }
     if (t == _i1.getType<List<List<_i122.Types>>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<List<_i122.Types>>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i122.Types>) {
       return (data as List).map((e) => deserialize<_i122.Types>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<Map<int, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) =>
               MapEntry(deserialize<int>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<bool, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) =>
               MapEntry(deserialize<bool>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<double, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<double>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<DateTime, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<DateTime>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<_i128.ByteData, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<_i128.ByteData>(e['k']),
               deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<Duration, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<Duration>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<_i1.UuidValue, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<_i1.UuidValue>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<Uri, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) =>
               MapEntry(deserialize<Uri>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<BigInt, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<BigInt>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<_i120.TestEnum, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<_i120.TestEnum>(e['k']),
               deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<_i121.TestEnumStringified, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<_i121.TestEnumStringified>(e['k']),
               deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<_i122.Types, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<_i122.Types>(e['k']), deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<Map<_i122.Types, String>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<Map<_i122.Types, String>>(e['k']),
               deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<_i122.Types, String>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i122.Types>(e['k']), deserialize<String>(e['v']))))
-          as dynamic;
+          deserialize<_i122.Types>(e['k']), deserialize<String>(e['v'])))) as T;
     }
     if (t == _i1.getType<Map<List<_i122.Types>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
               deserialize<List<_i122.Types>>(e['k']),
               deserialize<String>(e['v']))))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, int>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, bool>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<bool>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, double>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<double>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, DateTime>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<DateTime>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i128.ByteData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i128.ByteData>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, Duration>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<Duration>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i1.UuidValue>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, Uri>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<Uri>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, BigInt>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<BigInt>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i120.TestEnum>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i120.TestEnum>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i121.TestEnumStringified>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
               deserialize<_i121.TestEnumStringified>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i122.Types>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i122.Types>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, Map<String, _i122.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<Map<String, _i122.Types>>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, List<_i122.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<List<_i122.Types>>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == List<_i130.SimpleData>) {
       return (data as List)
           .map((e) => deserialize<_i130.SimpleData>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == List<int>) {
-      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<List<int>>) {
-      return (data as List).map((e) => deserialize<List<int>>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<List<int>>(e)).toList() as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<List<int>?>) {
       return (data as List).map((e) => deserialize<List<int>?>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<List<int>>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<List<int>>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<List<int>>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<List<int>>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<int?>) {
-      return (data as List).map((e) => deserialize<int?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<int?>(e)).toList() as T;
     }
     if (t == _i1.getType<List<int?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<int?>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<double>) {
-      return (data as List).map((e) => deserialize<double>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<double>(e)).toList() as T;
     }
     if (t == List<double?>) {
-      return (data as List).map((e) => deserialize<double?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<double?>(e)).toList() as T;
     }
     if (t == List<bool>) {
-      return (data as List).map((e) => deserialize<bool>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<bool>(e)).toList() as T;
     }
     if (t == List<bool?>) {
-      return (data as List).map((e) => deserialize<bool?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<bool?>(e)).toList() as T;
     }
     if (t == List<String?>) {
-      return (data as List).map((e) => deserialize<String?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
     if (t == List<DateTime>) {
-      return (data as List).map((e) => deserialize<DateTime>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<DateTime>(e)).toList() as T;
     }
     if (t == List<DateTime?>) {
-      return (data as List).map((e) => deserialize<DateTime?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<DateTime?>(e)).toList() as T;
     }
     if (t == List<_i128.ByteData>) {
       return (data as List).map((e) => deserialize<_i128.ByteData>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == List<_i128.ByteData?>) {
       return (data as List).map((e) => deserialize<_i128.ByteData?>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == List<_i130.SimpleData?>) {
       return (data as List)
           .map((e) => deserialize<_i130.SimpleData?>(e))
-          .toList() as dynamic;
+          .toList() as T;
     }
     if (t == _i1.getType<List<_i130.SimpleData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i130.SimpleData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i130.SimpleData>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i130.SimpleData>(e)).toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i130.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i130.SimpleData?>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<List<_i130.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i130.SimpleData?>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<Duration>) {
-      return (data as List).map((e) => deserialize<Duration>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<Duration>(e)).toList() as T;
     }
     if (t == List<Duration?>) {
-      return (data as List).map((e) => deserialize<Duration?>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<Duration?>(e)).toList() as T;
     }
     if (t == Map<String, int>) {
       return (data as Map).map(
-              (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          as dynamic;
+          (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v))) as T;
     }
     if (t == _i1.getType<Map<String, int>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, int>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<String, Map<String, int>>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<Map<String, int>>(v))) as dynamic;
+          deserialize<String>(k), deserialize<Map<String, int>>(v))) as T;
     }
     if (t == Map<String, int?>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<Map<String, int?>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, int?>?>()) {
       return (data != null
           ? (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<int, int>) {
       return Map.fromEntries((data as List).map((e) =>
-              MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
-          as dynamic;
+          MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v'])))) as T;
     }
     if (t == Map<_i131.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i131.TestEnum>(e['k']), deserialize<int>(e['v']))))
-          as dynamic;
+          deserialize<_i131.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
     }
     if (t == Map<String, _i131.TestEnum>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i131.TestEnum>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, double>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<double>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<double>(v))) as T;
     }
     if (t == Map<String, double?>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<double?>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<double?>(v))) as T;
     }
     if (t == Map<String, bool>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<bool>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, bool?>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<bool?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, String>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<String>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<String>(v))) as T;
     }
     if (t == Map<String, String?>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<String?>(v))) as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<String?>(v))) as T;
     }
     if (t == Map<String, DateTime>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<DateTime>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<DateTime>(v))) as T;
     }
     if (t == Map<String, DateTime?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<DateTime?>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
     if (t == Map<String, _i128.ByteData>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i128.ByteData>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, _i128.ByteData?>) {
       return (data as Map).map((k, v) =>
               MapEntry(deserialize<String>(k), deserialize<_i128.ByteData?>(v)))
-          as dynamic;
+          as T;
     }
     if (t == Map<String, _i130.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i130.SimpleData>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i130.SimpleData>(v))) as T;
     }
     if (t == Map<String, _i130.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i130.SimpleData?>(v)))
-          as dynamic;
+          deserialize<String>(k), deserialize<_i130.SimpleData?>(v))) as T;
     }
     if (t == _i1.getType<Map<String, _i130.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<_i130.SimpleData>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i130.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<_i130.SimpleData>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i130.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<_i130.SimpleData?>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == _i1.getType<Map<String, _i130.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
               deserialize<String>(k), deserialize<_i130.SimpleData?>(v)))
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == Map<String, Duration>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<Duration>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<Duration>(v))) as T;
     }
     if (t == Map<String, Duration?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
-          as dynamic;
+          MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
     if (t == _i129.CustomClass) {
       return _i129.CustomClass.fromJson(data) as T;
