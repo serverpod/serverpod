@@ -339,14 +339,14 @@ class TypeDefinition {
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null) as dynamic')
+                        ':null) as T')
                   ])
                 : Block.of([
                     const Code('(data as List).map((e) =>'
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
                   ])
           ]),
         ),
@@ -372,7 +372,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v)))' ':null) as dynamic')
+                        const Code('>(v)))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -383,7 +383,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v))) as dynamic')
+                        const Code('>(v))) as T')
                       ])
                 : // Key is not String -> stored as list of map entries
                 nullable
@@ -397,7 +397,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\']))))' ':null) as dynamic')
+                        const Code('>(e[\'v\']))))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -408,7 +408,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\'])))) as dynamic')
+                        const Code('>(e[\'v\'])))) as T')
                       ])
           ]),
         ),
