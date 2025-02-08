@@ -1,0 +1,40 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "types",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "aList",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "List<int>?"
+          },
+          {
+            "name": "aMap",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<int,int>?"
+          },
+          {
+            "name": "aSet",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Set<int>?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
