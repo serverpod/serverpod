@@ -494,6 +494,16 @@ void main() {
     });
 
     test(
+        'when deserializing with null in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({'aDateTime': null});
+      expect(
+        typeList.aDateTime,
+        isNull,
+      );
+    });
+
+    test(
         'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
         () {
       expect(
@@ -526,6 +536,20 @@ void main() {
           'anInt': ['test']
         }),
         throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with duplicate values, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'aString': ['test', 'test']
+        }),
+        throwsA(
+          isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Input list for Set contained duplicate items')),
+        ),
       );
     });
 
