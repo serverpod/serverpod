@@ -762,6 +762,7 @@ CREATE TABLE "types" (
     "aByteData" bytea,
     "aDuration" bigint,
     "aUuid" uuid,
+    "aUri" text,
     "aBigInt" text,
     "anEnum" bigint,
     "aStringifiedEnum" text
@@ -778,6 +779,42 @@ CREATE TABLE "unique_data" (
 
 -- Indexes
 CREATE UNIQUE INDEX "email_index_idx" ON "unique_data" USING btree ("email");
+
+--
+-- Class UriDefault as table uri_default
+--
+CREATE TABLE "uri_default" (
+    "id" bigserial PRIMARY KEY,
+    "uriDefault" text NOT NULL DEFAULT 'https://serverpod.dev/default'::text,
+    "uriDefaultNull" text DEFAULT 'https://serverpod.dev/default'::text
+);
+
+--
+-- Class UriDefaultMix as table uri_default_mix
+--
+CREATE TABLE "uri_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "uriDefaultAndDefaultModel" text NOT NULL DEFAULT 'https://serverpod.dev/default'::text,
+    "uriDefaultAndDefaultPersist" text NOT NULL DEFAULT 'https://serverpod.dev/defaultPersist'::text,
+    "uriDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'https://serverpod.dev/defaultPersist'::text
+);
+
+--
+-- Class UriDefaultModel as table uri_default_model
+--
+CREATE TABLE "uri_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "uriDefaultModel" text NOT NULL,
+    "uriDefaultModelNull" text
+);
+
+--
+-- Class UriDefaultPersist as table uri_default_persist
+--
+CREATE TABLE "uri_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "uriDefaultPersist" text DEFAULT 'https://serverpod.dev/'::text
+);
 
 --
 -- Class UserNote as table user_note
@@ -1497,9 +1534,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250130095232958', now())
+    VALUES ('serverpod_test', '20250206150436631', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250130095232958', "timestamp" = now();
+    DO UPDATE SET "version" = '20250206150436631', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

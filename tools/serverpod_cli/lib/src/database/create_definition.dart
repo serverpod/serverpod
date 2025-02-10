@@ -157,6 +157,8 @@ String? _getColumnDefault(
         return 'gen_random_uuid()';
       }
       return '${_escapeSqlString(defaultValue)}::uuid';
+    case DefaultValueAllowedType.uri:
+      return '${_escapeSqlString(defaultValue)}::text';
     case DefaultValueAllowedType.bigInt:
       var parsedBigInt = BigInt.parse(defaultValue);
       return "'${parsedBigInt.toString()}'::text";

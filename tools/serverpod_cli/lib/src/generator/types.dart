@@ -277,6 +277,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
+    if (className == 'Uri') return 'text';
     if (className == 'BigInt') return 'text';
 
     return 'json';
@@ -300,6 +301,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
+    if (className == 'Uri') return 'ColumnUri';
     if (className == 'BigInt') return 'ColumnBigInt';
 
     return 'ColumnSerializable';
@@ -337,14 +339,14 @@ class TypeDefinition {
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null) as dynamic')
+                        ':null) as T')
                   ])
                 : Block.of([
                     const Code('(data as List).map((e) =>'
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
                   ])
           ]),
         ),
@@ -370,7 +372,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v)))' ':null) as dynamic')
+                        const Code('>(v)))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -381,7 +383,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v))) as dynamic')
+                        const Code('>(v))) as T')
                       ])
                 : // Key is not String -> stored as list of map entries
                 nullable
@@ -395,7 +397,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\']))))' ':null) as dynamic')
+                        const Code('>(e[\'v\']))))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -406,7 +408,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\'])))) as dynamic')
+                        const Code('>(e[\'v\'])))) as T')
                       ])
           ]),
         ),
@@ -472,6 +474,7 @@ class TypeDefinition {
     if (className == 'bool') return ValueType.bool;
     if (className == 'DateTime') return ValueType.dateTime;
     if (className == 'Duration') return ValueType.duration;
+    if (className == 'Uri') return ValueType.uri;
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'BigInt') return ValueType.bigInt;
@@ -495,6 +498,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.double;
       case ValueType.string:
         return DefaultValueAllowedType.string;
+      case ValueType.uri:
+        return DefaultValueAllowedType.uri;
       case ValueType.uuidValue:
         return DefaultValueAllowedType.uuidValue;
       case ValueType.bigInt:
@@ -593,7 +598,8 @@ enum ValueType {
   set,
   map,
   isEnum,
-  classType;
+  classType,
+  uri;
 }
 
 enum DefaultValueAllowedType {
@@ -605,5 +611,6 @@ enum DefaultValueAllowedType {
   uuidValue,
   bigInt,
   duration,
+  uri,
   isEnum,
 }

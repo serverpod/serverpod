@@ -124,18 +124,18 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List)
               .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     if (t == List<_i6.ChatMessage>) {
       return (data as List).map((e) => deserialize<_i6.ChatMessage>(e)).toList()
-          as dynamic;
+          as T;
     }
     if (t == _i1.getType<List<_i7.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
               .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     try {
       return _i13.Protocol().deserialize<T>(data, t);

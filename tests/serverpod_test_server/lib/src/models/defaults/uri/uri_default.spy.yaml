@@ -1,0 +1,5 @@
+class: UriDefault
+table: uri_default
+fields:
+  uriDefault: Uri, default='https://serverpod.dev/default'
+  uriDefaultNull: Uri?, default='https://serverpod.dev/default'
