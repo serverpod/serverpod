@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:async/async.dart';
 
+import 'package:async/async.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class MethodStreaming extends Endpoint {
@@ -174,6 +175,71 @@ class MethodStreaming extends Endpoint {
     Stream<SimpleData> simpleDataStream,
   ) async* {
     await for (var data in simpleDataStream) {
+      yield data;
+    }
+  }
+
+  Stream<List<int>> simpleListInOutIntStream(
+    Session session,
+    Stream<List<int>> simpleDataListStream,
+  ) async* {
+    await for (var data in simpleDataListStream) {
+      yield data;
+    }
+  }
+
+  Stream<List<SimpleData>> simpleListInOutDataStream(
+    Session session,
+    Stream<List<SimpleData>> simpleDataListStream,
+  ) async* {
+    await for (var data in simpleDataListStream) {
+      yield data;
+    }
+  }
+
+  Stream<List<UserInfo>> simpleListInOutOtherModuleTypeStream(
+    Session session,
+    Stream<List<UserInfo>> userInfoListStream,
+  ) async* {
+    await for (var data in userInfoListStream) {
+      yield data;
+    }
+  }
+
+  Stream<List<SimpleData>?> simpleNullableListInOutNullableDataStream(
+    Session session,
+    Stream<List<SimpleData>?> simpleDataListStream,
+  ) async* {
+    await for (var data in simpleDataListStream) {
+      yield data;
+    }
+  }
+
+  Stream<List<SimpleData?>> simpleListInOutNullableDataStream(
+    Session session,
+    Stream<List<SimpleData?>> simpleDataListStream,
+  ) async* {
+    await for (var data in simpleDataListStream) {
+      yield data;
+    }
+  }
+
+  Stream<Set<int>> simpleSetInOutIntStream(
+    Session session,
+    Stream<Set<int>> simpleDataSetStream,
+  ) async* {
+    await for (var data in simpleDataSetStream) {
+      print('returning $data');
+      yield data;
+    }
+  }
+
+  Stream<Set<SimpleData>> simpleSetInOutDataStream(
+    Session session,
+    Stream<Set<SimpleData>> simpleDataSetStream,
+  ) async* {
+    await for (var data in simpleDataSetStream) {
+      print('returning $data');
       yield data;
     }
   }

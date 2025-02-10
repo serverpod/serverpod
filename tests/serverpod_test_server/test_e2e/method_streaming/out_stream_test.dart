@@ -1,3 +1,5 @@
+// import 'package:serverpod_auth_server/serverpod_auth_server.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' show UserInfo;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
@@ -73,6 +75,191 @@ void main() {
     await expectLater(
       stream,
       emitsError(isA<ConnectionClosedException>()),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream of lists of integers, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleListInOutIntStream(
+          Stream.fromIterable([
+            [1, 2, 3],
+            [4, 5, 6],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        [1, 2, 3],
+        [4, 5, 6],
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream of nullable lists of data objects, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleNullableListInOutNullableDataStream(
+          Stream.fromIterable([
+            [SimpleData(num: 1), SimpleData(num: 2)],
+            null,
+            [SimpleData(num: 3), SimpleData(num: 4)],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        [
+          isA<SimpleData>().having((s) => s.num, 'num', 1),
+          isA<SimpleData>().having((s) => s.num, 'num', 2),
+        ],
+        isNull,
+        [
+          isA<SimpleData>().having((s) => s.num, 'num', 3),
+          isA<SimpleData>().having((s) => s.num, 'num', 4),
+        ],
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream lists of nullable data objects, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleListInOutNullableDataStream(
+          Stream.fromIterable([
+            [SimpleData(num: 1), null, SimpleData(num: 2)],
+            [null, SimpleData(num: 3), null, SimpleData(num: 4), null],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        [
+          isA<SimpleData>().having((s) => s.num, 'num', 1),
+          isNull,
+          isA<SimpleData>().having((s) => s.num, 'num', 2),
+        ],
+        [
+          isNull,
+          isA<SimpleData>().having((s) => s.num, 'num', 3),
+          isNull,
+          isA<SimpleData>().having((s) => s.num, 'num', 4),
+          isNull,
+        ],
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream lists of `UserInfo` objects (type from another module), when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleListInOutOtherModuleTypeStream(
+          Stream.fromIterable([
+            [
+              UserInfo(
+                userIdentifier: 'my_user',
+                created: DateTime.utc(2025),
+                scopeNames: [],
+                blocked: false,
+              ),
+            ],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        [
+          isA<UserInfo>()
+              .having((s) => s.userIdentifier, 'userIdentifier', 'my_user'),
+        ],
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream of lists of data objects, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleListInOutDataStream(
+          Stream.fromIterable([
+            [SimpleData(num: 1), SimpleData(num: 2)],
+            [SimpleData(num: 3), SimpleData(num: 4)],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        [
+          isA<SimpleData>().having((s) => s.num, 'num', 1),
+          isA<SimpleData>().having((s) => s.num, 'num', 2),
+        ],
+        [
+          isA<SimpleData>().having((s) => s.num, 'num', 3),
+          isA<SimpleData>().having((s) => s.num, 'num', 4),
+        ],
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream of sets of integers, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleSetInOutIntStream(
+          Stream.fromIterable([
+            {1, 2, 3},
+            {4, 5, 6},
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        {1, 2, 3},
+        {4, 5, 6},
+      ]),
+    );
+  });
+
+  test(
+      'Given a streaming method that echoes a stream of sets of data objects, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .simpleSetInOutDataStream(
+          Stream.fromIterable([
+            {SimpleData(num: 1), SimpleData(num: 2)},
+            {SimpleData(num: 3), SimpleData(num: 4)},
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        {
+          isA<SimpleData>().having((s) => s.num, 'num', 1),
+          isA<SimpleData>().having((s) => s.num, 'num', 2),
+        },
+        {
+          isA<SimpleData>().having((s) => s.num, 'num', 3),
+          isA<SimpleData>().having((s) => s.num, 'num', 4),
+        },
+      ]),
     );
   });
 }

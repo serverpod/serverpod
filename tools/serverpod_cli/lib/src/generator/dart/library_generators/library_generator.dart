@@ -52,6 +52,17 @@ class LibraryGenerator {
 
     var protocol = ClassBuilder();
 
+    var topLevelContainerTypes = <TypeDefinition>[];
+    for (var method in protocolDefinition.endpoints.expand((e) => e.methods)) {
+      if (method.returnType.isFutureType || method.returnType.isStreamType) {
+        if (method.returnType.generics.first.isSetType ||
+            method.returnType.generics.first.isListType ||
+            method.returnType.generics.first.isMapType) {
+          topLevelContainerTypes.add(method.returnType.generics.first);
+        }
+      }
+    }
+
     protocol
       ..name = 'Protocol'
       ..extend = serverCode
@@ -217,6 +228,15 @@ class LibraryGenerator {
           for (var module in config.modules)
             _buildGetClassNameForObjectDelegation(
                 module.dartImportUrl(serverCode), module.name),
+          for (var topLevelContainerType in topLevelContainerTypes)
+            Block.of([
+              const Code('if(data is '),
+              topLevelContainerType.reference(serverCode, config: config).code,
+              const Code(') {'),
+              Code(
+                  'return \'${topLevelContainerType.classNameWithGenerics}\';'),
+              const Code('}'),
+            ]),
           const Code('return null;'),
         ])),
       Method((m) => m
@@ -247,6 +267,14 @@ class LibraryGenerator {
               module.dartImportUrl(serverCode),
               module.name,
             ),
+          for (final topLevelContainerTypes in topLevelContainerTypes) ...[
+            Code(
+                "if (dataClassName == '${topLevelContainerTypes.classNameWithGenerics}') {"),
+            const Code('return deserialize<'),
+            topLevelContainerTypes.reference(serverCode, config: config).code,
+            const Code('>(data[\'data\']);'),
+            const Code('}'),
+          ],
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
@@ -1009,6 +1037,16 @@ class LibraryGenerator {
     } else {
       return refer('params').index(literalString(param.name));
     }
+  }
+}
+
+extension on TypeDefinition {
+  /// Returns the class name with generic parameters (without any formatting whitespace),
+  /// but strips all import path for a succinct representation.
+  ///
+  /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
+  String get classNameWithGenerics {
+    return '$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenerics).join(',')}>' : ''}${nullable ? '?' : ''}';
   }
 }
 
