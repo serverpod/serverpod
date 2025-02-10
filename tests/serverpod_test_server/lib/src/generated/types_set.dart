@@ -53,51 +53,77 @@ abstract class TypesSet
 
   factory TypesSet.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesSet(
-      anInt:
-          (jsonSerialization['anInt'] as List?)?.map((e) => e as int).toSet(),
-      aBool:
-          (jsonSerialization['aBool'] as List?)?.map((e) => e as bool).toSet(),
-      aDouble: (jsonSerialization['aDouble'] as List?)
-          ?.map((e) => (e as num).toDouble())
-          .toSet(),
-      aDateTime: (jsonSerialization['aDateTime'] as List?)
-          ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
-          .toSet(),
-      aString: (jsonSerialization['aString'] as List?)
-          ?.map((e) => e as String)
-          .toSet(),
-      aByteData: (jsonSerialization['aByteData'] as List?)
-          ?.map((e) => _i1.ByteDataJsonExtension.fromJson(e))
-          .toSet(),
-      aDuration: (jsonSerialization['aDuration'] as List?)
-          ?.map((e) => _i1.DurationJsonExtension.fromJson(e))
-          .toSet(),
-      aUuid: (jsonSerialization['aUuid'] as List?)
-          ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
-          .toSet(),
-      aBigInt: (jsonSerialization['aBigInt'] as List?)
-          ?.map((e) => _i1.BigIntJsonExtension.fromJson(e))
-          .toSet(),
-      anEnum: (jsonSerialization['anEnum'] as List?)
-          ?.map((e) => _i3.TestEnum.fromJson((e as int)))
-          .toSet(),
-      aStringifiedEnum: (jsonSerialization['aStringifiedEnum'] as List?)
-          ?.map((e) => _i4.TestEnumStringified.fromJson((e as String)))
-          .toSet(),
-      anObject: (jsonSerialization['anObject'] as List?)
-          ?.map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-          .toSet(),
-      aMap: (jsonSerialization['aMap'] as List?)
-          ?.map((e) => (e as Map).map((k, v) => MapEntry(
-                k as String,
-                _i5.Types.fromJson((v as Map<String, dynamic>)),
-              )))
-          .toSet(),
-      aList: (jsonSerialization['aList'] as List?)
-          ?.map((e) => (e as List)
-              .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-              .toList())
-          .toSet(),
+      anInt: jsonSerialization['anInt'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['anInt'] as List),
+              itemFromJson: (e) => e as int),
+      aBool: jsonSerialization['aBool'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aBool'] as List),
+              itemFromJson: (e) => e as bool),
+      aDouble: jsonSerialization['aDouble'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aDouble'] as List),
+              itemFromJson: (e) => (e as num).toDouble()),
+      aDateTime: jsonSerialization['aDateTime'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aDateTime'] as List),
+              itemFromJson: (e) => _i1.DateTimeJsonExtension.fromJson(e)),
+      aString: jsonSerialization['aString'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aString'] as List),
+              itemFromJson: (e) => e as String),
+      aByteData: jsonSerialization['aByteData'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aByteData'] as List),
+              itemFromJson: (e) => _i1.ByteDataJsonExtension.fromJson(e)),
+      aDuration: jsonSerialization['aDuration'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aDuration'] as List),
+              itemFromJson: (e) => _i1.DurationJsonExtension.fromJson(e)),
+      aUuid: jsonSerialization['aUuid'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aUuid'] as List),
+              itemFromJson: (e) => _i1.UuidValueJsonExtension.fromJson(e)),
+      aBigInt: jsonSerialization['aBigInt'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aBigInt'] as List),
+              itemFromJson: (e) => _i1.BigIntJsonExtension.fromJson(e)),
+      anEnum: jsonSerialization['anEnum'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['anEnum'] as List),
+              itemFromJson: (e) => _i3.TestEnum.fromJson((e as int))),
+      aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aStringifiedEnum'] as List),
+              itemFromJson: (e) =>
+                  _i4.TestEnumStringified.fromJson((e as String))),
+      anObject: jsonSerialization['anObject'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['anObject'] as List),
+              itemFromJson: (e) =>
+                  _i5.Types.fromJson((e as Map<String, dynamic>))),
+      aMap: jsonSerialization['aMap'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aMap'] as List),
+              itemFromJson: (e) => (e as Map).map((k, v) => MapEntry(
+                    k as String,
+                    _i5.Types.fromJson((v as Map<String, dynamic>)),
+                  ))),
+      aList: jsonSerialization['aList'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aList'] as List),
+              itemFromJson: (e) => (e as List)
+                  .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
+                  .toList()),
     );
   }
 

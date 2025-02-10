@@ -84,7 +84,10 @@ abstract class Types implements _i1.SerializableModel {
           (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
       aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
           {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
-      aSet: (jsonSerialization['aSet'] as List?)?.map((e) => e as int).toSet(),
+      aSet: jsonSerialization['aSet'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
+              itemFromJson: (e) => e as int),
     );
   }
 
