@@ -78,8 +78,7 @@ void main() {
   test(
       'Given a class with only nullable fields with a Uuid defined when calling toJsonForProtocol then the key and value is set.',
       () {
-    // ignore: deprecated_member_use
-    var types = Types(aUuid: UuidValue.nil);
+    var types = Types(aUuid: Namespace.nil.uuidValue);
 
     var jsonMap = types.toJsonForProtocol();
 
@@ -226,8 +225,7 @@ void main() {
       'Given a class with a List with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
       () {
     var object = TypesList(
-      // ignore: deprecated_member_use
-      aUuid: [UuidValue.nil],
+      aUuid: [Namespace.nil.uuidValue],
     );
 
     var jsonMap = object.toJsonForProtocol();
@@ -384,8 +382,7 @@ void main() {
         'Given a class with a Set with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
         () {
       var object = TypesSet(
-        // ignore: deprecated_member_use
-        aUuid: {UuidValue.nil},
+        aUuid: {Namespace.nil.uuidValue},
       );
 
       var jsonMap = object.toJsonForProtocol();
@@ -543,8 +540,7 @@ void main() {
         'Given a class with a Map with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        // ignore: deprecated_member_use
-        aUuidValue: {'key': UuidValue.nil},
+        aUuidValue: {'key': Namespace.nil.uuidValue},
       );
 
       var jsonMap = object.toJsonForProtocol();
@@ -715,8 +711,7 @@ void main() {
         'Given a class with a Map with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        // ignore: deprecated_member_use
-        aUuidKey: {UuidValue.nil: 'value'},
+        aUuidKey: {Namespace.nil.uuidValue: 'value'},
       );
 
       var jsonMap = object.toJsonForProtocol();
