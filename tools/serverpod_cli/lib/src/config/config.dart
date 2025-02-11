@@ -79,6 +79,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
+    this.configuredDefaultIdType,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
@@ -206,6 +207,13 @@ class GeneratorConfig implements ModelLoadConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// User defined default type for primary keys.
+  final SupportedIdType? configuredDefaultIdType;
+
+  /// The default id type for the project.
+  SupportedIdType get defaultIdType =>
+      configuredDefaultIdType ?? SupportedIdType.int;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -377,6 +385,11 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    String? defaultIdTypeName = generatorConfig['defaultIdType'];
+    SupportedIdType? defaultIdType = (defaultIdTypeName != null)
+        ? SupportedIdType.fromString(defaultIdTypeName)
+        : null;
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -388,6 +401,7 @@ class GeneratorConfig implements ModelLoadConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
+      configuredDefaultIdType: defaultIdType,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
     );
@@ -528,7 +542,7 @@ name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
 serverPackage: $serverPackage
-migrationVersions: $migrationVersions 
+migrationVersions: $migrationVersions
 ''';
   }
 }

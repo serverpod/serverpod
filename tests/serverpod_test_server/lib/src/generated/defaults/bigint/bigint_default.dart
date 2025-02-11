@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BigIntDefault
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   BigIntDefault._({
     this.id,
     BigInt? bigintDefaultStr,
@@ -52,7 +52,7 @@ abstract class BigIntDefault
   BigInt? bigintDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +144,7 @@ class _BigIntDefaultImpl extends BigIntDefault {
   }
 }
 
-class BigIntDefaultTable extends _i1.Table {
+class BigIntDefaultTable extends _i1.Table<int> {
   BigIntDefaultTable({super.tableRelation})
       : super(tableName: 'bigint_default') {
     bigintDefaultStr = _i1.ColumnBigInt(
@@ -178,7 +178,7 @@ class BigIntDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => BigIntDefault.t;
+  _i1.Table<int> get table => BigIntDefault.t;
 }
 
 class BigIntDefaultIncludeList extends _i1.IncludeList {
@@ -198,7 +198,7 @@ class BigIntDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => BigIntDefault.t;
+  _i1.Table<int> get table => BigIntDefault.t;
 }
 
 class BigIntDefaultRepository {
@@ -236,7 +236,7 @@ class BigIntDefaultRepository {
     _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<BigIntDefault>(
+    return session.db.find<int, BigIntDefault>(
       where: where?.call(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -273,7 +273,7 @@ class BigIntDefaultRepository {
     _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<BigIntDefault>(
+    return session.db.findFirstRow<int, BigIntDefault>(
       where: where?.call(BigIntDefault.t),
       orderBy: orderBy?.call(BigIntDefault.t),
       orderByList: orderByList?.call(BigIntDefault.t),
@@ -289,7 +289,7 @@ class BigIntDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BigIntDefault>(
+    return session.db.findById<int, BigIntDefault>(
       id,
       transaction: transaction,
     );
@@ -306,7 +306,7 @@ class BigIntDefaultRepository {
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BigIntDefault>(
+    return session.db.insert<int, BigIntDefault>(
       rows,
       transaction: transaction,
     );
@@ -320,7 +320,7 @@ class BigIntDefaultRepository {
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BigIntDefault>(
+    return session.db.insertRow<int, BigIntDefault>(
       row,
       transaction: transaction,
     );
@@ -337,7 +337,7 @@ class BigIntDefaultRepository {
     _i1.ColumnSelections<BigIntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<BigIntDefault>(
+    return session.db.update<int, BigIntDefault>(
       rows,
       columns: columns?.call(BigIntDefault.t),
       transaction: transaction,
@@ -353,7 +353,7 @@ class BigIntDefaultRepository {
     _i1.ColumnSelections<BigIntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<BigIntDefault>(
+    return session.db.updateRow<int, BigIntDefault>(
       row,
       columns: columns?.call(BigIntDefault.t),
       transaction: transaction,
@@ -368,7 +368,7 @@ class BigIntDefaultRepository {
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BigIntDefault>(
+    return session.db.delete<int, BigIntDefault>(
       rows,
       transaction: transaction,
     );
@@ -380,7 +380,7 @@ class BigIntDefaultRepository {
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BigIntDefault>(
+    return session.db.deleteRow<int, BigIntDefault>(
       row,
       transaction: transaction,
     );
@@ -392,7 +392,7 @@ class BigIntDefaultRepository {
     required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<BigIntDefault>(
+    return session.db.deleteWhere<int, BigIntDefault>(
       where: where(BigIntDefault.t),
       transaction: transaction,
     );
@@ -406,7 +406,7 @@ class BigIntDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<BigIntDefault>(
+    return session.db.count<int, BigIntDefault>(
       where: where?.call(BigIntDefault.t),
       limit: limit,
       transaction: transaction,

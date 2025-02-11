@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -60,7 +61,7 @@ class TypeDefinition {
 
   bool get isMapType => className == 'Map';
 
-  bool get isIdType => className == 'int';
+  bool get isIdType => SupportedIdType.all.any((e) => e.className == className);
 
   bool get isVoidType => className == 'void';
 
@@ -136,9 +137,14 @@ class TypeDefinition {
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [TypeDefinition] of a non null int
   /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
+
+  /// A convenience variable for getting a [TypeDefinition] of a non null
+  /// UuidValue quickly.
+  static TypeDefinition uuid =
+      TypeDefinition(className: 'UuidValue', nullable: false);
 
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
@@ -519,6 +525,67 @@ class TypeDefinition {
     var nullableString = nullable ? '?' : '';
     var urlString = url != null ? '$url:' : '';
     return '$urlString$className$genericsString$nullableString';
+  }
+}
+
+/// Supported ID type definitions.
+/// All configuration to support other types is done only on this class. For
+/// new variants of id types, add a new static getter and update the [all]
+/// getter. For different types, it is necessary to also update the `Table`
+/// constructor at `packages:serverpod/src/database/concepts/table.dart`.
+class SupportedIdType {
+  const SupportedIdType({
+    required this.type,
+    required this.aliases,
+    required this.dbColumnDefaultBuilder,
+  });
+
+  /// The supported id type.
+  final TypeDefinition type;
+
+  /// The aliases for the id type as exposed to the user. Supports multiple,
+  /// even though it is not recommended to use more than one to avoid confusion.
+  final List<String> aliases;
+
+  /// A builder for the default value for the column on the database definition.
+  final String Function(String tableName) dbColumnDefaultBuilder;
+
+  /// The class name of the id type.
+  String get className => type.className;
+
+  /// If no id type is specified, the default id type is [int].
+  static SupportedIdType get int => SupportedIdType(
+        type: TypeDefinition.int,
+        aliases: ['int'],
+        dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
+      );
+
+  static SupportedIdType get uuidV4 => SupportedIdType(
+        type: TypeDefinition.uuid,
+        aliases: ['uuidV4'],
+        dbColumnDefaultBuilder: (_) => defaultUuidValueRandom,
+      );
+
+  static SupportedIdType get uuidV7 => SupportedIdType(
+        type: TypeDefinition.uuid,
+        aliases: ['uuidV7'],
+        dbColumnDefaultBuilder: (_) => defaultUuidValueRandomV7,
+      );
+
+  /// All supported id types.
+  static List<SupportedIdType> get all => [int, uuidV4, uuidV7];
+
+  /// All aliases exposed to the user.
+  static List<String> get userOptions => all.expand((e) => e.aliases).toList();
+
+  /// Get the [SupportedIdType] from a valid string alias. If the input is
+  /// invalid, will throw a [FormatException].
+  static SupportedIdType fromString(String input) {
+    for (var idType in all) {
+      if (idType.aliases.contains(input)) return idType;
+    }
+    var options = all.map((e) => "'${e.aliases.join("'|'")}'").join(', ');
+    throw FormatException('Invalid id type $input. Valid options: $options.');
   }
 }
 

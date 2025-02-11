@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class AuthKey implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   AuthKey._({
     this.id,
     required this.userId,
@@ -68,7 +68,7 @@ abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
   String method;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
@@ -177,7 +177,7 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
-class AuthKeyTable extends _i1.Table {
+class AuthKeyTable extends _i1.Table<int> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
     userId = _i1.ColumnInt(
       'userId',
@@ -227,7 +227,7 @@ class AuthKeyInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => AuthKey.t;
+  _i1.Table<int> get table => AuthKey.t;
 }
 
 class AuthKeyIncludeList extends _i1.IncludeList {
@@ -247,7 +247,7 @@ class AuthKeyIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => AuthKey.t;
+  _i1.Table<int> get table => AuthKey.t;
 }
 
 class AuthKeyRepository {
@@ -285,7 +285,7 @@ class AuthKeyRepository {
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<AuthKey>(
+    return session.db.find<int, AuthKey>(
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -322,7 +322,7 @@ class AuthKeyRepository {
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<AuthKey>(
+    return session.db.findFirstRow<int, AuthKey>(
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -338,7 +338,7 @@ class AuthKeyRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<AuthKey>(
+    return session.db.findById<int, AuthKey>(
       id,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<AuthKey>(
+    return session.db.insert<int, AuthKey>(
       rows,
       transaction: transaction,
     );
@@ -369,7 +369,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<AuthKey>(
+    return session.db.insertRow<int, AuthKey>(
       row,
       transaction: transaction,
     );
@@ -386,7 +386,7 @@ class AuthKeyRepository {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<AuthKey>(
+    return session.db.update<int, AuthKey>(
       rows,
       columns: columns?.call(AuthKey.t),
       transaction: transaction,
@@ -402,7 +402,7 @@ class AuthKeyRepository {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<AuthKey>(
+    return session.db.updateRow<int, AuthKey>(
       row,
       columns: columns?.call(AuthKey.t),
       transaction: transaction,
@@ -417,7 +417,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<AuthKey>(
+    return session.db.delete<int, AuthKey>(
       rows,
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<AuthKey>(
+    return session.db.deleteRow<int, AuthKey>(
       row,
       transaction: transaction,
     );
@@ -441,7 +441,7 @@ class AuthKeyRepository {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<AuthKey>(
+    return session.db.deleteWhere<int, AuthKey>(
       where: where(AuthKey.t),
       transaction: transaction,
     );
@@ -455,7 +455,7 @@ class AuthKeyRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<AuthKey>(
+    return session.db.count<int, AuthKey>(
       where: where?.call(AuthKey.t),
       limit: limit,
       transaction: transaction,

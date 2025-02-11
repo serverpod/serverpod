@@ -16,10 +16,12 @@ abstract class UuidDefault implements _i1.SerializableModel {
   UuidDefault._({
     this.id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
   })  : uuidDefaultRandom = uuidDefaultRandom ?? _i2.Uuid().v4obj(),
+        uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? _i2.Uuid().v7obj(),
         uuidDefaultRandomNull = uuidDefaultRandomNull ?? _i2.Uuid().v4obj(),
         uuidDefaultStr = uuidDefaultStr ??
             _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
@@ -29,6 +31,7 @@ abstract class UuidDefault implements _i1.SerializableModel {
   factory UuidDefault({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
@@ -39,6 +42,8 @@ abstract class UuidDefault implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       uuidDefaultRandom: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['uuidDefaultRandom']),
+      uuidDefaultRandomV7: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['uuidDefaultRandomV7']),
       uuidDefaultRandomNull: jsonSerialization['uuidDefaultRandomNull'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
@@ -59,6 +64,8 @@ abstract class UuidDefault implements _i1.SerializableModel {
 
   _i1.UuidValue uuidDefaultRandom;
 
+  _i1.UuidValue uuidDefaultRandomV7;
+
   _i1.UuidValue? uuidDefaultRandomNull;
 
   _i1.UuidValue uuidDefaultStr;
@@ -71,6 +78,7 @@ abstract class UuidDefault implements _i1.SerializableModel {
   UuidDefault copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
@@ -80,6 +88,7 @@ abstract class UuidDefault implements _i1.SerializableModel {
     return {
       if (id != null) 'id': id,
       'uuidDefaultRandom': uuidDefaultRandom.toJson(),
+      'uuidDefaultRandomV7': uuidDefaultRandomV7.toJson(),
       if (uuidDefaultRandomNull != null)
         'uuidDefaultRandomNull': uuidDefaultRandomNull?.toJson(),
       'uuidDefaultStr': uuidDefaultStr.toJson(),
@@ -100,12 +109,14 @@ class _UuidDefaultImpl extends UuidDefault {
   _UuidDefaultImpl({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
   }) : super._(
           id: id,
           uuidDefaultRandom: uuidDefaultRandom,
+          uuidDefaultRandomV7: uuidDefaultRandomV7,
           uuidDefaultRandomNull: uuidDefaultRandomNull,
           uuidDefaultStr: uuidDefaultStr,
           uuidDefaultStrNull: uuidDefaultStrNull,
@@ -118,6 +129,7 @@ class _UuidDefaultImpl extends UuidDefault {
   UuidDefault copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     Object? uuidDefaultRandomNull = _Undefined,
     _i1.UuidValue? uuidDefaultStr,
     Object? uuidDefaultStrNull = _Undefined,
@@ -125,6 +137,7 @@ class _UuidDefaultImpl extends UuidDefault {
     return UuidDefault(
       id: id is int? ? id : this.id,
       uuidDefaultRandom: uuidDefaultRandom ?? this.uuidDefaultRandom,
+      uuidDefaultRandomV7: uuidDefaultRandomV7 ?? this.uuidDefaultRandomV7,
       uuidDefaultRandomNull: uuidDefaultRandomNull is _i1.UuidValue?
           ? uuidDefaultRandomNull
           : this.uuidDefaultRandomNull,

@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class MethodInfo
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   MethodInfo._({
     this.id,
     required this.endpoint,
@@ -47,7 +48,7 @@ abstract class MethodInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   String method;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
@@ -135,7 +136,7 @@ class _MethodInfoImpl extends MethodInfo {
   }
 }
 
-class MethodInfoTable extends _i1.Table {
+class MethodInfoTable extends _i1.Table<int> {
   MethodInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_method') {
     endpoint = _i1.ColumnString(
@@ -169,7 +170,7 @@ class MethodInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MethodInfo.t;
+  _i1.Table<int> get table => MethodInfo.t;
 }
 
 class MethodInfoIncludeList extends _i1.IncludeList {
@@ -189,7 +190,7 @@ class MethodInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MethodInfo.t;
+  _i1.Table<int> get table => MethodInfo.t;
 }
 
 class MethodInfoRepository {
@@ -227,7 +228,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<MethodInfo>(
+    return session.db.find<int, MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -264,7 +265,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<MethodInfo>(
+    return session.db.findFirstRow<int, MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -280,7 +281,7 @@ class MethodInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<MethodInfo>(
+    return session.db.findById<int, MethodInfo>(
       id,
       transaction: transaction,
     );
@@ -297,7 +298,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MethodInfo>(
+    return session.db.insert<int, MethodInfo>(
       rows,
       transaction: transaction,
     );
@@ -311,7 +312,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MethodInfo>(
+    return session.db.insertRow<int, MethodInfo>(
       row,
       transaction: transaction,
     );
@@ -328,7 +329,7 @@ class MethodInfoRepository {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<MethodInfo>(
+    return session.db.update<int, MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
@@ -344,7 +345,7 @@ class MethodInfoRepository {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<MethodInfo>(
+    return session.db.updateRow<int, MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
@@ -359,7 +360,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MethodInfo>(
+    return session.db.delete<int, MethodInfo>(
       rows,
       transaction: transaction,
     );
@@ -371,7 +372,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MethodInfo>(
+    return session.db.deleteRow<int, MethodInfo>(
       row,
       transaction: transaction,
     );
@@ -383,7 +384,7 @@ class MethodInfoRepository {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<MethodInfo>(
+    return session.db.deleteWhere<int, MethodInfo>(
       where: where(MethodInfo.t),
       transaction: transaction,
     );
@@ -397,7 +398,7 @@ class MethodInfoRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<MethodInfo>(
+    return session.db.count<int, MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
       transaction: transaction,

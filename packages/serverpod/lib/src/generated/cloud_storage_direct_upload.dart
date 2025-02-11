@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -62,7 +62,7 @@ abstract class CloudStorageDirectUploadEntry
   String authKey;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +164,7 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
   }
 }
 
-class CloudStorageDirectUploadEntryTable extends _i1.Table {
+class CloudStorageDirectUploadEntryTable extends _i1.Table<int> {
   CloudStorageDirectUploadEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage_direct_upload') {
     storageId = _i1.ColumnString(
@@ -214,7 +214,7 @@ class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => CloudStorageDirectUploadEntry.t;
+  _i1.Table<int> get table => CloudStorageDirectUploadEntry.t;
 }
 
 class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
@@ -234,7 +234,7 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => CloudStorageDirectUploadEntry.t;
+  _i1.Table<int> get table => CloudStorageDirectUploadEntry.t;
 }
 
 class CloudStorageDirectUploadEntryRepository {
@@ -272,7 +272,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<CloudStorageDirectUploadEntry>(
+    return session.db.find<int, CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -309,7 +309,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<CloudStorageDirectUploadEntry>(
+    return session.db.findFirstRow<int, CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -325,7 +325,7 @@ class CloudStorageDirectUploadEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<CloudStorageDirectUploadEntry>(
+    return session.db.findById<int, CloudStorageDirectUploadEntry>(
       id,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class CloudStorageDirectUploadEntryRepository {
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CloudStorageDirectUploadEntry>(
+    return session.db.insert<int, CloudStorageDirectUploadEntry>(
       rows,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class CloudStorageDirectUploadEntryRepository {
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CloudStorageDirectUploadEntry>(
+    return session.db.insertRow<int, CloudStorageDirectUploadEntry>(
       row,
       transaction: transaction,
     );
@@ -373,7 +373,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CloudStorageDirectUploadEntry>(
+    return session.db.update<int, CloudStorageDirectUploadEntry>(
       rows,
       columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
@@ -389,7 +389,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CloudStorageDirectUploadEntry>(
+    return session.db.updateRow<int, CloudStorageDirectUploadEntry>(
       row,
       columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
@@ -404,7 +404,7 @@ class CloudStorageDirectUploadEntryRepository {
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CloudStorageDirectUploadEntry>(
+    return session.db.delete<int, CloudStorageDirectUploadEntry>(
       rows,
       transaction: transaction,
     );
@@ -416,7 +416,7 @@ class CloudStorageDirectUploadEntryRepository {
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CloudStorageDirectUploadEntry>(
+    return session.db.deleteRow<int, CloudStorageDirectUploadEntry>(
       row,
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class CloudStorageDirectUploadEntryRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CloudStorageDirectUploadEntry>(
+    return session.db.deleteWhere<int, CloudStorageDirectUploadEntry>(
       where: where(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
@@ -443,7 +443,7 @@ class CloudStorageDirectUploadEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CloudStorageDirectUploadEntry>(
+    return session.db.count<int, CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       limit: limit,
       transaction: transaction,

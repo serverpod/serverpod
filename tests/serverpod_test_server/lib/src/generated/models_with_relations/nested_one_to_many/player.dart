@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Player implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Player implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Player._({
     this.id,
     required this.name,
@@ -53,7 +53,7 @@ abstract class Player implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Team? team;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +148,7 @@ class _PlayerImpl extends Player {
   }
 }
 
-class PlayerTable extends _i1.Table {
+class PlayerTable extends _i1.Table<int> {
   PlayerTable({super.tableRelation}) : super(tableName: 'player') {
     name = _i1.ColumnString(
       'name',
@@ -206,7 +206,7 @@ class PlayerInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table get table => Player.t;
+  _i1.Table<int> get table => Player.t;
 }
 
 class PlayerIncludeList extends _i1.IncludeList {
@@ -226,7 +226,7 @@ class PlayerIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Player.t;
+  _i1.Table<int> get table => Player.t;
 }
 
 class PlayerRepository {
@@ -269,7 +269,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.find<Player>(
+    return session.db.find<int, Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -308,7 +308,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.findFirstRow<Player>(
+    return session.db.findFirstRow<int, Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -326,7 +326,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.findById<Player>(
+    return session.db.findById<int, Player>(
       id,
       transaction: transaction,
       include: include,
@@ -344,7 +344,7 @@ class PlayerRepository {
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Player>(
+    return session.db.insert<int, Player>(
       rows,
       transaction: transaction,
     );
@@ -358,7 +358,7 @@ class PlayerRepository {
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Player>(
+    return session.db.insertRow<int, Player>(
       row,
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class PlayerRepository {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Player>(
+    return session.db.update<int, Player>(
       rows,
       columns: columns?.call(Player.t),
       transaction: transaction,
@@ -391,7 +391,7 @@ class PlayerRepository {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Player>(
+    return session.db.updateRow<int, Player>(
       row,
       columns: columns?.call(Player.t),
       transaction: transaction,
@@ -406,7 +406,7 @@ class PlayerRepository {
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Player>(
+    return session.db.delete<int, Player>(
       rows,
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class PlayerRepository {
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Player>(
+    return session.db.deleteRow<int, Player>(
       row,
       transaction: transaction,
     );
@@ -430,7 +430,7 @@ class PlayerRepository {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Player>(
+    return session.db.deleteWhere<int, Player>(
       where: where(Player.t),
       transaction: transaction,
     );
@@ -444,7 +444,7 @@ class PlayerRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Player>(
+    return session.db.count<int, Player>(
       where: where?.call(Player.t),
       limit: limit,
       transaction: transaction,
@@ -471,7 +471,7 @@ class PlayerAttachRowRepository {
     }
 
     var $player = player.copyWith(teamId: team.id);
-    await session.db.updateRow<Player>(
+    await session.db.updateRow<int, Player>(
       $player,
       columns: [Player.t.teamId],
       transaction: transaction,
@@ -497,7 +497,7 @@ class PlayerDetachRowRepository {
     }
 
     var $player = player.copyWith(teamId: null);
-    await session.db.updateRow<Player>(
+    await session.db.updateRow<int, Player>(
       $player,
       columns: [Player.t.teamId],
       transaction: transaction,

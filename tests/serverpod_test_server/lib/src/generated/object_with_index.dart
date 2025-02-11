@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithIndex
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithIndex._({
     this.id,
     required this.indexed,
@@ -45,7 +45,7 @@ abstract class ObjectWithIndex
   int indexed2;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
@@ -133,7 +133,7 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-class ObjectWithIndexTable extends _i1.Table {
+class ObjectWithIndexTable extends _i1.Table<int> {
   ObjectWithIndexTable({super.tableRelation})
       : super(tableName: 'object_with_index') {
     indexed = _i1.ColumnInt(
@@ -165,7 +165,7 @@ class ObjectWithIndexInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexIncludeList extends _i1.IncludeList {
@@ -185,7 +185,7 @@ class ObjectWithIndexIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexRepository {
@@ -223,7 +223,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithIndex>(
+    return session.db.find<int, ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -260,7 +260,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithIndex>(
+    return session.db.findFirstRow<int, ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -276,7 +276,7 @@ class ObjectWithIndexRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithIndex>(
+    return session.db.findById<int, ObjectWithIndex>(
       id,
       transaction: transaction,
     );
@@ -293,7 +293,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithIndex>(
+    return session.db.insert<int, ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
@@ -307,7 +307,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithIndex>(
+    return session.db.insertRow<int, ObjectWithIndex>(
       row,
       transaction: transaction,
     );
@@ -324,7 +324,7 @@ class ObjectWithIndexRepository {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithIndex>(
+    return session.db.update<int, ObjectWithIndex>(
       rows,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
@@ -340,7 +340,7 @@ class ObjectWithIndexRepository {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithIndex>(
+    return session.db.updateRow<int, ObjectWithIndex>(
       row,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
@@ -355,7 +355,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithIndex>(
+    return session.db.delete<int, ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithIndex>(
+    return session.db.deleteRow<int, ObjectWithIndex>(
       row,
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class ObjectWithIndexRepository {
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithIndex>(
+    return session.db.deleteWhere<int, ObjectWithIndex>(
       where: where(ObjectWithIndex.t),
       transaction: transaction,
     );
@@ -393,7 +393,7 @@ class ObjectWithIndexRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithIndex>(
+    return session.db.count<int, ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       limit: limit,
       transaction: transaction,

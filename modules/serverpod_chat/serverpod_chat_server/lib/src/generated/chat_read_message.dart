@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to notify the server that messages have been read.
 abstract class ChatReadMessage
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ChatReadMessage._({
     this.id,
     required this.channel,
@@ -54,7 +54,7 @@ abstract class ChatReadMessage
   int lastReadMessageId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ChatReadMessage]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,7 @@ class _ChatReadMessageImpl extends ChatReadMessage {
   }
 }
 
-class ChatReadMessageTable extends _i1.Table {
+class ChatReadMessageTable extends _i1.Table<int> {
   ChatReadMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_read_message') {
     channel = _i1.ColumnString(
@@ -191,7 +191,7 @@ class ChatReadMessageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ChatReadMessage.t;
+  _i1.Table<int> get table => ChatReadMessage.t;
 }
 
 class ChatReadMessageIncludeList extends _i1.IncludeList {
@@ -211,7 +211,7 @@ class ChatReadMessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ChatReadMessage.t;
+  _i1.Table<int> get table => ChatReadMessage.t;
 }
 
 class ChatReadMessageRepository {
@@ -249,7 +249,7 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ChatReadMessage>(
+    return session.db.find<int, ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
@@ -286,7 +286,7 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ChatReadMessage>(
+    return session.db.findFirstRow<int, ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
@@ -302,7 +302,7 @@ class ChatReadMessageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ChatReadMessage>(
+    return session.db.findById<int, ChatReadMessage>(
       id,
       transaction: transaction,
     );
@@ -319,7 +319,7 @@ class ChatReadMessageRepository {
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ChatReadMessage>(
+    return session.db.insert<int, ChatReadMessage>(
       rows,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class ChatReadMessageRepository {
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ChatReadMessage>(
+    return session.db.insertRow<int, ChatReadMessage>(
       row,
       transaction: transaction,
     );
@@ -350,7 +350,7 @@ class ChatReadMessageRepository {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ChatReadMessage>(
+    return session.db.update<int, ChatReadMessage>(
       rows,
       columns: columns?.call(ChatReadMessage.t),
       transaction: transaction,
@@ -366,7 +366,7 @@ class ChatReadMessageRepository {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ChatReadMessage>(
+    return session.db.updateRow<int, ChatReadMessage>(
       row,
       columns: columns?.call(ChatReadMessage.t),
       transaction: transaction,
@@ -381,7 +381,7 @@ class ChatReadMessageRepository {
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ChatReadMessage>(
+    return session.db.delete<int, ChatReadMessage>(
       rows,
       transaction: transaction,
     );
@@ -393,7 +393,7 @@ class ChatReadMessageRepository {
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ChatReadMessage>(
+    return session.db.deleteRow<int, ChatReadMessage>(
       row,
       transaction: transaction,
     );
@@ -405,7 +405,7 @@ class ChatReadMessageRepository {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ChatReadMessage>(
+    return session.db.deleteWhere<int, ChatReadMessage>(
       where: where(ChatReadMessage.t),
       transaction: transaction,
     );
@@ -419,7 +419,7 @@ class ChatReadMessageRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ChatReadMessage>(
+    return session.db.count<int, ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       limit: limit,
       transaction: transaction,

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnString', () {
     var columnName = 'name';
-    var column = ColumnString(columnName, Table(tableName: 'test'));
+    var column = ColumnString(columnName, Table<int>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
@@ -116,6 +116,162 @@ void main() {
 
         expect(comparisonExpression.toString(), 'TRUE');
       });
+    });
+
+    test(
+        'when greater than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column > const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column > 10');
+    });
+
+    test(
+        'when greater than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column > 'test';
+
+      expect(comparisonExpression.toString(), '$column > \'test\'');
+    });
+
+    test(
+        'when greater than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column > column;
+
+      expect(comparisonExpression.toString(), '$column > $column');
+    });
+
+    test(
+        'when greater than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column > 10,
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: int, allowed types are Expression, String or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when greater or equal than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column >= const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column >= 10');
+    });
+
+    test(
+        'when greater or equal than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column >= 'test';
+
+      expect(comparisonExpression.toString(), '$column >= \'test\'');
+    });
+
+    test(
+        'when greater or equal than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column >= column;
+
+      expect(comparisonExpression.toString(), '$column >= $column');
+    });
+
+    test(
+        'when greater or equal than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column >= 10,
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: int, allowed types are Expression, String or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when less than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column < const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column < 10');
+    });
+
+    test(
+        'when less than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column < 'test';
+
+      expect(comparisonExpression.toString(), '$column < \'test\'');
+    });
+
+    test(
+        'when less than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column < column;
+
+      expect(comparisonExpression.toString(), '$column < $column');
+    });
+
+    test(
+        'when less than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column < 10,
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: int, allowed types are Expression, String or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when less or equal than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column <= const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column <= 10');
+    });
+
+    test(
+        'when less or equal than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column <= 'test';
+
+      expect(comparisonExpression.toString(), '$column <= \'test\'');
+    });
+
+    test(
+        'when less or equal than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column <= column;
+
+      expect(comparisonExpression.toString(), '$column <= $column');
+    });
+
+    test(
+        'when less or equal than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column <= 10,
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: int, allowed types are Expression, String or Column',
+          ),
+        ),
+      );
     });
   });
 }

@@ -14,7 +14,7 @@ import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -77,7 +77,7 @@ abstract class CloudStorageEntry
   bool verified;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
@@ -193,7 +193,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
-class CloudStorageEntryTable extends _i1.Table {
+class CloudStorageEntryTable extends _i1.Table<int> {
   CloudStorageEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
@@ -259,7 +259,7 @@ class CloudStorageEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryIncludeList extends _i1.IncludeList {
@@ -279,7 +279,7 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryRepository {
@@ -317,7 +317,7 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<CloudStorageEntry>(
+    return session.db.find<int, CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -354,7 +354,7 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<CloudStorageEntry>(
+    return session.db.findFirstRow<int, CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -370,7 +370,7 @@ class CloudStorageEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<CloudStorageEntry>(
+    return session.db.findById<int, CloudStorageEntry>(
       id,
       transaction: transaction,
     );
@@ -387,7 +387,7 @@ class CloudStorageEntryRepository {
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CloudStorageEntry>(
+    return session.db.insert<int, CloudStorageEntry>(
       rows,
       transaction: transaction,
     );
@@ -401,7 +401,7 @@ class CloudStorageEntryRepository {
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CloudStorageEntry>(
+    return session.db.insertRow<int, CloudStorageEntry>(
       row,
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class CloudStorageEntryRepository {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CloudStorageEntry>(
+    return session.db.update<int, CloudStorageEntry>(
       rows,
       columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
@@ -434,7 +434,7 @@ class CloudStorageEntryRepository {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CloudStorageEntry>(
+    return session.db.updateRow<int, CloudStorageEntry>(
       row,
       columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
@@ -449,7 +449,7 @@ class CloudStorageEntryRepository {
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CloudStorageEntry>(
+    return session.db.delete<int, CloudStorageEntry>(
       rows,
       transaction: transaction,
     );
@@ -461,7 +461,7 @@ class CloudStorageEntryRepository {
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CloudStorageEntry>(
+    return session.db.deleteRow<int, CloudStorageEntry>(
       row,
       transaction: transaction,
     );
@@ -473,7 +473,7 @@ class CloudStorageEntryRepository {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CloudStorageEntry>(
+    return session.db.deleteWhere<int, CloudStorageEntry>(
       where: where(CloudStorageEntry.t),
       transaction: transaction,
     );
@@ -487,7 +487,7 @@ class CloudStorageEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CloudStorageEntry>(
+    return session.db.count<int, CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       limit: limit,
       transaction: transaction,

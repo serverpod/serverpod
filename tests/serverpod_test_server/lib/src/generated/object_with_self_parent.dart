@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithSelfParent
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithSelfParent._({
     this.id,
     this.other,
@@ -41,7 +41,7 @@ abstract class ObjectWithSelfParent
   int? other;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithSelfParent]
   /// with some or all fields replaced by the given arguments.
@@ -122,7 +122,7 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
   }
 }
 
-class ObjectWithSelfParentTable extends _i1.Table {
+class ObjectWithSelfParentTable extends _i1.Table<int> {
   ObjectWithSelfParentTable({super.tableRelation})
       : super(tableName: 'object_with_self_parent') {
     other = _i1.ColumnInt(
@@ -147,7 +147,7 @@ class ObjectWithSelfParentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithSelfParent.t;
+  _i1.Table<int> get table => ObjectWithSelfParent.t;
 }
 
 class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
@@ -167,7 +167,7 @@ class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithSelfParent.t;
+  _i1.Table<int> get table => ObjectWithSelfParent.t;
 }
 
 class ObjectWithSelfParentRepository {
@@ -205,7 +205,7 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithSelfParent>(
+    return session.db.find<int, ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -242,7 +242,7 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithSelfParent>(
+    return session.db.findFirstRow<int, ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -258,7 +258,7 @@ class ObjectWithSelfParentRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithSelfParent>(
+    return session.db.findById<int, ObjectWithSelfParent>(
       id,
       transaction: transaction,
     );
@@ -275,7 +275,7 @@ class ObjectWithSelfParentRepository {
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithSelfParent>(
+    return session.db.insert<int, ObjectWithSelfParent>(
       rows,
       transaction: transaction,
     );
@@ -289,7 +289,7 @@ class ObjectWithSelfParentRepository {
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithSelfParent>(
+    return session.db.insertRow<int, ObjectWithSelfParent>(
       row,
       transaction: transaction,
     );
@@ -306,7 +306,7 @@ class ObjectWithSelfParentRepository {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithSelfParent>(
+    return session.db.update<int, ObjectWithSelfParent>(
       rows,
       columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
@@ -322,7 +322,7 @@ class ObjectWithSelfParentRepository {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithSelfParent>(
+    return session.db.updateRow<int, ObjectWithSelfParent>(
       row,
       columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
@@ -337,7 +337,7 @@ class ObjectWithSelfParentRepository {
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithSelfParent>(
+    return session.db.delete<int, ObjectWithSelfParent>(
       rows,
       transaction: transaction,
     );
@@ -349,7 +349,7 @@ class ObjectWithSelfParentRepository {
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithSelfParent>(
+    return session.db.deleteRow<int, ObjectWithSelfParent>(
       row,
       transaction: transaction,
     );
@@ -361,7 +361,7 @@ class ObjectWithSelfParentRepository {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithSelfParent>(
+    return session.db.deleteWhere<int, ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class ObjectWithSelfParentRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithSelfParent>(
+    return session.db.count<int, ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
       transaction: transaction,

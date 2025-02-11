@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
 
-abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class City implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   City._({
     this.id,
     required this.name,
@@ -55,7 +55,7 @@ abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Organization>? organizations;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
@@ -165,7 +165,7 @@ class _CityImpl extends City {
   }
 }
 
-class CityTable extends _i1.Table {
+class CityTable extends _i1.Table<int> {
   CityTable({super.tableRelation}) : super(tableName: 'city') {
     name = _i1.ColumnString(
       'name',
@@ -283,7 +283,7 @@ class CityInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => City.t;
+  _i1.Table<int> get table => City.t;
 }
 
 class CityIncludeList extends _i1.IncludeList {
@@ -303,7 +303,7 @@ class CityIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => City.t;
+  _i1.Table<int> get table => City.t;
 }
 
 class CityRepository {
@@ -350,7 +350,7 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return session.db.find<City>(
+    return session.db.find<int, City>(
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -389,7 +389,7 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return session.db.findFirstRow<City>(
+    return session.db.findFirstRow<int, City>(
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
@@ -407,7 +407,7 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return session.db.findById<City>(
+    return session.db.findById<int, City>(
       id,
       transaction: transaction,
       include: include,
@@ -425,7 +425,7 @@ class CityRepository {
     List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<City>(
+    return session.db.insert<int, City>(
       rows,
       transaction: transaction,
     );
@@ -439,7 +439,7 @@ class CityRepository {
     City row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<City>(
+    return session.db.insertRow<int, City>(
       row,
       transaction: transaction,
     );
@@ -456,7 +456,7 @@ class CityRepository {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<City>(
+    return session.db.update<int, City>(
       rows,
       columns: columns?.call(City.t),
       transaction: transaction,
@@ -472,7 +472,7 @@ class CityRepository {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<City>(
+    return session.db.updateRow<int, City>(
       row,
       columns: columns?.call(City.t),
       transaction: transaction,
@@ -487,7 +487,7 @@ class CityRepository {
     List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<City>(
+    return session.db.delete<int, City>(
       rows,
       transaction: transaction,
     );
@@ -499,7 +499,7 @@ class CityRepository {
     City row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<City>(
+    return session.db.deleteRow<int, City>(
       row,
       transaction: transaction,
     );
@@ -511,7 +511,7 @@ class CityRepository {
     required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<City>(
+    return session.db.deleteWhere<int, City>(
       where: where(City.t),
       transaction: transaction,
     );
@@ -525,7 +525,7 @@ class CityRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<City>(
+    return session.db.count<int, City>(
       where: where?.call(City.t),
       limit: limit,
       transaction: transaction,
@@ -557,7 +557,7 @@ class CityAttachRepository {
               $_cityCitizensCityId: city.id,
             ))
         .toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
       transaction: transaction,
@@ -581,7 +581,7 @@ class CityAttachRepository {
 
     var $organization =
         organization.map((e) => e.copyWith(cityId: city.id)).toList();
-    await session.db.update<_i3.Organization>(
+    await session.db.update<int, _i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],
       transaction: transaction,
@@ -611,7 +611,7 @@ class CityAttachRowRepository {
       person,
       $_cityCitizensCityId: city.id,
     );
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
       transaction: transaction,
@@ -634,7 +634,7 @@ class CityAttachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: city.id);
-    await session.db.updateRow<_i3.Organization>(
+    await session.db.updateRow<int, _i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],
       transaction: transaction,
@@ -665,7 +665,7 @@ class CityDetachRepository {
               $_cityCitizensCityId: null,
             ))
         .toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
       transaction: transaction,
@@ -688,7 +688,7 @@ class CityDetachRepository {
 
     var $organization =
         organization.map((e) => e.copyWith(cityId: null)).toList();
-    await session.db.update<_i3.Organization>(
+    await session.db.update<int, _i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],
       transaction: transaction,
@@ -717,7 +717,7 @@ class CityDetachRowRepository {
       person,
       $_cityCitizensCityId: null,
     );
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
       transaction: transaction,
@@ -739,7 +739,7 @@ class CityDetachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: null);
-    await session.db.updateRow<_i3.Organization>(
+    await session.db.updateRow<int, _i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],
       transaction: transaction,

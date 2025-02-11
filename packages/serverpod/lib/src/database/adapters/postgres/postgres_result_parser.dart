@@ -6,7 +6,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 Map<String, dynamic>? resolvePrefixedQueryRow(
   Table table,
   Map<String, dynamic> rawRow,
-  Map<String, Map<int, List<dynamic>>> resolvedListRelations, {
+  Map<String, Map<dynamic, List<dynamic>>> resolvedListRelations, {
   Include? include,
 }) {
   // Resolve this object.
@@ -28,7 +28,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
 
     if (relationInclude is IncludeList) {
       var primaryKey = resolvedTableRow['id'];
-      if (primaryKey is! int) {
+      if (primaryKey == null) {
         throw ArgumentError('Cannot resolve list relation without id.');
       }
 
@@ -52,12 +52,12 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
 
 /// Maps a list of query results to each id of the parent table relation by
 /// the query prefix.
-Map<String, Map<int, List<Map<String, dynamic>>>> mapListToQueryById(
+Map<String, Map<dynamic, List<Map<String, dynamic>>>> mapListToQueryById(
   List<Map<String, dynamic>> resolvedList,
   Table relativeRelationTable,
   String foreignFieldName,
 ) {
-  var mappedLists = resolvedList.fold<Map<int, List<Map<String, dynamic>>>>(
+  var mappedLists = resolvedList.fold<Map<dynamic, List<Map<String, dynamic>>>>(
     {},
     (mappedResult, row) {
       var id = row[foreignFieldName];
@@ -75,9 +75,9 @@ Map<String, Map<int, List<Map<String, dynamic>>>> mapListToQueryById(
 }
 
 List<dynamic> _extractRelationalList(
-  int primaryKey,
+  dynamic primaryKey,
   Table relationTable,
-  Map<String, Map<int, List<dynamic>>> resolvedListRelations,
+  Map<String, Map<dynamic, List<dynamic>>> resolvedListRelations,
 ) {
   return resolvedListRelations[relationTable.queryPrefix]?[primaryKey] ?? [];
 }

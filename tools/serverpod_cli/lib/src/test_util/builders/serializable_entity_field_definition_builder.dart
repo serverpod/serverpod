@@ -28,11 +28,17 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withPrimaryKey() {
-    _name = 'id';
-    _type = TypeDefinition.int;
-
-    return this;
+  FieldDefinitionBuilder withPrimaryKey(
+    String tableName, {
+    SupportedIdType? type,
+    bool isNullable = false,
+  }) {
+    type ??= SupportedIdType.int;
+    return withName('id')
+      ..withIdType(type: type.type, isNullable: isNullable)
+      ..withDefaults(
+        defaultPersistValue: type.dbColumnDefaultBuilder(tableName),
+      );
   }
 
   FieldDefinitionBuilder withEnumDefinition(
@@ -60,8 +66,12 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withIdType([bool isNullable = false]) {
-    _type = TypeDefinition.int;
+  FieldDefinitionBuilder withIdType({
+    TypeDefinition? type,
+    bool isNullable = false,
+  }) {
+    _type = type ?? TypeDefinition.int;
+    if (!_type.isIdType) throw ArgumentError('Id type $_type is not supported');
     if (isNullable) {
       _type = _type.asNullable;
     }

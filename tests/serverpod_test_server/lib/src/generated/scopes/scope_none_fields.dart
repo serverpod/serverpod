@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ScopeNoneFields
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ScopeNoneFields._({this.id});
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
@@ -31,7 +31,7 @@ abstract class ScopeNoneFields
   String? _name;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
@@ -120,7 +120,7 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   }
 }
 
-class ScopeNoneFieldsTable extends _i1.Table {
+class ScopeNoneFieldsTable extends _i1.Table<int> {
   ScopeNoneFieldsTable({super.tableRelation})
       : super(tableName: 'scope_none_fields') {
     $name = _i1.ColumnString(
@@ -145,7 +145,7 @@ class ScopeNoneFieldsInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ScopeNoneFields.t;
+  _i1.Table<int> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
@@ -165,7 +165,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ScopeNoneFields.t;
+  _i1.Table<int> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsRepository {
@@ -203,7 +203,7 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ScopeNoneFields>(
+    return session.db.find<int, ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -240,7 +240,7 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ScopeNoneFields>(
+    return session.db.findFirstRow<int, ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -256,7 +256,7 @@ class ScopeNoneFieldsRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ScopeNoneFields>(
+    return session.db.findById<int, ScopeNoneFields>(
       id,
       transaction: transaction,
     );
@@ -273,7 +273,7 @@ class ScopeNoneFieldsRepository {
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ScopeNoneFields>(
+    return session.db.insert<int, ScopeNoneFields>(
       rows,
       transaction: transaction,
     );
@@ -287,7 +287,7 @@ class ScopeNoneFieldsRepository {
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ScopeNoneFields>(
+    return session.db.insertRow<int, ScopeNoneFields>(
       row,
       transaction: transaction,
     );
@@ -304,7 +304,7 @@ class ScopeNoneFieldsRepository {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ScopeNoneFields>(
+    return session.db.update<int, ScopeNoneFields>(
       rows,
       columns: columns?.call(ScopeNoneFields.t),
       transaction: transaction,
@@ -320,7 +320,7 @@ class ScopeNoneFieldsRepository {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ScopeNoneFields>(
+    return session.db.updateRow<int, ScopeNoneFields>(
       row,
       columns: columns?.call(ScopeNoneFields.t),
       transaction: transaction,
@@ -335,7 +335,7 @@ class ScopeNoneFieldsRepository {
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ScopeNoneFields>(
+    return session.db.delete<int, ScopeNoneFields>(
       rows,
       transaction: transaction,
     );
@@ -347,7 +347,7 @@ class ScopeNoneFieldsRepository {
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ScopeNoneFields>(
+    return session.db.deleteRow<int, ScopeNoneFields>(
       row,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class ScopeNoneFieldsRepository {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ScopeNoneFields>(
+    return session.db.deleteWhere<int, ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
       transaction: transaction,
     );
@@ -373,7 +373,7 @@ class ScopeNoneFieldsRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ScopeNoneFields>(
+    return session.db.count<int, ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       limit: limit,
       transaction: transaction,

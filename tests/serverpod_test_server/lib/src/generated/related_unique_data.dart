@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
 
 abstract class RelatedUniqueData
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -54,7 +54,7 @@ abstract class RelatedUniqueData
   int number;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -151,7 +151,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   }
 }
 
-class RelatedUniqueDataTable extends _i1.Table {
+class RelatedUniqueDataTable extends _i1.Table<int> {
   RelatedUniqueDataTable({super.tableRelation})
       : super(tableName: 'related_unique_data') {
     uniqueDataId = _i1.ColumnInt(
@@ -210,7 +210,7 @@ class RelatedUniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataIncludeList extends _i1.IncludeList {
@@ -230,7 +230,7 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataRepository {
@@ -271,7 +271,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.find<RelatedUniqueData>(
+    return session.db.find<int, RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -310,7 +310,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findFirstRow<RelatedUniqueData>(
+    return session.db.findFirstRow<int, RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -328,7 +328,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findById<RelatedUniqueData>(
+    return session.db.findById<int, RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
@@ -346,7 +346,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RelatedUniqueData>(
+    return session.db.insert<int, RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RelatedUniqueData>(
+    return session.db.insertRow<int, RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -377,7 +377,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RelatedUniqueData>(
+    return session.db.update<int, RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -393,7 +393,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RelatedUniqueData>(
+    return session.db.updateRow<int, RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -408,7 +408,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RelatedUniqueData>(
+    return session.db.delete<int, RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -420,7 +420,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RelatedUniqueData>(
+    return session.db.deleteRow<int, RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -432,7 +432,7 @@ class RelatedUniqueDataRepository {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RelatedUniqueData>(
+    return session.db.deleteWhere<int, RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );
@@ -446,7 +446,7 @@ class RelatedUniqueDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RelatedUniqueData>(
+    return session.db.count<int, RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -474,7 +474,7 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await session.db.updateRow<RelatedUniqueData>(
+    await session.db.updateRow<int, RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
       transaction: transaction,

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DoubleDefaultPersist._({
     this.id,
     this.doubleDefaultPersist,
@@ -42,7 +42,7 @@ abstract class DoubleDefaultPersist
   double? doubleDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -127,7 +127,7 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }
 }
 
-class DoubleDefaultPersistTable extends _i1.Table {
+class DoubleDefaultPersistTable extends _i1.Table<int> {
   DoubleDefaultPersistTable({super.tableRelation})
       : super(tableName: 'double_default_persist') {
     doubleDefaultPersist = _i1.ColumnDouble(
@@ -153,7 +153,7 @@ class DoubleDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DoubleDefaultPersist.t;
+  _i1.Table<int> get table => DoubleDefaultPersist.t;
 }
 
 class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
@@ -173,7 +173,7 @@ class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DoubleDefaultPersist.t;
+  _i1.Table<int> get table => DoubleDefaultPersist.t;
 }
 
 class DoubleDefaultPersistRepository {
@@ -211,7 +211,7 @@ class DoubleDefaultPersistRepository {
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DoubleDefaultPersist>(
+    return session.db.find<int, DoubleDefaultPersist>(
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -248,7 +248,7 @@ class DoubleDefaultPersistRepository {
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DoubleDefaultPersist>(
+    return session.db.findFirstRow<int, DoubleDefaultPersist>(
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
@@ -264,7 +264,7 @@ class DoubleDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DoubleDefaultPersist>(
+    return session.db.findById<int, DoubleDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -281,7 +281,7 @@ class DoubleDefaultPersistRepository {
     List<DoubleDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DoubleDefaultPersist>(
+    return session.db.insert<int, DoubleDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -295,7 +295,7 @@ class DoubleDefaultPersistRepository {
     DoubleDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DoubleDefaultPersist>(
+    return session.db.insertRow<int, DoubleDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -312,7 +312,7 @@ class DoubleDefaultPersistRepository {
     _i1.ColumnSelections<DoubleDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DoubleDefaultPersist>(
+    return session.db.update<int, DoubleDefaultPersist>(
       rows,
       columns: columns?.call(DoubleDefaultPersist.t),
       transaction: transaction,
@@ -328,7 +328,7 @@ class DoubleDefaultPersistRepository {
     _i1.ColumnSelections<DoubleDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DoubleDefaultPersist>(
+    return session.db.updateRow<int, DoubleDefaultPersist>(
       row,
       columns: columns?.call(DoubleDefaultPersist.t),
       transaction: transaction,
@@ -343,7 +343,7 @@ class DoubleDefaultPersistRepository {
     List<DoubleDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DoubleDefaultPersist>(
+    return session.db.delete<int, DoubleDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class DoubleDefaultPersistRepository {
     DoubleDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DoubleDefaultPersist>(
+    return session.db.deleteRow<int, DoubleDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class DoubleDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DoubleDefaultPersist>(
+    return session.db.deleteWhere<int, DoubleDefaultPersist>(
       where: where(DoubleDefaultPersist.t),
       transaction: transaction,
     );
@@ -381,7 +381,7 @@ class DoubleDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DoubleDefaultPersist>(
+    return session.db.count<int, DoubleDefaultPersist>(
       where: where?.call(DoubleDefaultPersist.t),
       limit: limit,
       transaction: transaction,

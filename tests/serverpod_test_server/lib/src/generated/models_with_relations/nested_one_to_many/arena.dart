@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Arena implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -48,7 +48,7 @@ abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Team? team;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
@@ -136,7 +136,7 @@ class _ArenaImpl extends Arena {
   }
 }
 
-class ArenaTable extends _i1.Table {
+class ArenaTable extends _i1.Table<int> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
     name = _i1.ColumnString(
       'name',
@@ -187,7 +187,7 @@ class ArenaInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int> get table => Arena.t;
 }
 
 class ArenaIncludeList extends _i1.IncludeList {
@@ -207,7 +207,7 @@ class ArenaIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int> get table => Arena.t;
 }
 
 class ArenaRepository {
@@ -250,7 +250,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.find<Arena>(
+    return session.db.find<int, Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -289,7 +289,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findFirstRow<Arena>(
+    return session.db.findFirstRow<int, Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -307,7 +307,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findById<Arena>(
+    return session.db.findById<int, Arena>(
       id,
       transaction: transaction,
       include: include,
@@ -325,7 +325,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Arena>(
+    return session.db.insert<int, Arena>(
       rows,
       transaction: transaction,
     );
@@ -339,7 +339,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Arena>(
+    return session.db.insertRow<int, Arena>(
       row,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class ArenaRepository {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Arena>(
+    return session.db.update<int, Arena>(
       rows,
       columns: columns?.call(Arena.t),
       transaction: transaction,
@@ -372,7 +372,7 @@ class ArenaRepository {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Arena>(
+    return session.db.updateRow<int, Arena>(
       row,
       columns: columns?.call(Arena.t),
       transaction: transaction,
@@ -387,7 +387,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Arena>(
+    return session.db.delete<int, Arena>(
       rows,
       transaction: transaction,
     );
@@ -399,7 +399,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Arena>(
+    return session.db.deleteRow<int, Arena>(
       row,
       transaction: transaction,
     );
@@ -411,7 +411,7 @@ class ArenaRepository {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Arena>(
+    return session.db.deleteWhere<int, Arena>(
       where: where(Arena.t),
       transaction: transaction,
     );
@@ -425,7 +425,7 @@ class ArenaRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Arena>(
+    return session.db.count<int, Arena>(
       where: where?.call(Arena.t),
       limit: limit,
       transaction: transaction,
@@ -452,7 +452,7 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<int, _i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
       transaction: transaction,
@@ -486,7 +486,7 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i2.Team>(
+    await session.db.updateRow<int, _i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
       transaction: transaction,

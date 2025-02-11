@@ -13,14 +13,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 
 abstract class UuidDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UuidDefaultModel._({
     this.id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
   })  : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i2.Uuid().v4obj(),
+        uuidDefaultModelRandomV7 =
+            uuidDefaultModelRandomV7 ?? _i2.Uuid().v7obj(),
         uuidDefaultModelRandomNull =
             uuidDefaultModelRandomNull ?? _i2.Uuid().v4obj(),
         uuidDefaultModelStr = uuidDefaultModelStr ??
@@ -31,6 +34,7 @@ abstract class UuidDefaultModel
   factory UuidDefaultModel({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
@@ -41,6 +45,8 @@ abstract class UuidDefaultModel
       id: jsonSerialization['id'] as int?,
       uuidDefaultModelRandom: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['uuidDefaultModelRandom']),
+      uuidDefaultModelRandomV7: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['uuidDefaultModelRandomV7']),
       uuidDefaultModelRandomNull:
           jsonSerialization['uuidDefaultModelRandomNull'] == null
               ? null
@@ -65,6 +71,8 @@ abstract class UuidDefaultModel
 
   _i1.UuidValue uuidDefaultModelRandom;
 
+  _i1.UuidValue uuidDefaultModelRandomV7;
+
   _i1.UuidValue? uuidDefaultModelRandomNull;
 
   _i1.UuidValue uuidDefaultModelStr;
@@ -72,7 +80,7 @@ abstract class UuidDefaultModel
   _i1.UuidValue? uuidDefaultModelStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -80,6 +88,7 @@ abstract class UuidDefaultModel
   UuidDefaultModel copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
@@ -89,6 +98,7 @@ abstract class UuidDefaultModel
     return {
       if (id != null) 'id': id,
       'uuidDefaultModelRandom': uuidDefaultModelRandom.toJson(),
+      'uuidDefaultModelRandomV7': uuidDefaultModelRandomV7.toJson(),
       if (uuidDefaultModelRandomNull != null)
         'uuidDefaultModelRandomNull': uuidDefaultModelRandomNull?.toJson(),
       'uuidDefaultModelStr': uuidDefaultModelStr.toJson(),
@@ -102,6 +112,7 @@ abstract class UuidDefaultModel
     return {
       if (id != null) 'id': id,
       'uuidDefaultModelRandom': uuidDefaultModelRandom.toJson(),
+      'uuidDefaultModelRandomV7': uuidDefaultModelRandomV7.toJson(),
       if (uuidDefaultModelRandomNull != null)
         'uuidDefaultModelRandomNull': uuidDefaultModelRandomNull?.toJson(),
       'uuidDefaultModelStr': uuidDefaultModelStr.toJson(),
@@ -146,12 +157,14 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   _UuidDefaultModelImpl({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
   }) : super._(
           id: id,
           uuidDefaultModelRandom: uuidDefaultModelRandom,
+          uuidDefaultModelRandomV7: uuidDefaultModelRandomV7,
           uuidDefaultModelRandomNull: uuidDefaultModelRandomNull,
           uuidDefaultModelStr: uuidDefaultModelStr,
           uuidDefaultModelStrNull: uuidDefaultModelStrNull,
@@ -164,6 +177,7 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   UuidDefaultModel copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     Object? uuidDefaultModelRandomNull = _Undefined,
     _i1.UuidValue? uuidDefaultModelStr,
     Object? uuidDefaultModelStrNull = _Undefined,
@@ -172,6 +186,8 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
       id: id is int? ? id : this.id,
       uuidDefaultModelRandom:
           uuidDefaultModelRandom ?? this.uuidDefaultModelRandom,
+      uuidDefaultModelRandomV7:
+          uuidDefaultModelRandomV7 ?? this.uuidDefaultModelRandomV7,
       uuidDefaultModelRandomNull: uuidDefaultModelRandomNull is _i1.UuidValue?
           ? uuidDefaultModelRandomNull
           : this.uuidDefaultModelRandomNull,
@@ -183,11 +199,15 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   }
 }
 
-class UuidDefaultModelTable extends _i1.Table {
+class UuidDefaultModelTable extends _i1.Table<int> {
   UuidDefaultModelTable({super.tableRelation})
       : super(tableName: 'uuid_default_model') {
     uuidDefaultModelRandom = _i1.ColumnUuid(
       'uuidDefaultModelRandom',
+      this,
+    );
+    uuidDefaultModelRandomV7 = _i1.ColumnUuid(
+      'uuidDefaultModelRandomV7',
       this,
     );
     uuidDefaultModelRandomNull = _i1.ColumnUuid(
@@ -206,6 +226,8 @@ class UuidDefaultModelTable extends _i1.Table {
 
   late final _i1.ColumnUuid uuidDefaultModelRandom;
 
+  late final _i1.ColumnUuid uuidDefaultModelRandomV7;
+
   late final _i1.ColumnUuid uuidDefaultModelRandomNull;
 
   late final _i1.ColumnUuid uuidDefaultModelStr;
@@ -216,6 +238,7 @@ class UuidDefaultModelTable extends _i1.Table {
   List<_i1.Column> get columns => [
         id,
         uuidDefaultModelRandom,
+        uuidDefaultModelRandomV7,
         uuidDefaultModelRandomNull,
         uuidDefaultModelStr,
         uuidDefaultModelStrNull,
@@ -229,7 +252,7 @@ class UuidDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UuidDefaultModel.t;
+  _i1.Table<int> get table => UuidDefaultModel.t;
 }
 
 class UuidDefaultModelIncludeList extends _i1.IncludeList {
@@ -249,7 +272,7 @@ class UuidDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UuidDefaultModel.t;
+  _i1.Table<int> get table => UuidDefaultModel.t;
 }
 
 class UuidDefaultModelRepository {
@@ -287,7 +310,7 @@ class UuidDefaultModelRepository {
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UuidDefaultModel>(
+    return session.db.find<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
@@ -324,7 +347,7 @@ class UuidDefaultModelRepository {
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UuidDefaultModel>(
+    return session.db.findFirstRow<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
@@ -340,7 +363,7 @@ class UuidDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UuidDefaultModel>(
+    return session.db.findById<int, UuidDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -357,7 +380,7 @@ class UuidDefaultModelRepository {
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UuidDefaultModel>(
+    return session.db.insert<int, UuidDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -371,7 +394,7 @@ class UuidDefaultModelRepository {
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UuidDefaultModel>(
+    return session.db.insertRow<int, UuidDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -388,7 +411,7 @@ class UuidDefaultModelRepository {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UuidDefaultModel>(
+    return session.db.update<int, UuidDefaultModel>(
       rows,
       columns: columns?.call(UuidDefaultModel.t),
       transaction: transaction,
@@ -404,7 +427,7 @@ class UuidDefaultModelRepository {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UuidDefaultModel>(
+    return session.db.updateRow<int, UuidDefaultModel>(
       row,
       columns: columns?.call(UuidDefaultModel.t),
       transaction: transaction,
@@ -419,7 +442,7 @@ class UuidDefaultModelRepository {
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UuidDefaultModel>(
+    return session.db.delete<int, UuidDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -431,7 +454,7 @@ class UuidDefaultModelRepository {
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UuidDefaultModel>(
+    return session.db.deleteRow<int, UuidDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -443,7 +466,7 @@ class UuidDefaultModelRepository {
     required _i1.WhereExpressionBuilder<UuidDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UuidDefaultModel>(
+    return session.db.deleteWhere<int, UuidDefaultModel>(
       where: where(UuidDefaultModel.t),
       transaction: transaction,
     );
@@ -457,7 +480,7 @@ class UuidDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UuidDefaultModel>(
+    return session.db.count<int, UuidDefaultModel>(
       where: where?.call(UuidDefaultModel.t),
       limit: limit,
       transaction: transaction,

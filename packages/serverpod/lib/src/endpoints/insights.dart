@@ -37,7 +37,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.db.deleteWhere<SessionLogEntry>(
+    await session.db.deleteWhere<int, SessionLogEntry>(
       where: Constant.bool(true),
     );
   }
@@ -77,7 +77,7 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = await session.db.find<SessionLogEntry>(
+    var rows = await session.db.find<int, SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
@@ -86,17 +86,17 @@ class InsightsEndpoint extends Endpoint {
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var futureLogRows = session.db.find<LogEntry>(
+      var futureLogRows = session.db.find<int, LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: LogEntry.t.order,
       );
 
-      var futureQueryRows = session.db.find<QueryLogEntry>(
+      var futureQueryRows = session.db.find<int, QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: QueryLogEntry.t.order,
       );
 
-      var futureMessageRows = session.db.find<MessageLogEntry>(
+      var futureMessageRows = session.db.find<int, MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: MessageLogEntry.t.order,
       );

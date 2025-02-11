@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class EmailAuth
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -53,7 +54,7 @@ abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
   String hash;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +149,7 @@ class _EmailAuthImpl extends EmailAuth {
   }
 }
 
-class EmailAuthTable extends _i1.Table {
+class EmailAuthTable extends _i1.Table<int> {
   EmailAuthTable({super.tableRelation})
       : super(tableName: 'serverpod_email_auth') {
     userId = _i1.ColumnInt(
@@ -190,7 +191,7 @@ class EmailAuthInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmailAuth.t;
+  _i1.Table<int> get table => EmailAuth.t;
 }
 
 class EmailAuthIncludeList extends _i1.IncludeList {
@@ -210,7 +211,7 @@ class EmailAuthIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmailAuth.t;
+  _i1.Table<int> get table => EmailAuth.t;
 }
 
 class EmailAuthRepository {
@@ -248,7 +249,7 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailAuth>(
+    return session.db.find<int, EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -285,7 +286,7 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailAuth>(
+    return session.db.findFirstRow<int, EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -301,7 +302,7 @@ class EmailAuthRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAuth>(
+    return session.db.findById<int, EmailAuth>(
       id,
       transaction: transaction,
     );
@@ -318,7 +319,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAuth>(
+    return session.db.insert<int, EmailAuth>(
       rows,
       transaction: transaction,
     );
@@ -332,7 +333,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAuth>(
+    return session.db.insertRow<int, EmailAuth>(
       row,
       transaction: transaction,
     );
@@ -349,7 +350,7 @@ class EmailAuthRepository {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailAuth>(
+    return session.db.update<int, EmailAuth>(
       rows,
       columns: columns?.call(EmailAuth.t),
       transaction: transaction,
@@ -365,7 +366,7 @@ class EmailAuthRepository {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailAuth>(
+    return session.db.updateRow<int, EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
       transaction: transaction,
@@ -380,7 +381,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAuth>(
+    return session.db.delete<int, EmailAuth>(
       rows,
       transaction: transaction,
     );
@@ -392,7 +393,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAuth>(
+    return session.db.deleteRow<int, EmailAuth>(
       row,
       transaction: transaction,
     );
@@ -404,7 +405,7 @@ class EmailAuthRepository {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailAuth>(
+    return session.db.deleteWhere<int, EmailAuth>(
       where: where(EmailAuth.t),
       transaction: transaction,
     );
@@ -418,7 +419,7 @@ class EmailAuthRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailAuth>(
+    return session.db.count<int, EmailAuth>(
       where: where?.call(EmailAuth.t),
       limit: limit,
       transaction: transaction,

@@ -16,6 +16,7 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
+  SupportedIdType? _idType;
   bool _managedMigration;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
@@ -28,6 +29,7 @@ class ClassDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
+        _idType = SupportedIdType.int,
         _fields = [],
         _subDirParts = [],
         _managedMigration = true,
@@ -42,8 +44,7 @@ class ClassDefinitionBuilder {
       _fields.insert(
         0,
         () => FieldDefinitionBuilder()
-            .withName('id')
-            .withType(TypeDefinition.int.asNullable)
+            .withPrimaryKey(_tableName!, type: _idType, isNullable: true)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -180,6 +181,7 @@ class ClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignIdType,
     bool nullableRelation = false,
   }) {
     _fields.addAll([
@@ -196,6 +198,7 @@ class ClassDefinitionBuilder {
             .withShouldPersist(false)
             .withRelation(ObjectRelationDefinition(
               parentTable: parentTable,
+              parentTableIdType: foreignIdType ?? TypeDefinition.int,
               fieldName: foreignFieldName,
               foreignFieldName: 'id',
               isForeignKeyOrigin: false,
@@ -212,6 +215,8 @@ class ClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignKeyType,
+    TypeDefinition? foreignIdType,
     bool nullableRelation = false,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
@@ -222,6 +227,7 @@ class ClassDefinitionBuilder {
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
             parentTable: parentTable,
+            parentTableIdType: foreignIdType ?? TypeDefinition.int,
             fieldName: foreignFieldName,
             foreignFieldName: 'id',
             nullableRelation: nullableRelation,
@@ -230,7 +236,7 @@ class ClassDefinitionBuilder {
           .build(),
       () => FieldDefinitionBuilder()
           .withName(foreignFieldName)
-          .withIdType(nullableRelation)
+          .withIdType(type: foreignKeyType, isNullable: nullableRelation)
           .withShouldPersist(true)
           .withRelation(ForeignRelationDefinitionBuilder()
               .withParentTable(parentTable)
@@ -243,8 +249,9 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withImplicitListRelationField(
     String fieldName,
-    String className,
-  ) {
+    String className, {
+    TypeDefinition? foreignKeyOwnerIdType,
+  }) {
     _fields.add(() {
       return FieldDefinitionBuilder()
           .withName(fieldName)
@@ -259,6 +266,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName:
                 '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
             nullableRelation: true,
@@ -273,6 +281,7 @@ class ClassDefinitionBuilder {
     String fieldName,
     String className,
     String foreignKeyFieldName, {
+    TypeDefinition? foreignKeyOwnerIdType,
     bool nullableRelation = false,
   }) {
     _fields.add(() {
@@ -289,6 +298,7 @@ class ClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName: foreignKeyFieldName,
             nullableRelation: nullableRelation,
             implicitForeignField: false,
@@ -296,6 +306,11 @@ class ClassDefinitionBuilder {
           .build();
     });
 
+    return this;
+  }
+
+  ClassDefinitionBuilder withIdFieldType(SupportedIdType type) {
+    _idType = type;
     return this;
   }
 

@@ -1,5 +1,8 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -36,6 +39,11 @@ class CreateCommand extends ServerpodCommand {
       help: 'Template to use when creating a new project, valid options are '
           '"mini", "server" or "module".',
     );
+    argParser.addOption(
+      'defaultIdType',
+      allowed: SupportedIdType.userOptions,
+      help: 'Default type for primary keys. Valid options are:',
+    );
   }
 
   @override
@@ -67,7 +75,36 @@ class CreateCommand extends ServerpodCommand {
       return;
     }
 
-    if (!await performCreate(name, template, force)) {
+    SupportedIdType? defaultIdType;
+    bool isChangeIdTypeEnabled;
+    try {
+      var config = await GeneratorConfig.load();
+      defaultIdType = config.defaultIdType;
+      isChangeIdTypeEnabled = config.isExperimentalFeatureEnabled(
+        ExperimentalFeature.changeIdType,
+      );
+    } on ServerpodProjectNotFoundException catch (_) {
+      isChangeIdTypeEnabled = CommandLineExperimentalFeatures.instance.features
+          .contains(ExperimentalFeature.changeIdType);
+    } catch (_) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    String? defaultIdTypeName = argResults!['defaultIdType'];
+    if ((defaultIdTypeName != null) && !isChangeIdTypeEnabled) {
+      log.error(
+        'The "defaultIdType" option is not enabled. To enable it, add the '
+        'experimental feature "changeIdType" to the config file or the '
+        'command line.',
+      );
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    defaultIdType = (defaultIdTypeName != null)
+        ? SupportedIdType.fromString(defaultIdTypeName)
+        : defaultIdType;
+
+    if (!await performCreate(name, template, force, defaultIdType)) {
       throw ExitException();
     }
   }

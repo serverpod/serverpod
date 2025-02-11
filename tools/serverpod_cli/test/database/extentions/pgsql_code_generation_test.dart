@@ -119,5 +119,15 @@ ALTER TABLE ONLY "town"
     expect(pgsql, isNot(contains('CREATE TABLE "example_table"')));
   });
 
-  test('Given a database definition ', () {});
+  test(
+      'Given any database definition, the code for generating random UUIDv7 is added.',
+      () {
+    var databaseDefinition = DatabaseDefinitionBuilder().build();
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(
+      pgsql,
+      contains('create or replace function gen_random_uuid_v7()\nreturns uuid'),
+    );
+  });
 }

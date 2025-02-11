@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
 
-abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Member implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Member._({
     this.id,
     required this.name,
@@ -55,7 +55,7 @@ abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Blocking>? blockedBy;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
@@ -165,7 +165,7 @@ class _MemberImpl extends Member {
   }
 }
 
-class MemberTable extends _i1.Table {
+class MemberTable extends _i1.Table<int> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
     name = _i1.ColumnString(
       'name',
@@ -283,7 +283,7 @@ class MemberInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int> get table => Member.t;
 }
 
 class MemberIncludeList extends _i1.IncludeList {
@@ -303,7 +303,7 @@ class MemberIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int> get table => Member.t;
 }
 
 class MemberRepository {
@@ -346,7 +346,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.find<Member>(
+    return session.db.find<int, Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -385,7 +385,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.findFirstRow<Member>(
+    return session.db.findFirstRow<int, Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -403,7 +403,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.findById<Member>(
+    return session.db.findById<int, Member>(
       id,
       transaction: transaction,
       include: include,
@@ -421,7 +421,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Member>(
+    return session.db.insert<int, Member>(
       rows,
       transaction: transaction,
     );
@@ -435,7 +435,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Member>(
+    return session.db.insertRow<int, Member>(
       row,
       transaction: transaction,
     );
@@ -452,7 +452,7 @@ class MemberRepository {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Member>(
+    return session.db.update<int, Member>(
       rows,
       columns: columns?.call(Member.t),
       transaction: transaction,
@@ -468,7 +468,7 @@ class MemberRepository {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Member>(
+    return session.db.updateRow<int, Member>(
       row,
       columns: columns?.call(Member.t),
       transaction: transaction,
@@ -483,7 +483,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Member>(
+    return session.db.delete<int, Member>(
       rows,
       transaction: transaction,
     );
@@ -495,7 +495,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Member>(
+    return session.db.deleteRow<int, Member>(
       row,
       transaction: transaction,
     );
@@ -507,7 +507,7 @@ class MemberRepository {
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Member>(
+    return session.db.deleteWhere<int, Member>(
       where: where(Member.t),
       transaction: transaction,
     );
@@ -521,7 +521,7 @@ class MemberRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Member>(
+    return session.db.count<int, Member>(
       where: where?.call(Member.t),
       limit: limit,
       transaction: transaction,
@@ -549,7 +549,7 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
-    await session.db.update<_i2.Blocking>(
+    await session.db.update<int, _i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
       transaction: transaction,
@@ -573,7 +573,7 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedId: member.id)).toList();
-    await session.db.update<_i2.Blocking>(
+    await session.db.update<int, _i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
       transaction: transaction,
@@ -600,7 +600,7 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: member.id);
-    await session.db.updateRow<_i2.Blocking>(
+    await session.db.updateRow<int, _i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
       transaction: transaction,
@@ -623,7 +623,7 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: member.id);
-    await session.db.updateRow<_i2.Blocking>(
+    await session.db.updateRow<int, _i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
       transaction: transaction,

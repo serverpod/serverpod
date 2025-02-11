@@ -16,6 +16,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  SupportedIdType _defaultIdType;
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
@@ -45,6 +46,7 @@ class GeneratorConfigBuilder {
           ),
         ],
         _extraClasses = [],
+        _defaultIdType = SupportedIdType.int,
         _enabledFeatures = [ServerpodFeature.database],
         _enabledExperimentalFeatures = [];
 
@@ -102,6 +104,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withDefaultIdType(SupportedIdType defaultIdType) {
+    _defaultIdType = defaultIdType;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
     _enabledFeatures = features;
     return this;
@@ -132,6 +139,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      configuredDefaultIdType: _defaultIdType,
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,

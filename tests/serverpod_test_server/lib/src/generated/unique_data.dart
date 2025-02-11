@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UniqueData
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UniqueData._({
     this.id,
     required this.number,
@@ -44,7 +45,7 @@ abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   String email;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -132,7 +133,7 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
-class UniqueDataTable extends _i1.Table {
+class UniqueDataTable extends _i1.Table<int> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
     number = _i1.ColumnInt(
       'number',
@@ -163,7 +164,7 @@ class UniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int> get table => UniqueData.t;
 }
 
 class UniqueDataIncludeList extends _i1.IncludeList {
@@ -183,7 +184,7 @@ class UniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int> get table => UniqueData.t;
 }
 
 class UniqueDataRepository {
@@ -221,7 +222,7 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UniqueData>(
+    return session.db.find<int, UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -258,7 +259,7 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UniqueData>(
+    return session.db.findFirstRow<int, UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -274,7 +275,7 @@ class UniqueDataRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UniqueData>(
+    return session.db.findById<int, UniqueData>(
       id,
       transaction: transaction,
     );
@@ -291,7 +292,7 @@ class UniqueDataRepository {
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UniqueData>(
+    return session.db.insert<int, UniqueData>(
       rows,
       transaction: transaction,
     );
@@ -305,7 +306,7 @@ class UniqueDataRepository {
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UniqueData>(
+    return session.db.insertRow<int, UniqueData>(
       row,
       transaction: transaction,
     );
@@ -322,7 +323,7 @@ class UniqueDataRepository {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UniqueData>(
+    return session.db.update<int, UniqueData>(
       rows,
       columns: columns?.call(UniqueData.t),
       transaction: transaction,
@@ -338,7 +339,7 @@ class UniqueDataRepository {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UniqueData>(
+    return session.db.updateRow<int, UniqueData>(
       row,
       columns: columns?.call(UniqueData.t),
       transaction: transaction,
@@ -353,7 +354,7 @@ class UniqueDataRepository {
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UniqueData>(
+    return session.db.delete<int, UniqueData>(
       rows,
       transaction: transaction,
     );
@@ -365,7 +366,7 @@ class UniqueDataRepository {
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UniqueData>(
+    return session.db.deleteRow<int, UniqueData>(
       row,
       transaction: transaction,
     );
@@ -377,7 +378,7 @@ class UniqueDataRepository {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UniqueData>(
+    return session.db.deleteWhere<int, UniqueData>(
       where: where(UniqueData.t),
       transaction: transaction,
     );
@@ -391,7 +392,7 @@ class UniqueDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UniqueData>(
+    return session.db.count<int, UniqueData>(
       where: where?.call(UniqueData.t),
       limit: limit,
       transaction: transaction,

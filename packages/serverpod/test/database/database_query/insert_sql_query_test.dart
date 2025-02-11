@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:test/test.dart';
 
-class PersonTable extends Table {
+class PersonTable extends Table<int> {
   late final ColumnString name;
   late final ColumnInt age;
 
@@ -15,7 +15,7 @@ class PersonTable extends Table {
   List<Column> get columns => [id, name, age];
 }
 
-class PersonClass implements TableRow {
+class PersonClass implements TableRow<int> {
   final String name;
   final int age;
 
@@ -25,7 +25,7 @@ class PersonClass implements TableRow {
   PersonClass({this.id, required this.name, required this.age});
 
   @override
-  Table get table => PersonTable();
+  Table<int> get table => PersonTable();
 
   @override
   Map<String, Object?> toJson() {
@@ -37,14 +37,14 @@ class PersonClass implements TableRow {
   }
 }
 
-class OnlyIdClass implements TableRow {
+class OnlyIdClass implements TableRow<int> {
   OnlyIdClass({this.id});
 
   @override
   int? id;
 
   @override
-  Table get table => Table(tableName: 'only_id');
+  Table<int> get table => Table<int>(tableName: 'only_id');
 
   @override
   Map<String, Object?> toJson() {
@@ -87,7 +87,7 @@ void main() {
         'when building insert query with a row then output is a valid SQL query that lists the columns.',
         () {
       var query = InsertQueryBuilder(
-        table: Table(tableName: 'only_id'),
+        table: Table<int>(tableName: 'only_id'),
         rows: [OnlyIdClass()],
       ).build();
 

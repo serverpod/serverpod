@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefault
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DoubleDefault._({
     this.id,
     double? doubleDefault,
@@ -47,7 +47,7 @@ abstract class DoubleDefault
   double? doubleDefaultNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefault]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +137,7 @@ class _DoubleDefaultImpl extends DoubleDefault {
   }
 }
 
-class DoubleDefaultTable extends _i1.Table {
+class DoubleDefaultTable extends _i1.Table<int> {
   DoubleDefaultTable({super.tableRelation})
       : super(tableName: 'double_default') {
     doubleDefault = _i1.ColumnDouble(
@@ -171,7 +171,7 @@ class DoubleDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DoubleDefault.t;
+  _i1.Table<int> get table => DoubleDefault.t;
 }
 
 class DoubleDefaultIncludeList extends _i1.IncludeList {
@@ -191,7 +191,7 @@ class DoubleDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DoubleDefault.t;
+  _i1.Table<int> get table => DoubleDefault.t;
 }
 
 class DoubleDefaultRepository {
@@ -229,7 +229,7 @@ class DoubleDefaultRepository {
     _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DoubleDefault>(
+    return session.db.find<int, DoubleDefault>(
       where: where?.call(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -266,7 +266,7 @@ class DoubleDefaultRepository {
     _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DoubleDefault>(
+    return session.db.findFirstRow<int, DoubleDefault>(
       where: where?.call(DoubleDefault.t),
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
@@ -282,7 +282,7 @@ class DoubleDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DoubleDefault>(
+    return session.db.findById<int, DoubleDefault>(
       id,
       transaction: transaction,
     );
@@ -299,7 +299,7 @@ class DoubleDefaultRepository {
     List<DoubleDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DoubleDefault>(
+    return session.db.insert<int, DoubleDefault>(
       rows,
       transaction: transaction,
     );
@@ -313,7 +313,7 @@ class DoubleDefaultRepository {
     DoubleDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DoubleDefault>(
+    return session.db.insertRow<int, DoubleDefault>(
       row,
       transaction: transaction,
     );
@@ -330,7 +330,7 @@ class DoubleDefaultRepository {
     _i1.ColumnSelections<DoubleDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DoubleDefault>(
+    return session.db.update<int, DoubleDefault>(
       rows,
       columns: columns?.call(DoubleDefault.t),
       transaction: transaction,
@@ -346,7 +346,7 @@ class DoubleDefaultRepository {
     _i1.ColumnSelections<DoubleDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DoubleDefault>(
+    return session.db.updateRow<int, DoubleDefault>(
       row,
       columns: columns?.call(DoubleDefault.t),
       transaction: transaction,
@@ -361,7 +361,7 @@ class DoubleDefaultRepository {
     List<DoubleDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DoubleDefault>(
+    return session.db.delete<int, DoubleDefault>(
       rows,
       transaction: transaction,
     );
@@ -373,7 +373,7 @@ class DoubleDefaultRepository {
     DoubleDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DoubleDefault>(
+    return session.db.deleteRow<int, DoubleDefault>(
       row,
       transaction: transaction,
     );
@@ -385,7 +385,7 @@ class DoubleDefaultRepository {
     required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DoubleDefault>(
+    return session.db.deleteWhere<int, DoubleDefault>(
       where: where(DoubleDefault.t),
       transaction: transaction,
     );
@@ -399,7 +399,7 @@ class DoubleDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DoubleDefault>(
+    return session.db.count<int, DoubleDefault>(
       where: where?.call(DoubleDefault.t),
       limit: limit,
       transaction: transaction,

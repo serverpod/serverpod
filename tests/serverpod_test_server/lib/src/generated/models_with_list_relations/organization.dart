@@ -13,7 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/city.dart' as _i3;
 
-abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Organization
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Organization._({
     this.id,
     required this.name,
@@ -61,7 +62,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
   _i3.City? city;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
@@ -173,7 +174,7 @@ class _OrganizationImpl extends Organization {
   }
 }
 
-class OrganizationTable extends _i1.Table {
+class OrganizationTable extends _i1.Table<int> {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     name = _i1.ColumnString(
       'name',
@@ -278,7 +279,7 @@ class OrganizationInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Organization.t;
+  _i1.Table<int> get table => Organization.t;
 }
 
 class OrganizationIncludeList extends _i1.IncludeList {
@@ -298,7 +299,7 @@ class OrganizationIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Organization.t;
+  _i1.Table<int> get table => Organization.t;
 }
 
 class OrganizationRepository {
@@ -345,7 +346,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.db.find<Organization>(
+    return session.db.find<int, Organization>(
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -384,7 +385,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.db.findFirstRow<Organization>(
+    return session.db.findFirstRow<int, Organization>(
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -402,7 +403,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.db.findById<Organization>(
+    return session.db.findById<int, Organization>(
       id,
       transaction: transaction,
       include: include,
@@ -420,7 +421,7 @@ class OrganizationRepository {
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Organization>(
+    return session.db.insert<int, Organization>(
       rows,
       transaction: transaction,
     );
@@ -434,7 +435,7 @@ class OrganizationRepository {
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Organization>(
+    return session.db.insertRow<int, Organization>(
       row,
       transaction: transaction,
     );
@@ -451,7 +452,7 @@ class OrganizationRepository {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Organization>(
+    return session.db.update<int, Organization>(
       rows,
       columns: columns?.call(Organization.t),
       transaction: transaction,
@@ -467,7 +468,7 @@ class OrganizationRepository {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Organization>(
+    return session.db.updateRow<int, Organization>(
       row,
       columns: columns?.call(Organization.t),
       transaction: transaction,
@@ -482,7 +483,7 @@ class OrganizationRepository {
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Organization>(
+    return session.db.delete<int, Organization>(
       rows,
       transaction: transaction,
     );
@@ -494,7 +495,7 @@ class OrganizationRepository {
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Organization>(
+    return session.db.deleteRow<int, Organization>(
       row,
       transaction: transaction,
     );
@@ -506,7 +507,7 @@ class OrganizationRepository {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Organization>(
+    return session.db.deleteWhere<int, Organization>(
       where: where(Organization.t),
       transaction: transaction,
     );
@@ -520,7 +521,7 @@ class OrganizationRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Organization>(
+    return session.db.count<int, Organization>(
       where: where?.call(Organization.t),
       limit: limit,
       transaction: transaction,
@@ -548,7 +549,7 @@ class OrganizationAttachRepository {
 
     var $person =
         person.map((e) => e.copyWith(organizationId: organization.id)).toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
       transaction: transaction,
@@ -575,7 +576,7 @@ class OrganizationAttachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: city.id);
-    await session.db.updateRow<Organization>(
+    await session.db.updateRow<int, Organization>(
       $organization,
       columns: [Organization.t.cityId],
       transaction: transaction,
@@ -598,7 +599,7 @@ class OrganizationAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
       transaction: transaction,
@@ -624,7 +625,7 @@ class OrganizationDetachRepository {
     }
 
     var $person = person.map((e) => e.copyWith(organizationId: null)).toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
       transaction: transaction,
@@ -650,7 +651,7 @@ class OrganizationDetachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: null);
-    await session.db.updateRow<Organization>(
+    await session.db.updateRow<int, Organization>(
       $organization,
       columns: [Organization.t.cityId],
       transaction: transaction,
@@ -672,7 +673,7 @@ class OrganizationDetachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: null);
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<int, _i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
       transaction: transaction,

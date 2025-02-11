@@ -30,13 +30,12 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   name: column.name,
                   columnType:
                       ColumnType.values.byName(column.type.databaseTypeEnum),
-                  // The id column is not null, since it is auto incrementing.
+                  // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
-                  columnDefault: _getColumnDefault(
-                    column,
-                    classDefinition,
-                    ColumnType.values.byName(column.type.databaseTypeEnum),
+                  columnDefault: getColumnDefault(
+                    column.type,
+                    column.defaultPersistValue,
                   ),
                 )
           ],
@@ -117,20 +116,9 @@ void _sortTableDefinitions(List<TableDefinition> tables) {
   tables.sort((a, b) => a.name.compareTo(b.name));
 }
 
-String? _getColumnDefault(
-  SerializableModelFieldDefinition column,
-  ClassDefinition classDefinition,
-  ColumnType type,
-) {
-  if (column.name == 'id') {
-    return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
-  }
-
-  var defaultValueType = column.type.defaultValueType;
-  if (defaultValueType == null) return null;
-
-  var defaultValue = column.defaultPersistValue;
-  if (defaultValue == null) return null;
+String? getColumnDefault(TypeDefinition columnType, dynamic defaultValue) {
+  var defaultValueType = columnType.defaultValueType;
+  if ((defaultValue == null) || (defaultValueType == null)) return null;
 
   switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
@@ -156,6 +144,9 @@ String? _getColumnDefault(
       if (defaultUuidValueRandom == defaultValue) {
         return 'gen_random_uuid()';
       }
+      if (defaultUuidValueRandomV7 == defaultValue) {
+        return 'gen_random_uuid_v7()';
+      }
       return '${_escapeSqlString(defaultValue)}::uuid';
     case DefaultValueAllowedType.uri:
       return '${_escapeSqlString(defaultValue)}::text';
@@ -166,7 +157,7 @@ String? _getColumnDefault(
       Duration parsedDuration = parseDuration(defaultValue);
       return '${parsedDuration.toJson()}';
     case DefaultValueAllowedType.isEnum:
-      var enumDefinition = column.type.enumDefinition;
+      var enumDefinition = columnType.enumDefinition;
       if (enumDefinition == null) return null;
       var values = enumDefinition.values;
       return switch (enumDefinition.serialized) {

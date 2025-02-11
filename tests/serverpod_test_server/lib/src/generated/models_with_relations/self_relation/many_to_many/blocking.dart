@@ -13,7 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
 
-abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Blocking
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -62,7 +63,7 @@ abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Member? blockedBy;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
@@ -171,7 +172,7 @@ class _BlockingImpl extends Blocking {
   }
 }
 
-class BlockingTable extends _i1.Table {
+class BlockingTable extends _i1.Table<int> {
   BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
     blockedId = _i1.ColumnInt(
       'blockedId',
@@ -256,7 +257,7 @@ class BlockingInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Blocking.t;
+  _i1.Table<int> get table => Blocking.t;
 }
 
 class BlockingIncludeList extends _i1.IncludeList {
@@ -276,7 +277,7 @@ class BlockingIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Blocking.t;
+  _i1.Table<int> get table => Blocking.t;
 }
 
 class BlockingRepository {
@@ -317,7 +318,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.find<Blocking>(
+    return session.db.find<int, Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -356,7 +357,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.findFirstRow<Blocking>(
+    return session.db.findFirstRow<int, Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -374,7 +375,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.findById<Blocking>(
+    return session.db.findById<int, Blocking>(
       id,
       transaction: transaction,
       include: include,
@@ -392,7 +393,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Blocking>(
+    return session.db.insert<int, Blocking>(
       rows,
       transaction: transaction,
     );
@@ -406,7 +407,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Blocking>(
+    return session.db.insertRow<int, Blocking>(
       row,
       transaction: transaction,
     );
@@ -423,7 +424,7 @@ class BlockingRepository {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Blocking>(
+    return session.db.update<int, Blocking>(
       rows,
       columns: columns?.call(Blocking.t),
       transaction: transaction,
@@ -439,7 +440,7 @@ class BlockingRepository {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Blocking>(
+    return session.db.updateRow<int, Blocking>(
       row,
       columns: columns?.call(Blocking.t),
       transaction: transaction,
@@ -454,7 +455,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Blocking>(
+    return session.db.delete<int, Blocking>(
       rows,
       transaction: transaction,
     );
@@ -466,7 +467,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Blocking>(
+    return session.db.deleteRow<int, Blocking>(
       row,
       transaction: transaction,
     );
@@ -478,7 +479,7 @@ class BlockingRepository {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Blocking>(
+    return session.db.deleteWhere<int, Blocking>(
       where: where(Blocking.t),
       transaction: transaction,
     );
@@ -492,7 +493,7 @@ class BlockingRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Blocking>(
+    return session.db.count<int, Blocking>(
       where: where?.call(Blocking.t),
       limit: limit,
       transaction: transaction,
@@ -519,7 +520,7 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: blocked.id);
-    await session.db.updateRow<Blocking>(
+    await session.db.updateRow<int, Blocking>(
       $blocking,
       columns: [Blocking.t.blockedId],
       transaction: transaction,
@@ -542,7 +543,7 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: blockedBy.id);
-    await session.db.updateRow<Blocking>(
+    await session.db.updateRow<int, Blocking>(
       $blocking,
       columns: [Blocking.t.blockedById],
       transaction: transaction,

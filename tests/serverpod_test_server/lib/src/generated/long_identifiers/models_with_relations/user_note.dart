@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UserNote
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UserNote._({
     this.id,
     required this.name,
@@ -41,7 +42,7 @@ abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
   int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
@@ -161,7 +162,7 @@ class UserNoteImplicit extends _UserNoteImpl {
   }
 }
 
-class UserNoteTable extends _i1.Table {
+class UserNoteTable extends _i1.Table<int> {
   UserNoteTable({super.tableRelation}) : super(tableName: 'user_note') {
     name = _i1.ColumnString(
       'name',
@@ -194,7 +195,7 @@ class UserNoteInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserNote.t;
+  _i1.Table<int> get table => UserNote.t;
 }
 
 class UserNoteIncludeList extends _i1.IncludeList {
@@ -214,7 +215,7 @@ class UserNoteIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserNote.t;
+  _i1.Table<int> get table => UserNote.t;
 }
 
 class UserNoteRepository {
@@ -252,7 +253,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserNote>(
+    return session.db.find<int, UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -289,7 +290,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserNote>(
+    return session.db.findFirstRow<int, UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -305,7 +306,7 @@ class UserNoteRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserNote>(
+    return session.db.findById<int, UserNote>(
       id,
       transaction: transaction,
     );
@@ -322,7 +323,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNote>(
+    return session.db.insert<int, UserNote>(
       rows,
       transaction: transaction,
     );
@@ -336,7 +337,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNote>(
+    return session.db.insertRow<int, UserNote>(
       row,
       transaction: transaction,
     );
@@ -353,7 +354,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserNote>(
+    return session.db.update<int, UserNote>(
       rows,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -369,7 +370,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserNote>(
+    return session.db.updateRow<int, UserNote>(
       row,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -384,7 +385,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNote>(
+    return session.db.delete<int, UserNote>(
       rows,
       transaction: transaction,
     );
@@ -396,7 +397,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNote>(
+    return session.db.deleteRow<int, UserNote>(
       row,
       transaction: transaction,
     );
@@ -408,7 +409,7 @@ class UserNoteRepository {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserNote>(
+    return session.db.deleteWhere<int, UserNote>(
       where: where(UserNote.t),
       transaction: transaction,
     );
@@ -422,7 +423,7 @@ class UserNoteRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserNote>(
+    return session.db.count<int, UserNote>(
       where: where?.call(UserNote.t),
       limit: limit,
       transaction: transaction,

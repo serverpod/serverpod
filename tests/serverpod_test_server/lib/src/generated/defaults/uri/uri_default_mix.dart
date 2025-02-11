@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UriDefaultMix._({
     this.id,
     Uri? uriDefaultAndDefaultModel,
@@ -58,7 +58,7 @@ abstract class UriDefaultMix
   Uri uriDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -158,7 +158,7 @@ class _UriDefaultMixImpl extends UriDefaultMix {
   }
 }
 
-class UriDefaultMixTable extends _i1.Table {
+class UriDefaultMixTable extends _i1.Table<int> {
   UriDefaultMixTable({super.tableRelation})
       : super(tableName: 'uri_default_mix') {
     uriDefaultAndDefaultModel = _i1.ColumnUri(
@@ -200,7 +200,7 @@ class UriDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UriDefaultMix.t;
+  _i1.Table<int> get table => UriDefaultMix.t;
 }
 
 class UriDefaultMixIncludeList extends _i1.IncludeList {
@@ -220,7 +220,7 @@ class UriDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UriDefaultMix.t;
+  _i1.Table<int> get table => UriDefaultMix.t;
 }
 
 class UriDefaultMixRepository {
@@ -258,7 +258,7 @@ class UriDefaultMixRepository {
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UriDefaultMix>(
+    return session.db.find<int, UriDefaultMix>(
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -295,7 +295,7 @@ class UriDefaultMixRepository {
     _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UriDefaultMix>(
+    return session.db.findFirstRow<int, UriDefaultMix>(
       where: where?.call(UriDefaultMix.t),
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
@@ -311,7 +311,7 @@ class UriDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefaultMix>(
+    return session.db.findById<int, UriDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -328,7 +328,7 @@ class UriDefaultMixRepository {
     List<UriDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefaultMix>(
+    return session.db.insert<int, UriDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class UriDefaultMixRepository {
     UriDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UriDefaultMix>(
+    return session.db.insertRow<int, UriDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class UriDefaultMixRepository {
     _i1.ColumnSelections<UriDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UriDefaultMix>(
+    return session.db.update<int, UriDefaultMix>(
       rows,
       columns: columns?.call(UriDefaultMix.t),
       transaction: transaction,
@@ -375,7 +375,7 @@ class UriDefaultMixRepository {
     _i1.ColumnSelections<UriDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UriDefaultMix>(
+    return session.db.updateRow<int, UriDefaultMix>(
       row,
       columns: columns?.call(UriDefaultMix.t),
       transaction: transaction,
@@ -390,7 +390,7 @@ class UriDefaultMixRepository {
     List<UriDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefaultMix>(
+    return session.db.delete<int, UriDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -402,7 +402,7 @@ class UriDefaultMixRepository {
     UriDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UriDefaultMix>(
+    return session.db.deleteRow<int, UriDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class UriDefaultMixRepository {
     required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UriDefaultMix>(
+    return session.db.deleteWhere<int, UriDefaultMix>(
       where: where(UriDefaultMix.t),
       transaction: transaction,
     );
@@ -428,7 +428,7 @@ class UriDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UriDefaultMix>(
+    return session.db.count<int, UriDefaultMix>(
       where: where?.call(UriDefaultMix.t),
       limit: limit,
       transaction: transaction,

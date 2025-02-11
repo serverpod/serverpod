@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UriDefaultPersist._({
     this.id,
     this.uriDefaultPersist,
@@ -43,7 +43,7 @@ abstract class UriDefaultPersist
   Uri? uriDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -128,7 +128,7 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }
 }
 
-class UriDefaultPersistTable extends _i1.Table {
+class UriDefaultPersistTable extends _i1.Table<int> {
   UriDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uri_default_persist') {
     uriDefaultPersist = _i1.ColumnUri(
@@ -154,7 +154,7 @@ class UriDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UriDefaultPersist.t;
+  _i1.Table<int> get table => UriDefaultPersist.t;
 }
 
 class UriDefaultPersistIncludeList extends _i1.IncludeList {
@@ -174,7 +174,7 @@ class UriDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UriDefaultPersist.t;
+  _i1.Table<int> get table => UriDefaultPersist.t;
 }
 
 class UriDefaultPersistRepository {
@@ -212,7 +212,7 @@ class UriDefaultPersistRepository {
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UriDefaultPersist>(
+    return session.db.find<int, UriDefaultPersist>(
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -249,7 +249,7 @@ class UriDefaultPersistRepository {
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UriDefaultPersist>(
+    return session.db.findFirstRow<int, UriDefaultPersist>(
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
@@ -265,7 +265,7 @@ class UriDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefaultPersist>(
+    return session.db.findById<int, UriDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -282,7 +282,7 @@ class UriDefaultPersistRepository {
     List<UriDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefaultPersist>(
+    return session.db.insert<int, UriDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class UriDefaultPersistRepository {
     UriDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UriDefaultPersist>(
+    return session.db.insertRow<int, UriDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -313,7 +313,7 @@ class UriDefaultPersistRepository {
     _i1.ColumnSelections<UriDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UriDefaultPersist>(
+    return session.db.update<int, UriDefaultPersist>(
       rows,
       columns: columns?.call(UriDefaultPersist.t),
       transaction: transaction,
@@ -329,7 +329,7 @@ class UriDefaultPersistRepository {
     _i1.ColumnSelections<UriDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UriDefaultPersist>(
+    return session.db.updateRow<int, UriDefaultPersist>(
       row,
       columns: columns?.call(UriDefaultPersist.t),
       transaction: transaction,
@@ -344,7 +344,7 @@ class UriDefaultPersistRepository {
     List<UriDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefaultPersist>(
+    return session.db.delete<int, UriDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class UriDefaultPersistRepository {
     UriDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UriDefaultPersist>(
+    return session.db.deleteRow<int, UriDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -368,7 +368,7 @@ class UriDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UriDefaultPersist>(
+    return session.db.deleteWhere<int, UriDefaultPersist>(
       where: where(UriDefaultPersist.t),
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class UriDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UriDefaultPersist>(
+    return session.db.count<int, UriDefaultPersist>(
       where: where?.call(UriDefaultPersist.t),
       limit: limit,
       transaction: transaction,

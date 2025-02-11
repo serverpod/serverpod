@@ -111,6 +111,12 @@ void validateYamlModel(
       collector,
     );
 
+    _collectDependsOnKeyErrors(
+      node,
+      documentContents,
+      collector,
+    );
+
     _collectMutuallyExclusiveKeyErrors(
       node,
       documentContents,
@@ -176,6 +182,23 @@ void _collectInvalidKeyErrors(
         'The "$key" property is not allowed for $documentType type. Valid keys are $validKeys.',
         keyNode.span,
       ));
+    }
+  }
+}
+
+void _collectDependsOnKeyErrors(
+  ValidateNode node,
+  YamlMap documentContents,
+  CodeAnalysisCollector collector,
+) {
+  if (_shouldCheckDependsOnKeys(node, documentContents)) {
+    for (var dependsOnKey in node.dependsOnKeys) {
+      if (!documentContents.containsKey(dependsOnKey)) {
+        collector.addError(SourceSpanSeverityException(
+          'The "${node.key}" property depends on the "$dependsOnKey" property.',
+          documentContents.key(node.key)?.span,
+        ));
+      }
     }
   }
 }
@@ -403,6 +426,14 @@ Iterable<MapEntry<dynamic, YamlNode>> _findNodesByKeys(
 
 bool _isMissingRequiredKey(ValidateNode node, YamlMap documentContents) {
   return node.isRequired && !documentContents.containsKey(node.key);
+}
+
+bool _shouldCheckDependsOnKeys(
+  ValidateNode node,
+  YamlMap documentContents,
+) {
+  return documentContents.containsKey(node.key) &&
+      node.dependsOnKeys.isNotEmpty;
 }
 
 bool _shouldCheckMutuallyExclusiveKeys(

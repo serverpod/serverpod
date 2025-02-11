@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DateTimeDefault
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DateTimeDefault._({
     this.id,
     DateTime? dateTimeDefaultNow,
@@ -60,7 +60,7 @@ abstract class DateTimeDefault
   DateTime? dateTimeDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DateTimeDefault]
   /// with some or all fields replaced by the given arguments.
@@ -159,7 +159,7 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
   }
 }
 
-class DateTimeDefaultTable extends _i1.Table {
+class DateTimeDefaultTable extends _i1.Table<int> {
   DateTimeDefaultTable({super.tableRelation})
       : super(tableName: 'datetime_default') {
     dateTimeDefaultNow = _i1.ColumnDateTime(
@@ -201,7 +201,7 @@ class DateTimeDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DateTimeDefault.t;
+  _i1.Table<int> get table => DateTimeDefault.t;
 }
 
 class DateTimeDefaultIncludeList extends _i1.IncludeList {
@@ -221,7 +221,7 @@ class DateTimeDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DateTimeDefault.t;
+  _i1.Table<int> get table => DateTimeDefault.t;
 }
 
 class DateTimeDefaultRepository {
@@ -259,7 +259,7 @@ class DateTimeDefaultRepository {
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DateTimeDefault>(
+    return session.db.find<int, DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
@@ -296,7 +296,7 @@ class DateTimeDefaultRepository {
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DateTimeDefault>(
+    return session.db.findFirstRow<int, DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
@@ -312,7 +312,7 @@ class DateTimeDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DateTimeDefault>(
+    return session.db.findById<int, DateTimeDefault>(
       id,
       transaction: transaction,
     );
@@ -329,7 +329,7 @@ class DateTimeDefaultRepository {
     List<DateTimeDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DateTimeDefault>(
+    return session.db.insert<int, DateTimeDefault>(
       rows,
       transaction: transaction,
     );
@@ -343,7 +343,7 @@ class DateTimeDefaultRepository {
     DateTimeDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DateTimeDefault>(
+    return session.db.insertRow<int, DateTimeDefault>(
       row,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class DateTimeDefaultRepository {
     _i1.ColumnSelections<DateTimeDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DateTimeDefault>(
+    return session.db.update<int, DateTimeDefault>(
       rows,
       columns: columns?.call(DateTimeDefault.t),
       transaction: transaction,
@@ -376,7 +376,7 @@ class DateTimeDefaultRepository {
     _i1.ColumnSelections<DateTimeDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DateTimeDefault>(
+    return session.db.updateRow<int, DateTimeDefault>(
       row,
       columns: columns?.call(DateTimeDefault.t),
       transaction: transaction,
@@ -391,7 +391,7 @@ class DateTimeDefaultRepository {
     List<DateTimeDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DateTimeDefault>(
+    return session.db.delete<int, DateTimeDefault>(
       rows,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class DateTimeDefaultRepository {
     DateTimeDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DateTimeDefault>(
+    return session.db.deleteRow<int, DateTimeDefault>(
       row,
       transaction: transaction,
     );
@@ -415,7 +415,7 @@ class DateTimeDefaultRepository {
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DateTimeDefault>(
+    return session.db.deleteWhere<int, DateTimeDefault>(
       where: where(DateTimeDefault.t),
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class DateTimeDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DateTimeDefault>(
+    return session.db.count<int, DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       limit: limit,
       transaction: transaction,

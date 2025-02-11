@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Channel implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Channel._({
     this.id,
     required this.name,
@@ -47,7 +47,7 @@ abstract class Channel implements _i1.TableRow, _i1.ProtocolSerialization {
   String channel;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.
@@ -135,7 +135,7 @@ class _ChannelImpl extends Channel {
   }
 }
 
-class ChannelTable extends _i1.Table {
+class ChannelTable extends _i1.Table<int> {
   ChannelTable({super.tableRelation}) : super(tableName: 'channel') {
     name = _i1.ColumnString(
       'name',
@@ -168,7 +168,7 @@ class ChannelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Channel.t;
+  _i1.Table<int> get table => Channel.t;
 }
 
 class ChannelIncludeList extends _i1.IncludeList {
@@ -188,7 +188,7 @@ class ChannelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Channel.t;
+  _i1.Table<int> get table => Channel.t;
 }
 
 class ChannelRepository {
@@ -226,7 +226,7 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Channel>(
+    return session.db.find<int, Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
@@ -263,7 +263,7 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<Channel>(
+    return session.db.findFirstRow<int, Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
@@ -279,7 +279,7 @@ class ChannelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Channel>(
+    return session.db.findById<int, Channel>(
       id,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class ChannelRepository {
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Channel>(
+    return session.db.insert<int, Channel>(
       rows,
       transaction: transaction,
     );
@@ -310,7 +310,7 @@ class ChannelRepository {
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Channel>(
+    return session.db.insertRow<int, Channel>(
       row,
       transaction: transaction,
     );
@@ -327,7 +327,7 @@ class ChannelRepository {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Channel>(
+    return session.db.update<int, Channel>(
       rows,
       columns: columns?.call(Channel.t),
       transaction: transaction,
@@ -343,7 +343,7 @@ class ChannelRepository {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Channel>(
+    return session.db.updateRow<int, Channel>(
       row,
       columns: columns?.call(Channel.t),
       transaction: transaction,
@@ -358,7 +358,7 @@ class ChannelRepository {
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Channel>(
+    return session.db.delete<int, Channel>(
       rows,
       transaction: transaction,
     );
@@ -370,7 +370,7 @@ class ChannelRepository {
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Channel>(
+    return session.db.deleteRow<int, Channel>(
       row,
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class ChannelRepository {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Channel>(
+    return session.db.deleteWhere<int, Channel>(
       where: where(Channel.t),
       transaction: transaction,
     );
@@ -396,7 +396,7 @@ class ChannelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Channel>(
+    return session.db.count<int, Channel>(
       where: where?.call(Channel.t),
       limit: limit,
       transaction: transaction,

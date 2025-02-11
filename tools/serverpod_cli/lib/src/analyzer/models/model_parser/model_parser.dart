@@ -18,6 +18,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
+    SupportedIdType defaultIdType,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -44,13 +45,15 @@ class ModelParser {
     );
 
     var tableName = _parseTableName(documentContents);
+    var idType = _parseIdType(documentContents) ?? defaultIdType;
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      tableName != null,
+      tableName,
       extraClasses,
       serverOnly,
+      idType,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -152,34 +155,31 @@ class ModelParser {
     return tableName;
   }
 
+  static SupportedIdType? _parseIdType(YamlMap documentContents) {
+    var idType = documentContents.nodes[Keyword.idType]?.value;
+    if (idType is! String) return null;
+    try {
+      return SupportedIdType.fromString(idType);
+    } on FormatException {
+      return null;
+    }
+  }
+
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    bool hasTable,
+    String? tableName,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
+    SupportedIdType idType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
-    if (hasTable) {
-      fields.add(
-        SerializableModelFieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
-          scope: ModelFieldScopeDefinition.all,
-          shouldPersist: true,
-          documentation: [
-            '/// The database id, set if the object has been inserted into the',
-            '/// database or if it has been fetched from the database. Otherwise,',
-            '/// the id will be null.',
-          ],
-        ),
-      );
-    }
 
     var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap) return fields;
+    if (fieldsNode is! YamlMap?) return fields;
 
-    fields.addAll(fieldsNode.nodes.entries.expand((fieldNode) {
+    var fieldsNodeEntries = fieldsNode?.nodes.entries ?? [];
+    fields.addAll(fieldsNodeEntries.expand((fieldNode) {
       return _parseModelFieldDefinition(
         fieldNode,
         docsExtractor,
@@ -187,6 +187,37 @@ class ModelParser {
         serverOnlyClass,
       );
     }).toList());
+
+    if (tableName != null) {
+      var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
+
+      // The 'int' id type is special and should be handled differently.
+      if (maybeIdColumn?.type.className == 'int') {
+        maybeIdColumn = null;
+        idType = SupportedIdType.int;
+      }
+
+      var defaultIdFieldDoc = [
+        '/// The database id, set if the object has been inserted into the',
+        '/// database or if it has been fetched from the database. Otherwise,',
+        '/// the id will be null.',
+      ];
+
+      fields.removeWhere((f) => f.name == 'id');
+      fields.insert(
+        0,
+        SerializableModelFieldDefinition(
+          name: 'id',
+          type: (maybeIdColumn?.type ?? idType.type).asNullable,
+          scope: ModelFieldScopeDefinition.all,
+          defaultPersistValue: (maybeIdColumn != null)
+              ? maybeIdColumn.defaultPersistValue
+              : idType.dbColumnDefaultBuilder(tableName),
+          shouldPersist: true,
+          documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
+        ),
+      );
+    }
 
     return fields;
   }

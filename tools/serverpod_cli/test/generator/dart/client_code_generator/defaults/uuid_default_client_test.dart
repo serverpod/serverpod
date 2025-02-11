@@ -38,6 +38,11 @@ void main() {
             .withDefaults(defaultModelValue: 'random')
             .build(),
         FieldDefinitionBuilder()
+            .withName('uuidDefaultRandomV7')
+            .withTypeDefinition('UuidValue', false)
+            .withDefaults(defaultModelValue: 'random_v7')
+            .build(),
+        FieldDefinitionBuilder()
             .withName('uuidDefaultStr')
             .withTypeDefinition('UuidValue', false)
             .withDefaults(
@@ -87,7 +92,7 @@ void main() {
         () {
           expect(
             privateConstructor?.parameters.toSource().withoutImportPrefix,
-            '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
+            '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultRandomV7, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
           );
         },
       );
@@ -99,6 +104,16 @@ void main() {
               .firstWhere((e) => e.toSource().contains('uuidDefaultRandom'));
           expect(initializer?.toSource().withoutImportPrefix,
               'uuidDefaultRandom = uuidDefaultRandom ?? Uuid().v4obj()');
+        },
+      );
+
+      test(
+        'with uuidDefaultRandomV7 default value set correctly',
+        () {
+          var initializer = privateConstructor?.initializers
+              .firstWhere((e) => e.toSource().contains('uuidDefaultRandomV7'));
+          expect(initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? Uuid().v7obj()');
         },
       );
 

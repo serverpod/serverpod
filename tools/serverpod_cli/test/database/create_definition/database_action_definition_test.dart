@@ -10,7 +10,7 @@ void main() {
   test(
       'Given a class definition with a table, then generate a table with that name.',
       () {
-    var field = FieldDefinitionBuilder().withPrimaryKey().build();
+    var field = FieldDefinitionBuilder().withPrimaryKey('example').build();
     var model = ClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)
@@ -37,7 +37,7 @@ void main() {
 
     var field = FieldDefinitionBuilder()
         .withName('parentId')
-        .withIdType(true)
+        .withIdType(isNullable: true)
         .withRelation(relation)
         .build();
 

@@ -19,8 +19,8 @@ void main() {
   });
 
   group('Given table relation with relation definition', () {
-    var table = Table(tableName: 'company');
-    var foreignTable = Table(tableName: 'citizen');
+    var table = Table<int>(tableName: 'company');
+    var foreignTable = Table<int>(tableName: 'citizen');
     var lastJoiningColumn = ColumnInt('ceoId', table);
     var lastJoiningForeignColumn = ColumnInt('id', foreignTable);
     var tableRelationEntries = [
@@ -125,8 +125,8 @@ void main() {
     });
 
     group('when using copyAndAppend to create new table relation ', () {
-      var table = Table(tableName: 'citizen');
-      var foreignTable = Table(tableName: 'restaurant');
+      var table = Table<int>(tableName: 'citizen');
+      var foreignTable = Table<int>(tableName: 'restaurant');
       var newTableRelation = tableRelation.copyAndAppend(
         TableRelationEntry(
           relationAlias: 'favoriteRestaurant',
@@ -151,9 +151,9 @@ void main() {
   });
 
   group('Given table relation with multiple relation definitions', () {
-    var companyTable = Table(tableName: 'company');
-    var citizenTable = Table(tableName: 'citizen');
-    var restaurantTable = Table(tableName: 'restaurant');
+    var companyTable = Table<int>(tableName: 'company');
+    var citizenTable = Table<int>(tableName: 'citizen');
+    var restaurantTable = Table<int>(tableName: 'restaurant');
     var tableRelationEntries = [
       TableRelationEntry(
         relationAlias: 'ceo',
@@ -257,10 +257,10 @@ void main() {
       () {
     var companyTableName =
         'company_company_company_company_company_company_company';
-    var companyTable = Table(
+    var companyTable = Table<int>(
       tableName: companyTableName,
     );
-    var citizenTable = Table(
+    var citizenTable = Table<int>(
       tableName: 'citizen_citizen_citizen_citizen_citizen_citizen_citizen',
     );
     var joiningColumn = ColumnInt(
@@ -274,7 +274,7 @@ void main() {
           'ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo_ceo',
       field: joiningColumn,
       foreignField: joiningForeignColumn,
-      createTable: (foreignTableRelation) => Table(
+      createTable: (foreignTableRelation) => Table<int>(
         tableName: companyTableName,
         tableRelation: foreignTableRelation,
       ),
@@ -327,13 +327,13 @@ void main() {
 
   group('Given a table relation between three tables with long table names',
       () {
-    var citizenTable = Table(
+    var citizenTable = Table<int>(
       tableName: 'citizen_citizen_citizen_citizen_citizen_citizen_citizen',
     );
-    var companyTable = Table(
+    var companyTable = Table<int>(
       tableName: 'company_company_company_company_company_company_company',
     );
-    var addressTable = Table(
+    var addressTable = Table<int>(
       tableName: 'address_address_address_address_address_address_address',
     );
     Table relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
