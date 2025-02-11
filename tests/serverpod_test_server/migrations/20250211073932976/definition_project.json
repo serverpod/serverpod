@@ -4139,6 +4139,24 @@
           "columnType": 0,
           "isNullable": true,
           "dartType": "protocol:TestEnumStringified?"
+        },
+        {
+          "name": "aList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<int>?"
+        },
+        {
+          "name": "aMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<int,int>?"
+        },
+        {
+          "name": "aSet",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Set<int>?"
         }
       ],
       "foreignKeys": [],
