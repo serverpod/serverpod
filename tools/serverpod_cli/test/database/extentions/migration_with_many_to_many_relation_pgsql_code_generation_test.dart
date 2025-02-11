@@ -39,8 +39,11 @@ fields:
       var definitions = analyzer.validateAll();
       expect(collector.errors, isEmpty);
 
-      sourceDefinition =
-          createDatabaseDefinitionFromModels(definitions, 'example', []);
+      sourceDefinition = createDatabaseDefinitionFromModels(
+        definitions,
+        'example',
+        [],
+      );
     }
 
     DatabaseDefinition
@@ -101,5 +104,123 @@ fields:
     expect(dropTableTargetIndex, lessThan(createTableSourceIndex));
     expect(createTableSourceIndex, lessThan(createTableTargetIndex));
     expect(createTableTargetIndex, lessThan(addForegeinKeyIndex));
+  });
+
+  test(
+      'Given two tables that reference each other, when one is renamed, then the migration code should drop both tables and recreate them in a working order',
+      () {
+    DatabaseDefinition sourceDefinition;
+    {
+      var models = [
+        ModelSourceBuilder().withFileName('a').withYaml(
+          '''
+class: A
+table: a
+fields:
+  b: B?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('b').withYaml(
+          '''
+class: B
+table: b
+fields:
+  a: A?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('c').withYaml(
+          '''
+class: C
+table: c
+fields:
+  name: String?
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      expect(collector.errors, isEmpty);
+
+      sourceDefinition = createDatabaseDefinitionFromModels(
+        definitions,
+        'example',
+        [],
+      );
+    }
+
+    DatabaseDefinition
+        targetDefinition; // renames table `target` to `target_new`
+    {
+      var models = [
+        ModelSourceBuilder().withFileName('a').withYaml(
+          '''
+class: A
+table: a_new
+fields:
+  b: B?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('b').withYaml(
+          '''
+class: B
+table: b
+fields:
+  a: A?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('c').withYaml(
+          '''
+class: C
+table: c
+fields:
+  name: String?
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      expect(collector.errors, isEmpty);
+
+      targetDefinition = createDatabaseDefinitionFromModels(
+        definitions,
+        'example',
+        [],
+      );
+    }
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    var psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+    expect(psql, isNot(contains('"c"'))); // C is unchanged
+
+    var dropTableSourceIndex = psql.indexOf('DROP TABLE "b"');
+    var dropTableTargetIndex = psql.indexOf('DROP TABLE "a"');
+    var createTableTargetIndex = psql.indexOf('CREATE TABLE "a_new"');
+    var createTableSourceIndex = psql.indexOf('CREATE TABLE "b"');
+    var addForegeinKeyAIndex = psql.indexOf('ADD CONSTRAINT "a_new_fk_0"');
+    var addForegeinKeyBIndex = psql.indexOf('ADD CONSTRAINT "b_fk_0"');
+
+    expect(dropTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(createTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(createTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(addForegeinKeyAIndex, greaterThanOrEqualTo(0));
+    expect(addForegeinKeyBIndex, greaterThanOrEqualTo(0));
+
+    expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
+    expect(dropTableTargetIndex, lessThan(createTableSourceIndex));
+    expect(createTableTargetIndex, lessThan(createTableSourceIndex));
+    expect(createTableSourceIndex, lessThan(addForegeinKeyAIndex));
+    expect(addForegeinKeyAIndex, lessThan(addForegeinKeyBIndex));
   });
 }

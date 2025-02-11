@@ -10,29 +10,23 @@ DatabaseMigration generateDatabaseMigration({
   var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
-  // Find deleted tables
-  var deleteTables = <String>[];
   var sourceTables =
       databaseSource.tables.where((table) => table.isManaged).toList();
   var targetTables = databaseTarget.tables.where((table) => table.isManaged);
+  var deleteTables = <String>{};
 
-  for (var i = 0; i < sourceTables.length; i++) {
-    var srcTable = sourceTables[i];
-
-    if (!databaseTarget.containsTableNamed(srcTable.name) ||
-        srcTable.foreignKeys.any(
-            (foreignKey) => deleteTables.contains(foreignKey.referenceTable))) {
-      if (!deleteTables.contains(srcTable.name)) {
-        deleteTables.add(srcTable.name);
-
-        // Start the loop over, as an earlier table might point to the newly deleted
-        // table, and thus also needs to get dropped now.
-        i = -1; // loop will add +1 again, making this 0
-      }
+  // Mark tables which do not exist in the target schema anymore for deletion
+  for (var srcTable in sourceTables) {
+    if (!databaseTarget.containsTableNamed(srcTable.name)) {
+      deleteTables.addAll([
+        srcTable.name,
+        // For any table we delete, we also need to delete any other existing table that has a foreign key pointing into this table
+        ..._findDependentTables(srcTable.name, sourceTables),
+      ]);
     }
   }
 
-  for (var tableName in deleteTables.reversed) {
+  for (var tableName in deleteTables.toList().reversed) {
     actions.add(
       DatabaseMigrationAction(
         type: DatabaseMigrationActionType.deleteTable,
@@ -60,7 +54,6 @@ DatabaseMigration generateDatabaseMigration({
         srcTable.managed == false ||
         deleteTables.contains(srcTable.name)) {
       // Added table
-
       actions.add(
         DatabaseMigrationAction(
           type: srcTable == null || deleteTables.contains(srcTable.name)
@@ -105,6 +98,27 @@ DatabaseMigration generateDatabaseMigration({
     warnings: warnings,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
+}
+
+/// Returns the set of table names for all tables which have any relation into the table mentioned by [tableName]
+Set<String> _findDependentTables(
+  String tableName,
+  List<TableDefinition> tables, {
+  Set<String>? relatedTables,
+}) {
+  relatedTables ??= {};
+
+  for (var table in tables) {
+    if (!relatedTables.contains(table.name) &&
+        table.foreignKeys
+            .any((foreignKey) => foreignKey.referenceTable == tableName)) {
+      relatedTables.add(table.name);
+
+      _findDependentTables(table.name, tables, relatedTables: relatedTables);
+    }
+  }
+
+  return relatedTables;
 }
 
 TableMigration? generateTableMigration(
