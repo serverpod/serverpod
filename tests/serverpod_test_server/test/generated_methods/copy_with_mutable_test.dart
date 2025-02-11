@@ -114,6 +114,18 @@ void main() {
     });
 
     test(
+        'Given an object with an Uri and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var uri = Uri.parse('https://serverpod.dev');
+
+      var types = Types(aUri: uri);
+      var typesCopy = types.copyWith();
+      types.aUri = Uri.parse('https://flutter.dev');
+
+      expect(typesCopy.aUri, uri);
+    });
+
+    test(
         'Given an object with an BigInt and a copy of that object when mutating the original then the copy is unmodified.',
         () {
       var bigInt = BigInt.one;

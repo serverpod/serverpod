@@ -87,6 +87,17 @@ void main() {
   });
 
   test(
+      'Given a class with only nullable fields with a Uri defined when calling toJsonForProtocol then the key and value is set.',
+      () {
+    var uri = Uri.parse('https://serverpod.dev');
+    var types = Types(aUri: uri);
+
+    var jsonMap = types.toJsonForProtocol();
+
+    expect(jsonMap, {'aUri': 'https://serverpod.dev'});
+  });
+
+  test(
       'Given a class with only nullable fields with a BigInt defined when calling toJsonForProtocol then the key and value is set.',
       () {
     var types = Types(aBigInt: BigInt.one);
@@ -234,6 +245,20 @@ void main() {
 
     expect(jsonMap, {
       'aUuid': ['00000000-0000-0000-0000-000000000000']
+    });
+  });
+
+  test(
+      'Given a class with a List with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+      () {
+    var object = TypesList(
+      aUri: [Uri.parse('https://serverpod.dev')],
+    );
+
+    var jsonMap = object.toJsonForProtocol();
+
+    expect(jsonMap, {
+      'aUri': ['https://serverpod.dev']
     });
   });
 
@@ -555,6 +580,20 @@ void main() {
     });
 
     test(
+        'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aUriValue: {'key': Uri.parse('https://serverpod.dev')},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aUriValue': {'key': 'https://serverpod.dev'}
+      });
+    });
+
+    test(
         'Given a class with a Map with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
         () {
       var object = TypesMap(
@@ -724,6 +763,22 @@ void main() {
       expect(jsonMap, {
         'aUuidKey': [
           {'k': '00000000-0000-0000-0000-000000000000', 'v': 'value'}
+        ]
+      });
+    });
+
+    test(
+        'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aUriKey: {Uri.parse('https://serverpod.dev'): 'value'},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aUriKey': [
+          {'k': 'https://serverpod.dev', 'v': 'value'}
         ]
       });
     });

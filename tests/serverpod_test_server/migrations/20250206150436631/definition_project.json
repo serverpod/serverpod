@@ -4117,6 +4117,12 @@
           "dartType": "UuidValue?"
         },
         {
+          "name": "aUri",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "Uri?"
+        },
+        {
           "name": "aBigInt",
           "columnType": 0,
           "isNullable": true,
@@ -4203,6 +4209,184 @@
           "type": "btree",
           "isUnique": true,
           "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uri_default",
+      "dartName": "UriDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uri_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uriDefault",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/default'::text",
+          "dartType": "Uri"
+        },
+        {
+          "name": "uriDefaultNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'https://serverpod.dev/default'::text",
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uri_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uri_default_mix",
+      "dartName": "UriDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uri_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uriDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/default'::text",
+          "dartType": "Uri"
+        },
+        {
+          "name": "uriDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/defaultPersist'::text",
+          "dartType": "Uri"
+        },
+        {
+          "name": "uriDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'https://serverpod.dev/defaultPersist'::text",
+          "dartType": "Uri"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uri_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uri_default_model",
+      "dartName": "UriDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uri_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uriDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "Uri"
+        },
+        {
+          "name": "uriDefaultModelNull",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uri_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uri_default_persist",
+      "dartName": "UriDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uri_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uriDefaultPersist",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'https://serverpod.dev/'::text",
+          "dartType": "Uri?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uri_default_persist_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true

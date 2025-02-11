@@ -1263,6 +1263,10 @@ class SerializableModelLibraryGenerator {
         return refer(field.type.className, serverpodUrl(serverCode))
             .property('fromString')
             .call([CodeExpression(Code(defaultValue))]).code;
+      case DefaultValueAllowedType.uri:
+        return refer(field.type.className)
+            .property('parse')
+            .call([CodeExpression(Code(defaultValue))]).code;
       case DefaultValueAllowedType.bigInt:
         return refer(field.type.className)
             .property('parse')

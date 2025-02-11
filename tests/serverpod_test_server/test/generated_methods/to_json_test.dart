@@ -87,6 +87,16 @@ void main() {
   });
 
   test(
+      'Given a class with only nullable fields with a Uuid defined when calling toJson then the key and value is set.',
+      () {
+    var types = Types(aUri: Uri.parse('https://serverpod.dev/foo#test'));
+
+    var jsonMap = types.toJson();
+
+    expect(jsonMap, {'aUri': 'https://serverpod.dev/foo#test'});
+  });
+
+  test(
       'Given a class with only nullable fields with a Duration defined when calling toJson then the key and value is set.',
       () {
     var types = Types(aDuration: Duration(seconds: 1));

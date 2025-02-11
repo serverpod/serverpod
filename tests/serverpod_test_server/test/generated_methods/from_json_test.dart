@@ -282,6 +282,35 @@ void main() {
     });
   });
 
+  group('Given a class with nullable Uri field, ', () {
+    test(
+        'when deserializing from JSON with a Uri string, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aUri': 'https://serverpod.dev'}).aUri,
+        Uri.parse('https://serverpod.dev'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a Uri object, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aUri': Uri.parse('https://serverpod.dev')}).aUri,
+        Uri.parse('https://serverpod.dev'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        Types.fromJson({'aUri': null}).aUri,
+        isNull,
+      );
+    });
+  });
+
   group('Given a class with nullable BigInt field, ', () {
     test(
         'when deserializing from JSON with a Big string, then the result matches the expected value',

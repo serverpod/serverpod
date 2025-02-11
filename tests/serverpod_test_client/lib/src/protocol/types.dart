@@ -25,6 +25,7 @@ abstract class Types implements _i1.SerializableModel {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.aUri,
     this.aBigInt,
     this.anEnum,
     this.aStringifiedEnum,
@@ -43,6 +44,7 @@ abstract class Types implements _i1.SerializableModel {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
@@ -70,6 +72,9 @@ abstract class Types implements _i1.SerializableModel {
       aUuid: jsonSerialization['aUuid'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+      aUri: jsonSerialization['aUri'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(jsonSerialization['aUri']),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
           : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
@@ -112,6 +117,8 @@ abstract class Types implements _i1.SerializableModel {
 
   _i1.UuidValue? aUuid;
 
+  Uri? aUri;
+
   BigInt? aBigInt;
 
   _i3.TestEnum? anEnum;
@@ -137,6 +144,7 @@ abstract class Types implements _i1.SerializableModel {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
@@ -156,6 +164,7 @@ abstract class Types implements _i1.SerializableModel {
       if (aByteData != null) 'aByteData': aByteData?.toJson(),
       if (aDuration != null) 'aDuration': aDuration?.toJson(),
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
@@ -185,6 +194,7 @@ class _TypesImpl extends Types {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
@@ -201,6 +211,7 @@ class _TypesImpl extends Types {
           aByteData: aByteData,
           aDuration: aDuration,
           aUuid: aUuid,
+          aUri: aUri,
           aBigInt: aBigInt,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
@@ -223,6 +234,7 @@ class _TypesImpl extends Types {
     Object? aByteData = _Undefined,
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
+    Object? aUri = _Undefined,
     Object? aBigInt = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
@@ -241,6 +253,7 @@ class _TypesImpl extends Types {
           aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
+      aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
