@@ -49,6 +49,10 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.isImmutable,
+        valueRestriction: BooleanValueRestriction().validate,
+      ),
+      ValidateNode(
         Keyword.managedMigration,
         valueRestriction: BooleanValueRestriction().validate,
       ),

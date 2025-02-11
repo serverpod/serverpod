@@ -23,6 +23,7 @@ class ClassDefinitionBuilder {
   bool _isSealed;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  bool _isImmutable;
 
   ClassDefinitionBuilder()
       : _fileName = 'example',
@@ -35,7 +36,8 @@ class ClassDefinitionBuilder {
         _isException = false,
         _indexes = [],
         _childClasses = [],
-        _isSealed = false;
+        _isSealed = false,
+        _isImmutable = false;
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -65,6 +67,7 @@ class ClassDefinitionBuilder {
       childClasses: _childClasses,
       extendsClass: _extendsClass,
       isSealed: _isSealed,
+      isImmutable: _isImmutable,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
@@ -337,6 +340,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withIsSealed(bool isSealed) {
     _isSealed = isSealed;
+    return this;
+  }
+
+  ClassDefinitionBuilder withImmutable(bool isImmutable) {
+    _isImmutable = isImmutable;
     return this;
   }
 }

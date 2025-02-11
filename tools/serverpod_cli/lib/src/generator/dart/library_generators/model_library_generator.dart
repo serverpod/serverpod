@@ -224,6 +224,7 @@ class SerializableModelLibraryGenerator {
         classDefinition.fields,
         tableName,
         classDefinition.subDirParts,
+        classDefinition.isImmutable,
       ));
 
       classBuilder.constructors.addAll([
@@ -256,6 +257,12 @@ class SerializableModelLibraryGenerator {
       } else if (!classDefinition.isSealed) {
         classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
+
+      if (classDefinition.isImmutable) {
+        classBuilder.methods.add(_buildEqualOperator(classDefinition, fields));
+        classBuilder.methods.add(_buildHashCodeMethod(classDefinition, fields));
+      }
+
       // Serialization
 
       if (!classDefinition.isSealed) {
@@ -542,6 +549,86 @@ class SerializableModelLibraryGenerator {
             )
             .returned
             .statement;
+      },
+    );
+  }
+
+  Method _buildEqualOperator(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.name = 'operator ==';
+        m.annotations.add(refer('override'));
+        m.annotations
+            .add(refer('useResult', serverpodUrl(serverCode)).expression);
+        m.requiredParameters.add(Parameter((p) {
+          p
+            ..name = 'other'
+            ..named = false
+            ..type = refer('Object');
+        }));
+
+        var comparisons = [
+          'other.runtimeType == runtimeType',
+          'other is ${classDefinition.className}',
+          ...fields.map((field) {
+            var name = field.name;
+
+            if (field.type.isCollectionType) {
+              return 'const DeepCollectionEquality().equals(other.$name, $name)';
+            }
+
+            return '(identical(other.$name, $name) || other.$name == $name)';
+          })
+        ];
+
+        m.returns = refer('bool');
+        m.body = Block.of([
+          const Code('return '),
+          Code('identical(this, other) || (${comparisons.join('&&')})'),
+          const Code(';'),
+        ]);
+      },
+    );
+  }
+
+  Method _buildHashCodeMethod(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.name = 'hashCode';
+        m.type = MethodType.getter;
+        m.annotations.add(refer('override'));
+        m.annotations
+            .add(refer('useResult', serverpodUrl(serverCode)).expression);
+
+        var hashedFields = [
+          'runtimeType',
+          ...fields.map((field) {
+            if (field.type.isCollectionType) {
+              return 'const DeepCollectionEquality().hash(${field.name})';
+            }
+
+            return field.name;
+          })
+        ];
+
+        var hashCode = switch (hashedFields.length) {
+          1 => '${hashedFields.first}.hashCode',
+          <= 20 => 'Object.hash(${hashedFields.join(',')})',
+          _ => 'Object.hashAll([${hashedFields.join(',')}])',
+        };
+
+        m.returns = refer('int');
+        m.body = Block.of([
+          const Code('return '),
+          Code(hashCode),
+          const Code(';'),
+        ]);
       },
     );
   }
@@ -1094,6 +1181,10 @@ class SerializableModelLibraryGenerator {
         setAsToThis: true,
       ));
 
+      if (classDefinition.isImmutable) {
+        c.constant = true;
+      }
+
       for (SerializableModelFieldDefinition field in fields) {
         if (!field.hasDefaults) continue;
         if (classDefinition.inheritedFields.contains(field)) continue;
@@ -1128,6 +1219,10 @@ class SerializableModelLibraryGenerator {
         setAsToThis: false,
       ));
 
+      if (classDefinition.isImmutable) {
+        c.constant = true;
+      }
+
       c.redirect = refer('_${className}Impl');
     });
   }
@@ -1153,6 +1248,10 @@ class SerializableModelLibraryGenerator {
           field.name: refer(field.name),
         };
       });
+
+      if (classDefinition.isImmutable) {
+        c.constant = true;
+      }
 
       c.initializers.add(refer('super._').call([], namedParams).code);
     });
@@ -1298,7 +1397,8 @@ class SerializableModelLibraryGenerator {
   List<Field> _buildModelClassFields(
       List<SerializableModelFieldDefinition> fields,
       String? tableName,
-      List<String> subDirParts) {
+      List<String> subDirParts,
+      bool isClassImmutable) {
     List<Field> modelClassFields = [];
     var classFields = fields
         .where((f) =>
@@ -1317,6 +1417,8 @@ class SerializableModelLibraryGenerator {
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
+        f.modifier =
+            isClassImmutable ? FieldModifier.final$ : FieldModifier.var$;
       }));
     }
 

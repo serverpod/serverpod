@@ -8,6 +8,7 @@
 
 # Name of the class to generate.
 class: Example
+immutable: true
 
 # Add the table key, if this class represents a row in the database.
 #table: example
@@ -19,3 +20,4 @@ class: Example
 fields:
   name: String
   data: int
+  items: List<int>

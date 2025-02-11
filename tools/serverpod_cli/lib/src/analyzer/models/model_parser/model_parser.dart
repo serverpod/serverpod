@@ -35,6 +35,7 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var isImmutable = _parseIsImmutable(documentContents);
     var isSealed = _parseIsSealed(documentContents);
     var extendsClass = _parseExtendsClass(documentContents);
 
@@ -73,6 +74,7 @@ class ModelParser {
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
       type: classType,
+      isImmutable: isImmutable,
     );
   }
 
@@ -110,6 +112,13 @@ class ModelParser {
     );
     enumDef.type.enumDefinition = enumDef;
     return enumDef;
+  }
+
+  static bool _parseIsImmutable(YamlMap documentContents) {
+    var isImmutable = documentContents.nodes[Keyword.isImmutable]?.value;
+    if (isImmutable is! bool) return false;
+
+    return isImmutable;
   }
 
   static bool _parseIsSealed(YamlMap documentContents) {

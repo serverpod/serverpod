@@ -68,6 +68,8 @@ class TypeDefinition {
 
   bool get isFutureType => className == 'Future';
 
+  bool get isCollectionType => isListType || isMapType;
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 

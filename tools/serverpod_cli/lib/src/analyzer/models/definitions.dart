@@ -59,6 +59,9 @@ class ClassDefinition extends SerializableModelDefinition {
   /// If set to true the class is sealed.
   final bool isSealed;
 
+  /// If set to true the class is immutable.
+  final bool isImmutable;
+
   /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
   List<InheritanceDefinition> childClasses;
 
@@ -78,6 +81,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required this.isException,
     required super.type,
     required this.isSealed,
+    required this.isImmutable,
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,

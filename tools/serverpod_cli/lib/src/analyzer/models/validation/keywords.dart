@@ -4,6 +4,7 @@ class Keyword {
   static const String enumType = 'enum';
 
   static const String serialized = 'serialized';
+  static const String isImmutable = 'immutable';
 
   static const String isSealed = 'sealed';
   static const String extendsClass = 'extends';
