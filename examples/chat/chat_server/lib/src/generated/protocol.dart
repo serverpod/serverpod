@@ -88,7 +88,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<_i6.Channel>) {
       return (data as List).map((e) => deserialize<_i6.Channel>(e)).toList()
-          as dynamic;
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

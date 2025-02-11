@@ -87,6 +87,16 @@ void main() {
   });
 
   test(
+      'Given a class with only nullable fields with a Uuid defined when calling toJson then the key and value is set.',
+      () {
+    var types = Types(aUri: Uri.parse('https://serverpod.dev/foo#test'));
+
+    var jsonMap = types.toJson();
+
+    expect(jsonMap, {'aUri': 'https://serverpod.dev/foo#test'});
+  });
+
+  test(
       'Given a class with only nullable fields with a Duration defined when calling toJson then the key and value is set.',
       () {
     var types = Types(aDuration: Duration(seconds: 1));
@@ -224,6 +234,26 @@ void main() {
 
     expect(jsonMap, {
       'aUuid': ['00000000-0000-0000-0000-000000000000']
+    });
+  });
+
+  test(
+      'Given a class with a List<BigInt> when calling toJson the entire nested structure is converted.',
+      () {
+    var object = TypesList(
+      aBigInt: [
+        BigInt.parse('-12345678901234567890'),
+        BigInt.parse('18446744073709551615'),
+      ],
+    );
+
+    var jsonMap = object.toJson();
+
+    expect(jsonMap, {
+      'aBigInt': [
+        '-12345678901234567890',
+        '18446744073709551615',
+      ],
     });
   });
 

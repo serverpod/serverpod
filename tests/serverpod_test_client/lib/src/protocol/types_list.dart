@@ -25,6 +25,8 @@ abstract class TypesList implements _i1.SerializableModel {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.aUri,
+    this.aBigInt,
     this.anEnum,
     this.aStringifiedEnum,
     this.anObject,
@@ -41,6 +43,8 @@ abstract class TypesList implements _i1.SerializableModel {
     List<_i2.ByteData>? aByteData,
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
+    List<Uri>? aUri,
+    List<BigInt>? aBigInt,
     List<_i3.TestEnum>? anEnum,
     List<_i4.TestEnumStringified>? aStringifiedEnum,
     List<_i5.Types>? anObject,
@@ -71,6 +75,12 @@ abstract class TypesList implements _i1.SerializableModel {
           .toList(),
       aUuid: (jsonSerialization['aUuid'] as List?)
           ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
+          .toList(),
+      aUri: (jsonSerialization['aUri'] as List?)
+          ?.map((e) => _i1.UriJsonExtension.fromJson(e))
+          .toList(),
+      aBigInt: (jsonSerialization['aBigInt'] as List?)
+          ?.map((e) => _i1.BigIntJsonExtension.fromJson(e))
           .toList(),
       anEnum: (jsonSerialization['anEnum'] as List?)
           ?.map((e) => _i3.TestEnum.fromJson((e as int)))
@@ -111,6 +121,10 @@ abstract class TypesList implements _i1.SerializableModel {
 
   List<_i1.UuidValue>? aUuid;
 
+  List<Uri>? aUri;
+
+  List<BigInt>? aBigInt;
+
   List<_i3.TestEnum>? anEnum;
 
   List<_i4.TestEnumStringified>? aStringifiedEnum;
@@ -133,6 +147,8 @@ abstract class TypesList implements _i1.SerializableModel {
     List<_i2.ByteData>? aByteData,
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
+    List<Uri>? aUri,
+    List<BigInt>? aBigInt,
     List<_i3.TestEnum>? anEnum,
     List<_i4.TestEnumStringified>? aStringifiedEnum,
     List<_i5.Types>? anObject,
@@ -153,6 +169,9 @@ abstract class TypesList implements _i1.SerializableModel {
       if (aDuration != null)
         'aDuration': aDuration?.toJson(valueToJson: (v) => v.toJson()),
       if (aUuid != null) 'aUuid': aUuid?.toJson(valueToJson: (v) => v.toJson()),
+      if (aUri != null) 'aUri': aUri?.toJson(valueToJson: (v) => v.toJson()),
+      if (aBigInt != null)
+        'aBigInt': aBigInt?.toJson(valueToJson: (v) => v.toJson()),
       if (anEnum != null)
         'anEnum': anEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnum != null)
@@ -187,6 +206,8 @@ class _TypesListImpl extends TypesList {
     List<_i2.ByteData>? aByteData,
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
+    List<Uri>? aUri,
+    List<BigInt>? aBigInt,
     List<_i3.TestEnum>? anEnum,
     List<_i4.TestEnumStringified>? aStringifiedEnum,
     List<_i5.Types>? anObject,
@@ -201,6 +222,8 @@ class _TypesListImpl extends TypesList {
           aByteData: aByteData,
           aDuration: aDuration,
           aUuid: aUuid,
+          aUri: aUri,
+          aBigInt: aBigInt,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
           anObject: anObject,
@@ -221,6 +244,8 @@ class _TypesListImpl extends TypesList {
     Object? aByteData = _Undefined,
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
+    Object? aUri = _Undefined,
+    Object? aBigInt = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? anObject = _Undefined,
@@ -249,6 +274,10 @@ class _TypesListImpl extends TypesList {
       aUuid: aUuid is List<_i1.UuidValue>?
           ? aUuid
           : this.aUuid?.map((e0) => e0).toList(),
+      aUri: aUri is List<Uri>? ? aUri : this.aUri?.map((e0) => e0).toList(),
+      aBigInt: aBigInt is List<BigInt>?
+          ? aBigInt
+          : this.aBigInt?.map((e0) => e0).toList(),
       anEnum: anEnum is List<_i3.TestEnum>?
           ? anEnum
           : this.anEnum?.map((e0) => e0).toList(),

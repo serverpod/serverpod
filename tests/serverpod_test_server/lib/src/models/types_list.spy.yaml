@@ -8,6 +8,8 @@ fields:
   aByteData: List<ByteData>?
   aDuration: List<Duration>?
   aUuid: List<UuidValue>?
+  aUri: List<Uri>?
+  aBigInt: List<BigInt>?
   anEnum: List<TestEnum>?
   aStringifiedEnum: List<TestEnumStringified>?
   anObject: List<Types>?

@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
@@ -132,6 +131,8 @@ Expression _buildFromJson(
     case ValueType.duration:
     case ValueType.byteData:
     case ValueType.uuidValue:
+    case ValueType.uri:
+    case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,

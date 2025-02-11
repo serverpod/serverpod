@@ -97,6 +97,21 @@ void main() {
     });
 
     test(
+        'Given an object with an BigInt and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var bigInt = BigInt.one;
+
+      var types = Types(aBigInt: bigInt);
+      var typesCopy = types.copyWith();
+      types.aBigInt = BigInt.two;
+
+      expect(
+        typesCopy.aBigInt,
+        BigInt.one,
+      );
+    });
+
+    test(
         'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
         () {
       // ignore: deprecated_member_use
@@ -111,6 +126,18 @@ void main() {
         // ignore: deprecated_member_use
         UuidValue.fromString(Uuid.NAMESPACE_NIL).uuid,
       );
+    });
+
+    test(
+        'Given an object with an Uri and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var uri = Uri.parse('https://serverpod.dev');
+
+      var types = Types(aUri: uri);
+      var typesCopy = types.copyWith();
+      types.aUri = Uri.parse('https://flutter.dev');
+
+      expect(typesCopy.aUri, uri);
     });
 
     test(

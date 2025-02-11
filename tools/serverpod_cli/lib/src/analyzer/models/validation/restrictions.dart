@@ -1,7 +1,3 @@
-import 'package:serverpod_cli/src/util/model_helper.dart';
-import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
@@ -10,8 +6,11 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
 
 import 'model_relations.dart';
 
@@ -401,22 +400,23 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    var errors = <SourceSpanSeverityException>[];
     var definition = documentDefinition;
 
-    if (definition is! ClassDefinition) return errors;
+    if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field == null) return errors;
+    if (field == null) return [];
 
     if (field.type.isIdType) {
-      errors.add(SourceSpanSeverityException(
-        'The "optional" property should be omitted on id fields.',
-        span,
-      ));
+      return [
+        SourceSpanSeverityException(
+          'The "optional" property should be omitted on id fields.',
+          span,
+        ),
+      ];
     }
 
-    return errors;
+    return [];
   }
 
   List<SourceSpanSeverityException> validateTableIndexName(
@@ -1434,6 +1434,8 @@ class Restrictions {
     'DateTime',
     'Duration',
     'UuidValue',
+    'Uri',
+    'BigInt',
     'ByteData',
     'List',
     'Map',

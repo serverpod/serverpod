@@ -133,7 +133,7 @@ void main() {
   });
 
   test(
-      'Given the test server, when a `Uri`` is sent to the server, then it is returned verbatim',
+      'Given the test server, when a `Uri` is sent to the server, then it is returned verbatim',
       () async {
     var uri =
         Uri.parse('https://docs.serverpod.dev/contribute#working-on-serverpod');
@@ -146,6 +146,22 @@ void main() {
       'Given the test server, when a `null` `Uri?` is sent to the server, then `null` is returned',
       () async {
     var result = await client.basicTypes.testUri(null);
+    expect(result, isNull);
+  });
+
+  test(
+      'Given the test server, when a `BigInt` is sent to the server, then it is returned verbatim',
+      () async {
+    var bigInt = BigInt.parse('-12345678901234567890');
+
+    var result = await client.basicTypes.testBigInt(bigInt);
+    expect(result, equals(bigInt));
+  });
+
+  test(
+      'Given the test server, when a `null` `BigInt?` is sent to the server, then `null` is returned',
+      () async {
+    var result = await client.basicTypes.testBigInt(null);
     expect(result, isNull);
   });
 }

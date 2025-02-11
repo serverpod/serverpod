@@ -721,6 +721,8 @@ class DatabaseConnection {
     if (column is ColumnByteData) return 'bytea';
     if (column is ColumnDuration) return 'bigint';
     if (column is ColumnUuid) return 'uuid';
+    if (column is ColumnUri) return 'text';
+    if (column is ColumnBigInt) return 'text';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
