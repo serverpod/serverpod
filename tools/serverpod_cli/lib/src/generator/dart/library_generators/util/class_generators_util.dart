@@ -263,11 +263,38 @@ Expression _buildListOrSetTypeFromJson(
   ClassDefinition classDefinition,
   bool isList,
 ) {
+  if (type.isSetType) {
+    return CodeExpression(Block.of([
+      if (type.nullable) ...[
+        valueExpression.code,
+        const Code(' == null ? null :'),
+      ],
+      refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
+      const Code('.fromJson('),
+      valueExpression
+          .asA(const CodeExpression(
+            // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
+            Code('List'),
+          ))
+          .code,
+      const Code(', itemFromJson: (e) =>'),
+      _buildFromJson(
+        jsonReference,
+        type.generics.first,
+        serverCode,
+        config,
+        classDefinition,
+        mapExpression: refer('e'),
+      ).code,
+      const Code(')'),
+    ]));
+  }
+
   return CodeExpression(
     Block.of([
       valueExpression
           .asA(CodeExpression(
-            Code('${isList ? 'List' : 'Set'}${type.nullable ? '?' : ''}'),
+            Code('List${type.nullable ? '?' : ''}'),
           ))
           .code,
       Code('${type.nullable ? '?' : ''}.map((e) => '),
@@ -279,7 +306,7 @@ Expression _buildListOrSetTypeFromJson(
         classDefinition,
         mapExpression: refer('e'),
       ).code,
-      Code(')${isList ? '.toList()' : ''}'),
+      const Code(').toList()'),
     ]),
   );
 }

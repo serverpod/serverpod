@@ -41,6 +41,9 @@ CREATE TABLE "bigint_default_persist" (
 --
 ALTER TABLE "types" ADD COLUMN "aUri" text;
 ALTER TABLE "types" ADD COLUMN "aBigInt" text;
+ALTER TABLE "types" ADD COLUMN "aList" json;
+ALTER TABLE "types" ADD COLUMN "aMap" json;
+ALTER TABLE "types" ADD COLUMN "aSet" json;
 --
 -- ACTION CREATE TABLE
 --
@@ -82,9 +85,9 @@ CREATE TABLE "uri_default_persist" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250206150436631', now())
+    VALUES ('serverpod_test', '20250211073932976', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250206150436631', "timestamp" = now();
+    DO UPDATE SET "version" = '20250211073932976', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

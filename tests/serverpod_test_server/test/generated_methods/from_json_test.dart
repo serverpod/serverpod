@@ -507,6 +507,91 @@ void main() {
     });
   });
 
+  group('Given a class with a nullable Set and nested objects, ', () {
+    test(
+        'when deserializing with correct value type in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({
+        'anObject': [
+          {'aDateTime': '2024-01-01T00:00:00.000Z'}
+        ]
+      });
+      expect(
+        typeList.anObject?.first,
+        isA<Types>(),
+      );
+    });
+
+    test(
+        'when deserializing with null in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({'aDateTime': null});
+      expect(
+        typeList.aDateTime,
+        isNull,
+      );
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'anObject': [
+            {'aDateTime': 1}
+          ]
+        }),
+        throwsA(isA<TypeError>()),
+      );
+    });
+  });
+
+  group('Given a class with a nullable Set field, ', () {
+    test(
+        'when deserializing with correct value types in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({
+        'anInt': [1, 2]
+      });
+      expect(typeList.anInt?.length, 2);
+      expect(typeList.anInt?.first, 1);
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'anInt': ['test']
+        }),
+        throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with duplicate values, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'aString': ['test', 'test']
+        }),
+        throwsA(
+          isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Input list for Set contained duplicate items')),
+        ),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        TypesList.fromJson({'anInt': null}).anInt,
+        isNull,
+      );
+    });
+  });
+
   test(
       'Given a class with a non-nullable List field when deserializing with null value provided in JSON, then a TypeError is thrown',
       () {

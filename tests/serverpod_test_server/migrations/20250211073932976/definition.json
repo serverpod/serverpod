@@ -4139,6 +4139,24 @@
           "columnType": 0,
           "isNullable": true,
           "dartType": "protocol:TestEnumStringified?"
+        },
+        {
+          "name": "aList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<int>?"
+        },
+        {
+          "name": "aMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<int,int>?"
+        },
+        {
+          "name": "aSet",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Set<int>?"
         }
       ],
       "foreignKeys": [],
@@ -6483,7 +6501,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20250206150436631"
+      "version": "20250211073932976"
     },
     {
       "module": "serverpod_auth",

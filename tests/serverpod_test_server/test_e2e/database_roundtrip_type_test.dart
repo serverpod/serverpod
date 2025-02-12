@@ -185,6 +185,22 @@ void main() {
     });
 
     test(
+        'When sending an object with a `Set<int>` field, then it\'s written to the database and can be read later',
+        () async {
+      const set = {1, 2, 3};
+      var types = Types(aSet: set);
+
+      types = await client.basicDatabase.insertTypes(types);
+      expect(types.id, isNotNull);
+
+      var storedTypes = await client.basicDatabase.getTypes(types.id!);
+      expect(storedTypes, isNotNull);
+
+      expect(storedTypes!.id, equals(types.id));
+      expect(storedTypes.aSet, equals(set));
+    });
+
+    test(
         'When sending an object with a `Uri` field, then it\'s written to the database and can be read later',
         () async {
       var uri = Uri.parse('https://serverpod.dev');

@@ -29,6 +29,9 @@ abstract class Types implements _i1.SerializableModel {
     this.aBigInt,
     this.anEnum,
     this.aStringifiedEnum,
+    this.aList,
+    this.aMap,
+    this.aSet,
   });
 
   factory Types({
@@ -45,6 +48,9 @@ abstract class Types implements _i1.SerializableModel {
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -79,6 +85,14 @@ abstract class Types implements _i1.SerializableModel {
           ? null
           : _i4.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String)),
+      aList:
+          (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
+      aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
+          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+      aSet: jsonSerialization['aSet'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
+              itemFromJson: (e) => e as int),
     );
   }
 
@@ -111,6 +125,12 @@ abstract class Types implements _i1.SerializableModel {
 
   _i4.TestEnumStringified? aStringifiedEnum;
 
+  List<int>? aList;
+
+  Map<int, int>? aMap;
+
+  Set<int>? aSet;
+
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -128,6 +148,9 @@ abstract class Types implements _i1.SerializableModel {
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -146,6 +169,9 @@ abstract class Types implements _i1.SerializableModel {
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
+      if (aList != null) 'aList': aList?.toJson(),
+      if (aMap != null) 'aMap': aMap?.toJson(),
+      if (aSet != null) 'aSet': aSet?.toJson(),
     };
   }
 
@@ -172,6 +198,9 @@ class _TypesImpl extends Types {
     BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -186,6 +215,9 @@ class _TypesImpl extends Types {
           aBigInt: aBigInt,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
+          aList: aList,
+          aMap: aMap,
+          aSet: aSet,
         );
 
   /// Returns a shallow copy of this [Types]
@@ -206,6 +238,9 @@ class _TypesImpl extends Types {
     Object? aBigInt = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
+    Object? aList = _Undefined,
+    Object? aMap = _Undefined,
+    Object? aSet = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -224,6 +259,18 @@ class _TypesImpl extends Types {
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
+      aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
+      aMap: aMap is Map<int, int>?
+          ? aMap
+          : this.aMap?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
     );
   }
 }

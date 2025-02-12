@@ -156,7 +156,7 @@ class Restrictions {
       ];
     }
 
-    var reservedClassNames = const {'List', 'Map', 'String', 'DateTime'};
+    var reservedClassNames = const {'List', 'Set', 'Map', 'String', 'DateTime'};
     if (reservedClassNames.contains(className)) {
       return [
         SourceSpanSeverityException(
@@ -929,6 +929,17 @@ class Restrictions {
           ),
         );
       }
+    } else if (fieldType.isSetType) {
+      if (fieldType.generics.length == 1) {
+        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+            'The Set type must have one generic type defined (e.g. Set<String>).',
+            span,
+          ),
+        );
+      }
     } else if (fieldType.generics.isNotEmpty) {
       errors.add(
         SourceSpanSeverityException(
@@ -1359,6 +1370,7 @@ class Restrictions {
     'ByteData',
     'List',
     'Map',
+    'Set',
   ];
 
   var blackListedTypes = [

@@ -765,7 +765,10 @@ CREATE TABLE "types" (
     "aUri" text,
     "aBigInt" text,
     "anEnum" bigint,
-    "aStringifiedEnum" text
+    "aStringifiedEnum" text,
+    "aList" json,
+    "aMap" json,
+    "aSet" json
 );
 
 --
@@ -1534,9 +1537,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250206150436631', now())
+    VALUES ('serverpod_test', '20250211073932976', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250206150436631', "timestamp" = now();
+    DO UPDATE SET "version" = '20250211073932976', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

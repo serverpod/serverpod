@@ -595,6 +595,8 @@ class SerializableModelLibraryGenerator {
     var nextCallback = switch (type.className) {
       ListKeyword.className =>
         _buildListCloneCallback(type.generics.first, depth),
+      SetKeyword.className =>
+        _buildSetCloneCallback(type.generics.first, depth),
       MapKeyword.className =>
         _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
@@ -611,9 +613,13 @@ class SerializableModelLibraryGenerator {
     }
         .call([nextCallback]);
 
-    return type.isListType
-        ? expression.property(ListKeyword.toList).call([])
-        : expression;
+    if (type.isListType) {
+      return expression.property(ListKeyword.toList).call([]);
+    } else if (type.isSetType) {
+      return expression.property(SetKeyword.toSet).call([]);
+    } else {
+      return expression;
+    }
   }
 
   Expression _buildShallowClone(
@@ -634,6 +640,22 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildListCloneCallback(TypeDefinition type, int depth) {
+    var variableName = 'e$depth';
+
+    return Method(
+      (p) {
+        p
+          ..lambda = true
+          ..requiredParameters.add(
+            Parameter((p) => p..name = variableName),
+          )
+          ..body =
+              _buildDeepCloneTree(type, variableName, depth: depth + 1).code;
+      },
+    ).closure;
+  }
+
+  Expression _buildSetCloneCallback(TypeDefinition type, int depth) {
     var variableName = 'e$depth';
 
     return Method(
@@ -970,7 +992,8 @@ class SerializableModelLibraryGenerator {
 
     Map<String, Expression> namedParams = {};
 
-    if (fieldType.isListType && !fieldType.generics.first.isSerializedValue) {
+    if ((fieldType.isListType || fieldType.isSetType) &&
+        !fieldType.generics.first.isSerializedValue) {
       namedParams = {
         'valueToJson': Method(
           (p) => p
