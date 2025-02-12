@@ -19,7 +19,7 @@ If you are considering contributing code to Serverpod, please check the roadmap 
 
 ## Contributing code
 
-Pull request are very much welcome. If you are working on something more significant than just a smaller bug fixes, please declare your interest on an issues first. This way we can discuss the changes to ensure that they align with the project's goals and prevent duplicated work.
+Pull request are very much welcome. If you are working on something more significant than just a smaller bug fix, please declare your interest on an issue first. This way we can discuss the changes to ensure that they align with the project's goals and prevent duplicated work.
 
 A good starting point is to look at our list of [good first issues](https://github.com/serverpod/serverpod/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). These are issues that are relatively easy to fix and are a good way to get started with the project.
 
@@ -69,12 +69,12 @@ Here, you will find example projects that demonstrate how to use Serverpod.
 
 This directory contains tests for the Serverpod project.
 
-- __`boostrap_project`__: Test that validate all variations of a project can be created and run.
+- __`bootstrap_project`__: Tests that validate that all variations of a project can be created and run.
 - __`docker`__: Docker configuration required for running the tests.
 - __`serverpod_cli_e2e_test`__: End to end tests for the CLI.
 - __`serverpod_test_server`__: Contains tests that require a complete Serverpod project. The folder contains tests from both the client and server side.
 - __`serverpod_test_flutter`__: Contains tests for Flutter components used by the client.
-- __`serverpod_test_client`__: Tests that only required the client.
+- __`serverpod_test_client`__: Tests that only require the client.
 - __`serverpod_test_module`__: General module tests.
 
 ### Setting up the development environment
@@ -115,7 +115,7 @@ $ dart pub global activate --source path .
 Depending on your Dart version you may need to run the `dart pub global` command above every time you've made changes in the Serverpod tooling.
 
 > [!TIP]
-> At the time of writing, a bug in `pub global activate` prevents changes from being picked up in activated libraries, tracked here: https://github.com/dart-lang/pub/issues/4295.
+> At the time of writing, a bug in `pub global activate` prevents changes from being picked up in activated libraries, [tracked here](https://github.com/dart-lang/pub/issues/4295).
 >
 > If you are experiencing issues with the CLI not picking up changes, you can try running the workarounds listed in the issue.
 
@@ -124,17 +124,17 @@ When projects are created using your cloned version of the CLI, all serverpod de
 
 #### Using local templates
 
-To use templates from your cloned repository, you will need to set the `SERVERPOD_HOME` environment variable. It should point to the root your cloned `serverpod` monorepo. (E.g. `/Users/myuser/MyRepos/serverpod`)
+To use templates from your cloned repository, e.g. to create a new project with your local version of Serverpod, you will need to set the `SERVERPOD_HOME` environment variable. It should point to the root your cloned `serverpod` monorepo. (E.g. `/Users/myuser/MyRepos/serverpod`)
 
 ### Code style
 
 Serverpod uses the Dart linter to enforce a consistent code style. The linter is run as part of the CI checks, so it is important that the code follows the linter rules. When you write code, make sure to use `dart format` and `dart analyze` to ensure that the code follows the linter rules.
 
-We try to follow the [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines as much as possible. But above all we care about code readability and maintainability. Therefore, we encourage you to write code that is easy to read and understand for future contributors.
+We try to follow the [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines as much as possible. But above all, we care about code readability and maintainability. Therefore, we encourage you to write code that is easy to read and understand for future contributors.
 
 ### Running the tests
 
-Serverpod has a comprehensive test suite that covers the core functionality of the project. The tests are run as part of the CI checks, so to speed up development it can be good to run the tests locally before submitting a pull request.
+Serverpod has a comprehensive test suite that covers the core functionality of the project. The tests are run as part of the CI checks, but to speed up development it can be good to run the tests locally before submitting a pull request.
 
 To ensure all tests work as expected, it is recommended to add an entry for the test server, postgres and redis at the end of your `/etc/hosts file`.
 ```text
@@ -178,7 +178,7 @@ To run any integration test in the `tests/serverpod_test_server/test_integration
 
     ```bash
     $ cd tests/serverpod_test_server/docker-local
-    $ docker-compose up --build --detach
+    $ docker compose up --build --detach
     ```
 
 2. Start the test server and apply migrations.
@@ -188,7 +188,7 @@ To run any integration test in the `tests/serverpod_test_server/test_integration
     $ dart bin/main.dart --apply-migrations
     ```
 
-##### Running test project end to end tests
+##### Running the test project's end to end tests
 
 To run end to end tests in the `tests/serverpod_test_server/test_e2e` directory, you will need to follow these steps:
 
@@ -196,7 +196,7 @@ To run end to end tests in the `tests/serverpod_test_server/test_e2e` directory,
 
     ```bash
     $ cd tests/serverpod_test_server/docker-local
-    $ docker-compose up --build --detach
+    $ docker compose up --build --detach
     ```
 
 2. Start the test server and apply migrations.
@@ -213,7 +213,7 @@ To run end to end tests in the `tests/serverpod_test_server/test_e2e` directory,
     $ dart test test_e2e/connection_test.dart
     ```
 
-##### Running test project migration tests
+##### Running the test project's migration tests
 
 To run migration tests in the `tests/serverpod_test_server/test_e2e_migrations` directory, you will need to follow these steps:
 
@@ -221,19 +221,19 @@ To run migration tests in the `tests/serverpod_test_server/test_e2e_migrations` 
 
     ```bash
     $ cd tests/serverpod_test_server/docker-local
-    $ docker-compose down -v
+    $ docker compose down -v
     ```
 
 2. Start a new Docker container for the test server.
 
     ```bash
     $ cd tests/serverpod_test_server/docker-local
-    $ docker-compose up --build --detach
+    $ docker compose up --build --detach
     ```
 
 ### Introducing new dependencies
 
-Adding new dependencies to the project should be done with care. We are very restrictive with adding new dependencies to the project. If dependencies are added, they should be well maintained and have a good reason for being added.
+Adding new dependencies to the project should be done with care. We are very restrictive with adding new dependencies to the project. If dependencies are added, they must be well maintained, have a permissive open-source license, and must have a good reason for being added.
 
 Modifications to `pubspec.yaml` files should be done in the templates directory. The `pubspec.yaml` files for all libraries are generated from these templates. After a templates has been modified, run the `util/update_pubspecs` script to update the `pubspec.yaml` files.
 
