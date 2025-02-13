@@ -1,10 +1,12 @@
-import 'package:code_builder/code_builder.dart';
+import 'package:analyzer/dart/element/type.dart' show RecordType;
+import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Generates all the [ProtocolDefinition] based
@@ -46,7 +48,7 @@ class LibraryGenerator {
     // exports
     library.directives.addAll([
       for (var classInfo in topLevelModels)
-        Directive.export(TypeDefinition.getRef(classInfo)),
+        Directive.export(ClassTypeDefinition.getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -122,20 +124,20 @@ class LibraryGenerator {
             for (var classInfo in unsealedModels)
               refer(
                   classInfo.className,
-                  TypeDefinition.getRef(
+                  ClassTypeDefinition.getRef(
                       classInfo)): Code.scope((a) =>
-                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) as T'),
             for (var classInfo in unsealedModels)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
-                    ..url = TypeDefinition.getRef(classInfo)
+                    ..url = ClassTypeDefinition.getRef(classInfo)
                     ..isNullable = true,
                 )
               ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in unsealedModels)
@@ -148,8 +150,8 @@ class LibraryGenerator {
                   for (var endPoint in protocolDefinition.endpoints)
                     // Generate deserialization for endpoint methods.
                     for (var method in endPoint.methods) ...[
-                      // Generate deserialization for the return type of the method.
-                      ...method.returnType
+                      // Generate deserialization for the return type of the method. (which is always a class, `Future` or `Stream`)
+                      ...(method.returnType as ClassTypeDefinition)
                           .retrieveGenericType()
                           .generateDeserialization(serverCode, config: config),
                       // Generate deserialization for parameters of the method.
@@ -162,8 +164,16 @@ class LibraryGenerator {
                             config: config),
                       // Generate deserialization for named parameters of the method.
                       for (var parameter in method.parametersNamed)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
+                        ...parameter.type.generateDeserialization(
+                          serverCode,
+                          config: config,
+                        ),
+
+                      for (var recordType in protocolDefinition.allRecordTypes)
+                        ...recordType.generateDeserialization(
+                          serverCode,
+                          config: config,
+                        )
                     ],
                   // Generate deserialization for extra classes.
                   for (var extraClass in config.extraClasses)
@@ -210,7 +220,7 @@ class LibraryGenerator {
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
             _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode), 'serverpod'),
@@ -236,7 +246,7 @@ class LibraryGenerator {
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) => 'if(dataClassName == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
+                'return deserialize<${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)
             _buildDeserializeByClassNameDelegation(
               serverpodProtocolUrl(serverCode),
@@ -279,8 +289,8 @@ class LibraryGenerator {
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'
-                          'return ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}.t;'),
+                          'case ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}:'
+                          'return ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}.t;'),
                   const Code('}'),
                 ]),
               const Code('return null;'),
@@ -306,6 +316,27 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
+      Method(
+        (m) => m
+          ..static = true
+          ..docs.add('''
+          /// Maps any `Record`s known to this [Protocol] to their JSON representation
+          /// 
+          /// Throws in case the record type is not known.
+          /// 
+          /// This method will return `null` (only) for `null` inputs.''')
+          ..name = 'mapRecordToJson'
+          ..returns = refer('Map<String, dynamic>?')
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'record'
+            ..type = refer('Record?')))
+          ..body = _buildRecordEncode(
+            protocolDefinition.allRecordTypes,
+            'record',
+            serverCode: serverCode,
+            config: config,
+          ),
+      ),
     ]);
 
     library.body.add(protocol.build());
@@ -721,10 +752,47 @@ class LibraryGenerator {
       literalString(methodDef.name),
       literalMap({
         for (var parameterDef in params)
-          literalString(parameterDef.name): refer(parameterDef.name),
+          // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
+          // For the records we need to transform then into a map that can be handled by the shared (non-project specific) serialization code
+          literalString(parameterDef.name): switch (parameterDef.type) {
+            RecordTypeDefinition _ => refer(
+                'Protocol',
+                serverCode
+                    ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                    : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+              ).property('mapRecordToJson').call([refer('record')]).code,
+            ClassTypeDefinition classDef =>
+              (classDef.isSetType || classDef.isListType) &&
+                      classDef.generics.first is RecordTypeDefinition
+                  ? refer('${parameterDef.name}${classDef.nullable ? '?' : ''}')
+                      .property('map')
+                      .call([
+                        refer(
+                          'Protocol',
+                          serverCode
+                              ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                              : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+                        ).property('mapRecordToJson')
+                      ])
+                      .property('toList')
+                      .call([])
+                  : ((classDef.isMapType &&
+                          classDef.generics.length == 2 &&
+                          (classDef.generics.first is RecordTypeDefinition ||
+                              classDef.generics.last is RecordTypeDefinition))
+                      ? classDef.prepareRecordMapForSending(
+                          name: parameterDef.name,
+                          serverCode: serverCode,
+                          config: config)
+                      : refer(parameterDef.name)),
+          },
       })
     ], {}, [
-      methodDef.returnType.generics.first.reference(false, config: config)
+      // Return type is always `Future` or `Stream` class
+      (methodDef.returnType as ClassTypeDefinition)
+          .generics
+          .first
+          .reference(false, config: config)
     ]).code;
   }
 
@@ -755,7 +823,11 @@ class LibraryGenerator {
       }),
     ], {}, [
       methodDef.returnType.reference(false, config: config),
-      methodDef.returnType.generics.first.reference(false, config: config),
+      // return type is `Stream` class
+      (methodDef.returnType as ClassTypeDefinition)
+          .generics
+          .first
+          .reference(false, config: config),
     ]).code;
   }
 
@@ -860,16 +932,23 @@ class LibraryGenerator {
                   '${_getMethodCallComment(method) ?? ''}${method.name}',
                 )
                 .call([
-              refer('session'),
-              for (var param in [
-                ...method.parameters,
-                ...method.parametersPositional
-              ])
-                refer('params').index(literalString(param.name)),
-            ], {
-              for (var param in [...method.parametersNamed])
-                param.name: refer('params').index(literalString(param.name)),
-            }).code,
+                  refer('session'),
+                  for (var param in [
+                    ...method.parameters,
+                    ...method.parametersPositional
+                  ])
+                    refer('params').index(literalString(param.name)),
+                ], {
+                  for (var param in [...method.parametersNamed])
+                    param.name:
+                        refer('params').index(literalString(param.name)),
+                })
+                .transformRecordReturnType(
+                  method.returnType,
+                  serverCode: serverCode,
+                  config: config,
+                )
+                .code,
         ).closure,
       });
     }
@@ -914,10 +993,15 @@ class LibraryGenerator {
               'name': literalString(param.name),
               'nullable': literalBool(param.type.nullable),
             }, [
-              param.type.generics.first.reference(true, config: config)
+              // type is `Stream` class
+              (param.type as ClassTypeDefinition)
+                  .generics
+                  .first
+                  .reference(true, config: config)
             ])
         }),
-        'returnType': _buildMethodStreamReturnType(method.returnType),
+        'returnType': _buildMethodStreamReturnType(
+            method.returnType as ClassTypeDefinition),
         'call': Method(
           (m) => m
             ..requiredParameters.addAll([
@@ -962,9 +1046,11 @@ class LibraryGenerator {
     return methodStreamConnectors;
   }
 
-  Expression _buildMethodStreamReturnType(TypeDefinition returnType) {
+  Expression _buildMethodStreamReturnType(ClassTypeDefinition returnType) {
     var returnEnum = refer('MethodStreamReturnType', serverpodUrl(true));
-    if (returnType.generics.first.isVoidType) {
+
+    if (returnType.generics.first is ClassTypeDefinition &&
+        (returnType.generics.first as ClassTypeDefinition).isVoidType) {
       return returnEnum.property('voidType');
     } else if (returnType.isStreamType) {
       return returnEnum.property('streamType');
@@ -985,7 +1071,7 @@ class LibraryGenerator {
     List<ParameterDefinition> nonStreamingParams = [];
 
     for (var param in params) {
-      if (param.type.isStreamType) {
+      if ((param.type as ClassTypeDefinition).isStreamType) {
         streamingParams.add(param);
       } else {
         nonStreamingParams.add(param);
@@ -996,7 +1082,7 @@ class LibraryGenerator {
   }
 
   Expression _referMethodStreamParam(ParameterDefinition param) {
-    if (param.type.isStreamType) {
+    if ((param.type as ClassTypeDefinition).isStreamType) {
       return refer('streamParams')
           .index(literalString(param.name))
           .nullChecked
@@ -1004,11 +1090,322 @@ class LibraryGenerator {
           .call(
         [],
         {},
-        [param.type.generics.first.reference(true, config: config)],
+        [
+          (param.type as ClassTypeDefinition)
+              .generics
+              .first
+              .reference(true, config: config)
+        ],
       );
     } else {
       return refer('params').index(literalString(param.name));
     }
+  }
+}
+
+extension on ClassTypeDefinition {
+  bool get returnsRecordInContainer {
+    return ((isMapType || isListType || isSetType) &&
+        generics.any((g) =>
+            g is RecordTypeDefinition ||
+            (g is ClassTypeDefinition &&
+                // Important to only check default container types, there is not need to descent into model classes
+                (g.isMapType || g.isListType || g.isSetType) &&
+                g.returnsRecordInContainer)));
+  }
+
+  Code prepareRecordMapForSending({
+    required String name,
+    required bool serverCode,
+    required GeneratorConfig config,
+  }) {
+    var keyType = generics.first;
+    var valueType = generics.last;
+
+    if (keyType is ClassTypeDefinition && keyType.className == 'String') {
+      return Block.of([
+        const Code('{'),
+        Code('for (final entry in $name.entries)'),
+        const Code('entry.key: '),
+        refer(
+          'Protocol',
+          serverCode
+              ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+              : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+        ).property('mapRecordToJson').call([refer('entry.value')]).code,
+        const Code(','),
+        const Code('}'),
+      ]);
+    } else {
+      return Block.of([
+        const Code('/* map list */'),
+        const Code('['),
+        Code('for (final entry in $name.entries)'),
+        const Code('{'),
+        // Key
+        const Code('"k":'),
+        if (keyType is RecordTypeDefinition)
+          refer(
+            'Protocol',
+            serverCode
+                ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+          ).property('mapRecordToJson').call([refer('entry.key')]).code
+        else
+          const Code('entry.key'),
+        const Code(','),
+
+        // Value
+        const Code('"v":'),
+        if (valueType is RecordTypeDefinition)
+          refer(
+            'Protocol',
+            serverCode
+                ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+          ).property('mapRecordToJson').call([refer('entry.value')]).code
+        else
+          const Code('entry.value'),
+
+        const Code(','),
+        const Code('},'),
+        const Code(']'),
+      ]);
+    }
+  }
+}
+
+extension on ProtocolDefinition {
+  void _collectRecordTypes(
+    ClassTypeDefinition classDef,
+    List<RecordTypeDefinition> recordTypes,
+    Set<String> handledTypes,
+  ) {
+    var typeName = classDef.dartType?.toString();
+    if (typeName == null || handledTypes.contains(typeName)) {
+      return;
+    }
+
+    handledTypes.add(typeName);
+
+    for (var generic in classDef.generics) {
+      if (generic is RecordTypeDefinition) {
+        _addRecordType(generic, recordTypes, handledTypes);
+      } else if (generic is ClassTypeDefinition) {
+        _collectRecordTypes(generic, recordTypes, handledTypes);
+      }
+    }
+  }
+
+  void _addRecordType(
+    RecordTypeDefinition recordType,
+    List<RecordTypeDefinition> recordTypes,
+    Set<String> handledTypes,
+  ) {
+    var typeName = recordType.dartType.toString();
+    if (handledTypes.contains(typeName)) {
+      return;
+    }
+
+    handledTypes.add(typeName);
+    recordTypes.add(recordType);
+
+    for (var type in [
+      ...recordType.dartType.namedFields.map((f) => f.type),
+      ...recordType.dartType.positionalFields.map((f) => f.type),
+    ]) {
+      var fieldType = TypeDefinition.fromDartType(type);
+
+      switch (fieldType) {
+        case RecordTypeDefinition():
+          _addRecordType(fieldType, recordTypes, handledTypes);
+        case ClassTypeDefinition():
+          _collectRecordTypes(fieldType, recordTypes, handledTypes);
+      }
+    }
+  }
+
+  /// Returns all record types referenced by the protocol.
+  /// From endpoint method and model fields.
+  Iterable<RecordTypeDefinition> get allRecordTypes {
+    var recordTypes = <RecordTypeDefinition>[];
+
+    var handledTypes = <String>{};
+
+    for (var method in endpoints.expand((e) => e.methods)) {
+      var returnType = method.returnType;
+      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)
+      if (returnType is ClassTypeDefinition) {
+        _collectRecordTypes(returnType, recordTypes, handledTypes);
+      }
+
+      for (var parameter in method.allParameters) {
+        var type = parameter.type;
+        if (type is RecordTypeDefinition) {
+          _addRecordType(type, recordTypes, handledTypes);
+        } else if (type is ClassTypeDefinition) {
+          _collectRecordTypes(type, recordTypes, handledTypes);
+        }
+      }
+    }
+
+    // TODO(tp): Once we allow `Record`s in the model definitions, we need to extract them here as well
+    //           Currently the `model.type.dartType` is always `null` here though, so we can not iterate over the models' fields
+    // for (var model in models) {}
+
+    return recordTypes;
+  }
+}
+
+Code _buildRecordEncode(
+  Iterable<RecordTypeDefinition> recordTypes,
+  String name, {
+  required bool serverCode,
+  required GeneratorConfig config,
+}) {
+  var codes = <Code>[
+    const Code('if (record == null ) {return null;}'),
+  ];
+
+  var handledTypes = <String>{};
+
+  for (var recordType in recordTypes) {
+    var nonNullTypeName = recordType.dartType.toString();
+    if (nonNullTypeName.endsWith('?')) {
+      nonNullTypeName =
+          nonNullTypeName.substring(0, nonNullTypeName.length - 1);
+    }
+
+    if (handledTypes.contains(nonNullTypeName)) {
+      continue;
+    }
+    handledTypes.add(nonNullTypeName);
+
+    codes.addAll([
+      Code('if ($name is '),
+      recordType.reference(serverCode, config: config, nullable: false).code,
+      const Code(') {'),
+      const Code('return '),
+      recordType.toJsonMapCode(
+        name: name,
+        serverCode: serverCode,
+        config: config,
+        nullable: false,
+      ),
+      const Code(';'),
+      const Code('}'),
+    ]);
+  }
+
+  codes.add(
+    const Code(
+      "throw Exception('Unsupported record type \${record.runtimeType}');",
+    ),
+  );
+
+  return Block.of(codes);
+}
+
+extension on Expression {
+  Expression transformRecordReturnType(
+    TypeDefinition returnType, {
+    required bool serverCode,
+    required GeneratorConfig config,
+  }) {
+    if (returnType is ClassTypeDefinition &&
+        returnType.generics.isNotEmpty &&
+        returnType.generics.first is RecordTypeDefinition) {
+      return property('then').call([
+        CodeExpression(
+          Block.of([
+            const Code('(record) => '),
+            refer(
+              'Protocol',
+              serverCode
+                  ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                  : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+            ).property('mapRecordToJson').call([refer('record')]).code,
+          ]),
+        ),
+      ]);
+    }
+
+    if (returnType is ClassTypeDefinition &&
+        returnType.generics.isNotEmpty &&
+        returnType.generics.first is ClassTypeDefinition &&
+        (returnType.generics.first as ClassTypeDefinition)
+            .returnsRecordInContainer) {
+      return property('then').call(
+        [
+          CodeExpression(
+            Block.of([
+              const Code('(container) => '),
+              if ((returnType.generics.first as ClassTypeDefinition).nullable)
+                const Code('container == null ? null : '),
+              refer(
+                'mapRecordContainingContainerToJson',
+                'package:serverpod_serialization/serverpod_serialization.dart',
+              ).call([
+                refer('container'),
+                refer(
+                  'Protocol',
+                  serverCode
+                      ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                      : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+                ).property('mapRecordToJson')
+              ]).code,
+            ]),
+          ),
+        ],
+      );
+    }
+
+    return this;
+  }
+}
+
+extension on RecordTypeDefinition {
+  Code toJsonMapCode({
+    required String name,
+    required bool serverCode,
+    required GeneratorConfig config,
+    bool? nullable,
+  }) {
+    return Block.of([
+      if (nullable ?? this.nullable) Code('$name == null ? null : '),
+      const Code('{'),
+      if (dartType.positionalFields.isNotEmpty) ...[
+        const Code('"p": ['),
+        for (var (index, positionalField)
+            in dartType.positionalFields.indexed) ...[
+          if (positionalField.type is RecordType) ...[
+            Code(
+              'mapRecordToJson($name.\$${index + 1})',
+            ),
+          ] else
+            Code('$name.\$${index + 1}'),
+          const Code(','),
+        ],
+        const Code('],'),
+      ],
+      if (dartType.namedFields.isNotEmpty) ...[
+        const Code('"n": {'),
+        for (final (i, namedField) in dartType.namedFields.indexed) ...[
+          Code('"${namedField.name}"'),
+          const Code(':'),
+          if (namedField.type is RecordType) ...[
+            // if ((namedField.type as RecordType).nullabilitySuffix !=
+            //     NullabilitySuffix.none)
+            //   Code('$name.${namedField.name} == null ? null : '),
+            Code('mapRecordToJson($name.${namedField.name})')
+          ] else
+            Code('$name.${namedField.name}'),
+          const Code(','),
+        ],
+        const Code('},'),
+      ],
+      const Code('}'),
+    ]);
   }
 }
 

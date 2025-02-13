@@ -241,6 +241,12 @@ abstract class SerializationManager {
         } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
           return nonEncodable.toJsonForProtocol();
         } else {
+          if (object is Record) {
+            throw Exception(
+              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
+            );
+          }
+
           // ignore: avoid_dynamic_calls
           return nonEncodable?.toJson();
           // throws NoSuchMethodError if toJson is not implemented
@@ -274,7 +280,7 @@ abstract class SerializationManager {
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
-  /// name so that it can be decoded even if th class is unknown.
+  /// name so that it can be decoded even if the class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
   String encodeWithType(
@@ -324,4 +330,54 @@ const extensionSerializedTypes = [
 
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
+}
+
+/// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+///
+/// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+///
+/// It is only supposed to be called from generated protocol code.
+///
+/// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.
+dynamic mapRecordContainingContainerToJson(
+  Object obj,
+  Map<String, dynamic>? Function(Record?) mapRecord,
+) {
+  assert(obj is List || obj is Map || obj is Set);
+
+  switch (obj) {
+    case Map<String, dynamic>():
+      return {
+        for (var entry in obj.entries)
+          entry.key: switch (entry.value) {
+            Record record => mapRecord(record),
+            Set set => mapRecordContainingContainerToJson(set, mapRecord),
+            List list => mapRecordContainingContainerToJson(list, mapRecord),
+            Map map => mapRecordContainingContainerToJson(map, mapRecord),
+            _ => obj,
+          }
+      };
+    case Map():
+      return [
+        for (var entry in obj.entries)
+          {
+            'k': entry.key is Record ? mapRecord(entry.key) : entry.key,
+            'v': entry.value is Record
+                ? mapRecord(entry.value)
+                : mapRecordContainingContainerToJson(entry.value, mapRecord),
+          }
+      ];
+
+    case List():
+      return [
+        for (var e in obj) e is Record ? mapRecord(e) : e,
+      ];
+
+    case Set():
+      return [
+        for (var e in obj) e is Record ? mapRecord(e) : e,
+      ];
+  }
+
+  return obj;
 }

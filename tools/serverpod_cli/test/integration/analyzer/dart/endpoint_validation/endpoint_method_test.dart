@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/endpoint_validation_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
 const pathToServerpodRoot = '../../../../../../../..';
 var testProjectDirectory = Directory(path.joinAll([
@@ -71,11 +71,16 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has expected return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Future');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'String');
       });
     });
   });
@@ -133,11 +138,16 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has expected return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Future');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'String');
       });
     });
   });
@@ -436,11 +446,16 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has stream return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Stream');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'String');
       });
     });
   });
@@ -617,11 +632,16 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has dynamic stream return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Stream');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'dynamic');
       });
     });
   });
@@ -668,12 +688,22 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has stream return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Stream');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
-        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'String');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.nullable,
+            isTrue);
       });
     });
   });
@@ -720,11 +750,16 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has dynamic stream return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Stream');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'dynamic');
       });
     });
   });
@@ -770,12 +805,22 @@ class ExampleEndpoint extends Endpoint {
       });
 
       test('has future return type.', () {
-        var returnType =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        var returnType = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.returnType as ClassTypeDefinition?;
         expect(returnType?.className, 'Future');
         expect(returnType?.generics, hasLength(1));
-        expect(returnType?.generics.firstOrNull?.className, 'String');
-        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.className,
+            'String');
+        expect(
+            returnType?.generics
+                .whereType<ClassTypeDefinition>()
+                .firstOrNull
+                ?.nullable,
+            isTrue);
       });
     });
   });
