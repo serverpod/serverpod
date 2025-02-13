@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart' as serverpod;
@@ -277,5 +278,161 @@ void main() {
     var encoded = serverProtocol.encodeWithType(serverpodDefinedModel);
 
     expect(encoded, isA<String>());
+  });
+
+  test(
+      'Given a project-defined Record type, when encoding it using `mapRecordToJson` then it is encoded',
+      () {
+    var recordAsJSON = mapRecordToJson(
+      (
+        (1, '2'),
+        namedSubRecord: (SimpleData(num: 3), 4.5),
+      ),
+    );
+
+    expect(
+      recordAsJSON,
+      equals({
+        'p': [
+          {
+            'p': [1, '2']
+          }
+        ],
+        'n': {
+          'namedSubRecord': {
+            'p': [isA<SimpleData>().having((d) => d.num, 'num', 3), 4.5]
+          }
+        }
+      }),
+    );
+  });
+
+  test(
+      'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+      () {
+    var jsonMap = mapRecordContainingContainerToJson(
+      {
+        'foo': (1, SimpleData(num: 2)),
+        'bar': null,
+      },
+    );
+
+    expect(
+      jsonMap,
+      isA<Map<String, dynamic>>()
+          .having(
+        (m) => m.length,
+        'length',
+        2,
+      )
+          .having((m) => m['foo'], 'foo entry', {
+        "p": [
+          1,
+          isA<SimpleData>(), // will be encoded in the JSON String serialization
+        ]
+      }).having(
+        (m) => m['bar'],
+        'bar entry',
+        isNull,
+      ),
+    );
+
+    // ensure this can be encoded as well
+    expect(jsonEncode(jsonMap), isNotEmpty);
+  });
+
+  test(
+      'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+      () {
+    var jsonList = mapRecordContainingContainerToJson([
+      null,
+      (1, SimpleData(num: 2)),
+    ]);
+
+    expect(
+      jsonList,
+      isA<List>()
+          .having(
+            (m) => m.length,
+            'length',
+            2,
+          )
+          .having(
+            (m) => m.first,
+            'first entry',
+            isNull,
+          )
+          .having((m) => m.last, 'last entry', {
+        "p": [
+          1,
+          isA<SimpleData>(), // will be encoded in the JSON String serialization
+        ]
+      }),
+    );
+
+    // ensure this can be encoded as well
+    expect(jsonEncode(jsonList), isNotEmpty);
+  });
+
+  test(
+      'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+      () {
+    var jsonList = mapRecordContainingContainerToJson({
+      null,
+      (1, SimpleData(num: 2)),
+    });
+
+    expect(
+      jsonList,
+      isA<List>()
+          .having(
+            (m) => m.length,
+            'length',
+            2,
+          )
+          .having(
+            (m) => m.first,
+            'first entry',
+            isNull,
+          )
+          .having((m) => m.last, 'last entry', {
+        "p": [
+          1,
+          isA<SimpleData>(), // will be encoded in the JSON String serialization
+        ]
+      }),
+    );
+
+    // ensure this can be encoded as well
+    expect(jsonEncode(jsonList), isNotEmpty);
+  });
+
+  test(
+      'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+      () {
+    var jsonList = mapRecordContainingContainerToJson([
+      {
+        null,
+        (1, SimpleData(num: 2)),
+      }
+    ]);
+
+    expect(
+      jsonList,
+      [
+        [
+          isNull,
+          {
+            "p": [
+              1,
+              isA<SimpleData>(), // will be encoded in the JSON String serialization
+            ]
+          },
+        ]
+      ],
+    );
+
+    // ensure this can be encoded as well
+    expect(jsonEncode(jsonList), isNotEmpty);
   });
 }
