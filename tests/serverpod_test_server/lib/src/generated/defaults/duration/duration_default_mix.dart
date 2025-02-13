@@ -281,7 +281,7 @@ class DurationDefaultMixRepository {
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, DurationDefaultMix>(
+    return session.db.find<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -318,7 +318,7 @@ class DurationDefaultMixRepository {
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, DurationDefaultMix>(
+    return session.db.findFirstRow<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
@@ -334,7 +334,7 @@ class DurationDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, DurationDefaultMix>(
+    return session.db.findById<DurationDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -351,7 +351,7 @@ class DurationDefaultMixRepository {
     List<DurationDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, DurationDefaultMix>(
+    return session.db.insert<DurationDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -365,7 +365,7 @@ class DurationDefaultMixRepository {
     DurationDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, DurationDefaultMix>(
+    return session.db.insertRow<DurationDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class DurationDefaultMixRepository {
     _i1.ColumnSelections<DurationDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, DurationDefaultMix>(
+    return session.db.update<DurationDefaultMix>(
       rows,
       columns: columns?.call(DurationDefaultMix.t),
       transaction: transaction,
@@ -398,7 +398,7 @@ class DurationDefaultMixRepository {
     _i1.ColumnSelections<DurationDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, DurationDefaultMix>(
+    return session.db.updateRow<DurationDefaultMix>(
       row,
       columns: columns?.call(DurationDefaultMix.t),
       transaction: transaction,
@@ -413,7 +413,7 @@ class DurationDefaultMixRepository {
     List<DurationDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, DurationDefaultMix>(
+    return session.db.delete<DurationDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -425,7 +425,7 @@ class DurationDefaultMixRepository {
     DurationDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, DurationDefaultMix>(
+    return session.db.deleteRow<DurationDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -437,7 +437,7 @@ class DurationDefaultMixRepository {
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, DurationDefaultMix>(
+    return session.db.deleteWhere<DurationDefaultMix>(
       where: where(DurationDefaultMix.t),
       transaction: transaction,
     );
@@ -451,7 +451,7 @@ class DurationDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, DurationDefaultMix>(
+    return session.db.count<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       limit: limit,
       transaction: transaction,

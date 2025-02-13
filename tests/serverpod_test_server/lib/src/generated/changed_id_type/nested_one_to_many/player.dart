@@ -272,7 +272,7 @@ class PlayerUuidRepository {
     _i1.Transaction? transaction,
     PlayerUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, PlayerUuid>(
+    return session.db.find<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
@@ -311,7 +311,7 @@ class PlayerUuidRepository {
     _i1.Transaction? transaction,
     PlayerUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, PlayerUuid>(
+    return session.db.findFirstRow<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
@@ -329,7 +329,7 @@ class PlayerUuidRepository {
     _i1.Transaction? transaction,
     PlayerUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, PlayerUuid>(
+    return session.db.findById<PlayerUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -347,7 +347,7 @@ class PlayerUuidRepository {
     List<PlayerUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, PlayerUuid>(
+    return session.db.insert<PlayerUuid>(
       rows,
       transaction: transaction,
     );
@@ -361,7 +361,7 @@ class PlayerUuidRepository {
     PlayerUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, PlayerUuid>(
+    return session.db.insertRow<PlayerUuid>(
       row,
       transaction: transaction,
     );
@@ -378,7 +378,7 @@ class PlayerUuidRepository {
     _i1.ColumnSelections<PlayerUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, PlayerUuid>(
+    return session.db.update<PlayerUuid>(
       rows,
       columns: columns?.call(PlayerUuid.t),
       transaction: transaction,
@@ -394,7 +394,7 @@ class PlayerUuidRepository {
     _i1.ColumnSelections<PlayerUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, PlayerUuid>(
+    return session.db.updateRow<PlayerUuid>(
       row,
       columns: columns?.call(PlayerUuid.t),
       transaction: transaction,
@@ -409,7 +409,7 @@ class PlayerUuidRepository {
     List<PlayerUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, PlayerUuid>(
+    return session.db.delete<PlayerUuid>(
       rows,
       transaction: transaction,
     );
@@ -421,7 +421,7 @@ class PlayerUuidRepository {
     PlayerUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, PlayerUuid>(
+    return session.db.deleteRow<PlayerUuid>(
       row,
       transaction: transaction,
     );
@@ -433,7 +433,7 @@ class PlayerUuidRepository {
     required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, PlayerUuid>(
+    return session.db.deleteWhere<PlayerUuid>(
       where: where(PlayerUuid.t),
       transaction: transaction,
     );
@@ -447,7 +447,7 @@ class PlayerUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, PlayerUuid>(
+    return session.db.count<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
       limit: limit,
       transaction: transaction,
@@ -474,7 +474,7 @@ class PlayerUuidAttachRowRepository {
     }
 
     var $playerUuid = playerUuid.copyWith(teamId: team.id);
-    await session.db.updateRow<_i1.UuidValue, PlayerUuid>(
+    await session.db.updateRow<PlayerUuid>(
       $playerUuid,
       columns: [PlayerUuid.t.teamId],
       transaction: transaction,
@@ -500,7 +500,7 @@ class PlayerUuidDetachRowRepository {
     }
 
     var $playeruuid = playeruuid.copyWith(teamId: null);
-    await session.db.updateRow<_i1.UuidValue, PlayerUuid>(
+    await session.db.updateRow<PlayerUuid>(
       $playeruuid,
       columns: [PlayerUuid.t.teamId],
       transaction: transaction,

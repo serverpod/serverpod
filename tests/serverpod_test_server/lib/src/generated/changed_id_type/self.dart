@@ -455,7 +455,7 @@ class ChangedIdTypeSelfRepository {
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.find<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -494,7 +494,7 @@ class ChangedIdTypeSelfRepository {
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.findFirstRow<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
@@ -512,7 +512,7 @@ class ChangedIdTypeSelfRepository {
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.findById<ChangedIdTypeSelf>(
       id,
       transaction: transaction,
       include: include,
@@ -530,7 +530,7 @@ class ChangedIdTypeSelfRepository {
     List<ChangedIdTypeSelf> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.insert<ChangedIdTypeSelf>(
       rows,
       transaction: transaction,
     );
@@ -544,7 +544,7 @@ class ChangedIdTypeSelfRepository {
     ChangedIdTypeSelf row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.insertRow<ChangedIdTypeSelf>(
       row,
       transaction: transaction,
     );
@@ -561,7 +561,7 @@ class ChangedIdTypeSelfRepository {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.update<ChangedIdTypeSelf>(
       rows,
       columns: columns?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
@@ -577,7 +577,7 @@ class ChangedIdTypeSelfRepository {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.updateRow<ChangedIdTypeSelf>(
       row,
       columns: columns?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
@@ -592,7 +592,7 @@ class ChangedIdTypeSelfRepository {
     List<ChangedIdTypeSelf> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.delete<ChangedIdTypeSelf>(
       rows,
       transaction: transaction,
     );
@@ -604,7 +604,7 @@ class ChangedIdTypeSelfRepository {
     ChangedIdTypeSelf row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.deleteRow<ChangedIdTypeSelf>(
       row,
       transaction: transaction,
     );
@@ -616,7 +616,7 @@ class ChangedIdTypeSelfRepository {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.deleteWhere<ChangedIdTypeSelf>(
       where: where(ChangedIdTypeSelf.t),
       transaction: transaction,
     );
@@ -630,7 +630,7 @@ class ChangedIdTypeSelfRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, ChangedIdTypeSelf>(
+    return session.db.count<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
       transaction: transaction,
@@ -659,7 +659,7 @@ class ChangedIdTypeSelfAttachRepository {
     var $nestedChangedIdTypeSelf = nestedChangedIdTypeSelf
         .map((e) => e.copyWith(parentId: changedIdTypeSelf.id))
         .toList();
-    await session.db.update<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.update<_i2.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
@@ -686,7 +686,7 @@ class ChangedIdTypeSelfAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: changedIdTypeSelf.id);
-    await session.db.updateRow<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $previous,
       columns: [_i2.ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
@@ -709,7 +709,7 @@ class ChangedIdTypeSelfAttachRowRepository {
     }
 
     var $changedIdTypeSelf = changedIdTypeSelf.copyWith(nextId: next.id);
-    await session.db.updateRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    await session.db.updateRow<ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
@@ -732,7 +732,7 @@ class ChangedIdTypeSelfAttachRowRepository {
     }
 
     var $changedIdTypeSelf = changedIdTypeSelf.copyWith(parentId: parent.id);
-    await session.db.updateRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    await session.db.updateRow<ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
@@ -756,7 +756,7 @@ class ChangedIdTypeSelfAttachRowRepository {
 
     var $nestedChangedIdTypeSelf =
         nestedChangedIdTypeSelf.copyWith(parentId: changedIdTypeSelf.id);
-    await session.db.updateRow<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
@@ -783,7 +783,7 @@ class ChangedIdTypeSelfDetachRepository {
 
     var $changedIdTypeSelf =
         changedIdTypeSelf.map((e) => e.copyWith(parentId: null)).toList();
-    await session.db.update<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.update<_i2.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
@@ -817,7 +817,7 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $$previous,
       columns: [_i2.ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
@@ -839,7 +839,7 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $changedidtypeself = changedidtypeself.copyWith(nextId: null);
-    await session.db.updateRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    await session.db.updateRow<ChangedIdTypeSelf>(
       $changedidtypeself,
       columns: [ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
@@ -861,7 +861,7 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $changedidtypeself = changedidtypeself.copyWith(parentId: null);
-    await session.db.updateRow<_i1.UuidValue, ChangedIdTypeSelf>(
+    await session.db.updateRow<ChangedIdTypeSelf>(
       $changedidtypeself,
       columns: [ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
@@ -883,7 +883,7 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $changedIdTypeSelf = changedIdTypeSelf.copyWith(parentId: null);
-    await session.db.updateRow<_i1.UuidValue, _i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,

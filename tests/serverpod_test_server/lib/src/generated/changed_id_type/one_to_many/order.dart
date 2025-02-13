@@ -345,7 +345,7 @@ class OrderUuidRepository {
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, OrderUuid>(
+    return session.db.find<OrderUuid>(
       where: where?.call(OrderUuid.t),
       orderBy: orderBy?.call(OrderUuid.t),
       orderByList: orderByList?.call(OrderUuid.t),
@@ -384,7 +384,7 @@ class OrderUuidRepository {
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, OrderUuid>(
+    return session.db.findFirstRow<OrderUuid>(
       where: where?.call(OrderUuid.t),
       orderBy: orderBy?.call(OrderUuid.t),
       orderByList: orderByList?.call(OrderUuid.t),
@@ -402,7 +402,7 @@ class OrderUuidRepository {
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, OrderUuid>(
+    return session.db.findById<OrderUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -420,7 +420,7 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, OrderUuid>(
+    return session.db.insert<OrderUuid>(
       rows,
       transaction: transaction,
     );
@@ -434,7 +434,7 @@ class OrderUuidRepository {
     OrderUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, OrderUuid>(
+    return session.db.insertRow<OrderUuid>(
       row,
       transaction: transaction,
     );
@@ -451,7 +451,7 @@ class OrderUuidRepository {
     _i1.ColumnSelections<OrderUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, OrderUuid>(
+    return session.db.update<OrderUuid>(
       rows,
       columns: columns?.call(OrderUuid.t),
       transaction: transaction,
@@ -467,7 +467,7 @@ class OrderUuidRepository {
     _i1.ColumnSelections<OrderUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, OrderUuid>(
+    return session.db.updateRow<OrderUuid>(
       row,
       columns: columns?.call(OrderUuid.t),
       transaction: transaction,
@@ -482,7 +482,7 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, OrderUuid>(
+    return session.db.delete<OrderUuid>(
       rows,
       transaction: transaction,
     );
@@ -494,7 +494,7 @@ class OrderUuidRepository {
     OrderUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, OrderUuid>(
+    return session.db.deleteRow<OrderUuid>(
       row,
       transaction: transaction,
     );
@@ -506,7 +506,7 @@ class OrderUuidRepository {
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, OrderUuid>(
+    return session.db.deleteWhere<OrderUuid>(
       where: where(OrderUuid.t),
       transaction: transaction,
     );
@@ -520,7 +520,7 @@ class OrderUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, OrderUuid>(
+    return session.db.count<OrderUuid>(
       where: where?.call(OrderUuid.t),
       limit: limit,
       transaction: transaction,
@@ -548,7 +548,7 @@ class OrderUuidAttachRepository {
 
     var $commentInt =
         commentInt.map((e) => e.copyWith(orderId: orderUuid.id)).toList();
-    await session.db.update<int, _i3.CommentInt>(
+    await session.db.update<_i3.CommentInt>(
       $commentInt,
       columns: [_i3.CommentInt.t.orderId],
       transaction: transaction,
@@ -575,7 +575,7 @@ class OrderUuidAttachRowRepository {
     }
 
     var $orderUuid = orderUuid.copyWith(customerId: customer.id);
-    await session.db.updateRow<_i1.UuidValue, OrderUuid>(
+    await session.db.updateRow<OrderUuid>(
       $orderUuid,
       columns: [OrderUuid.t.customerId],
       transaction: transaction,
@@ -598,7 +598,7 @@ class OrderUuidAttachRowRepository {
     }
 
     var $commentInt = commentInt.copyWith(orderId: orderUuid.id);
-    await session.db.updateRow<int, _i3.CommentInt>(
+    await session.db.updateRow<_i3.CommentInt>(
       $commentInt,
       columns: [_i3.CommentInt.t.orderId],
       transaction: transaction,

@@ -345,7 +345,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.find<int, Cat>(
+    return session.db.find<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -384,7 +384,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Cat>(
+    return session.db.findFirstRow<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -402,7 +402,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.findById<int, Cat>(
+    return session.db.findById<Cat>(
       id,
       transaction: transaction,
       include: include,
@@ -420,7 +420,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Cat>(
+    return session.db.insert<Cat>(
       rows,
       transaction: transaction,
     );
@@ -434,7 +434,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Cat>(
+    return session.db.insertRow<Cat>(
       row,
       transaction: transaction,
     );
@@ -451,7 +451,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Cat>(
+    return session.db.update<Cat>(
       rows,
       columns: columns?.call(Cat.t),
       transaction: transaction,
@@ -467,7 +467,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Cat>(
+    return session.db.updateRow<Cat>(
       row,
       columns: columns?.call(Cat.t),
       transaction: transaction,
@@ -482,7 +482,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Cat>(
+    return session.db.delete<Cat>(
       rows,
       transaction: transaction,
     );
@@ -494,7 +494,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Cat>(
+    return session.db.deleteRow<Cat>(
       row,
       transaction: transaction,
     );
@@ -506,7 +506,7 @@ class CatRepository {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Cat>(
+    return session.db.deleteWhere<Cat>(
       where: where(Cat.t),
       transaction: transaction,
     );
@@ -520,7 +520,7 @@ class CatRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Cat>(
+    return session.db.count<Cat>(
       where: where?.call(Cat.t),
       limit: limit,
       transaction: transaction,
@@ -548,7 +548,7 @@ class CatAttachRepository {
 
     var $nestedCat =
         nestedCat.map((e) => e.copyWith(motherId: cat.id)).toList();
-    await session.db.update<int, _i2.Cat>(
+    await session.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
       transaction: transaction,
@@ -575,7 +575,7 @@ class CatAttachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: mother.id);
-    await session.db.updateRow<int, Cat>(
+    await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
       transaction: transaction,
@@ -598,7 +598,7 @@ class CatAttachRowRepository {
     }
 
     var $nestedCat = nestedCat.copyWith(motherId: cat.id);
-    await session.db.updateRow<int, _i2.Cat>(
+    await session.db.updateRow<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
       transaction: transaction,
@@ -624,7 +624,7 @@ class CatDetachRepository {
     }
 
     var $cat = cat.map((e) => e.copyWith(motherId: null)).toList();
-    await session.db.update<int, _i2.Cat>(
+    await session.db.update<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
       transaction: transaction,
@@ -650,7 +650,7 @@ class CatDetachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.db.updateRow<int, Cat>(
+    await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
       transaction: transaction,
@@ -672,7 +672,7 @@ class CatDetachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.db.updateRow<int, _i2.Cat>(
+    await session.db.updateRow<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
       transaction: transaction,

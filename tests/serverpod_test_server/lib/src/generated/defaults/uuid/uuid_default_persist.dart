@@ -268,7 +268,7 @@ class UuidDefaultPersistRepository {
     _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, UuidDefaultPersist>(
+    return session.db.find<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -305,7 +305,7 @@ class UuidDefaultPersistRepository {
     _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, UuidDefaultPersist>(
+    return session.db.findFirstRow<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
@@ -321,7 +321,7 @@ class UuidDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, UuidDefaultPersist>(
+    return session.db.findById<UuidDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -338,7 +338,7 @@ class UuidDefaultPersistRepository {
     List<UuidDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, UuidDefaultPersist>(
+    return session.db.insert<UuidDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -352,7 +352,7 @@ class UuidDefaultPersistRepository {
     UuidDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, UuidDefaultPersist>(
+    return session.db.insertRow<UuidDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -369,7 +369,7 @@ class UuidDefaultPersistRepository {
     _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, UuidDefaultPersist>(
+    return session.db.update<UuidDefaultPersist>(
       rows,
       columns: columns?.call(UuidDefaultPersist.t),
       transaction: transaction,
@@ -385,7 +385,7 @@ class UuidDefaultPersistRepository {
     _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, UuidDefaultPersist>(
+    return session.db.updateRow<UuidDefaultPersist>(
       row,
       columns: columns?.call(UuidDefaultPersist.t),
       transaction: transaction,
@@ -400,7 +400,7 @@ class UuidDefaultPersistRepository {
     List<UuidDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, UuidDefaultPersist>(
+    return session.db.delete<UuidDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -412,7 +412,7 @@ class UuidDefaultPersistRepository {
     UuidDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, UuidDefaultPersist>(
+    return session.db.deleteRow<UuidDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -424,7 +424,7 @@ class UuidDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, UuidDefaultPersist>(
+    return session.db.deleteWhere<UuidDefaultPersist>(
       where: where(UuidDefaultPersist.t),
       transaction: transaction,
     );
@@ -438,7 +438,7 @@ class UuidDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, UuidDefaultPersist>(
+    return session.db.count<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       limit: limit,
       transaction: transaction,

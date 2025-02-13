@@ -208,7 +208,7 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, SimpleDateTime>(
+    return session.db.find<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -245,7 +245,7 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, SimpleDateTime>(
+    return session.db.findFirstRow<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -261,7 +261,7 @@ class SimpleDateTimeRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, SimpleDateTime>(
+    return session.db.findById<SimpleDateTime>(
       id,
       transaction: transaction,
     );
@@ -278,7 +278,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, SimpleDateTime>(
+    return session.db.insert<SimpleDateTime>(
       rows,
       transaction: transaction,
     );
@@ -292,7 +292,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, SimpleDateTime>(
+    return session.db.insertRow<SimpleDateTime>(
       row,
       transaction: transaction,
     );
@@ -309,7 +309,7 @@ class SimpleDateTimeRepository {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, SimpleDateTime>(
+    return session.db.update<SimpleDateTime>(
       rows,
       columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
@@ -325,7 +325,7 @@ class SimpleDateTimeRepository {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, SimpleDateTime>(
+    return session.db.updateRow<SimpleDateTime>(
       row,
       columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
@@ -340,7 +340,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, SimpleDateTime>(
+    return session.db.delete<SimpleDateTime>(
       rows,
       transaction: transaction,
     );
@@ -352,7 +352,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, SimpleDateTime>(
+    return session.db.deleteRow<SimpleDateTime>(
       row,
       transaction: transaction,
     );
@@ -364,7 +364,7 @@ class SimpleDateTimeRepository {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, SimpleDateTime>(
+    return session.db.deleteWhere<SimpleDateTime>(
       where: where(SimpleDateTime.t),
       transaction: transaction,
     );
@@ -378,7 +378,7 @@ class SimpleDateTimeRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, SimpleDateTime>(
+    return session.db.count<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       limit: limit,
       transaction: transaction,

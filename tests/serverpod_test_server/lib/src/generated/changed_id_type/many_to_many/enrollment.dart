@@ -320,7 +320,7 @@ class EnrollmentIntRepository {
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
   }) async {
-    return session.db.find<int, EnrollmentInt>(
+    return session.db.find<EnrollmentInt>(
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -359,7 +359,7 @@ class EnrollmentIntRepository {
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
   }) async {
-    return session.db.findFirstRow<int, EnrollmentInt>(
+    return session.db.findFirstRow<EnrollmentInt>(
       where: where?.call(EnrollmentInt.t),
       orderBy: orderBy?.call(EnrollmentInt.t),
       orderByList: orderByList?.call(EnrollmentInt.t),
@@ -377,7 +377,7 @@ class EnrollmentIntRepository {
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
   }) async {
-    return session.db.findById<int, EnrollmentInt>(
+    return session.db.findById<EnrollmentInt>(
       id,
       transaction: transaction,
       include: include,
@@ -395,7 +395,7 @@ class EnrollmentIntRepository {
     List<EnrollmentInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, EnrollmentInt>(
+    return session.db.insert<EnrollmentInt>(
       rows,
       transaction: transaction,
     );
@@ -409,7 +409,7 @@ class EnrollmentIntRepository {
     EnrollmentInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, EnrollmentInt>(
+    return session.db.insertRow<EnrollmentInt>(
       row,
       transaction: transaction,
     );
@@ -426,7 +426,7 @@ class EnrollmentIntRepository {
     _i1.ColumnSelections<EnrollmentIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, EnrollmentInt>(
+    return session.db.update<EnrollmentInt>(
       rows,
       columns: columns?.call(EnrollmentInt.t),
       transaction: transaction,
@@ -442,7 +442,7 @@ class EnrollmentIntRepository {
     _i1.ColumnSelections<EnrollmentIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, EnrollmentInt>(
+    return session.db.updateRow<EnrollmentInt>(
       row,
       columns: columns?.call(EnrollmentInt.t),
       transaction: transaction,
@@ -457,7 +457,7 @@ class EnrollmentIntRepository {
     List<EnrollmentInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, EnrollmentInt>(
+    return session.db.delete<EnrollmentInt>(
       rows,
       transaction: transaction,
     );
@@ -469,7 +469,7 @@ class EnrollmentIntRepository {
     EnrollmentInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, EnrollmentInt>(
+    return session.db.deleteRow<EnrollmentInt>(
       row,
       transaction: transaction,
     );
@@ -481,7 +481,7 @@ class EnrollmentIntRepository {
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, EnrollmentInt>(
+    return session.db.deleteWhere<EnrollmentInt>(
       where: where(EnrollmentInt.t),
       transaction: transaction,
     );
@@ -495,7 +495,7 @@ class EnrollmentIntRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, EnrollmentInt>(
+    return session.db.count<EnrollmentInt>(
       where: where?.call(EnrollmentInt.t),
       limit: limit,
       transaction: transaction,
@@ -522,7 +522,7 @@ class EnrollmentIntAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(studentId: student.id);
-    await session.db.updateRow<int, EnrollmentInt>(
+    await session.db.updateRow<EnrollmentInt>(
       $enrollmentInt,
       columns: [EnrollmentInt.t.studentId],
       transaction: transaction,
@@ -545,7 +545,7 @@ class EnrollmentIntAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(courseId: course.id);
-    await session.db.updateRow<int, EnrollmentInt>(
+    await session.db.updateRow<EnrollmentInt>(
       $enrollmentInt,
       columns: [EnrollmentInt.t.courseId],
       transaction: transaction,

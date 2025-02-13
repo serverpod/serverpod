@@ -271,7 +271,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.find<int, RelatedUniqueData>(
+    return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -310,7 +310,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findFirstRow<int, RelatedUniqueData>(
+    return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -328,7 +328,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findById<int, RelatedUniqueData>(
+    return session.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
@@ -346,7 +346,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, RelatedUniqueData>(
+    return session.db.insert<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, RelatedUniqueData>(
+    return session.db.insertRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -377,7 +377,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, RelatedUniqueData>(
+    return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -393,7 +393,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, RelatedUniqueData>(
+    return session.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -408,7 +408,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, RelatedUniqueData>(
+    return session.db.delete<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -420,7 +420,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, RelatedUniqueData>(
+    return session.db.deleteRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -432,7 +432,7 @@ class RelatedUniqueDataRepository {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, RelatedUniqueData>(
+    return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );
@@ -446,7 +446,7 @@ class RelatedUniqueDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, RelatedUniqueData>(
+    return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -474,7 +474,7 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await session.db.updateRow<int, RelatedUniqueData>(
+    await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
       transaction: transaction,

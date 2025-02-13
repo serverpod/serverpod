@@ -463,7 +463,7 @@ class StringDefaultPersistRepository {
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, StringDefaultPersist>(
+    return session.db.find<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -500,7 +500,7 @@ class StringDefaultPersistRepository {
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, StringDefaultPersist>(
+    return session.db.findFirstRow<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
@@ -516,7 +516,7 @@ class StringDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, StringDefaultPersist>(
+    return session.db.findById<StringDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -533,7 +533,7 @@ class StringDefaultPersistRepository {
     List<StringDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, StringDefaultPersist>(
+    return session.db.insert<StringDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -547,7 +547,7 @@ class StringDefaultPersistRepository {
     StringDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, StringDefaultPersist>(
+    return session.db.insertRow<StringDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -564,7 +564,7 @@ class StringDefaultPersistRepository {
     _i1.ColumnSelections<StringDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, StringDefaultPersist>(
+    return session.db.update<StringDefaultPersist>(
       rows,
       columns: columns?.call(StringDefaultPersist.t),
       transaction: transaction,
@@ -580,7 +580,7 @@ class StringDefaultPersistRepository {
     _i1.ColumnSelections<StringDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, StringDefaultPersist>(
+    return session.db.updateRow<StringDefaultPersist>(
       row,
       columns: columns?.call(StringDefaultPersist.t),
       transaction: transaction,
@@ -595,7 +595,7 @@ class StringDefaultPersistRepository {
     List<StringDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, StringDefaultPersist>(
+    return session.db.delete<StringDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -607,7 +607,7 @@ class StringDefaultPersistRepository {
     StringDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, StringDefaultPersist>(
+    return session.db.deleteRow<StringDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -619,7 +619,7 @@ class StringDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, StringDefaultPersist>(
+    return session.db.deleteWhere<StringDefaultPersist>(
       where: where(StringDefaultPersist.t),
       transaction: transaction,
     );
@@ -633,7 +633,7 @@ class StringDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, StringDefaultPersist>(
+    return session.db.count<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       limit: limit,
       transaction: transaction,

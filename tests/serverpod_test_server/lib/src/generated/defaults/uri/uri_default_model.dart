@@ -234,7 +234,7 @@ class UriDefaultModelRepository {
     _i1.OrderByListBuilder<UriDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, UriDefaultModel>(
+    return session.db.find<UriDefaultModel>(
       where: where?.call(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -271,7 +271,7 @@ class UriDefaultModelRepository {
     _i1.OrderByListBuilder<UriDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, UriDefaultModel>(
+    return session.db.findFirstRow<UriDefaultModel>(
       where: where?.call(UriDefaultModel.t),
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
@@ -287,7 +287,7 @@ class UriDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, UriDefaultModel>(
+    return session.db.findById<UriDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -304,7 +304,7 @@ class UriDefaultModelRepository {
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, UriDefaultModel>(
+    return session.db.insert<UriDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -318,7 +318,7 @@ class UriDefaultModelRepository {
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, UriDefaultModel>(
+    return session.db.insertRow<UriDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -335,7 +335,7 @@ class UriDefaultModelRepository {
     _i1.ColumnSelections<UriDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, UriDefaultModel>(
+    return session.db.update<UriDefaultModel>(
       rows,
       columns: columns?.call(UriDefaultModel.t),
       transaction: transaction,
@@ -351,7 +351,7 @@ class UriDefaultModelRepository {
     _i1.ColumnSelections<UriDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, UriDefaultModel>(
+    return session.db.updateRow<UriDefaultModel>(
       row,
       columns: columns?.call(UriDefaultModel.t),
       transaction: transaction,
@@ -366,7 +366,7 @@ class UriDefaultModelRepository {
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, UriDefaultModel>(
+    return session.db.delete<UriDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -378,7 +378,7 @@ class UriDefaultModelRepository {
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, UriDefaultModel>(
+    return session.db.deleteRow<UriDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -390,7 +390,7 @@ class UriDefaultModelRepository {
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, UriDefaultModel>(
+    return session.db.deleteWhere<UriDefaultModel>(
       where: where(UriDefaultModel.t),
       transaction: transaction,
     );
@@ -404,7 +404,7 @@ class UriDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, UriDefaultModel>(
+    return session.db.count<UriDefaultModel>(
       where: where?.call(UriDefaultModel.t),
       limit: limit,
       transaction: transaction,

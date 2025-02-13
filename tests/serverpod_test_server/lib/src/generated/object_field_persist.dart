@@ -232,7 +232,7 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, ObjectFieldPersist>(
+    return session.db.find<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -269,7 +269,7 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, ObjectFieldPersist>(
+    return session.db.findFirstRow<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
@@ -285,7 +285,7 @@ class ObjectFieldPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, ObjectFieldPersist>(
+    return session.db.findById<ObjectFieldPersist>(
       id,
       transaction: transaction,
     );
@@ -302,7 +302,7 @@ class ObjectFieldPersistRepository {
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, ObjectFieldPersist>(
+    return session.db.insert<ObjectFieldPersist>(
       rows,
       transaction: transaction,
     );
@@ -316,7 +316,7 @@ class ObjectFieldPersistRepository {
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, ObjectFieldPersist>(
+    return session.db.insertRow<ObjectFieldPersist>(
       row,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class ObjectFieldPersistRepository {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, ObjectFieldPersist>(
+    return session.db.update<ObjectFieldPersist>(
       rows,
       columns: columns?.call(ObjectFieldPersist.t),
       transaction: transaction,
@@ -349,7 +349,7 @@ class ObjectFieldPersistRepository {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, ObjectFieldPersist>(
+    return session.db.updateRow<ObjectFieldPersist>(
       row,
       columns: columns?.call(ObjectFieldPersist.t),
       transaction: transaction,
@@ -364,7 +364,7 @@ class ObjectFieldPersistRepository {
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, ObjectFieldPersist>(
+    return session.db.delete<ObjectFieldPersist>(
       rows,
       transaction: transaction,
     );
@@ -376,7 +376,7 @@ class ObjectFieldPersistRepository {
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, ObjectFieldPersist>(
+    return session.db.deleteRow<ObjectFieldPersist>(
       row,
       transaction: transaction,
     );
@@ -388,7 +388,7 @@ class ObjectFieldPersistRepository {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, ObjectFieldPersist>(
+    return session.db.deleteWhere<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),
       transaction: transaction,
     );
@@ -402,7 +402,7 @@ class ObjectFieldPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, ObjectFieldPersist>(
+    return session.db.count<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       limit: limit,
       transaction: transaction,

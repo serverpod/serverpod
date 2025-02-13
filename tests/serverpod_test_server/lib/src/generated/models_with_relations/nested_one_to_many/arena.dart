@@ -250,7 +250,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.find<int, Arena>(
+    return session.db.find<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -289,7 +289,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Arena>(
+    return session.db.findFirstRow<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -307,7 +307,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findById<int, Arena>(
+    return session.db.findById<Arena>(
       id,
       transaction: transaction,
       include: include,
@@ -325,7 +325,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Arena>(
+    return session.db.insert<Arena>(
       rows,
       transaction: transaction,
     );
@@ -339,7 +339,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Arena>(
+    return session.db.insertRow<Arena>(
       row,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class ArenaRepository {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Arena>(
+    return session.db.update<Arena>(
       rows,
       columns: columns?.call(Arena.t),
       transaction: transaction,
@@ -372,7 +372,7 @@ class ArenaRepository {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Arena>(
+    return session.db.updateRow<Arena>(
       row,
       columns: columns?.call(Arena.t),
       transaction: transaction,
@@ -387,7 +387,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Arena>(
+    return session.db.delete<Arena>(
       rows,
       transaction: transaction,
     );
@@ -399,7 +399,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Arena>(
+    return session.db.deleteRow<Arena>(
       row,
       transaction: transaction,
     );
@@ -411,7 +411,7 @@ class ArenaRepository {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Arena>(
+    return session.db.deleteWhere<Arena>(
       where: where(Arena.t),
       transaction: transaction,
     );
@@ -425,7 +425,7 @@ class ArenaRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Arena>(
+    return session.db.count<Arena>(
       where: where?.call(Arena.t),
       limit: limit,
       transaction: transaction,
@@ -452,7 +452,7 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<int, _i2.Team>(
+    await session.db.updateRow<_i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
       transaction: transaction,
@@ -486,7 +486,7 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<int, _i2.Team>(
+    await session.db.updateRow<_i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
       transaction: transaction,

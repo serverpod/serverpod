@@ -263,7 +263,7 @@ class DateTimeDefaultMixRepository {
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, DateTimeDefaultMix>(
+    return session.db.find<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -300,7 +300,7 @@ class DateTimeDefaultMixRepository {
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, DateTimeDefaultMix>(
+    return session.db.findFirstRow<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
@@ -316,7 +316,7 @@ class DateTimeDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, DateTimeDefaultMix>(
+    return session.db.findById<DateTimeDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class DateTimeDefaultMixRepository {
     List<DateTimeDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, DateTimeDefaultMix>(
+    return session.db.insert<DateTimeDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -347,7 +347,7 @@ class DateTimeDefaultMixRepository {
     DateTimeDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, DateTimeDefaultMix>(
+    return session.db.insertRow<DateTimeDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -364,7 +364,7 @@ class DateTimeDefaultMixRepository {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, DateTimeDefaultMix>(
+    return session.db.update<DateTimeDefaultMix>(
       rows,
       columns: columns?.call(DateTimeDefaultMix.t),
       transaction: transaction,
@@ -380,7 +380,7 @@ class DateTimeDefaultMixRepository {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, DateTimeDefaultMix>(
+    return session.db.updateRow<DateTimeDefaultMix>(
       row,
       columns: columns?.call(DateTimeDefaultMix.t),
       transaction: transaction,
@@ -395,7 +395,7 @@ class DateTimeDefaultMixRepository {
     List<DateTimeDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, DateTimeDefaultMix>(
+    return session.db.delete<DateTimeDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -407,7 +407,7 @@ class DateTimeDefaultMixRepository {
     DateTimeDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, DateTimeDefaultMix>(
+    return session.db.deleteRow<DateTimeDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -419,7 +419,7 @@ class DateTimeDefaultMixRepository {
     required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, DateTimeDefaultMix>(
+    return session.db.deleteWhere<DateTimeDefaultMix>(
       where: where(DateTimeDefaultMix.t),
       transaction: transaction,
     );
@@ -433,7 +433,7 @@ class DateTimeDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, DateTimeDefaultMix>(
+    return session.db.count<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
       transaction: transaction,

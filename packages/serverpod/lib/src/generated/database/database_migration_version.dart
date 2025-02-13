@@ -252,7 +252,7 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, DatabaseMigrationVersion>(
+    return session.db.find<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -289,7 +289,7 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, DatabaseMigrationVersion>(
+    return session.db.findFirstRow<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
@@ -305,7 +305,7 @@ class DatabaseMigrationVersionRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, DatabaseMigrationVersion>(
+    return session.db.findById<DatabaseMigrationVersion>(
       id,
       transaction: transaction,
     );
@@ -322,7 +322,7 @@ class DatabaseMigrationVersionRepository {
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, DatabaseMigrationVersion>(
+    return session.db.insert<DatabaseMigrationVersion>(
       rows,
       transaction: transaction,
     );
@@ -336,7 +336,7 @@ class DatabaseMigrationVersionRepository {
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, DatabaseMigrationVersion>(
+    return session.db.insertRow<DatabaseMigrationVersion>(
       row,
       transaction: transaction,
     );
@@ -353,7 +353,7 @@ class DatabaseMigrationVersionRepository {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, DatabaseMigrationVersion>(
+    return session.db.update<DatabaseMigrationVersion>(
       rows,
       columns: columns?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
@@ -369,7 +369,7 @@ class DatabaseMigrationVersionRepository {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, DatabaseMigrationVersion>(
+    return session.db.updateRow<DatabaseMigrationVersion>(
       row,
       columns: columns?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
@@ -384,7 +384,7 @@ class DatabaseMigrationVersionRepository {
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, DatabaseMigrationVersion>(
+    return session.db.delete<DatabaseMigrationVersion>(
       rows,
       transaction: transaction,
     );
@@ -396,7 +396,7 @@ class DatabaseMigrationVersionRepository {
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, DatabaseMigrationVersion>(
+    return session.db.deleteRow<DatabaseMigrationVersion>(
       row,
       transaction: transaction,
     );
@@ -408,7 +408,7 @@ class DatabaseMigrationVersionRepository {
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, DatabaseMigrationVersion>(
+    return session.db.deleteWhere<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
       transaction: transaction,
     );
@@ -422,7 +422,7 @@ class DatabaseMigrationVersionRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, DatabaseMigrationVersion>(
+    return session.db.count<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
       transaction: transaction,

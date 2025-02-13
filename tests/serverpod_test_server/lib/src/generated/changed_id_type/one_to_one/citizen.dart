@@ -385,7 +385,7 @@ class CitizenIntRepository {
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
   }) async {
-    return session.db.find<int, CitizenInt>(
+    return session.db.find<CitizenInt>(
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -424,7 +424,7 @@ class CitizenIntRepository {
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
   }) async {
-    return session.db.findFirstRow<int, CitizenInt>(
+    return session.db.findFirstRow<CitizenInt>(
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
@@ -442,7 +442,7 @@ class CitizenIntRepository {
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
   }) async {
-    return session.db.findById<int, CitizenInt>(
+    return session.db.findById<CitizenInt>(
       id,
       transaction: transaction,
       include: include,
@@ -460,7 +460,7 @@ class CitizenIntRepository {
     List<CitizenInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, CitizenInt>(
+    return session.db.insert<CitizenInt>(
       rows,
       transaction: transaction,
     );
@@ -474,7 +474,7 @@ class CitizenIntRepository {
     CitizenInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, CitizenInt>(
+    return session.db.insertRow<CitizenInt>(
       row,
       transaction: transaction,
     );
@@ -491,7 +491,7 @@ class CitizenIntRepository {
     _i1.ColumnSelections<CitizenIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, CitizenInt>(
+    return session.db.update<CitizenInt>(
       rows,
       columns: columns?.call(CitizenInt.t),
       transaction: transaction,
@@ -507,7 +507,7 @@ class CitizenIntRepository {
     _i1.ColumnSelections<CitizenIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, CitizenInt>(
+    return session.db.updateRow<CitizenInt>(
       row,
       columns: columns?.call(CitizenInt.t),
       transaction: transaction,
@@ -522,7 +522,7 @@ class CitizenIntRepository {
     List<CitizenInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, CitizenInt>(
+    return session.db.delete<CitizenInt>(
       rows,
       transaction: transaction,
     );
@@ -534,7 +534,7 @@ class CitizenIntRepository {
     CitizenInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, CitizenInt>(
+    return session.db.deleteRow<CitizenInt>(
       row,
       transaction: transaction,
     );
@@ -546,7 +546,7 @@ class CitizenIntRepository {
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, CitizenInt>(
+    return session.db.deleteWhere<CitizenInt>(
       where: where(CitizenInt.t),
       transaction: transaction,
     );
@@ -560,7 +560,7 @@ class CitizenIntRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, CitizenInt>(
+    return session.db.count<CitizenInt>(
       where: where?.call(CitizenInt.t),
       limit: limit,
       transaction: transaction,
@@ -587,7 +587,7 @@ class CitizenIntAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizenInt.id);
-    await session.db.updateRow<_i1.UuidValue, _i2.AddressUuid>(
+    await session.db.updateRow<_i2.AddressUuid>(
       $address,
       columns: [_i2.AddressUuid.t.inhabitantId],
       transaction: transaction,
@@ -610,7 +610,7 @@ class CitizenIntAttachRowRepository {
     }
 
     var $citizenInt = citizenInt.copyWith(companyId: company.id);
-    await session.db.updateRow<int, CitizenInt>(
+    await session.db.updateRow<CitizenInt>(
       $citizenInt,
       columns: [CitizenInt.t.companyId],
       transaction: transaction,
@@ -633,7 +633,7 @@ class CitizenIntAttachRowRepository {
     }
 
     var $citizenInt = citizenInt.copyWith(oldCompanyId: oldCompany.id);
-    await session.db.updateRow<int, CitizenInt>(
+    await session.db.updateRow<CitizenInt>(
       $citizenInt,
       columns: [CitizenInt.t.oldCompanyId],
       transaction: transaction,
@@ -667,7 +667,7 @@ class CitizenIntDetachRowRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.updateRow<_i1.UuidValue, _i2.AddressUuid>(
+    await session.db.updateRow<_i2.AddressUuid>(
       $$address,
       columns: [_i2.AddressUuid.t.inhabitantId],
       transaction: transaction,
@@ -689,7 +689,7 @@ class CitizenIntDetachRowRepository {
     }
 
     var $citizenint = citizenint.copyWith(oldCompanyId: null);
-    await session.db.updateRow<int, CitizenInt>(
+    await session.db.updateRow<CitizenInt>(
       $citizenint,
       columns: [CitizenInt.t.oldCompanyId],
       transaction: transaction,

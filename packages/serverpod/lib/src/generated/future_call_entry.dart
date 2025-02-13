@@ -293,7 +293,7 @@ class FutureCallEntryRepository {
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, FutureCallEntry>(
+    return session.db.find<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -330,7 +330,7 @@ class FutureCallEntryRepository {
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, FutureCallEntry>(
+    return session.db.findFirstRow<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
@@ -346,7 +346,7 @@ class FutureCallEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, FutureCallEntry>(
+    return session.db.findById<FutureCallEntry>(
       id,
       transaction: transaction,
     );
@@ -363,7 +363,7 @@ class FutureCallEntryRepository {
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, FutureCallEntry>(
+    return session.db.insert<FutureCallEntry>(
       rows,
       transaction: transaction,
     );
@@ -377,7 +377,7 @@ class FutureCallEntryRepository {
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, FutureCallEntry>(
+    return session.db.insertRow<FutureCallEntry>(
       row,
       transaction: transaction,
     );
@@ -394,7 +394,7 @@ class FutureCallEntryRepository {
     _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, FutureCallEntry>(
+    return session.db.update<FutureCallEntry>(
       rows,
       columns: columns?.call(FutureCallEntry.t),
       transaction: transaction,
@@ -410,7 +410,7 @@ class FutureCallEntryRepository {
     _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, FutureCallEntry>(
+    return session.db.updateRow<FutureCallEntry>(
       row,
       columns: columns?.call(FutureCallEntry.t),
       transaction: transaction,
@@ -425,7 +425,7 @@ class FutureCallEntryRepository {
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, FutureCallEntry>(
+    return session.db.delete<FutureCallEntry>(
       rows,
       transaction: transaction,
     );
@@ -437,7 +437,7 @@ class FutureCallEntryRepository {
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, FutureCallEntry>(
+    return session.db.deleteRow<FutureCallEntry>(
       row,
       transaction: transaction,
     );
@@ -449,7 +449,7 @@ class FutureCallEntryRepository {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, FutureCallEntry>(
+    return session.db.deleteWhere<FutureCallEntry>(
       where: where(FutureCallEntry.t),
       transaction: transaction,
     );
@@ -463,7 +463,7 @@ class FutureCallEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, FutureCallEntry>(
+    return session.db.count<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       limit: limit,
       transaction: transaction,

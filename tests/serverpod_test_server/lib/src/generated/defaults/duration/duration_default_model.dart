@@ -248,7 +248,7 @@ class DurationDefaultModelRepository {
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, DurationDefaultModel>(
+    return session.db.find<DurationDefaultModel>(
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -285,7 +285,7 @@ class DurationDefaultModelRepository {
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, DurationDefaultModel>(
+    return session.db.findFirstRow<DurationDefaultModel>(
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
@@ -301,7 +301,7 @@ class DurationDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, DurationDefaultModel>(
+    return session.db.findById<DurationDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -318,7 +318,7 @@ class DurationDefaultModelRepository {
     List<DurationDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, DurationDefaultModel>(
+    return session.db.insert<DurationDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -332,7 +332,7 @@ class DurationDefaultModelRepository {
     DurationDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, DurationDefaultModel>(
+    return session.db.insertRow<DurationDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -349,7 +349,7 @@ class DurationDefaultModelRepository {
     _i1.ColumnSelections<DurationDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, DurationDefaultModel>(
+    return session.db.update<DurationDefaultModel>(
       rows,
       columns: columns?.call(DurationDefaultModel.t),
       transaction: transaction,
@@ -365,7 +365,7 @@ class DurationDefaultModelRepository {
     _i1.ColumnSelections<DurationDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, DurationDefaultModel>(
+    return session.db.updateRow<DurationDefaultModel>(
       row,
       columns: columns?.call(DurationDefaultModel.t),
       transaction: transaction,
@@ -380,7 +380,7 @@ class DurationDefaultModelRepository {
     List<DurationDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, DurationDefaultModel>(
+    return session.db.delete<DurationDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -392,7 +392,7 @@ class DurationDefaultModelRepository {
     DurationDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, DurationDefaultModel>(
+    return session.db.deleteRow<DurationDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -404,7 +404,7 @@ class DurationDefaultModelRepository {
     required _i1.WhereExpressionBuilder<DurationDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, DurationDefaultModel>(
+    return session.db.deleteWhere<DurationDefaultModel>(
       where: where(DurationDefaultModel.t),
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class DurationDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, DurationDefaultModel>(
+    return session.db.count<DurationDefaultModel>(
       where: where?.call(DurationDefaultModel.t),
       limit: limit,
       transaction: transaction,

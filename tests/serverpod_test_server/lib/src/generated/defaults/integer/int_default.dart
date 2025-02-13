@@ -226,7 +226,7 @@ class IntDefaultRepository {
     _i1.OrderByListBuilder<IntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, IntDefault>(
+    return session.db.find<IntDefault>(
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -263,7 +263,7 @@ class IntDefaultRepository {
     _i1.OrderByListBuilder<IntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, IntDefault>(
+    return session.db.findFirstRow<IntDefault>(
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -279,7 +279,7 @@ class IntDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, IntDefault>(
+    return session.db.findById<IntDefault>(
       id,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class IntDefaultRepository {
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, IntDefault>(
+    return session.db.insert<IntDefault>(
       rows,
       transaction: transaction,
     );
@@ -310,7 +310,7 @@ class IntDefaultRepository {
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, IntDefault>(
+    return session.db.insertRow<IntDefault>(
       row,
       transaction: transaction,
     );
@@ -327,7 +327,7 @@ class IntDefaultRepository {
     _i1.ColumnSelections<IntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, IntDefault>(
+    return session.db.update<IntDefault>(
       rows,
       columns: columns?.call(IntDefault.t),
       transaction: transaction,
@@ -343,7 +343,7 @@ class IntDefaultRepository {
     _i1.ColumnSelections<IntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, IntDefault>(
+    return session.db.updateRow<IntDefault>(
       row,
       columns: columns?.call(IntDefault.t),
       transaction: transaction,
@@ -358,7 +358,7 @@ class IntDefaultRepository {
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, IntDefault>(
+    return session.db.delete<IntDefault>(
       rows,
       transaction: transaction,
     );
@@ -370,7 +370,7 @@ class IntDefaultRepository {
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, IntDefault>(
+    return session.db.deleteRow<IntDefault>(
       row,
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class IntDefaultRepository {
     required _i1.WhereExpressionBuilder<IntDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, IntDefault>(
+    return session.db.deleteWhere<IntDefault>(
       where: where(IntDefault.t),
       transaction: transaction,
     );
@@ -396,7 +396,7 @@ class IntDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, IntDefault>(
+    return session.db.count<IntDefault>(
       where: where?.call(IntDefault.t),
       limit: limit,
       transaction: transaction,

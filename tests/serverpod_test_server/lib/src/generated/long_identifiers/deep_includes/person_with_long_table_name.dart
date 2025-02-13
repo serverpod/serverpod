@@ -336,7 +336,7 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return session.db.find<int, PersonWithLongTableName>(
+    return session.db.find<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
@@ -375,7 +375,7 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return session.db.findFirstRow<int, PersonWithLongTableName>(
+    return session.db.findFirstRow<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
@@ -393,7 +393,7 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return session.db.findById<int, PersonWithLongTableName>(
+    return session.db.findById<PersonWithLongTableName>(
       id,
       transaction: transaction,
       include: include,
@@ -411,7 +411,7 @@ class PersonWithLongTableNameRepository {
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, PersonWithLongTableName>(
+    return session.db.insert<PersonWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -425,7 +425,7 @@ class PersonWithLongTableNameRepository {
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, PersonWithLongTableName>(
+    return session.db.insertRow<PersonWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -442,7 +442,7 @@ class PersonWithLongTableNameRepository {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, PersonWithLongTableName>(
+    return session.db.update<PersonWithLongTableName>(
       rows,
       columns: columns?.call(PersonWithLongTableName.t),
       transaction: transaction,
@@ -458,7 +458,7 @@ class PersonWithLongTableNameRepository {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, PersonWithLongTableName>(
+    return session.db.updateRow<PersonWithLongTableName>(
       row,
       columns: columns?.call(PersonWithLongTableName.t),
       transaction: transaction,
@@ -473,7 +473,7 @@ class PersonWithLongTableNameRepository {
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, PersonWithLongTableName>(
+    return session.db.delete<PersonWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -485,7 +485,7 @@ class PersonWithLongTableNameRepository {
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, PersonWithLongTableName>(
+    return session.db.deleteRow<PersonWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -497,7 +497,7 @@ class PersonWithLongTableNameRepository {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, PersonWithLongTableName>(
+    return session.db.deleteWhere<PersonWithLongTableName>(
       where: where(PersonWithLongTableName.t),
       transaction: transaction,
     );
@@ -511,7 +511,7 @@ class PersonWithLongTableNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, PersonWithLongTableName>(
+    return session.db.count<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -539,7 +539,7 @@ class PersonWithLongTableNameAttachRowRepository {
 
     var $personWithLongTableName =
         personWithLongTableName.copyWith(organizationId: organization.id);
-    await session.db.updateRow<int, PersonWithLongTableName>(
+    await session.db.updateRow<PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [PersonWithLongTableName.t.organizationId],
       transaction: transaction,
@@ -566,7 +566,7 @@ class PersonWithLongTableNameDetachRowRepository {
 
     var $personwithlongtablename =
         personwithlongtablename.copyWith(organizationId: null);
-    await session.db.updateRow<int, PersonWithLongTableName>(
+    await session.db.updateRow<PersonWithLongTableName>(
       $personwithlongtablename,
       columns: [PersonWithLongTableName.t.organizationId],
       transaction: transaction,

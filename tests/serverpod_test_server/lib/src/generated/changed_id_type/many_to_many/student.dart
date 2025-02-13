@@ -278,7 +278,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, StudentUuid>(
+    return session.db.find<StudentUuid>(
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -317,7 +317,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, StudentUuid>(
+    return session.db.findFirstRow<StudentUuid>(
       where: where?.call(StudentUuid.t),
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
@@ -335,7 +335,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, StudentUuid>(
+    return session.db.findById<StudentUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -353,7 +353,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, StudentUuid>(
+    return session.db.insert<StudentUuid>(
       rows,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, StudentUuid>(
+    return session.db.insertRow<StudentUuid>(
       row,
       transaction: transaction,
     );
@@ -384,7 +384,7 @@ class StudentUuidRepository {
     _i1.ColumnSelections<StudentUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, StudentUuid>(
+    return session.db.update<StudentUuid>(
       rows,
       columns: columns?.call(StudentUuid.t),
       transaction: transaction,
@@ -400,7 +400,7 @@ class StudentUuidRepository {
     _i1.ColumnSelections<StudentUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, StudentUuid>(
+    return session.db.updateRow<StudentUuid>(
       row,
       columns: columns?.call(StudentUuid.t),
       transaction: transaction,
@@ -415,7 +415,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, StudentUuid>(
+    return session.db.delete<StudentUuid>(
       rows,
       transaction: transaction,
     );
@@ -427,7 +427,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, StudentUuid>(
+    return session.db.deleteRow<StudentUuid>(
       row,
       transaction: transaction,
     );
@@ -439,7 +439,7 @@ class StudentUuidRepository {
     required _i1.WhereExpressionBuilder<StudentUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, StudentUuid>(
+    return session.db.deleteWhere<StudentUuid>(
       where: where(StudentUuid.t),
       transaction: transaction,
     );
@@ -453,7 +453,7 @@ class StudentUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, StudentUuid>(
+    return session.db.count<StudentUuid>(
       where: where?.call(StudentUuid.t),
       limit: limit,
       transaction: transaction,
@@ -482,7 +482,7 @@ class StudentUuidAttachRepository {
     var $enrollmentInt = enrollmentInt
         .map((e) => e.copyWith(studentId: studentUuid.id))
         .toList();
-    await session.db.update<int, _i2.EnrollmentInt>(
+    await session.db.update<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.studentId],
       transaction: transaction,
@@ -509,7 +509,7 @@ class StudentUuidAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(studentId: studentUuid.id);
-    await session.db.updateRow<int, _i2.EnrollmentInt>(
+    await session.db.updateRow<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.studentId],
       transaction: transaction,

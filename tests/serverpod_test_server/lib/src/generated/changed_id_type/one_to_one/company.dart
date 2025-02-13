@@ -270,7 +270,7 @@ class CompanyUuidRepository {
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, CompanyUuid>(
+    return session.db.find<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -309,7 +309,7 @@ class CompanyUuidRepository {
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, CompanyUuid>(
+    return session.db.findFirstRow<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
@@ -327,7 +327,7 @@ class CompanyUuidRepository {
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, CompanyUuid>(
+    return session.db.findById<CompanyUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -345,7 +345,7 @@ class CompanyUuidRepository {
     List<CompanyUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, CompanyUuid>(
+    return session.db.insert<CompanyUuid>(
       rows,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class CompanyUuidRepository {
     CompanyUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, CompanyUuid>(
+    return session.db.insertRow<CompanyUuid>(
       row,
       transaction: transaction,
     );
@@ -376,7 +376,7 @@ class CompanyUuidRepository {
     _i1.ColumnSelections<CompanyUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, CompanyUuid>(
+    return session.db.update<CompanyUuid>(
       rows,
       columns: columns?.call(CompanyUuid.t),
       transaction: transaction,
@@ -392,7 +392,7 @@ class CompanyUuidRepository {
     _i1.ColumnSelections<CompanyUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, CompanyUuid>(
+    return session.db.updateRow<CompanyUuid>(
       row,
       columns: columns?.call(CompanyUuid.t),
       transaction: transaction,
@@ -407,7 +407,7 @@ class CompanyUuidRepository {
     List<CompanyUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, CompanyUuid>(
+    return session.db.delete<CompanyUuid>(
       rows,
       transaction: transaction,
     );
@@ -419,7 +419,7 @@ class CompanyUuidRepository {
     CompanyUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, CompanyUuid>(
+    return session.db.deleteRow<CompanyUuid>(
       row,
       transaction: transaction,
     );
@@ -431,7 +431,7 @@ class CompanyUuidRepository {
     required _i1.WhereExpressionBuilder<CompanyUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, CompanyUuid>(
+    return session.db.deleteWhere<CompanyUuid>(
       where: where(CompanyUuid.t),
       transaction: transaction,
     );
@@ -445,7 +445,7 @@ class CompanyUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, CompanyUuid>(
+    return session.db.count<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
       limit: limit,
       transaction: transaction,
@@ -472,7 +472,7 @@ class CompanyUuidAttachRowRepository {
     }
 
     var $companyUuid = companyUuid.copyWith(townId: town.id);
-    await session.db.updateRow<_i1.UuidValue, CompanyUuid>(
+    await session.db.updateRow<CompanyUuid>(
       $companyUuid,
       columns: [CompanyUuid.t.townId],
       transaction: transaction,

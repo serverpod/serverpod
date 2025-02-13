@@ -270,7 +270,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.db.find<int, Address>(
+    return session.db.find<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -309,7 +309,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Address>(
+    return session.db.findFirstRow<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -327,7 +327,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.db.findById<int, Address>(
+    return session.db.findById<Address>(
       id,
       transaction: transaction,
       include: include,
@@ -345,7 +345,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Address>(
+    return session.db.insert<Address>(
       rows,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Address>(
+    return session.db.insertRow<Address>(
       row,
       transaction: transaction,
     );
@@ -376,7 +376,7 @@ class AddressRepository {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Address>(
+    return session.db.update<Address>(
       rows,
       columns: columns?.call(Address.t),
       transaction: transaction,
@@ -392,7 +392,7 @@ class AddressRepository {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Address>(
+    return session.db.updateRow<Address>(
       row,
       columns: columns?.call(Address.t),
       transaction: transaction,
@@ -407,7 +407,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Address>(
+    return session.db.delete<Address>(
       rows,
       transaction: transaction,
     );
@@ -419,7 +419,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Address>(
+    return session.db.deleteRow<Address>(
       row,
       transaction: transaction,
     );
@@ -431,7 +431,7 @@ class AddressRepository {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Address>(
+    return session.db.deleteWhere<Address>(
       where: where(Address.t),
       transaction: transaction,
     );
@@ -445,7 +445,7 @@ class AddressRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Address>(
+    return session.db.count<Address>(
       where: where?.call(Address.t),
       limit: limit,
       transaction: transaction,
@@ -472,7 +472,7 @@ class AddressAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await session.db.updateRow<int, Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
       transaction: transaction,
@@ -498,7 +498,7 @@ class AddressDetachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: null);
-    await session.db.updateRow<int, Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
       transaction: transaction,

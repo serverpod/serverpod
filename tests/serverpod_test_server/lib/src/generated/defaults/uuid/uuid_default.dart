@@ -308,7 +308,7 @@ class UuidDefaultRepository {
     _i1.OrderByListBuilder<UuidDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, UuidDefault>(
+    return session.db.find<UuidDefault>(
       where: where?.call(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -345,7 +345,7 @@ class UuidDefaultRepository {
     _i1.OrderByListBuilder<UuidDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, UuidDefault>(
+    return session.db.findFirstRow<UuidDefault>(
       where: where?.call(UuidDefault.t),
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
@@ -361,7 +361,7 @@ class UuidDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, UuidDefault>(
+    return session.db.findById<UuidDefault>(
       id,
       transaction: transaction,
     );
@@ -378,7 +378,7 @@ class UuidDefaultRepository {
     List<UuidDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, UuidDefault>(
+    return session.db.insert<UuidDefault>(
       rows,
       transaction: transaction,
     );
@@ -392,7 +392,7 @@ class UuidDefaultRepository {
     UuidDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, UuidDefault>(
+    return session.db.insertRow<UuidDefault>(
       row,
       transaction: transaction,
     );
@@ -409,7 +409,7 @@ class UuidDefaultRepository {
     _i1.ColumnSelections<UuidDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, UuidDefault>(
+    return session.db.update<UuidDefault>(
       rows,
       columns: columns?.call(UuidDefault.t),
       transaction: transaction,
@@ -425,7 +425,7 @@ class UuidDefaultRepository {
     _i1.ColumnSelections<UuidDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, UuidDefault>(
+    return session.db.updateRow<UuidDefault>(
       row,
       columns: columns?.call(UuidDefault.t),
       transaction: transaction,
@@ -440,7 +440,7 @@ class UuidDefaultRepository {
     List<UuidDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, UuidDefault>(
+    return session.db.delete<UuidDefault>(
       rows,
       transaction: transaction,
     );
@@ -452,7 +452,7 @@ class UuidDefaultRepository {
     UuidDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, UuidDefault>(
+    return session.db.deleteRow<UuidDefault>(
       row,
       transaction: transaction,
     );
@@ -464,7 +464,7 @@ class UuidDefaultRepository {
     required _i1.WhereExpressionBuilder<UuidDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, UuidDefault>(
+    return session.db.deleteWhere<UuidDefault>(
       where: where(UuidDefault.t),
       transaction: transaction,
     );
@@ -478,7 +478,7 @@ class UuidDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, UuidDefault>(
+    return session.db.count<UuidDefault>(
       where: where?.call(UuidDefault.t),
       limit: limit,
       transaction: transaction,

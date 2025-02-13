@@ -342,7 +342,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.find<int, Order>(
+    return session.db.find<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -381,7 +381,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Order>(
+    return session.db.findFirstRow<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -399,7 +399,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.db.findById<int, Order>(
+    return session.db.findById<Order>(
       id,
       transaction: transaction,
       include: include,
@@ -417,7 +417,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Order>(
+    return session.db.insert<Order>(
       rows,
       transaction: transaction,
     );
@@ -431,7 +431,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Order>(
+    return session.db.insertRow<Order>(
       row,
       transaction: transaction,
     );
@@ -448,7 +448,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Order>(
+    return session.db.update<Order>(
       rows,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -464,7 +464,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Order>(
+    return session.db.updateRow<Order>(
       row,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -479,7 +479,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Order>(
+    return session.db.delete<Order>(
       rows,
       transaction: transaction,
     );
@@ -491,7 +491,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Order>(
+    return session.db.deleteRow<Order>(
       row,
       transaction: transaction,
     );
@@ -503,7 +503,7 @@ class OrderRepository {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Order>(
+    return session.db.deleteWhere<Order>(
       where: where(Order.t),
       transaction: transaction,
     );
@@ -517,7 +517,7 @@ class OrderRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Order>(
+    return session.db.count<Order>(
       where: where?.call(Order.t),
       limit: limit,
       transaction: transaction,
@@ -544,7 +544,7 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await session.db.update<int, _i3.Comment>(
+    await session.db.update<_i3.Comment>(
       $comment,
       columns: [_i3.Comment.t.orderId],
       transaction: transaction,
@@ -571,7 +571,7 @@ class OrderAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<int, Order>(
+    await session.db.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
       transaction: transaction,
@@ -594,7 +594,7 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.db.updateRow<int, _i3.Comment>(
+    await session.db.updateRow<_i3.Comment>(
       $comment,
       columns: [_i3.Comment.t.orderId],
       transaction: transaction,

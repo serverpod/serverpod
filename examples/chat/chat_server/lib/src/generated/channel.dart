@@ -226,7 +226,7 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, Channel>(
+    return session.db.find<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
@@ -263,7 +263,7 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, Channel>(
+    return session.db.findFirstRow<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
@@ -279,7 +279,7 @@ class ChannelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, Channel>(
+    return session.db.findById<Channel>(
       id,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class ChannelRepository {
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Channel>(
+    return session.db.insert<Channel>(
       rows,
       transaction: transaction,
     );
@@ -310,7 +310,7 @@ class ChannelRepository {
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Channel>(
+    return session.db.insertRow<Channel>(
       row,
       transaction: transaction,
     );
@@ -327,7 +327,7 @@ class ChannelRepository {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Channel>(
+    return session.db.update<Channel>(
       rows,
       columns: columns?.call(Channel.t),
       transaction: transaction,
@@ -343,7 +343,7 @@ class ChannelRepository {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Channel>(
+    return session.db.updateRow<Channel>(
       row,
       columns: columns?.call(Channel.t),
       transaction: transaction,
@@ -358,7 +358,7 @@ class ChannelRepository {
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Channel>(
+    return session.db.delete<Channel>(
       rows,
       transaction: transaction,
     );
@@ -370,7 +370,7 @@ class ChannelRepository {
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Channel>(
+    return session.db.deleteRow<Channel>(
       row,
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class ChannelRepository {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Channel>(
+    return session.db.deleteWhere<Channel>(
       where: where(Channel.t),
       transaction: transaction,
     );
@@ -396,7 +396,7 @@ class ChannelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Channel>(
+    return session.db.count<Channel>(
       where: where?.call(Channel.t),
       limit: limit,
       transaction: transaction,

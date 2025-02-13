@@ -267,7 +267,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.find<int, Company>(
+    return session.db.find<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -306,7 +306,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Company>(
+    return session.db.findFirstRow<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -324,7 +324,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.findById<int, Company>(
+    return session.db.findById<Company>(
       id,
       transaction: transaction,
       include: include,
@@ -342,7 +342,7 @@ class CompanyRepository {
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Company>(
+    return session.db.insert<Company>(
       rows,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class CompanyRepository {
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Company>(
+    return session.db.insertRow<Company>(
       row,
       transaction: transaction,
     );
@@ -373,7 +373,7 @@ class CompanyRepository {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Company>(
+    return session.db.update<Company>(
       rows,
       columns: columns?.call(Company.t),
       transaction: transaction,
@@ -389,7 +389,7 @@ class CompanyRepository {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Company>(
+    return session.db.updateRow<Company>(
       row,
       columns: columns?.call(Company.t),
       transaction: transaction,
@@ -404,7 +404,7 @@ class CompanyRepository {
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Company>(
+    return session.db.delete<Company>(
       rows,
       transaction: transaction,
     );
@@ -416,7 +416,7 @@ class CompanyRepository {
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Company>(
+    return session.db.deleteRow<Company>(
       row,
       transaction: transaction,
     );
@@ -428,7 +428,7 @@ class CompanyRepository {
     required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Company>(
+    return session.db.deleteWhere<Company>(
       where: where(Company.t),
       transaction: transaction,
     );
@@ -442,7 +442,7 @@ class CompanyRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Company>(
+    return session.db.count<Company>(
       where: where?.call(Company.t),
       limit: limit,
       transaction: transaction,
@@ -469,7 +469,7 @@ class CompanyAttachRowRepository {
     }
 
     var $company = company.copyWith(townId: town.id);
-    await session.db.updateRow<int, Company>(
+    await session.db.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
       transaction: transaction,

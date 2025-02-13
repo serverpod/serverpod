@@ -285,7 +285,7 @@ class AuthKeyRepository {
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, AuthKey>(
+    return session.db.find<AuthKey>(
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -322,7 +322,7 @@ class AuthKeyRepository {
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, AuthKey>(
+    return session.db.findFirstRow<AuthKey>(
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
@@ -338,7 +338,7 @@ class AuthKeyRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, AuthKey>(
+    return session.db.findById<AuthKey>(
       id,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, AuthKey>(
+    return session.db.insert<AuthKey>(
       rows,
       transaction: transaction,
     );
@@ -369,7 +369,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, AuthKey>(
+    return session.db.insertRow<AuthKey>(
       row,
       transaction: transaction,
     );
@@ -386,7 +386,7 @@ class AuthKeyRepository {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, AuthKey>(
+    return session.db.update<AuthKey>(
       rows,
       columns: columns?.call(AuthKey.t),
       transaction: transaction,
@@ -402,7 +402,7 @@ class AuthKeyRepository {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, AuthKey>(
+    return session.db.updateRow<AuthKey>(
       row,
       columns: columns?.call(AuthKey.t),
       transaction: transaction,
@@ -417,7 +417,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, AuthKey>(
+    return session.db.delete<AuthKey>(
       rows,
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, AuthKey>(
+    return session.db.deleteRow<AuthKey>(
       row,
       transaction: transaction,
     );
@@ -441,7 +441,7 @@ class AuthKeyRepository {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, AuthKey>(
+    return session.db.deleteWhere<AuthKey>(
       where: where(AuthKey.t),
       transaction: transaction,
     );
@@ -455,7 +455,7 @@ class AuthKeyRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, AuthKey>(
+    return session.db.count<AuthKey>(
       where: where?.call(AuthKey.t),
       limit: limit,
       transaction: transaction,

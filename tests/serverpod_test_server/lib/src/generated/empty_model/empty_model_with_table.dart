@@ -162,7 +162,7 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, EmptyModelWithTable>(
+    return session.db.find<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -199,7 +199,7 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, EmptyModelWithTable>(
+    return session.db.findFirstRow<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
@@ -215,7 +215,7 @@ class EmptyModelWithTableRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, EmptyModelWithTable>(
+    return session.db.findById<EmptyModelWithTable>(
       id,
       transaction: transaction,
     );
@@ -232,7 +232,7 @@ class EmptyModelWithTableRepository {
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, EmptyModelWithTable>(
+    return session.db.insert<EmptyModelWithTable>(
       rows,
       transaction: transaction,
     );
@@ -246,7 +246,7 @@ class EmptyModelWithTableRepository {
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, EmptyModelWithTable>(
+    return session.db.insertRow<EmptyModelWithTable>(
       row,
       transaction: transaction,
     );
@@ -263,7 +263,7 @@ class EmptyModelWithTableRepository {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, EmptyModelWithTable>(
+    return session.db.update<EmptyModelWithTable>(
       rows,
       columns: columns?.call(EmptyModelWithTable.t),
       transaction: transaction,
@@ -279,7 +279,7 @@ class EmptyModelWithTableRepository {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, EmptyModelWithTable>(
+    return session.db.updateRow<EmptyModelWithTable>(
       row,
       columns: columns?.call(EmptyModelWithTable.t),
       transaction: transaction,
@@ -294,7 +294,7 @@ class EmptyModelWithTableRepository {
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, EmptyModelWithTable>(
+    return session.db.delete<EmptyModelWithTable>(
       rows,
       transaction: transaction,
     );
@@ -306,7 +306,7 @@ class EmptyModelWithTableRepository {
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, EmptyModelWithTable>(
+    return session.db.deleteRow<EmptyModelWithTable>(
       row,
       transaction: transaction,
     );
@@ -318,7 +318,7 @@ class EmptyModelWithTableRepository {
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, EmptyModelWithTable>(
+    return session.db.deleteWhere<EmptyModelWithTable>(
       where: where(EmptyModelWithTable.t),
       transaction: transaction,
     );
@@ -332,7 +332,7 @@ class EmptyModelWithTableRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, EmptyModelWithTable>(
+    return session.db.count<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       limit: limit,
       transaction: transaction,

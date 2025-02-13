@@ -247,7 +247,7 @@ class BoolDefaultModelRepository {
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, BoolDefaultModel>(
+    return session.db.find<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -284,7 +284,7 @@ class BoolDefaultModelRepository {
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, BoolDefaultModel>(
+    return session.db.findFirstRow<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
@@ -300,7 +300,7 @@ class BoolDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, BoolDefaultModel>(
+    return session.db.findById<BoolDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -317,7 +317,7 @@ class BoolDefaultModelRepository {
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, BoolDefaultModel>(
+    return session.db.insert<BoolDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -331,7 +331,7 @@ class BoolDefaultModelRepository {
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, BoolDefaultModel>(
+    return session.db.insertRow<BoolDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -348,7 +348,7 @@ class BoolDefaultModelRepository {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, BoolDefaultModel>(
+    return session.db.update<BoolDefaultModel>(
       rows,
       columns: columns?.call(BoolDefaultModel.t),
       transaction: transaction,
@@ -364,7 +364,7 @@ class BoolDefaultModelRepository {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, BoolDefaultModel>(
+    return session.db.updateRow<BoolDefaultModel>(
       row,
       columns: columns?.call(BoolDefaultModel.t),
       transaction: transaction,
@@ -379,7 +379,7 @@ class BoolDefaultModelRepository {
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, BoolDefaultModel>(
+    return session.db.delete<BoolDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -391,7 +391,7 @@ class BoolDefaultModelRepository {
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, BoolDefaultModel>(
+    return session.db.deleteRow<BoolDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class BoolDefaultModelRepository {
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, BoolDefaultModel>(
+    return session.db.deleteWhere<BoolDefaultModel>(
       where: where(BoolDefaultModel.t),
       transaction: transaction,
     );
@@ -417,7 +417,7 @@ class BoolDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, BoolDefaultModel>(
+    return session.db.count<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       limit: limit,
       transaction: transaction,

@@ -205,7 +205,7 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, ObjectWithDuration>(
+    return session.db.find<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
@@ -242,7 +242,7 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, ObjectWithDuration>(
+    return session.db.findFirstRow<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
@@ -258,7 +258,7 @@ class ObjectWithDurationRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, ObjectWithDuration>(
+    return session.db.findById<ObjectWithDuration>(
       id,
       transaction: transaction,
     );
@@ -275,7 +275,7 @@ class ObjectWithDurationRepository {
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, ObjectWithDuration>(
+    return session.db.insert<ObjectWithDuration>(
       rows,
       transaction: transaction,
     );
@@ -289,7 +289,7 @@ class ObjectWithDurationRepository {
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, ObjectWithDuration>(
+    return session.db.insertRow<ObjectWithDuration>(
       row,
       transaction: transaction,
     );
@@ -306,7 +306,7 @@ class ObjectWithDurationRepository {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, ObjectWithDuration>(
+    return session.db.update<ObjectWithDuration>(
       rows,
       columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
@@ -322,7 +322,7 @@ class ObjectWithDurationRepository {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, ObjectWithDuration>(
+    return session.db.updateRow<ObjectWithDuration>(
       row,
       columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
@@ -337,7 +337,7 @@ class ObjectWithDurationRepository {
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, ObjectWithDuration>(
+    return session.db.delete<ObjectWithDuration>(
       rows,
       transaction: transaction,
     );
@@ -349,7 +349,7 @@ class ObjectWithDurationRepository {
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, ObjectWithDuration>(
+    return session.db.deleteRow<ObjectWithDuration>(
       row,
       transaction: transaction,
     );
@@ -361,7 +361,7 @@ class ObjectWithDurationRepository {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, ObjectWithDuration>(
+    return session.db.deleteWhere<ObjectWithDuration>(
       where: where(ObjectWithDuration.t),
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class ObjectWithDurationRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, ObjectWithDuration>(
+    return session.db.count<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       limit: limit,
       transaction: transaction,

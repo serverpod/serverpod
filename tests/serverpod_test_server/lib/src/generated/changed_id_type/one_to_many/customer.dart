@@ -278,7 +278,7 @@ class CustomerIntRepository {
     _i1.Transaction? transaction,
     CustomerIntInclude? include,
   }) async {
-    return session.db.find<int, CustomerInt>(
+    return session.db.find<CustomerInt>(
       where: where?.call(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -317,7 +317,7 @@ class CustomerIntRepository {
     _i1.Transaction? transaction,
     CustomerIntInclude? include,
   }) async {
-    return session.db.findFirstRow<int, CustomerInt>(
+    return session.db.findFirstRow<CustomerInt>(
       where: where?.call(CustomerInt.t),
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
@@ -335,7 +335,7 @@ class CustomerIntRepository {
     _i1.Transaction? transaction,
     CustomerIntInclude? include,
   }) async {
-    return session.db.findById<int, CustomerInt>(
+    return session.db.findById<CustomerInt>(
       id,
       transaction: transaction,
       include: include,
@@ -353,7 +353,7 @@ class CustomerIntRepository {
     List<CustomerInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, CustomerInt>(
+    return session.db.insert<CustomerInt>(
       rows,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class CustomerIntRepository {
     CustomerInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, CustomerInt>(
+    return session.db.insertRow<CustomerInt>(
       row,
       transaction: transaction,
     );
@@ -384,7 +384,7 @@ class CustomerIntRepository {
     _i1.ColumnSelections<CustomerIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, CustomerInt>(
+    return session.db.update<CustomerInt>(
       rows,
       columns: columns?.call(CustomerInt.t),
       transaction: transaction,
@@ -400,7 +400,7 @@ class CustomerIntRepository {
     _i1.ColumnSelections<CustomerIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, CustomerInt>(
+    return session.db.updateRow<CustomerInt>(
       row,
       columns: columns?.call(CustomerInt.t),
       transaction: transaction,
@@ -415,7 +415,7 @@ class CustomerIntRepository {
     List<CustomerInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, CustomerInt>(
+    return session.db.delete<CustomerInt>(
       rows,
       transaction: transaction,
     );
@@ -427,7 +427,7 @@ class CustomerIntRepository {
     CustomerInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, CustomerInt>(
+    return session.db.deleteRow<CustomerInt>(
       row,
       transaction: transaction,
     );
@@ -439,7 +439,7 @@ class CustomerIntRepository {
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, CustomerInt>(
+    return session.db.deleteWhere<CustomerInt>(
       where: where(CustomerInt.t),
       transaction: transaction,
     );
@@ -453,7 +453,7 @@ class CustomerIntRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, CustomerInt>(
+    return session.db.count<CustomerInt>(
       where: where?.call(CustomerInt.t),
       limit: limit,
       transaction: transaction,
@@ -481,7 +481,7 @@ class CustomerIntAttachRepository {
 
     var $orderUuid =
         orderUuid.map((e) => e.copyWith(customerId: customerInt.id)).toList();
-    await session.db.update<_i1.UuidValue, _i2.OrderUuid>(
+    await session.db.update<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
       transaction: transaction,
@@ -508,7 +508,7 @@ class CustomerIntAttachRowRepository {
     }
 
     var $orderUuid = orderUuid.copyWith(customerId: customerInt.id);
-    await session.db.updateRow<_i1.UuidValue, _i2.OrderUuid>(
+    await session.db.updateRow<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
       transaction: transaction,
@@ -535,7 +535,7 @@ class CustomerIntDetachRepository {
 
     var $orderUuid =
         orderUuid.map((e) => e.copyWith(customerId: null)).toList();
-    await session.db.update<_i1.UuidValue, _i2.OrderUuid>(
+    await session.db.update<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
       transaction: transaction,
@@ -561,7 +561,7 @@ class CustomerIntDetachRowRepository {
     }
 
     var $orderUuid = orderUuid.copyWith(customerId: null);
-    await session.db.updateRow<_i1.UuidValue, _i2.OrderUuid>(
+    await session.db.updateRow<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
       transaction: transaction,

@@ -269,7 +269,7 @@ class CommentIntRepository {
     _i1.Transaction? transaction,
     CommentIntInclude? include,
   }) async {
-    return session.db.find<int, CommentInt>(
+    return session.db.find<CommentInt>(
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -308,7 +308,7 @@ class CommentIntRepository {
     _i1.Transaction? transaction,
     CommentIntInclude? include,
   }) async {
-    return session.db.findFirstRow<int, CommentInt>(
+    return session.db.findFirstRow<CommentInt>(
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
@@ -326,7 +326,7 @@ class CommentIntRepository {
     _i1.Transaction? transaction,
     CommentIntInclude? include,
   }) async {
-    return session.db.findById<int, CommentInt>(
+    return session.db.findById<CommentInt>(
       id,
       transaction: transaction,
       include: include,
@@ -344,7 +344,7 @@ class CommentIntRepository {
     List<CommentInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, CommentInt>(
+    return session.db.insert<CommentInt>(
       rows,
       transaction: transaction,
     );
@@ -358,7 +358,7 @@ class CommentIntRepository {
     CommentInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, CommentInt>(
+    return session.db.insertRow<CommentInt>(
       row,
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class CommentIntRepository {
     _i1.ColumnSelections<CommentIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, CommentInt>(
+    return session.db.update<CommentInt>(
       rows,
       columns: columns?.call(CommentInt.t),
       transaction: transaction,
@@ -391,7 +391,7 @@ class CommentIntRepository {
     _i1.ColumnSelections<CommentIntTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, CommentInt>(
+    return session.db.updateRow<CommentInt>(
       row,
       columns: columns?.call(CommentInt.t),
       transaction: transaction,
@@ -406,7 +406,7 @@ class CommentIntRepository {
     List<CommentInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, CommentInt>(
+    return session.db.delete<CommentInt>(
       rows,
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class CommentIntRepository {
     CommentInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, CommentInt>(
+    return session.db.deleteRow<CommentInt>(
       row,
       transaction: transaction,
     );
@@ -430,7 +430,7 @@ class CommentIntRepository {
     required _i1.WhereExpressionBuilder<CommentIntTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, CommentInt>(
+    return session.db.deleteWhere<CommentInt>(
       where: where(CommentInt.t),
       transaction: transaction,
     );
@@ -444,7 +444,7 @@ class CommentIntRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, CommentInt>(
+    return session.db.count<CommentInt>(
       where: where?.call(CommentInt.t),
       limit: limit,
       transaction: transaction,
@@ -471,7 +471,7 @@ class CommentIntAttachRowRepository {
     }
 
     var $commentInt = commentInt.copyWith(orderId: order.id);
-    await session.db.updateRow<int, CommentInt>(
+    await session.db.updateRow<CommentInt>(
       $commentInt,
       columns: [CommentInt.t.orderId],
       transaction: transaction,

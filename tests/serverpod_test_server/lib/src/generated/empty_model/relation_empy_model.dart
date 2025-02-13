@@ -260,7 +260,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.find<int, RelationEmptyModel>(
+    return session.db.find<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -299,7 +299,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.findFirstRow<int, RelationEmptyModel>(
+    return session.db.findFirstRow<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -317,7 +317,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.findById<int, RelationEmptyModel>(
+    return session.db.findById<RelationEmptyModel>(
       id,
       transaction: transaction,
       include: include,
@@ -335,7 +335,7 @@ class RelationEmptyModelRepository {
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, RelationEmptyModel>(
+    return session.db.insert<RelationEmptyModel>(
       rows,
       transaction: transaction,
     );
@@ -349,7 +349,7 @@ class RelationEmptyModelRepository {
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, RelationEmptyModel>(
+    return session.db.insertRow<RelationEmptyModel>(
       row,
       transaction: transaction,
     );
@@ -366,7 +366,7 @@ class RelationEmptyModelRepository {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, RelationEmptyModel>(
+    return session.db.update<RelationEmptyModel>(
       rows,
       columns: columns?.call(RelationEmptyModel.t),
       transaction: transaction,
@@ -382,7 +382,7 @@ class RelationEmptyModelRepository {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, RelationEmptyModel>(
+    return session.db.updateRow<RelationEmptyModel>(
       row,
       columns: columns?.call(RelationEmptyModel.t),
       transaction: transaction,
@@ -397,7 +397,7 @@ class RelationEmptyModelRepository {
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, RelationEmptyModel>(
+    return session.db.delete<RelationEmptyModel>(
       rows,
       transaction: transaction,
     );
@@ -409,7 +409,7 @@ class RelationEmptyModelRepository {
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, RelationEmptyModel>(
+    return session.db.deleteRow<RelationEmptyModel>(
       row,
       transaction: transaction,
     );
@@ -421,7 +421,7 @@ class RelationEmptyModelRepository {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, RelationEmptyModel>(
+    return session.db.deleteWhere<RelationEmptyModel>(
       where: where(RelationEmptyModel.t),
       transaction: transaction,
     );
@@ -435,7 +435,7 @@ class RelationEmptyModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, RelationEmptyModel>(
+    return session.db.count<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       limit: limit,
       transaction: transaction,
@@ -468,7 +468,7 @@ class RelationEmptyModelAttachRepository {
                   relationEmptyModel.id,
             ))
         .toList();
-    await session.db.update<int, _i2.EmptyModelRelationItem>(
+    await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -501,7 +501,7 @@ class RelationEmptyModelAttachRowRepository {
       emptyModelRelationItem,
       $_relationEmptyModelItemsRelationEmptyModelId: relationEmptyModel.id,
     );
-    await session.db.updateRow<int, _i2.EmptyModelRelationItem>(
+    await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -535,7 +535,7 @@ class RelationEmptyModelDetachRepository {
               $_relationEmptyModelItemsRelationEmptyModelId: null,
             ))
         .toList();
-    await session.db.update<int, _i2.EmptyModelRelationItem>(
+    await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -567,7 +567,7 @@ class RelationEmptyModelDetachRowRepository {
       emptyModelRelationItem,
       $_relationEmptyModelItemsRelationEmptyModelId: null,
     );
-    await session.db.updateRow<int, _i2.EmptyModelRelationItem>(
+    await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t

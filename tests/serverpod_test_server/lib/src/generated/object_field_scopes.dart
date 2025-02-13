@@ -234,7 +234,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, ObjectFieldScopes>(
+    return session.db.find<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -271,7 +271,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, ObjectFieldScopes>(
+    return session.db.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -287,7 +287,7 @@ class ObjectFieldScopesRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, ObjectFieldScopes>(
+    return session.db.findById<ObjectFieldScopes>(
       id,
       transaction: transaction,
     );
@@ -304,7 +304,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, ObjectFieldScopes>(
+    return session.db.insert<ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -318,7 +318,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, ObjectFieldScopes>(
+    return session.db.insertRow<ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -335,7 +335,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, ObjectFieldScopes>(
+    return session.db.update<ObjectFieldScopes>(
       rows,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -351,7 +351,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, ObjectFieldScopes>(
+    return session.db.updateRow<ObjectFieldScopes>(
       row,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -366,7 +366,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, ObjectFieldScopes>(
+    return session.db.delete<ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -378,7 +378,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, ObjectFieldScopes>(
+    return session.db.deleteRow<ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -390,7 +390,7 @@ class ObjectFieldScopesRepository {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, ObjectFieldScopes>(
+    return session.db.deleteWhere<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
       transaction: transaction,
     );
@@ -404,7 +404,7 @@ class ObjectFieldScopesRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, ObjectFieldScopes>(
+    return session.db.count<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       transaction: transaction,

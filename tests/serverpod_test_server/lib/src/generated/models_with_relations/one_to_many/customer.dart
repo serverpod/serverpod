@@ -278,7 +278,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.db.find<int, Customer>(
+    return session.db.find<Customer>(
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
@@ -317,7 +317,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Customer>(
+    return session.db.findFirstRow<Customer>(
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
@@ -335,7 +335,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.db.findById<int, Customer>(
+    return session.db.findById<Customer>(
       id,
       transaction: transaction,
       include: include,
@@ -353,7 +353,7 @@ class CustomerRepository {
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Customer>(
+    return session.db.insert<Customer>(
       rows,
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class CustomerRepository {
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Customer>(
+    return session.db.insertRow<Customer>(
       row,
       transaction: transaction,
     );
@@ -384,7 +384,7 @@ class CustomerRepository {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Customer>(
+    return session.db.update<Customer>(
       rows,
       columns: columns?.call(Customer.t),
       transaction: transaction,
@@ -400,7 +400,7 @@ class CustomerRepository {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Customer>(
+    return session.db.updateRow<Customer>(
       row,
       columns: columns?.call(Customer.t),
       transaction: transaction,
@@ -415,7 +415,7 @@ class CustomerRepository {
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Customer>(
+    return session.db.delete<Customer>(
       rows,
       transaction: transaction,
     );
@@ -427,7 +427,7 @@ class CustomerRepository {
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Customer>(
+    return session.db.deleteRow<Customer>(
       row,
       transaction: transaction,
     );
@@ -439,7 +439,7 @@ class CustomerRepository {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Customer>(
+    return session.db.deleteWhere<Customer>(
       where: where(Customer.t),
       transaction: transaction,
     );
@@ -453,7 +453,7 @@ class CustomerRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Customer>(
+    return session.db.count<Customer>(
       where: where?.call(Customer.t),
       limit: limit,
       transaction: transaction,
@@ -480,7 +480,7 @@ class CustomerAttachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: customer.id)).toList();
-    await session.db.update<int, _i2.Order>(
+    await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
       transaction: transaction,
@@ -507,7 +507,7 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<int, _i2.Order>(
+    await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
       transaction: transaction,
@@ -533,7 +533,7 @@ class CustomerDetachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.db.update<int, _i2.Order>(
+    await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
       transaction: transaction,
@@ -559,7 +559,7 @@ class CustomerDetachRowRepository {
     }
 
     var $order = order.copyWith(customerId: null);
-    await session.db.updateRow<int, _i2.Order>(
+    await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
       transaction: transaction,

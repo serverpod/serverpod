@@ -274,7 +274,7 @@ class AddressUuidRepository {
     _i1.Transaction? transaction,
     AddressUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, AddressUuid>(
+    return session.db.find<AddressUuid>(
       where: where?.call(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -313,7 +313,7 @@ class AddressUuidRepository {
     _i1.Transaction? transaction,
     AddressUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, AddressUuid>(
+    return session.db.findFirstRow<AddressUuid>(
       where: where?.call(AddressUuid.t),
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
@@ -331,7 +331,7 @@ class AddressUuidRepository {
     _i1.Transaction? transaction,
     AddressUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, AddressUuid>(
+    return session.db.findById<AddressUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -349,7 +349,7 @@ class AddressUuidRepository {
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, AddressUuid>(
+    return session.db.insert<AddressUuid>(
       rows,
       transaction: transaction,
     );
@@ -363,7 +363,7 @@ class AddressUuidRepository {
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, AddressUuid>(
+    return session.db.insertRow<AddressUuid>(
       row,
       transaction: transaction,
     );
@@ -380,7 +380,7 @@ class AddressUuidRepository {
     _i1.ColumnSelections<AddressUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, AddressUuid>(
+    return session.db.update<AddressUuid>(
       rows,
       columns: columns?.call(AddressUuid.t),
       transaction: transaction,
@@ -396,7 +396,7 @@ class AddressUuidRepository {
     _i1.ColumnSelections<AddressUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, AddressUuid>(
+    return session.db.updateRow<AddressUuid>(
       row,
       columns: columns?.call(AddressUuid.t),
       transaction: transaction,
@@ -411,7 +411,7 @@ class AddressUuidRepository {
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, AddressUuid>(
+    return session.db.delete<AddressUuid>(
       rows,
       transaction: transaction,
     );
@@ -423,7 +423,7 @@ class AddressUuidRepository {
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, AddressUuid>(
+    return session.db.deleteRow<AddressUuid>(
       row,
       transaction: transaction,
     );
@@ -435,7 +435,7 @@ class AddressUuidRepository {
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, AddressUuid>(
+    return session.db.deleteWhere<AddressUuid>(
       where: where(AddressUuid.t),
       transaction: transaction,
     );
@@ -449,7 +449,7 @@ class AddressUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, AddressUuid>(
+    return session.db.count<AddressUuid>(
       where: where?.call(AddressUuid.t),
       limit: limit,
       transaction: transaction,
@@ -476,7 +476,7 @@ class AddressUuidAttachRowRepository {
     }
 
     var $addressUuid = addressUuid.copyWith(inhabitantId: inhabitant.id);
-    await session.db.updateRow<_i1.UuidValue, AddressUuid>(
+    await session.db.updateRow<AddressUuid>(
       $addressUuid,
       columns: [AddressUuid.t.inhabitantId],
       transaction: transaction,
@@ -502,7 +502,7 @@ class AddressUuidDetachRowRepository {
     }
 
     var $addressuuid = addressuuid.copyWith(inhabitantId: null);
-    await session.db.updateRow<_i1.UuidValue, AddressUuid>(
+    await session.db.updateRow<AddressUuid>(
       $addressuuid,
       columns: [AddressUuid.t.inhabitantId],
       transaction: transaction,

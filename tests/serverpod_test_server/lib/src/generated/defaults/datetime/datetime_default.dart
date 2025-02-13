@@ -259,7 +259,7 @@ class DateTimeDefaultRepository {
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, DateTimeDefault>(
+    return session.db.find<DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
@@ -296,7 +296,7 @@ class DateTimeDefaultRepository {
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, DateTimeDefault>(
+    return session.db.findFirstRow<DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
@@ -312,7 +312,7 @@ class DateTimeDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, DateTimeDefault>(
+    return session.db.findById<DateTimeDefault>(
       id,
       transaction: transaction,
     );
@@ -329,7 +329,7 @@ class DateTimeDefaultRepository {
     List<DateTimeDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, DateTimeDefault>(
+    return session.db.insert<DateTimeDefault>(
       rows,
       transaction: transaction,
     );
@@ -343,7 +343,7 @@ class DateTimeDefaultRepository {
     DateTimeDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, DateTimeDefault>(
+    return session.db.insertRow<DateTimeDefault>(
       row,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class DateTimeDefaultRepository {
     _i1.ColumnSelections<DateTimeDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, DateTimeDefault>(
+    return session.db.update<DateTimeDefault>(
       rows,
       columns: columns?.call(DateTimeDefault.t),
       transaction: transaction,
@@ -376,7 +376,7 @@ class DateTimeDefaultRepository {
     _i1.ColumnSelections<DateTimeDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, DateTimeDefault>(
+    return session.db.updateRow<DateTimeDefault>(
       row,
       columns: columns?.call(DateTimeDefault.t),
       transaction: transaction,
@@ -391,7 +391,7 @@ class DateTimeDefaultRepository {
     List<DateTimeDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, DateTimeDefault>(
+    return session.db.delete<DateTimeDefault>(
       rows,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class DateTimeDefaultRepository {
     DateTimeDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, DateTimeDefault>(
+    return session.db.deleteRow<DateTimeDefault>(
       row,
       transaction: transaction,
     );
@@ -415,7 +415,7 @@ class DateTimeDefaultRepository {
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, DateTimeDefault>(
+    return session.db.deleteWhere<DateTimeDefault>(
       where: where(DateTimeDefault.t),
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class DateTimeDefaultRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, DateTimeDefault>(
+    return session.db.count<DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       limit: limit,
       transaction: transaction,

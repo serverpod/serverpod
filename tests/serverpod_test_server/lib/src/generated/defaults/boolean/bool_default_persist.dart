@@ -235,7 +235,7 @@ class BoolDefaultPersistRepository {
     _i1.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, BoolDefaultPersist>(
+    return session.db.find<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       orderBy: orderBy?.call(BoolDefaultPersist.t),
       orderByList: orderByList?.call(BoolDefaultPersist.t),
@@ -272,7 +272,7 @@ class BoolDefaultPersistRepository {
     _i1.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, BoolDefaultPersist>(
+    return session.db.findFirstRow<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       orderBy: orderBy?.call(BoolDefaultPersist.t),
       orderByList: orderByList?.call(BoolDefaultPersist.t),
@@ -288,7 +288,7 @@ class BoolDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, BoolDefaultPersist>(
+    return session.db.findById<BoolDefaultPersist>(
       id,
       transaction: transaction,
     );
@@ -305,7 +305,7 @@ class BoolDefaultPersistRepository {
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, BoolDefaultPersist>(
+    return session.db.insert<BoolDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -319,7 +319,7 @@ class BoolDefaultPersistRepository {
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, BoolDefaultPersist>(
+    return session.db.insertRow<BoolDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -336,7 +336,7 @@ class BoolDefaultPersistRepository {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, BoolDefaultPersist>(
+    return session.db.update<BoolDefaultPersist>(
       rows,
       columns: columns?.call(BoolDefaultPersist.t),
       transaction: transaction,
@@ -352,7 +352,7 @@ class BoolDefaultPersistRepository {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, BoolDefaultPersist>(
+    return session.db.updateRow<BoolDefaultPersist>(
       row,
       columns: columns?.call(BoolDefaultPersist.t),
       transaction: transaction,
@@ -367,7 +367,7 @@ class BoolDefaultPersistRepository {
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, BoolDefaultPersist>(
+    return session.db.delete<BoolDefaultPersist>(
       rows,
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class BoolDefaultPersistRepository {
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, BoolDefaultPersist>(
+    return session.db.deleteRow<BoolDefaultPersist>(
       row,
       transaction: transaction,
     );
@@ -391,7 +391,7 @@ class BoolDefaultPersistRepository {
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, BoolDefaultPersist>(
+    return session.db.deleteWhere<BoolDefaultPersist>(
       where: where(BoolDefaultPersist.t),
       transaction: transaction,
     );
@@ -405,7 +405,7 @@ class BoolDefaultPersistRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, BoolDefaultPersist>(
+    return session.db.count<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       limit: limit,
       transaction: transaction,

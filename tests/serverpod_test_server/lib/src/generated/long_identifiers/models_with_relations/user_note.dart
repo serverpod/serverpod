@@ -253,7 +253,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, UserNote>(
+    return session.db.find<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -290,7 +290,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, UserNote>(
+    return session.db.findFirstRow<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -306,7 +306,7 @@ class UserNoteRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, UserNote>(
+    return session.db.findById<UserNote>(
       id,
       transaction: transaction,
     );
@@ -323,7 +323,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, UserNote>(
+    return session.db.insert<UserNote>(
       rows,
       transaction: transaction,
     );
@@ -337,7 +337,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, UserNote>(
+    return session.db.insertRow<UserNote>(
       row,
       transaction: transaction,
     );
@@ -354,7 +354,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, UserNote>(
+    return session.db.update<UserNote>(
       rows,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -370,7 +370,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, UserNote>(
+    return session.db.updateRow<UserNote>(
       row,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -385,7 +385,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, UserNote>(
+    return session.db.delete<UserNote>(
       rows,
       transaction: transaction,
     );
@@ -397,7 +397,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, UserNote>(
+    return session.db.deleteRow<UserNote>(
       row,
       transaction: transaction,
     );
@@ -409,7 +409,7 @@ class UserNoteRepository {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, UserNote>(
+    return session.db.deleteWhere<UserNote>(
       where: where(UserNote.t),
       transaction: transaction,
     );
@@ -423,7 +423,7 @@ class UserNoteRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, UserNote>(
+    return session.db.count<UserNote>(
       where: where?.call(UserNote.t),
       limit: limit,
       transaction: transaction,

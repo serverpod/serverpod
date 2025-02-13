@@ -318,7 +318,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.find<int, Post>(
+    return session.db.find<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -357,7 +357,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findFirstRow<int, Post>(
+    return session.db.findFirstRow<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -375,7 +375,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findById<int, Post>(
+    return session.db.findById<Post>(
       id,
       transaction: transaction,
       include: include,
@@ -393,7 +393,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, Post>(
+    return session.db.insert<Post>(
       rows,
       transaction: transaction,
     );
@@ -407,7 +407,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, Post>(
+    return session.db.insertRow<Post>(
       row,
       transaction: transaction,
     );
@@ -424,7 +424,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, Post>(
+    return session.db.update<Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -440,7 +440,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, Post>(
+    return session.db.updateRow<Post>(
       row,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -455,7 +455,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, Post>(
+    return session.db.delete<Post>(
       rows,
       transaction: transaction,
     );
@@ -467,7 +467,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, Post>(
+    return session.db.deleteRow<Post>(
       row,
       transaction: transaction,
     );
@@ -479,7 +479,7 @@ class PostRepository {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, Post>(
+    return session.db.deleteWhere<Post>(
       where: where(Post.t),
       transaction: transaction,
     );
@@ -493,7 +493,7 @@ class PostRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, Post>(
+    return session.db.count<Post>(
       where: where?.call(Post.t),
       limit: limit,
       transaction: transaction,
@@ -520,7 +520,7 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.updateRow<int, _i2.Post>(
+    await session.db.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -543,7 +543,7 @@ class PostAttachRowRepository {
     }
 
     var $post = post.copyWith(nextId: next.id);
-    await session.db.updateRow<int, Post>(
+    await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,
@@ -577,7 +577,7 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<int, _i2.Post>(
+    await session.db.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -599,7 +599,7 @@ class PostDetachRowRepository {
     }
 
     var $post = post.copyWith(nextId: null);
-    await session.db.updateRow<int, Post>(
+    await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,

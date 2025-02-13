@@ -400,7 +400,7 @@ class QueryLogEntryRepository {
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, QueryLogEntry>(
+    return session.db.find<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -437,7 +437,7 @@ class QueryLogEntryRepository {
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, QueryLogEntry>(
+    return session.db.findFirstRow<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
@@ -453,7 +453,7 @@ class QueryLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, QueryLogEntry>(
+    return session.db.findById<QueryLogEntry>(
       id,
       transaction: transaction,
     );
@@ -470,7 +470,7 @@ class QueryLogEntryRepository {
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, QueryLogEntry>(
+    return session.db.insert<QueryLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -484,7 +484,7 @@ class QueryLogEntryRepository {
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, QueryLogEntry>(
+    return session.db.insertRow<QueryLogEntry>(
       row,
       transaction: transaction,
     );
@@ -501,7 +501,7 @@ class QueryLogEntryRepository {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, QueryLogEntry>(
+    return session.db.update<QueryLogEntry>(
       rows,
       columns: columns?.call(QueryLogEntry.t),
       transaction: transaction,
@@ -517,7 +517,7 @@ class QueryLogEntryRepository {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, QueryLogEntry>(
+    return session.db.updateRow<QueryLogEntry>(
       row,
       columns: columns?.call(QueryLogEntry.t),
       transaction: transaction,
@@ -532,7 +532,7 @@ class QueryLogEntryRepository {
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, QueryLogEntry>(
+    return session.db.delete<QueryLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -544,7 +544,7 @@ class QueryLogEntryRepository {
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, QueryLogEntry>(
+    return session.db.deleteRow<QueryLogEntry>(
       row,
       transaction: transaction,
     );
@@ -556,7 +556,7 @@ class QueryLogEntryRepository {
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, QueryLogEntry>(
+    return session.db.deleteWhere<QueryLogEntry>(
       where: where(QueryLogEntry.t),
       transaction: transaction,
     );
@@ -570,7 +570,7 @@ class QueryLogEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, QueryLogEntry>(
+    return session.db.count<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       limit: limit,
       transaction: transaction,

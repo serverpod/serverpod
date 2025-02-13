@@ -309,7 +309,7 @@ class MultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, MultipleMaxFieldName>(
+    return session.db.find<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -346,7 +346,7 @@ class MultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, MultipleMaxFieldName>(
+    return session.db.findFirstRow<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
@@ -362,7 +362,7 @@ class MultipleMaxFieldNameRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, MultipleMaxFieldName>(
+    return session.db.findById<MultipleMaxFieldName>(
       id,
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class MultipleMaxFieldNameRepository {
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, MultipleMaxFieldName>(
+    return session.db.insert<MultipleMaxFieldName>(
       rows,
       transaction: transaction,
     );
@@ -393,7 +393,7 @@ class MultipleMaxFieldNameRepository {
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, MultipleMaxFieldName>(
+    return session.db.insertRow<MultipleMaxFieldName>(
       row,
       transaction: transaction,
     );
@@ -410,7 +410,7 @@ class MultipleMaxFieldNameRepository {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, MultipleMaxFieldName>(
+    return session.db.update<MultipleMaxFieldName>(
       rows,
       columns: columns?.call(MultipleMaxFieldName.t),
       transaction: transaction,
@@ -426,7 +426,7 @@ class MultipleMaxFieldNameRepository {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, MultipleMaxFieldName>(
+    return session.db.updateRow<MultipleMaxFieldName>(
       row,
       columns: columns?.call(MultipleMaxFieldName.t),
       transaction: transaction,
@@ -441,7 +441,7 @@ class MultipleMaxFieldNameRepository {
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, MultipleMaxFieldName>(
+    return session.db.delete<MultipleMaxFieldName>(
       rows,
       transaction: transaction,
     );
@@ -453,7 +453,7 @@ class MultipleMaxFieldNameRepository {
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, MultipleMaxFieldName>(
+    return session.db.deleteRow<MultipleMaxFieldName>(
       row,
       transaction: transaction,
     );
@@ -465,7 +465,7 @@ class MultipleMaxFieldNameRepository {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, MultipleMaxFieldName>(
+    return session.db.deleteWhere<MultipleMaxFieldName>(
       where: where(MultipleMaxFieldName.t),
       transaction: transaction,
     );
@@ -479,7 +479,7 @@ class MultipleMaxFieldNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, MultipleMaxFieldName>(
+    return session.db.count<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       limit: limit,
       transaction: transaction,

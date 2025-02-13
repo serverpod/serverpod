@@ -253,7 +253,7 @@ class ArenaUuidRepository {
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
   }) async {
-    return session.db.find<_i1.UuidValue, ArenaUuid>(
+    return session.db.find<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -292,7 +292,7 @@ class ArenaUuidRepository {
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
   }) async {
-    return session.db.findFirstRow<_i1.UuidValue, ArenaUuid>(
+    return session.db.findFirstRow<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
       orderBy: orderBy?.call(ArenaUuid.t),
       orderByList: orderByList?.call(ArenaUuid.t),
@@ -310,7 +310,7 @@ class ArenaUuidRepository {
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
   }) async {
-    return session.db.findById<_i1.UuidValue, ArenaUuid>(
+    return session.db.findById<ArenaUuid>(
       id,
       transaction: transaction,
       include: include,
@@ -328,7 +328,7 @@ class ArenaUuidRepository {
     List<ArenaUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<_i1.UuidValue, ArenaUuid>(
+    return session.db.insert<ArenaUuid>(
       rows,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class ArenaUuidRepository {
     ArenaUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<_i1.UuidValue, ArenaUuid>(
+    return session.db.insertRow<ArenaUuid>(
       row,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class ArenaUuidRepository {
     _i1.ColumnSelections<ArenaUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<_i1.UuidValue, ArenaUuid>(
+    return session.db.update<ArenaUuid>(
       rows,
       columns: columns?.call(ArenaUuid.t),
       transaction: transaction,
@@ -375,7 +375,7 @@ class ArenaUuidRepository {
     _i1.ColumnSelections<ArenaUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<_i1.UuidValue, ArenaUuid>(
+    return session.db.updateRow<ArenaUuid>(
       row,
       columns: columns?.call(ArenaUuid.t),
       transaction: transaction,
@@ -390,7 +390,7 @@ class ArenaUuidRepository {
     List<ArenaUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<_i1.UuidValue, ArenaUuid>(
+    return session.db.delete<ArenaUuid>(
       rows,
       transaction: transaction,
     );
@@ -402,7 +402,7 @@ class ArenaUuidRepository {
     ArenaUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<_i1.UuidValue, ArenaUuid>(
+    return session.db.deleteRow<ArenaUuid>(
       row,
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class ArenaUuidRepository {
     required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<_i1.UuidValue, ArenaUuid>(
+    return session.db.deleteWhere<ArenaUuid>(
       where: where(ArenaUuid.t),
       transaction: transaction,
     );
@@ -428,7 +428,7 @@ class ArenaUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<_i1.UuidValue, ArenaUuid>(
+    return session.db.count<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
       limit: limit,
       transaction: transaction,
@@ -455,7 +455,7 @@ class ArenaUuidAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arenaUuid.id);
-    await session.db.updateRow<int, _i2.TeamInt>(
+    await session.db.updateRow<_i2.TeamInt>(
       $team,
       columns: [_i2.TeamInt.t.arenaId],
       transaction: transaction,
@@ -489,7 +489,7 @@ class ArenaUuidDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<int, _i2.TeamInt>(
+    await session.db.updateRow<_i2.TeamInt>(
       $$team,
       columns: [_i2.TeamInt.t.arenaId],
       transaction: transaction,

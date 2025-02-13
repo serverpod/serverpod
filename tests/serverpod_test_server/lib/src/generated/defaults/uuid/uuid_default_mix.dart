@@ -258,7 +258,7 @@ class UuidDefaultMixRepository {
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, UuidDefaultMix>(
+    return session.db.find<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
@@ -295,7 +295,7 @@ class UuidDefaultMixRepository {
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, UuidDefaultMix>(
+    return session.db.findFirstRow<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
@@ -311,7 +311,7 @@ class UuidDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, UuidDefaultMix>(
+    return session.db.findById<UuidDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -328,7 +328,7 @@ class UuidDefaultMixRepository {
     List<UuidDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, UuidDefaultMix>(
+    return session.db.insert<UuidDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -342,7 +342,7 @@ class UuidDefaultMixRepository {
     UuidDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, UuidDefaultMix>(
+    return session.db.insertRow<UuidDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -359,7 +359,7 @@ class UuidDefaultMixRepository {
     _i1.ColumnSelections<UuidDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, UuidDefaultMix>(
+    return session.db.update<UuidDefaultMix>(
       rows,
       columns: columns?.call(UuidDefaultMix.t),
       transaction: transaction,
@@ -375,7 +375,7 @@ class UuidDefaultMixRepository {
     _i1.ColumnSelections<UuidDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, UuidDefaultMix>(
+    return session.db.updateRow<UuidDefaultMix>(
       row,
       columns: columns?.call(UuidDefaultMix.t),
       transaction: transaction,
@@ -390,7 +390,7 @@ class UuidDefaultMixRepository {
     List<UuidDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, UuidDefaultMix>(
+    return session.db.delete<UuidDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -402,7 +402,7 @@ class UuidDefaultMixRepository {
     UuidDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, UuidDefaultMix>(
+    return session.db.deleteRow<UuidDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class UuidDefaultMixRepository {
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, UuidDefaultMix>(
+    return session.db.deleteWhere<UuidDefaultMix>(
       where: where(UuidDefaultMix.t),
       transaction: transaction,
     );
@@ -428,7 +428,7 @@ class UuidDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, UuidDefaultMix>(
+    return session.db.count<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
       limit: limit,
       transaction: transaction,

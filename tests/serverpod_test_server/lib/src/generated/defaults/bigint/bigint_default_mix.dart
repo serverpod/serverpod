@@ -261,7 +261,7 @@ class BigIntDefaultMixRepository {
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, BigIntDefaultMix>(
+    return session.db.find<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -298,7 +298,7 @@ class BigIntDefaultMixRepository {
     _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, BigIntDefaultMix>(
+    return session.db.findFirstRow<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
@@ -314,7 +314,7 @@ class BigIntDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, BigIntDefaultMix>(
+    return session.db.findById<BigIntDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -331,7 +331,7 @@ class BigIntDefaultMixRepository {
     List<BigIntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, BigIntDefaultMix>(
+    return session.db.insert<BigIntDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -345,7 +345,7 @@ class BigIntDefaultMixRepository {
     BigIntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, BigIntDefaultMix>(
+    return session.db.insertRow<BigIntDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -362,7 +362,7 @@ class BigIntDefaultMixRepository {
     _i1.ColumnSelections<BigIntDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, BigIntDefaultMix>(
+    return session.db.update<BigIntDefaultMix>(
       rows,
       columns: columns?.call(BigIntDefaultMix.t),
       transaction: transaction,
@@ -378,7 +378,7 @@ class BigIntDefaultMixRepository {
     _i1.ColumnSelections<BigIntDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, BigIntDefaultMix>(
+    return session.db.updateRow<BigIntDefaultMix>(
       row,
       columns: columns?.call(BigIntDefaultMix.t),
       transaction: transaction,
@@ -393,7 +393,7 @@ class BigIntDefaultMixRepository {
     List<BigIntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, BigIntDefaultMix>(
+    return session.db.delete<BigIntDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -405,7 +405,7 @@ class BigIntDefaultMixRepository {
     BigIntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, BigIntDefaultMix>(
+    return session.db.deleteRow<BigIntDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -417,7 +417,7 @@ class BigIntDefaultMixRepository {
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, BigIntDefaultMix>(
+    return session.db.deleteWhere<BigIntDefaultMix>(
       where: where(BigIntDefaultMix.t),
       transaction: transaction,
     );
@@ -431,7 +431,7 @@ class BigIntDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, BigIntDefaultMix>(
+    return session.db.count<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
       limit: limit,
       transaction: transaction,

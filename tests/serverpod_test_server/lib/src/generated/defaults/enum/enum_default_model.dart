@@ -295,7 +295,7 @@ class EnumDefaultModelRepository {
     _i1.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, EnumDefaultModel>(
+    return session.db.find<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       orderBy: orderBy?.call(EnumDefaultModel.t),
       orderByList: orderByList?.call(EnumDefaultModel.t),
@@ -332,7 +332,7 @@ class EnumDefaultModelRepository {
     _i1.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, EnumDefaultModel>(
+    return session.db.findFirstRow<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       orderBy: orderBy?.call(EnumDefaultModel.t),
       orderByList: orderByList?.call(EnumDefaultModel.t),
@@ -348,7 +348,7 @@ class EnumDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, EnumDefaultModel>(
+    return session.db.findById<EnumDefaultModel>(
       id,
       transaction: transaction,
     );
@@ -365,7 +365,7 @@ class EnumDefaultModelRepository {
     List<EnumDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, EnumDefaultModel>(
+    return session.db.insert<EnumDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -379,7 +379,7 @@ class EnumDefaultModelRepository {
     EnumDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, EnumDefaultModel>(
+    return session.db.insertRow<EnumDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -396,7 +396,7 @@ class EnumDefaultModelRepository {
     _i1.ColumnSelections<EnumDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, EnumDefaultModel>(
+    return session.db.update<EnumDefaultModel>(
       rows,
       columns: columns?.call(EnumDefaultModel.t),
       transaction: transaction,
@@ -412,7 +412,7 @@ class EnumDefaultModelRepository {
     _i1.ColumnSelections<EnumDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, EnumDefaultModel>(
+    return session.db.updateRow<EnumDefaultModel>(
       row,
       columns: columns?.call(EnumDefaultModel.t),
       transaction: transaction,
@@ -427,7 +427,7 @@ class EnumDefaultModelRepository {
     List<EnumDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, EnumDefaultModel>(
+    return session.db.delete<EnumDefaultModel>(
       rows,
       transaction: transaction,
     );
@@ -439,7 +439,7 @@ class EnumDefaultModelRepository {
     EnumDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, EnumDefaultModel>(
+    return session.db.deleteRow<EnumDefaultModel>(
       row,
       transaction: transaction,
     );
@@ -451,7 +451,7 @@ class EnumDefaultModelRepository {
     required _i1.WhereExpressionBuilder<EnumDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, EnumDefaultModel>(
+    return session.db.deleteWhere<EnumDefaultModel>(
       where: where(EnumDefaultModel.t),
       transaction: transaction,
     );
@@ -465,7 +465,7 @@ class EnumDefaultModelRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, EnumDefaultModel>(
+    return session.db.count<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       limit: limit,
       transaction: transaction,

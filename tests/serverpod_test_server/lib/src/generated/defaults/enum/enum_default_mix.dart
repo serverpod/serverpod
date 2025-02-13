@@ -271,7 +271,7 @@ class EnumDefaultMixRepository {
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, EnumDefaultMix>(
+    return session.db.find<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -308,7 +308,7 @@ class EnumDefaultMixRepository {
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, EnumDefaultMix>(
+    return session.db.findFirstRow<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
@@ -324,7 +324,7 @@ class EnumDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, EnumDefaultMix>(
+    return session.db.findById<EnumDefaultMix>(
       id,
       transaction: transaction,
     );
@@ -341,7 +341,7 @@ class EnumDefaultMixRepository {
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, EnumDefaultMix>(
+    return session.db.insert<EnumDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class EnumDefaultMixRepository {
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, EnumDefaultMix>(
+    return session.db.insertRow<EnumDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -372,7 +372,7 @@ class EnumDefaultMixRepository {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, EnumDefaultMix>(
+    return session.db.update<EnumDefaultMix>(
       rows,
       columns: columns?.call(EnumDefaultMix.t),
       transaction: transaction,
@@ -388,7 +388,7 @@ class EnumDefaultMixRepository {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, EnumDefaultMix>(
+    return session.db.updateRow<EnumDefaultMix>(
       row,
       columns: columns?.call(EnumDefaultMix.t),
       transaction: transaction,
@@ -403,7 +403,7 @@ class EnumDefaultMixRepository {
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, EnumDefaultMix>(
+    return session.db.delete<EnumDefaultMix>(
       rows,
       transaction: transaction,
     );
@@ -415,7 +415,7 @@ class EnumDefaultMixRepository {
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, EnumDefaultMix>(
+    return session.db.deleteRow<EnumDefaultMix>(
       row,
       transaction: transaction,
     );
@@ -427,7 +427,7 @@ class EnumDefaultMixRepository {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, EnumDefaultMix>(
+    return session.db.deleteWhere<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),
       transaction: transaction,
     );
@@ -441,7 +441,7 @@ class EnumDefaultMixRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, EnumDefaultMix>(
+    return session.db.count<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       limit: limit,
       transaction: transaction,

@@ -300,7 +300,7 @@ class ObjectWithEnumRepository {
     _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<int, ObjectWithEnum>(
+    return session.db.find<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -337,7 +337,7 @@ class ObjectWithEnumRepository {
     _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<int, ObjectWithEnum>(
+    return session.db.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
@@ -353,7 +353,7 @@ class ObjectWithEnumRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<int, ObjectWithEnum>(
+    return session.db.findById<ObjectWithEnum>(
       id,
       transaction: transaction,
     );
@@ -370,7 +370,7 @@ class ObjectWithEnumRepository {
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<int, ObjectWithEnum>(
+    return session.db.insert<ObjectWithEnum>(
       rows,
       transaction: transaction,
     );
@@ -384,7 +384,7 @@ class ObjectWithEnumRepository {
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<int, ObjectWithEnum>(
+    return session.db.insertRow<ObjectWithEnum>(
       row,
       transaction: transaction,
     );
@@ -401,7 +401,7 @@ class ObjectWithEnumRepository {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<int, ObjectWithEnum>(
+    return session.db.update<ObjectWithEnum>(
       rows,
       columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
@@ -417,7 +417,7 @@ class ObjectWithEnumRepository {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<int, ObjectWithEnum>(
+    return session.db.updateRow<ObjectWithEnum>(
       row,
       columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
@@ -432,7 +432,7 @@ class ObjectWithEnumRepository {
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<int, ObjectWithEnum>(
+    return session.db.delete<ObjectWithEnum>(
       rows,
       transaction: transaction,
     );
@@ -444,7 +444,7 @@ class ObjectWithEnumRepository {
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<int, ObjectWithEnum>(
+    return session.db.deleteRow<ObjectWithEnum>(
       row,
       transaction: transaction,
     );
@@ -456,7 +456,7 @@ class ObjectWithEnumRepository {
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<int, ObjectWithEnum>(
+    return session.db.deleteWhere<ObjectWithEnum>(
       where: where(ObjectWithEnum.t),
       transaction: transaction,
     );
@@ -470,7 +470,7 @@ class ObjectWithEnumRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<int, ObjectWithEnum>(
+    return session.db.count<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       limit: limit,
       transaction: transaction,
