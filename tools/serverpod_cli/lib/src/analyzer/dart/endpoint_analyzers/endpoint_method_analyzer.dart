@@ -1,11 +1,12 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+
 import 'extension/endpoint_parameters_extension.dart';
 
 const _excludedMethodNameSet = {
@@ -199,5 +200,7 @@ extension on List<ParameterElement> {
 
 extension on Parameters {
   bool _hasStream() => [...required, ...positional, ...named]
-      .any((element) => element.type.dartType?.isDartAsyncStream ?? false);
+      .map((e) => e.type)
+      .whereType<ClassTypeDefinition>()
+      .any((type) => (type).dartType?.isDartAsyncStream == true);
 }

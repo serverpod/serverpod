@@ -167,7 +167,7 @@ class Restrictions {
     }
 
     var duplicateExtraClass =
-        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+        config.extraClasses.cast<ClassTypeDefinition?>().firstWhere(
               (extraClass) => extraClass?.className == className,
               orElse: () => null,
             );
@@ -867,7 +867,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> _validateFieldDataType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
     SourceSpan? span,
   ) {
     var typeText = span?.text;
@@ -908,8 +908,15 @@ class Restrictions {
 
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
-        errors.addAll(_validateFieldDataType(fieldType.generics.last, span));
+        errors.addAll(_validateFieldDataType(
+          // Model generics do not support records yet, so we can cast safely in these cases
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.last as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -920,7 +927,10 @@ class Restrictions {
       }
     } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -931,7 +941,10 @@ class Restrictions {
       }
     } else if (fieldType.isSetType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -1073,7 +1086,9 @@ class Restrictions {
 
     if (field.type.isListType) {
       var referenceClass = parsedModels
-          .findAllByClassName(field.type.generics.first.className)
+          .findAllByClassName(
+              // Relations only support models in generics, so cast is fine
+              (field.type.generics.first as ClassTypeDefinition).className)
           .firstOrNull;
 
       if (referenceClass != null &&
@@ -1381,17 +1396,17 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
+  bool _isValidType(ClassTypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
         _isCustomType(type);
   }
 
-  bool _isUnsupportedType(TypeDefinition type) {
+  bool _isUnsupportedType(ClassTypeDefinition type) {
     return blackListedTypes.contains(type.className);
   }
 
-  bool _isUnresolvedModuleType(TypeDefinition type) {
+  bool _isUnresolvedModuleType(ClassTypeDefinition type) {
     if (!type.isModuleType) return false;
 
     var moduleAlias = type.moduleAlias;
@@ -1400,7 +1415,7 @@ class Restrictions {
     return !parsedModels.moduleNames.contains(moduleAlias);
   }
 
-  bool _isModelType(TypeDefinition type) {
+  bool _isModelType(ClassTypeDefinition type) {
     var className = type.className;
 
     var definitions = parsedModels.classNames[className];
@@ -1418,7 +1433,7 @@ class Restrictions {
     return true;
   }
 
-  bool _isCustomType(TypeDefinition type) {
+  bool _isCustomType(ClassTypeDefinition type) {
     return config.extraClasses.any((c) => c.className == type.className);
   }
 
@@ -1429,13 +1444,16 @@ class Restrictions {
   }
 
   Set<ClassDefinition> _extractAllClassDefinitionsFromType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
   ) {
     var classDefinitions = <ClassDefinition>{};
 
     if (fieldType.generics.isNotEmpty) {
       for (var generic in fieldType.generics) {
-        classDefinitions.addAll(_extractAllClassDefinitionsFromType(generic));
+        // Records are not yet support, so cast is fine
+        classDefinitions.addAll(_extractAllClassDefinitionsFromType(
+          generic as ClassTypeDefinition,
+        ));
       }
     }
 
