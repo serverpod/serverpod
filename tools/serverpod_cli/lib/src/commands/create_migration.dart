@@ -49,11 +49,14 @@ class CreateMigrationCommand extends ServerpodCommand {
         throw ExitException(ExitCodeType.commandInvokedCannotExecute);
       }
     }
-
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();
-    } catch (_) {
+    } catch (e) {
+      if (e is LocateModuleNameFromServerPackageNameException) {
+        log.error('Not a server package (${e.packageName}). Please '
+            'make sure your server package name ends with \'_server\'.');
+      }
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 

@@ -159,6 +159,12 @@ Future<List<Uri>> locateAllModulePaths({
   return paths;
 }
 
+/// This method assumes that server package names end with `_server`.
+/// If the package name does not follow this convention, an exception is thrown.
+///
+/// Throws:
+/// - [LocateModuleNameFromServerPackageNameException] if the package name
+///   does not end with `_server`, indicating it is not a valid server package.
 String moduleNameFromServerPackageName(String packageDirName) {
   var packageName = packageDirName.split('-').first;
 

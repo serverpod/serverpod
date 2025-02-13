@@ -17,6 +17,10 @@ class DatabaseSetup {
       config = await GeneratorConfig.load(dir.path);
     } catch (error) {
       log.error('Could not load config file.');
+      if (error is LocateModuleNameFromServerPackageNameException) {
+        log.error('Not a server package (${error.packageName}). Please '
+            'make sure your server package name ends with \'_server\'.');
+      }
       return false;
     }
 
@@ -38,6 +42,9 @@ class DatabaseSetup {
       // Ignore known error since the user can create the migration manually
       // and get better error messages then.
     } on MigrationVersionAlreadyExistsException {
+      // Ignore known error since the user can create the migration manually
+      // and get better error messages then.
+    } on LocateModuleNameFromServerPackageNameException {
       // Ignore known error since the user can create the migration manually
       // and get better error messages then.
     }
