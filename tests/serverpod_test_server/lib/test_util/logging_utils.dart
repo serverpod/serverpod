@@ -13,24 +13,24 @@ class LoggingUtil {
   static Future<List<SessionLogInfo>> findAllLogs(
     Session session,
   ) async {
-    var rows = (await session.db.find<int, SessionLogEntry>(
+    var rows = (await session.db.find<SessionLogEntry>(
       orderBy: SessionLogEntry.t.id,
       orderDescending: true,
     ));
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var futureLogRows = session.db.find<int, LogEntry>(
+      var futureLogRows = session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: LogEntry.t.order,
       );
 
-      var futureQueryRows = session.db.find<int, QueryLogEntry>(
+      var futureQueryRows = session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: QueryLogEntry.t.order,
       );
 
-      var futureMessageRows = session.db.find<int, MessageLogEntry>(
+      var futureMessageRows = session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
         orderBy: MessageLogEntry.t.order,
       );

@@ -224,7 +224,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
     Database database,
   ) async {
     try {
-      return await database.find<int, DatabaseMigrationVersion>();
+      return await database.find<DatabaseMigrationVersion>();
     } catch (e) {
       // Ignore if the table does not exist.
       stderr.writeln('Failed to get installed migrations: $e');
