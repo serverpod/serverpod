@@ -49,7 +49,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> find<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> find<T extends TableRow>(
     Session session, {
     Expression? where,
     int? limit,
@@ -60,7 +60,7 @@ class DatabaseConnection {
     Include? include,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T_ID, T>(session, operation: 'find');
+    var table = _getTableOrAssert<T>(session, operation: 'find');
     orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     var query = SelectQueryBuilder(table: table)
@@ -72,7 +72,7 @@ class DatabaseConnection {
         .withInclude(include)
         .build();
 
-    return _deserializedMappedQuery<T_ID, T>(
+    return _deserializedMappedQuery<T>(
       session,
       query,
       table: table,
@@ -83,7 +83,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findFirstRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T?> findFirstRow<T extends TableRow>(
     Session session, {
     Expression? where,
     int? offset,
@@ -93,8 +93,8 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
-    _getTableOrAssert<T_ID, T>(session, operation: 'findRow');
-    var rows = await find<T_ID, T>(
+    _getTableOrAssert<T>(session, operation: 'findRow');
+    var rows = await find<T>(
       session,
       where: where,
       offset: offset,
@@ -112,14 +112,14 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findById<T_ID, T extends TableRow<T_ID>>(
+  Future<T?> findById<T extends TableRow>(
     Session session,
-    T_ID id, {
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) async {
-    var table = _getTableOrAssert<T_ID, T>(session, operation: 'findById');
-    return await findFirstRow<T_ID, T>(
+    var table = _getTableOrAssert<T>(session, operation: 'findById');
+    return await findFirstRow<T>(
       session,
       where: table.id.equals(id),
       transaction: transaction,
@@ -128,7 +128,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> insert<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> insert<T extends TableRow>(
     Session session,
     List<T> rows, {
     Transaction? transaction,
@@ -149,12 +149,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> insertRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> insertRow<T extends TableRow>(
     Session session,
     T row, {
     Transaction? transaction,
   }) async {
-    var result = await insert<T_ID, T>(
+    var result = await insert<T>(
       session,
       [row],
       transaction: transaction,
@@ -170,7 +170,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> update<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> update<T extends TableRow>(
     Session session,
     List<T> rows, {
     List<Column>? columns,
@@ -212,13 +212,13 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> updateRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> updateRow<T extends TableRow>(
     Session session,
     T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
-    var updated = await update<T_ID, T>(
+    var updated = await update<T>(
       session,
       [row],
       columns: columns,
@@ -235,7 +235,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> delete<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> delete<T extends TableRow>(
     Session session,
     List<T> rows, {
     Transaction? transaction,
@@ -247,7 +247,7 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    return deleteWhere<T_ID, T>(
+    return deleteWhere<T>(
       session,
       table.id.inSet(rows.map((row) => row.id!).toSet()),
       transaction: transaction,
@@ -255,12 +255,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> deleteRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> deleteRow<T extends TableRow>(
     Session session,
     T row, {
     Transaction? transaction,
   }) async {
-    var result = await delete<T_ID, T>(
+    var result = await delete<T>(
       session,
       [row],
       transaction: transaction,
@@ -276,12 +276,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> deleteWhere<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> deleteWhere<T extends TableRow>(
     Session session,
     Expression where, {
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T_ID, T>(session, operation: 'deleteWhere');
+    var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
     var query = DeleteQueryBuilder(table: table)
         .withReturn(Returning.all)
@@ -297,13 +297,13 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count<T_ID, T extends TableRow<T_ID>>(
+  Future<int> count<T extends TableRow>(
     Session session, {
     Expression? where,
     int? limit,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert<T_ID, T>(session, operation: 'count');
+    var table = _getTableOrAssert<T>(session, operation: 'count');
 
     var query = CountQueryBuilder(table: table)
         .withCountAlias('c')
@@ -494,10 +494,10 @@ class DatabaseConnection {
     return postgresTransaction?.executionContext ?? _postgresConnection;
   }
 
-  Future<List<T>> _deserializedMappedQuery<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
     Session session,
     String query, {
-    required Table<T_ID> table,
+    required Table table,
     int? timeoutInSeconds,
     required Transaction? transaction,
     Include? include,
@@ -754,16 +754,13 @@ class DatabaseConnection {
   }
 }
 
-Table<T_ID> _getTableOrAssert<T_ID, T>(
-  Session session, {
-  required String operation,
-}) {
+Table _getTableOrAssert<T>(Session session, {required String operation}) {
   var table = session.serverpod.serializationManager.getTableForType(T);
   assert(table is Table, '''
 You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
 Current type was $T''');
-  return table! as Table<T_ID>;
+  return table!;
 }
 
 /// Throws an exception if the given [transaction] is not a Postgres transaction.

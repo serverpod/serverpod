@@ -52,7 +52,7 @@ class Database {
   ///
   /// [offset] defines how many items to skip, after with [limit] (or all)
   /// items are read from the database.
-  Future<List<T>> find<T_ID, T extends TableRow<T_ID>>({
+  Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
     int? offset,
@@ -62,7 +62,7 @@ class Database {
     Transaction? transaction,
     Include? include,
   }) async {
-    return _databaseConnection.find<T_ID, T>(
+    return _databaseConnection.find<T>(
       _session,
       where: where,
       limit: limit,
@@ -85,7 +85,7 @@ class Database {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
-  Future<T?> findFirstRow<T_ID, T extends TableRow<T_ID>>({
+  Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -94,7 +94,7 @@ class Database {
     Transaction? transaction,
     Include? include,
   }) async {
-    return await _databaseConnection.findFirstRow<T_ID, T>(
+    return await _databaseConnection.findFirstRow<T>(
       _session,
       where: where,
       offset: offset,
@@ -111,14 +111,14 @@ class Database {
   /// often useful to cast the object returned.
   ///
   /// ```dart
-  /// var myRow = session.db.findById<int, MyClass>(myId);
+  /// var myRow = session.db.findById<MyClass>(myId);
   /// ```
-  Future<T?> findById<T_ID, T extends TableRow<T_ID>>(
-    T_ID id, {
+  Future<T?> findById<T extends TableRow>(
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) async {
-    return _databaseConnection.findById<T_ID, T>(
+    return _databaseConnection.findById<T>(
       _session,
       id,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -132,12 +132,12 @@ class Database {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// update, none of the rows will be updated.
-  Future<List<T>> update<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.update<T_ID, T>(
+    return _databaseConnection.update<T>(
       _session,
       rows,
       columns: columns,
@@ -149,12 +149,12 @@ class Database {
   /// Updates a single [TableRow]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<T> updateRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> updateRow<T extends TableRow>(
     T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.updateRow<T_ID, T>(
+    return _databaseConnection.updateRow<T>(
       _session,
       row,
       columns: columns,
@@ -166,11 +166,11 @@ class Database {
   /// Inserts all [TableRow]s in the list and returns the inserted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<T>> insert<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
   }) async {
-    return _databaseConnection.insert<T_ID, T>(
+    return _databaseConnection.insert<T>(
       _session,
       rows,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -179,11 +179,11 @@ class Database {
   }
 
   /// Inserts a single [TableRow] and returns the inserted row.
-  Future<T> insertRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> insertRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
   }) async {
-    return _databaseConnection.insertRow<T_ID, T>(
+    return _databaseConnection.insertRow<T>(
       _session,
       row,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -194,11 +194,11 @@ class Database {
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.
-  Future<List<T>> delete<T_ID, T extends TableRow<T_ID>>(
+  Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
   }) async {
-    return _databaseConnection.delete<T_ID, T>(
+    return _databaseConnection.delete<T>(
       _session,
       rows,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -207,11 +207,11 @@ class Database {
   }
 
   /// Deletes a single [TableRow].
-  Future<T> deleteRow<T_ID, T extends TableRow<T_ID>>(
+  Future<T> deleteRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
   }) async {
-    return await _databaseConnection.deleteRow<T_ID, T>(
+    return await _databaseConnection.deleteRow<T>(
       _session,
       row,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -220,11 +220,11 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<T>> deleteWhere<T_ID, T extends TableRow<T_ID>>({
+  Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.deleteWhere<T_ID, T>(
+    return _databaseConnection.deleteWhere<T>(
       _session,
       where,
       // ignore: invalid_use_of_visible_for_testing_member
@@ -234,13 +234,13 @@ class Database {
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
-  Future<int> count<T_ID, T extends TableRow<T_ID>>({
+  Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.count<T_ID, T>(
+    return _databaseConnection.count<T>(
       _session,
       where: where,
       limit: limit,
