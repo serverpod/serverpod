@@ -585,20 +585,23 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
+  Expression _buildDeepCloneTree(ClassTypeDefinition type, String variableName,
       {int depth = 0, bool isRoot = false}) {
     var isLeafNode = type.generics.isEmpty;
     if (isLeafNode) {
       return _buildShallowClone(type, variableName, isRoot);
     }
 
+    // NOTE(tp): For now the model types do not contain records, so casting is valid currently
     var nextCallback = switch (type.className) {
-      ListKeyword.className =>
-        _buildListCloneCallback(type.generics.first, depth),
-      SetKeyword.className =>
-        _buildSetCloneCallback(type.generics.first, depth),
-      MapKeyword.className =>
-        _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
+      ListKeyword.className => _buildListCloneCallback(
+          type.generics.first as ClassTypeDefinition, depth),
+      SetKeyword.className => _buildSetCloneCallback(
+          type.generics.first as ClassTypeDefinition, depth),
+      MapKeyword.className => _buildMapCloneCallback(
+          type.generics[0] as ClassTypeDefinition,
+          type.generics[1] as ClassTypeDefinition,
+          depth),
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
@@ -623,7 +626,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildShallowClone(
-      TypeDefinition type, String variableName, bool isRoot) {
+      ClassTypeDefinition type, String variableName, bool isRoot) {
     var isNonMutableType =
         type.isEnumType || nonMutableTypeNames.contains(type.className);
     if (isNonMutableType) {
@@ -639,7 +642,7 @@ class SerializableModelLibraryGenerator {
     }
   }
 
-  Expression _buildListCloneCallback(TypeDefinition type, int depth) {
+  Expression _buildListCloneCallback(ClassTypeDefinition type, int depth) {
     var variableName = 'e$depth';
 
     return Method(
@@ -655,7 +658,7 @@ class SerializableModelLibraryGenerator {
     ).closure;
   }
 
-  Expression _buildSetCloneCallback(TypeDefinition type, int depth) {
+  Expression _buildSetCloneCallback(ClassTypeDefinition type, int depth) {
     var variableName = 'e$depth';
 
     return Method(
@@ -672,8 +675,8 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildMapCloneCallback(
-    TypeDefinition keyType,
-    TypeDefinition valueType,
+    ClassTypeDefinition keyType,
+    ClassTypeDefinition valueType,
     int depth,
   ) {
     var keyVariableName = 'key$depth';
@@ -766,7 +769,9 @@ class SerializableModelLibraryGenerator {
             );
 
             if (field.relation is ListRelationDefinition) {
-              type = field.type.generics.first.reference(
+              type =
+                  // NOTE(tp): Cast is fine, as relations are to model classes
+                  (field.type.generics.first as ClassTypeDefinition).reference(
                 serverCode,
                 subDirParts: subDirParts,
                 config: config,
@@ -934,7 +939,7 @@ class SerializableModelLibraryGenerator {
 
   Expression _toJsonCallConversionMethod(
     Reference fieldRef,
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
     String methodName,
   ) {
     if (fieldType.isSerializedValue) return fieldRef;
@@ -993,7 +998,7 @@ class SerializableModelLibraryGenerator {
     Map<String, Expression> namedParams = {};
 
     if ((fieldType.isListType || fieldType.isSetType) &&
-        !fieldType.generics.first.isSerializedValue) {
+        !(fieldType.generics.first as ClassTypeDefinition).isSerializedValue) {
       namedParams = {
         'valueToJson': Method(
           (p) => p
@@ -1003,13 +1008,14 @@ class SerializableModelLibraryGenerator {
             )
             ..body = _toJsonCallConversionMethod(
               refer('v'),
-              fieldType.generics.first,
+              fieldType.generics.first as ClassTypeDefinition,
               methodName,
             ).code,
         ).closure
       };
     } else if (fieldType.isMapType) {
-      if (!fieldType.generics.first.isSerializedValue) {
+      if (!(fieldType.generics.first as ClassTypeDefinition)
+          .isSerializedValue) {
         namedParams = {
           ...namedParams,
           'keyToJson': Method(
@@ -1020,14 +1026,14 @@ class SerializableModelLibraryGenerator {
               )
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
-                fieldType.generics.first,
+                fieldType.generics.first as ClassTypeDefinition,
                 methodName,
               ).code,
           ).closure
         };
       }
 
-      if (!fieldType.generics.last.isSerializedValue) {
+      if (!(fieldType.generics.last as ClassTypeDefinition).isSerializedValue) {
         namedParams = {
           ...namedParams,
           'valueToJson': Method(
@@ -1038,7 +1044,7 @@ class SerializableModelLibraryGenerator {
               )
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
-                fieldType.generics.last,
+                fieldType.generics.last as ClassTypeDefinition,
                 methodName,
               ).code,
           ).closure
@@ -1558,13 +1564,15 @@ class SerializableModelLibraryGenerator {
         relationFieldName = relation.fieldName;
         relationForeignFieldName = createForeignFieldName(relation);
         fieldName = '__${field.name}';
-        fieldType = field.type.generics.first.reference(
+        fieldType =
+            (field.type.generics.first as ClassTypeDefinition).reference(
           serverCode,
           subDirParts: subDirParts,
           config: config,
           nullable: false,
         );
-        tableType = field.type.generics.first.reference(
+        tableType =
+            (field.type.generics.first as ClassTypeDefinition).reference(
           serverCode,
           subDirParts: subDirParts,
           config: config,

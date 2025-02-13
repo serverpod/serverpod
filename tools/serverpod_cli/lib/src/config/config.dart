@@ -205,7 +205,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
-  final List<TypeDefinition> extraClasses;
+  final List<ClassTypeDefinition> extraClasses;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -349,7 +349,7 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     // Load extraClasses
-    var extraClasses = <TypeDefinition>[];
+    var extraClasses = <ClassTypeDefinition>[];
     var configExtraClasses = generatorConfig['extraClasses'];
     if (configExtraClasses != null) {
       try {
