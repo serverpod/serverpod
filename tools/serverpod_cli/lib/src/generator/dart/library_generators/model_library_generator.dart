@@ -592,13 +592,21 @@ class SerializableModelLibraryGenerator {
       return _buildShallowClone(type, variableName, isRoot);
     }
 
+    // For now the model types do not contain records, so casting is valid
     var nextCallback = switch (type.className) {
-      ListKeyword.className =>
-        _buildListCloneCallback(type.generics.first, depth),
-      SetKeyword.className =>
-        _buildSetCloneCallback(type.generics.first, depth),
-      MapKeyword.className =>
-        _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
+      ListKeyword.className => _buildListCloneCallback(
+          type.generics.first,
+          depth,
+        ),
+      SetKeyword.className => _buildSetCloneCallback(
+          type.generics.first,
+          depth,
+        ),
+      MapKeyword.className => _buildMapCloneCallback(
+          type.generics[0],
+          type.generics[1],
+          depth,
+        ),
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
@@ -1542,12 +1550,14 @@ class SerializableModelLibraryGenerator {
         subDirParts: subDirParts,
         config: config,
         nullable: false,
-      );
-      TypeReference tableType = field.type.reference(serverCode,
-          subDirParts: subDirParts,
-          config: config,
-          nullable: false,
-          typeSuffix: 'Table');
+      ) as TypeReference; // relations must point to another model type
+      TypeReference tableType = field.type.reference(
+        serverCode,
+        subDirParts: subDirParts,
+        config: config,
+        nullable: false,
+        typeSuffix: 'Table',
+      ) as TypeReference;
 
       var relation = field.relation;
       if (relation is ObjectRelationDefinition) {
@@ -1563,14 +1573,14 @@ class SerializableModelLibraryGenerator {
           subDirParts: subDirParts,
           config: config,
           nullable: false,
-        );
-        tableType = field.type.generics.first.reference(
+        ) as TypeReference; // relations must point to another model type
+        tableType = (field.type.generics.first).reference(
           serverCode,
           subDirParts: subDirParts,
           config: config,
           nullable: false,
           typeSuffix: 'Table',
-        );
+        ) as TypeReference;
       }
 
       // Add getter method for relation table that creates the table
