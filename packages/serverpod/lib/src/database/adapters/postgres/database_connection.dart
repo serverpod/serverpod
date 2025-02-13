@@ -249,7 +249,7 @@ class DatabaseConnection {
 
     return deleteWhere<T>(
       session,
-      table.id.inSet(rows.map((row) => row.id!).toSet()),
+      table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       transaction: transaction,
     );
   }
