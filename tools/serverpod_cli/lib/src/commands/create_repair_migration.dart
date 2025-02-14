@@ -70,11 +70,7 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();
-    } catch (e) {
-      if (e is LocateModuleNameFromServerPackageNameException) {
-        log.error('Not a server package (${e.packageName}). Please '
-            'make sure your server package name ends with \'_server\'.');
-      }
+    } catch (_) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 

@@ -9,7 +9,6 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ServerProject {
   Uri serverRootUri;
@@ -52,10 +51,6 @@ Future<void> runLanguageServer() async {
     if (serverProject == null &&
         exception is ServerpodModulesNotFoundException) {
       _sendModulesNotFoundNotification(connection);
-    } else if (serverProject == null &&
-        exception is LocateModuleNameFromServerPackageNameException) {
-      _sendUnableToLocateModuleNameFromServerPackageNameNotification(connection,
-          exception as LocateModuleNameFromServerPackageNameException);
     } else if (serverProject == null) {
       return;
     }
@@ -133,19 +128,6 @@ void _sendModulesNotFoundNotification(Connection connection) {
     ShowMessageParams(
       message:
           'Serverpod model validation disabled. Unable to locate necessary modules, have you run "dart pub get"?',
-      type: MessageType.Warning,
-    ).toJson(),
-  );
-}
-
-void _sendUnableToLocateModuleNameFromServerPackageNameNotification(
-    Connection connection,
-    LocateModuleNameFromServerPackageNameException error) {
-  connection.sendNotification(
-    'window/showMessage',
-    ShowMessageParams(
-      message: 'Not a server package (${error.packageName}). Please '
-          'make sure your server package name ends with \'_server\'.',
       type: MessageType.Warning,
     ).toJson(),
   );

@@ -13,7 +13,6 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 class GenerateCommand extends ServerpodCommand {
   @override
@@ -42,10 +41,6 @@ class GenerateCommand extends ServerpodCommand {
       config = await GeneratorConfig.load();
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
-      if (e is LocateModuleNameFromServerPackageNameException) {
-        log.error('Not a server package (${e.packageName}). Please '
-            'make sure your server package name ends with \'_server\'.');
-      }
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
