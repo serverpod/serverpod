@@ -316,27 +316,28 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
-      Method(
-        (m) => m
-          ..static = true
-          ..docs.add('''
+      if (protocolDefinition.allRecordTypes.isNotEmpty)
+        Method(
+          (m) => m
+            ..static = true
+            ..docs.add('''
           /// Maps any `Record`s known to this [Protocol] to their JSON representation
           /// 
           /// Throws in case the record type is not known.
           /// 
           /// This method will return `null` (only) for `null` inputs.''')
-          ..name = 'mapRecordToJson'
-          ..returns = refer('Map<String, dynamic>?')
-          ..requiredParameters.add(Parameter((p) => p
-            ..name = 'record'
-            ..type = refer('Record?')))
-          ..body = _buildRecordEncode(
-            protocolDefinition.allRecordTypes,
-            'record',
-            serverCode: serverCode,
-            config: config,
-          ),
-      ),
+            ..name = 'mapRecordToJson'
+            ..returns = refer('Map<String, dynamic>?')
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'record'
+              ..type = refer('Record?')))
+            ..body = _buildRecordEncode(
+              protocolDefinition.allRecordTypes,
+              'record',
+              serverCode: serverCode,
+              config: config,
+            ),
+        ),
     ]);
 
     library.body.add(protocol.build());
