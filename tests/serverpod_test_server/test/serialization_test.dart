@@ -278,4 +278,31 @@ void main() {
 
     expect(encoded, isA<String>());
   });
+
+  test(
+      'Given a project-defined Record type, when encoding it using `mapRecordToJson` then it is encoded',
+      () {
+    var recordAsJSON = Protocol.mapRecordToJson(
+      (
+        (1, '2'),
+        namedSubRecord: (SimpleData(num: 3), 4.5),
+      ),
+    );
+
+    expect(
+      recordAsJSON,
+      equals({
+        'p': [
+          {
+            'p': [1, '2']
+          }
+        ],
+        'n': {
+          'namedSubRecord': {
+            'p': [isA<SimpleData>().having((d) => d.num, 'num', 3), 4.5]
+          }
+        }
+      }),
+    );
+  });
 }

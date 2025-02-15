@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dar
 
 class ParameterDefinitionBuilder {
   String _name = 'example';
-  TypeDefinition _type =
+  ClassTypeDefinition _type =
       TypeDefinitionBuilder().withClassName('String').build();
   bool _required = false;
 
@@ -13,7 +13,7 @@ class ParameterDefinitionBuilder {
     return this;
   }
 
-  ParameterDefinitionBuilder withType(TypeDefinition type) {
+  ParameterDefinitionBuilder withType(ClassTypeDefinition type) {
     _type = type;
     return this;
   }

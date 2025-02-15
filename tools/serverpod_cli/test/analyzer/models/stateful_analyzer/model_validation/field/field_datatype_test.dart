@@ -532,16 +532,24 @@ fields:
       test('then the nested type is tagged as an enum', () {
         var definition = definitions.first as ClassDefinition;
         expect(
-          definition.fields.first.type.generics.first.isEnumType,
-          isTrue,
+          definition.fields.first.type.generics.first,
+          isA<ClassTypeDefinition>().having(
+            (d) => d.isEnumType,
+            'isEnumType',
+            isTrue,
+          ),
         );
       });
 
       test('then the nested type has projectModelDefinition set', () {
         var definition = definitions.first as ClassDefinition;
         expect(
-          definition.fields.first.type.generics.first.projectModelDefinition,
-          isNotNull,
+          definition.fields.first.type.generics.first,
+          isA<ClassTypeDefinition>().having(
+            (d) => d.projectModelDefinition,
+            'projectModelDefinition',
+            isNotNull,
+          ),
         );
       });
     });
@@ -577,13 +585,21 @@ fields:
 
       var definition = definitions.first as ClassDefinition;
       expect(
-        definition.fields.first.type.generics.first.isEnumType,
-        isTrue,
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.isEnumType,
+          'isEnumType',
+          isTrue,
+        ),
       );
 
       expect(
-        definition.fields.first.type.generics.last.isEnumType,
-        isTrue,
+        definition.fields.first.type.generics.last,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.isEnumType,
+          'isEnumTye',
+          isTrue,
+        ),
       );
     });
 
@@ -678,14 +694,16 @@ fields:
           reason: 'Expected the Map to be nullable but it was not.');
 
       expect(
-        definition.fields.first.type.generics.first.className,
-        'String',
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>()
+            .having((d) => d.className, 'className', 'String'),
         reason: 'Expected the first generic type to be String, but it was not.',
       );
 
       expect(
-        definition.fields.first.type.generics.last.className,
-        'CustomClass',
+        definition.fields.first.type.generics.last,
+        isA<ClassTypeDefinition>()
+            .having((d) => d.className, 'className', 'CustomClass'),
         reason:
             'Expected the last generic type to be CustomClass, but it was not.',
       );
@@ -740,15 +758,17 @@ fields:
         );
 
         expect(
-          definition.fields.first.type.generics.first.className,
-          'String',
+          definition.fields.first.type.generics.first,
+          isA<ClassTypeDefinition>()
+              .having((d) => d.className, 'className', 'String'),
           reason:
               'Expected the first generic type to be String, but it was not.',
         );
 
         expect(
-          definition.fields.first.type.generics.last.className,
-          'CustomClass',
+          definition.fields.first.type.generics.last,
+          isA<ClassTypeDefinition>()
+              .having((d) => d.className, 'className', 'CustomClass'),
           reason:
               'Expected the last generic type to be CustomClass, but it was not.',
         );
@@ -1258,7 +1278,7 @@ fields:
   });
 
   group('Given a class with a type set to the class name of a custom type', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1320,7 +1340,7 @@ fields:
   group(
       'Given a class with a nullable type set to the class name of a custom type',
       () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1362,7 +1382,7 @@ fields:
   });
 
   group('Given a class with a type set to a list of custom classes', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1400,22 +1420,30 @@ fields:
     test('then the field type is set.', () {
       var definition = definitions.first as ClassDefinition;
       expect(
-        definition.fields.first.type.generics.first.className,
-        'CustomExample',
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.className,
+          'className',
+          'CustomExample',
+        ),
       );
     });
 
     test('then the type url is set to the custom type.', () {
       var definition = definitions.first as ClassDefinition;
       expect(
-        definition.fields.first.type.generics.first.url,
-        'package:shared_package/src/lib/custom_example.dart',
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.url,
+          'url',
+          'package:shared_package/src/lib/custom_example.dart',
+        ),
       );
     });
   });
 
   group('Given a class with a type set to a map of custom classes', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1453,26 +1481,42 @@ fields:
     test('then the field type is set.', () {
       var definition = definitions.first as ClassDefinition;
       expect(
-        definition.fields.first.type.generics.first.className,
-        'CustomExample',
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.className,
+          'className',
+          'CustomExample',
+        ),
       );
 
       expect(
-        definition.fields.first.type.generics.last.className,
-        'CustomExample',
+        definition.fields.first.type.generics.last,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.className,
+          'className',
+          'CustomExample',
+        ),
       );
     });
 
     test('then the type url is set to the custom type.', () {
       var definition = definitions.first as ClassDefinition;
       expect(
-        definition.fields.first.type.generics.first.url,
-        'package:shared_package/src/lib/custom_example.dart',
+        definition.fields.first.type.generics.first,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.url,
+          'url',
+          'package:shared_package/src/lib/custom_example.dart',
+        ),
       );
 
       expect(
-        definition.fields.first.type.generics.last.url,
-        'package:shared_package/src/lib/custom_example.dart',
+        definition.fields.first.type.generics.last,
+        isA<ClassTypeDefinition>().having(
+          (d) => d.url,
+          'url',
+          'package:shared_package/src/lib/custom_example.dart',
+        ),
       );
     });
   });

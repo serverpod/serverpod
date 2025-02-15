@@ -113,12 +113,18 @@ class ServerTestToolsGenerator {
   }
 
   Method _buildEndpointMethod(
-      MethodDefinition method, EndpointDefinition endpoint) {
+    MethodDefinition method,
+    EndpointDefinition endpoint,
+  ) {
     return Method(
       (methodBuilder) {
-        bool returnsStream = method.returnType.isStreamType;
-        bool hasStreamParameter =
-            method.allParameters.any((p) => p.type.isStreamType);
+        var returnType = method.returnType;
+
+        bool returnsStream =
+            returnType is ClassTypeDefinition && returnType.isStreamType;
+        bool hasStreamParameter = method.allParameters
+            .map((p) => p.type)
+            .any((t) => t is ClassTypeDefinition && t.isStreamType);
 
         methodBuilder
           ..name = method.name
@@ -240,10 +246,16 @@ class ServerTestToolsGenerator {
     required bool hasStreamParameter,
     required bool returnsStream,
   }) {
-    var parameters =
-        method.allParameters.where((p) => !p.type.isStreamType).toList();
-    var streamParameters =
-        method.allParameters.where((p) => p.type.isStreamType).toList();
+    var parameters = method.allParameters
+        .where((p) =>
+            p.type is! ClassTypeDefinition ||
+            !(p.type as ClassTypeDefinition).isStreamType)
+        .toList();
+    var streamParameters = method.allParameters
+        .where((p) =>
+            p.type is ClassTypeDefinition &&
+            (p.type as ClassTypeDefinition).isStreamType)
+        .toList();
 
     var closure = Method(
       (methodBuilder) => methodBuilder
@@ -306,7 +318,10 @@ class ServerTestToolsGenerator {
         ..symbol = 'TestStreamManager'
         ..url = serverpodTestUrl;
       typeRef.types.add(
-        method.returnType.generics.first.reference(true, config: config),
+        (method.returnType as ClassTypeDefinition)
+            .generics
+            .first
+            .reference(true, config: config),
       );
     });
 

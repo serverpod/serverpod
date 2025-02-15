@@ -251,6 +251,55 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+recordParameters:
+  - returnIntRecord:
+  - returnNullableStringRecord:
+  - streamIntRecordEcho:
+  - returnNullableIntRecord:
+  - streamNullableIntRecordEcho:
+  - returnIntStringRecord:
+  - streamIntStringRecordEcho:
+  - returnNullableIntStringRecord:
+  - streamNullableIntStringRecordEcho:
+  - returnIntSimpleDataRecord:
+  - streamIntSimpleDataRecordEcho:
+  - returnNullableIntSimpleDataRecord:
+  - streamNullableIntSimpleDataRecordEcho:
+  - returnNamedIntStringRecord:
+  - streamNamedIntStringRecordEcho:
+  - returnNamedNullableIntStringRecord:
+  - streamNamedNullableIntStringRecordEcho:
+  - returnNamedIntSimpleDataRecord:
+  - streamNamedIntSimpleDataRecordEcho:
+  - returnNamedNullableIntSimpleDataRecord:
+  - streamNamedNullableIntSimpleDataRecordEcho:
+  - returnRecordTypedef:
+  - streamRecordTypedef:
+  - returnNullableRecordTypedef:
+  - streamNullableRecordTypedef:
+  - returnListOfIntSimpleDataRecord:
+  - streamListOfIntSimpleDataRecordEchoStream:
+  - returnListOfNullableIntSimpleDataRecord:
+  - streamListOfNullableIntSimpleDataRecordEchoStream:
+  - returnNullableSetOfIntSimpleDataRecord:
+  - returnSetOfIntSimpleDataRecord:
+  - streamSetOfIntSimpleDataRecordEchoStream:
+  - returnSetOfNullableIntSimpleDataRecord:
+  - streamSetOfNullableIntSimpleDataRecordEchoStream:
+  - returnStringMapOfIntSimpleDataRecord:
+  - returnStringMapOfListOfRecord:
+  - streamStringMapOfIntSimpleDataRecordEchoStream:
+  - returnStringMapOfNullableIntSimpleDataRecord:
+  - streamStringMapOfNullableIntSimpleDataRecordEchoStream:
+  - returnRecordMapOfIntSimpleDataRecord:
+  - streamRecordMapOfIntSimpleDataRecordEchoStream:
+  - returnRecordMapOfNullableIntSimpleDataRecord:
+  - streamRecordMapOfNullableIntSimpleDataRecordEchoStream:
+  - returnNestedRecord:
+  - returnListOfNestedRecord:
+  - streamNestedRecordEchoStream:
+  - returnNamedNullableNestedRecord:
+  - returnPositionedNullableNestedRecord:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:

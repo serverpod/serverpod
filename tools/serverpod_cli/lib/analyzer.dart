@@ -17,6 +17,6 @@ export 'src/analyzer/models/definitions.dart'
         SerializableModelIndexDefinition,
         EnumDefinition;
 export 'src/database/migration.dart';
-export 'src/generator/types.dart' show TypeDefinition;
+export 'src/generator/types.dart' show ClassTypeDefinition;
 export 'src/migrations/generator.dart';
 export 'src/database/extensions.dart';
