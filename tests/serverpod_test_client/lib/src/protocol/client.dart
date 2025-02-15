@@ -33,13 +33,14 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i17;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i19;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
-    as _i19;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i20;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i21;
-import 'protocol.dart' as _i22;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i22;
+import 'protocol.dart' as _i23;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2155,6 +2156,261 @@ class EndpointOptionalParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointRecordParameters extends _i1.EndpointRef {
+  EndpointRecordParameters(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'recordParameters';
+
+  _i2.Future<(int,)> returnRecordOfInt((int,) record) =>
+      caller.callServerEndpoint<(int,)>(
+        'recordParameters',
+        'returnRecordOfInt',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int,)?> returnNullableRecordOfInt((int,)? record) =>
+      caller.callServerEndpoint<(int,)?>(
+        'recordParameters',
+        'returnNullableRecordOfInt',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int?,)> returnRecordOfNullableInt((int?,) record) =>
+      caller.callServerEndpoint<(int?,)>(
+        'recordParameters',
+        'returnRecordOfNullableInt',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int?,)?> returnNullableRecordOfNullableInt((int?,)? record) =>
+      caller.callServerEndpoint<(int?,)?>(
+        'recordParameters',
+        'returnNullableRecordOfNullableInt',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int, String)> returnIntStringRecord((int, String) record) =>
+      caller.callServerEndpoint<(int, String)>(
+        'recordParameters',
+        'returnIntStringRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int, String)?> returnNullableIntStringRecord(
+          (int, String)? record) =>
+      caller.callServerEndpoint<(int, String)?>(
+        'recordParameters',
+        'returnNullableIntStringRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int, _i10.SimpleData)> returnIntSimpleDataRecord(
+          (int, _i10.SimpleData) record) =>
+      caller.callServerEndpoint<(int, _i10.SimpleData)>(
+        'recordParameters',
+        'returnIntSimpleDataRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int, _i10.SimpleData)?> returnNullableIntSimpleDataRecord(
+          (int, _i10.SimpleData)? record) =>
+      caller.callServerEndpoint<(int, _i10.SimpleData)?>(
+        'recordParameters',
+        'returnNullableIntSimpleDataRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<({int number, String text})> returnNamedIntStringRecord(
+          ({int number, String text}) record) =>
+      caller.callServerEndpoint<({int number, String text})>(
+        'recordParameters',
+        'returnNamedIntStringRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<({int number, String text})?> returnNamedNullableIntStringRecord(
+          ({int number, String text})? record) =>
+      caller.callServerEndpoint<({int number, String text})?>(
+        'recordParameters',
+        'returnNamedNullableIntStringRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<({_i10.SimpleData data, int number})>
+      returnRecordOfNamedIntAndObject(
+              ({_i10.SimpleData data, int number}) record) =>
+          caller.callServerEndpoint<({_i10.SimpleData data, int number})>(
+            'recordParameters',
+            'returnRecordOfNamedIntAndObject',
+            {'record': _i19.mapRecordToJson(record)},
+          );
+
+  _i2.Future<({_i10.SimpleData data, int number})?>
+      returnNullableRecordOfNamedIntAndObject(
+              ({_i10.SimpleData data, int number})? record) =>
+          caller.callServerEndpoint<({_i10.SimpleData data, int number})?>(
+            'recordParameters',
+            'returnNullableRecordOfNamedIntAndObject',
+            {'record': _i19.mapRecordToJson(record)},
+          );
+
+  _i2.Future<({_i10.SimpleData? data, int? number})>
+      returnRecordOfNamedNullableIntAndNullableObject(
+              ({_i10.SimpleData? data, int? number}) record) =>
+          caller.callServerEndpoint<({_i10.SimpleData? data, int? number})>(
+            'recordParameters',
+            'returnRecordOfNamedNullableIntAndNullableObject',
+            {'record': _i19.mapRecordToJson(record)},
+          );
+
+  _i2.Future<(int, {_i10.SimpleData data})> returnRecordTypedef(
+          (int, {_i10.SimpleData data}) record) =>
+      caller.callServerEndpoint<(int, {_i10.SimpleData data})>(
+        'recordParameters',
+        'returnRecordTypedef',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(int, {_i10.SimpleData data})?> returnNullableRecordTypedef(
+          (int, {_i10.SimpleData data})? record) =>
+      caller.callServerEndpoint<(int, {_i10.SimpleData data})?>(
+        'recordParameters',
+        'returnNullableRecordTypedef',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<List<(int, _i10.SimpleData)>> returnListOfIntSimpleDataRecord(
+          List<(int, _i10.SimpleData)> recordList) =>
+      caller.callServerEndpoint<List<(int, _i10.SimpleData)>>(
+        'recordParameters',
+        'returnListOfIntSimpleDataRecord',
+        {'recordList': _i19.mapRecordContainingContainerToJson(recordList)},
+      );
+
+  _i2.Future<List<(int, _i10.SimpleData)?>>
+      returnListOfNullableIntSimpleDataRecord(
+              List<(int, _i10.SimpleData)?> record) =>
+          caller.callServerEndpoint<List<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnListOfNullableIntSimpleDataRecord',
+            {'record': _i19.mapRecordContainingContainerToJson(record)},
+          );
+
+  _i2.Future<Set<(int, _i10.SimpleData)>> returnSetOfIntSimpleDataRecord(
+          Set<(int, _i10.SimpleData)> recordSet) =>
+      caller.callServerEndpoint<Set<(int, _i10.SimpleData)>>(
+        'recordParameters',
+        'returnSetOfIntSimpleDataRecord',
+        {'recordSet': _i19.mapRecordContainingContainerToJson(recordSet)},
+      );
+
+  _i2.Future<Set<(int, _i10.SimpleData)?>>
+      returnSetOfNullableIntSimpleDataRecord(
+              Set<(int, _i10.SimpleData)?> set) =>
+          caller.callServerEndpoint<Set<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnSetOfNullableIntSimpleDataRecord',
+            {'set': _i19.mapRecordContainingContainerToJson(set)},
+          );
+
+  _i2.Future<Set<(int, _i10.SimpleData)>?>
+      returnNullableSetOfIntSimpleDataRecord(
+              Set<(int, _i10.SimpleData)>? recordSet) =>
+          caller.callServerEndpoint<Set<(int, _i10.SimpleData)>?>(
+            'recordParameters',
+            'returnNullableSetOfIntSimpleDataRecord',
+            {
+              'recordSet': recordSet == null
+                  ? null
+                  : _i19.mapRecordContainingContainerToJson(recordSet)
+            },
+          );
+
+  _i2.Future<Map<String, (int, _i10.SimpleData)>>
+      returnStringMapOfIntSimpleDataRecord(
+              Map<String, (int, _i10.SimpleData)> map) =>
+          caller.callServerEndpoint<Map<String, (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'returnStringMapOfIntSimpleDataRecord',
+            {'map': _i19.mapRecordContainingContainerToJson(map)},
+          );
+
+  _i2.Future<Map<String, (int, _i10.SimpleData)?>>
+      returnStringMapOfNullableIntSimpleDataRecord(
+              Map<String, (int, _i10.SimpleData)?> map) =>
+          caller.callServerEndpoint<Map<String, (int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnStringMapOfNullableIntSimpleDataRecord',
+            {'map': _i19.mapRecordContainingContainerToJson(map)},
+          );
+
+  _i2.Future<Map<(String, int), (int, _i10.SimpleData)>>
+      returnRecordMapOfIntSimpleDataRecord(
+              Map<(String, int), (int, _i10.SimpleData)> map) =>
+          caller.callServerEndpoint<Map<(String, int), (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'returnRecordMapOfIntSimpleDataRecord',
+            {'map': _i19.mapRecordContainingContainerToJson(map)},
+          );
+
+  /// Returns the first and only input value mapped into the return structure (basically reversed)
+  _i2.Future<Map<String, List<Set<(int,)>>>> returnStringMapOfListOfRecord(
+          Set<List<Map<String, (int,)>>> input) =>
+      caller.callServerEndpoint<Map<String, List<Set<(int,)>>>>(
+        'recordParameters',
+        'returnStringMapOfListOfRecord',
+        {'input': _i19.mapRecordContainingContainerToJson(input)},
+      );
+
+  _i2.Future<({(_i10.SimpleData, double) namedSubRecord})>
+      returnNestedNamedRecord(
+              ({(_i10.SimpleData, double) namedSubRecord}) record) =>
+          caller
+              .callServerEndpoint<({(_i10.SimpleData, double) namedSubRecord})>(
+            'recordParameters',
+            'returnNestedNamedRecord',
+            {'record': _i19.mapRecordToJson(record)},
+          );
+
+  _i2.Future<
+      ({
+        (_i10.SimpleData, double)? namedSubRecord
+      })> returnNestedNullableNamedRecord(
+          ({(_i10.SimpleData, double)? namedSubRecord}) record) =>
+      caller.callServerEndpoint<({(_i10.SimpleData, double)? namedSubRecord})>(
+        'recordParameters',
+        'returnNestedNullableNamedRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<((int, String), {(_i10.SimpleData, double) namedSubRecord})>
+      returnNestedPositionalAndNamedRecord(
+              (
+                (int, String), {
+                (_i10.SimpleData, double) namedSubRecord
+              }) record) =>
+          caller.callServerEndpoint<
+              ((int, String), {(_i10.SimpleData, double) namedSubRecord})>(
+            'recordParameters',
+            'returnNestedPositionalAndNamedRecord',
+            {'record': _i19.mapRecordToJson(record)},
+          );
+
+  _i2.Future<List<((int, String), {(_i10.SimpleData, double) namedSubRecord})>>
+      returnListOfNestedPositionalAndNamedRecord(
+              List<((int, String), {(_i10.SimpleData, double) namedSubRecord})>
+                  recordList) =>
+          caller.callServerEndpoint<
+              List<
+                  ((int, String), {(_i10.SimpleData, double) namedSubRecord})>>(
+            'recordParameters',
+            'returnListOfNestedPositionalAndNamedRecord',
+            {'recordList': _i19.mapRecordContainingContainerToJson(recordList)},
+          );
+}
+
+/// {@category Endpoint}
 class EndpointRedis extends _i1.EndpointRef {
   EndpointRedis(_i1.EndpointCaller caller) : super(caller);
 
@@ -2241,8 +2497,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i19.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i19.ScopeServerOnlyField>(
+  _i2.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -2257,8 +2513,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i20.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i20.ScopeServerOnlyFieldChild>(
+  _i2.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i21.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -2784,8 +3040,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i21.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i21.MyFeatureModel>(
+  _i2.Future<_i22.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i22.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -2819,7 +3075,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i22.Protocol(),
+          _i23.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -2858,6 +3114,7 @@ class Client extends _i1.ServerpodClientShared {
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
+    recordParameters = EndpointRecordParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     serverOnlyScopedFieldChildModel =
@@ -2934,6 +3191,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOptionalParameters optionalParameters;
 
+  late final EndpointRecordParameters recordParameters;
+
   late final EndpointRedis redis;
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
@@ -2996,6 +3255,7 @@ class Client extends _i1.ServerpodClientShared {
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
+        'recordParameters': recordParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
