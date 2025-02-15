@@ -283,7 +283,7 @@ void main() {
   test(
       'Given a project-defined Record type, when encoding it using `mapRecordToJson` then it is encoded',
       () {
-    var recordAsJSON = Protocol.mapRecordToJson(
+    var recordAsJSON = mapRecordToJson(
       (
         (1, '2'),
         namedSubRecord: (SimpleData(num: 3), 4.5),
