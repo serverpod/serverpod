@@ -1390,13 +1390,10 @@ extension on RecordTypeDefinition {
       ],
       if (dartType.namedFields.isNotEmpty) ...[
         const Code('"n": {'),
-        for (final (i, namedField) in dartType.namedFields.indexed) ...[
+        for (final namedField in dartType.namedFields) ...[
           Code('"${namedField.name}"'),
           const Code(':'),
           if (namedField.type is RecordType) ...[
-            // if ((namedField.type as RecordType).nullabilitySuffix !=
-            //     NullabilitySuffix.none)
-            //   Code('$name.${namedField.name} == null ? null : '),
             Code('mapRecordToJson($name.${namedField.name})')
           ] else
             Code('$name.${namedField.name}'),
