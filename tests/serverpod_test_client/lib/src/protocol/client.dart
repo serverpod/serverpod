@@ -33,13 +33,14 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i17;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i19;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
-    as _i19;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i20;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i21;
-import 'protocol.dart' as _i22;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i22;
+import 'protocol.dart' as _i23;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2077,6 +2078,532 @@ class EndpointOptionalParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointRecordParameters extends _i1.EndpointRef {
+  EndpointRecordParameters(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'recordParameters';
+
+  _i2.Future<(int,)> returnIntRecord((int,) record) =>
+      caller.callServerEndpoint<(int,)>(
+        'recordParameters',
+        'returnIntRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(String, String)?> returnNullableStringRecord(
+          (String, String)? record) =>
+      caller.callServerEndpoint<(String, String)?>(
+        'recordParameters',
+        'returnNullableStringRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int,)> streamIntRecordEcho(_i2.Stream<(int,)> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int,)>, (int,)>(
+        'recordParameters',
+        'streamIntRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int,)?> returnNullableIntRecord((int,)? record) =>
+      caller.callServerEndpoint<(int,)?>(
+        'recordParameters',
+        'returnNullableIntRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int,)?> streamNullableIntRecordEcho(_i2.Stream<(int,)?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int,)?>, (int,)?>(
+        'recordParameters',
+        'streamNullableIntRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int, String)> returnIntStringRecord((int, String) record) =>
+      caller.callServerEndpoint<(int, String)>(
+        'recordParameters',
+        'returnIntStringRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, String)> streamIntStringRecordEcho(
+          _i2.Stream<(int, String)> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int, String)>,
+          (int, String)>(
+        'recordParameters',
+        'streamIntStringRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int, String)?> returnNullableIntStringRecord(
+          (int, String)? record) =>
+      caller.callServerEndpoint<(int, String)?>(
+        'recordParameters',
+        'returnNullableIntStringRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, String)?> streamNullableIntStringRecordEcho(
+          _i2.Stream<(int, String)?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int, String)?>,
+          (int, String)?>(
+        'recordParameters',
+        'streamNullableIntStringRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int, _i10.SimpleData)> returnIntSimpleDataRecord(
+          (int, _i10.SimpleData) record) =>
+      caller.callServerEndpoint<(int, _i10.SimpleData)>(
+        'recordParameters',
+        'returnIntSimpleDataRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, _i10.SimpleData)> streamIntSimpleDataRecordEcho(
+          _i2.Stream<(int, _i10.SimpleData)> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int, _i10.SimpleData)>,
+          (int, _i10.SimpleData)>(
+        'recordParameters',
+        'streamIntSimpleDataRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int, _i10.SimpleData)?> returnNullableIntSimpleDataRecord(
+          (int, _i10.SimpleData)? record) =>
+      caller.callServerEndpoint<(int, _i10.SimpleData)?>(
+        'recordParameters',
+        'returnNullableIntSimpleDataRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, _i10.SimpleData)?> streamNullableIntSimpleDataRecordEcho(
+          _i2.Stream<(int, _i10.SimpleData)?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int, _i10.SimpleData)?>,
+          (int, _i10.SimpleData)?>(
+        'recordParameters',
+        'streamNullableIntSimpleDataRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<({int number, String text})> returnNamedIntStringRecord(
+          ({int number, String text}) record) =>
+      caller.callServerEndpoint<({int number, String text})>(
+        'recordParameters',
+        'returnNamedIntStringRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<({int number, String text})> streamNamedIntStringRecordEcho(
+          _i2.Stream<({int number, String text})> value) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<({int number, String text})>, ({int number, String text})>(
+        'recordParameters',
+        'streamNamedIntStringRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<({int number, String text})?> returnNamedNullableIntStringRecord(
+          ({int number, String text})? record) =>
+      caller.callServerEndpoint<({int number, String text})?>(
+        'recordParameters',
+        'returnNamedNullableIntStringRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, String)?> streamNamedNullableIntStringRecordEcho(
+          _i2.Stream<(int, String)?> value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int, String)?>,
+          (int, String)?>(
+        'recordParameters',
+        'streamNamedNullableIntStringRecordEcho',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<({_i10.SimpleData data, int number})>
+      returnNamedIntSimpleDataRecord(
+              ({_i10.SimpleData data, int number}) record) =>
+          caller.callServerEndpoint<({_i10.SimpleData data, int number})>(
+            'recordParameters',
+            'returnNamedIntSimpleDataRecord',
+            {'record': _i19.Protocol.mapRecordToJson(record)},
+          );
+
+  _i2.Stream<({_i10.SimpleData data, int number})>
+      streamNamedIntSimpleDataRecordEcho(
+              _i2.Stream<({_i10.SimpleData data, int number})> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<({_i10.SimpleData data, int number})>,
+              ({_i10.SimpleData data, int number})>(
+            'recordParameters',
+            'streamNamedIntSimpleDataRecordEcho',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<({_i10.SimpleData data, int number})?>
+      returnNamedNullableIntSimpleDataRecord(
+              ({_i10.SimpleData data, int number})? record) =>
+          caller.callServerEndpoint<({_i10.SimpleData data, int number})?>(
+            'recordParameters',
+            'returnNamedNullableIntSimpleDataRecord',
+            {'record': _i19.Protocol.mapRecordToJson(record)},
+          );
+
+  _i2.Stream<({_i10.SimpleData data, int number})?>
+      streamNamedNullableIntSimpleDataRecordEcho(
+              _i2.Stream<({_i10.SimpleData data, int number})?> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<({_i10.SimpleData data, int number})?>,
+              ({_i10.SimpleData data, int number})?>(
+            'recordParameters',
+            'streamNamedNullableIntSimpleDataRecordEcho',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<(int, {_i10.SimpleData data})> returnRecordTypedef(
+          (int, {_i10.SimpleData data}) record) =>
+      caller.callServerEndpoint<(int, {_i10.SimpleData data})>(
+        'recordParameters',
+        'returnRecordTypedef',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, {_i10.SimpleData data})> streamRecordTypedef(
+          _i2.Stream<(int, {_i10.SimpleData data})> value) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<(int, {_i10.SimpleData data})>,
+          (int, {_i10.SimpleData data})>(
+        'recordParameters',
+        'streamRecordTypedef',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<(int, {_i10.SimpleData data})?> returnNullableRecordTypedef(
+          (int, {_i10.SimpleData data})? record) =>
+      caller.callServerEndpoint<(int, {_i10.SimpleData data})?>(
+        'recordParameters',
+        'returnNullableRecordTypedef',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Stream<(int, {_i10.SimpleData data})?> streamNullableRecordTypedef(
+          _i2.Stream<(int, {_i10.SimpleData data})?> value) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<(int, {_i10.SimpleData data})?>,
+          (int, {_i10.SimpleData data})?>(
+        'recordParameters',
+        'streamNullableRecordTypedef',
+        {},
+        {'value': value},
+      );
+
+  _i2.Future<List<(int, _i10.SimpleData)>> returnListOfIntSimpleDataRecord(
+          List<(int, _i10.SimpleData)> recordList) =>
+      caller.callServerEndpoint<List<(int, _i10.SimpleData)>>(
+        'recordParameters',
+        'returnListOfIntSimpleDataRecord',
+        {'recordList': recordList.map(_i19.Protocol.mapRecordToJson).toList()},
+      );
+
+  _i2.Stream<List<(int, _i10.SimpleData)>>
+      streamListOfIntSimpleDataRecordEchoStream(
+              _i2.Stream<List<(int, _i10.SimpleData)>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<List<(int, _i10.SimpleData)>>,
+              List<(int, _i10.SimpleData)>>(
+            'recordParameters',
+            'streamListOfIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<List<(int, _i10.SimpleData)?>>
+      returnListOfNullableIntSimpleDataRecord(
+              List<(int, _i10.SimpleData)?> record) =>
+          caller.callServerEndpoint<List<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnListOfNullableIntSimpleDataRecord',
+            {'record': record.map(_i19.Protocol.mapRecordToJson).toList()},
+          );
+
+  _i2.Stream<List<(int, _i10.SimpleData)?>>
+      streamListOfNullableIntSimpleDataRecordEchoStream(
+              _i2.Stream<List<(int, _i10.SimpleData)?>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<List<(int, _i10.SimpleData)?>>,
+              List<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'streamListOfNullableIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Set<(int, _i10.SimpleData)>?>
+      returnNullableSetOfIntSimpleDataRecord(
+              Set<(int, _i10.SimpleData)>? recordSet) =>
+          caller.callServerEndpoint<Set<(int, _i10.SimpleData)>?>(
+            'recordParameters',
+            'returnNullableSetOfIntSimpleDataRecord',
+            {
+              'recordSet':
+                  recordSet?.map(_i19.Protocol.mapRecordToJson).toList()
+            },
+          );
+
+  _i2.Future<Set<(int, _i10.SimpleData)>> returnSetOfIntSimpleDataRecord(
+          Set<(int, _i10.SimpleData)> recordSet) =>
+      caller.callServerEndpoint<Set<(int, _i10.SimpleData)>>(
+        'recordParameters',
+        'returnSetOfIntSimpleDataRecord',
+        {'recordSet': recordSet.map(_i19.Protocol.mapRecordToJson).toList()},
+      );
+
+  _i2.Stream<Set<(int, _i10.SimpleData)>>
+      streamSetOfIntSimpleDataRecordEchoStream(
+              _i2.Stream<Set<(int, _i10.SimpleData)>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Set<(int, _i10.SimpleData)>>,
+              Set<(int, _i10.SimpleData)>>(
+            'recordParameters',
+            'streamSetOfIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Set<(int, _i10.SimpleData)?>>
+      returnSetOfNullableIntSimpleDataRecord(
+              Set<(int, _i10.SimpleData)?> set) =>
+          caller.callServerEndpoint<Set<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnSetOfNullableIntSimpleDataRecord',
+            {'set': set.map(_i19.Protocol.mapRecordToJson).toList()},
+          );
+
+  _i2.Stream<Set<(int, _i10.SimpleData)?>>
+      streamSetOfNullableIntSimpleDataRecordEchoStream(
+              _i2.Stream<Set<(int, _i10.SimpleData)?>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Set<(int, _i10.SimpleData)?>>,
+              Set<(int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'streamSetOfNullableIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Map<String, (int, _i10.SimpleData)>>
+      returnStringMapOfIntSimpleDataRecord(
+              Map<String, (int, _i10.SimpleData)> map) =>
+          caller.callServerEndpoint<Map<String, (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'returnStringMapOfIntSimpleDataRecord',
+            {
+              'map': {
+                for (final entry in map.entries)
+                  entry.key: _i19.Protocol.mapRecordToJson(entry.value),
+              }
+            },
+          );
+
+  _i2.Future<
+      Map<
+          String,
+          List<
+              (
+                String,
+                Set<(int, int, String, String)>,
+                List<(int, int, int, String, String, String)>
+              )>>> returnStringMapOfListOfRecord(
+          List<(int, int, int, int, String, String, String, String)> list) =>
+      caller.callServerEndpoint<
+          Map<
+              String,
+              List<
+                  (
+                    String,
+                    Set<(int, int, String, String)>,
+                    List<(int, int, int, String, String, String)>
+                  )>>>(
+        'recordParameters',
+        'returnStringMapOfListOfRecord',
+        {'list': list.map(_i19.Protocol.mapRecordToJson).toList()},
+      );
+
+  _i2.Stream<Map<String, (int, _i10.SimpleData)>>
+      streamStringMapOfIntSimpleDataRecordEchoStream(
+              _i2.Stream<Map<String, (int, _i10.SimpleData)>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Map<String, (int, _i10.SimpleData)>>,
+              Map<String, (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'streamStringMapOfIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Map<String, (int, _i10.SimpleData)?>>
+      returnStringMapOfNullableIntSimpleDataRecord(
+              Map<String, (int, _i10.SimpleData)?> map) =>
+          caller.callServerEndpoint<Map<String, (int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnStringMapOfNullableIntSimpleDataRecord',
+            {
+              'map': {
+                for (final entry in map.entries)
+                  entry.key: _i19.Protocol.mapRecordToJson(entry.value),
+              }
+            },
+          );
+
+  _i2.Stream<Map<String, (int, _i10.SimpleData)?>>
+      streamStringMapOfNullableIntSimpleDataRecordEchoStream(
+              _i2.Stream<Map<String, (int, _i10.SimpleData)?>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Map<String, (int, _i10.SimpleData)?>>,
+              Map<String, (int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'streamStringMapOfNullableIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Map<(String, int), (int, _i10.SimpleData)>>
+      returnRecordMapOfIntSimpleDataRecord(
+              Map<(String, int), (int, _i10.SimpleData)> map) =>
+          caller.callServerEndpoint<Map<(String, int), (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'returnRecordMapOfIntSimpleDataRecord',
+            {
+              'map': /* map list */
+                  [
+                for (final entry in map.entries)
+                  {
+                    "k": _i19.Protocol.mapRecordToJson(entry.key),
+                    "v": _i19.Protocol.mapRecordToJson(entry.value),
+                  },
+              ]
+            },
+          );
+
+  _i2.Stream<Map<(String, int), (int, _i10.SimpleData)>>
+      streamRecordMapOfIntSimpleDataRecordEchoStream(
+              _i2.Stream<Map<(String, int), (int, _i10.SimpleData)>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Map<(String, int), (int, _i10.SimpleData)>>,
+              Map<(String, int), (int, _i10.SimpleData)>>(
+            'recordParameters',
+            'streamRecordMapOfIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<Map<String, (int, _i10.SimpleData)?>>
+      returnRecordMapOfNullableIntSimpleDataRecord(
+              Map<String, (int, _i10.SimpleData)?> map) =>
+          caller.callServerEndpoint<Map<String, (int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'returnRecordMapOfNullableIntSimpleDataRecord',
+            {
+              'map': {
+                for (final entry in map.entries)
+                  entry.key: _i19.Protocol.mapRecordToJson(entry.value),
+              }
+            },
+          );
+
+  _i2.Stream<Map<(String, int), (int, _i10.SimpleData)?>>
+      streamRecordMapOfNullableIntSimpleDataRecordEchoStream(
+              _i2.Stream<Map<(String, int), (int, _i10.SimpleData)?>> value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<Map<(String, int), (int, _i10.SimpleData)?>>,
+              Map<(String, int), (int, _i10.SimpleData)?>>(
+            'recordParameters',
+            'streamRecordMapOfNullableIntSimpleDataRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<((int, String), {(_i10.SimpleData, double) namedSubRecord})>
+      returnNestedRecord(
+              (
+                (int, String), {
+                (_i10.SimpleData, double) namedSubRecord
+              }) record) =>
+          caller.callServerEndpoint<
+              ((int, String), {(_i10.SimpleData, double) namedSubRecord})>(
+            'recordParameters',
+            'returnNestedRecord',
+            {'record': _i19.Protocol.mapRecordToJson(record)},
+          );
+
+  _i2.Future<List<((int, String), {(_i10.SimpleData, double) namedSubRecord})>>
+      returnListOfNestedRecord(
+              List<((int, String), {(_i10.SimpleData, double) namedSubRecord})>
+                  recordList) =>
+          caller.callServerEndpoint<
+              List<
+                  ((int, String), {(_i10.SimpleData, double) namedSubRecord})>>(
+            'recordParameters',
+            'returnListOfNestedRecord',
+            {
+              'recordList':
+                  recordList.map(_i19.Protocol.mapRecordToJson).toList()
+            },
+          );
+
+  _i2.Stream<((int, String), {(_i10.SimpleData, double) namedSubRecord})>
+      streamNestedRecordEchoStream(
+              _i2.Stream<
+                      (
+                        (int, String), {
+                        (_i10.SimpleData, double) namedSubRecord
+                      })>
+                  value) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<
+                  ((int, String), {(_i10.SimpleData, double) namedSubRecord})>,
+              ((int, String), {(_i10.SimpleData, double) namedSubRecord})>(
+            'recordParameters',
+            'streamNestedRecordEchoStream',
+            {},
+            {'value': value},
+          );
+
+  _i2.Future<
+      ({
+        (_i10.SimpleData, double)? namedSubRecord
+      })> returnNamedNullableNestedRecord(
+          ({(_i10.SimpleData, double)? namedSubRecord}) record) =>
+      caller.callServerEndpoint<({(_i10.SimpleData, double)? namedSubRecord})>(
+        'recordParameters',
+        'returnNamedNullableNestedRecord',
+        {'record': _i19.Protocol.mapRecordToJson(record)},
+      );
+
+  _i2.Future<(_i10.SimpleData?, (int, _i10.SimpleData?))>
+      returnPositionedNullableNestedRecord(
+              (_i10.SimpleData?, (int, _i10.SimpleData?)) record) =>
+          caller
+              .callServerEndpoint<(_i10.SimpleData?, (int, _i10.SimpleData?))>(
+            'recordParameters',
+            'returnPositionedNullableNestedRecord',
+            {'record': _i19.Protocol.mapRecordToJson(record)},
+          );
+}
+
+/// {@category Endpoint}
 class EndpointRedis extends _i1.EndpointRef {
   EndpointRedis(_i1.EndpointCaller caller) : super(caller);
 
@@ -2163,8 +2690,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i19.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i19.ScopeServerOnlyField>(
+  _i2.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -2179,8 +2706,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i20.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i20.ScopeServerOnlyFieldChild>(
+  _i2.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i21.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -2706,8 +3233,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i21.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i21.MyFeatureModel>(
+  _i2.Future<_i22.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i22.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -2741,7 +3268,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i22.Protocol(),
+          _i23.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -2780,6 +3307,7 @@ class Client extends _i1.ServerpodClientShared {
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
+    recordParameters = EndpointRecordParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     serverOnlyScopedFieldChildModel =
@@ -2856,6 +3384,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOptionalParameters optionalParameters;
 
+  late final EndpointRecordParameters recordParameters;
+
   late final EndpointRedis redis;
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
@@ -2918,6 +3448,7 @@ class Client extends _i1.ServerpodClientShared {
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
+        'recordParameters': recordParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
