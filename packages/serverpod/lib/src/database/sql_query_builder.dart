@@ -215,7 +215,7 @@ class SelectQueryBuilder {
   /// Adds an additional filter on the query to find only rows that have a
   /// relation to the specified ids.
   SelectQueryBuilder withWhereRelationInResultSet(
-    Set<dynamic> ids,
+    Set<Object?> ids,
     Table relationTable,
   ) {
     var tableRelation = relationTable.tableRelation;
@@ -238,9 +238,7 @@ class SelectQueryBuilder {
 
     var relationFieldName = tableRelation.foreignFieldBaseQuery;
 
-    var strIds = [
-      for (var id in ids) ((id is num) || (id == null)) ? '$id' : "'$id'",
-    ].join(', ');
+    var strIds = [for (var id in ids) id is num? ? '$id' : "'$id'"].join(', ');
     var whereAddition = Expression('$relationFieldName IN ($strIds)');
 
     _listQueryAdditions = _ListQueryAdditions(
