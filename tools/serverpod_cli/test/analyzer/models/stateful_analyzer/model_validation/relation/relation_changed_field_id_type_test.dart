@@ -30,8 +30,8 @@ void main() {
                 '''
                 class: Example
                 table: example
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   myParentId: $idClassName2
                   parent: ExampleParent?, relation(field=myParentId)
                 indexes:
@@ -44,8 +44,8 @@ void main() {
                 '''
                 class: ExampleParent
                 table: example_parent
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   name: String
                 ''',
               ).build()
@@ -103,8 +103,8 @@ void main() {
                 '''
                 class: Example
                 table: example
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   parentId: $idClassName2?
                   parent: ExampleParent?, relation(name=example_parent, field=parentId)
                 indexes:
@@ -117,8 +117,8 @@ void main() {
                 '''
                 class: ExampleParent
                 table: example_parent
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   name: String
                   example: Example?, relation(name=example_parent)
                 ''',
@@ -172,8 +172,8 @@ void main() {
                 '''
                 class: User
                 table: user
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   addressId: $idClassName2, relation(parent=address)
                 indexes:
                   address_index_idx:
@@ -185,8 +185,8 @@ void main() {
                 '''
                 class: Address
                 table: address
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   street: String
                 ''',
               ).build(),
@@ -229,8 +229,8 @@ void main() {
                 '''
                 class: User
                 table: user
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   addressId: $idClassName2
                   address: Address?, relation(field=addressId)
                 indexes:
@@ -243,8 +243,8 @@ void main() {
                 '''
                 class: Address
                 table: address
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   street: String
                 ''',
               ).build(),
@@ -279,8 +279,8 @@ void main() {
                 '''
                 class: User
                 table: user
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   addressId: $idClassName2, relation(name=user_address, parent=address)
                 indexes:
                   address_index_idx:
@@ -292,8 +292,8 @@ void main() {
                 '''
                 class: Address
                 table: address
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   user: User?, relation(name=user_address)
                 ''',
               ).build(),
@@ -328,8 +328,8 @@ void main() {
                 '''
                 class: User
                 table: user
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   addressId: $idClassName2
                   address: Address?, relation(name=user_address, field=addressId)
                 indexes:
@@ -342,8 +342,8 @@ void main() {
                 '''
                 class: Address
                 table: address
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   user: User?, relation(name=user_address)
                 ''',
               ).build(),
@@ -389,8 +389,8 @@ void main() {
                 '''
                 class: Employee
                 table: employee
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   company: Company?, relation(name=company_employees)
                 ''',
               ).build(),
@@ -398,8 +398,8 @@ void main() {
                 '''
                 class: Company
                 table: company
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   employees: List<Employee>?, relation(name=company_employees)
                 ''',
               ).build()
@@ -470,8 +470,8 @@ void main() {
                 '''
                 class: Employee
                 table: employee
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   company: Company?, relation
                 ''',
               ).build(),
@@ -479,8 +479,8 @@ void main() {
                 '''
                 class: Company
                 table: company
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   employees: List<Employee>?, relation
                 ''',
               ).build(),
@@ -540,8 +540,8 @@ void main() {
                 '''
                 class: Employee
                 table: employee
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   name: String
                 ''',
               ).build(),
@@ -549,8 +549,8 @@ void main() {
                 '''
                 class: Company
                 table: company
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   employees: List<Employee>?, relation
                 ''',
               ).build(),
@@ -595,8 +595,8 @@ void main() {
                 '''
                 class: Employee
                 table: employee
-                idType: $idTypeAlias1
                 fields:
+                  id: $idClassName1, default=${idType1.defaultValue}
                   companyId: $idClassName2, relation(name=company_employees, parent=company)
                 ''',
               ).build(),
@@ -604,8 +604,8 @@ void main() {
                 '''
                 class: Company
                 table: company
-                idType: $idTypeAlias2
                 fields:
+                  id: $idClassName2, default=${idType2.defaultValue}
                   employees: List<Employee>?, relation(name=company_employees)
                 ''',
               ).build()
