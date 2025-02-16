@@ -49,16 +49,6 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
-        Keyword.idType,
-        isRequired: false,
-        dependsOnKeys: {
-          Keyword.table,
-        },
-        valueRestriction: restrictions.validateIdType,
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.changeIdType),
-      ),
-      ValidateNode(
         Keyword.managedMigration,
         valueRestriction: BooleanValueRestriction().validate,
       ),

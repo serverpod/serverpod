@@ -274,28 +274,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateIdType(
-    String parentNodeName,
-    dynamic idType,
-    SourceSpan? span,
-  ) {
-    if (idType is! String) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.idType} type must be a String. Valid options are: '
-          '${SupportedIdType.userOptions.map((e) => "'$e'").join(', ')}.',
-          span,
-        )
-      ];
-    }
-    try {
-      SupportedIdType.fromString(idType);
-    } on FormatException catch (e) {
-      return [SourceSpanSeverityException(e.message, span)];
-    }
-    return [];
-  }
-
   List<SourceSpanSeverityException> validateExtendingClassName(
     String parentNodeName,
     dynamic parentClassName,
