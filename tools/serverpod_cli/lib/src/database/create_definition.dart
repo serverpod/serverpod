@@ -36,6 +36,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   columnDefault: getColumnDefault(
                     column.type,
                     column.defaultPersistValue,
+                    classDefinition.tableName!,
                   ),
                 )
           ],
@@ -116,7 +117,11 @@ void _sortTableDefinitions(List<TableDefinition> tables) {
   tables.sort((a, b) => a.name.compareTo(b.name));
 }
 
-String? getColumnDefault(TypeDefinition columnType, dynamic defaultValue) {
+String? getColumnDefault(
+  TypeDefinition columnType,
+  dynamic defaultValue,
+  String tableName,
+) {
   var defaultValueType = columnType.defaultValueType;
   if ((defaultValue == null) || (defaultValueType == null)) return null;
 
@@ -135,6 +140,9 @@ String? getColumnDefault(TypeDefinition columnType, dynamic defaultValue) {
     case DefaultValueAllowedType.bool:
       return defaultValue;
     case DefaultValueAllowedType.int:
+      if (defaultValue == defaultIntSerial) {
+        return "nextval('${tableName}_id_seq'::regclass)";
+      }
       return '$defaultValue';
     case DefaultValueAllowedType.double:
       return '$defaultValue';

@@ -55,7 +55,7 @@ void main() {
         expect(model.idField.type.className, idClassName);
       }, skip: errors.isNotEmpty);
 
-      var expectedDefaultValue = idType.dbColumnDefaultBuilder('example');
+      var expectedDefaultValue = idType.defaultValue;
       test("then the default persist value is '$expectedDefaultValue'", () {
         expect(model.idField.defaultPersistValue, expectedDefaultValue);
       }, skip: errors.isNotEmpty);

@@ -1,7 +1,7 @@
 class: TeamInt
 table: team_int
 fields:
-  id: int
+  id: int, default=serial
   name: String
   arenaId: UuidValue?
   arena: ArenaUuid?, relation(name=arena_team, field=arenaId, onDelete=SetNull)

@@ -537,7 +537,7 @@ class SupportedIdType {
   const SupportedIdType({
     required this.type,
     required this.aliases,
-    required this.dbColumnDefaultBuilder,
+    required this.defaultValue,
   });
 
   /// The supported id type.
@@ -547,8 +547,9 @@ class SupportedIdType {
   /// even though it is not recommended to use more than one to avoid confusion.
   final List<String> aliases;
 
-  /// A builder for the default value for the column on the database definition.
-  final String Function(String tableName) dbColumnDefaultBuilder;
+  /// The default value for the column on the database definition. Must be one
+  /// of the supported defaults for the type.
+  final String defaultValue;
 
   /// The class name of the id type.
   String get className => type.className;
@@ -557,19 +558,19 @@ class SupportedIdType {
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
         aliases: ['int'],
-        dbColumnDefaultBuilder: (tb) => "nextval('${tb}_id_seq'::regclass)",
+        defaultValue: defaultIntSerial,
       );
 
   static SupportedIdType get uuidV4 => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuidV4'],
-        dbColumnDefaultBuilder: (_) => defaultUuidValueRandom,
+        defaultValue: defaultUuidValueRandom,
       );
 
   static SupportedIdType get uuidV7 => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuidV7'],
-        dbColumnDefaultBuilder: (_) => defaultUuidValueRandomV7,
+        defaultValue: defaultUuidValueRandomV7,
       );
 
   /// All supported id types.

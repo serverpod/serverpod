@@ -856,7 +856,7 @@ class Restrictions {
             span,
           ),
         );
-      } else if ((typeClassName != 'int') && (!field.hasDefaults)) {
+      } else if (!field.hasDefaults) {
         errors.add(
           SourceSpanSeverityException(
             'The type "$typeClassName" must have a default value.',

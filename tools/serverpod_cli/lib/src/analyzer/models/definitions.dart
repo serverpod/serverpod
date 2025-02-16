@@ -561,6 +561,9 @@ const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
 
+/// Int for the default primary key type.
+const String defaultIntSerial = 'serial';
+
 /// DateTime
 const String defaultDateTimeValueNow = 'now';
 

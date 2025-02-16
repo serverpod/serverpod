@@ -1,6 +1,6 @@
 class: CustomerInt
 table: customer_int
 fields:
-  id: int
+  id: int, default=serial
   name: String
   orders: List<OrderUuid>?, relation(name=customer_orders)

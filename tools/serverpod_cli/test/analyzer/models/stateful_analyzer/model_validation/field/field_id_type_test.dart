@@ -19,7 +19,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: int
+          id: int, default=serial
         ''',
         ).build()
       ];
@@ -69,6 +69,7 @@ void main() {
 
       expect(definition.fields.first.name, 'id');
       expect(definition.fields.first.type.className, 'int');
+      expect(definition.fields.first.defaultPersistValue, defaultIntSerial);
       expect(definition.fields.first.type.nullable, true);
     },
   );
@@ -99,7 +100,7 @@ void main() {
   );
 
   test(
-    'Given a class with the int id field and the default key, then an error is collected.',
+    'Given a class with the int id field and a wrong value on the default key, then an error is collected.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -119,7 +120,7 @@ void main() {
       expect(
         collector.errors.first.message,
         contains(
-          'The field "id" with type "int" is sequential and does not accept a direct "default" assignment.',
+          'The default value "1" is not supported for the id type "int".',
         ),
       );
     },
@@ -140,7 +141,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: int, $forbiddenKey
+              id: int, default=serial, $forbiddenKey
             ''',
           ).build()
         ];
@@ -158,11 +159,8 @@ void main() {
   }
 
   for (var idType in SupportedIdType.all) {
-    // The int type is the only one that has no default key.
-    if (idType.aliases.first == 'int') continue;
-
     var idClassName = idType.className;
-    var defaultValue = idType.dbColumnDefaultBuilder('example');
+    var defaultValue = idType.defaultValue;
 
     test(
         'Given a class with the $idClassName id type and no default value, then an error is collected.',

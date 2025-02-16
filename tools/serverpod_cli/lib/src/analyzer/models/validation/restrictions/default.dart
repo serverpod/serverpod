@@ -76,17 +76,9 @@ class DefaultValueRestriction extends ValueRestriction {
 
     var supportedDefaults = SupportedIdType.all
         .where((e) => e.type.className == typeClassName)
-        .map((e) => e.dbColumnDefaultBuilder(tableName));
+        .map((e) => e.defaultValue);
 
-    if (typeClassName == 'int') {
-      errors.add(
-        SourceSpanSeverityException(
-          'The field "id" with type "int" is sequential and does not accept '
-          'a direct "default" assignment.',
-          span,
-        ),
-      );
-    } else if (!supportedDefaults.contains(value)) {
+    if (!supportedDefaults.contains(value)) {
       errors.add(
         SourceSpanSeverityException(
           'The default value "$value" is not supported for the id type '

@@ -44,7 +44,7 @@ class ClassDefinitionBuilder {
       _fields.insert(
         0,
         () => FieldDefinitionBuilder()
-            .withPrimaryKey(_tableName!, type: _idType, isNullable: true)
+            .withPrimaryKey(type: _idType, isNullable: true)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),

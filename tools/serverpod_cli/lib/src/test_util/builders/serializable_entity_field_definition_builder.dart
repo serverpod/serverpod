@@ -28,8 +28,7 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withPrimaryKey(
-    String tableName, {
+  FieldDefinitionBuilder withPrimaryKey({
     SupportedIdType? type,
     bool isNullable = false,
   }) {
@@ -37,7 +36,7 @@ class FieldDefinitionBuilder {
     return withName('id')
       ..withIdType(type: type.type, isNullable: isNullable)
       ..withDefaults(
-        defaultPersistValue: type.dbColumnDefaultBuilder(tableName),
+        defaultPersistValue: type.defaultValue,
       );
   }
 

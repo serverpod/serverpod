@@ -10,7 +10,7 @@ void main() {
   test(
       'Given a class definition with a table, then generate a table with that name.',
       () {
-    var field = FieldDefinitionBuilder().withPrimaryKey('example').build();
+    var field = FieldDefinitionBuilder().withPrimaryKey().build();
     var model = ClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)

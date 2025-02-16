@@ -56,7 +56,7 @@ void main() {
           expect(exampleClass.idField.type.className, idClassName);
           expect(
             exampleClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('example'),
+            idType.defaultValue,
           );
         });
 
@@ -64,7 +64,7 @@ void main() {
           expect(exampleParentClass.idField.type.className, idClassName);
           expect(
             exampleParentClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('example_parent'),
+            idType.defaultValue,
           );
         });
 
@@ -193,7 +193,7 @@ void main() {
           expect(userClass.idField.type.className, idClassName);
           expect(
             userClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('user'),
+            idType.defaultValue,
           );
         });
 
@@ -201,7 +201,7 @@ void main() {
           expect(addressClass.idField.type.className, idClassName);
           expect(
             addressClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('address'),
+            idType.defaultValue,
           );
         });
       });
@@ -398,7 +398,7 @@ void main() {
           expect(employeeClass.idField.type.className, idClassName);
           expect(
             employeeClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('employee'),
+            idType.defaultValue,
           );
         });
 
@@ -406,7 +406,7 @@ void main() {
           expect(companyClass.idField.type.className, idClassName);
           expect(
             companyClass.idField.defaultPersistValue,
-            idType.dbColumnDefaultBuilder('company'),
+            idType.defaultValue,
           );
         });
 

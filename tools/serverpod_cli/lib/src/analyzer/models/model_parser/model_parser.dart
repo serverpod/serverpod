@@ -45,7 +45,6 @@ class ModelParser {
     );
 
     var tableName = _parseTableName(documentContents);
-    var idType = _parseIdType(documentContents) ?? defaultIdType;
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
@@ -53,7 +52,7 @@ class ModelParser {
       tableName,
       extraClasses,
       serverOnly,
-      idType,
+      defaultIdType,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -155,23 +154,13 @@ class ModelParser {
     return tableName;
   }
 
-  static SupportedIdType? _parseIdType(YamlMap documentContents) {
-    var idType = documentContents.nodes[Keyword.idType]?.value;
-    if (idType is! String) return null;
-    try {
-      return SupportedIdType.fromString(idType);
-    } on FormatException {
-      return null;
-    }
-  }
-
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     String? tableName,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
-    SupportedIdType idType,
+    SupportedIdType defaultIdType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
 
@@ -191,12 +180,6 @@ class ModelParser {
     if (tableName != null) {
       var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
 
-      // The 'int' id type is special and should be handled differently.
-      if (maybeIdColumn?.type.className == 'int') {
-        maybeIdColumn = null;
-        idType = SupportedIdType.int;
-      }
-
       var defaultIdFieldDoc = [
         '/// The database id, set if the object has been inserted into the',
         '/// database or if it has been fetched from the database. Otherwise,',
@@ -208,11 +191,11 @@ class ModelParser {
         0,
         SerializableModelFieldDefinition(
           name: 'id',
-          type: (maybeIdColumn?.type ?? idType.type).asNullable,
+          type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
           defaultPersistValue: (maybeIdColumn != null)
               ? maybeIdColumn.defaultPersistValue
-              : idType.dbColumnDefaultBuilder(tableName),
+              : defaultIdType.defaultValue,
           shouldPersist: true,
           documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
         ),

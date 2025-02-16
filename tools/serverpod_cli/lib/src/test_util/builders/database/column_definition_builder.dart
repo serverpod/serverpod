@@ -37,7 +37,8 @@ class ColumnDefinitionBuilder {
     _columnType = ColumnType.values.byName(idType.type.databaseTypeEnum);
     _columnDefault = getColumnDefault(
       idType.type,
-      idType.dbColumnDefaultBuilder(tableName),
+      idType.defaultValue,
+      tableName,
     );
     _dartType = idType.type.className;
     return this;
