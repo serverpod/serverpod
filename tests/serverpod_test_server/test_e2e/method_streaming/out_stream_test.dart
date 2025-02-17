@@ -261,4 +261,38 @@ void main() {
       ]),
     );
   });
+
+  test(
+      'Given a streaming method that echoes a flattened stream of sets of data objects, when calling the method, then the input values are returned.',
+      () async {
+    var response = await client.methodStreaming
+        .nestedSetInListInOutDataStream(
+          Stream.fromIterable([
+            [
+              {SimpleData(num: 1), SimpleData(num: 2)}
+            ],
+            [
+              {SimpleData(num: 3)},
+              {SimpleData(num: 4)},
+            ],
+          ]),
+        )
+        .toList();
+
+    expect(
+      response,
+      equals([
+        {
+          isA<SimpleData>().having((s) => s.num, 'num', 1),
+          isA<SimpleData>().having((s) => s.num, 'num', 2),
+        },
+        {
+          isA<SimpleData>().having((s) => s.num, 'num', 3),
+        },
+        {
+          isA<SimpleData>().having((s) => s.num, 'num', 4),
+        },
+      ]),
+    );
+  });
 }

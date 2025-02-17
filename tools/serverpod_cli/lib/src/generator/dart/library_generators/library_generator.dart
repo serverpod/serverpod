@@ -53,20 +53,17 @@ class LibraryGenerator {
     var protocol = ClassBuilder();
 
     var topLevelStreamContainerTypes = <TypeDefinition>[];
-    for (var method in protocolDefinition.endpoints.expand((e) => e.methods)) {
-      if (method.returnType.isStreamType) {
-        if (method.returnType.generics.first.isSetType ||
-            method.returnType.generics.first.isListType ||
-            method.returnType.generics.first.isMapType) {
-          var containerType = method.returnType.generics.first;
-
-          if (containerType.dartType == null ||
-              !topLevelStreamContainerTypes.any((type) =>
-                  // TODO(tp): Use `isStructurallyEqualTo` in the future (not supported by current lower bound of Flutter 3.19)
-                  type.dartType.toString() ==
-                  containerType.dartType.toString())) {
-            topLevelStreamContainerTypes.add(method.returnType.generics.first);
-          }
+    for (var topLevelType in protocolDefinition.endpoints
+        .expand((e) => e.methods)
+        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
+        .where((t) => t.isStreamType)) {
+      var valueType = topLevelType.generics.first;
+      if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
+        if (valueType.dartType == null ||
+            !topLevelStreamContainerTypes.any((type) =>
+                // TODO(tp): Use `isStructurallyEqualTo` in the future (not supported by current lower bound of Flutter 3.19)
+                type.dartType.toString() == valueType.dartType.toString())) {
+          topLevelStreamContainerTypes.add(valueType);
         }
       }
     }
@@ -191,7 +188,10 @@ class LibraryGenerator {
                   // Generate deserialization for extra classes as nullables.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.asNullable
-                        .generateDeserialization(serverCode, config: config)
+                        .generateDeserialization(serverCode, config: config),
+                  // Generate deserialization for containers used in streams
+                  for (var type in topLevelStreamContainerTypes)
+                    ...type.generateDeserialization(serverCode, config: config)
                 ]))
               .entries
               .map((e) => Block.of([

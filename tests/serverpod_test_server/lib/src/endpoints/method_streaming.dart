@@ -229,7 +229,6 @@ class MethodStreaming extends Endpoint {
     Stream<Set<int>> simpleDataSetStream,
   ) async* {
     await for (var data in simpleDataSetStream) {
-      print('returning $data');
       yield data;
     }
   }
@@ -239,8 +238,19 @@ class MethodStreaming extends Endpoint {
     Stream<Set<SimpleData>> simpleDataSetStream,
   ) async* {
     await for (var data in simpleDataSetStream) {
-      print('returning $data');
       yield data;
+    }
+  }
+
+  Stream<Set<SimpleData>> nestedSetInListInOutDataStream(
+    Session session,
+    // NOTE(tp): Important that this type is only declared once as a parameter, but still code is generated for it
+    Stream<List<Set<SimpleData>>> simpleDataSetStream,
+  ) async* {
+    await for (var list in simpleDataSetStream) {
+      for (var data in list) {
+        yield data;
+      }
     }
   }
 
