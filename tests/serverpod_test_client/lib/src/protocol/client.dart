@@ -1788,6 +1788,74 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'simpleDataStream': simpleDataStream},
       );
 
+  _i2.Stream<List<int>> simpleListInOutIntStream(
+          _i2.Stream<List<int>> simpleDataListStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<int>>, List<int>>(
+        'methodStreaming',
+        'simpleListInOutIntStream',
+        {},
+        {'simpleDataListStream': simpleDataListStream},
+      );
+
+  _i2.Stream<List<_i10.SimpleData>> simpleListInOutDataStream(
+          _i2.Stream<List<_i10.SimpleData>> simpleDataListStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<_i10.SimpleData>>,
+          List<_i10.SimpleData>>(
+        'methodStreaming',
+        'simpleListInOutDataStream',
+        {},
+        {'simpleDataListStream': simpleDataListStream},
+      );
+
+  _i2.Stream<List<_i3.UserInfo>> simpleListInOutOtherModuleTypeStream(
+          _i2.Stream<List<_i3.UserInfo>> userInfoListStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<_i3.UserInfo>>,
+          List<_i3.UserInfo>>(
+        'methodStreaming',
+        'simpleListInOutOtherModuleTypeStream',
+        {},
+        {'userInfoListStream': userInfoListStream},
+      );
+
+  _i2.Stream<List<_i10.SimpleData>?> simpleNullableListInOutNullableDataStream(
+          _i2.Stream<List<_i10.SimpleData>?> simpleDataListStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<_i10.SimpleData>?>,
+          List<_i10.SimpleData>?>(
+        'methodStreaming',
+        'simpleNullableListInOutNullableDataStream',
+        {},
+        {'simpleDataListStream': simpleDataListStream},
+      );
+
+  _i2.Stream<List<_i10.SimpleData?>> simpleListInOutNullableDataStream(
+          _i2.Stream<List<_i10.SimpleData?>> simpleDataListStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<_i10.SimpleData?>>,
+          List<_i10.SimpleData?>>(
+        'methodStreaming',
+        'simpleListInOutNullableDataStream',
+        {},
+        {'simpleDataListStream': simpleDataListStream},
+      );
+
+  _i2.Stream<Set<int>> simpleSetInOutIntStream(
+          _i2.Stream<Set<int>> simpleDataSetStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<Set<int>>, Set<int>>(
+        'methodStreaming',
+        'simpleSetInOutIntStream',
+        {},
+        {'simpleDataSetStream': simpleDataSetStream},
+      );
+
+  _i2.Stream<Set<_i10.SimpleData>> simpleSetInOutDataStream(
+          _i2.Stream<Set<_i10.SimpleData>> simpleDataSetStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<Set<_i10.SimpleData>>,
+          Set<_i10.SimpleData>>(
+        'methodStreaming',
+        'simpleSetInOutDataStream',
+        {},
+        {'simpleDataSetStream': simpleDataSetStream},
+      );
+
   _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
         'methodStreaming',
         'simpleEndpoint',

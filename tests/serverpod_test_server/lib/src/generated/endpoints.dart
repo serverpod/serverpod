@@ -62,9 +62,9 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i49;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i50;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i51;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i51;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i52;
+    as _i52;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -4154,6 +4154,160 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['simpleDataStream']!.cast<_i45.SimpleData>(),
           ),
         ),
+        'simpleListInOutIntStream': _i1.MethodStreamConnector(
+          name: 'simpleListInOutIntStream',
+          params: {},
+          streamParams: {
+            'simpleDataListStream': _i1.StreamParameterDescription<List<int>>(
+              name: 'simpleDataListStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleListInOutIntStream(
+            session,
+            streamParams['simpleDataListStream']!.cast<List<int>>(),
+          ),
+        ),
+        'simpleListInOutDataStream': _i1.MethodStreamConnector(
+          name: 'simpleListInOutDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataListStream':
+                _i1.StreamParameterDescription<List<_i45.SimpleData>>(
+              name: 'simpleDataListStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleListInOutDataStream(
+            session,
+            streamParams['simpleDataListStream']!.cast<List<_i45.SimpleData>>(),
+          ),
+        ),
+        'simpleListInOutOtherModuleTypeStream': _i1.MethodStreamConnector(
+          name: 'simpleListInOutOtherModuleTypeStream',
+          params: {},
+          streamParams: {
+            'userInfoListStream':
+                _i1.StreamParameterDescription<List<_i51.UserInfo>>(
+              name: 'userInfoListStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleListInOutOtherModuleTypeStream(
+            session,
+            streamParams['userInfoListStream']!.cast<List<_i51.UserInfo>>(),
+          ),
+        ),
+        'simpleNullableListInOutNullableDataStream': _i1.MethodStreamConnector(
+          name: 'simpleNullableListInOutNullableDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataListStream':
+                _i1.StreamParameterDescription<List<_i45.SimpleData>?>(
+              name: 'simpleDataListStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleNullableListInOutNullableDataStream(
+            session,
+            streamParams['simpleDataListStream']!
+                .cast<List<_i45.SimpleData>?>(),
+          ),
+        ),
+        'simpleListInOutNullableDataStream': _i1.MethodStreamConnector(
+          name: 'simpleListInOutNullableDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataListStream':
+                _i1.StreamParameterDescription<List<_i45.SimpleData?>>(
+              name: 'simpleDataListStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleListInOutNullableDataStream(
+            session,
+            streamParams['simpleDataListStream']!
+                .cast<List<_i45.SimpleData?>>(),
+          ),
+        ),
+        'simpleSetInOutIntStream': _i1.MethodStreamConnector(
+          name: 'simpleSetInOutIntStream',
+          params: {},
+          streamParams: {
+            'simpleDataSetStream': _i1.StreamParameterDescription<Set<int>>(
+              name: 'simpleDataSetStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleSetInOutIntStream(
+            session,
+            streamParams['simpleDataSetStream']!.cast<Set<int>>(),
+          ),
+        ),
+        'simpleSetInOutDataStream': _i1.MethodStreamConnector(
+          name: 'simpleSetInOutDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataSetStream':
+                _i1.StreamParameterDescription<Set<_i45.SimpleData>>(
+              name: 'simpleDataSetStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .simpleSetInOutDataStream(
+            session,
+            streamParams['simpleDataSetStream']!.cast<Set<_i45.SimpleData>>(),
+          ),
+        ),
         'delayedStreamResponse': _i1.MethodStreamConnector(
           name: 'delayedStreamResponse',
           params: {
@@ -4543,7 +4697,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i51.ModuleClass>(),
+              type: _i1.getType<_i52.ModuleClass>(),
               nullable: false,
             )
           },
@@ -5916,8 +6070,8 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth'] = _i52.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_test_module'] = _i51.Endpoints()
+    modules['serverpod_auth'] = _i51.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = _i52.Endpoints()
       ..initializeEndpoints(server);
   }
 }
