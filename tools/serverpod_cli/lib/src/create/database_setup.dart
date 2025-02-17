@@ -40,9 +40,6 @@ class DatabaseSetup {
     } on MigrationVersionAlreadyExistsException {
       // Ignore known error since the user can create the migration manually
       // and get better error messages then.
-    } on LocateModuleNameFromServerPackageNameException {
-      // Ignore known error since the user can create the migration manually
-      // and get better error messages then.
     }
 
     if (migration == null) {

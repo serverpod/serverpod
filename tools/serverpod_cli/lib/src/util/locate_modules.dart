@@ -110,9 +110,8 @@ List<String> findAllMigrationVersionsSync({
   }
 }
 
-Future<List<Uri>> locateAllModulePaths({
-  required Directory directory,
-}) async {
+Future<List<Uri>> locateAllModulePaths(
+    {required Directory directory, required String currentProjectName}) async {
   var packageConfig = await findPackageConfig(directory);
   if (packageConfig == null) {
     throw Exception('Failed to read package configuration.');
@@ -123,6 +122,11 @@ Future<List<Uri>> locateAllModulePaths({
     try {
       var packageName = packageInfo.name;
       if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
+        continue;
+      }
+
+      //Check if the package is the current project
+      if (packageName == currentProjectName + _serverSuffix) {
         continue;
       }
 
