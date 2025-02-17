@@ -7623,7 +7623,7 @@ class Protocol extends _i1.SerializationManagerServer {
       return 'List<SimpleData>';
     }
     if (data is List<_i3.UserInfo>) {
-      return 'List<UserInfo>';
+      return 'List<serverpod_auth.UserInfo>';
     }
     if (data is List<_i135.SimpleData>?) {
       return 'List<SimpleData>?';
@@ -8084,7 +8084,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'List<SimpleData>') {
       return deserialize<List<_i135.SimpleData>>(data['data']);
     }
-    if (dataClassName == 'List<UserInfo>') {
+    if (dataClassName == 'List<serverpod_auth.UserInfo>') {
       return deserialize<List<_i3.UserInfo>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData>?') {

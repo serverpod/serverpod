@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -242,7 +243,7 @@ class LibraryGenerator {
               containerType.reference(serverCode, config: config).code,
               const Code(') {'),
               Code(
-                  'return \'${containerType.classNameWithGenericsForProtocol}\';'),
+                  'return \'${containerType.classNameWithGenericsForProtocol(modules: config.modules)}\';'),
               const Code('}'),
             ]),
           const Code('return null;'),
@@ -277,7 +278,7 @@ class LibraryGenerator {
             ),
           for (final containerType in topLevelStreamContainerTypes) ...[
             Code(
-                "if (dataClassName == '${containerType.classNameWithGenericsForProtocol}') {"),
+                "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {"),
             const Code('return deserialize<'),
             containerType.reference(serverCode, config: config).code,
             const Code('>(data[\'data\']);'),
@@ -1053,8 +1054,19 @@ extension on TypeDefinition {
   /// but strips all import path for a succinct representation.
   ///
   /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
-  String get classNameWithGenericsForProtocol {
-    return '$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenericsForProtocol).join(',')}>' : ''}${nullable ? '?' : ''}';
+  /// Using a model from another module will look like `"List<serverpod_auth.UserInfo>"`
+  String classNameWithGenericsForProtocol({
+    required List<ModuleConfig> modules,
+  }) {
+    String? moduleName;
+    for (var module in modules) {
+      // NOTE(tp): Since we're iterating over types used in the endpoints, the import always refers to the server package
+      if (url != null && url!.startsWith('package:${module.serverPackage}/')) {
+        moduleName = module.name;
+      }
+    }
+
+    return '${moduleName != null ? '$moduleName.' : ''}$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenericsForProtocol(modules: modules)).join(',')}>' : ''}${nullable ? '?' : ''}';
   }
 }
 
