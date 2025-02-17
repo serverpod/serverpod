@@ -2123,8 +2123,21 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
+    if (t == List<_i133.UserInfo>) {
+      return (data as List).map((e) => deserialize<_i133.UserInfo>(e)).toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i131.SimpleData>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toList()
+          : null) as T;
+    }
     if (t == Set<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
+    }
+    if (t == Set<_i131.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toSet()
+          as T;
     }
     if (t == Set<Set<int>>) {
       return (data as List).map((e) => deserialize<Set<int>>(e)).toSet() as T;
@@ -2210,10 +2223,6 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i129.ByteData?>(e)).toSet()
           as T;
     }
-    if (t == Set<_i131.SimpleData>) {
-      return (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toSet()
-          as T;
-    }
     if (t == Set<_i131.SimpleData?>) {
       return (data as List)
           .map((e) => deserialize<_i131.SimpleData?>(e))
@@ -2272,6 +2281,16 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i130.FreezedCustomClass?>()) {
       return (data != null ? _i130.FreezedCustomClass.fromJson(data) : null)
           as T;
+    }
+    if (t == _i1.getType<List<_i131.SimpleData>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toList()
+          : null) as T;
+    }
+    if (t == List<Set<_i131.SimpleData>>) {
+      return (data as List)
+          .map((e) => deserialize<Set<_i131.SimpleData>>(e))
+          .toList() as T;
     }
     try {
       return _i133.Protocol().deserialize<T>(data, t);
@@ -2702,6 +2721,30 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
+    if (data is List<int>) {
+      return 'List<int>';
+    }
+    if (data is List<_i131.SimpleData>) {
+      return 'List<SimpleData>';
+    }
+    if (data is List<_i133.UserInfo>) {
+      return 'List<serverpod_auth.UserInfo>';
+    }
+    if (data is List<_i131.SimpleData>?) {
+      return 'List<SimpleData>?';
+    }
+    if (data is List<_i131.SimpleData?>) {
+      return 'List<SimpleData?>';
+    }
+    if (data is Set<int>) {
+      return 'Set<int>';
+    }
+    if (data is Set<_i131.SimpleData>) {
+      return 'Set<SimpleData>';
+    }
+    if (data is List<Set<_i131.SimpleData>>) {
+      return 'List<Set<SimpleData>>';
+    }
     return null;
   }
 
@@ -3129,6 +3172,30 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName.startsWith('serverpod_test_module.')) {
       data['className'] = dataClassName.substring(22);
       return _i128.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName == 'List<int>') {
+      return deserialize<List<int>>(data['data']);
+    }
+    if (dataClassName == 'List<SimpleData>') {
+      return deserialize<List<_i131.SimpleData>>(data['data']);
+    }
+    if (dataClassName == 'List<serverpod_auth.UserInfo>') {
+      return deserialize<List<_i133.UserInfo>>(data['data']);
+    }
+    if (dataClassName == 'List<SimpleData>?') {
+      return deserialize<List<_i131.SimpleData>?>(data['data']);
+    }
+    if (dataClassName == 'List<SimpleData?>') {
+      return deserialize<List<_i131.SimpleData?>>(data['data']);
+    }
+    if (dataClassName == 'Set<int>') {
+      return deserialize<Set<int>>(data['data']);
+    }
+    if (dataClassName == 'Set<SimpleData>') {
+      return deserialize<Set<_i131.SimpleData>>(data['data']);
+    }
+    if (dataClassName == 'List<Set<SimpleData>>') {
+      return deserialize<List<Set<_i131.SimpleData>>>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
