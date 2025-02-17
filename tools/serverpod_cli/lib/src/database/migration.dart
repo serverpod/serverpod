@@ -104,21 +104,22 @@ DatabaseMigration generateDatabaseMigration({
 Set<String> _findDependentTables(
   String tableName,
   List<TableDefinition> tables, {
-  Set<String>? relatedTables,
+  Set<String>? dependentTables,
 }) {
-  relatedTables ??= {};
+  dependentTables ??= {};
 
   for (var table in tables) {
-    if (!relatedTables.contains(table.name) &&
+    if (!dependentTables.contains(table.name) &&
         table.foreignKeys
             .any((foreignKey) => foreignKey.referenceTable == tableName)) {
-      relatedTables.add(table.name);
+      dependentTables.add(table.name);
 
-      _findDependentTables(table.name, tables, relatedTables: relatedTables);
+      _findDependentTables(table.name, tables,
+          dependentTables: dependentTables);
     }
   }
 
-  return relatedTables;
+  return dependentTables;
 }
 
 TableMigration? generateTableMigration(
