@@ -224,6 +224,7 @@ methodStreaming:
   - simpleListInOutNullableDataStream:
   - simpleSetInOutIntStream:
   - simpleSetInOutDataStream:
+  - nestedSetInListInOutDataStream:
   - simpleEndpoint:
   - intParameter:
   - doubleInputValue:

@@ -1856,6 +1856,16 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'simpleDataSetStream': simpleDataSetStream},
       );
 
+  _i2.Stream<Set<_i10.SimpleData>> nestedSetInListInOutDataStream(
+          _i2.Stream<List<Set<_i10.SimpleData>>> simpleDataSetStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<Set<_i10.SimpleData>>,
+          Set<_i10.SimpleData>>(
+        'methodStreaming',
+        'nestedSetInListInOutDataStream',
+        {},
+        {'simpleDataSetStream': simpleDataSetStream},
+      );
+
   _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
         'methodStreaming',
         'simpleEndpoint',

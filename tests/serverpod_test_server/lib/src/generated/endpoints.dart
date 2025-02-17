@@ -4308,6 +4308,29 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['simpleDataSetStream']!.cast<Set<_i45.SimpleData>>(),
           ),
         ),
+        'nestedSetInListInOutDataStream': _i1.MethodStreamConnector(
+          name: 'nestedSetInListInOutDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataSetStream':
+                _i1.StreamParameterDescription<List<Set<_i45.SimpleData>>>(
+              name: 'simpleDataSetStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+                  .nestedSetInListInOutDataStream(
+            session,
+            streamParams['simpleDataSetStream']!
+                .cast<List<Set<_i45.SimpleData>>>(),
+          ),
+        ),
         'delayedStreamResponse': _i1.MethodStreamConnector(
           name: 'delayedStreamResponse',
           params: {

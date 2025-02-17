@@ -2282,6 +2282,16 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i130.FreezedCustomClass.fromJson(data) : null)
           as T;
     }
+    if (t == _i1.getType<List<_i131.SimpleData>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toList()
+          : null) as T;
+    }
+    if (t == List<Set<_i131.SimpleData>>) {
+      return (data as List)
+          .map((e) => deserialize<Set<_i131.SimpleData>>(e))
+          .toList() as T;
+    }
     try {
       return _i133.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -2732,6 +2742,9 @@ class Protocol extends _i1.SerializationManager {
     if (data is Set<_i131.SimpleData>) {
       return 'Set<SimpleData>';
     }
+    if (data is List<Set<_i131.SimpleData>>) {
+      return 'List<Set<SimpleData>>';
+    }
     return null;
   }
 
@@ -3180,6 +3193,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName == 'Set<SimpleData>') {
       return deserialize<Set<_i131.SimpleData>>(data['data']);
+    }
+    if (dataClassName == 'List<Set<SimpleData>>') {
+      return deserialize<List<Set<_i131.SimpleData>>>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

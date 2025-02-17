@@ -6605,6 +6605,38 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _i3.Stream<Set<_i11.SimpleData>> nestedSetInListInOutDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<Set<_i11.SimpleData>>> simpleDataSetStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Set<_i11.SimpleData>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'nestedSetInListInOutDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'nestedSetInListInOutDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataSetStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataSetStream': simpleDataSetStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<void> simpleEndpoint(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
