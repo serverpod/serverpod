@@ -58,7 +58,15 @@ class LibraryGenerator {
         if (method.returnType.generics.first.isSetType ||
             method.returnType.generics.first.isListType ||
             method.returnType.generics.first.isMapType) {
-          topLevelContainerTypes.add(method.returnType.generics.first);
+          var containerType = method.returnType.generics.first;
+
+          if (containerType.dartType == null ||
+              !topLevelContainerTypes.any((type) =>
+                  type.dartType
+                      ?.isStructurallyEqualTo(containerType.dartType!) ??
+                  false)) {
+            topLevelContainerTypes.add(method.returnType.generics.first);
+          }
         }
       }
     }
