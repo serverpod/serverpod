@@ -110,9 +110,8 @@ List<String> findAllMigrationVersionsSync({
   }
 }
 
-Future<List<Uri>> locateAllModulePaths({
-  required Directory directory,
-}) async {
+Future<List<Uri>> locateAllModulePaths(
+    {required Directory directory, required String currentProjectName}) async {
   var packageConfig = await findPackageConfig(directory);
   if (packageConfig == null) {
     throw Exception('Failed to read package configuration.');
@@ -123,6 +122,11 @@ Future<List<Uri>> locateAllModulePaths({
     try {
       var packageName = packageInfo.name;
       if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
+        continue;
+      }
+
+      //Check if the package is the current project
+      if (packageName == currentProjectName + _serverSuffix) {
         continue;
       }
 
@@ -159,6 +163,12 @@ Future<List<Uri>> locateAllModulePaths({
   return paths;
 }
 
+/// This method assumes that server package names end with `_server`.
+/// If the package name does not follow this convention, an exception is thrown.
+///
+/// Throws:
+/// - [LocateModuleNameFromServerPackageNameException] if the package name
+///   does not end with `_server`, indicating it is not a valid server package.
 String moduleNameFromServerPackageName(String packageDirName) {
   var packageName = packageDirName.split('-').first;
 
@@ -166,7 +176,8 @@ String moduleNameFromServerPackageName(String packageDirName) {
     return 'serverpod';
   }
   if (!packageName.endsWith(_serverSuffix)) {
-    throw Exception('Not a server package ($packageName)');
+    throw LocateModuleNameFromServerPackageNameException(
+        packageName: packageName);
   }
   return packageName.substring(0, packageName.length - _serverSuffix.length);
 }

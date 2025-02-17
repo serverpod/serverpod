@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
 
@@ -26,6 +27,9 @@ Future<String?> getProjectName([Directory? projectDirectory]) async {
 
   try {
     return moduleNameFromServerPackageName(name);
+  } on LocateModuleNameFromServerPackageNameException catch (e) {
+    log.error('Not a server package (${e.packageName}). Please '
+        'make sure your server package name ends with \'_server\'.');
   } catch (e) {
     log.error(e.toString());
     return null;
