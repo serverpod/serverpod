@@ -62,9 +62,9 @@ class LibraryGenerator {
 
           if (containerType.dartType == null ||
               !topLevelContainerTypes.any((type) =>
-                  type.dartType
-                      ?.isStructurallyEqualTo(containerType.dartType!) ??
-                  false)) {
+                  // TODO(tp): Use `isStructurallyEqualTo` in the future (not supported by current lower bound of Flutter 3.19)
+                  type.dartType.toString() ==
+                  containerType.dartType.toString())) {
             topLevelContainerTypes.add(method.returnType.generics.first);
           }
         }
