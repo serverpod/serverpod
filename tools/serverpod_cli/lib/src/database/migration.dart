@@ -12,7 +12,8 @@ DatabaseMigration generateDatabaseMigration({
 
   var sourceTables =
       databaseSource.tables.where((table) => table.isManaged).toList();
-  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
+  var targetTables =
+      databaseTarget.tables.where((table) => table.isManaged).toList();
   var deleteTables = <String>{};
 
   // Mark tables which do not exist in the target schema anymore for deletion
@@ -20,8 +21,9 @@ DatabaseMigration generateDatabaseMigration({
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
       deleteTables.addAll([
         srcTable.name,
-        // For any table we delete, we also need to delete any other existing table that has a foreign key pointing into this table
-        ..._findDependentTables(srcTable.name, sourceTables),
+        // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
+        ..._findDependentTables(srcTable.name,
+            sourceTables: sourceTables, targetTables: targetTables),
       ]);
     }
   }
@@ -102,19 +104,29 @@ DatabaseMigration generateDatabaseMigration({
 
 /// Returns the set of table names for all tables which have any relation into the table mentioned by [tableName]
 Set<String> _findDependentTables(
-  String tableName,
-  List<TableDefinition> tables, {
+  String tableName, {
+  required List<TableDefinition> sourceTables,
+  required List<TableDefinition> targetTables,
   Set<String>? dependentTables,
 }) {
   dependentTables ??= {};
 
-  for (var table in tables) {
+  for (var table in sourceTables) {
     if (!dependentTables.contains(table.name) &&
-        table.foreignKeys
-            .any((foreignKey) => foreignKey.referenceTable == tableName)) {
+        table.foreignKeys.any((foreignKey) =>
+            foreignKey.referenceTable == tableName &&
+            // Check whether the reference will also be upheld in the target table.
+            // otherwise the target table will already be modified and does not need to have be fully dropped
+            targetTables.any((targetTable) =>
+                targetTable.name == table.name &&
+                targetTable.foreignKeys.any((targetForeignKey) =>
+                    targetForeignKey.constraintName ==
+                    foreignKey.constraintName)))) {
       dependentTables.add(table.name);
 
-      _findDependentTables(table.name, tables,
+      _findDependentTables(table.name,
+          sourceTables: sourceTables,
+          targetTables: targetTables,
           dependentTables: dependentTables);
     }
   }
