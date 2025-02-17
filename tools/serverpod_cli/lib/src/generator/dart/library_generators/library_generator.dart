@@ -242,7 +242,7 @@ class LibraryGenerator {
               topLevelContainerType.reference(serverCode, config: config).code,
               const Code(') {'),
               Code(
-                  'return \'${topLevelContainerType.classNameWithGenerics}\';'),
+                  'return \'${topLevelContainerType.classNameWithGenericsForProtocol}\';'),
               const Code('}'),
             ]),
           const Code('return null;'),
@@ -277,7 +277,7 @@ class LibraryGenerator {
             ),
           for (final topLevelContainerTypes in topLevelContainerTypes) ...[
             Code(
-                "if (dataClassName == '${topLevelContainerTypes.classNameWithGenerics}') {"),
+                "if (dataClassName == '${topLevelContainerTypes.classNameWithGenericsForProtocol}') {"),
             const Code('return deserialize<'),
             topLevelContainerTypes.reference(serverCode, config: config).code,
             const Code('>(data[\'data\']);'),
@@ -1053,8 +1053,8 @@ extension on TypeDefinition {
   /// but strips all import path for a succinct representation.
   ///
   /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
-  String get classNameWithGenerics {
-    return '$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenerics).join(',')}>' : ''}${nullable ? '?' : ''}';
+  String get classNameWithGenericsForProtocol {
+    return '$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenericsForProtocol).join(',')}>' : ''}${nullable ? '?' : ''}';
   }
 }
 
