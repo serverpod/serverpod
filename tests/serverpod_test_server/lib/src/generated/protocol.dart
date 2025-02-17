@@ -7612,14 +7612,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is List<int>) {
       return 'List<int>';
     }
-    if (data is List<int>) {
-      return 'List<int>';
-    }
     if (data is List<String>?) {
       return 'List<String>?';
-    }
-    if (data is List<int>) {
-      return 'List<int>';
     }
     if (data is List<List<int>>) {
       return 'List<List<int>>';
@@ -7668,9 +7662,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data is List<_i133.ByteData?>) {
       return 'List<ByteData?>';
-    }
-    if (data is List<_i135.SimpleData>) {
-      return 'List<SimpleData>';
     }
     if (data is List<_i135.SimpleData?>) {
       return 'List<SimpleData?>';
@@ -7759,38 +7750,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is Map<String, Duration?>) {
       return 'Map<String,Duration?>';
     }
-    if (data is List<String?>) {
-      return 'List<String?>';
-    }
-    if (data is List<String?>) {
-      return 'List<String?>';
-    }
-    if (data is List<String?>) {
-      return 'List<String?>';
-    }
-    if (data is List<int>) {
-      return 'List<int>';
-    }
-    if (data is List<_i135.SimpleData>) {
-      return 'List<SimpleData>';
-    }
     if (data is List<_i3.UserInfo>) {
       return 'List<UserInfo>';
-    }
-    if (data is List<_i135.SimpleData>?) {
-      return 'List<SimpleData>?';
-    }
-    if (data is List<_i135.SimpleData?>) {
-      return 'List<SimpleData?>';
     }
     if (data is Set<int>) {
       return 'Set<int>';
     }
     if (data is Set<_i135.SimpleData>) {
       return 'Set<SimpleData>';
-    }
-    if (data is Set<int>) {
-      return 'Set<int>';
     }
     if (data is Set<Set<int>>) {
       return 'Set<Set<int>>';
@@ -7843,9 +7810,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is Set<_i133.ByteData?>) {
       return 'Set<ByteData?>';
     }
-    if (data is Set<_i135.SimpleData>) {
-      return 'Set<SimpleData>';
-    }
     if (data is Set<_i135.SimpleData?>) {
       return 'Set<SimpleData?>';
     }
@@ -7854,24 +7818,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data is Set<Duration?>) {
       return 'Set<Duration?>';
-    }
-    if (data is List<String?>) {
-      return 'List<String?>';
-    }
-    if (data is List<int>) {
-      return 'List<int>';
-    }
-    if (data is List<_i135.SimpleData>) {
-      return 'List<SimpleData>';
-    }
-    if (data is List<_i135.SimpleData>) {
-      return 'List<SimpleData>';
-    }
-    if (data is List<_i135.SimpleData>) {
-      return 'List<SimpleData>';
-    }
-    if (data is List<int>) {
-      return 'List<int>';
     }
     return null;
   }
@@ -8317,14 +8263,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'List<int>') {
       return deserialize<List<int>>(data['data']);
     }
-    if (dataClassName == 'List<int>') {
-      return deserialize<List<int>>(data['data']);
-    }
     if (dataClassName == 'List<String>?') {
       return deserialize<List<String>?>(data['data']);
-    }
-    if (dataClassName == 'List<int>') {
-      return deserialize<List<int>>(data['data']);
     }
     if (dataClassName == 'List<List<int>>') {
       return deserialize<List<List<int>>>(data['data']);
@@ -8373,9 +8313,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'List<ByteData?>') {
       return deserialize<List<_i133.ByteData?>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i135.SimpleData>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData?>') {
       return deserialize<List<_i135.SimpleData?>>(data['data']);
@@ -8464,38 +8401,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Map<String,Duration?>') {
       return deserialize<Map<String, Duration?>>(data['data']);
     }
-    if (dataClassName == 'List<String?>') {
-      return deserialize<List<String?>>(data['data']);
-    }
-    if (dataClassName == 'List<String?>') {
-      return deserialize<List<String?>>(data['data']);
-    }
-    if (dataClassName == 'List<String?>') {
-      return deserialize<List<String?>>(data['data']);
-    }
-    if (dataClassName == 'List<int>') {
-      return deserialize<List<int>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i135.SimpleData>>(data['data']);
-    }
     if (dataClassName == 'List<UserInfo>') {
       return deserialize<List<_i3.UserInfo>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>?') {
-      return deserialize<List<_i135.SimpleData>?>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData?>') {
-      return deserialize<List<_i135.SimpleData?>>(data['data']);
     }
     if (dataClassName == 'Set<int>') {
       return deserialize<Set<int>>(data['data']);
     }
     if (dataClassName == 'Set<SimpleData>') {
       return deserialize<Set<_i135.SimpleData>>(data['data']);
-    }
-    if (dataClassName == 'Set<int>') {
-      return deserialize<Set<int>>(data['data']);
     }
     if (dataClassName == 'Set<Set<int>>') {
       return deserialize<Set<Set<int>>>(data['data']);
@@ -8548,9 +8461,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Set<ByteData?>') {
       return deserialize<Set<_i133.ByteData?>>(data['data']);
     }
-    if (dataClassName == 'Set<SimpleData>') {
-      return deserialize<Set<_i135.SimpleData>>(data['data']);
-    }
     if (dataClassName == 'Set<SimpleData?>') {
       return deserialize<Set<_i135.SimpleData?>>(data['data']);
     }
@@ -8559,24 +8469,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'Set<Duration?>') {
       return deserialize<Set<Duration?>>(data['data']);
-    }
-    if (dataClassName == 'List<String?>') {
-      return deserialize<List<String?>>(data['data']);
-    }
-    if (dataClassName == 'List<int>') {
-      return deserialize<List<int>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i135.SimpleData>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i135.SimpleData>>(data['data']);
-    }
-    if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i135.SimpleData>>(data['data']);
-    }
-    if (dataClassName == 'List<int>') {
-      return deserialize<List<int>>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
