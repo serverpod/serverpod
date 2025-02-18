@@ -68,14 +68,3 @@ class MigrationVersionAlreadyExistsException implements Exception {
     required this.directoryPath,
   });
 }
-
-/// Exception thrown when a module name cannot be determined from the server package name.
-class LocateModuleNameFromServerPackageNameException implements Exception {
-  /// The package name that doesn't have a suffix of '_server'.
-  final String packageName;
-
-  /// Creates a new [LocateModuleNameFromServerPackageNameException].
-  LocateModuleNameFromServerPackageNameException({
-    required this.packageName,
-  });
-}

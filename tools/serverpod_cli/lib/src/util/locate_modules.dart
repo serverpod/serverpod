@@ -177,7 +177,19 @@ String moduleNameFromServerPackageName(String packageDirName) {
   }
   if (!packageName.endsWith(_serverSuffix)) {
     throw LocateModuleNameFromServerPackageNameException(
-        packageName: packageName);
+      packageName: packageName,
+    );
   }
   return packageName.substring(0, packageName.length - _serverSuffix.length);
+}
+
+/// Exception thrown when a module name cannot be determined from the server package name.
+class LocateModuleNameFromServerPackageNameException implements Exception {
+  /// The package name that doesn't have a suffix of '_server'.
+  final String packageName;
+
+  /// Creates a new [LocateModuleNameFromServerPackageNameException].
+  LocateModuleNameFromServerPackageNameException({
+    required this.packageName,
+  });
 }

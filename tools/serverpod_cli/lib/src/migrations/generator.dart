@@ -21,6 +21,7 @@ class MigrationGenerator {
     required this.directory,
     required this.projectName,
   });
+
   final Directory directory;
   final String projectName;
 
@@ -324,7 +325,9 @@ class MigrationGenerator {
     required Directory directory,
   }) async {
     var modulePaths = await locateAllModulePaths(
-        directory: directory, currentProjectName: projectName);
+      directory: directory,
+      currentProjectName: projectName,
+    );
 
     var selectedModules = modules.where(
       (module) => module.migrationVersions.isNotEmpty,
