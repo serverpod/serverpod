@@ -10,11 +10,11 @@ void run(List<String> args) async {
 
   // You can set the serverId using either:
   // 1. A command-line flag: --server-id=<value>
-  // 2. The 'SERVER_ID' environment variable
+  // 2. The 'SERVERPOD_SERVER_ID' environment variable
   //
   // If both are set, the command-line flag takes precedence.
   // If neither is set, the default value 'default' will be used.
-  final serverId = Platform.environment['SERVER_ID'] ?? 'default';
+  final serverId = Platform.environment['SERVERPOD_SERVER_ID'] ?? 'default';
   final pod = Serverpod(
     args,
     Protocol(),
