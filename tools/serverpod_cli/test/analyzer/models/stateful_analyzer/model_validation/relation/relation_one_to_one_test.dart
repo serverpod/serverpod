@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+import '../../../../../test_variants.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -922,5 +923,81 @@ void main() {
         'The referenced field "userId" does not have a unique index which is required to be used in a one-to-one relation.',
       );
     }, skip: errors.isEmpty);
+  });
+
+  testWithVariants(
+      'Given a class with an id relation,',
+      describeVariant: (v) =>
+          'when the class is${v.classIsServerOnly ? '' : ' not'} serverOnly'
+          ' and the id field is${v.nullableField ? '' : ' not'} nullable'
+          '${v.fieldScope == null ? '' : ' and the field scope is ${v.fieldScope!.name}'}'
+          ', then it should cause ${v.errors.length} error(s)',
+      const [
+        (
+          classIsServerOnly: true,
+          fieldScope: null,
+          nullableField: true,
+          errors: []
+        ),
+        (
+          classIsServerOnly: true,
+          fieldScope: null,
+          nullableField: false,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.all,
+          nullableField: true,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.all,
+          nullableField: false,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.serverOnly,
+          nullableField: true,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.serverOnly,
+          nullableField: false,
+          errors: [
+            'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".',
+          ]
+        ),
+      ], (variant) {
+    var collector = CodeGenerationCollector();
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      (ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        ${variant.classIsServerOnly ? 'serverOnly: true' : ''}
+        fields:
+          parentId: int${variant.nullableField ? '?' : ''}, relation(parent=parent) ${variant.fieldScope == null ? '' : ', scope=${variant.fieldScope!.name}'}
+        ''',
+      ).build())
+    ];
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(collector.errors, hasLength(variant.errors.length));
+    expect(collector.errors.map((e) => e.message), variant.errors);
   });
 }
