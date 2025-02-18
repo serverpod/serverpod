@@ -165,6 +165,7 @@ class Restrictions {
       'Client',
       'Endpoints',
       'Protocol',
+      'Record',
     };
     if (reservedClassNames.contains(className)) {
       return [
@@ -913,10 +914,12 @@ class Restrictions {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
         'The field has an invalid datatype "$typeName".',
-        span?.subspan(
-          span.text.indexOf(typeName),
-          span.text.indexOf(typeName) + typeName.length,
-        ),
+        span?.text.contains(typeName) == true
+            ? span?.subspan(
+                span.text.indexOf(typeName),
+                span.text.indexOf(typeName) + typeName.length,
+              )
+            : span,
       ));
     }
 
@@ -950,6 +953,21 @@ class Restrictions {
         errors.add(
           SourceSpanSeverityException(
             'The Set type must have one generic type defined (e.g. Set<String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.isRecordType) {
+      if (fieldType.generics.isNotEmpty) {
+        errors.addAll(
+          fieldType.generics.expand(
+            (field) => _validateFieldDataType(field, span),
+          ),
+        );
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+            'A record type must have at least one field defined (e.g. (int,)).',
             span,
           ),
         );
@@ -1398,7 +1416,8 @@ class Restrictions {
   bool _isValidType(TypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
-        _isCustomType(type);
+        _isCustomType(type) ||
+        (type.isRecordType && type.generics.every(_isValidType));
   }
 
   bool _isUnsupportedType(TypeDefinition type) {

@@ -1,10 +1,11 @@
 import 'package:super_string/super_string.dart';
 
 /// Splits a string on the separator token unless the token is inside
-/// brackets, angle brackets, ( ) and < >, single quotes '', or double quotes "".
+/// brackets, angle brackets, ( ) and < >, single quotes '', or double quotes "", or curly braces {}.
 List<String> splitIgnoringBracketsAndQuotes(
   String input, {
   String separator = ',',
+  bool includeEmpty = false,
 }) {
   List<String> result = [];
   StringBuffer current = StringBuffer();
@@ -34,9 +35,9 @@ List<String> splitIgnoringBracketsAndQuotes(
           insideSingleQuote = false;
         }
       } else {
-        if (char == '<' || char == '(') {
+        if (char == '<' || char == '(' || char == '{') {
           depth++;
-        } else if (char == '>' || char == ')') {
+        } else if (char == '>' || char == ')' || char == '}') {
           depth--;
         } else if (char == '"') {
           depth++;
@@ -49,7 +50,7 @@ List<String> splitIgnoringBracketsAndQuotes(
     }
   }
 
-  if (current.isNotEmpty) {
+  if (current.toString().trim().isNotEmpty || includeEmpty) {
     result.add(current.toString().trim());
   }
 

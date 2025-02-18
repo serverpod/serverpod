@@ -206,6 +206,19 @@ class TypeDefinition {
         recordFieldName: recordFieldName,
       );
 
+  /// Returns this [TypeDefinition] as a named record field
+  TypeDefinition asNamedRecordField(String recordFieldName) => TypeDefinition(
+        className: className,
+        url: url,
+        nullable: nullable,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics,
+        enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
+        recordFieldName: recordFieldName,
+      );
+
   static String getRef(SerializableModelDefinition model) {
     if (model is ModelClassDefinition) {
       var sealedTopNode = model.sealedTopNode;
@@ -611,6 +624,7 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
+    if (className == 'Record') return ValueType.record;
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
   }
@@ -681,6 +695,10 @@ TypeDefinition parseType(
 }) {
   var trimmedInput = input.trim();
 
+  if (_describesRecord(trimmedInput)) {
+    return _parseRecord(trimmedInput, extraClasses: extraClasses);
+  }
+
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
 
@@ -716,6 +734,115 @@ TypeDefinition parseType(
   );
 }
 
+bool _describesRecord(String trimmedInput) {
+  if (trimmedInput.startsWith('(') &&
+      (trimmedInput.endsWith(')') ||
+          trimmedInput.replaceAll(' ', '').endsWith(')?'))) {
+    var (fields, _) = _unwrapRecord(trimmedInput);
+
+    var splitFields = splitIgnoringBracketsAndQuotes(
+      fields,
+      includeEmpty: true,
+    );
+
+    // Field into split from string must have at least 2 parts,
+    // meaning the record is using a `,` even if it has only 1 fields, e.g. `(int,)`
+    // or some named parameter like `({String foo})`.
+    return splitFields.length > 1 ||
+        (splitFields.length == 1 &&
+            splitFields.single.startsWith('{') &&
+            splitFields.single.endsWith('}'));
+  }
+
+  return false;
+}
+
+(String fields, bool nullable) _unwrapRecord(String trimmedRecordInput) {
+  var start = trimmedRecordInput.indexOf('(');
+  var end = trimmedRecordInput.lastIndexOf(')');
+  var nullable = trimmedRecordInput.endsWith('?');
+  var fields = trimmedRecordInput.substring(start + 1, end);
+
+  return (fields, nullable);
+}
+
+TypeDefinition _parseRecord(
+  String trimmedRecordInput, {
+  List<TypeDefinition>? extraClasses,
+}) {
+  assert(trimmedRecordInput.startsWith('('));
+  assert(trimmedRecordInput.endsWith(')') || trimmedRecordInput.endsWith('?'));
+
+  var (fields, nullable) = _unwrapRecord(trimmedRecordInput);
+
+  var splitFields = splitIgnoringBracketsAndQuotes(fields);
+
+  var recordFields = <TypeDefinition>[];
+
+  for (var splitField in splitFields) {
+    if (splitField.startsWith('{')) {
+      recordFields.addAll(_parseNamedRecordFields(
+        splitField,
+        extraClasses: extraClasses,
+      ));
+    } else {
+      // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
+
+      var parts = splitIgnoringBracketsAndQuotes(splitField, separator: ' ');
+
+      if (parts.length > 1 && !parts.last.startsWith('<')) {
+        // if the last part is a name (and not a generic parameter), then we need to drop that
+
+        recordFields.add(
+          parseType(
+            parts.take(parts.length - 1).join(),
+            extraClasses: extraClasses,
+          ),
+        );
+      } else {
+        recordFields.add(parseType(splitField, extraClasses: extraClasses));
+      }
+    }
+  }
+
+  return TypeDefinition(
+    className: RecordKeyword.className,
+    generics: recordFields,
+    nullable: nullable,
+  );
+}
+
+Iterable<TypeDefinition> _parseNamedRecordFields(
+  String namedRecordFieldsPart, {
+  List<TypeDefinition>? extraClasses,
+}) sync* {
+  assert(namedRecordFieldsPart.startsWith('{'));
+  assert(namedRecordFieldsPart.endsWith('}'));
+
+  var start = namedRecordFieldsPart.indexOf('{');
+  var end = namedRecordFieldsPart.lastIndexOf('}');
+  var typesMap = namedRecordFieldsPart.substring(start + 1, end);
+
+  var splitFields = splitIgnoringBracketsAndQuotes(typesMap);
+
+  for (var splitField in splitFields) {
+    if (splitField.startsWith('(')) {
+      yield parseType(splitField, extraClasses: extraClasses);
+    } else {
+      // e.g. `String foo`
+      var parts = splitField.split(' ');
+      assert(parts.length >= 2);
+
+      var type = parseType(
+        parts.take(parts.length - 1).join(),
+        extraClasses: extraClasses,
+      );
+
+      yield type.asNamedRecordField(parts.last);
+    }
+  }
+}
+
 int _findLastClassToken(int start, String input, bool isNullable) {
   if (start != -1) return start;
   if (isNullable) return input.length - 1;
@@ -747,6 +874,7 @@ enum ValueType {
   list,
   set,
   map,
+  record,
   isEnum,
   classType,
   uri;
