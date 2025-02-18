@@ -16,6 +16,7 @@ fields:
   anObjectKey: Map<Types, String>?
   aMapKey: Map<Map<Types, String>, String>?
   aListKey: Map<List<Types>, String>?
+  aRecordKey: Map<(String,), String>?
   # values
   anIntValue: Map<String, int>?
   aBoolValue: Map<String, bool>?
@@ -32,3 +33,4 @@ fields:
   anObjectValue: Map<String, Types>?
   aMapValue: Map<String, Map<String, Types>>?
   aListValue: Map<String, List<Types>>?
+  aRecordValue: Map<String, (String,)>?

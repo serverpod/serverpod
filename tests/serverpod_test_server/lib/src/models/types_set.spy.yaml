@@ -14,3 +14,4 @@ fields:
   anObject: Set<Types>?
   aMap: Set<Map<String, Types>>?
   aList: Set<List<Types>>?
+  aRecord: Set<(int,)>?

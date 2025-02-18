@@ -323,6 +323,44 @@ void main() {
           );
         },
       );
+
+      test(
+        'when calling modelWithRecordsEchoStream then should return the models',
+        () async {
+          final lists = <TypesRecord?>[
+            TypesRecord(anInt: (1,)),
+            TypesRecord(aUri: (Uri.parse('http://serverpod.dev'),)),
+            null,
+            TypesRecord(aSimpleData: (SimpleData(num: 2),)),
+          ];
+
+          var result = endpoints.testTools.modelWithRecordsEchoStream(
+            sessionBuilder,
+            lists.first,
+            Stream.fromIterable(lists.skip(1)),
+          );
+
+          expect(
+            result,
+            emitsInOrder(
+              [
+                isA<TypesRecord>().having((m) => m.anInt, 'anInt', (1,)),
+                isA<TypesRecord>().having(
+                  (m) => m.aUri?.$1,
+                  'aUri',
+                  Uri.parse('http://serverpod.dev'),
+                ),
+                isNull,
+                isA<TypesRecord>().having(
+                  (m) => m.aSimpleData?.$1,
+                  'aSimpleData',
+                  isA<SimpleData>().having((s) => s.num, 'num', 2),
+                ),
+              ],
+            ),
+          );
+        },
+      );
     },
   );
 }
