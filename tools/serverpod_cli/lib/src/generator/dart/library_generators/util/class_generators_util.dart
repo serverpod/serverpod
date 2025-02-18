@@ -68,7 +68,7 @@ TypeReference typeOrderByListBuilder(
 }
 
 Expression buildFromJsonForField(
-  SerializableModelFieldDefinition field,
+  SerializableModelFieldDefinition<ClassTypeDefinition> field,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,

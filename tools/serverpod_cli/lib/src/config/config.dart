@@ -358,7 +358,7 @@ class GeneratorConfig implements ModelLoadConfig {
             parseType(
               extraClassConfig,
               extraClasses: null,
-            ),
+            ) as ClassTypeDefinition,
           );
         }
       } on SourceSpanException catch (_) {

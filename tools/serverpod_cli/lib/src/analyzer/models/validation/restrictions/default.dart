@@ -26,7 +26,8 @@ class DefaultValueRestriction extends ValueRestriction {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     var defaultValueType = field.type.defaultValueType;
@@ -424,7 +425,7 @@ class DefaultValueRestriction extends ValueRestriction {
   List<SourceSpanSeverityException> _enumValidation(
     dynamic value,
     SourceSpan? span,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
   ) {
     var errors = <SourceSpanSeverityException>[];
 

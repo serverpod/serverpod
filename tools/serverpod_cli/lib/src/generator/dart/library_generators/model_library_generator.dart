@@ -47,7 +47,8 @@ class SerializableModelLibraryGenerator {
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
-    var fields = classDefinition.fieldsIncludingInherited;
+    var fields = classDefinition.fieldsIncludingInherited
+        .cast<SerializableModelFieldDefinition<ClassTypeDefinition>>();
     var sealedTopNode = classDefinition.sealedTopNode;
 
     var buildRepository = BuildRepositoryClass(
@@ -80,7 +81,8 @@ class SerializableModelLibraryGenerator {
             className,
             classDefinition,
             tableName,
-            fields,
+            fields
+                .cast<SerializableModelFieldDefinition<ClassTypeDefinition>>(),
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -155,7 +157,7 @@ class SerializableModelLibraryGenerator {
     String className,
     ClassDefinition classDefinition,
     String? tableName,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
@@ -324,7 +326,7 @@ class SerializableModelLibraryGenerator {
     String className,
     ClassDefinition classDefinition,
     String? tableName,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
   ) {
     return Class((classBuilder) {
       classBuilder
@@ -497,7 +499,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildCopyWithMethod(
     ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
   ) {
     return Method(
       (m) {
@@ -548,7 +550,8 @@ class SerializableModelLibraryGenerator {
 
   Map<String, Expression> _buildCopyWithAssignment(
     ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>>
+        fields, // TODO(tp): Why is this passed separately?
   ) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
@@ -751,7 +754,8 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassIncludeMethod(
       String className,
-      Iterable<SerializableModelFieldDefinition> relationFields,
+      Iterable<SerializableModelFieldDefinition<ClassTypeDefinition>>
+          relationFields,
       List<String> subDirParts) {
     return Method(
       (m) => m
@@ -871,7 +875,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelClassToJsonMethod(
-      Iterable<SerializableModelFieldDefinition> fields) {
+      Iterable<SerializableModelFieldDefinition<ClassTypeDefinition>> fields) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
@@ -897,7 +901,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelClassToJsonForProtocolMethod(
-    Iterable<SerializableModelFieldDefinition> fields,
+    Iterable<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
   ) {
     return Method(
       (m) {
@@ -1056,7 +1060,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Code _createToJsonBodyFromFields(
-    Iterable<SerializableModelFieldDefinition> fields,
+    Iterable<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String toJsonMethodName,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
@@ -1084,7 +1088,7 @@ class SerializableModelLibraryGenerator {
 
   Constructor _buildModelClassFromJsonConstructor(
       String className,
-      List<SerializableModelFieldDefinition> fields,
+      List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
       ClassDefinition classDefinition) {
     return Constructor((c) {
       c.factory = true;
@@ -1109,7 +1113,7 @@ class SerializableModelLibraryGenerator {
 
   Constructor _buildModelClassConstructor(
     ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String? tableName,
   ) {
     return Constructor((c) {
@@ -1123,7 +1127,7 @@ class SerializableModelLibraryGenerator {
         setAsToThis: true,
       ));
 
-      for (SerializableModelFieldDefinition field in fields) {
+      for (var field in fields) {
         if (!field.hasDefaults) continue;
         if (classDefinition.inheritedFields.contains(field)) continue;
 
@@ -1226,7 +1230,7 @@ class SerializableModelLibraryGenerator {
 
   Code? _getDefaultValue(
     ClassDefinition classDefinition,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
   ) {
     var defaultValue = field.defaultModelValue;
 
@@ -1359,7 +1363,7 @@ class SerializableModelLibraryGenerator {
   Class _buildModelTableClass(
       String className,
       String tableName,
-      List<SerializableModelFieldDefinition> fields,
+      List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
       ClassDefinition classDefinition) {
     return Class((c) {
       c.name = '${className}Table';
@@ -1455,7 +1459,7 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelTableClassFields(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     List<String> subDirParts,
   ) {
     List<Field> tableFields = [];
@@ -1527,7 +1531,7 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Method> _buildModelTableClassRelationGetters(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
     List<String> subDirParts,
   ) {
@@ -1626,7 +1630,7 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Method> _buildModelTableClassManyRelationGetters(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     List<Method> getters = [];
@@ -1741,7 +1745,7 @@ class SerializableModelLibraryGenerator {
 
   Constructor _buildModelTableClassConstructor(
       String tableName,
-      List<SerializableModelFieldDefinition> fields,
+      List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
       ClassDefinition classDefinition) {
     return Constructor((constructorBuilder) {
       constructorBuilder.optionalParameters.add(
@@ -1769,7 +1773,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildModelTableGeneralFieldExpression(
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
   ) {
     assert(!field.type.isEnumType);
     return TypeReference((t) => t
@@ -1784,7 +1788,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildModelTableEnumFieldTypeReference(
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
   ) {
     assert(field.type.isEnumType);
     var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
@@ -1814,7 +1818,7 @@ class SerializableModelLibraryGenerator {
 
   Class _buildModelIncludeClass(
     String className,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
@@ -1982,7 +1986,8 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelIncludeClassFields(
-      List<SerializableModelFieldDefinition> objectRelationFields,
+      List<SerializableModelFieldDefinition<ClassTypeDefinition>>
+          objectRelationFields,
       ClassDefinition classDefinition) {
     List<Field> modelIncludeClassFields = [];
     for (var field in objectRelationFields) {
@@ -2012,7 +2017,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelIncludeClassConstructor(
-    List<SerializableModelFieldDefinition> relationFields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> relationFields,
     ClassDefinition classDefinition,
   ) {
     return Constructor((constructorBuilder) {

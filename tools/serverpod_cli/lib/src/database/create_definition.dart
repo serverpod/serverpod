@@ -28,8 +28,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
                   name: column.name,
-                  columnType:
-                      ColumnType.values.byName(column.type.databaseTypeEnum),
+                  columnType: ColumnType.values.byName((column
+                          as SerializableModelFieldDefinition<
+                              ClassTypeDefinition>)
+                      .type
+                      .databaseTypeEnum),
                   // The id column is not null, since it is auto incrementing.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
@@ -118,7 +121,7 @@ void _sortTableDefinitions(List<TableDefinition> tables) {
 }
 
 String? _getColumnDefault(
-  SerializableModelFieldDefinition column,
+  SerializableModelFieldDefinition<ClassTypeDefinition> column,
   ClassDefinition classDefinition,
   ColumnType type,
 ) {

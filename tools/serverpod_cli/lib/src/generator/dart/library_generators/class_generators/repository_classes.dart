@@ -80,7 +80,7 @@ class BuildRepositoryClass {
 
   Class buildModelAttachRepositoryClass(
     String className,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -101,7 +101,7 @@ class BuildRepositoryClass {
 
   Class buildModelAttachRowRepositoryClass(
     String className,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -122,7 +122,7 @@ class BuildRepositoryClass {
 
   Class buildModelDetachRepositoryClass(
     String className,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -143,7 +143,7 @@ class BuildRepositoryClass {
 
   Class buildModelDetachRowRepositoryClass(
     String className,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -910,7 +910,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildAttachMethods(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -924,7 +924,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildAttachRowMethods(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -948,7 +948,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachFromListRelationField(
     String className,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1026,7 +1026,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachRowFromListRelationField(
     String className,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1099,7 +1099,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachRowFromObjectRelationField(
     String className,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1278,7 +1278,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildDetachMethods(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -1292,7 +1292,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildDetachRowMethods(
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition<ClassTypeDefinition>> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -1316,7 +1316,7 @@ class BuildRepositoryClass {
 
   Method _buildDetachFromListRelationField(
     String className,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1390,7 +1390,7 @@ class BuildRepositoryClass {
 
   Method _buildDetachRowFromListRelationField(
     String className,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1464,8 +1464,11 @@ class BuildRepositoryClass {
     });
   }
 
-  Method _buildDetachRowFromObjectRelationField(String className,
-      SerializableModelFieldDefinition field, ClassDefinition classDefinition) {
+  Method _buildDetachRowFromObjectRelationField(
+    String className,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
+    ClassDefinition classDefinition,
+  ) {
     return Method((methodBuilder) {
       var classFieldName = className.toCamelCase(isLowerCamelCase: true);
       var fieldName = field.name;

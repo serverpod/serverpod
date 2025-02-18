@@ -172,12 +172,12 @@ class ClassDefinition extends SerializableModelDefinition {
 }
 
 /// Describes a single field of a [ClassDefinition].
-class SerializableModelFieldDefinition {
+class SerializableModelFieldDefinition<T extends TypeDefinition> {
   /// The name of the field.
   final String name;
 
   /// The type of the field.
-  ClassTypeDefinition type;
+  T type;
 
   /// The scope of the field.
   /// It tells us if the field should only be present
@@ -390,7 +390,7 @@ class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the data for the relation.
   /// Meaning either an object of the type of the current object.
   /// If this is null then there is no link from the other side.
-  SerializableModelFieldDefinition? foreignContainerField;
+  SerializableModelFieldDefinition<ClassTypeDefinition>? foreignContainerField;
 
   final bool nullableRelation;
 

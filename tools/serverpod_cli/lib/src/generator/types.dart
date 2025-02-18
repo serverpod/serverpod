@@ -244,7 +244,7 @@ class ClassTypeDefinition implements TypeDefinition {
   /// and [className] is separated by ':'.
   factory ClassTypeDefinition.mixedUrlAndClassName({
     required String mixed,
-    List<ClassTypeDefinition> generics = const [],
+    List<TypeDefinition> generics = const [],
     required bool nullable,
     bool customClass = false,
   }) {
@@ -662,16 +662,25 @@ class ClassTypeDefinition implements TypeDefinition {
 /// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
 /// [ClassTypeDefinition.customClass].
-ClassTypeDefinition parseType(
+TypeDefinition parseType(
   String input, {
   required List<ClassTypeDefinition>? extraClasses,
 }) {
+  print('input $input');
+
   var trimmedInput = input.trim();
+
+  if (trimmedInput.startsWith('(') && trimmedInput.endsWith(')') ||
+      trimmedInput.replaceAll(' ', '').endsWith(')?') &&
+          // Return this should check whether the `,` is really between types on the top level
+          trimmedInput.contains(',')) {
+    return _parseRecord(trimmedInput, extraClasses: extraClasses);
+  }
 
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
 
-  var generics = <ClassTypeDefinition>[];
+  var generics = <TypeDefinition>[];
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
@@ -701,6 +710,32 @@ ClassTypeDefinition parseType(
     generics: generics,
     customClass: extraClasses == null,
   );
+}
+
+RecordTypeDefinition _parseRecord(
+  String trimmedRecordInput, {
+  List<ClassTypeDefinition>? extraClasses,
+}) {
+  assert(trimmedRecordInput.startsWith('('));
+  assert(trimmedRecordInput.endsWith(')') || trimmedRecordInput.endsWith('?'));
+
+  var start = trimmedRecordInput.indexOf('(');
+  var end = trimmedRecordInput.lastIndexOf(')');
+  var internalTypes = trimmedRecordInput.substring(start + 1, end);
+
+  print('_parseRecord');
+  print(internalTypes);
+  print(splitIgnoringBracketsAndQuotes(internalTypes));
+
+  return RecordTypeDefinition(
+    dartType: RecordType(
+      positional: [],
+      named: {},
+      nullabilitySuffix: NullabilitySuffix.none,
+    ),
+  );
+
+  // throw 'no l';
 }
 
 int _findLastClassToken(int start, String input, bool isNullable) {

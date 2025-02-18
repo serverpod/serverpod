@@ -72,7 +72,7 @@ class ModelParser {
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
-      type: classType,
+      type: classType as ClassTypeDefinition,
     );
   }
 
@@ -95,7 +95,7 @@ class ModelParser {
     var enumType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
-    );
+    ) as ClassTypeDefinition;
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -244,13 +244,28 @@ class ModelParser {
       node,
     );
 
+    if (typeResult is RecordTypeDefinition) {
+      return [
+        SerializableModelFieldDefinition<RecordTypeDefinition>(
+          name: fieldName,
+          relation: relation,
+          shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
+          scope: scope,
+          type: typeResult,
+          documentation: fieldDocumentation,
+          defaultModelValue: defaultModelValue,
+          defaultPersistValue: defaultPersistValue,
+        )
+      ];
+    }
+
     return [
-      SerializableModelFieldDefinition(
+      SerializableModelFieldDefinition<ClassTypeDefinition>(
         name: fieldName,
         relation: relation,
         shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
         scope: scope,
-        type: typeResult,
+        type: typeResult as ClassTypeDefinition,
         documentation: fieldDocumentation,
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
@@ -267,9 +282,11 @@ class ModelParser {
 
   static RelationDefinition? _parseRelation(
     String fieldName,
-    ClassTypeDefinition typeResult,
+    TypeDefinition typeResult,
     YamlMap node,
   ) {
+    if (typeResult is! ClassTypeDefinition) return null;
+
     if (!_isRelation(node)) return null;
 
     var relationName = _parseRelationName(node);
