@@ -46,7 +46,7 @@ class LibraryGenerator {
     // exports
     library.directives.addAll([
       for (var classInfo in topLevelModels)
-        Directive.export(TypeDefinition.getRef(classInfo)),
+        Directive.export(ClassTypeDefinition.getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -122,20 +122,20 @@ class LibraryGenerator {
             for (var classInfo in unsealedModels)
               refer(
                   classInfo.className,
-                  TypeDefinition.getRef(
+                  ClassTypeDefinition.getRef(
                       classInfo)): Code.scope((a) =>
-                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) as T'),
             for (var classInfo in unsealedModels)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
-                    ..url = TypeDefinition.getRef(classInfo)
+                    ..url = ClassTypeDefinition.getRef(classInfo)
                     ..isNullable = true,
                 )
               ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in unsealedModels)
@@ -210,7 +210,7 @@ class LibraryGenerator {
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
             _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode), 'serverpod'),
@@ -236,7 +236,7 @@ class LibraryGenerator {
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) => 'if(dataClassName == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
+                'return deserialize<${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)
             _buildDeserializeByClassNameDelegation(
               serverpodProtocolUrl(serverCode),
@@ -279,8 +279,8 @@ class LibraryGenerator {
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'
-                          'return ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}.t;'),
+                          'case ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}:'
+                          'return ${a(refer(classInfo.className, ClassTypeDefinition.getRef(classInfo)))}.t;'),
                   const Code('}'),
                 ]),
               const Code('return null;'),
@@ -962,7 +962,7 @@ class LibraryGenerator {
     return methodStreamConnectors;
   }
 
-  Expression _buildMethodStreamReturnType(TypeDefinition returnType) {
+  Expression _buildMethodStreamReturnType(ClassTypeDefinition returnType) {
     var returnEnum = refer('MethodStreamReturnType', serverpodUrl(true));
     if (returnType.generics.first.isVoidType) {
       return returnEnum.property('voidType');

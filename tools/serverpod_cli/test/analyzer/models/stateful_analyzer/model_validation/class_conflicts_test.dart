@@ -57,7 +57,7 @@ void main() {
         ''',
       ).build(),
     ];
-    var extraClassDefinition = TypeDefinition(
+    var extraClassDefinition = ClassTypeDefinition(
         className: 'CustomClass',
         nullable: false,
         url: 'package:my_app_shared/my_app_shared.dart');

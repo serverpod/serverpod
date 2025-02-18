@@ -43,7 +43,7 @@ abstract base class MethodDefinition {
 
   /// The returned type of this method.
   /// This should always be a future.
-  final TypeDefinition returnType;
+  final EndpointTypeDefinition returnType;
 
   /// The required positional parameters of this method.
   final List<ParameterDefinition> parameters;
@@ -104,7 +104,7 @@ class ParameterDefinition {
   final String name;
 
   /// The type of the parameter.
-  final TypeDefinition type;
+  final EndpointTypeDefinition type;
 
   /// Whether this parameter is required.
   final bool required;

@@ -7,7 +7,6 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 sealed class SerializableModelDefinition {
   final String fileName;
   final String sourceFileName;
-  final String className;
   final List<String> subDirParts;
   final bool serverOnly;
   final TypeDefinition type;
@@ -15,7 +14,6 @@ sealed class SerializableModelDefinition {
   SerializableModelDefinition({
     required this.fileName,
     required this.sourceFileName,
-    required this.className,
     required this.serverOnly,
     required this.type,
     this.subDirParts = const [],
@@ -35,6 +33,8 @@ sealed class SerializableModelDefinition {
 /// See also:
 /// - [EnumDefinition]
 class ClassDefinition extends SerializableModelDefinition {
+  final String className;
+
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
@@ -71,7 +71,7 @@ class ClassDefinition extends SerializableModelDefinition {
   ClassDefinition({
     required super.fileName,
     required super.sourceFileName,
-    required super.className,
+    required this.className,
     required this.fields,
     required super.serverOnly,
     required this.manageMigration,
@@ -171,13 +171,15 @@ class ClassDefinition extends SerializableModelDefinition {
   }
 }
 
+// TODO: Also use union here ? -> probably not, as parsing still has to allow invalid combinations and then warn about it via the analyzer
+
 /// Describes a single field of a [ClassDefinition].
 class SerializableModelFieldDefinition {
   /// The name of the field.
   final String name;
 
   /// The type of the field.
-  TypeDefinition type;
+  ModelTypeDefinition type;
 
   /// The scope of the field.
   /// It tells us if the field should only be present
@@ -309,6 +311,11 @@ class SerializableModelIndexDefinition {
 
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableModelDefinition {
+  final String enumName;
+
+  @override
+  final EnumTypeDefinition type;
+
   /// The type of serialization this enum should use.
   final EnumSerialization serialized;
 
@@ -321,16 +328,22 @@ class EnumDefinition extends SerializableModelDefinition {
 
   /// Create a new [EnumDefinition].
   EnumDefinition({
-    required super.fileName,
-    required super.sourceFileName,
-    required super.className,
+    required this.enumName,
+    required String fileName,
+    required String sourceFileName,
+    required String className,
     required this.serialized,
     required this.values,
-    required super.serverOnly,
-    required super.type,
+    required bool serverOnly,
+    required this.type,
     super.subDirParts,
     this.documentation,
-  });
+  }) : super(
+          fileName: '',
+          sourceFileName: '',
+          serverOnly: false,
+          type: type,
+        );
 }
 
 /// A representation of a single value of a [EnumDefinition].

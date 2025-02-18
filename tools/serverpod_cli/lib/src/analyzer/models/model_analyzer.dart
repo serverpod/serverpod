@@ -38,7 +38,7 @@ class SerializableModelAnalyzer {
 
   /// Best effort attempt to extract a model definition from a yaml file.
   static SerializableModelDefinition? extractModelDefinition(
-      ModelSource modelSource, List<TypeDefinition> extraClasses) {
+      ModelSource modelSource, List<ClassTypeDefinition> extraClasses) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
       modelSource.yamlSourceUri,
     );

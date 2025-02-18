@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition
 
 class FieldDefinitionBuilder {
   String _name;
-  TypeDefinition _type;
+  ClassTypeDefinition _type;
   ModelFieldScopeDefinition _scope;
   RelationDefinition? _relation;
   bool _shouldPersist;
@@ -14,7 +14,7 @@ class FieldDefinitionBuilder {
 
   FieldDefinitionBuilder()
       : _name = 'name',
-        _type = TypeDefinition(
+        _type = ClassTypeDefinition(
           className: 'String',
           nullable: true,
         ),
@@ -30,7 +30,7 @@ class FieldDefinitionBuilder {
 
   FieldDefinitionBuilder withPrimaryKey() {
     _name = 'id';
-    _type = TypeDefinition.int;
+    _type = ClassTypeDefinition.int;
 
     return this;
   }
@@ -39,7 +39,7 @@ class FieldDefinitionBuilder {
     EnumDefinition enumDefinition, [
     bool nullable = false,
   ]) {
-    _type = TypeDefinition(
+    _type = ClassTypeDefinition(
       className: enumDefinition.className,
       nullable: nullable,
       enumDefinition: enumDefinition,
@@ -50,9 +50,9 @@ class FieldDefinitionBuilder {
   FieldDefinitionBuilder withTypeDefinition(
     String className, [
     bool nullable = false,
-    List<TypeDefinition> generics = const [],
+    List<ClassTypeDefinition> generics = const [],
   ]) {
-    _type = TypeDefinition(
+    _type = ClassTypeDefinition(
       className: className,
       nullable: nullable,
       generics: generics,
@@ -61,14 +61,14 @@ class FieldDefinitionBuilder {
   }
 
   FieldDefinitionBuilder withIdType([bool isNullable = false]) {
-    _type = TypeDefinition.int;
+    _type = ClassTypeDefinition.int;
     if (isNullable) {
       _type = _type.asNullable;
     }
     return this;
   }
 
-  FieldDefinitionBuilder withType(TypeDefinition type) {
+  FieldDefinitionBuilder withType(ClassTypeDefinition type) {
     _type = type;
     return this;
   }

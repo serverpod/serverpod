@@ -167,7 +167,7 @@ class Restrictions {
     }
 
     var duplicateExtraClass =
-        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+        config.extraClasses.cast<ClassTypeDefinition?>().firstWhere(
               (extraClass) => extraClass?.className == className,
               orElse: () => null,
             );
@@ -867,7 +867,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> _validateFieldDataType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
     SourceSpan? span,
   ) {
     var typeText = span?.text;
@@ -1381,17 +1381,17 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
+  bool _isValidType(ClassTypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
         _isCustomType(type);
   }
 
-  bool _isUnsupportedType(TypeDefinition type) {
+  bool _isUnsupportedType(ClassTypeDefinition type) {
     return blackListedTypes.contains(type.className);
   }
 
-  bool _isUnresolvedModuleType(TypeDefinition type) {
+  bool _isUnresolvedModuleType(ClassTypeDefinition type) {
     if (!type.isModuleType) return false;
 
     var moduleAlias = type.moduleAlias;
@@ -1400,7 +1400,7 @@ class Restrictions {
     return !parsedModels.moduleNames.contains(moduleAlias);
   }
 
-  bool _isModelType(TypeDefinition type) {
+  bool _isModelType(ClassTypeDefinition type) {
     var className = type.className;
 
     var definitions = parsedModels.classNames[className];
@@ -1418,7 +1418,7 @@ class Restrictions {
     return true;
   }
 
-  bool _isCustomType(TypeDefinition type) {
+  bool _isCustomType(ClassTypeDefinition type) {
     return config.extraClasses.any((c) => c.className == type.className);
   }
 
@@ -1429,7 +1429,7 @@ class Restrictions {
   }
 
   Set<ClassDefinition> _extractAllClassDefinitionsFromType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
   ) {
     var classDefinitions = <ClassDefinition>{};
 

@@ -1,7 +1,6 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:path/path.dart' as p;
+import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
@@ -17,39 +16,102 @@ const _moduleRef = 'module:';
 const _projectRef = 'project:';
 const _packageRef = 'package:';
 
+/// Base class for type definitions
+///
+/// One of
+/// - [EnumTypeDefinition]
+/// - [ClassTypeDefinition]
+///
+/// In parallel we have [ModelTypeDefinition] and [EndpointTypeDefinition],
+/// for their respective use-cases during analyzation.
+sealed class TypeDefinition {
+  bool get nullable;
+
+  String get databaseType;
+
+  String get columnType;
+
+  TypeReference reference(
+    bool serverCode, {
+    bool? nullable,
+    List<String> subDirParts = const [],
+    required GeneratorConfig config,
+    String? typeSuffix,
+  });
+}
+
+final class EnumTypeDefinition implements TypeDefinition {
+  final String typeName;
+
+  @override
+  // TODO: implement nullable
+  final bool nullable;
+
+  final EnumDefinition enumDefinition;
+
+  EnumTypeDefinition({
+    required this.typeName,
+    required this.nullable,
+    required this.enumDefinition,
+  });
+
+  @override
+  // TODO: implement databaseType
+  String get databaseType {
+    var enumSerialization = enumDefinition.serialized;
+
+    switch (enumSerialization) {
+      case EnumSerialization.byName:
+        return 'text';
+      case EnumSerialization.byIndex:
+        return 'bigint';
+    }
+  }
+
+  @override
+  String get columnType => 'ColumnSerializable';
+
+  @override
+  TypeReference reference(
+    bool serverCode, {
+    bool? nullable,
+    List<String> subDirParts = const [],
+    required GeneratorConfig config,
+    String? typeSuffix,
+  }) {
+    // TODO: implement reference
+    throw UnimplementedError();
+  }
+}
+
 /// Contains information about the type of fields, arguments and return values.
-class TypeDefinition {
+final class ClassTypeDefinition implements TypeDefinition {
   /// The class name of the type.
   final String className;
 
   /// The generics the type has.
-  final List<TypeDefinition> generics;
+  final List<ClassTypeDefinition> generics;
 
   final String? url;
 
-  /// Populated if type is a model that is defined in the project. I.e. not a
-  /// module or serverpod model.
-  final SerializableModelDefinition? projectModelDefinition;
-
   /// Whether this type is nullable.
+  @override
   final bool nullable;
 
-  final DartType? dartType;
+  // final DartType? dartType;
 
   /// True if this type references a custom class.
   final bool customClass;
 
-  EnumDefinition? enumDefinition;
-
-  TypeDefinition({
+  ClassTypeDefinition({
     required this.className,
     this.generics = const [],
     required this.nullable,
     this.url,
-    this.dartType,
+    // this.dartType,
     this.customClass = false,
-    this.enumDefinition,
-    this.projectModelDefinition,
+    // this.enumDefinition,
+    // this.projectModelDefinition,
   });
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
@@ -74,7 +136,7 @@ class TypeDefinition {
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
-  bool get isEnumType => enumDefinition != null;
+  // bool get isEnumType => enumDefinition != null;
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
@@ -91,11 +153,11 @@ class TypeDefinition {
     return url;
   }
 
-  /// Creates an [TypeDefinition] from [mixed] where the [url]
+  /// Creates an [ClassTypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
-  factory TypeDefinition.mixedUrlAndClassName({
+  factory ClassTypeDefinition.mixedUrlAndClassName({
     required String mixed,
-    List<TypeDefinition> generics = const [],
+    List<ClassTypeDefinition> generics = const [],
     required bool nullable,
     bool customClass = false,
   }) {
@@ -105,7 +167,7 @@ class TypeDefinition {
         ? (parts..removeLast()).join(':')
         : 'dart:typed_data';
 
-    return TypeDefinition(
+    return ClassTypeDefinition(
       className: classname,
       nullable: nullable,
       generics: generics,
@@ -114,13 +176,15 @@ class TypeDefinition {
     );
   }
 
-  /// Creates an [TypeDefinition] from a given [DartType].
+  /// Creates an [ClassTypeDefinition] from a given [DartType].
   /// throws [FromDartTypeClassNameException] if the class name could not be
   /// determined.
-  factory TypeDefinition.fromDartType(DartType type) {
+  factory ClassTypeDefinition.fromDartType(DartType type) {
     var generics = (type is ParameterizedType)
-        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
-        : <TypeDefinition>[];
+        ? type.typeArguments
+            .map((e) => ClassTypeDefinition.fromDartType(e))
+            .toList()
+        : <ClassTypeDefinition>[];
     var url = type.element?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
@@ -130,41 +194,44 @@ class TypeDefinition {
       throw FromDartTypeClassNameException(type);
     }
 
-    return TypeDefinition(
+    return ClassTypeDefinition(
       className: className,
       nullable: nullable,
-      dartType: type,
+      // dartType: type,
       generics: generics,
       url: url,
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [ClassTypeDefinition] of an non null int
   /// quickly.
-  static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
+  static ClassTypeDefinition int = ClassTypeDefinition(
+    className: 'int',
+    nullable: false,
+  );
 
-  /// Get this [TypeDefinition], but nullable.
-  TypeDefinition get asNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but nullable.
+  ClassTypeDefinition get asNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: true,
         customClass: customClass,
-        dartType: dartType,
+        // dartType: dartType,
         generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
+        // enumDefinition: enumDefinition,
+        // projectModelDefinition: projectModelDefinition,
       );
 
-  /// Get this [TypeDefinition], but non nullable.
-  TypeDefinition get asNonNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but non nullable.
+  ClassTypeDefinition get asNonNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: false,
         customClass: customClass,
-        dartType: dartType,
+        // dartType: dartType,
         generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
+        // enumDefinition: enumDefinition,
+        // projectModelDefinition: projectModelDefinition,
       );
 
   static String getRef(SerializableModelDefinition model) {
@@ -215,17 +282,18 @@ class TypeDefinition {
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
         } else if (url == defaultModuleAlias) {
+          // TODO: Re-add
           // protocol: reference
-          var localProjectModelDefinition = projectModelDefinition;
-          String reference = switch (localProjectModelDefinition) {
-            // Import model directly
-            SerializableModelDefinition modelDefinition =>
-              getRef(modelDefinition),
-            // Import model through generated protocol file
-            null => 'protocol.dart',
-          };
+          // var localProjectModelDefinition = projectModelDefinition;
+          // String reference = switch (localProjectModelDefinition) {
+          //   // Import model directly
+          //   SerializableModelDefinition modelDefinition =>
+          //     getRef(modelDefinition),
+          //   // Import model through generated protocol file
+          //   null => 'protocol.dart',
+          // };
 
-          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
+          // t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
@@ -260,18 +328,9 @@ class TypeDefinition {
     );
   }
 
-  /// Get the pgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [ClassTypeDefinition] in the database.
+  @override
   String get databaseType {
-    // TODO: add all supported types here
-    var enumSerialization = enumDefinition?.serialized;
-    if (enumSerialization != null && isEnumType) {
-      switch (enumSerialization) {
-        case EnumSerialization.byName:
-          return 'text';
-        case EnumSerialization.byIndex:
-          return 'bigint';
-      }
-    }
     if (className == 'int') return 'bigint';
     if (className == 'double') return 'double precision';
     if (className == 'bool') return 'boolean';
@@ -286,16 +345,16 @@ class TypeDefinition {
     return 'json';
   }
 
-  /// Get the enum name of the [ColumnType], representing this [TypeDefinition]
+  /// Get the enum name of the [ColumnType], representing this [ClassTypeDefinition]
   /// in the database.
   String get databaseTypeEnum {
     return databaseTypeToLowerCamelCase(databaseType);
   }
 
-  /// Get the [Column] extending class name representing this [TypeDefinition].
+  /// Get the [Column] extending class name representing this [ClassTypeDefinition].
   String get columnType {
     // TODO: add all supported types here
-    if (isEnumType) return 'ColumnEnum';
+    // if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
@@ -312,7 +371,7 @@ class TypeDefinition {
 
   /// Retrieves the generic from this type.
   /// Throws a [FormatException] if no generic is found.
-  TypeDefinition retrieveGenericType() {
+  ClassTypeDefinition retrieveGenericType() {
     var genericType = generics.firstOrNull;
     if (genericType == null) {
       throw FormatException('$this does not have a generic type to retrieve.');
@@ -449,25 +508,27 @@ class TypeDefinition {
   /// First, the protocol definition is parsed, then it's check for the
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
-  TypeDefinition applyProtocolReferences(
+  ClassTypeDefinition applyProtocolReferences(
     List<SerializableModelDefinition> classDefinitions,
   ) {
     var modelDefinition = classDefinitions
-        .where((c) => c.className == className)
-        .where((c) => c.type.moduleAlias == defaultModuleAlias)
+        .where((c) => c is ClassDefinition && c.className == className)
+        .where((c) =>
+            c is ClassDefinition &&
+            (c.type as ClassTypeDefinition).moduleAlias == defaultModuleAlias)
         .firstOrNull;
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
-    return TypeDefinition(
+    return ClassTypeDefinition(
         className: className,
         nullable: nullable,
         customClass: customClass,
-        dartType: dartType,
-        projectModelDefinition: isProjectModel ? modelDefinition : null,
+        // dartType: dartType,
+        // projectModelDefinition: isProjectModel ? modelDefinition : null,
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        enumDefinition: enumDefinition,
+        // enumDefinition: enumDefinition,
         url: isProjectModel ? defaultModuleAlias : url);
   }
 
@@ -486,7 +547,8 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
-    if (isEnumType) return ValueType.isEnum;
+    // if (isEnumType) return ValueType.isEnum;
+
     return ValueType.classType;
   }
 
@@ -529,17 +591,17 @@ class TypeDefinition {
 
 /// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
-/// [TypeDefinition.customClass].
-TypeDefinition parseType(
+/// [ClassTypeDefinition.customClass].
+ClassTypeDefinition parseType(
   String input, {
-  required List<TypeDefinition>? extraClasses,
+  required List<ClassTypeDefinition>? extraClasses,
 }) {
   var trimmedInput = input.trim();
 
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
 
-  var generics = <TypeDefinition>[];
+  var generics = <ClassTypeDefinition>[];
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
@@ -556,14 +618,14 @@ TypeDefinition parseType(
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
   var extraClass = extraClasses
-      ?.cast<TypeDefinition?>()
+      ?.cast<ClassTypeDefinition?>()
       .firstWhere((c) => c?.className == className, orElse: () => null);
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
   }
 
-  return TypeDefinition.mixedUrlAndClassName(
+  return ClassTypeDefinition.mixedUrlAndClassName(
     mixed: className,
     nullable: isNullable,
     generics: generics,
@@ -618,4 +680,90 @@ enum DefaultValueAllowedType {
   duration,
   uri,
   isEnum,
+}
+
+sealed class ModelTypeDefinition {
+  /// Populated if type is a model that is defined in the project. I.e. not a
+  /// module or serverpod model.
+  SerializableModelDefinition? get projectModelDefinition;
+}
+
+final class ModelEnumTypeDefinition extends EnumTypeDefinition
+    implements ModelTypeDefinition {
+  ModelEnumTypeDefinition({
+    required super.typeName,
+    required super.nullable,
+    required super.enumDefinition,
+    required this.projectModelDefinition,
+  });
+
+  @override
+  final SerializableModelDefinition projectModelDefinition;
+}
+
+/// Contains information about the type of fields, arguments and return values.
+final class ModelClassTypeDefinition extends ClassTypeDefinition
+    implements ModelTypeDefinition {
+  ModelClassTypeDefinition({
+    required this.projectModelDefinition,
+    required super.className,
+    required super.nullable,
+  });
+
+  @override
+  // TODO: implement projectModelDefinition
+  final SerializableModelDefinition? projectModelDefinition;
+}
+
+sealed class EndpointTypeDefinition {
+  DartType get dartType;
+}
+
+final class EndpointEnumTypeDefinition extends EnumTypeDefinition
+    implements EndpointTypeDefinition {
+  EndpointEnumTypeDefinition({
+    required super.typeName,
+    required super.nullable,
+    required super.enumDefinition,
+    required this.dartType,
+  });
+
+  @override
+  final DartType dartType;
+}
+
+/// Contains information about the type of fields, arguments and return values.
+final class EndpointClassTypeDefinition extends ClassTypeDefinition
+    implements EndpointTypeDefinition {
+  EndpointClassTypeDefinition({
+    required super.className,
+    required super.nullable,
+    required this.dartType,
+  });
+
+  @override
+  // TODO: implement type
+  final DartType dartType;
+  // final RecordType record;
+  
+
+  void x() {
+    this.dartType.isDartCoreEnum;
+    this.dartType.isDartCoreEnum;
+  }
+}
+
+enum F<T extends int> {
+  x(bar: 123);
+
+  final T bar;
+
+  const F({
+    required this.bar,
+  });
+}
+
+
+enum T<X> implements F<int> {
+  const y();
 }

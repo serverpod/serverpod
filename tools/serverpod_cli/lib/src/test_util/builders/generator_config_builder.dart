@@ -15,7 +15,7 @@ class GeneratorConfigBuilder {
   List<String> _serverPackageDirectoryPathParts;
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
-  List<TypeDefinition> _extraClasses;
+  List<ClassTypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
@@ -97,7 +97,8 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withExtraClasses(List<TypeDefinition> extraClasses) {
+  GeneratorConfigBuilder withExtraClasses(
+      List<ClassTypeDefinition> extraClasses) {
     _extraClasses = extraClasses;
     return this;
   }

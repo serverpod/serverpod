@@ -6,7 +6,7 @@ class MethodDefinitionBuilder {
   String _name = 'example';
   String? _documentationComment;
   List<AnnotationDefinition> _annotations = [];
-  TypeDefinition _returnType =
+  ClassTypeDefinition _returnType =
       TypeDefinitionBuilder().withFutureOf('String').build();
   List<ParameterDefinition> _parameters = [];
   List<ParameterDefinition> _parametersPositional = [];
@@ -31,7 +31,7 @@ class MethodDefinitionBuilder {
     return this;
   }
 
-  MethodDefinitionBuilder withReturnType(TypeDefinition returnType) {
+  MethodDefinitionBuilder withReturnType(ClassTypeDefinition returnType) {
     _returnType = returnType;
     return this;
   }

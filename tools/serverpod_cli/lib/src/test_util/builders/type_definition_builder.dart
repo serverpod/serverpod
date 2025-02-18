@@ -3,7 +3,7 @@ import 'package:serverpod_cli/analyzer.dart';
 
 class TypeDefinitionBuilder {
   String _className;
-  List<TypeDefinition> _generics;
+  List<ClassTypeDefinition> _generics;
   bool _nullable;
   String? _url;
   DartType? _dartType;
@@ -25,7 +25,7 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withGenerics(List<TypeDefinition> generics) {
+  TypeDefinitionBuilder withGenerics(List<ClassTypeDefinition> generics) {
     _generics = generics;
     return this;
   }
@@ -116,8 +116,8 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinition build() {
-    return TypeDefinition(
+  ClassTypeDefinition build() {
+    return ClassTypeDefinition(
       className: _className,
       generics: _generics,
       nullable: _nullable,

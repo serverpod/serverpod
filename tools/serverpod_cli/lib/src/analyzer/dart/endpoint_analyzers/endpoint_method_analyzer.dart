@@ -1,11 +1,12 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+
 import 'extension/endpoint_parameters_extension.dart';
 
 const _excludedMethodNameSet = {
@@ -35,7 +36,7 @@ abstract class EndpointMethodAnalyzer {
         parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
-        returnType: TypeDefinition.fromDartType(method.returnType),
+        returnType: ClassTypeDefinition.fromDartType(method.returnType),
       );
     }
 
@@ -46,7 +47,7 @@ abstract class EndpointMethodAnalyzer {
       parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
-      returnType: TypeDefinition.fromDartType(method.returnType),
+      returnType: ClassTypeDefinition.fromDartType(method.returnType),
     );
   }
 
@@ -137,7 +138,7 @@ abstract class EndpointMethodAnalyzer {
     }
 
     try {
-      TypeDefinition.fromDartType(innerType);
+      ClassTypeDefinition.fromDartType(innerType);
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',
@@ -199,5 +200,5 @@ extension on List<ParameterElement> {
 
 extension on Parameters {
   bool _hasStream() => [...required, ...positional, ...named]
-      .any((element) => element.type.dartType?.isDartAsyncStream ?? false);
+      .any((element) => element.type.dartType.isDartAsyncStream);
 }

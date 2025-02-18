@@ -585,7 +585,7 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
+  Expression _buildDeepCloneTree(ClassTypeDefinition type, String variableName,
       {int depth = 0, bool isRoot = false}) {
     var isLeafNode = type.generics.isEmpty;
     if (isLeafNode) {
@@ -623,7 +623,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildShallowClone(
-      TypeDefinition type, String variableName, bool isRoot) {
+      ClassTypeDefinition type, String variableName, bool isRoot) {
     var isNonMutableType =
         type.isEnumType || nonMutableTypeNames.contains(type.className);
     if (isNonMutableType) {
@@ -639,7 +639,7 @@ class SerializableModelLibraryGenerator {
     }
   }
 
-  Expression _buildListCloneCallback(TypeDefinition type, int depth) {
+  Expression _buildListCloneCallback(ClassTypeDefinition type, int depth) {
     var variableName = 'e$depth';
 
     return Method(
@@ -655,7 +655,7 @@ class SerializableModelLibraryGenerator {
     ).closure;
   }
 
-  Expression _buildSetCloneCallback(TypeDefinition type, int depth) {
+  Expression _buildSetCloneCallback(ClassTypeDefinition type, int depth) {
     var variableName = 'e$depth';
 
     return Method(
@@ -672,8 +672,8 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildMapCloneCallback(
-    TypeDefinition keyType,
-    TypeDefinition valueType,
+    ClassTypeDefinition keyType,
+    ClassTypeDefinition valueType,
     int depth,
   ) {
     var keyVariableName = 'key$depth';
@@ -934,7 +934,7 @@ class SerializableModelLibraryGenerator {
 
   Expression _toJsonCallConversionMethod(
     Reference fieldRef,
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
     String methodName,
   ) {
     if (fieldType.isSerializedValue) return fieldRef;
@@ -1778,12 +1778,12 @@ class SerializableModelLibraryGenerator {
   Expression _buildModelTableEnumFieldTypeReference(
     SerializableModelFieldDefinition field,
   ) {
-    assert(field.type.isEnumType);
+    var type = field.type as EnumTypeDefinition;
+
     var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
     Expression serializedAs;
 
-    switch (field.type.enumDefinition?.serialized) {
-      case null:
+    switch (type.enumDefinition.serialized) {
       case EnumSerialization.byIndex:
         serializedAs = enumType.property('byIndex');
         break;
@@ -1981,7 +1981,8 @@ class SerializableModelLibraryGenerator {
       if (field.relation is ObjectRelationDefinition) {
         modelIncludeClassFields.add(Field((f) => f
           ..name = '_${field.name}'
-          ..type = field.type.reference(
+          // relations must be on class type
+          ..type = (field.type as ClassTypeDefinition).reference(
             serverCode,
             subDirParts: classDefinition.subDirParts,
             config: config,
@@ -1991,13 +1992,13 @@ class SerializableModelLibraryGenerator {
       } else if (field.relation is ListRelationDefinition) {
         modelIncludeClassFields.add(Field((f) => f
           ..name = '_${field.name}'
-          ..type = field.type.generics.first.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-            nullable: true,
-            typeSuffix: 'IncludeList',
-          )));
+          ..type = (field.type as ClassTypeDefinition).generics.first.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'IncludeList',
+              )));
       }
     }
     return modelIncludeClassFields;
