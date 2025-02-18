@@ -47,7 +47,8 @@ class SerializableModelLibraryGenerator {
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
-    var fields = classDefinition.fieldsIncludingInherited;
+    var fields = classDefinition.fieldsIncludingInherited
+        .cast<SerializableModelFieldDefinition>();
     var sealedTopNode = classDefinition.sealedTopNode;
 
     var buildRepository = BuildRepositoryClass(
@@ -80,7 +81,7 @@ class SerializableModelLibraryGenerator {
             className,
             classDefinition,
             tableName,
-            fields,
+            fields.cast<SerializableModelFieldDefinition>(),
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -548,7 +549,8 @@ class SerializableModelLibraryGenerator {
 
   Map<String, Expression> _buildCopyWithAssignment(
     ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
+    List<SerializableModelFieldDefinition>
+        fields, // TODO(tp): Why is this passed separately?
   ) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
@@ -1125,7 +1127,7 @@ class SerializableModelLibraryGenerator {
         setAsToThis: true,
       ));
 
-      for (SerializableModelFieldDefinition field in fields) {
+      for (var field in fields) {
         if (!field.hasDefaults) continue;
         if (classDefinition.inheritedFields.contains(field)) continue;
 
