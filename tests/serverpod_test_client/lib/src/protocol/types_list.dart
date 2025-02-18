@@ -14,6 +14,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
 
 abstract class TypesList implements _i1.SerializableModel {
   TypesList._({
@@ -32,6 +33,8 @@ abstract class TypesList implements _i1.SerializableModel {
     this.anObject,
     this.aMap,
     this.aList,
+    this.aRecord,
+    this.aNullableRecord,
   });
 
   factory TypesList({
@@ -50,6 +53,8 @@ abstract class TypesList implements _i1.SerializableModel {
     List<_i5.Types>? anObject,
     List<Map<String, _i5.Types>>? aMap,
     List<List<_i5.Types>>? aList,
+    List<(int,)>? aRecord,
+    List<(int,)?>? aNullableRecord,
   }) = _TypesListImpl;
 
   factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -102,6 +107,16 @@ abstract class TypesList implements _i1.SerializableModel {
               .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
               .toList())
           .toList(),
+      aRecord: (jsonSerialization['aRecord'] as List?)
+          ?.map((e) =>
+              _i6.Protocol().deserialize<(int,)>((e as Map<String, dynamic>)))
+          .toList(),
+      aNullableRecord: (jsonSerialization['aNullableRecord'] as List?)
+          ?.map((e) => e == null
+              ? null
+              : _i6.Protocol()
+                  .deserialize<(int,)?>((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
@@ -135,6 +150,10 @@ abstract class TypesList implements _i1.SerializableModel {
 
   List<List<_i5.Types>>? aList;
 
+  List<(int,)>? aRecord;
+
+  List<(int,)?>? aNullableRecord;
+
   /// Returns a shallow copy of this [TypesList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -154,6 +173,8 @@ abstract class TypesList implements _i1.SerializableModel {
     List<_i5.Types>? anObject,
     List<Map<String, _i5.Types>>? aMap,
     List<List<_i5.Types>>? aList,
+    List<(int,)>? aRecord,
+    List<(int,)?>? aNullableRecord,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -185,6 +206,11 @@ abstract class TypesList implements _i1.SerializableModel {
       if (aList != null)
         'aList': aList?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+      if (aRecord != null)
+        'aRecord': _i6.mapRecordContainingContainerToJson(aRecord!),
+      if (aNullableRecord != null)
+        'aNullableRecord':
+            _i6.mapRecordContainingContainerToJson(aNullableRecord!),
     };
   }
 
@@ -213,6 +239,8 @@ class _TypesListImpl extends TypesList {
     List<_i5.Types>? anObject,
     List<Map<String, _i5.Types>>? aMap,
     List<List<_i5.Types>>? aList,
+    List<(int,)>? aRecord,
+    List<(int,)?>? aNullableRecord,
   }) : super._(
           anInt: anInt,
           aBool: aBool,
@@ -229,6 +257,8 @@ class _TypesListImpl extends TypesList {
           anObject: anObject,
           aMap: aMap,
           aList: aList,
+          aRecord: aRecord,
+          aNullableRecord: aNullableRecord,
         );
 
   /// Returns a shallow copy of this [TypesList]
@@ -251,6 +281,8 @@ class _TypesListImpl extends TypesList {
     Object? anObject = _Undefined,
     Object? aMap = _Undefined,
     Object? aList = _Undefined,
+    Object? aRecord = _Undefined,
+    Object? aNullableRecord = _Undefined,
   }) {
     return TypesList(
       anInt: anInt is List<int>? ? anInt : this.anInt?.map((e0) => e0).toList(),
@@ -306,6 +338,12 @@ class _TypesListImpl extends TypesList {
               .aList
               ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
               .toList(),
+      aRecord: aRecord is List<(int,)>?
+          ? aRecord
+          : this.aRecord?.map((e0) => e0).toList(),
+      aNullableRecord: aNullableRecord is List<(int,)?>?
+          ? aNullableRecord
+          : this.aNullableRecord?.map((e0) => e0).toList(),
     );
   }
 }

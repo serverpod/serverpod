@@ -14,6 +14,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'types.dart' as _i5;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i6;
 
 abstract class TypesMap
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -33,6 +34,7 @@ abstract class TypesMap
     this.anObjectKey,
     this.aMapKey,
     this.aListKey,
+    this.aRecordKey,
     this.anIntValue,
     this.aBoolValue,
     this.aDoubleValue,
@@ -48,6 +50,7 @@ abstract class TypesMap
     this.anObjectValue,
     this.aMapValue,
     this.aListValue,
+    this.aRecordValue,
   });
 
   factory TypesMap({
@@ -66,6 +69,7 @@ abstract class TypesMap
     Map<_i5.Types, String>? anObjectKey,
     Map<Map<_i5.Types, String>, String>? aMapKey,
     Map<List<_i5.Types>, String>? aListKey,
+    Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
@@ -81,6 +85,7 @@ abstract class TypesMap
     Map<String, _i5.Types>? anObjectValue,
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
+    Map<String, (String,)>? aRecordValue,
   }) = _TypesMapImpl;
 
   factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -184,6 +189,14 @@ abstract class TypesMap
                     .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
                     .toList(): e['v'] as String
               }),
+      aRecordKey: (jsonSerialization['aRecordKey'] as List?)
+          ?.fold<Map<(String,), String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i6.Protocol().deserialize<(String,)>(
+                        (e['k'] as Map<String, dynamic>)): e['v'] as String
+                  }),
       anIntValue:
           (jsonSerialization['anIntValue'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
@@ -265,6 +278,12 @@ abstract class TypesMap
                     .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
                     .toList(),
               )),
+      aRecordValue:
+          (jsonSerialization['aRecordValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i6.Protocol()
+                    .deserialize<(String,)>((v as Map<String, dynamic>)),
+              )),
     );
   }
 
@@ -298,6 +317,8 @@ abstract class TypesMap
 
   Map<List<_i5.Types>, String>? aListKey;
 
+  Map<(String,), String>? aRecordKey;
+
   Map<String, int>? anIntValue;
 
   Map<String, bool>? aBoolValue;
@@ -328,6 +349,8 @@ abstract class TypesMap
 
   Map<String, List<_i5.Types>>? aListValue;
 
+  Map<String, (String,)>? aRecordValue;
+
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -347,6 +370,7 @@ abstract class TypesMap
     Map<_i5.Types, String>? anObjectKey,
     Map<Map<_i5.Types, String>, String>? aMapKey,
     Map<List<_i5.Types>, String>? aListKey,
+    Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
@@ -362,6 +386,7 @@ abstract class TypesMap
     Map<String, _i5.Types>? anObjectValue,
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
+    Map<String, (String,)>? aRecordValue,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -395,6 +420,8 @@ abstract class TypesMap
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
             keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson())),
+      if (aRecordKey != null)
+        'aRecordKey': _i6.mapRecordContainingContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -427,6 +454,8 @@ abstract class TypesMap
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+      if (aRecordValue != null)
+        'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
     };
   }
 
@@ -465,6 +494,8 @@ abstract class TypesMap
         'aListKey': aListKey?.toJson(
             keyToJson: (k) =>
                 k.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+      if (aRecordKey != null)
+        'aRecordKey': _i6.mapRecordContainingContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -500,6 +531,8 @@ abstract class TypesMap
         'aListValue': aListValue?.toJson(
             valueToJson: (v) =>
                 v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+      if (aRecordValue != null)
+        'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
     };
   }
 
@@ -528,6 +561,7 @@ class _TypesMapImpl extends TypesMap {
     Map<_i5.Types, String>? anObjectKey,
     Map<Map<_i5.Types, String>, String>? aMapKey,
     Map<List<_i5.Types>, String>? aListKey,
+    Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
@@ -543,6 +577,7 @@ class _TypesMapImpl extends TypesMap {
     Map<String, _i5.Types>? anObjectValue,
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
+    Map<String, (String,)>? aRecordValue,
   }) : super._(
           anIntKey: anIntKey,
           aBoolKey: aBoolKey,
@@ -559,6 +594,7 @@ class _TypesMapImpl extends TypesMap {
           anObjectKey: anObjectKey,
           aMapKey: aMapKey,
           aListKey: aListKey,
+          aRecordKey: aRecordKey,
           anIntValue: anIntValue,
           aBoolValue: aBoolValue,
           aDoubleValue: aDoubleValue,
@@ -574,6 +610,7 @@ class _TypesMapImpl extends TypesMap {
           anObjectValue: anObjectValue,
           aMapValue: aMapValue,
           aListValue: aListValue,
+          aRecordValue: aRecordValue,
         );
 
   /// Returns a shallow copy of this [TypesMap]
@@ -596,6 +633,7 @@ class _TypesMapImpl extends TypesMap {
     Object? anObjectKey = _Undefined,
     Object? aMapKey = _Undefined,
     Object? aListKey = _Undefined,
+    Object? aRecordKey = _Undefined,
     Object? anIntValue = _Undefined,
     Object? aBoolValue = _Undefined,
     Object? aDoubleValue = _Undefined,
@@ -611,6 +649,7 @@ class _TypesMapImpl extends TypesMap {
     Object? anObjectValue = _Undefined,
     Object? aMapValue = _Undefined,
     Object? aListValue = _Undefined,
+    Object? aRecordValue = _Undefined,
   }) {
     return TypesMap(
       anIntKey: anIntKey is Map<int, String>?
@@ -771,6 +810,16 @@ class _TypesMapImpl extends TypesMap {
                     key0.map((e1) => e1.copyWith()).toList(),
                     value0,
                   )),
+      aRecordKey: aRecordKey is Map<(String,), String>?
+          ? aRecordKey
+          : this.aRecordKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
       anIntValue: anIntValue is Map<String, int>?
           ? anIntValue
           : this.anIntValue?.map((
@@ -928,6 +977,16 @@ class _TypesMapImpl extends TypesMap {
                   MapEntry(
                     key0,
                     value0.map((e1) => e1.copyWith()).toList(),
+                  )),
+      aRecordValue: aRecordValue is Map<String, (String,)>?
+          ? aRecordValue
+          : this.aRecordValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
                   )),
     );
   }
