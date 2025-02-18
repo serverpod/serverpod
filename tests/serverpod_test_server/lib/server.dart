@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
@@ -10,10 +11,19 @@ import 'src/generated/protocol.dart';
 
 void run(List<String> args) async {
   // Create serverpod
+
+  // You can set the serverId using either:
+  // 1. A command-line flag: --server-id=<value>
+  // 2. The 'SERVER_ID' environment variable
+  //
+  // If both are set, the command-line flag takes precedence.
+  // If neither is set, the default value 'default' will be used.
+  final serverId = Platform.environment['SERVER_ID'] ?? 'default';
   var pod = Serverpod(
     args,
     Protocol(),
     Endpoints(),
+    serverId: serverId,
     authenticationHandler: auth.authenticationHandler,
   );
 
