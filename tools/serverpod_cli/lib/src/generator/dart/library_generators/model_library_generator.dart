@@ -5,6 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
@@ -752,7 +753,7 @@ class SerializableModelLibraryGenerator {
   Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
       {int depth = 0, bool isRoot = false}) {
     var isLeafNode = type.generics.isEmpty;
-    if (isLeafNode) {
+    if (isLeafNode || type.isRecordType) {
       return _buildShallowClone(type, variableName, isRoot);
     }
 
@@ -1116,6 +1117,27 @@ class SerializableModelLibraryGenerator {
   ) {
     if (fieldType.isSerializedValue) return fieldRef;
 
+    if (fieldType.isRecordType) {
+      var mapRecordToJsonRef = refer(
+        'mapRecordToJson',
+        serverCode
+            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      );
+
+      return mapRecordToJsonRef.call([fieldRef]);
+    } else if (fieldType.returnsRecordInContainer) {
+      var mapRecordContainingContainerToJsonRef = refer(
+        'mapRecordContainingContainerToJson',
+        serverCode
+            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      );
+
+      return mapRecordContainingContainerToJsonRef
+          .call([refer('${fieldRef.symbol}${fieldType.nullable ? '!' : ''}')]);
+    }
+
     Expression fieldExpression = fieldRef;
 
     // If the field is a custom class and we are generating 'toJsonForProtocol',
@@ -1302,7 +1324,7 @@ class SerializableModelLibraryGenerator {
         inheritedFields: inheritedFields,
       ));
 
-      for (SerializableModelFieldDefinition field in fields) {
+      for (var field in fields) {
         if (!field.hasDefaults) continue;
         if (inheritedFields.contains(field)) continue;
 
