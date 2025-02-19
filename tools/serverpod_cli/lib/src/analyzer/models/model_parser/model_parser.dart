@@ -17,7 +17,7 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -156,7 +156,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
@@ -164,7 +164,7 @@ class ModelParser {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
-          type: TypeDefinition.int.asNullable,
+          type: ClassTypeDefinition.int.asNullable,
           scope: ModelFieldScopeDefinition.all,
           shouldPersist: true,
           documentation: [
@@ -194,7 +194,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
     var key = fieldNode.key;
@@ -267,7 +267,7 @@ class ModelParser {
 
   static RelationDefinition? _parseRelation(
     String fieldName,
-    TypeDefinition typeResult,
+    ClassTypeDefinition typeResult,
     YamlMap node,
   ) {
     if (!_isRelation(node)) return null;

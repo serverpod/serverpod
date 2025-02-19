@@ -251,6 +251,34 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+recordParameters:
+  - returnIntRecord:
+  - returnNullableStringRecord:
+  - returnNullableIntRecord:
+  - returnIntStringRecord:
+  - returnNullableIntStringRecord:
+  - returnIntSimpleDataRecord:
+  - returnNullableIntSimpleDataRecord:
+  - returnNamedIntStringRecord:
+  - returnNamedNullableIntStringRecord:
+  - returnNamedIntSimpleDataRecord:
+  - returnNamedNullableIntSimpleDataRecord:
+  - returnRecordTypedef:
+  - returnNullableRecordTypedef:
+  - returnListOfIntSimpleDataRecord:
+  - returnListOfNullableIntSimpleDataRecord:
+  - returnNullableSetOfIntSimpleDataRecord:
+  - returnSetOfIntSimpleDataRecord:
+  - returnSetOfNullableIntSimpleDataRecord:
+  - returnStringMapOfIntSimpleDataRecord:
+  - returnStringMapOfListOfRecord:
+  - returnStringMapOfNullableIntSimpleDataRecord:
+  - returnRecordMapOfIntSimpleDataRecord:
+  - returnRecordMapOfNullableIntSimpleDataRecord:
+  - returnNestedRecord:
+  - returnListOfNestedRecord:
+  - returnNamedNullableNestedRecord:
+  - returnPositionedNullableNestedRecord:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:

@@ -43,7 +43,7 @@ class ClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withName('id')
-            .withType(TypeDefinition.int.asNullable)
+            .withType(ClassTypeDefinition.int.asNullable)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
