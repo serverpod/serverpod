@@ -67,6 +67,10 @@ class LibraryGenerator {
         ..body = refer('_instance').code),
     ]);
 
+    var allTypesToDeserialize = protocolDefinition.typesToDeserialize;
+    var recordTypesToDeserialize =
+        allTypesToDeserialize.whereType<RecordTypeDefinition>().toList();
+
     protocol.fields.addAll([
       Field((f) => f
         ..name = '_instance'
@@ -147,7 +151,7 @@ class LibraryGenerator {
                           (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
-                  for (var type in protocolDefinition.typesToDeserialize)
+                  for (var type in allTypesToDeserialize)
                     ...type.generateDeserialization(
                       serverCode,
                       config: config,
@@ -293,7 +297,7 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
-      if (protocolDefinition.typesToDeserialize.isNotEmpty)
+      if (recordTypesToDeserialize.isNotEmpty) ...[
         Method(
           (m) => m
             ..static = true
@@ -309,13 +313,72 @@ class LibraryGenerator {
               ..name = 'record'
               ..type = refer('Record?')))
             ..body = _buildRecordEncode(
-              protocolDefinition.typesToDeserialize
-                  .whereType<RecordTypeDefinition>(),
+              recordTypesToDeserialize,
               'record',
               serverCode: serverCode,
               config: config,
             ),
         ),
+        Method((m) => m
+          ..static = true
+          ..docs.add('''
+          /// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+          ///
+          /// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+          ///
+          /// It is only supposed to be called from generated protocol code.
+          ///
+          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.''')
+          ..name = 'mapRecordContainingContainerToJson'
+          ..returns = refer('Object?')
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'obj'
+            ..type = refer('Object')))
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'mapRecord'
+            ..type = refer('Map<String, dynamic>? Function(Record?)')))
+          ..body = const Code('''
+  if (obj is! List && obj is Map && obj is Set) {
+    throw ArgumentError.value(obj, 'obj',
+        'The object to serialize should be of type List, Map, or Set');
+  }
+
+  switch (obj) {
+    case Map<String, dynamic>():
+      return {
+        for (var entry in obj.entries)
+          entry.key: switch (entry.value) {
+            Record record => mapRecord(record),
+            Set set => mapRecordContainingContainerToJson(set, mapRecord),
+            List list => mapRecordContainingContainerToJson(list, mapRecord),
+            Map map => mapRecordContainingContainerToJson(map, mapRecord),
+            _ => obj,
+          }
+      };
+    case Map():
+      return [
+        for (var entry in obj.entries)
+          {
+            'k': entry.key is Record ? mapRecord(entry.key) : entry.key,
+            'v': entry.value is Record
+                ? mapRecord(entry.value)
+                : mapRecordContainingContainerToJson(entry.value, mapRecord),
+          }
+      ];
+
+    case List():
+      return [
+        for (var e in obj) e is Record ? mapRecord(e) : e,
+      ];
+
+    case Set():
+      return [
+        for (var e in obj) e is Record ? mapRecord(e) : e,
+      ];
+  }
+
+  return obj;''')),
+      ],
     ]);
 
     library.body.add(protocol.build());
@@ -1318,6 +1381,13 @@ extension on Expression {
         returnType.generics.first is ClassTypeDefinition &&
         (returnType.generics.first as ClassTypeDefinition)
             .returnsRecordInContainer) {
+      var protocolRef = refer(
+        'Protocol',
+        serverCode
+            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      );
+
       return property('then').call(
         [
           CodeExpression(
@@ -1325,17 +1395,9 @@ extension on Expression {
               const Code('(container) => '),
               if ((returnType.generics.first as ClassTypeDefinition).nullable)
                 const Code('container == null ? null : '),
-              refer(
-                'mapRecordContainingContainerToJson',
-                'package:serverpod_serialization/serverpod_serialization.dart',
-              ).call([
+              protocolRef.property('mapRecordContainingContainerToJson').call([
                 refer('container'),
-                refer(
-                  'Protocol',
-                  serverCode
-                      ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-                      : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
-                ).property('mapRecordToJson')
+                protocolRef.property('mapRecordToJson'),
               ]).code,
             ]),
           ),
