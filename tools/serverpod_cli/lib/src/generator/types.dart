@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:code_builder/code_builder.dart';
+import 'package:code_builder/code_builder.dart' as cb;
+import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
@@ -17,8 +18,155 @@ const _moduleRef = 'module:';
 const _projectRef = 'project:';
 const _packageRef = 'package:';
 
+sealed class TypeDefinition {
+  bool get nullable;
+
+  /// Creates an [ClassTypeDefinition] from a given [DartType].
+  /// throws [FromDartTypeClassNameException] if the class name could not be
+  /// determined.
+  factory TypeDefinition.fromDartType(DartType type) {
+    if (type is RecordType) {
+      return RecordTypeDefinition(
+        dartType: type,
+      );
+    }
+
+    var generics = (type is ParameterizedType)
+        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
+        : <TypeDefinition>[];
+    var url = type.element?.librarySource?.uri.toString();
+    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
+
+    var className = type is! VoidType ? type.element?.displayName : 'void';
+
+    if (className == null) {
+      throw FromDartTypeClassNameException(type);
+    }
+
+    return ClassTypeDefinition(
+      className: className,
+      nullable: nullable,
+      dartType: type,
+      generics: generics,
+      url: url,
+    );
+  }
+
+  Reference reference(
+    bool serverCode, {
+    bool? nullable,
+    List<String> subDirParts = const [],
+    required GeneratorConfig config,
+    String? typeSuffix,
+  });
+
+  List<MapEntry<Expression, Code>> generateDeserialization(
+    bool serverCode, {
+    required GeneratorConfig config,
+  });
+}
+
+class RecordTypeDefinition implements TypeDefinition {
+  /// Whether this type is nullable.
+  @override
+  final bool nullable;
+
+  final RecordType dartType;
+
+  RecordTypeDefinition({
+    required this.dartType,
+  }) : nullable = dartType.nullabilitySuffix == NullabilitySuffix.question;
+
+  @override
+  Reference reference(
+    bool serverCode, {
+    bool? nullable,
+    List<String> subDirParts = const [],
+    required GeneratorConfig config,
+    String? typeSuffix,
+  }) {
+    return cb.RecordType((b) {
+      b.positionalFieldTypes.addAll(dartType.positionalFields.map((p) =>
+          TypeDefinition.fromDartType(p.type)
+              .reference(serverCode, config: config)));
+
+      b.namedFieldTypes.addAll({
+        for (var namedFieldEntry in dartType.namedFields)
+          namedFieldEntry.name:
+              TypeDefinition.fromDartType(namedFieldEntry.type)
+                  .reference(serverCode, config: config),
+      });
+
+      b.isNullable = nullable ?? this.nullable;
+    });
+  }
+
+  @override
+  List<MapEntry<Expression, Code>> generateDeserialization(
+    bool serverCode, {
+    required GeneratorConfig config,
+  }) {
+    return [
+      MapEntry(
+          refer('getType', serverpodUrl(serverCode))
+              .call([], {}, [reference(serverCode, config: config)]),
+          Block.of([
+            if (nullable) const Code(' (data == null) ? null as T : '),
+            const Code('('),
+            for (final (i, positionalField)
+                in dartType.positionalFields.indexed) ...[
+              if (positionalField.type.nullabilitySuffix !=
+                  NullabilitySuffix.none)
+                Code(
+                    "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
+              const Code('deserialize<'),
+              TypeDefinition.fromDartType(positionalField.type)
+                  .reference(serverCode, config: config, nullable: false)
+                  .code,
+              const Code('>('),
+              if (i == 0 &&
+                  positionalField.type.nullabilitySuffix ==
+                      NullabilitySuffix.none) ...[
+                Code("((data as Map)['p'] as List)[$i]"),
+              ] else
+                Code("data['p'][$i]"),
+              const Code(')'),
+              const Code(','),
+            ],
+            if (dartType.namedFields.isNotEmpty) ...[
+              for (final (i, namedField) in dartType.namedFields.indexed) ...[
+                Code(namedField.name),
+                const Code(':'),
+                if (namedField.type.nullabilitySuffix != NullabilitySuffix.none)
+                  Code(
+                      "((data ${i == 0 && dartType.positionalFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.name}'] == null ? null : "),
+                const Code('deserialize<'),
+                TypeDefinition.fromDartType(namedField.type)
+                    .reference(serverCode, config: config, nullable: false)
+                    .code,
+                const Code('>('),
+                if (i == 0 &&
+                    dartType.positionalFields.isEmpty &&
+                    namedField.type.nullabilitySuffix == NullabilitySuffix.none)
+                  Code("((data as Map)['n'] as Map)['${namedField.name}']")
+                else
+                  Code("data['n']['${namedField.name}']"),
+                const Code(')'),
+                const Code(','),
+              ],
+            ],
+            const Code(') as T'),
+          ])),
+
+      // ),
+    ];
+  }
+}
+
 /// Contains information about the type of fields, arguments and return values.
-class TypeDefinition {
+// TODO(tp): Maybe we would also benefit from a specific `enum` type definition (aka `EnumTypeDefinition`) here,
+// instead of having the `enum` field on the the class. Same applies for primitive "non classes" (String, int, etc.)
+class ClassTypeDefinition implements TypeDefinition {
   /// The class name of the type.
   final String className;
 
@@ -32,6 +180,7 @@ class TypeDefinition {
   final SerializableModelDefinition? projectModelDefinition;
 
   /// Whether this type is nullable.
+  @override
   final bool nullable;
 
   final DartType? dartType;
@@ -41,7 +190,7 @@ class TypeDefinition {
 
   EnumDefinition? enumDefinition;
 
-  TypeDefinition({
+  ClassTypeDefinition({
     required this.className,
     this.generics = const [],
     required this.nullable,
@@ -91,9 +240,9 @@ class TypeDefinition {
     return url;
   }
 
-  /// Creates an [TypeDefinition] from [mixed] where the [url]
+  /// Creates an [ClassTypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
-  factory TypeDefinition.mixedUrlAndClassName({
+  factory ClassTypeDefinition.mixedUrlAndClassName({
     required String mixed,
     List<TypeDefinition> generics = const [],
     required bool nullable,
@@ -105,7 +254,7 @@ class TypeDefinition {
         ? (parts..removeLast()).join(':')
         : 'dart:typed_data';
 
-    return TypeDefinition(
+    return ClassTypeDefinition(
       className: classname,
       nullable: nullable,
       generics: generics,
@@ -114,37 +263,13 @@ class TypeDefinition {
     );
   }
 
-  /// Creates an [TypeDefinition] from a given [DartType].
-  /// throws [FromDartTypeClassNameException] if the class name could not be
-  /// determined.
-  factory TypeDefinition.fromDartType(DartType type) {
-    var generics = (type is ParameterizedType)
-        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
-        : <TypeDefinition>[];
-    var url = type.element?.librarySource?.uri.toString();
-    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-
-    var className = type is! VoidType ? type.element?.displayName : 'void';
-
-    if (className == null) {
-      throw FromDartTypeClassNameException(type);
-    }
-
-    return TypeDefinition(
-      className: className,
-      nullable: nullable,
-      dartType: type,
-      generics: generics,
-      url: url,
-    );
-  }
-
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [ClassTypeDefinition] of an non null int
   /// quickly.
-  static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
+  static ClassTypeDefinition int =
+      ClassTypeDefinition(className: 'int', nullable: false);
 
-  /// Get this [TypeDefinition], but nullable.
-  TypeDefinition get asNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but nullable.
+  ClassTypeDefinition get asNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: true,
@@ -155,8 +280,8 @@ class TypeDefinition {
         projectModelDefinition: projectModelDefinition,
       );
 
-  /// Get this [TypeDefinition], but non nullable.
-  TypeDefinition get asNonNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but non nullable.
+  ClassTypeDefinition get asNonNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: false,
@@ -178,6 +303,7 @@ class TypeDefinition {
   }
 
   /// Generate a [TypeReference] from this definition.
+  @override
   TypeReference reference(
     bool serverCode, {
     bool? nullable,
@@ -251,16 +377,18 @@ class TypeDefinition {
         }
         t.isNullable = nullable ?? this.nullable;
         t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
-        t.types.addAll(generics.map((e) => e.reference(
-              serverCode,
-              subDirParts: subDirParts,
-              config: config,
-            )));
+        t.types.addAll(generics.map(
+          (e) => e.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          ),
+        ));
       },
     );
   }
 
-  /// Get the pgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [ClassTypeDefinition] in the database.
   String get databaseType {
     // TODO: add all supported types here
     var enumSerialization = enumDefinition?.serialized;
@@ -286,15 +414,14 @@ class TypeDefinition {
     return 'json';
   }
 
-  /// Get the enum name of the [ColumnType], representing this [TypeDefinition]
+  /// Get the enum name of the [ColumnType], representing this [ClassTypeDefinition]
   /// in the database.
   String get databaseTypeEnum {
     return databaseTypeToLowerCamelCase(databaseType);
   }
 
-  /// Get the [Column] extending class name representing this [TypeDefinition].
+  /// Get the [Column] extending class name representing this [ClassTypeDefinition].
   String get columnType {
-    // TODO: add all supported types here
     if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
     if (className == 'double') return 'ColumnDouble';
@@ -322,6 +449,7 @@ class TypeDefinition {
   }
 
   /// Generates the constructors for List and Map types
+  @override
   List<MapEntry<Expression, Code>> generateDeserialization(
     bool serverCode, {
     required GeneratorConfig config,
@@ -365,7 +493,9 @@ class TypeDefinition {
                   .call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
-            generics.first.className == 'String'
+            generics.first is ClassTypeDefinition &&
+                    (generics.first as ClassTypeDefinition).className ==
+                        'String'
                 ? nullable
                     ? Block.of([
                         // using Code.scope only sets the generic to List
@@ -449,7 +579,7 @@ class TypeDefinition {
   /// First, the protocol definition is parsed, then it's check for the
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
-  TypeDefinition applyProtocolReferences(
+  ClassTypeDefinition applyProtocolReferences(
     List<SerializableModelDefinition> classDefinitions,
   ) {
     var modelDefinition = classDefinitions
@@ -458,14 +588,16 @@ class TypeDefinition {
         .firstOrNull;
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
-    return TypeDefinition(
+    return ClassTypeDefinition(
         className: className,
         nullable: nullable,
         customClass: customClass,
         dartType: dartType,
         projectModelDefinition: isProjectModel ? modelDefinition : null,
         generics: generics
-            .map((e) => e.applyProtocolReferences(classDefinitions))
+            .map((e) => e is ClassTypeDefinition
+                ? e.applyProtocolReferences(classDefinitions)
+                : e)
             .toList(),
         enumDefinition: enumDefinition,
         url: isProjectModel ? defaultModuleAlias : url);
@@ -529,12 +661,21 @@ class TypeDefinition {
 
 /// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
-/// [TypeDefinition.customClass].
+/// [ClassTypeDefinition.customClass].
 TypeDefinition parseType(
   String input, {
-  required List<TypeDefinition>? extraClasses,
+  required List<ClassTypeDefinition>? extraClasses,
 }) {
+  print('input $input');
+
   var trimmedInput = input.trim();
+
+  if (trimmedInput.startsWith('(') && trimmedInput.endsWith(')') ||
+      trimmedInput.replaceAll(' ', '').endsWith(')?') &&
+          // Return this should check whether the `,` is really between types on the top level
+          trimmedInput.contains(',')) {
+    return _parseRecord(trimmedInput, extraClasses: extraClasses);
+  }
 
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
@@ -556,19 +697,45 @@ TypeDefinition parseType(
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
   var extraClass = extraClasses
-      ?.cast<TypeDefinition?>()
+      ?.cast<ClassTypeDefinition?>()
       .firstWhere((c) => c?.className == className, orElse: () => null);
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
   }
 
-  return TypeDefinition.mixedUrlAndClassName(
+  return ClassTypeDefinition.mixedUrlAndClassName(
     mixed: className,
     nullable: isNullable,
     generics: generics,
     customClass: extraClasses == null,
   );
+}
+
+RecordTypeDefinition _parseRecord(
+  String trimmedRecordInput, {
+  List<ClassTypeDefinition>? extraClasses,
+}) {
+  assert(trimmedRecordInput.startsWith('('));
+  assert(trimmedRecordInput.endsWith(')') || trimmedRecordInput.endsWith('?'));
+
+  var start = trimmedRecordInput.indexOf('(');
+  var end = trimmedRecordInput.lastIndexOf(')');
+  var internalTypes = trimmedRecordInput.substring(start + 1, end);
+
+  print('_parseRecord');
+  print(internalTypes);
+  print(splitIgnoringBracketsAndQuotes(internalTypes));
+
+  return RecordTypeDefinition(
+    dartType: RecordType(
+      positional: [],
+      named: {},
+      nullabilitySuffix: NullabilitySuffix.none,
+    ),
+  );
+
+  // throw 'no l';
 }
 
 int _findLastClassToken(int start, String input, bool isNullable) {

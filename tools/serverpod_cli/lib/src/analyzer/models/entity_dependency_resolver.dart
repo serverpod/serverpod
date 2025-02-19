@@ -14,19 +14,25 @@ class ModelDependencyResolver {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       _resolveInheritance(classDefinition, modelDefinitions);
       for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
-        _resolveFieldIndexes(fieldDefinition, classDefinition);
-        _resolveProtocolReference(fieldDefinition, modelDefinitions);
-        _resolveEnumType(fieldDefinition.type, modelDefinitions);
-        _resolveObjectRelationReference(
-          classDefinition,
-          fieldDefinition,
-          modelDefinitions,
-        );
-        _resolveListRelationReference(
-          classDefinition,
-          fieldDefinition,
-          modelDefinitions,
-        );
+        if (fieldDefinition
+            is SerializableModelFieldDefinition<ClassTypeDefinition>) {
+          _resolveFieldIndexes(fieldDefinition, classDefinition);
+          _resolveProtocolReference(fieldDefinition, modelDefinitions);
+          _resolveEnumType(fieldDefinition.type, modelDefinitions);
+          _resolveObjectRelationReference(
+            classDefinition,
+            fieldDefinition,
+            modelDefinitions,
+          );
+          _resolveListRelationReference(
+            classDefinition,
+            fieldDefinition,
+            modelDefinitions,
+          );
+        } else {
+          // TODO: Should we make the field generic over the type?
+          print(fieldDefinition);
+        }
       }
     });
   }
@@ -71,8 +77,8 @@ class ModelDependencyResolver {
     fieldDefinition.indexes = indexesContainingField;
   }
 
-  static TypeDefinition _resolveProtocolReference(
-      SerializableModelFieldDefinition fieldDefinition,
+  static ClassTypeDefinition _resolveProtocolReference(
+      SerializableModelFieldDefinition<ClassTypeDefinition> fieldDefinition,
       List<SerializableModelDefinition> modelDefinitions) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
       modelDefinitions,
@@ -80,11 +86,12 @@ class ModelDependencyResolver {
   }
 
   static void _resolveEnumType(
-    TypeDefinition typeDefinition,
+    ClassTypeDefinition typeDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     if (typeDefinition.generics.isNotEmpty) {
-      for (var genericType in typeDefinition.generics) {
+      for (var genericType
+          in typeDefinition.generics.whereType<ClassTypeDefinition>()) {
         _resolveEnumType(genericType, modelDefinitions);
       }
       return;
@@ -102,7 +109,7 @@ class ModelDependencyResolver {
 
   static void _resolveObjectRelationReference(
     ClassDefinition classDefinition,
-    SerializableModelFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition<ClassTypeDefinition> fieldDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var relation = fieldDefinition.relation;
@@ -203,8 +210,8 @@ class ModelDependencyResolver {
     String tableName,
   ) {
     var relationFieldType = relation.nullableRelation
-        ? TypeDefinition.int.asNullable
-        : TypeDefinition.int;
+        ? ClassTypeDefinition.int.asNullable
+        : ClassTypeDefinition.int;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -301,7 +308,8 @@ class ModelDependencyResolver {
     );
   }
 
-  static SerializableModelFieldDefinition? _findForeignFieldByRelationName(
+  static SerializableModelFieldDefinition<ClassTypeDefinition>?
+      _findForeignFieldByRelationName(
     ClassDefinition classDefinition,
     ClassDefinition foreignClass,
     String fieldName,
@@ -315,7 +323,8 @@ class ModelDependencyResolver {
     );
     if (foreignFields.isEmpty) return null;
 
-    return foreignFields.first;
+    return foreignFields.first
+        as SerializableModelFieldDefinition<ClassTypeDefinition>;
   }
 
   static void _injectForeignRelationField(
@@ -336,7 +345,7 @@ class ModelDependencyResolver {
 
   static void _resolveListRelationReference(
     ClassDefinition classDefinition,
-    SerializableModelFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition<ClassTypeDefinition> fieldDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var relation = fieldDefinition.relation;
@@ -351,7 +360,9 @@ class ModelDependencyResolver {
     }
 
     var type = fieldDefinition.type;
-    var referenceClassName = type.generics.first.className;
+    // relations can only point to other model classes
+    var firstGeneric = type.generics.first as ClassTypeDefinition;
+    var referenceClassName = firstGeneric.className;
 
     var referenceClass =
         modelDefinitions.cast<SerializableModelDefinition?>().firstWhere(
@@ -374,7 +385,7 @@ class ModelDependencyResolver {
 
       var foreignField = SerializableModelFieldDefinition(
         name: foreignFieldName,
-        type: TypeDefinition.int.asNullable,
+        type: ClassTypeDefinition.int.asNullable,
         scope: ModelFieldScopeDefinition.none,
         shouldPersist: true,
         relation: ForeignRelationDefinition(
@@ -403,7 +414,9 @@ class ModelDependencyResolver {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
         if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
-            fieldRelation is ForeignRelationDefinition)) return false;
+            fieldRelation is ForeignRelationDefinition)) {
+          return false;
+        }
         return fieldRelation?.name == relation.name;
       });
 
@@ -421,12 +434,15 @@ class ModelDependencyResolver {
             _createImplicitForeignIdFieldName(foreignField.name);
       }
 
-      SerializableModelFieldDefinition? foreignContainerField;
+      SerializableModelFieldDefinition<ClassTypeDefinition>?
+          foreignContainerField;
       if (foreignRelation is ForeignRelationDefinition) {
         foreignRelation.foreignContainerField = fieldDefinition;
-        foreignContainerField = foreignRelation.containerField;
+        foreignContainerField = foreignRelation.containerField
+            as SerializableModelFieldDefinition<ClassTypeDefinition>?;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
-        foreignContainerField = foreignField;
+        foreignContainerField = foreignField
+            as SerializableModelFieldDefinition<ClassTypeDefinition>;
       }
 
       if (foreignFieldName == null) return;

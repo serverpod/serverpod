@@ -68,7 +68,7 @@ TypeReference typeOrderByListBuilder(
 }
 
 Expression buildFromJsonForField(
-  SerializableModelFieldDefinition field,
+  SerializableModelFieldDefinition<ClassTypeDefinition> field,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,
@@ -103,7 +103,7 @@ TypeReference _typeWithTableCallback(
 
 Expression _buildFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition, {
@@ -183,7 +183,7 @@ Expression _buildFromJson(
 }
 
 Expression _buildPrimitiveTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -196,7 +196,7 @@ Expression _buildPrimitiveTypeFromJson(
 }
 
 Expression _buildDoubleTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -208,7 +208,7 @@ Expression _buildDoubleTypeFromJson(
 }
 
 Expression _buildComplexTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
 ) {
@@ -223,7 +223,7 @@ Expression _buildComplexTypeFromJson(
 
 Expression _buildEnumTypeFromJson(
   EnumSerialization enumSerialization,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -256,7 +256,7 @@ Expression _buildEnumTypeFromJson(
 
 Expression _buildListOrSetTypeFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -280,7 +280,7 @@ Expression _buildListOrSetTypeFromJson(
       const Code(', itemFromJson: (e) =>'),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -300,7 +300,7 @@ Expression _buildListOrSetTypeFromJson(
       Code('${type.nullable ? '?' : ''}.map((e) => '),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -313,13 +313,15 @@ Expression _buildListOrSetTypeFromJson(
 
 Expression _buildMapTypeFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
-  if (type.generics.first.valueType == ValueType.string) {
+  var firstGeneric = type.generics.first;
+  if (firstGeneric is ClassTypeDefinition &&
+      firstGeneric.valueType == ValueType.string) {
     return CodeExpression(
       Block.of([
         const Code('('),
@@ -330,7 +332,7 @@ Expression _buildMapTypeFromJson(
         refer('MapEntry').call([
           _buildFromJson(
             jsonReference,
-            type.generics.first,
+            firstGeneric,
             serverCode,
             config,
             classDefinition,
@@ -338,7 +340,7 @@ Expression _buildMapTypeFromJson(
           ),
           _buildFromJson(
             jsonReference,
-            type.generics.last,
+            type.generics.last as ClassTypeDefinition,
             serverCode,
             config,
             classDefinition,
@@ -374,7 +376,7 @@ Expression _buildMapTypeFromJson(
       const Code('>>({}, (t, e) => {...t, '),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -383,7 +385,7 @@ Expression _buildMapTypeFromJson(
       const Code(':'),
       _buildFromJson(
         jsonReference,
-        type.generics.last,
+        type.generics.last as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -395,7 +397,7 @@ Expression _buildMapTypeFromJson(
 }
 
 Expression _buildClassTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -422,7 +424,7 @@ Expression _buildClassTypeFromJson(
 
 extension ExpressionExtension on Expression {
   Expression checkIfNull(
-    TypeDefinition type, {
+    ClassTypeDefinition type, {
     required Expression valueExpression,
   }) {
     if (!type.nullable) return this;

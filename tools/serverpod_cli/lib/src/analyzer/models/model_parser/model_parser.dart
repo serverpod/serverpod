@@ -17,7 +17,7 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -72,7 +72,7 @@ class ModelParser {
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
-      type: classType,
+      type: classType as ClassTypeDefinition,
     );
   }
 
@@ -95,7 +95,7 @@ class ModelParser {
     var enumType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
-    );
+    ) as ClassTypeDefinition;
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -156,7 +156,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
@@ -164,7 +164,7 @@ class ModelParser {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
-          type: TypeDefinition.int.asNullable,
+          type: ClassTypeDefinition.int.asNullable,
           scope: ModelFieldScopeDefinition.all,
           shouldPersist: true,
           documentation: [
@@ -194,7 +194,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    List<ClassTypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
     var key = fieldNode.key;
@@ -244,13 +244,28 @@ class ModelParser {
       node,
     );
 
+    if (typeResult is RecordTypeDefinition) {
+      return [
+        SerializableModelFieldDefinition<RecordTypeDefinition>(
+          name: fieldName,
+          relation: relation,
+          shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
+          scope: scope,
+          type: typeResult,
+          documentation: fieldDocumentation,
+          defaultModelValue: defaultModelValue,
+          defaultPersistValue: defaultPersistValue,
+        )
+      ];
+    }
+
     return [
-      SerializableModelFieldDefinition(
+      SerializableModelFieldDefinition<ClassTypeDefinition>(
         name: fieldName,
         relation: relation,
         shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
         scope: scope,
-        type: typeResult,
+        type: typeResult as ClassTypeDefinition,
         documentation: fieldDocumentation,
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
@@ -270,6 +285,8 @@ class ModelParser {
     TypeDefinition typeResult,
     YamlMap node,
   ) {
+    if (typeResult is! ClassTypeDefinition) return null;
+
     if (!_isRelation(node)) return null;
 
     var relationName = _parseRelationName(node);

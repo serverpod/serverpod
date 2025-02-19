@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -197,7 +198,7 @@ class ParsedModelsCollection {
 
   List<SerializableModelFieldDefinition> findNamedForeignRelationFields(
     ClassDefinition classDefinition,
-    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
   ) {
     var relationField = _extractRelationField(classDefinition, field);
     if (relationField == null) return [];
@@ -263,9 +264,11 @@ class ParsedModelsCollection {
     return classes == null || classes.length == 1;
   }
 
-  String extractReferenceClassName(SerializableModelFieldDefinition field) {
+  String extractReferenceClassName(
+      SerializableModelFieldDefinition<ClassTypeDefinition> field) {
     if (field.type.isListType) {
-      return field.type.generics.first.className;
+      // Relation reference must point to a model class type
+      return (field.type.generics.first as ClassTypeDefinition).className;
     }
 
     return field.type.className;

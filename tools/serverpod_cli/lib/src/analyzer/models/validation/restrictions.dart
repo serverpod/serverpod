@@ -167,7 +167,7 @@ class Restrictions {
     }
 
     var duplicateExtraClass =
-        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+        config.extraClasses.cast<ClassTypeDefinition?>().firstWhere(
               (extraClass) => extraClass?.className == className,
               orElse: () => null,
             );
@@ -338,7 +338,8 @@ class Restrictions {
 
     if (definition is! ClassDefinition) return errors;
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return errors;
 
     if (!field.type.isIdType) {
@@ -382,7 +383,8 @@ class Restrictions {
 
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     if (field.type.isIdType) {
@@ -532,7 +534,8 @@ class Restrictions {
 
     if (classDefinition is! ClassDefinition) return [];
 
-    var field = classDefinition.findField(parentNodeName);
+    var field = classDefinition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     if (field.type.isListType) {
@@ -585,8 +588,8 @@ class Restrictions {
   }
 
   bool _isImplicitManyToManyRelation(
-    SerializableModelFieldDefinition field,
-    SerializableModelFieldDefinition foreignField,
+    SerializableModelFieldDefinition<ClassTypeDefinition> field,
+    SerializableModelFieldDefinition<ClassTypeDefinition> foreignField,
   ) {
     if (!field.type.isListType) return false;
     if (!foreignField.type.isListType) return false;
@@ -637,6 +640,11 @@ class Restrictions {
       ];
     }
 
+    if (foreignKeyField
+        is! SerializableModelFieldDefinition<ClassTypeDefinition>) {
+      return [];
+    }
+
     if (!foreignKeyField.shouldPersist) {
       return [
         SourceSpanSeverityException(
@@ -649,7 +657,8 @@ class Restrictions {
     var foreignKeyRelation = foreignKeyField.relation;
     if (foreignKeyRelation is! ForeignRelationDefinition) return [];
 
-    var field = classDefinition.findField(parentNodeName);
+    var field = classDefinition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     var relation = field?.relation;
     if (relation is UnresolvableObjectRelationDefinition &&
         relation.reason == UnresolvableReason.relationAlreadyDefinedForField) {
@@ -669,7 +678,8 @@ class Restrictions {
     if (parentClass is! ClassDefinition) return [];
 
     var referenceField =
-        parentClass.findField(foreignKeyRelation.foreignFieldName);
+        parentClass.findField(foreignKeyRelation.foreignFieldName)
+            as SerializableModelFieldDefinition<ClassTypeDefinition>?; // TODO
 
     if (foreignKeyField.type.className != referenceField?.type.className) {
       return [
@@ -698,7 +708,7 @@ class Restrictions {
   }
 
   bool _isOneToOneObjectRelation(
-    SerializableModelFieldDefinition? field,
+    SerializableModelFieldDefinition<ClassTypeDefinition>? field,
     ClassDefinition classDefinition,
   ) {
     if (field == null) return false;
@@ -711,7 +721,9 @@ class Restrictions {
     );
 
     if (foreignFields.isEmpty) return false;
-    if (foreignFields.any((element) => element.type.isListType)) return false;
+    if (foreignFields.any((element) =>
+        element is SerializableModelFieldDefinition<ClassTypeDefinition> &&
+        element.type.isListType)) return false;
 
     return true;
   }
@@ -736,7 +748,8 @@ class Restrictions {
 
     if (definition is! ClassDefinition) return errors;
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return errors;
     var type = field.type.className;
 
@@ -825,12 +838,20 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
+    print('type: ${type.runtimeType}');
+    print('type: $type');
+    print('type: $parentNodeName');
+
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return errors;
+    if (field is! SerializableModelFieldDefinition<ClassTypeDefinition>) {
+      return [];
+    }
 
+    print('type: $field');
     errors.addAll(_validateFieldDataType(field.type, span));
 
     // Abort further validation if the field data type has errors.
@@ -867,7 +888,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> _validateFieldDataType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
     SourceSpan? span,
   ) {
     var typeText = span?.text;
@@ -908,8 +929,15 @@ class Restrictions {
 
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
-        errors.addAll(_validateFieldDataType(fieldType.generics.last, span));
+        errors.addAll(_validateFieldDataType(
+          // NOTE(tp): Model generics do not support records yet, so we can cast safely in these cases
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.last as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -920,7 +948,10 @@ class Restrictions {
       }
     } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -931,7 +962,10 @@ class Restrictions {
       }
     } else if (fieldType.isSetType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -955,7 +989,7 @@ class Restrictions {
   List<SourceSpanSeverityException> _validateFieldRelationType({
     required String parentNodeName,
     required String type,
-    required SerializableModelFieldDefinition field,
+    required SerializableModelFieldDefinition<ClassTypeDefinition> field,
     required SourceSpan? span,
   }) {
     String? parsedType = parsedModels.extractReferenceClassName(field);
@@ -1067,14 +1101,15 @@ class Restrictions {
       ];
     }
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
 
     if (field == null) return [];
 
     if (field.type.isListType) {
-      var referenceClass = parsedModels
-          .findAllByClassName(field.type.generics.first.className)
-          .firstOrNull;
+      var referenceClass = parsedModels.findAllByClassName(
+          // NOTE(tp): Relations only support models in generics, so cast is fine
+          (field.type.generics.first as ClassTypeDefinition).className).firstOrNull;
 
       if (referenceClass != null &&
           referenceClass.type.moduleAlias != definition.type.moduleAlias) {
@@ -1137,7 +1172,8 @@ class Restrictions {
       ];
     }
 
-    var field = classDefinition.findField(parentNodeName);
+    var field = classDefinition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     var foreignFields = parsedModels.findNamedForeignRelationFields(
@@ -1166,7 +1202,10 @@ class Restrictions {
       ];
     }
 
-    if (_isImplicitManyToManyRelation(field, foreignFields.first)) {
+    if (_isImplicitManyToManyRelation(
+        field,
+        foreignFields.first
+            as SerializableModelFieldDefinition<ClassTypeDefinition>)) {
       return [
         SourceSpanSeverityException(
           'A named relation to another list field is not supported.',
@@ -1260,7 +1299,8 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     var errors = <SourceSpanSeverityException>[];
@@ -1285,7 +1325,8 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     var errors = <SourceSpanSeverityException>[];
@@ -1310,7 +1351,8 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var field = definition.findField(parentNodeName);
+    var field = definition.findField(parentNodeName)
+        as SerializableModelFieldDefinition<ClassTypeDefinition>?;
     if (field == null) return [];
 
     var errors = <SourceSpanSeverityException>[];
@@ -1381,17 +1423,17 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
+  bool _isValidType(ClassTypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
         _isCustomType(type);
   }
 
-  bool _isUnsupportedType(TypeDefinition type) {
+  bool _isUnsupportedType(ClassTypeDefinition type) {
     return blackListedTypes.contains(type.className);
   }
 
-  bool _isUnresolvedModuleType(TypeDefinition type) {
+  bool _isUnresolvedModuleType(ClassTypeDefinition type) {
     if (!type.isModuleType) return false;
 
     var moduleAlias = type.moduleAlias;
@@ -1400,7 +1442,7 @@ class Restrictions {
     return !parsedModels.moduleNames.contains(moduleAlias);
   }
 
-  bool _isModelType(TypeDefinition type) {
+  bool _isModelType(ClassTypeDefinition type) {
     var className = type.className;
 
     var definitions = parsedModels.classNames[className];
@@ -1418,7 +1460,7 @@ class Restrictions {
     return true;
   }
 
-  bool _isCustomType(TypeDefinition type) {
+  bool _isCustomType(ClassTypeDefinition type) {
     return config.extraClasses.any((c) => c.className == type.className);
   }
 
@@ -1429,13 +1471,16 @@ class Restrictions {
   }
 
   Set<ClassDefinition> _extractAllClassDefinitionsFromType(
-    TypeDefinition fieldType,
+    ClassTypeDefinition fieldType,
   ) {
     var classDefinitions = <ClassDefinition>{};
 
     if (fieldType.generics.isNotEmpty) {
       for (var generic in fieldType.generics) {
-        classDefinitions.addAll(_extractAllClassDefinitionsFromType(generic));
+        // NOTE(tp): Records are not yet support
+        classDefinitions.addAll(_extractAllClassDefinitionsFromType(
+          generic as ClassTypeDefinition,
+        ));
       }
     }
 
