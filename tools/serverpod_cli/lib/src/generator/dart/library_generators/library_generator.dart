@@ -168,13 +168,12 @@ class LibraryGenerator {
                           serverCode,
                           config: config,
                         ),
-
-                      for (var recordType in protocolDefinition.allRecordTypes)
-                        ...recordType.generateDeserialization(
-                          serverCode,
-                          config: config,
-                        )
                     ],
+                  for (var recordType in protocolDefinition.allRecordTypes)
+                    ...recordType.generateDeserialization(
+                      serverCode,
+                      config: config,
+                    ),
                   // Generate deserialization for extra classes.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.generateDeserialization(serverCode,
