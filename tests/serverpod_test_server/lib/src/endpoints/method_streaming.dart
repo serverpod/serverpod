@@ -244,7 +244,7 @@ class MethodStreaming extends Endpoint {
 
   Stream<Set<SimpleData>> nestedSetInListInOutDataStream(
     Session session,
-    // NOTE(tp): Important that this type is only declared once as a parameter, but still code is generated for it
+    // Important that this type is only declared once as a parameter, but still code is generated for it
     Stream<List<Set<SimpleData>>> simpleDataSetStream,
   ) async* {
     await for (var list in simpleDataSetStream) {
