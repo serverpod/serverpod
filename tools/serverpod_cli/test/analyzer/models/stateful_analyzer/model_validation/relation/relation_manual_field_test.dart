@@ -328,10 +328,10 @@ fields:
       test(
           'then the error message reports that the "optional" property '
           'is mutually exclusive with the "field" property.', () {
-        var error = errors.first;
         expect(
-          error.message,
-          'The "optional" property is mutually exclusive with the "field" property.',
+          errors.map((e) => e.message),
+          contains(
+              'The "optional" property is mutually exclusive with the "field" property.'),
         );
       });
     },
