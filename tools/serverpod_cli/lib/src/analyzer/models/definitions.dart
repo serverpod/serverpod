@@ -359,7 +359,7 @@ class ResolvedInheritanceDefinition extends InheritanceDefinition {
   ResolvedInheritanceDefinition(this.classDefinition);
 }
 
-abstract class RelationDefinition {
+sealed class RelationDefinition {
   String? name;
 
   bool isForeignKeyOrigin;
