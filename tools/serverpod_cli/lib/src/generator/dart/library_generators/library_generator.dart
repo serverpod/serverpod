@@ -62,7 +62,6 @@ class LibraryGenerator {
       if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
         if (valueType.dartType == null ||
             !topLevelStreamContainerTypes.any((type) =>
-                // TODO(tp): Use `isStructurallyEqualTo` in the future (not supported by current lower bound of Flutter 3.19)
                 type.dartType.toString() == valueType.dartType.toString())) {
           topLevelStreamContainerTypes.add(valueType);
         }
