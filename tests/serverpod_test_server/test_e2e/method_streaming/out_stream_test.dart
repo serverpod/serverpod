@@ -80,18 +80,16 @@ void main() {
   test(
       'Given a streaming method that echoes a stream of lists of integers, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleListInOutIntStream(
-          Stream.fromIterable([
-            [1, 2, 3],
-            [4, 5, 6],
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleListInOutIntStream(
+      Stream.fromIterable([
+        [1, 2, 3],
+        [4, 5, 6],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         [1, 2, 3],
         [4, 5, 6],
       ]),
@@ -101,19 +99,18 @@ void main() {
   test(
       'Given a streaming method that echoes a stream of nullable lists of data objects, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleNullableListInOutNullableDataStream(
-          Stream.fromIterable([
-            [SimpleData(num: 1), SimpleData(num: 2)],
-            null,
-            [SimpleData(num: 3), SimpleData(num: 4)],
-          ]),
-        )
-        .toList();
+    var response =
+        client.methodStreaming.simpleNullableListInOutNullableDataStream(
+      Stream.fromIterable([
+        [SimpleData(num: 1), SimpleData(num: 2)],
+        null,
+        [SimpleData(num: 3), SimpleData(num: 4)],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         [
           isA<SimpleData>().having((s) => s.num, 'num', 1),
           isA<SimpleData>().having((s) => s.num, 'num', 2),
@@ -130,18 +127,16 @@ void main() {
   test(
       'Given a streaming method that echoes a stream lists of nullable data objects, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleListInOutNullableDataStream(
-          Stream.fromIterable([
-            [SimpleData(num: 1), null, SimpleData(num: 2)],
-            [null, SimpleData(num: 3), null, SimpleData(num: 4), null],
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleListInOutNullableDataStream(
+      Stream.fromIterable([
+        [SimpleData(num: 1), null, SimpleData(num: 2)],
+        [null, SimpleData(num: 3), null, SimpleData(num: 4), null],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         [
           isA<SimpleData>().having((s) => s.num, 'num', 1),
           isNull,
@@ -161,24 +156,22 @@ void main() {
   test(
       'Given a streaming method that echoes a stream lists of `UserInfo` objects (type from another module), when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleListInOutOtherModuleTypeStream(
-          Stream.fromIterable([
-            [
-              UserInfo(
-                userIdentifier: 'my_user',
-                created: DateTime.utc(2025),
-                scopeNames: [],
-                blocked: false,
-              ),
-            ],
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleListInOutOtherModuleTypeStream(
+      Stream.fromIterable([
+        [
+          UserInfo(
+            userIdentifier: 'my_user',
+            created: DateTime.utc(2025),
+            scopeNames: [],
+            blocked: false,
+          ),
+        ],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         [
           isA<UserInfo>()
               .having((s) => s.userIdentifier, 'userIdentifier', 'my_user'),
@@ -190,18 +183,16 @@ void main() {
   test(
       'Given a streaming method that echoes a stream of lists of data objects, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleListInOutDataStream(
-          Stream.fromIterable([
-            [SimpleData(num: 1), SimpleData(num: 2)],
-            [SimpleData(num: 3), SimpleData(num: 4)],
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleListInOutDataStream(
+      Stream.fromIterable([
+        [SimpleData(num: 1), SimpleData(num: 2)],
+        [SimpleData(num: 3), SimpleData(num: 4)],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         [
           isA<SimpleData>().having((s) => s.num, 'num', 1),
           isA<SimpleData>().having((s) => s.num, 'num', 2),
@@ -217,18 +208,16 @@ void main() {
   test(
       'Given a streaming method that echoes a stream of sets of integers, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleSetInOutIntStream(
-          Stream.fromIterable([
-            {1, 2, 3},
-            {4, 5, 6},
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleSetInOutIntStream(
+      Stream.fromIterable([
+        {1, 2, 3},
+        {4, 5, 6},
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         {1, 2, 3},
         {4, 5, 6},
       ]),
@@ -238,18 +227,16 @@ void main() {
   test(
       'Given a streaming method that echoes a stream of sets of data objects, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .simpleSetInOutDataStream(
-          Stream.fromIterable([
-            {SimpleData(num: 1), SimpleData(num: 2)},
-            {SimpleData(num: 3), SimpleData(num: 4)},
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.simpleSetInOutDataStream(
+      Stream.fromIterable([
+        {SimpleData(num: 1), SimpleData(num: 2)},
+        {SimpleData(num: 3), SimpleData(num: 4)},
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         {
           isA<SimpleData>().having((s) => s.num, 'num', 1),
           isA<SimpleData>().having((s) => s.num, 'num', 2),
@@ -265,23 +252,21 @@ void main() {
   test(
       'Given a streaming method that echoes a flattened stream of sets of data objects, when calling the method, then the input values are returned.',
       () async {
-    var response = await client.methodStreaming
-        .nestedSetInListInOutDataStream(
-          Stream.fromIterable([
-            [
-              {SimpleData(num: 1), SimpleData(num: 2)}
-            ],
-            [
-              {SimpleData(num: 3)},
-              {SimpleData(num: 4)},
-            ],
-          ]),
-        )
-        .toList();
+    var response = client.methodStreaming.nestedSetInListInOutDataStream(
+      Stream.fromIterable([
+        [
+          {SimpleData(num: 1), SimpleData(num: 2)}
+        ],
+        [
+          {SimpleData(num: 3)},
+          {SimpleData(num: 4)},
+        ],
+      ]),
+    );
 
     expect(
       response,
-      equals([
+      emitsInOrder([
         {
           isA<SimpleData>().having((s) => s.num, 'num', 1),
           isA<SimpleData>().having((s) => s.num, 'num', 2),
