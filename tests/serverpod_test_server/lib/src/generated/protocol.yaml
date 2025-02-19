@@ -217,6 +217,14 @@ methodStreaming:
   - simpleStreamWithParameter:
   - simpleDataStream:
   - simpleInOutDataStream:
+  - simpleListInOutIntStream:
+  - simpleListInOutDataStream:
+  - simpleListInOutOtherModuleTypeStream:
+  - simpleNullableListInOutNullableDataStream:
+  - simpleListInOutNullableDataStream:
+  - simpleSetInOutIntStream:
+  - simpleSetInOutDataStream:
+  - nestedSetInListInOutDataStream:
   - simpleEndpoint:
   - intParameter:
   - doubleInputValue:

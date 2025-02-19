@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -51,6 +52,21 @@ class LibraryGenerator {
     ]);
 
     var protocol = ClassBuilder();
+
+    var topLevelStreamContainerTypes = <TypeDefinition>[];
+    for (var topLevelType in protocolDefinition.endpoints
+        .expand((e) => e.methods)
+        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
+        .where((t) => t.isStreamType)) {
+      var valueType = topLevelType.generics.first;
+      if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
+        if (valueType.dartType == null ||
+            !topLevelStreamContainerTypes.any((type) =>
+                type.dartType.toString() == valueType.dartType.toString())) {
+          topLevelStreamContainerTypes.add(valueType);
+        }
+      }
+    }
 
     protocol
       ..name = 'Protocol'
@@ -172,7 +188,10 @@ class LibraryGenerator {
                   // Generate deserialization for extra classes as nullables.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.asNullable
-                        .generateDeserialization(serverCode, config: config)
+                        .generateDeserialization(serverCode, config: config),
+                  // Generate deserialization for containers used in streams
+                  for (var type in topLevelStreamContainerTypes)
+                    ...type.generateDeserialization(serverCode, config: config)
                 ]))
               .entries
               .map((e) => Block.of([
@@ -217,6 +236,15 @@ class LibraryGenerator {
           for (var module in config.modules)
             _buildGetClassNameForObjectDelegation(
                 module.dartImportUrl(serverCode), module.name),
+          for (var containerType in topLevelStreamContainerTypes)
+            Block.of([
+              const Code('if(data is '),
+              containerType.reference(serverCode, config: config).code,
+              const Code(') {'),
+              Code(
+                  'return \'${containerType.classNameWithGenericsForProtocol(modules: config.modules)}\';'),
+              const Code('}'),
+            ]),
           const Code('return null;'),
         ])),
       Method((m) => m
@@ -247,6 +275,14 @@ class LibraryGenerator {
               module.dartImportUrl(serverCode),
               module.name,
             ),
+          for (final containerType in topLevelStreamContainerTypes) ...[
+            Code(
+                "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {"),
+            const Code('return deserialize<'),
+            containerType.reference(serverCode, config: config).code,
+            const Code('>(data[\'data\']);'),
+            const Code('}'),
+          ],
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
@@ -1009,6 +1045,27 @@ class LibraryGenerator {
     } else {
       return refer('params').index(literalString(param.name));
     }
+  }
+}
+
+extension on TypeDefinition {
+  /// Returns the class name with generic parameters (without any formatting whitespace),
+  /// but strips all import path for a succinct representation.
+  ///
+  /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
+  /// Using a model from another module will look like `"List<serverpod_auth.UserInfo>"`
+  String classNameWithGenericsForProtocol({
+    required List<ModuleConfig> modules,
+  }) {
+    String? moduleName;
+    for (var module in modules) {
+      // NOTE(tp): Since we're iterating over types used in the endpoints, the import always refers to the server package
+      if (url != null && url!.startsWith('package:${module.serverPackage}/')) {
+        moduleName = module.name;
+      }
+    }
+
+    return '${moduleName != null ? '$moduleName.' : ''}$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenericsForProtocol(modules: modules)).join(',')}>' : ''}${nullable ? '?' : ''}';
   }
 }
 

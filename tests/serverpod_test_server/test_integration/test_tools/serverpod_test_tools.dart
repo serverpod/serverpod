@@ -6378,6 +6378,265 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _i3.Stream<List<int>> simpleListInOutIntStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<int>> simpleDataListStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleListInOutIntStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleListInOutIntStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataListStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataListStream': simpleDataListStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<_i11.SimpleData>> simpleListInOutDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<_i11.SimpleData>> simpleDataListStream,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<List<_i11.SimpleData>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleListInOutDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleListInOutDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataListStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataListStream': simpleDataListStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<_i4.UserInfo>> simpleListInOutOtherModuleTypeStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<_i4.UserInfo>> userInfoListStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<List<_i4.UserInfo>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleListInOutOtherModuleTypeStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleListInOutOtherModuleTypeStream',
+          arguments: {},
+          requestedInputStreams: ['userInfoListStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'userInfoListStream': userInfoListStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<_i11.SimpleData>?> simpleNullableListInOutNullableDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<_i11.SimpleData>?> simpleDataListStream,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<List<_i11.SimpleData>?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleNullableListInOutNullableDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleNullableListInOutNullableDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataListStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataListStream': simpleDataListStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<_i11.SimpleData?>> simpleListInOutNullableDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<_i11.SimpleData?>> simpleDataListStream,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<List<_i11.SimpleData?>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleListInOutNullableDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleListInOutNullableDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataListStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataListStream': simpleDataListStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<Set<int>> simpleSetInOutIntStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<Set<int>> simpleDataSetStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Set<int>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleSetInOutIntStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleSetInOutIntStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataSetStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataSetStream': simpleDataSetStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<Set<_i11.SimpleData>> simpleSetInOutDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<Set<_i11.SimpleData>> simpleDataSetStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Set<_i11.SimpleData>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'simpleSetInOutDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'simpleSetInOutDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataSetStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataSetStream': simpleDataSetStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<Set<_i11.SimpleData>> nestedSetInListInOutDataStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<List<Set<_i11.SimpleData>>> simpleDataSetStream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<Set<_i11.SimpleData>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'methodStreaming',
+          method: 'nestedSetInListInOutDataStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'nestedSetInListInOutDataStream',
+          arguments: {},
+          requestedInputStreams: ['simpleDataSetStream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'simpleDataSetStream': simpleDataSetStream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<void> simpleEndpoint(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
