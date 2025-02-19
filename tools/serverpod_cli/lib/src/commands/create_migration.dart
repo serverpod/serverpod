@@ -46,7 +46,7 @@ class CreateMigrationCommand extends ServerpodCommand {
           'Invalid tag name. Tag names can only contain lowercase letters, '
           'number, and dashes.',
         );
-        throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
       }
     }
 
@@ -54,7 +54,7 @@ class CreateMigrationCommand extends ServerpodCommand {
     try {
       config = await GeneratorConfig.load();
     } catch (_) {
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     if (!config.isFeatureEnabled(ServerpodFeature.database)) {
@@ -62,12 +62,12 @@ class CreateMigrationCommand extends ServerpodCommand {
         'The database feature is not enabled in this project. '
         'This command cannot be used.',
       );
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     var projectName = await getProjectName();
     if (projectName == null) {
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     var generator = MigrationGenerator(
@@ -107,7 +107,7 @@ class CreateMigrationCommand extends ServerpodCommand {
     if (migration == null ||
         projectDirectory == null ||
         migrationName == null) {
-      throw ExitException();
+      throw ExitException.error();
     }
 
     log.info(
