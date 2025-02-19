@@ -147,30 +147,8 @@ class LibraryGenerator {
                           (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
-                  for (var endPoint in protocolDefinition.endpoints)
-                    // Generate deserialization for endpoint methods.
-                    for (var method in endPoint.methods) ...[
-                      // Generate deserialization for the return type of the method. (which is always a class, `Future` or `Stream`)
-                      ...(method.returnType as ClassTypeDefinition)
-                          .retrieveGenericType()
-                          .generateDeserialization(serverCode, config: config),
-                      // Generate deserialization for parameters of the method.
-                      for (var parameter in method.parameters)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
-                      // Generate deserialization for positional parameters of the method.
-                      for (var parameter in method.parametersPositional)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
-                      // Generate deserialization for named parameters of the method.
-                      for (var parameter in method.parametersNamed)
-                        ...parameter.type.generateDeserialization(
-                          serverCode,
-                          config: config,
-                        ),
-                    ],
-                  for (var recordType in protocolDefinition.allRecordTypes)
-                    ...recordType.generateDeserialization(
+                  for (var type in protocolDefinition.typesToDeserialize)
+                    ...type.generateDeserialization(
                       serverCode,
                       config: config,
                     ),
@@ -315,7 +293,7 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
-      if (protocolDefinition.allRecordTypes.isNotEmpty)
+      if (protocolDefinition.typesToDeserialize.isNotEmpty)
         Method(
           (m) => m
             ..static = true
@@ -331,7 +309,8 @@ class LibraryGenerator {
               ..name = 'record'
               ..type = refer('Record?')))
             ..body = _buildRecordEncode(
-              protocolDefinition.allRecordTypes,
+              protocolDefinition.typesToDeserialize
+                  .whereType<RecordTypeDefinition>(),
               'record',
               serverCode: serverCode,
               config: config,
@@ -1176,9 +1155,9 @@ extension on ClassTypeDefinition {
 }
 
 extension on ProtocolDefinition {
-  void _collectRecordTypes(
+  void _addTypeAndCollectRecords(
     ClassTypeDefinition classDef,
-    List<RecordTypeDefinition> recordTypes,
+    List<TypeDefinition> recordTypes,
     Set<String> handledTypes,
   ) {
     var typeName = classDef.dartType?.toString();
@@ -1187,19 +1166,20 @@ extension on ProtocolDefinition {
     }
 
     handledTypes.add(typeName);
+    recordTypes.add(classDef);
 
     for (var generic in classDef.generics) {
       if (generic is RecordTypeDefinition) {
         _addRecordType(generic, recordTypes, handledTypes);
       } else if (generic is ClassTypeDefinition) {
-        _collectRecordTypes(generic, recordTypes, handledTypes);
+        _addTypeAndCollectRecords(generic, recordTypes, handledTypes);
       }
     }
   }
 
   void _addRecordType(
     RecordTypeDefinition recordType,
-    List<RecordTypeDefinition> recordTypes,
+    List<TypeDefinition> recordTypes,
     Set<String> handledTypes,
   ) {
     var typeName = recordType.dartType.toString();
@@ -1209,6 +1189,7 @@ extension on ProtocolDefinition {
 
     handledTypes.add(typeName);
     recordTypes.add(recordType);
+    print('adding $typeName to recordTypes.add');
 
     for (var type in [
       ...recordType.dartType.namedFields.map((f) => f.type),
@@ -1220,15 +1201,17 @@ extension on ProtocolDefinition {
         case RecordTypeDefinition():
           _addRecordType(fieldType, recordTypes, handledTypes);
         case ClassTypeDefinition():
-          _collectRecordTypes(fieldType, recordTypes, handledTypes);
+          _addTypeAndCollectRecords(fieldType, recordTypes, handledTypes);
       }
     }
   }
 
-  /// Returns all record types referenced by the protocol.
-  /// From endpoint method and model fields.
-  Iterable<RecordTypeDefinition> get allRecordTypes {
-    var recordTypes = <RecordTypeDefinition>[];
+  /// Returns all top-level types and record types referenced by the protocol.
+  ///
+  /// For records it also returns sub record types, as these are also required
+  /// to be supported by `deserialize` on the `Protocol`.
+  List<TypeDefinition> get typesToDeserialize {
+    var recordTypes = <TypeDefinition>[];
 
     var handledTypes = <String>{};
 
@@ -1236,7 +1219,7 @@ extension on ProtocolDefinition {
       var returnType = method.returnType;
       // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)
       if (returnType is ClassTypeDefinition) {
-        _collectRecordTypes(returnType, recordTypes, handledTypes);
+        _addTypeAndCollectRecords(returnType, recordTypes, handledTypes);
       }
 
       for (var parameter in method.allParameters) {
@@ -1244,7 +1227,7 @@ extension on ProtocolDefinition {
         if (type is RecordTypeDefinition) {
           _addRecordType(type, recordTypes, handledTypes);
         } else if (type is ClassTypeDefinition) {
-          _collectRecordTypes(type, recordTypes, handledTypes);
+          _addTypeAndCollectRecords(type, recordTypes, handledTypes);
         }
       }
     }
