@@ -179,6 +179,14 @@ class ModelParser {
 
     if (tableName != null) {
       var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
+      var defaultValue = (maybeIdColumn != null)
+          ? maybeIdColumn.defaultPersistValue
+          : defaultIdType.defaultValue;
+
+      // The 'int' id type can be specified without a default value.
+      if (maybeIdColumn?.type.className == 'int') {
+        defaultValue = defaultValue ?? SupportedIdType.int.defaultValue;
+      }
 
       var defaultIdFieldDoc = [
         '/// The database id, set if the object has been inserted into the',
@@ -193,9 +201,7 @@ class ModelParser {
           name: 'id',
           type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
-          defaultPersistValue: (maybeIdColumn != null)
-              ? maybeIdColumn.defaultPersistValue
-              : defaultIdType.defaultValue,
+          defaultPersistValue: defaultValue,
           shouldPersist: true,
           documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
         ),

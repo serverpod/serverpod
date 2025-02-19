@@ -51,27 +51,48 @@ void main() {
     var defaultValue = idType.defaultValue;
 
     group('Given a class with the $idClassName id type', () {
-      test('and no default value, then an error is collected.', () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      if (idClassName == 'int') {
+        test('and no default value, then no error is collected.', () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
           class: Example
           table: example
           fields:
             id: $idClassName
           ''',
-        ).build()
-      ];
+            ).build()
+          ];
 
-      var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
 
-        expect(
-          collector.errors.first.message,
-          contains('The type "$idClassName" must have a default value.'),
-        );
-      });
+          expect(collector.errors, isEmpty);
+        });
+      } else {
+        test('and no default value, then an error is collected.', () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
+          class: Example
+          table: example
+          fields:
+            id: $idClassName
+          ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors.first.message,
+            contains('The type "$idClassName" must have a default value.'),
+          );
+        });
+      }
 
       group('and default value set to $defaultValue', () {
         var yamlSource = ModelSourceBuilder().withYaml(
@@ -83,7 +104,7 @@ void main() {
         ''',
         ).build();
 
-      var collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
         var definitions = statefulAnalyzer.validateAll();
         var errors = collector.errors;
@@ -92,7 +113,7 @@ void main() {
           expect(errors, isEmpty);
         });
 
-      var definition = definitions.first as ClassDefinition;
+        var definition = definitions.first as ClassDefinition;
 
         test("then the id of the table is '$idClassName'.", () {
           expect(definition.idField.type.className, idClassName);
