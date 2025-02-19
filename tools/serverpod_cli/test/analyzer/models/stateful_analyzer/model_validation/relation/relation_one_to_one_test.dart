@@ -1000,4 +1000,75 @@ void main() {
     expect(collector.errors, hasLength(variant.errors.length));
     expect(collector.errors.map((e) => e.message), variant.errors);
   });
+
+  testWithVariants(
+      'Given a class with an object relation,',
+      describeVariant: (v) =>
+          'when the class is${v.classIsServerOnly ? '' : ' not'} serverOnly'
+          ' and the field is${v.optional ? '' : ' not'} optional'
+          '${v.fieldScope == null ? '' : ' and the field scope is ${v.fieldScope!.name}'}'
+          ', then it should cause ${v.errors.length} error(s)',
+      const [
+        (classIsServerOnly: true, fieldScope: null, optional: true, errors: []),
+        (
+          classIsServerOnly: true,
+          fieldScope: null,
+          optional: false,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: null,
+          optional: true,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: null,
+          optional: false,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.serverOnly,
+          optional: true,
+          errors: []
+        ),
+        (
+          classIsServerOnly: false,
+          fieldScope: ModelFieldScopeDefinition.serverOnly,
+          optional: false,
+          errors: [
+            'The relation with scope "serverOnly" requires the relation to be optional.'
+          ]
+        ),
+      ], (variant) {
+    var collector = CodeGenerationCollector();
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      (ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        ${variant.classIsServerOnly ? 'serverOnly: true' : ''}
+        fields:
+          parent: Parent?, relation${variant.optional ? '(optional)' : ''}${variant.fieldScope == null ? '' : ', scope=${variant.fieldScope!.name}'}
+        ''',
+      ).build())
+    ];
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(collector.errors, hasLength(variant.errors.length));
+    expect(collector.errors.map((e) => e.message), variant.errors);
+  });
 }
