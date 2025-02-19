@@ -41,7 +41,7 @@ class GenerateCommand extends ServerpodCommand {
       config = await GeneratorConfig.load();
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     // Validate cli version is compatible with serverpod packages
@@ -84,7 +84,7 @@ class GenerateCommand extends ServerpodCommand {
     }
 
     if (!success) {
-      throw ExitException();
+      throw ExitException.error();
     } else {
       log.info('Done.', type: TextLogType.success);
     }

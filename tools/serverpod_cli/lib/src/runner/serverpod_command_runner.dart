@@ -14,16 +14,16 @@ Future<void> _preCommandEnvironmentChecks() async {
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    throw ExitException();
+    throw ExitException.error();
   }
   if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    throw ExitException();
+    throw ExitException.error();
   }
 
   if (!loadEnvironmentVars()) {
-    throw ExitException();
+    throw ExitException.error();
   }
 
   // Make sure all necessary downloads are installed
@@ -32,13 +32,13 @@ Future<void> _preCommandEnvironmentChecks() async {
       await resourceManager.installTemplates();
     } catch (e) {
       log.error('Failed to download templates.');
-      throw ExitException();
+      throw ExitException.error();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       log.error(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      throw ExitException();
+      throw ExitException.error();
     }
   }
 }

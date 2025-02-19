@@ -45,13 +45,13 @@ class CreateCommand extends ServerpodCommand {
     if (rest == null || rest.isEmpty) {
       log.error('Project name missing.');
       printUsage();
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     if (rest.length > 1) {
       log.error('Multiple project names specified, please specify only.');
       printUsage();
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     var name = rest.last;
@@ -68,7 +68,7 @@ class CreateCommand extends ServerpodCommand {
     }
 
     if (!await performCreate(name, template, force)) {
-      throw ExitException();
+      throw ExitException.error();
     }
   }
 }
