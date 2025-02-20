@@ -110,55 +110,12 @@ List<String> findAllMigrationVersionsSync({
   }
 }
 
-Future<List<Uri>> locateAllModulePaths({
-  required Directory directory,
-}) async {
-  var packageConfig = await findPackageConfig(directory);
-  if (packageConfig == null) {
-    throw Exception('Failed to read package configuration.');
-  }
-
-  var paths = <Uri>[];
-  for (var packageInfo in packageConfig.packages) {
-    try {
-      var packageName = packageInfo.name;
-      if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
-        continue;
-      }
-
-      var packageSrcRoot = packageInfo.packageUriRoot;
-
-      // Check for generator file
-      var generatorConfigSegments =
-          List<String>.from(packageSrcRoot.pathSegments)
-            ..removeLast()
-            ..removeLast()
-            ..addAll(['config', 'generator.yaml']);
-      var generatorConfigUri = packageSrcRoot.replace(
-        pathSegments: generatorConfigSegments,
-      );
-
-      var generatorConfigFile = File.fromUri(generatorConfigUri);
-      if (!await generatorConfigFile.exists()) {
-        continue;
-      }
-
-      // Get the root of the package
-      var packageRootSegments = List<String>.from(packageSrcRoot.pathSegments)
-        ..removeLast()
-        ..removeLast();
-      var packageRoot = packageSrcRoot.replace(
-        pathSegments: packageRootSegments,
-      );
-      paths.add(packageRoot);
-    } catch (e) {
-      log.debug(e.toString());
-      continue;
-    }
-  }
-  return paths;
-}
-
+/// This method assumes that server package names end with `_server`.
+/// If the package name does not follow this convention, an exception is thrown.
+///
+/// Throws:
+/// - [LocateModuleNameFromServerPackageNameException] if the package name
+///   does not end with `_server`, indicating it is not a valid server package.
 String moduleNameFromServerPackageName(String packageDirName) {
   var packageName = packageDirName.split('-').first;
 
@@ -166,7 +123,20 @@ String moduleNameFromServerPackageName(String packageDirName) {
     return 'serverpod';
   }
   if (!packageName.endsWith(_serverSuffix)) {
-    throw Exception('Not a server package ($packageName)');
+    throw LocateModuleNameFromServerPackageNameException(
+      packageName: packageName,
+    );
   }
   return packageName.substring(0, packageName.length - _serverSuffix.length);
+}
+
+/// Exception thrown when a module name cannot be determined from the server package name.
+class LocateModuleNameFromServerPackageNameException implements Exception {
+  /// The package name that doesn't have a suffix of '_server'.
+  final String packageName;
+
+  /// Creates a new [LocateModuleNameFromServerPackageNameException].
+  LocateModuleNameFromServerPackageNameException({
+    required this.packageName,
+  });
 }
