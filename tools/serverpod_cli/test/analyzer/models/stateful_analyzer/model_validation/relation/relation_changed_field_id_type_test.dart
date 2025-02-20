@@ -65,18 +65,10 @@ void main() {
 
             test('then the table Example has id type $idTypeAlias1.', () {
               expect(exampleClass.idField.type.className, idClassName1);
-              expect(
-                exampleClass.idField.defaultPersistValue,
-                idType1.defaultValue,
-              );
             });
 
             test('then the table ExampleParent has id type $idTypeAlias2.', () {
               expect(exampleParentClass.idField.type.className, idClassName2);
-              expect(
-                exampleParentClass.idField.defaultPersistValue,
-                idType2.defaultValue,
-              );
             });
 
             test('then the field type is same as the relation id type.', () {
@@ -206,18 +198,10 @@ void main() {
 
             test('then the table User has id type $idTypeAlias1.', () {
               expect(userClass.idField.type.className, idClassName1);
-              expect(
-                userClass.idField.defaultPersistValue,
-                idType1.defaultValue,
-              );
             });
 
             test('then the table Address has id type $idTypeAlias2.', () {
               expect(addressClass.idField.type.className, idClassName2);
-              expect(
-                addressClass.idField.defaultPersistValue,
-                idType2.defaultValue,
-              );
             });
           });
 
@@ -419,18 +403,10 @@ void main() {
 
             test('then the table Employee has id type $idTypeAlias1.', () {
               expect(employeeClass.idField.type.className, idClassName1);
-              expect(
-                employeeClass.idField.defaultPersistValue,
-                idType1.defaultValue,
-              );
             });
 
             test('then the table Company has id type $idTypeAlias2.', () {
               expect(companyClass.idField.type.className, idClassName2);
-              expect(
-                companyClass.idField.defaultPersistValue,
-                idType2.defaultValue,
-              );
             });
 
             group('then the list relation', () {

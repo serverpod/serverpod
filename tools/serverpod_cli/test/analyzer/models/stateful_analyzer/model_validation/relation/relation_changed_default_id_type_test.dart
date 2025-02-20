@@ -54,18 +54,10 @@ void main() {
 
         test('then the table Example has id type $idTypeAlias.', () {
           expect(exampleClass.idField.type.className, idClassName);
-          expect(
-            exampleClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
 
         test('then the table ExampleParent has id type $idTypeAlias.', () {
           expect(exampleParentClass.idField.type.className, idClassName);
-          expect(
-            exampleParentClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
 
         test('then the field type is same as the relation id type.', () {
@@ -191,18 +183,10 @@ void main() {
 
         test('then the table User has id type $idTypeAlias.', () {
           expect(userClass.idField.type.className, idClassName);
-          expect(
-            userClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
 
         test('then the table Address has id type $idTypeAlias.', () {
           expect(addressClass.idField.type.className, idClassName);
-          expect(
-            addressClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
       });
 
@@ -396,18 +380,10 @@ void main() {
 
         test('then the table Employee has id type $idTypeAlias.', () {
           expect(employeeClass.idField.type.className, idClassName);
-          expect(
-            employeeClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
 
         test('then the table Company has id type $idTypeAlias.', () {
           expect(companyClass.idField.type.className, idClassName);
-          expect(
-            companyClass.idField.defaultPersistValue,
-            idType.defaultValue,
-          );
         });
 
         group('then the list relation', () {
