@@ -84,7 +84,9 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     if (typeDefinition.generics.isNotEmpty) {
-      for (var genericType in typeDefinition.generics) {
+      // enums could only be defined in classes
+      for (var genericType
+          in typeDefinition.generics.whereType<ClassTypeDefinition>()) {
         _resolveEnumType(genericType, modelDefinitions);
       }
       return;
@@ -351,7 +353,9 @@ class ModelDependencyResolver {
     }
 
     var type = fieldDefinition.type;
-    var referenceClassName = type.generics.first.className;
+    // relations can only point to other model classes
+    var firstGeneric = type.generics.first as ClassTypeDefinition;
+    var referenceClassName = firstGeneric.className;
 
     var referenceClass =
         modelDefinitions.cast<SerializableModelDefinition?>().firstWhere(

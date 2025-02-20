@@ -42,7 +42,7 @@ abstract base class MethodDefinition {
   final List<AnnotationDefinition> annotations;
 
   /// The returned type of this method.
-  /// This should always be a future.
+  /// This should always be a [Future] or a [Stream].
   final ClassTypeDefinition returnType;
 
   /// The required positional parameters of this method.
@@ -60,7 +60,7 @@ abstract base class MethodDefinition {
         ...parametersNamed,
       ];
 
-  const MethodDefinition({
+  MethodDefinition({
     required this.name,
     required this.documentationComment,
     required this.annotations,
@@ -68,13 +68,17 @@ abstract base class MethodDefinition {
     required this.parameters,
     required this.parametersPositional,
     required this.parametersNamed,
-  });
+  }) {
+    if (returnType.className != 'Future' && returnType.className != 'Stream') {
+      throw Exception('Expect the method return type to be a Future or Stream');
+    }
+  }
 }
 
 /// Describes a single callable method in a [EndpointDefinition].
 final class MethodCallDefinition extends MethodDefinition {
   /// Creates a new [MethodCallDefinition].
-  const MethodCallDefinition({
+  MethodCallDefinition({
     required super.name,
     required super.documentationComment,
     required super.annotations,
@@ -104,7 +108,7 @@ class ParameterDefinition {
   final String name;
 
   /// The type of the parameter.
-  final ClassTypeDefinition type;
+  final TypeDefinition type;
 
   /// Whether this parameter is required.
   final bool required;

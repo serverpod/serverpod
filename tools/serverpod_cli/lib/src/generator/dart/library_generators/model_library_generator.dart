@@ -592,13 +592,21 @@ class SerializableModelLibraryGenerator {
       return _buildShallowClone(type, variableName, isRoot);
     }
 
+    // For now the model types do not contain records, so casting is valid
     var nextCallback = switch (type.className) {
-      ListKeyword.className =>
-        _buildListCloneCallback(type.generics.first, depth),
-      SetKeyword.className =>
-        _buildSetCloneCallback(type.generics.first, depth),
-      MapKeyword.className =>
-        _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
+      ListKeyword.className => _buildListCloneCallback(
+          type.generics.first as ClassTypeDefinition,
+          depth,
+        ),
+      SetKeyword.className => _buildSetCloneCallback(
+          type.generics.first as ClassTypeDefinition,
+          depth,
+        ),
+      MapKeyword.className => _buildMapCloneCallback(
+          type.generics[0] as ClassTypeDefinition,
+          type.generics[1] as ClassTypeDefinition,
+          depth,
+        ),
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
@@ -766,7 +774,9 @@ class SerializableModelLibraryGenerator {
             );
 
             if (field.relation is ListRelationDefinition) {
-              type = field.type.generics.first.reference(
+              // Cast is fine, as relations are to model classes
+              type =
+                  (field.type.generics.first as ClassTypeDefinition).reference(
                 serverCode,
                 subDirParts: subDirParts,
                 config: config,
@@ -992,8 +1002,11 @@ class SerializableModelLibraryGenerator {
 
     Map<String, Expression> namedParams = {};
 
+    var firstGeneric = fieldType.generics.firstOrNull;
+    var lastGeneric = fieldType.generics.lastOrNull;
     if ((fieldType.isListType || fieldType.isSetType) &&
-        !fieldType.generics.first.isSerializedValue) {
+        firstGeneric is ClassTypeDefinition &&
+        !firstGeneric.isSerializedValue) {
       namedParams = {
         'valueToJson': Method(
           (p) => p
@@ -1003,13 +1016,14 @@ class SerializableModelLibraryGenerator {
             )
             ..body = _toJsonCallConversionMethod(
               refer('v'),
-              fieldType.generics.first,
+              fieldType.generics.first as ClassTypeDefinition,
               methodName,
             ).code,
         ).closure
       };
     } else if (fieldType.isMapType) {
-      if (!fieldType.generics.first.isSerializedValue) {
+      if (firstGeneric is ClassTypeDefinition &&
+          !firstGeneric.isSerializedValue) {
         namedParams = {
           ...namedParams,
           'keyToJson': Method(
@@ -1020,14 +1034,15 @@ class SerializableModelLibraryGenerator {
               )
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
-                fieldType.generics.first,
+                firstGeneric,
                 methodName,
               ).code,
           ).closure
         };
       }
 
-      if (!fieldType.generics.last.isSerializedValue) {
+      if (lastGeneric is ClassTypeDefinition &&
+          !lastGeneric.isSerializedValue) {
         namedParams = {
           ...namedParams,
           'valueToJson': Method(
@@ -1038,7 +1053,7 @@ class SerializableModelLibraryGenerator {
               )
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
-                fieldType.generics.last,
+                lastGeneric,
                 methodName,
               ).code,
           ).closure
@@ -1558,13 +1573,15 @@ class SerializableModelLibraryGenerator {
         relationFieldName = relation.fieldName;
         relationForeignFieldName = createForeignFieldName(relation);
         fieldName = '__${field.name}';
-        fieldType = field.type.generics.first.reference(
+        fieldType =
+            (field.type.generics.first as ClassTypeDefinition).reference(
           serverCode,
           subDirParts: subDirParts,
           config: config,
           nullable: false,
         );
-        tableType = field.type.generics.first.reference(
+        tableType =
+            (field.type.generics.first as ClassTypeDefinition).reference(
           serverCode,
           subDirParts: subDirParts,
           config: config,

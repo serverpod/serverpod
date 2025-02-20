@@ -17,13 +17,58 @@ const _moduleRef = 'module:';
 const _projectRef = 'project:';
 const _packageRef = 'package:';
 
+sealed class TypeDefinition {
+  bool get nullable;
+
+  /// Creates an [ClassTypeDefinition] from a given [DartType].
+  /// throws [FromDartTypeClassNameException] if the class name could not be
+  /// determined.
+  factory TypeDefinition.fromDartType(DartType type) {
+    var generics = (type is ParameterizedType)
+        ? type.typeArguments
+            .map((e) => TypeDefinition.fromDartType(e))
+            .cast<ClassTypeDefinition>()
+            .toList()
+        : <ClassTypeDefinition>[];
+    var url = type.element?.librarySource?.uri.toString();
+    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
+
+    var className = type is! VoidType ? type.element?.displayName : 'void';
+
+    if (className == null) {
+      throw FromDartTypeClassNameException(type);
+    }
+
+    return ClassTypeDefinition(
+      className: className,
+      nullable: nullable,
+      dartType: type,
+      generics: generics,
+      url: url,
+    );
+  }
+
+  Reference reference(
+    bool serverCode, {
+    bool? nullable,
+    List<String> subDirParts = const [],
+    required GeneratorConfig config,
+    String? typeSuffix,
+  });
+
+  List<MapEntry<Expression, Code>> generateDeserialization(
+    bool serverCode, {
+    required GeneratorConfig config,
+  });
+}
+
 /// Contains information about the type of fields, arguments and return values.
-class ClassTypeDefinition {
+final class ClassTypeDefinition implements TypeDefinition {
   /// The class name of the type.
   final String className;
 
   /// The generics the type has.
-  final List<ClassTypeDefinition> generics;
+  final List<TypeDefinition> generics;
 
   final String? url;
 
@@ -32,6 +77,7 @@ class ClassTypeDefinition {
   final SerializableModelDefinition? projectModelDefinition;
 
   /// Whether this type is nullable.
+  @override
   final bool nullable;
 
   final DartType? dartType;
@@ -114,33 +160,6 @@ class ClassTypeDefinition {
     );
   }
 
-  /// Creates an [ClassTypeDefinition] from a given [DartType].
-  /// throws [FromDartTypeClassNameException] if the class name could not be
-  /// determined.
-  factory ClassTypeDefinition.fromDartType(DartType type) {
-    var generics = (type is ParameterizedType)
-        ? type.typeArguments
-            .map((e) => ClassTypeDefinition.fromDartType(e))
-            .toList()
-        : <ClassTypeDefinition>[];
-    var url = type.element?.librarySource?.uri.toString();
-    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-
-    var className = type is! VoidType ? type.element?.displayName : 'void';
-
-    if (className == null) {
-      throw FromDartTypeClassNameException(type);
-    }
-
-    return ClassTypeDefinition(
-      className: className,
-      nullable: nullable,
-      dartType: type,
-      generics: generics,
-      url: url,
-    );
-  }
-
   /// A convenience variable for getting a [ClassTypeDefinition] of an non null int
   /// quickly.
   static ClassTypeDefinition int =
@@ -181,6 +200,7 @@ class ClassTypeDefinition {
   }
 
   /// Generate a [TypeReference] from this definition.
+  @override
   TypeReference reference(
     bool serverCode, {
     bool? nullable,
@@ -315,7 +335,7 @@ class ClassTypeDefinition {
 
   /// Retrieves the generic from this type.
   /// Throws a [FormatException] if no generic is found.
-  ClassTypeDefinition retrieveGenericType() {
+  TypeDefinition retrieveGenericType() {
     var genericType = generics.firstOrNull;
     if (genericType == null) {
       throw FormatException('$this does not have a generic type to retrieve.');
@@ -325,6 +345,7 @@ class ClassTypeDefinition {
   }
 
   /// Generates the constructors for List and Map types
+  @override
   List<MapEntry<Expression, Code>> generateDeserialization(
     bool serverCode, {
     required GeneratorConfig config,
@@ -368,7 +389,9 @@ class ClassTypeDefinition {
                   .call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
-            generics.first.className == 'String'
+            generics.first is ClassTypeDefinition &&
+                    (generics.first as ClassTypeDefinition).className ==
+                        'String'
                 ? nullable
                     ? Block.of([
                         // using Code.scope only sets the generic to List
@@ -468,7 +491,9 @@ class ClassTypeDefinition {
         dartType: dartType,
         projectModelDefinition: isProjectModel ? modelDefinition : null,
         generics: generics
-            .map((e) => e.applyProtocolReferences(classDefinitions))
+            .map((e) => e is ClassTypeDefinition
+                ? e.applyProtocolReferences(classDefinitions)
+                : e)
             .toList(),
         enumDefinition: enumDefinition,
         url: isProjectModel ? defaultModuleAlias : url);

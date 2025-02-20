@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/endpoint_parameters_extension.dart';
-
 import 'package:serverpod_cli/src/generator/types.dart';
 
 abstract class EndpointParameterAnalyzer {
@@ -23,7 +22,7 @@ abstract class EndpointParameterAnalyzer {
       var definition = ParameterDefinition(
         name: parameter.name,
         required: _isRequired(parameter),
-        type: ClassTypeDefinition.fromDartType(parameter.type),
+        type: TypeDefinition.fromDartType(parameter.type),
       );
 
       if (parameter.isRequiredPositional) {
@@ -104,7 +103,7 @@ abstract class EndpointParameterAnalyzer {
       }
 
       try {
-        ClassTypeDefinition.fromDartType(parameter.type);
+        TypeDefinition.fromDartType(parameter.type);
       } on FromDartTypeClassNameException catch (e) {
         return SourceSpanSeverityException(
           'The type "${e.type}" is not a supported endpoint parameter type.',

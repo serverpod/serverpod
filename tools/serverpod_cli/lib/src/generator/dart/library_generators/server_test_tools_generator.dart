@@ -117,8 +117,9 @@ class ServerTestToolsGenerator {
     return Method(
       (methodBuilder) {
         bool returnsStream = method.returnType.isStreamType;
-        bool hasStreamParameter =
-            method.allParameters.any((p) => p.type.isStreamType);
+        bool hasStreamParameter = method.allParameters.any((p) =>
+            p.type is ClassTypeDefinition &&
+            (p.type as ClassTypeDefinition).isStreamType);
 
         methodBuilder
           ..name = method.name
@@ -240,10 +241,16 @@ class ServerTestToolsGenerator {
     required bool hasStreamParameter,
     required bool returnsStream,
   }) {
-    var parameters =
-        method.allParameters.where((p) => !p.type.isStreamType).toList();
-    var streamParameters =
-        method.allParameters.where((p) => p.type.isStreamType).toList();
+    var parameters = method.allParameters
+        .where((p) =>
+            p.type is! ClassTypeDefinition ||
+            !((p.type as ClassTypeDefinition).isStreamType))
+        .toList();
+    var streamParameters = method.allParameters
+        .where((p) =>
+            p.type is ClassTypeDefinition &&
+            (p.type as ClassTypeDefinition).isStreamType)
+        .toList();
 
     var closure = Method(
       (methodBuilder) => methodBuilder

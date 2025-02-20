@@ -908,8 +908,15 @@ class Restrictions {
 
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
-        errors.addAll(_validateFieldDataType(fieldType.generics.last, span));
+        errors.addAll(_validateFieldDataType(
+          // Model generics do not support records yet, so we can cast safely in these cases
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.last as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -920,7 +927,10 @@ class Restrictions {
       }
     } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -931,7 +941,10 @@ class Restrictions {
       }
     } else if (fieldType.isSetType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(
+          fieldType.generics.first as ClassTypeDefinition,
+          span,
+        ));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -1073,7 +1086,9 @@ class Restrictions {
 
     if (field.type.isListType) {
       var referenceClass = parsedModels
-          .findAllByClassName(field.type.generics.first.className)
+          .findAllByClassName(
+              // Relations only support models in generics, so cast is fine
+              (field.type.generics.first as ClassTypeDefinition).className)
           .firstOrNull;
 
       if (referenceClass != null &&
@@ -1435,7 +1450,10 @@ class Restrictions {
 
     if (fieldType.generics.isNotEmpty) {
       for (var generic in fieldType.generics) {
-        classDefinitions.addAll(_extractAllClassDefinitionsFromType(generic));
+        // Records are not yet support, so cast is fine
+        classDefinitions.addAll(_extractAllClassDefinitionsFromType(
+          generic as ClassTypeDefinition,
+        ));
       }
     }
 

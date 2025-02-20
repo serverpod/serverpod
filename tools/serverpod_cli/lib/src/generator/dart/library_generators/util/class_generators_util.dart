@@ -280,7 +280,7 @@ Expression _buildListOrSetTypeFromJson(
       const Code(', itemFromJson: (e) =>'),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -300,7 +300,7 @@ Expression _buildListOrSetTypeFromJson(
       Code('${type.nullable ? '?' : ''}.map((e) => '),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -319,7 +319,9 @@ Expression _buildMapTypeFromJson(
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
-  if (type.generics.first.valueType == ValueType.string) {
+  var firstGeneric = type.generics.first;
+  if (firstGeneric is ClassTypeDefinition &&
+      firstGeneric.valueType == ValueType.string) {
     return CodeExpression(
       Block.of([
         const Code('('),
@@ -330,7 +332,7 @@ Expression _buildMapTypeFromJson(
         refer('MapEntry').call([
           _buildFromJson(
             jsonReference,
-            type.generics.first,
+            firstGeneric,
             serverCode,
             config,
             classDefinition,
@@ -338,7 +340,7 @@ Expression _buildMapTypeFromJson(
           ),
           _buildFromJson(
             jsonReference,
-            type.generics.last,
+            type.generics.last as ClassTypeDefinition,
             serverCode,
             config,
             classDefinition,
@@ -374,7 +376,7 @@ Expression _buildMapTypeFromJson(
       const Code('>>({}, (t, e) => {...t, '),
       _buildFromJson(
         jsonReference,
-        type.generics.first,
+        type.generics.first as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,
@@ -383,7 +385,7 @@ Expression _buildMapTypeFromJson(
       const Code(':'),
       _buildFromJson(
         jsonReference,
-        type.generics.last,
+        type.generics.last as ClassTypeDefinition,
         serverCode,
         config,
         classDefinition,

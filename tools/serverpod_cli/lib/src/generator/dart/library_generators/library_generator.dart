@@ -57,9 +57,13 @@ class LibraryGenerator {
     for (var topLevelType in protocolDefinition.endpoints
         .expand((e) => e.methods)
         .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
+        .whereType<ClassTypeDefinition>()
         .where((t) => t.isStreamType)) {
       var valueType = topLevelType.generics.first;
-      if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
+      if (valueType is ClassTypeDefinition &&
+          (valueType.isSetType ||
+              valueType.isListType ||
+              valueType.isMapType)) {
         if (valueType.dartType == null ||
             !topLevelStreamContainerTypes.any((type) =>
                 type.dartType.toString() == valueType.dartType.toString())) {
@@ -165,6 +169,7 @@ class LibraryGenerator {
                     // Generate deserialization for endpoint methods.
                     for (var method in endPoint.methods) ...[
                       // Generate deserialization for the return type of the method.
+                      // return type is always either `Stream` or `Future`
                       ...method.returnType
                           .retrieveGenericType()
                           .generateDeserialization(serverCode, config: config),
@@ -950,7 +955,11 @@ class LibraryGenerator {
               'name': literalString(param.name),
               'nullable': literalBool(param.type.nullable),
             }, [
-              param.type.generics.first.reference(true, config: config)
+              // type is `Stream` class
+              (param.type as ClassTypeDefinition)
+                  .generics
+                  .first
+                  .reference(true, config: config)
             ])
         }),
         'returnType': _buildMethodStreamReturnType(method.returnType),
@@ -1000,7 +1009,8 @@ class LibraryGenerator {
 
   Expression _buildMethodStreamReturnType(ClassTypeDefinition returnType) {
     var returnEnum = refer('MethodStreamReturnType', serverpodUrl(true));
-    if (returnType.generics.first.isVoidType) {
+    if (returnType.generics.first is ClassTypeDefinition &&
+        (returnType.generics.first as ClassTypeDefinition).isVoidType) {
       return returnEnum.property('voidType');
     } else if (returnType.isStreamType) {
       return returnEnum.property('streamType');
@@ -1021,7 +1031,7 @@ class LibraryGenerator {
     List<ParameterDefinition> nonStreamingParams = [];
 
     for (var param in params) {
-      if (param.type.isStreamType) {
+      if ((param.type as ClassTypeDefinition).isStreamType) {
         streamingParams.add(param);
       } else {
         nonStreamingParams.add(param);
@@ -1032,7 +1042,7 @@ class LibraryGenerator {
   }
 
   Expression _referMethodStreamParam(ParameterDefinition param) {
-    if (param.type.isStreamType) {
+    if ((param.type as ClassTypeDefinition).isStreamType) {
       return refer('streamParams')
           .index(literalString(param.name))
           .nullChecked
@@ -1040,7 +1050,12 @@ class LibraryGenerator {
           .call(
         [],
         {},
-        [param.type.generics.first.reference(true, config: config)],
+        [
+          (param.type as ClassTypeDefinition)
+              .generics
+              .first
+              .reference(true, config: config)
+        ],
       );
     } else {
       return refer('params').index(literalString(param.name));
@@ -1065,7 +1080,7 @@ extension on ClassTypeDefinition {
       }
     }
 
-    return '${moduleName != null ? '$moduleName.' : ''}$className${generics.isNotEmpty ? '<${generics.map((e) => e.classNameWithGenericsForProtocol(modules: modules)).join(',')}>' : ''}${nullable ? '?' : ''}';
+    return '${moduleName != null ? '$moduleName.' : ''}$className${generics.isNotEmpty ? '<${generics.map((e) => (e as ClassTypeDefinition).classNameWithGenericsForProtocol(modules: modules)).join(',')}>' : ''}${nullable ? '?' : ''}';
   }
 }
 

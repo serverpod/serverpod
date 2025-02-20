@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
 typedef ModelWithDocumentPath = ({
@@ -265,7 +266,8 @@ class ParsedModelsCollection {
 
   String extractReferenceClassName(SerializableModelFieldDefinition field) {
     if (field.type.isListType) {
-      return field.type.generics.first.className;
+      // Relation reference must point to a model class type
+      return (field.type.generics.first as ClassTypeDefinition).className;
     }
 
     return field.type.className;
