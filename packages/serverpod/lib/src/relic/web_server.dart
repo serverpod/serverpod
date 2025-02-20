@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -81,20 +82,20 @@ class WebServer {
           ),
       };
     } catch (e, stackTrace) {
-      logError(
-        'Failed to bind socket, '
-        'Webserver port $_port may already be in use.',
-      );
-      logError(e, stackTrace: stackTrace);
+      await _reportException(e, stackTrace,
+          message: 'Failed to bind socket, '
+              'Webserver port $_port may already be in use.');
+
       return false;
     }
     httpServer.autoCompress = true;
 
     runZonedGuarded(
       _start,
-      (e, stackTrace) {
+      (e, stackTrace) async {
         // Last resort error handling
-        logError('Relic zoned error: $e', stackTrace: stackTrace);
+
+        await _reportException(e, stackTrace, message: 'Relic zoned error');
       },
     );
 
@@ -109,11 +110,11 @@ class WebServer {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
-          logError(e, stackTrace: stackTrace);
+          await _reportException(e, stackTrace, httpRequest: request);
         }
       }
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(e, stackTrace);
     }
   }
 
@@ -176,7 +177,13 @@ class WebServer {
       var found = await route.handleCall(session, request);
       return found;
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(
+        e,
+        stackTrace,
+        space: OriginSpace.application,
+        session: session,
+        httpRequest: request,
+      );
 
       request.response.statusCode = HttpStatus.internalServerError;
       request.response.write('Internal Server Error');
@@ -184,6 +191,31 @@ class WebServer {
       await request.response.close();
     }
     return true;
+  }
+
+  Future<void> _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    OriginSpace space = OriginSpace.framework,
+    String? message,
+    Session? session,
+    HttpRequest? httpRequest,
+  }) async {
+    logError(
+      message != null ? '$message $e' : e,
+      stackTrace: stackTrace,
+    );
+
+    serverpod.submitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space,
+      context: session != null
+          ? contextFromSession(session, httpRequest: httpRequest)
+          : httpRequest != null
+              ? contextFromHttpRequest(
+                  serverpod.server, httpRequest, OperationType.web)
+              : contextFromServer(serverpod.server),
+    );
   }
 
   /// Logs an error to stderr.
