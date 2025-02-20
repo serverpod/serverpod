@@ -875,6 +875,21 @@ class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointDiagnosticEventTest extends _i1.EndpointRef {
+  EndpointDiagnosticEventTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'diagnosticEventTest';
+
+  _i2.Future<String> submitExceptionEvent() =>
+      caller.callServerEndpoint<String>(
+        'diagnosticEventTest',
+        'submitExceptionEvent',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointExceptionTest extends _i1.EndpointRef {
   EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
 
@@ -975,6 +990,13 @@ class EndpointFutureCalls extends _i1.EndpointRef {
       caller.callServerEndpoint<void>(
         'futureCalls',
         'makeFutureCall',
+        {'data': data},
+      );
+
+  _i2.Future<void> makeFutureCallThatThrows(_i10.SimpleData? data) =>
+      caller.callServerEndpoint<void>(
+        'futureCalls',
+        'makeFutureCallThatThrows',
         {'data': data},
       );
 }
@@ -2842,6 +2864,7 @@ class Client extends _i1.ServerpodClientShared {
     deprecation = EndpointDeprecation(this);
     echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
+    diagnosticEventTest = EndpointDiagnosticEventTest(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
@@ -2901,6 +2924,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointEchoRequest echoRequest;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
+
+  late final EndpointDiagnosticEventTest diagnosticEventTest;
 
   late final EndpointExceptionTest exceptionTest;
 
@@ -2980,6 +3005,7 @@ class Client extends _i1.ServerpodClientShared {
         'deprecation': deprecation,
         'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
+        'diagnosticEventTest': diagnosticEventTest,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,

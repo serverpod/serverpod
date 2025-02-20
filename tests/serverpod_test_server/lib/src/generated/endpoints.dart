@@ -23,48 +23,49 @@ import '../endpoints/database_transactions.dart' as _i11;
 import '../endpoints/deprecation.dart' as _i12;
 import '../endpoints/echo_request.dart' as _i13;
 import '../endpoints/email_auth_provider.dart' as _i14;
-import '../endpoints/exception_test_endpoint.dart' as _i15;
-import '../endpoints/failed_calls.dart' as _i16;
-import '../endpoints/field_scopes.dart' as _i17;
-import '../endpoints/future_calls.dart' as _i18;
-import '../endpoints/list_parameters.dart' as _i19;
-import '../endpoints/logging.dart' as _i20;
-import '../endpoints/logging_disabled.dart' as _i21;
-import '../endpoints/map_parameters.dart' as _i22;
-import '../endpoints/method_signature_permutations.dart' as _i23;
-import '../endpoints/method_streaming.dart' as _i24;
-import '../endpoints/module_serialization.dart' as _i25;
-import '../endpoints/named_parameters.dart' as _i26;
-import '../endpoints/optional_parameters.dart' as _i27;
-import '../endpoints/redis.dart' as _i28;
-import '../endpoints/server_only_scoped_field_model.dart' as _i29;
-import '../endpoints/server_only_scoped_field_model_child.dart' as _i30;
-import '../endpoints/set_parameters.dart' as _i31;
-import '../endpoints/signin_required.dart' as _i32;
-import '../endpoints/simple.dart' as _i33;
-import '../endpoints/streaming.dart' as _i34;
-import '../endpoints/streaming_logging.dart' as _i35;
-import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i36;
-import '../endpoints/subDir/subdir_test_endpoint.dart' as _i37;
-import '../endpoints/test_tools.dart' as _i38;
-import '../my_feature/endpoints/my_feature_endpoint.dart' as _i39;
-import 'dart:typed_data' as _i40;
-import 'package:uuid/uuid_value.dart' as _i41;
-import 'package:serverpod_test_shared/src/custom_classes.dart' as _i42;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i43;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i44;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i45;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i46;
+import '../endpoints/exception_event_test_endpoint.dart' as _i15;
+import '../endpoints/exception_test_endpoint.dart' as _i16;
+import '../endpoints/failed_calls.dart' as _i17;
+import '../endpoints/field_scopes.dart' as _i18;
+import '../endpoints/future_calls.dart' as _i19;
+import '../endpoints/list_parameters.dart' as _i20;
+import '../endpoints/logging.dart' as _i21;
+import '../endpoints/logging_disabled.dart' as _i22;
+import '../endpoints/map_parameters.dart' as _i23;
+import '../endpoints/method_signature_permutations.dart' as _i24;
+import '../endpoints/method_streaming.dart' as _i25;
+import '../endpoints/module_serialization.dart' as _i26;
+import '../endpoints/named_parameters.dart' as _i27;
+import '../endpoints/optional_parameters.dart' as _i28;
+import '../endpoints/redis.dart' as _i29;
+import '../endpoints/server_only_scoped_field_model.dart' as _i30;
+import '../endpoints/server_only_scoped_field_model_child.dart' as _i31;
+import '../endpoints/set_parameters.dart' as _i32;
+import '../endpoints/signin_required.dart' as _i33;
+import '../endpoints/simple.dart' as _i34;
+import '../endpoints/streaming.dart' as _i35;
+import '../endpoints/streaming_logging.dart' as _i36;
+import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i37;
+import '../endpoints/subDir/subdir_test_endpoint.dart' as _i38;
+import '../endpoints/test_tools.dart' as _i39;
+import '../my_feature/endpoints/my_feature_endpoint.dart' as _i40;
+import 'dart:typed_data' as _i41;
+import 'package:uuid/uuid_value.dart' as _i42;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i43;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i44;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i45;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i46;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i47;
 import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
-    as _i47;
-import 'package:serverpod_test_server/src/generated/object_with_object.dart'
     as _i48;
-import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+import 'package:serverpod_test_server/src/generated/object_with_object.dart'
     as _i49;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i50;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i51;
+import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+    as _i50;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i51;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i52;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i52;
+    as _i53;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -148,182 +149,188 @@ class Endpoints extends _i1.EndpointDispatch {
           'emailAuthTestMethods',
           null,
         ),
-      'exceptionTest': _i15.ExceptionTestEndpoint()
+      'diagnosticEventTest': _i15.DiagnosticEventTestEndpoint()
+        ..initialize(
+          server,
+          'diagnosticEventTest',
+          null,
+        ),
+      'exceptionTest': _i16.ExceptionTestEndpoint()
         ..initialize(
           server,
           'exceptionTest',
           null,
         ),
-      'failedCalls': _i16.FailedCallsEndpoint()
+      'failedCalls': _i17.FailedCallsEndpoint()
         ..initialize(
           server,
           'failedCalls',
           null,
         ),
-      'fieldScopes': _i17.FieldScopesEndpoint()
+      'fieldScopes': _i18.FieldScopesEndpoint()
         ..initialize(
           server,
           'fieldScopes',
           null,
         ),
-      'futureCalls': _i18.FutureCallsEndpoint()
+      'futureCalls': _i19.FutureCallsEndpoint()
         ..initialize(
           server,
           'futureCalls',
           null,
         ),
-      'listParameters': _i19.ListParametersEndpoint()
+      'listParameters': _i20.ListParametersEndpoint()
         ..initialize(
           server,
           'listParameters',
           null,
         ),
-      'logging': _i20.LoggingEndpoint()
+      'logging': _i21.LoggingEndpoint()
         ..initialize(
           server,
           'logging',
           null,
         ),
-      'streamLogging': _i20.StreamLogging()
+      'streamLogging': _i21.StreamLogging()
         ..initialize(
           server,
           'streamLogging',
           null,
         ),
-      'streamQueryLogging': _i20.StreamQueryLogging()
+      'streamQueryLogging': _i21.StreamQueryLogging()
         ..initialize(
           server,
           'streamQueryLogging',
           null,
         ),
-      'loggingDisabled': _i21.LoggingDisabledEndpoint()
+      'loggingDisabled': _i22.LoggingDisabledEndpoint()
         ..initialize(
           server,
           'loggingDisabled',
           null,
         ),
-      'mapParameters': _i22.MapParametersEndpoint()
+      'mapParameters': _i23.MapParametersEndpoint()
         ..initialize(
           server,
           'mapParameters',
           null,
         ),
-      'methodSignaturePermutations': _i23.MethodSignaturePermutationsEndpoint()
+      'methodSignaturePermutations': _i24.MethodSignaturePermutationsEndpoint()
         ..initialize(
           server,
           'methodSignaturePermutations',
           null,
         ),
-      'methodStreaming': _i24.MethodStreaming()
+      'methodStreaming': _i25.MethodStreaming()
         ..initialize(
           server,
           'methodStreaming',
           null,
         ),
-      'authenticatedMethodStreaming': _i24.AuthenticatedMethodStreaming()
+      'authenticatedMethodStreaming': _i25.AuthenticatedMethodStreaming()
         ..initialize(
           server,
           'authenticatedMethodStreaming',
           null,
         ),
-      'moduleSerialization': _i25.ModuleSerializationEndpoint()
+      'moduleSerialization': _i26.ModuleSerializationEndpoint()
         ..initialize(
           server,
           'moduleSerialization',
           null,
         ),
-      'namedParameters': _i26.NamedParametersEndpoint()
+      'namedParameters': _i27.NamedParametersEndpoint()
         ..initialize(
           server,
           'namedParameters',
           null,
         ),
-      'optionalParameters': _i27.OptionalParametersEndpoint()
+      'optionalParameters': _i28.OptionalParametersEndpoint()
         ..initialize(
           server,
           'optionalParameters',
           null,
         ),
-      'redis': _i28.RedisEndpoint()
+      'redis': _i29.RedisEndpoint()
         ..initialize(
           server,
           'redis',
           null,
         ),
-      'serverOnlyScopedFieldModel': _i29.ServerOnlyScopedFieldModelEndpoint()
+      'serverOnlyScopedFieldModel': _i30.ServerOnlyScopedFieldModelEndpoint()
         ..initialize(
           server,
           'serverOnlyScopedFieldModel',
           null,
         ),
       'serverOnlyScopedFieldChildModel':
-          _i30.ServerOnlyScopedFieldChildModelEndpoint()
+          _i31.ServerOnlyScopedFieldChildModelEndpoint()
             ..initialize(
               server,
               'serverOnlyScopedFieldChildModel',
               null,
             ),
-      'setParameters': _i31.SetParametersEndpoint()
+      'setParameters': _i32.SetParametersEndpoint()
         ..initialize(
           server,
           'setParameters',
           null,
         ),
-      'signInRequired': _i32.SignInRequiredEndpoint()
+      'signInRequired': _i33.SignInRequiredEndpoint()
         ..initialize(
           server,
           'signInRequired',
           null,
         ),
-      'adminScopeRequired': _i32.AdminScopeRequiredEndpoint()
+      'adminScopeRequired': _i33.AdminScopeRequiredEndpoint()
         ..initialize(
           server,
           'adminScopeRequired',
           null,
         ),
-      'simple': _i33.SimpleEndpoint()
+      'simple': _i34.SimpleEndpoint()
         ..initialize(
           server,
           'simple',
           null,
         ),
-      'streaming': _i34.StreamingEndpoint()
+      'streaming': _i35.StreamingEndpoint()
         ..initialize(
           server,
           'streaming',
           null,
         ),
-      'streamingLogging': _i35.StreamingLoggingEndpoint()
+      'streamingLogging': _i36.StreamingLoggingEndpoint()
         ..initialize(
           server,
           'streamingLogging',
           null,
         ),
-      'subSubDirTest': _i36.SubSubDirTestEndpoint()
+      'subSubDirTest': _i37.SubSubDirTestEndpoint()
         ..initialize(
           server,
           'subSubDirTest',
           null,
         ),
-      'subDirTest': _i37.SubDirTestEndpoint()
+      'subDirTest': _i38.SubDirTestEndpoint()
         ..initialize(
           server,
           'subDirTest',
           null,
         ),
-      'testTools': _i38.TestToolsEndpoint()
+      'testTools': _i39.TestToolsEndpoint()
         ..initialize(
           server,
           'testTools',
           null,
         ),
-      'authenticatedTestTools': _i38.AuthenticatedTestToolsEndpoint()
+      'authenticatedTestTools': _i39.AuthenticatedTestToolsEndpoint()
         ..initialize(
           server,
           'authenticatedTestTools',
           null,
         ),
-      'myFeature': _i39.MyFeatureEndpoint()
+      'myFeature': _i40.MyFeatureEndpoint()
         ..initialize(
           server,
           'myFeature',
@@ -596,7 +603,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i40.ByteData?>(),
+              type: _i1.getType<_i41.ByteData?>(),
               nullable: true,
             )
           },
@@ -632,7 +639,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i41.UuidValue?>(),
+              type: _i1.getType<_i42.UuidValue?>(),
               nullable: true,
             )
           },
@@ -801,7 +808,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'testByteData',
           params: {},
           streamParams: {
-            'value': _i1.StreamParameterDescription<_i40.ByteData?>(
+            'value': _i1.StreamParameterDescription<_i41.ByteData?>(
               name: 'value',
               nullable: false,
             )
@@ -816,7 +823,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       as _i5.BasicTypesStreamingEndpoint)
                   .testByteData(
             session,
-            streamParams['value']!.cast<_i40.ByteData?>(),
+            streamParams['value']!.cast<_i41.ByteData?>(),
           ),
         ),
         'testDuration': _i1.MethodStreamConnector(
@@ -845,7 +852,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'testUuid',
           params: {},
           streamParams: {
-            'value': _i1.StreamParameterDescription<_i41.UuidValue?>(
+            'value': _i1.StreamParameterDescription<_i42.UuidValue?>(
               name: 'value',
               nullable: false,
             )
@@ -860,7 +867,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       as _i5.BasicTypesStreamingEndpoint)
                   .testUuid(
             session,
-            streamParams['value']!.cast<_i41.UuidValue?>(),
+            streamParams['value']!.cast<_i42.UuidValue?>(),
           ),
         ),
         'testUri': _i1.MethodStreamConnector(
@@ -933,7 +940,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i40.ByteData>(),
+              type: _i1.getType<_i41.ByteData>(),
               nullable: false,
             ),
           },
@@ -1078,7 +1085,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i40.ByteData>(),
+              type: _i1.getType<_i41.ByteData>(),
               nullable: false,
             ),
           },
@@ -1235,7 +1242,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass>(),
+              type: _i1.getType<_i43.CustomClass>(),
               nullable: false,
             )
           },
@@ -1254,7 +1261,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass?>(),
+              type: _i1.getType<_i43.CustomClass?>(),
               nullable: true,
             )
           },
@@ -1273,7 +1280,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass2>(),
+              type: _i1.getType<_i43.CustomClass2>(),
               nullable: false,
             )
           },
@@ -1292,7 +1299,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass2?>(),
+              type: _i1.getType<_i43.CustomClass2?>(),
               nullable: true,
             )
           },
@@ -1311,7 +1318,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i43.ExternalCustomClass>(),
+              type: _i1.getType<_i44.ExternalCustomClass>(),
               nullable: false,
             )
           },
@@ -1330,7 +1337,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i43.ExternalCustomClass?>(),
+              type: _i1.getType<_i44.ExternalCustomClass?>(),
               nullable: true,
             )
           },
@@ -1349,7 +1356,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i44.FreezedCustomClass>(),
+              type: _i1.getType<_i45.FreezedCustomClass>(),
               nullable: false,
             )
           },
@@ -1368,7 +1375,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i44.FreezedCustomClass?>(),
+              type: _i1.getType<_i45.FreezedCustomClass?>(),
               nullable: true,
             )
           },
@@ -1387,7 +1394,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClassWithoutProtocolSerialization>(),
+              type: _i1.getType<_i43.CustomClassWithoutProtocolSerialization>(),
               nullable: false,
             )
           },
@@ -1406,7 +1413,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClassWithProtocolSerialization>(),
+              type: _i1.getType<_i43.CustomClassWithProtocolSerialization>(),
               nullable: false,
             )
           },
@@ -1426,7 +1433,7 @@ class Endpoints extends _i1.EndpointDispatch {
             'data': _i1.ParameterDescription(
               name: 'data',
               type: _i1
-                  .getType<_i42.CustomClassWithProtocolSerializationMethod>(),
+                  .getType<_i43.CustomClassWithProtocolSerializationMethod>(),
               nullable: false,
             )
           },
@@ -1617,7 +1624,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             )
           },
@@ -1636,7 +1643,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             )
           },
@@ -1655,7 +1662,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             )
           },
@@ -1694,7 +1701,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i46.Types>(),
+              type: _i1.getType<_i47.Types>(),
               nullable: false,
             )
           },
@@ -1712,7 +1719,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i46.Types>(),
+              type: _i1.getType<_i47.Types>(),
               nullable: false,
             )
           },
@@ -1787,7 +1794,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i47.ObjectWithEnum>(),
+              type: _i1.getType<_i48.ObjectWithEnum>(),
               nullable: false,
             )
           },
@@ -1825,7 +1832,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i48.ObjectWithObject>(),
+              type: _i1.getType<_i49.ObjectWithObject>(),
               nullable: false,
             )
           },
@@ -2103,6 +2110,23 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['diagnosticEventTest'] = _i1.EndpointConnector(
+      name: 'diagnosticEventTest',
+      endpoint: endpoints['diagnosticEventTest']!,
+      methodConnectors: {
+        'submitExceptionEvent': _i1.MethodConnector(
+          name: 'submitExceptionEvent',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['diagnosticEventTest']
+                      as _i15.DiagnosticEventTestEndpoint)
+                  .submitExceptionEvent(session),
+        )
+      },
+    );
     connectors['exceptionTest'] = _i1.EndpointConnector(
       name: 'exceptionTest',
       endpoint: endpoints['exceptionTest']!,
@@ -2114,7 +2138,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i15.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i16.ExceptionTestEndpoint)
                   .throwNormalException(session),
         ),
         'throwExceptionWithData': _i1.MethodConnector(
@@ -2124,7 +2148,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i15.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i16.ExceptionTestEndpoint)
                   .throwExceptionWithData(session),
         ),
         'workingWithoutException': _i1.MethodConnector(
@@ -2134,7 +2158,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i15.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i16.ExceptionTestEndpoint)
                   .workingWithoutException(session),
         ),
       },
@@ -2150,7 +2174,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i16.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i17.FailedCallsEndpoint)
                   .failedCall(session),
         ),
         'failedDatabaseQuery': _i1.MethodConnector(
@@ -2160,7 +2184,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i16.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i17.FailedCallsEndpoint)
                   .failedDatabaseQuery(session),
         ),
         'failedDatabaseQueryCaughtException': _i1.MethodConnector(
@@ -2170,7 +2194,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i16.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i17.FailedCallsEndpoint)
                   .failedDatabaseQueryCaughtException(session),
         ),
         'slowCall': _i1.MethodConnector(
@@ -2180,7 +2204,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i16.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i17.FailedCallsEndpoint)
                   .slowCall(session),
         ),
         'caughtException': _i1.MethodConnector(
@@ -2190,7 +2214,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i16.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i17.FailedCallsEndpoint)
                   .caughtException(session),
         ),
       },
@@ -2204,7 +2228,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i49.ObjectFieldScopes>(),
+              type: _i1.getType<_i50.ObjectFieldScopes>(),
               nullable: false,
             )
           },
@@ -2212,7 +2236,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['fieldScopes'] as _i17.FieldScopesEndpoint)
+              (endpoints['fieldScopes'] as _i18.FieldScopesEndpoint)
                   .storeObject(
             session,
             params['object'],
@@ -2225,7 +2249,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['fieldScopes'] as _i17.FieldScopesEndpoint)
+              (endpoints['fieldScopes'] as _i18.FieldScopesEndpoint)
                   .retrieveObject(session),
         ),
       },
@@ -2239,7 +2263,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData?>(),
+              type: _i1.getType<_i46.SimpleData?>(),
               nullable: true,
             )
           },
@@ -2247,12 +2271,31 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['futureCalls'] as _i18.FutureCallsEndpoint)
+              (endpoints['futureCalls'] as _i19.FutureCallsEndpoint)
                   .makeFutureCall(
             session,
             params['data'],
           ),
-        )
+        ),
+        'makeFutureCallThatThrows': _i1.MethodConnector(
+          name: 'makeFutureCallThatThrows',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i46.SimpleData?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['futureCalls'] as _i19.FutureCallsEndpoint)
+                  .makeFutureCallThatThrows(
+            session,
+            params['data'],
+          ),
+        ),
       },
     );
     connectors['listParameters'] = _i1.EndpointConnector(
@@ -2272,7 +2315,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntList(
             session,
             params['list'],
@@ -2291,7 +2334,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntListList(
             session,
             params['list'],
@@ -2310,7 +2353,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntListNullable(
             session,
             params['list'],
@@ -2329,7 +2372,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntListNullableList(
             session,
             params['list'],
@@ -2348,7 +2391,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntListListNullable(
             session,
             params['list'],
@@ -2367,7 +2410,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnIntListNullableInts(
             session,
             params['list'],
@@ -2386,7 +2429,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnNullableIntListNullableInts(
             session,
             params['list'],
@@ -2405,7 +2448,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDoubleList(
             session,
             params['list'],
@@ -2424,7 +2467,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDoubleListNullableDoubles(
             session,
             params['list'],
@@ -2443,7 +2486,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnBoolList(
             session,
             params['list'],
@@ -2462,7 +2505,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnBoolListNullableBools(
             session,
             params['list'],
@@ -2481,7 +2524,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnStringList(
             session,
             params['list'],
@@ -2500,7 +2543,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnStringListNullableStrings(
             session,
             params['list'],
@@ -2519,7 +2562,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDateTimeList(
             session,
             params['list'],
@@ -2538,7 +2581,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDateTimeListNullableDateTimes(
             session,
             params['list'],
@@ -2549,7 +2592,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i40.ByteData>>(),
+              type: _i1.getType<List<_i41.ByteData>>(),
               nullable: false,
             )
           },
@@ -2557,7 +2600,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnByteDataList(
             session,
             params['list'],
@@ -2568,7 +2611,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i40.ByteData?>>(),
+              type: _i1.getType<List<_i41.ByteData?>>(),
               nullable: false,
             )
           },
@@ -2576,7 +2619,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnByteDataListNullableByteDatas(
             session,
             params['list'],
@@ -2587,7 +2630,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData>>(),
+              type: _i1.getType<List<_i46.SimpleData>>(),
               nullable: false,
             )
           },
@@ -2595,7 +2638,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnSimpleDataList(
             session,
             params['list'],
@@ -2606,7 +2649,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData?>>(),
+              type: _i1.getType<List<_i46.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -2614,7 +2657,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnSimpleDataListNullableSimpleData(
             session,
             params['list'],
@@ -2625,7 +2668,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData>?>(),
+              type: _i1.getType<List<_i46.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -2633,7 +2676,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnSimpleDataListNullable(
             session,
             params['list'],
@@ -2644,7 +2687,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData?>?>(),
+              type: _i1.getType<List<_i46.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -2652,7 +2695,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnNullableSimpleDataListNullableSimpleData(
             session,
             params['list'],
@@ -2671,7 +2714,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDurationList(
             session,
             params['list'],
@@ -2690,7 +2733,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i19.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i20.ListParametersEndpoint)
                   .returnDurationListNullableDurations(
             session,
             params['list'],
@@ -2715,7 +2758,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).slowQueryMethod(
+              (endpoints['logging'] as _i21.LoggingEndpoint).slowQueryMethod(
             session,
             params['seconds'],
           ),
@@ -2733,7 +2776,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).queryMethod(
+              (endpoints['logging'] as _i21.LoggingEndpoint).queryMethod(
             session,
             params['queries'],
           ),
@@ -2745,7 +2788,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .failedQueryMethod(session),
         ),
         'slowMethod': _i1.MethodConnector(
@@ -2761,7 +2804,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).slowMethod(
+              (endpoints['logging'] as _i21.LoggingEndpoint).slowMethod(
             session,
             params['delayMillis'],
           ),
@@ -2773,7 +2816,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .failingMethod(session),
         ),
         'emptyMethod': _i1.MethodConnector(
@@ -2783,7 +2826,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .emptyMethod(session),
         ),
         'log': _i1.MethodConnector(
@@ -2804,7 +2847,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).log(
+              (endpoints['logging'] as _i21.LoggingEndpoint).log(
             session,
             params['message'],
             params['logLevels'],
@@ -2823,7 +2866,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).logInfo(
+              (endpoints['logging'] as _i21.LoggingEndpoint).logInfo(
             session,
             params['message'],
           ),
@@ -2851,7 +2894,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .logDebugAndInfoAndError(
             session,
             params['debug'],
@@ -2866,7 +2909,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .twoQueries(session),
         ),
         'streamEmpty': _i1.MethodStreamConnector(
@@ -2884,7 +2927,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).streamEmpty(
+              (endpoints['logging'] as _i21.LoggingEndpoint).streamEmpty(
             session,
             streamParams['input']!.cast<int>(),
           ),
@@ -2904,7 +2947,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).streamLogging(
+              (endpoints['logging'] as _i21.LoggingEndpoint).streamLogging(
             session,
             streamParams['input']!.cast<int>(),
           ),
@@ -2924,7 +2967,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['logging'] as _i20.LoggingEndpoint).streamQueryLogging(
+              (endpoints['logging'] as _i21.LoggingEndpoint).streamQueryLogging(
             session,
             streamParams['input']!.cast<int>(),
           ),
@@ -2939,7 +2982,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['logging'] as _i20.LoggingEndpoint)
+              (endpoints['logging'] as _i21.LoggingEndpoint)
                   .streamException(session),
         ),
       },
@@ -2971,7 +3014,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['loggingDisabled'] as _i21.LoggingDisabledEndpoint)
+              (endpoints['loggingDisabled'] as _i22.LoggingDisabledEndpoint)
                   .logInfo(
             session,
             params['message'],
@@ -2996,7 +3039,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnIntMap(
             session,
             params['map'],
@@ -3015,7 +3058,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnIntMapNullable(
             session,
             params['map'],
@@ -3034,7 +3077,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnNestedIntMap(
             session,
             params['map'],
@@ -3053,7 +3096,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnIntMapNullableInts(
             session,
             params['map'],
@@ -3072,7 +3115,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnNullableIntMapNullableInts(
             session,
             params['map'],
@@ -3091,7 +3134,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnIntIntMap(
             session,
             params['map'],
@@ -3102,7 +3145,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i50.TestEnum, int>>(),
+              type: _i1.getType<Map<_i51.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -3110,7 +3153,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnEnumIntMap(
             session,
             params['map'],
@@ -3121,7 +3164,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i50.TestEnum>>(),
+              type: _i1.getType<Map<String, _i51.TestEnum>>(),
               nullable: false,
             )
           },
@@ -3129,7 +3172,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnEnumMap(
             session,
             params['map'],
@@ -3148,7 +3191,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDoubleMap(
             session,
             params['map'],
@@ -3167,7 +3210,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDoubleMapNullableDoubles(
             session,
             params['map'],
@@ -3186,7 +3229,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnBoolMap(
             session,
             params['map'],
@@ -3205,7 +3248,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnBoolMapNullableBools(
             session,
             params['map'],
@@ -3224,7 +3267,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnStringMap(
             session,
             params['map'],
@@ -3243,7 +3286,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnStringMapNullableStrings(
             session,
             params['map'],
@@ -3262,7 +3305,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDateTimeMap(
             session,
             params['map'],
@@ -3281,7 +3324,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDateTimeMapNullableDateTimes(
             session,
             params['map'],
@@ -3292,7 +3335,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i40.ByteData>>(),
+              type: _i1.getType<Map<String, _i41.ByteData>>(),
               nullable: false,
             )
           },
@@ -3300,7 +3343,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnByteDataMap(
             session,
             params['map'],
@@ -3311,7 +3354,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i40.ByteData?>>(),
+              type: _i1.getType<Map<String, _i41.ByteData?>>(),
               nullable: false,
             )
           },
@@ -3319,7 +3362,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnByteDataMapNullableByteDatas(
             session,
             params['map'],
@@ -3330,7 +3373,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData>>(),
+              type: _i1.getType<Map<String, _i46.SimpleData>>(),
               nullable: false,
             )
           },
@@ -3338,7 +3381,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnSimpleDataMap(
             session,
             params['map'],
@@ -3349,7 +3392,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData?>>(),
+              type: _i1.getType<Map<String, _i46.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -3357,7 +3400,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnSimpleDataMapNullableSimpleData(
             session,
             params['map'],
@@ -3368,7 +3411,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData>?>(),
+              type: _i1.getType<Map<String, _i46.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -3376,7 +3419,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnSimpleDataMapNullable(
             session,
             params['map'],
@@ -3387,7 +3430,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData?>?>(),
+              type: _i1.getType<Map<String, _i46.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -3395,7 +3438,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnNullableSimpleDataMapNullableSimpleData(
             session,
             params['map'],
@@ -3414,7 +3457,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDurationMap(
             session,
             params['map'],
@@ -3433,7 +3476,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i22.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i23.MapParametersEndpoint)
                   .returnDurationMapNullableDurations(
             session,
             params['map'],
@@ -3459,7 +3502,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalArg(
             session,
             params['string'],
@@ -3479,7 +3522,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoNamedArg(
             session,
             string: params['string'],
@@ -3499,7 +3542,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoNullableNamedArg(
             session,
             string: params['string'],
@@ -3519,7 +3562,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoOptionalArg(
             session,
             params['string'],
@@ -3544,7 +3587,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalAndNamedArgs(
             session,
             params['string1'],
@@ -3570,7 +3613,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalAndNullableNamedArgs(
             session,
             params['string1'],
@@ -3596,7 +3639,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalAndOptionalArgs(
             session,
             params['string1'],
@@ -3619,7 +3662,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoNamedArgStream(
             session,
             strings: streamParams['strings']!.cast<String>(),
@@ -3641,7 +3684,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoNamedArgStreamAsFuture(
             session,
             strings: streamParams['strings']!.cast<String>(),
@@ -3663,7 +3706,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalArgStream(
             session,
             streamParams['strings']!.cast<String>(),
@@ -3685,7 +3728,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodSignaturePermutations']
-                      as _i23.MethodSignaturePermutationsEndpoint)
+                      as _i24.MethodSignaturePermutationsEndpoint)
                   .echoPositionalArgStreamAsFuture(
             session,
             streamParams['strings']!.cast<String>(),
@@ -3704,7 +3747,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .methodCallEndpoint(session),
         ),
         'wasBroadcastStreamCanceled': _i1.MethodConnector(
@@ -3714,7 +3757,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .wasBroadcastStreamCanceled(session),
         ),
         'wasSessionWillCloseListenerCalled': _i1.MethodConnector(
@@ -3724,7 +3767,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .wasSessionWillCloseListenerCalled(session),
         ),
         'simpleEndpoint': _i1.MethodConnector(
@@ -3734,7 +3777,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleEndpoint(session),
         ),
         'intParameter': _i1.MethodConnector(
@@ -3750,7 +3793,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .intParameter(
             session,
             params['value'],
@@ -3769,7 +3812,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .doubleInputValue(
             session,
             params['value'],
@@ -3788,7 +3831,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .delayedResponse(
             session,
             params['delay'],
@@ -3801,7 +3844,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .completeAllDelayedResponses(session),
         ),
         'simpleStream': _i1.MethodStreamConnector(
@@ -3814,7 +3857,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleStream(session),
         ),
         'neverEndingStreamWithDelay': _i1.MethodStreamConnector(
@@ -3833,7 +3876,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .neverEndingStreamWithDelay(
             session,
             params['millisecondsDelay'],
@@ -3854,7 +3897,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .intReturnFromStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -3875,7 +3918,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .nullableIntReturnFromStream(
             session,
             streamParams['stream']!.cast<int?>(),
@@ -3891,7 +3934,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .getBroadcastStream(session),
         ),
         'intStreamFromValue': _i1.MethodStreamConnector(
@@ -3910,7 +3953,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .intStreamFromValue(
             session,
             params['value'],
@@ -3931,7 +3974,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -3952,7 +3995,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .dynamicEchoStream(
             session,
             streamParams['stream']!.cast<dynamic>(),
@@ -3973,7 +4016,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .nullableIntEchoStream(
             session,
             streamParams['stream']!.cast<int?>(),
@@ -3994,7 +4037,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .voidReturnAfterStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4019,7 +4062,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .multipleIntEchoStreams(
             session,
             streamParams['stream1']!.cast<int>(),
@@ -4041,7 +4084,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .directVoidReturnWithStreamInput(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4062,7 +4105,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .directOneIntReturnWithStreamInput(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4083,7 +4126,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleInputReturnStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4105,7 +4148,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleStreamWithParameter(
             session,
             params['value'],
@@ -4127,7 +4170,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleDataStream(
             session,
             params['value'],
@@ -4137,7 +4180,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'simpleInOutDataStream',
           params: {},
           streamParams: {
-            'simpleDataStream': _i1.StreamParameterDescription<_i45.SimpleData>(
+            'simpleDataStream': _i1.StreamParameterDescription<_i46.SimpleData>(
               name: 'simpleDataStream',
               nullable: false,
             )
@@ -4148,10 +4191,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleInOutDataStream(
             session,
-            streamParams['simpleDataStream']!.cast<_i45.SimpleData>(),
+            streamParams['simpleDataStream']!.cast<_i46.SimpleData>(),
           ),
         ),
         'simpleListInOutIntStream': _i1.MethodStreamConnector(
@@ -4169,7 +4212,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleListInOutIntStream(
             session,
             streamParams['simpleDataListStream']!.cast<List<int>>(),
@@ -4180,7 +4223,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'simpleDataListStream':
-                _i1.StreamParameterDescription<List<_i45.SimpleData>>(
+                _i1.StreamParameterDescription<List<_i46.SimpleData>>(
               name: 'simpleDataListStream',
               nullable: false,
             )
@@ -4191,10 +4234,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleListInOutDataStream(
             session,
-            streamParams['simpleDataListStream']!.cast<List<_i45.SimpleData>>(),
+            streamParams['simpleDataListStream']!.cast<List<_i46.SimpleData>>(),
           ),
         ),
         'simpleListInOutOtherModuleTypeStream': _i1.MethodStreamConnector(
@@ -4202,7 +4245,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'userInfoListStream':
-                _i1.StreamParameterDescription<List<_i51.UserInfo>>(
+                _i1.StreamParameterDescription<List<_i52.UserInfo>>(
               name: 'userInfoListStream',
               nullable: false,
             )
@@ -4213,10 +4256,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleListInOutOtherModuleTypeStream(
             session,
-            streamParams['userInfoListStream']!.cast<List<_i51.UserInfo>>(),
+            streamParams['userInfoListStream']!.cast<List<_i52.UserInfo>>(),
           ),
         ),
         'simpleNullableListInOutNullableDataStream': _i1.MethodStreamConnector(
@@ -4224,7 +4267,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'simpleDataListStream':
-                _i1.StreamParameterDescription<List<_i45.SimpleData>?>(
+                _i1.StreamParameterDescription<List<_i46.SimpleData>?>(
               name: 'simpleDataListStream',
               nullable: false,
             )
@@ -4235,11 +4278,11 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleNullableListInOutNullableDataStream(
             session,
             streamParams['simpleDataListStream']!
-                .cast<List<_i45.SimpleData>?>(),
+                .cast<List<_i46.SimpleData>?>(),
           ),
         ),
         'simpleListInOutNullableDataStream': _i1.MethodStreamConnector(
@@ -4247,7 +4290,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'simpleDataListStream':
-                _i1.StreamParameterDescription<List<_i45.SimpleData?>>(
+                _i1.StreamParameterDescription<List<_i46.SimpleData?>>(
               name: 'simpleDataListStream',
               nullable: false,
             )
@@ -4258,11 +4301,11 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleListInOutNullableDataStream(
             session,
             streamParams['simpleDataListStream']!
-                .cast<List<_i45.SimpleData?>>(),
+                .cast<List<_i46.SimpleData?>>(),
           ),
         ),
         'simpleSetInOutIntStream': _i1.MethodStreamConnector(
@@ -4280,7 +4323,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleSetInOutIntStream(
             session,
             streamParams['simpleDataSetStream']!.cast<Set<int>>(),
@@ -4291,7 +4334,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'simpleDataSetStream':
-                _i1.StreamParameterDescription<Set<_i45.SimpleData>>(
+                _i1.StreamParameterDescription<Set<_i46.SimpleData>>(
               name: 'simpleDataSetStream',
               nullable: false,
             )
@@ -4302,10 +4345,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .simpleSetInOutDataStream(
             session,
-            streamParams['simpleDataSetStream']!.cast<Set<_i45.SimpleData>>(),
+            streamParams['simpleDataSetStream']!.cast<Set<_i46.SimpleData>>(),
           ),
         ),
         'nestedSetInListInOutDataStream': _i1.MethodStreamConnector(
@@ -4313,7 +4356,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {},
           streamParams: {
             'simpleDataSetStream':
-                _i1.StreamParameterDescription<List<Set<_i45.SimpleData>>>(
+                _i1.StreamParameterDescription<List<Set<_i46.SimpleData>>>(
               name: 'simpleDataSetStream',
               nullable: false,
             )
@@ -4324,11 +4367,11 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .nestedSetInListInOutDataStream(
             session,
             streamParams['simpleDataSetStream']!
-                .cast<List<Set<_i45.SimpleData>>>(),
+                .cast<List<Set<_i46.SimpleData>>>(),
           ),
         ),
         'delayedStreamResponse': _i1.MethodStreamConnector(
@@ -4347,7 +4390,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .delayedStreamResponse(
             session,
             params['delay'],
@@ -4374,7 +4417,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .delayedNeverListenedInputStream(
             session,
             params['delay'],
@@ -4402,7 +4445,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .delayedPausedInputStream(
             session,
             params['delay'],
@@ -4424,7 +4467,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .inStreamThrowsException(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4445,7 +4488,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .inStreamThrowsSerializableException(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4461,7 +4504,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .outStreamThrowsException(session),
         ),
         'outStreamThrowsSerializableException': _i1.MethodStreamConnector(
@@ -4474,7 +4517,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .outStreamThrowsSerializableException(session),
         ),
         'throwsExceptionVoid': _i1.MethodStreamConnector(
@@ -4492,7 +4535,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsExceptionVoid(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4513,7 +4556,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsSerializableExceptionVoid(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4534,7 +4577,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsException(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4555,7 +4598,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsSerializableException(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4571,7 +4614,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsExceptionStream(session),
         ),
         'exceptionThrownBeforeStreamReturn': _i1.MethodStreamConnector(
@@ -4584,7 +4627,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .exceptionThrownBeforeStreamReturn(session),
         ),
         'exceptionThrownInStreamReturn': _i1.MethodStreamConnector(
@@ -4597,7 +4640,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .exceptionThrownInStreamReturn(session),
         ),
         'throwsSerializableExceptionStream': _i1.MethodStreamConnector(
@@ -4610,7 +4653,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .throwsSerializableExceptionStream(session),
         ),
         'didInputStreamHaveError': _i1.MethodStreamConnector(
@@ -4628,7 +4671,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .didInputStreamHaveError(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4650,7 +4693,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['methodStreaming'] as _i24.MethodStreaming)
+              (endpoints['methodStreaming'] as _i25.MethodStreaming)
                   .didInputStreamHaveSerializableExceptionError(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4673,7 +4716,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedMethodStreaming']
-                      as _i24.AuthenticatedMethodStreaming)
+                      as _i25.AuthenticatedMethodStreaming)
                   .simpleStream(session),
         ),
         'intEchoStream': _i1.MethodStreamConnector(
@@ -4692,7 +4735,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedMethodStreaming']
-                      as _i24.AuthenticatedMethodStreaming)
+                      as _i25.AuthenticatedMethodStreaming)
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -4712,7 +4755,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i25.ModuleSerializationEndpoint)
+                      as _i26.ModuleSerializationEndpoint)
                   .serializeModuleObject(session),
         ),
         'modifyModuleObject': _i1.MethodConnector(
@@ -4720,7 +4763,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i52.ModuleClass>(),
+              type: _i1.getType<_i53.ModuleClass>(),
               nullable: false,
             )
           },
@@ -4729,7 +4772,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i25.ModuleSerializationEndpoint)
+                      as _i26.ModuleSerializationEndpoint)
                   .modifyModuleObject(
             session,
             params['object'],
@@ -4743,7 +4786,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i25.ModuleSerializationEndpoint)
+                      as _i26.ModuleSerializationEndpoint)
                   .serializeNestedModuleObject(session),
         ),
       },
@@ -4780,7 +4823,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['namedParameters'] as _i26.NamedParametersEndpoint)
+              (endpoints['namedParameters'] as _i27.NamedParametersEndpoint)
                   .namedParametersMethod(
             session,
             namedInt: params['namedInt'],
@@ -4807,7 +4850,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['namedParameters'] as _i26.NamedParametersEndpoint)
+              (endpoints['namedParameters'] as _i27.NamedParametersEndpoint)
                   .namedParametersMethodEqualInts(
             session,
             namedInt: params['namedInt'],
@@ -4834,7 +4877,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['optionalParameters']
-                      as _i27.OptionalParametersEndpoint)
+                      as _i28.OptionalParametersEndpoint)
                   .returnOptionalInt(
             session,
             params['optionalInt'],
@@ -4856,7 +4899,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             ),
           },
@@ -4864,7 +4907,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint).setSimpleData(
+              (endpoints['redis'] as _i29.RedisEndpoint).setSimpleData(
             session,
             params['key'],
             params['data'],
@@ -4880,7 +4923,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             ),
           },
@@ -4888,7 +4931,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint)
+              (endpoints['redis'] as _i29.RedisEndpoint)
                   .setSimpleDataWithLifetime(
             session,
             params['key'],
@@ -4908,7 +4951,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint).getSimpleData(
+              (endpoints['redis'] as _i29.RedisEndpoint).getSimpleData(
             session,
             params['key'],
           ),
@@ -4926,7 +4969,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint).deleteSimpleData(
+              (endpoints['redis'] as _i29.RedisEndpoint).deleteSimpleData(
             session,
             params['key'],
           ),
@@ -4938,7 +4981,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint)
+              (endpoints['redis'] as _i29.RedisEndpoint)
                   .resetMessageCentralTest(session),
         ),
         'listenToChannel': _i1.MethodConnector(
@@ -4954,7 +4997,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint).listenToChannel(
+              (endpoints['redis'] as _i29.RedisEndpoint).listenToChannel(
             session,
             params['channel'],
           ),
@@ -4969,7 +5012,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             ),
           },
@@ -4977,7 +5020,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint).postToChannel(
+              (endpoints['redis'] as _i29.RedisEndpoint).postToChannel(
             session,
             params['channel'],
             params['data'],
@@ -4990,7 +5033,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i28.RedisEndpoint)
+              (endpoints['redis'] as _i29.RedisEndpoint)
                   .countSubscribedChannels(session),
         ),
       },
@@ -5007,7 +5050,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['serverOnlyScopedFieldModel']
-                      as _i29.ServerOnlyScopedFieldModelEndpoint)
+                      as _i30.ServerOnlyScopedFieldModelEndpoint)
                   .getScopeServerOnlyField(session),
         )
       },
@@ -5024,7 +5067,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['serverOnlyScopedFieldChildModel']
-                      as _i30.ServerOnlyScopedFieldChildModelEndpoint)
+                      as _i31.ServerOnlyScopedFieldChildModelEndpoint)
                   .getProtocolField(session),
         )
       },
@@ -5046,7 +5089,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSet(
             session,
             params['set'],
@@ -5065,7 +5108,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSetSet(
             session,
             params['set'],
@@ -5084,7 +5127,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntListSet(
             session,
             params['set'],
@@ -5103,7 +5146,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSetNullable(
             session,
             params['set'],
@@ -5122,7 +5165,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSetNullableSet(
             session,
             params['set'],
@@ -5141,7 +5184,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSetSetNullable(
             session,
             params['set'],
@@ -5160,7 +5203,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnIntSetNullableInts(
             session,
             params['set'],
@@ -5179,7 +5222,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnNullableIntSetNullableInts(
             session,
             params['set'],
@@ -5198,7 +5241,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDoubleSet(
             session,
             params['set'],
@@ -5217,7 +5260,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDoubleSetNullableDoubles(
             session,
             params['set'],
@@ -5236,7 +5279,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnBoolSet(
             session,
             params['set'],
@@ -5255,7 +5298,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnBoolSetNullableBools(
             session,
             params['set'],
@@ -5274,7 +5317,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnStringSet(
             session,
             params['set'],
@@ -5293,7 +5336,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnStringSetNullableStrings(
             session,
             params['set'],
@@ -5312,7 +5355,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDateTimeSet(
             session,
             params['set'],
@@ -5331,7 +5374,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDateTimeSetNullableDateTimes(
             session,
             params['set'],
@@ -5342,7 +5385,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'set': _i1.ParameterDescription(
               name: 'set',
-              type: _i1.getType<Set<_i40.ByteData>>(),
+              type: _i1.getType<Set<_i41.ByteData>>(),
               nullable: false,
             )
           },
@@ -5350,7 +5393,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnByteDataSet(
             session,
             params['set'],
@@ -5361,7 +5404,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'set': _i1.ParameterDescription(
               name: 'set',
-              type: _i1.getType<Set<_i40.ByteData?>>(),
+              type: _i1.getType<Set<_i41.ByteData?>>(),
               nullable: false,
             )
           },
@@ -5369,7 +5412,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnByteDataSetNullableByteDatas(
             session,
             params['set'],
@@ -5380,7 +5423,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'set': _i1.ParameterDescription(
               name: 'set',
-              type: _i1.getType<Set<_i45.SimpleData>>(),
+              type: _i1.getType<Set<_i46.SimpleData>>(),
               nullable: false,
             )
           },
@@ -5388,7 +5431,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnSimpleDataSet(
             session,
             params['set'],
@@ -5399,7 +5442,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'set': _i1.ParameterDescription(
               name: 'set',
-              type: _i1.getType<Set<_i45.SimpleData?>>(),
+              type: _i1.getType<Set<_i46.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -5407,7 +5450,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnSimpleDataSetNullableSimpleData(
             session,
             params['set'],
@@ -5426,7 +5469,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDurationSet(
             session,
             params['set'],
@@ -5445,7 +5488,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['setParameters'] as _i31.SetParametersEndpoint)
+              (endpoints['setParameters'] as _i32.SetParametersEndpoint)
                   .returnDurationSetNullableDurations(
             session,
             params['set'],
@@ -5464,7 +5507,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['signInRequired'] as _i32.SignInRequiredEndpoint)
+              (endpoints['signInRequired'] as _i33.SignInRequiredEndpoint)
                   .testMethod(session),
         )
       },
@@ -5481,7 +5524,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['adminScopeRequired']
-                      as _i32.AdminScopeRequiredEndpoint)
+                      as _i33.AdminScopeRequiredEndpoint)
                   .testMethod(session),
         )
       },
@@ -5508,7 +5551,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint).setGlobalInt(
+              (endpoints['simple'] as _i34.SimpleEndpoint).setGlobalInt(
             session,
             params['value'],
             params['secondValue'],
@@ -5521,7 +5564,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint)
+              (endpoints['simple'] as _i34.SimpleEndpoint)
                   .addToGlobalInt(session),
         ),
         'getGlobalInt': _i1.MethodConnector(
@@ -5531,7 +5574,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint)
+              (endpoints['simple'] as _i34.SimpleEndpoint)
                   .getGlobalInt(session),
         ),
         'hello': _i1.MethodConnector(
@@ -5547,7 +5590,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint).hello(
+              (endpoints['simple'] as _i34.SimpleEndpoint).hello(
             session,
             params['name'],
           ),
@@ -5575,7 +5618,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['subSubDirTest'] as _i36.SubSubDirTestEndpoint)
+              (endpoints['subSubDirTest'] as _i37.SubSubDirTestEndpoint)
                   .testMethod(session),
         )
       },
@@ -5591,7 +5634,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['subDirTest'] as _i37.SubDirTestEndpoint)
+              (endpoints['subDirTest'] as _i38.SubDirTestEndpoint)
                   .testMethod(session),
         )
       },
@@ -5607,7 +5650,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSessionId(session),
         ),
         'returnsSessionEndpointAndMethod': _i1.MethodConnector(
@@ -5617,7 +5660,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSessionEndpointAndMethod(session),
         ),
         'returnsString': _i1.MethodConnector(
@@ -5633,7 +5676,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint).returnsString(
+              (endpoints['testTools'] as _i39.TestToolsEndpoint).returnsString(
             session,
             params['string'],
           ),
@@ -5651,7 +5694,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .postNumberToSharedStream(
             session,
             params['number'],
@@ -5670,7 +5713,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .createSimpleData(
             session,
             params['data'],
@@ -5683,7 +5726,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .getAllSimpleData(session),
         ),
         'createSimpleDatasInsideTransactions': _i1.MethodConnector(
@@ -5699,7 +5742,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .createSimpleDatasInsideTransactions(
             session,
             params['data'],
@@ -5718,7 +5761,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .createSimpleDataAndThrowInsideTransaction(
             session,
             params['data'],
@@ -5731,7 +5774,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .createSimpleDatasInParallelTransactionCalls(session),
         ),
         'echoSimpleData': _i1.MethodConnector(
@@ -5739,7 +5782,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i46.SimpleData>(),
               nullable: false,
             )
           },
@@ -5747,7 +5790,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint).echoSimpleData(
+              (endpoints['testTools'] as _i39.TestToolsEndpoint).echoSimpleData(
             session,
             params['simpleData'],
           ),
@@ -5757,7 +5800,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleDatas': _i1.ParameterDescription(
               name: 'simpleDatas',
-              type: _i1.getType<List<_i45.SimpleData>>(),
+              type: _i1.getType<List<_i46.SimpleData>>(),
               nullable: false,
             )
           },
@@ -5765,7 +5808,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .echoSimpleDatas(
             session,
             params['simpleDatas'],
@@ -5778,7 +5821,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .logMessageWithSession(session),
         ),
         'addWillCloseListenerToSessionAndThrow': _i1.MethodConnector(
@@ -5788,7 +5831,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .addWillCloseListenerToSessionAndThrow(session),
         ),
         'returnsSessionIdFromStream': _i1.MethodStreamConnector(
@@ -5801,7 +5844,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSessionIdFromStream(session),
         ),
         'returnsSessionEndpointAndMethodFromStream': _i1.MethodStreamConnector(
@@ -5814,7 +5857,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSessionEndpointAndMethodFromStream(session),
         ),
         'returnsStream': _i1.MethodStreamConnector(
@@ -5833,7 +5876,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint).returnsStream(
+              (endpoints['testTools'] as _i39.TestToolsEndpoint).returnsStream(
             session,
             params['n'],
           ),
@@ -5853,7 +5896,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsListFromInputStream(
             session,
             streamParams['numbers']!.cast<int>(),
@@ -5863,7 +5906,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'returnsSimpleDataListFromInputStream',
           params: {},
           streamParams: {
-            'simpleDatas': _i1.StreamParameterDescription<_i45.SimpleData>(
+            'simpleDatas': _i1.StreamParameterDescription<_i46.SimpleData>(
               name: 'simpleDatas',
               nullable: false,
             )
@@ -5874,10 +5917,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSimpleDataListFromInputStream(
             session,
-            streamParams['simpleDatas']!.cast<_i45.SimpleData>(),
+            streamParams['simpleDatas']!.cast<_i46.SimpleData>(),
           ),
         ),
         'returnsStreamFromInputStream': _i1.MethodStreamConnector(
@@ -5895,7 +5938,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsStreamFromInputStream(
             session,
             streamParams['numbers']!.cast<int>(),
@@ -5905,7 +5948,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'returnsSimpleDataStreamFromInputStream',
           params: {},
           streamParams: {
-            'simpleDatas': _i1.StreamParameterDescription<_i45.SimpleData>(
+            'simpleDatas': _i1.StreamParameterDescription<_i46.SimpleData>(
               name: 'simpleDatas',
               nullable: false,
             )
@@ -5916,10 +5959,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .returnsSimpleDataStreamFromInputStream(
             session,
-            streamParams['simpleDatas']!.cast<_i45.SimpleData>(),
+            streamParams['simpleDatas']!.cast<_i46.SimpleData>(),
           ),
         ),
         'postNumberToSharedStreamAndReturnStream': _i1.MethodStreamConnector(
@@ -5938,7 +5981,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .postNumberToSharedStreamAndReturnStream(
             session,
             params['number'],
@@ -5954,7 +5997,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .listenForNumbersOnSharedStream(session),
         ),
         'addWillCloseListenerToSessionIntStreamMethodAndThrow':
@@ -5968,7 +6011,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i38.TestToolsEndpoint)
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
                   .addWillCloseListenerToSessionIntStreamMethodAndThrow(
                       session),
         ),
@@ -5992,7 +6035,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['authenticatedTestTools']
-                      as _i38.AuthenticatedTestToolsEndpoint)
+                      as _i39.AuthenticatedTestToolsEndpoint)
                   .returnsString(
             session,
             params['string'],
@@ -6015,7 +6058,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedTestTools']
-                      as _i38.AuthenticatedTestToolsEndpoint)
+                      as _i39.AuthenticatedTestToolsEndpoint)
                   .returnsStream(
             session,
             params['n'],
@@ -6037,7 +6080,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedTestTools']
-                      as _i38.AuthenticatedTestToolsEndpoint)
+                      as _i39.AuthenticatedTestToolsEndpoint)
                   .returnsListFromInputStream(
             session,
             streamParams['numbers']!.cast<int>(),
@@ -6059,7 +6102,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedTestTools']
-                      as _i38.AuthenticatedTestToolsEndpoint)
+                      as _i39.AuthenticatedTestToolsEndpoint)
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
@@ -6078,7 +6121,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['myFeature'] as _i39.MyFeatureEndpoint)
+              (endpoints['myFeature'] as _i40.MyFeatureEndpoint)
                   .myFeatureMethod(session),
         ),
         'myFeatureModel': _i1.MethodConnector(
@@ -6088,13 +6131,13 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['myFeature'] as _i39.MyFeatureEndpoint)
+              (endpoints['myFeature'] as _i40.MyFeatureEndpoint)
                   .myFeatureModel(session),
         ),
       },
     );
-    modules['serverpod_auth'] = _i51.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_test_module'] = _i52.Endpoints()
+    modules['serverpod_auth'] = _i52.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = _i53.Endpoints()
       ..initializeEndpoints(server);
   }
 }

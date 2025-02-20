@@ -101,6 +101,8 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+diagnosticEventTest:
+  - submitExceptionEvent:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:
@@ -116,6 +118,7 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+  - makeFutureCallThatThrows:
 listParameters:
   - returnIntList:
   - returnIntListList:

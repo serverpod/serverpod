@@ -428,6 +428,15 @@ class ServerTestToolsGenerator {
         ..name = 'serverpodStartTimeout'
         ..named = true
         ..type = refer('Duration?')),
+      Parameter(
+        (p) => p
+          ..name = 'unstableDiagnosticEventHandlers'
+          ..named = true
+          ..type = TypeReference((tr) => tr
+            ..symbol = 'List'
+            ..types.add(refer('DiagnosticEventHandler', serverpodUrl(true)))
+            ..isNullable = true),
+      ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
         Parameter((p) => p
           ..name = 'rollbackDatabase'
@@ -478,6 +487,8 @@ class ServerTestToolsGenerator {
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                'unstableDiagnosticEventHandlers':
+                    refer('unstableDiagnosticEventHandlers'),
               },
             ),
           ],

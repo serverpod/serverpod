@@ -71,6 +71,7 @@ void main() {
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  List<_i2.DiagnosticEventHandler>\? unstableDiagnosticEventHandlers,\n'
               r'\}\)',
             ));
       },
@@ -125,6 +126,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [unstableDiagnosticEventHandlers] '),
         );
       },
       skip: testToolsFile == null,
@@ -212,6 +217,7 @@ void main() {
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  List<_i2.DiagnosticEventHandler>\? unstableDiagnosticEventHandlers,\n'
               r'\}\)',
             ));
       },
@@ -258,6 +264,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [unstableDiagnosticEventHandlers] '),
         );
       },
       skip: testToolsFile == null,
@@ -321,6 +331,7 @@ void main() {
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  List<_i2.DiagnosticEventHandler>\? unstableDiagnosticEventHandlers,\n'
               r'\}\)',
             ));
       },
@@ -375,6 +386,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [unstableDiagnosticEventHandlers] '),
         );
       },
       skip: testToolsFile == null,
@@ -456,6 +471,7 @@ void main() {
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  List<_i2.DiagnosticEventHandler>\? unstableDiagnosticEventHandlers,\n'
               r'\}\)',
             ));
       },
@@ -510,6 +526,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [unstableDiagnosticEventHandlers] '),
         );
       },
       skip: testToolsFile == null,

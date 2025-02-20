@@ -69,6 +69,12 @@ abstract class Session implements DatabaseAccessor {
     return _authenticated;
   }
 
+  /// The authentication information for the session, if set.
+  /// This will be null if the session is not authenticated or not initialized.
+  AuthenticationInfo? get authInfoOrNull {
+    return _authenticated;
+  }
+
   /// Returns true if the user is signed in.
   Future<bool> get isUserSignedIn async {
     return (await authenticated) != null;
