@@ -1,8 +1,22 @@
-import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 
+/// Creates test group with the given description, containing a test for each
+/// item in [variants].
 ///
-@isTestGroup
+/// The test description is determined by [describeVariant] and each test
+/// invocation is passed a variant `T` to its [body] callback.
+///
+/// Example usage:
+/// ```dart
+/// testWithVariants(
+///    'Given a user',
+///    describeVariant: (v) => 'named ${v.name} of age ${v.age}, test that ..',
+///    const [
+///      (name: 'Bob', age: 42),
+///      (name: 'Alice', age: 29),
+///    ], (variant) {/* ... */});
+/// ```
+/// The remaining argument are simply forwarded to [test]
 void testWithVariants<T>(
   Object? description,
   Iterable<T> variants,
