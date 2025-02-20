@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to an endpoint. It is not intended to be used directly by the user.
@@ -72,7 +73,8 @@ abstract class EndpointWebsocketRequestHandler {
           try {
             endpointConnector = await server.endpoints.getEndpointConnector(
                 session: session, endpointPath: endpointName);
-          } on NotAuthorizedException {
+          } on NotAuthorizedException catch (e, s) {
+            _reportException(server, e, s, session: session);
             continue;
           } on EndpointNotFoundException {
             throw Exception('Endpoint not found: $endpointName');
@@ -97,10 +99,11 @@ abstract class EndpointWebsocketRequestHandler {
           } catch (e, s) {
             messageError = e;
             messageStackTrace = s;
-            stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
-                'Uncaught exception in handleStreamMessage.');
-            stderr.writeln('$e');
-            stderr.writeln('$s');
+
+            _reportException(server, e, s,
+                message:
+                    'Internal server error. Uncaught exception in handleStreamMessage.',
+                session: session);
           }
 
           var duration = DateTime.now().difference(startTime);
@@ -116,6 +119,8 @@ abstract class EndpointWebsocketRequestHandler {
       } catch (e, s) {
         error = e;
         stackTrace = s;
+
+        _reportException(server, e, s, session: session);
       }
 
       // TODO: Possibly keep a list of open streams instead
@@ -130,9 +135,8 @@ abstract class EndpointWebsocketRequestHandler {
         }
       }
       await session.close(error: error, stackTrace: stackTrace);
-    } catch (e, stackTrace) {
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+    } catch (e, s) {
+      _reportException(server, e, s, httpRequest: request);
       return;
     } finally {
       onClosed();
@@ -151,9 +155,11 @@ abstract class EndpointWebsocketRequestHandler {
         endpointPath: endpointName,
       );
       await connector.endpoint.streamOpened(session);
-    } on NotAuthorizedException {
+    } on NotAuthorizedException catch (e, s) {
+      _reportException(session.server, e, s, session: session);
       return;
-    } catch (_) {
+    } catch (e, s) {
+      _reportException(session.server, e, s, session: session);
       return;
     }
   }
@@ -170,10 +176,40 @@ abstract class EndpointWebsocketRequestHandler {
         endpointPath: endpointName,
       );
       await connector.endpoint.streamClosed(session);
-    } on NotAuthorizedException {
+    } on NotAuthorizedException catch (e, s) {
+      _reportException(session.server, e, s, session: session);
       return;
-    } catch (_) {
+    } catch (e, s) {
+      _reportException(session.server, e, s, session: session);
       return;
     }
+  }
+
+  static void _reportException(
+    Server server,
+    Object e,
+    StackTrace stackTrace, {
+    OriginSpace space = OriginSpace.framework,
+    String? message,
+    HttpRequest? httpRequest,
+    StreamingSession? session,
+  }) {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
+
+    server.serverpod.submitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space,
+      context: session != null
+          ? contextFromSession(session, httpRequest: httpRequest)
+          : httpRequest != null
+              ? contextFromHttpRequest(
+                  server, httpRequest, OperationType.stream)
+              : contextFromServer(server),
+    );
   }
 }
