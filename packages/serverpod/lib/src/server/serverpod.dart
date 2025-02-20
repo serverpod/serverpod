@@ -78,6 +78,9 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
+  /// [DiagnosticEventHandler] for optional custom exception handling.
+  final DiagnosticEventHandler _eventHandler;
+
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
@@ -284,6 +287,15 @@ class Serverpod {
   final SecurityContextConfig? _securityContextConfig;
 
   /// Creates a new Serverpod.
+  ///
+  /// ## Experimental features
+  ///
+  /// Features prefixed with `unstable` are new or experimental where
+  /// the API and names may change from one minor release to another.
+  ///
+  /// [unstableDiagnosticEventHandlers] is a list of handlers that will be
+  /// called for all diagnostic events.
+  /// See [DiagnosticEventHandler] for more information.
   Serverpod(
     List<String> args,
     this.serializationManager,
@@ -294,17 +306,56 @@ class Serverpod {
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
-  }) : _securityContextConfig = securityContextConfig {
+    List<DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
+  })  : _securityContextConfig = securityContextConfig,
+        _eventHandler = _EventHandlers(
+          unstableDiagnosticEventHandlers ?? const [],
+          timeout: config?.unstableDiagnosticHandlerTimeout,
+        ) {
+    _initializeServerpod(
+      args,
+      config: config,
+      unstableDiagnosticEventHandlers: unstableDiagnosticEventHandlers,
+    );
+  }
+
+  void _initializeServerpod(
+    List<String> args, {
+    ServerpodConfig? config,
+    List<DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
+  }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
 
-    _instance = this;
-    _internalSerializationManager = internal.Protocol();
-
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
     stdout.writeln(commandLineArgs.toString());
+
+    try {
+      _innerInitializeServerpod(commandLineArgs, config: config);
+    } catch (e, stackTrace) {
+      submitEvent(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: DiagnosticEventContext(
+          serverId: commandLineArgs.serverId,
+          serverRunMode: commandLineArgs.runMode,
+          serverName: '',
+        ),
+      );
+      rethrow;
+    }
+
+    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
+  }
+
+  void _innerInitializeServerpod(
+    CommandLineArgs commandLineArgs, {
+    ServerpodConfig? config,
+  }) {
+    _instance = this;
+    _internalSerializationManager = internal.Protocol();
 
     _runMode = commandLineArgs.runMode;
     serverId = commandLineArgs.serverId;
@@ -412,17 +463,17 @@ class Serverpod {
         securityContext: _securityContextConfig?.webServer,
       );
     }
-
-    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
 
   int _exitCode = 0;
 
   /// Starts the Serverpod and all [Server]s that it manages.
   ///
-  /// If [runInGuardedZone] is set to true, the start function will be executed inside `runZonedGuarded`.
+  /// If [runInGuardedZone] is set to true (the default),
+  /// the start function will be executed inside `runZonedGuarded`.
   /// Any errors during the start up sequence will cause the process to exit.
   /// Any runtime errors will be in their own error zone and will not crash the server.
+  ///
   /// If [runInGuardedZone] is set to false, the start function will be executed in the same error zone as the caller.
   /// An [ExitException] will be thrown if the start up sequence fails.
   Future<void> start({bool runInGuardedZone = true}) async {
@@ -430,15 +481,28 @@ class Serverpod {
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
+        if (error.message != '') {
+          stderr.writeln(error.message);
+        }
         exit(error.exitCode);
       }
 
       _exitCode = 1;
-      stderr.writeln(
-        '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
-      );
+      var message =
+          '${DateTime.now().toUtc()} Internal server error. Zoned exception.';
+      stderr.writeln(message);
       stderr.writeln('$error');
       stderr.writeln('$stackTrace');
+
+      submitEvent(
+        ExceptionEvent(error, stackTrace, message: message),
+        OriginSpace.framework,
+        context: DiagnosticEventContext(
+          serverId: serverId,
+          serverRunMode: server.runMode,
+          serverName: '',
+        ),
+      );
     }
 
     if (runInGuardedZone) {
@@ -794,17 +858,31 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
+  /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
   Future<void> shutdown({bool exitProcess = true}) async {
-    await _internalSession.close();
-    await redisController?.stop();
-    await server.shutdown();
-    await _webServer?.stop();
-    await _serviceServer?.shutdown();
-    await _futureCallManager?.stop();
-    _healthCheckManager?.stop();
+    try {
+      await _internalSession.close();
+      await redisController?.stop();
+      await server.shutdown();
+      await _webServer?.stop();
+      await _serviceServer?.shutdown();
+      await _futureCallManager?.stop();
+      _healthCheckManager?.stop();
 
-    // This needs to be closed last as it is used by the other services.
-    await _databasePoolManager?.stop();
+      // This needs to be closed last as it is used by the other services.
+      await _databasePoolManager?.stop();
+    } catch (e, stackTrace) {
+      submitEvent(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: DiagnosticEventContext(
+          serverId: serverId,
+          serverRunMode: server.runMode,
+          serverName: '',
+        ),
+      );
+      rethrow;
+    }
 
     if (exitProcess) {
       exit(0);
@@ -817,6 +895,16 @@ class Serverpod {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
+  }
+
+  /// Submits an event to registered event handlers.
+  /// They will execute asynchrously.
+  void submitEvent(
+    DiagnosticEvent event,
+    OriginSpace space, {
+    required DiagnosticEventContext context,
+  }) {
+    return _eventHandler.handleEvent(event, space, context: context);
   }
 
   /// Establishes a connection to the database. This method will retry
@@ -880,4 +968,51 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+}
+
+/// Container for a list of [DiagnosticEventHandler]s
+/// that will run concurrently with each other
+/// and asynchronously with the caller.
+class _EventHandlers implements DiagnosticEventHandler {
+  final List<DiagnosticEventHandler> handlers;
+
+  /// If set, this timeout is applied to each event handler invocation.
+  final Duration? timeout;
+
+  /// Creates a new [_EventHandlers] with the specified list of handlers.
+  const _EventHandlers(
+    this.handlers, {
+    // ignore: unused_element
+    this.timeout = const Duration(seconds: 30),
+  });
+
+  @override
+  void handleEvent(
+    DiagnosticEvent event,
+    OriginSpace space, {
+    required DiagnosticEventContext context,
+  }) {
+    var futures = handlers.map((handler) => Future(
+          () => handler.handleEvent(event, space, context: context),
+        ));
+
+    var to = timeout;
+    if (to != null) {
+      futures = futures.map((future) => future.timeout(to));
+    }
+
+    futures.wait.onError((ParallelWaitError e, stackTrace) {
+      var errors = e.errors;
+      if (errors is Iterable<AsyncError?>) {
+        for (var error in errors) {
+          if (error != null) {
+            stderr.writeln('Error in event handler: $error');
+          }
+        }
+      } else {
+        stderr.writeln('Error in an event handler: $errors');
+      }
+      return e.values;
+    });
+  }
 }
