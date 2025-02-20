@@ -185,7 +185,7 @@ class ModelParser {
 
       // The 'int' id type can be specified without a default value.
       if (maybeIdColumn?.type.className == 'int') {
-        defaultValue = defaultValue ?? SupportedIdType.int.defaultValue;
+        defaultValue ??= SupportedIdType.int.defaultValue;
       }
 
       var defaultIdFieldDoc = [
@@ -201,6 +201,7 @@ class ModelParser {
           name: 'id',
           type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
+          defaultModelValue: defaultValue,
           defaultPersistValue: defaultValue,
           shouldPersist: true,
           documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,

@@ -53,6 +53,10 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       var expectedDefaultValue = idType.defaultValue;
+      test("then the default model value is '$expectedDefaultValue'", () {
+        expect(model.idField.defaultModelValue, expectedDefaultValue);
+      }, skip: errors.isNotEmpty);
+
       test("then the default persist value is '$expectedDefaultValue'", () {
         expect(model.idField.defaultPersistValue, expectedDefaultValue);
       }, skip: errors.isNotEmpty);

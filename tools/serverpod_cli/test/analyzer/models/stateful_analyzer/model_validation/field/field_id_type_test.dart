@@ -123,8 +123,13 @@ void main() {
           expect(definition.idField.type.nullable, true);
         }, skip: errors.isNotEmpty);
 
-        test("then the default persist value is '$defaultValue'", () {
-          expect(definition.idField.defaultPersistValue, defaultValue);
+        var expectedDefaultValue = idType.defaultValue;
+        test("then the default model value is '$expectedDefaultValue'", () {
+          expect(definition.idField.defaultModelValue, expectedDefaultValue);
+        }, skip: errors.isNotEmpty);
+
+        test("then the default persist value is '$expectedDefaultValue'", () {
+          expect(definition.idField.defaultPersistValue, expectedDefaultValue);
         }, skip: errors.isNotEmpty);
       });
 
