@@ -110,59 +110,6 @@ List<String> findAllMigrationVersionsSync({
   }
 }
 
-Future<List<Uri>> locateAllModulePaths(
-    {required Directory directory, required String currentProjectName}) async {
-  var packageConfig = await findPackageConfig(directory);
-  if (packageConfig == null) {
-    throw Exception('Failed to read package configuration.');
-  }
-
-  var paths = <Uri>[];
-  for (var packageInfo in packageConfig.packages) {
-    try {
-      var packageName = packageInfo.name;
-      if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
-        continue;
-      }
-
-      //Check if the package is the current project
-      if (packageName == currentProjectName + _serverSuffix) {
-        continue;
-      }
-
-      var packageSrcRoot = packageInfo.packageUriRoot;
-
-      // Check for generator file
-      var generatorConfigSegments =
-          List<String>.from(packageSrcRoot.pathSegments)
-            ..removeLast()
-            ..removeLast()
-            ..addAll(['config', 'generator.yaml']);
-      var generatorConfigUri = packageSrcRoot.replace(
-        pathSegments: generatorConfigSegments,
-      );
-
-      var generatorConfigFile = File.fromUri(generatorConfigUri);
-      if (!await generatorConfigFile.exists()) {
-        continue;
-      }
-
-      // Get the root of the package
-      var packageRootSegments = List<String>.from(packageSrcRoot.pathSegments)
-        ..removeLast()
-        ..removeLast();
-      var packageRoot = packageSrcRoot.replace(
-        pathSegments: packageRootSegments,
-      );
-      paths.add(packageRoot);
-    } catch (e) {
-      log.debug(e.toString());
-      continue;
-    }
-  }
-  return paths;
-}
-
 /// This method assumes that server package names end with `_server`.
 /// If the package name does not follow this convention, an exception is thrown.
 ///
