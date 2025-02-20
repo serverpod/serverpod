@@ -731,35 +731,38 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
-    var errors = <SourceSpanSeverityException>[];
-    var definition = documentDefinition;
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return const [];
 
-    if (definition is! ClassDefinition) return errors;
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null) return const [];
 
-    var field = definition.findField(parentNodeName);
-    if (field == null) return errors;
-    var type = field.type.className;
-
-    if (AnalyzeChecker.isIdType(type) &&
-        !AnalyzeChecker.isParentDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "parent" property must be defined on id fields.',
-        span,
-      ));
+    var type = field.type;
+    if (type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
+      return [
+        SourceSpanSeverityException(
+          'The "parent" property must be defined on id fields.',
+          span,
+        )
+      ];
     }
 
-    if (!AnalyzeChecker.isFieldDefined(content)) {
-      var isOptional = AnalyzeChecker.isOptionalDefined(content);
-      var isServerOnly = field.scope == ModelFieldScopeDefinition.serverOnly;
-      if (isServerOnly && !isOptional) {
-        errors.add(SourceSpanSeverityException(
+    var relation = field.relation;
+    if (relation is! ObjectRelationDefinition) return const [];
+
+    if (!AnalyzeChecker.isFieldDefined(content) &&
+        !classDefinition.serverOnly &&
+        field.scope == ModelFieldScopeDefinition.serverOnly &&
+        !relation.nullableRelation) {
+      return [
+        SourceSpanSeverityException(
           'The relation with scope "${field.scope.name}" requires the relation to be optional.',
           span,
-        ));
-      }
+        )
+      ];
     }
 
-    return errors;
+    return const [];
   }
 
   List<SourceSpanSeverityException> validateParentName(
