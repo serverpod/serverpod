@@ -73,10 +73,16 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  late HttpServer _httpServer;
+  HttpServer? _httpServer;
 
   /// The [HttpServer] responsible for handling calls.
-  HttpServer get httpServer => _httpServer;
+  HttpServer get httpServer {
+    var httpServer = _httpServer;
+    if (httpServer == null) {
+      throw StateError('httpServer not started');
+    }
+    return httpServer;
+  }
 
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
@@ -558,7 +564,7 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _httpServer.close();
+    await _httpServer?.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
