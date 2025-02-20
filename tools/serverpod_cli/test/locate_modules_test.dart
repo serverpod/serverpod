@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/util/locate_modules.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
