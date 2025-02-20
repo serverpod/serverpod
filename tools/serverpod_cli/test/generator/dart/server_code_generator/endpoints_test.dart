@@ -1,13 +1,13 @@
+import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -167,7 +167,7 @@ void main() {
             MethodDefinitionBuilder()
                 .withName(methodName)
                 .withReturnType(
-                    TypeDefinitionBuilder().withStreamOf('String').build())
+                    ClassTypeDefinitionBuilder().withStreamOf('String').build())
                 .buildMethodStreamDefinition(),
           ]).build(),
         ],
@@ -217,7 +217,8 @@ void main() {
             MethodDefinitionBuilder().withName(methodName).withParameters([
               ParameterDefinition(
                 name: 'streamParam',
-                type: TypeDefinitionBuilder().withStreamOf('String').build(),
+                type:
+                    ClassTypeDefinitionBuilder().withStreamOf('String').build(),
                 required: false,
               ),
             ]).buildMethodStreamDefinition(),

@@ -3,12 +3,12 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/parameter_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
@@ -136,7 +136,7 @@ void main() {
         MethodDefinitionBuilder()
             .withName('streamingMethod')
             .withReturnType(
-              TypeDefinitionBuilder()
+              ClassTypeDefinitionBuilder()
                   .withStreamOf(modelName.pascalCase)
                   .build(),
             )
@@ -189,7 +189,7 @@ void main() {
           .withField(
             FieldDefinitionBuilder()
                 .withName('model')
-                .withType(TypeDefinitionBuilder()
+                .withType(ClassTypeDefinitionBuilder()
                     .withListOf(
                       testModelName,
                       url: defaultModuleAlias,
@@ -242,9 +242,10 @@ void main() {
       EndpointDefinitionBuilder().withMethods([
         MethodDefinitionBuilder().withName('myEndpoint').withParameters([
           ParameterDefinitionBuilder()
-              .withType(
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                TypeDefinitionBuilder()
+              .withType(ClassTypeDefinitionBuilder()
+                  .withClassName('List')
+                  .withGenerics([
+                ClassTypeDefinitionBuilder()
                     .withClassName(testModelName)
                     .withNullable(false)
                     .withUrl(defaultModuleAlias)
@@ -300,9 +301,10 @@ void main() {
       EndpointDefinitionBuilder().withMethods([
         MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
           ParameterDefinitionBuilder()
-              .withType(
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                TypeDefinitionBuilder()
+              .withType(ClassTypeDefinitionBuilder()
+                  .withClassName('List')
+                  .withGenerics([
+                ClassTypeDefinitionBuilder()
                     .withClassName(testModelName)
                     .withNullable(false)
                     .withUrl(defaultModuleAlias)
@@ -360,9 +362,10 @@ void main() {
             .withName('myEndpoint')
             .withParametersPositional([
           ParameterDefinitionBuilder()
-              .withType(
-                  TypeDefinitionBuilder().withClassName('List').withGenerics([
-                TypeDefinitionBuilder()
+              .withType(ClassTypeDefinitionBuilder()
+                  .withClassName('List')
+                  .withGenerics([
+                ClassTypeDefinitionBuilder()
                     .withClassName(testModelName)
                     .withNullable(false)
                     .withUrl(defaultModuleAlias)

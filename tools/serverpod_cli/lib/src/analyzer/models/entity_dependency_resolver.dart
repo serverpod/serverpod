@@ -71,7 +71,7 @@ class ModelDependencyResolver {
     fieldDefinition.indexes = indexesContainingField;
   }
 
-  static TypeDefinition _resolveProtocolReference(
+  static ClassTypeDefinition _resolveProtocolReference(
       SerializableModelFieldDefinition fieldDefinition,
       List<SerializableModelDefinition> modelDefinitions) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
@@ -80,7 +80,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveEnumType(
-    TypeDefinition typeDefinition,
+    ClassTypeDefinition typeDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     if (typeDefinition.generics.isNotEmpty) {
@@ -203,8 +203,8 @@ class ModelDependencyResolver {
     String tableName,
   ) {
     var relationFieldType = relation.nullableRelation
-        ? TypeDefinition.int.asNullable
-        : TypeDefinition.int;
+        ? ClassTypeDefinition.int.asNullable
+        : ClassTypeDefinition.int;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -374,7 +374,7 @@ class ModelDependencyResolver {
 
       var foreignField = SerializableModelFieldDefinition(
         name: foreignFieldName,
-        type: TypeDefinition.int.asNullable,
+        type: ClassTypeDefinition.int.asNullable,
         scope: ModelFieldScopeDefinition.none,
         shouldPersist: true,
         relation: ForeignRelationDefinition(

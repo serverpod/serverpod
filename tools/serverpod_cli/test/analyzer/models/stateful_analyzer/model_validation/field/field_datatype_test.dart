@@ -1258,7 +1258,7 @@ fields:
   });
 
   group('Given a class with a type set to the class name of a custom type', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1320,7 +1320,7 @@ fields:
   group(
       'Given a class with a nullable type set to the class name of a custom type',
       () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1362,7 +1362,7 @@ fields:
   });
 
   group('Given a class with a type set to a list of custom classes', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,
@@ -1415,7 +1415,7 @@ fields:
   });
 
   group('Given a class with a type set to a map of custom classes', () {
-    var type = TypeDefinition(
+    var type = ClassTypeDefinition(
       className: 'CustomExample',
       generics: const [],
       nullable: false,

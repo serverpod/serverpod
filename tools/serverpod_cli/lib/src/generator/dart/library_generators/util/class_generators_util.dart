@@ -103,7 +103,7 @@ TypeReference _typeWithTableCallback(
 
 Expression _buildFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition, {
@@ -183,7 +183,7 @@ Expression _buildFromJson(
 }
 
 Expression _buildPrimitiveTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -196,7 +196,7 @@ Expression _buildPrimitiveTypeFromJson(
 }
 
 Expression _buildDoubleTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -208,7 +208,7 @@ Expression _buildDoubleTypeFromJson(
 }
 
 Expression _buildComplexTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
 ) {
@@ -223,7 +223,7 @@ Expression _buildComplexTypeFromJson(
 
 Expression _buildEnumTypeFromJson(
   EnumSerialization enumSerialization,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -256,7 +256,7 @@ Expression _buildEnumTypeFromJson(
 
 Expression _buildListOrSetTypeFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -313,7 +313,7 @@ Expression _buildListOrSetTypeFromJson(
 
 Expression _buildMapTypeFromJson(
   Reference jsonReference,
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -395,7 +395,7 @@ Expression _buildMapTypeFromJson(
 }
 
 Expression _buildClassTypeFromJson(
-  TypeDefinition type,
+  ClassTypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -422,7 +422,7 @@ Expression _buildClassTypeFromJson(
 
 extension ExpressionExtension on Expression {
   Expression checkIfNull(
-    TypeDefinition type, {
+    ClassTypeDefinition type, {
     required Expression valueExpression,
   }) {
     if (!type.nullable) return this;

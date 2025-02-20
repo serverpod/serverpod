@@ -1,13 +1,13 @@
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 
 class MethodDefinitionBuilder {
   String _name = 'example';
   String? _documentationComment;
   List<AnnotationDefinition> _annotations = [];
-  TypeDefinition _returnType =
-      TypeDefinitionBuilder().withFutureOf('String').build();
+  ClassTypeDefinition _returnType =
+      ClassTypeDefinitionBuilder().withFutureOf('String').build();
   List<ParameterDefinition> _parameters = [];
   List<ParameterDefinition> _parametersPositional = [];
   List<ParameterDefinition> _parametersNamed = [];
@@ -31,7 +31,7 @@ class MethodDefinitionBuilder {
     return this;
   }
 
-  MethodDefinitionBuilder withReturnType(TypeDefinition returnType) {
+  MethodDefinitionBuilder withReturnType(ClassTypeDefinition returnType) {
     _returnType = returnType;
     return this;
   }

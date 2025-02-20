@@ -23,7 +23,7 @@ abstract class EndpointParameterAnalyzer {
       var definition = ParameterDefinition(
         name: parameter.name,
         required: _isRequired(parameter),
-        type: TypeDefinition.fromDartType(parameter.type),
+        type: ClassTypeDefinition.fromDartType(parameter.type),
       );
 
       if (parameter.isRequiredPositional) {
@@ -104,7 +104,7 @@ abstract class EndpointParameterAnalyzer {
       }
 
       try {
-        TypeDefinition.fromDartType(parameter.type);
+        ClassTypeDefinition.fromDartType(parameter.type);
       } on FromDartTypeClassNameException catch (e) {
         return SourceSpanSeverityException(
           'The type "${e.type}" is not a supported endpoint parameter type.',

@@ -35,7 +35,7 @@ abstract class EndpointMethodAnalyzer {
         parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
-        returnType: TypeDefinition.fromDartType(method.returnType),
+        returnType: ClassTypeDefinition.fromDartType(method.returnType),
       );
     }
 
@@ -46,7 +46,7 @@ abstract class EndpointMethodAnalyzer {
       parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
-      returnType: TypeDefinition.fromDartType(method.returnType),
+      returnType: ClassTypeDefinition.fromDartType(method.returnType),
     );
   }
 
@@ -137,7 +137,7 @@ abstract class EndpointMethodAnalyzer {
     }
 
     try {
-      TypeDefinition.fromDartType(innerType);
+      ClassTypeDefinition.fromDartType(innerType);
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',

@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class EnumDefinitionBuilder {
@@ -37,7 +37,7 @@ class EnumDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      type: ClassTypeDefinitionBuilder().withClassName(_className).build(),
     );
     enumDefinition.type.enumDefinition = enumDefinition;
     return enumDefinition;

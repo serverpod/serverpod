@@ -3,9 +3,9 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
 
@@ -323,7 +323,8 @@ void main() {
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
               .withName('names')
-              .withType(TypeDefinitionBuilder().withListOf('String').build())
+              .withType(
+                  ClassTypeDefinitionBuilder().withListOf('String').build())
               .build())
           .build()
     ];
@@ -359,8 +360,9 @@ void main() {
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
               .withName('map')
-              .withType(
-                  TypeDefinitionBuilder().withMapOf('String', 'String').build())
+              .withType(ClassTypeDefinitionBuilder()
+                  .withMapOf('String', 'String')
+                  .build())
               .build())
           .build()
     ];

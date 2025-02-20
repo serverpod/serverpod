@@ -397,7 +397,7 @@ void main() {
           .withField(
             SerializableModelFieldDefinition(
                 name: 'title',
-                type: TypeDefinition(className: 'String', nullable: true),
+                type: ClassTypeDefinition(className: 'String', nullable: true),
                 scope: ModelFieldScopeDefinition.none,
                 shouldPersist: false),
           )

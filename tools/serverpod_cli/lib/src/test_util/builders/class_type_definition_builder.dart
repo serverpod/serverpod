@@ -1,9 +1,9 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
-class TypeDefinitionBuilder {
+class ClassTypeDefinitionBuilder {
   String _className;
-  List<TypeDefinition> _generics;
+  List<ClassTypeDefinition> _generics;
   bool _nullable;
   String? _url;
   DartType? _dartType;
@@ -11,7 +11,7 @@ class TypeDefinitionBuilder {
   EnumDefinition? _enumDefinition;
   SerializableModelDefinition? _modelDefinition;
 
-  TypeDefinitionBuilder()
+  ClassTypeDefinitionBuilder()
       : _className = 'DefaultClassName',
         _generics = [],
         _nullable = false,
@@ -20,44 +20,45 @@ class TypeDefinitionBuilder {
         _customClass = false,
         _modelDefinition = null;
 
-  TypeDefinitionBuilder withClassName(String className) {
+  ClassTypeDefinitionBuilder withClassName(String className) {
     _className = className;
     return this;
   }
 
-  TypeDefinitionBuilder withGenerics(List<TypeDefinition> generics) {
+  ClassTypeDefinitionBuilder withGenerics(List<ClassTypeDefinition> generics) {
     _generics = generics;
     return this;
   }
 
-  TypeDefinitionBuilder withFutureOf(
+  ClassTypeDefinitionBuilder withFutureOf(
     String className, [
     bool nullable = false,
   ]) {
     _className = 'Future';
-    _generics.add(TypeDefinitionBuilder()
+    _generics.add(ClassTypeDefinitionBuilder()
         .withClassName(className)
         .withNullable(nullable)
         .build());
     return this;
   }
 
-  TypeDefinitionBuilder withStreamOf(
+  ClassTypeDefinitionBuilder withStreamOf(
     String className,
   ) {
     _className = 'Stream';
-    _generics.add(TypeDefinitionBuilder().withClassName(className).build());
+    _generics
+        .add(ClassTypeDefinitionBuilder().withClassName(className).build());
     return this;
   }
 
-  TypeDefinitionBuilder withListOf(
+  ClassTypeDefinitionBuilder withListOf(
     String className, {
     bool nullable = false,
     String? url,
     SerializableModelDefinition? modelInfo,
   }) {
     _className = 'List';
-    var generic = TypeDefinitionBuilder()
+    var generic = ClassTypeDefinitionBuilder()
         .withClassName(className)
         .withNullable(nullable)
         .withUrl(url);
@@ -70,54 +71,55 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withMapOf(
+  ClassTypeDefinitionBuilder withMapOf(
     String keyClassName,
     String valueClassName, [
     bool nullable = false,
   ]) {
     _className = 'Map';
-    _generics.add(TypeDefinitionBuilder().withClassName(keyClassName).build());
-    _generics.add(TypeDefinitionBuilder()
+    _generics
+        .add(ClassTypeDefinitionBuilder().withClassName(keyClassName).build());
+    _generics.add(ClassTypeDefinitionBuilder()
         .withClassName(valueClassName)
         .withNullable(nullable)
         .build());
     return this;
   }
 
-  TypeDefinitionBuilder withNullable(bool nullable) {
+  ClassTypeDefinitionBuilder withNullable(bool nullable) {
     _nullable = nullable;
     return this;
   }
 
-  TypeDefinitionBuilder withUrl(String? url) {
+  ClassTypeDefinitionBuilder withUrl(String? url) {
     _url = url;
     return this;
   }
 
-  TypeDefinitionBuilder withDartType(DartType? dartType) {
+  ClassTypeDefinitionBuilder withDartType(DartType? dartType) {
     _dartType = dartType;
     return this;
   }
 
-  TypeDefinitionBuilder withCustomClass(bool customClass) {
+  ClassTypeDefinitionBuilder withCustomClass(bool customClass) {
     _customClass = customClass;
     return this;
   }
 
-  TypeDefinitionBuilder withEnumSerialized(EnumDefinition definition) {
+  ClassTypeDefinitionBuilder withEnumSerialized(EnumDefinition definition) {
     _enumDefinition = definition;
     return this;
   }
 
-  TypeDefinitionBuilder withModelDefinition(
+  ClassTypeDefinitionBuilder withModelDefinition(
     SerializableModelDefinition modelDefinition,
   ) {
     _modelDefinition = modelDefinition;
     return this;
   }
 
-  TypeDefinition build() {
-    return TypeDefinition(
+  ClassTypeDefinition build() {
+    return ClassTypeDefinition(
       className: _className,
       generics: _generics,
       nullable: _nullable,

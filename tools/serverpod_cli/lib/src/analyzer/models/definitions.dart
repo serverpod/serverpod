@@ -10,7 +10,7 @@ sealed class SerializableModelDefinition {
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
-  final TypeDefinition type;
+  final ClassTypeDefinition type;
 
   SerializableModelDefinition({
     required this.fileName,
@@ -177,7 +177,7 @@ class SerializableModelFieldDefinition {
   final String name;
 
   /// The type of the field.
-  TypeDefinition type;
+  ClassTypeDefinition type;
 
   /// The scope of the field.
   /// It tells us if the field should only be present

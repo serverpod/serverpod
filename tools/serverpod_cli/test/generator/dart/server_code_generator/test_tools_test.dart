@@ -3,10 +3,10 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
 const projectName = 'example_project';
@@ -623,7 +623,7 @@ void main() {
           MethodDefinitionBuilder()
               .withName('streamMethod')
               .withReturnType(
-                  TypeDefinitionBuilder().withStreamOf('String').build())
+                  ClassTypeDefinitionBuilder().withStreamOf('String').build())
               .buildMethodStreamDefinition(),
         ]).build(),
       ],
@@ -683,7 +683,8 @@ void main() {
           MethodDefinitionBuilder().withName(methodName).withParametersNamed([
             ParameterDefinition(
               name: 'stringParam',
-              type: TypeDefinitionBuilder().withClassName('String').build(),
+              type:
+                  ClassTypeDefinitionBuilder().withClassName('String').build(),
               required: true,
             ),
           ]).buildMethodStreamDefinition(),
@@ -749,7 +750,8 @@ void main() {
               .withParametersPositional([
             ParameterDefinition(
               name: 'stringParam',
-              type: TypeDefinitionBuilder().withClassName('String?').build(),
+              type:
+                  ClassTypeDefinitionBuilder().withClassName('String?').build(),
               required: false,
             ),
           ]).buildMethodStreamDefinition(),
@@ -814,7 +816,8 @@ void main() {
           MethodDefinitionBuilder().withName(methodName).withParametersNamed([
             ParameterDefinition(
               name: 'stringParam',
-              type: TypeDefinitionBuilder().withClassName('String?').build(),
+              type:
+                  ClassTypeDefinitionBuilder().withClassName('String?').build(),
               required: false,
             ),
           ]).buildMethodStreamDefinition(),
@@ -879,7 +882,7 @@ void main() {
           MethodDefinitionBuilder().withName(methodName).withParameters([
             ParameterDefinition(
               name: 'streamParam',
-              type: TypeDefinitionBuilder().withStreamOf('String').build(),
+              type: ClassTypeDefinitionBuilder().withStreamOf('String').build(),
               required: false,
             ),
           ]).buildMethodStreamDefinition(),
@@ -946,7 +949,7 @@ void main() {
           MethodDefinitionBuilder().withName(methodName).withParametersNamed([
             ParameterDefinition(
               name: 'streamParam',
-              type: TypeDefinitionBuilder().withStreamOf('String').build(),
+              type: ClassTypeDefinitionBuilder().withStreamOf('String').build(),
               required: true,
             ),
           ]).buildMethodStreamDefinition(),
@@ -1014,12 +1017,14 @@ void main() {
               .withParameters([
                 ParameterDefinition(
                   name: 'streamParam',
-                  type: TypeDefinitionBuilder().withStreamOf('String').build(),
+                  type: ClassTypeDefinitionBuilder()
+                      .withStreamOf('String')
+                      .build(),
                   required: false,
                 ),
               ])
               .withReturnType(
-                  TypeDefinitionBuilder().withStreamOf('String').build())
+                  ClassTypeDefinitionBuilder().withStreamOf('String').build())
               .buildMethodStreamDefinition(),
         ]).build(),
       ],

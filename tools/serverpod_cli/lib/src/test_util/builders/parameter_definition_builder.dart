@@ -1,11 +1,11 @@
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 
 class ParameterDefinitionBuilder {
   String _name = 'example';
-  TypeDefinition _type =
-      TypeDefinitionBuilder().withClassName('String').build();
+  ClassTypeDefinition _type =
+      ClassTypeDefinitionBuilder().withClassName('String').build();
   bool _required = false;
 
   ParameterDefinitionBuilder withName(String name) {
@@ -13,7 +13,7 @@ class ParameterDefinitionBuilder {
     return this;
   }
 
-  ParameterDefinitionBuilder withType(TypeDefinition type) {
+  ParameterDefinitionBuilder withType(ClassTypeDefinition type) {
     _type = type;
     return this;
   }

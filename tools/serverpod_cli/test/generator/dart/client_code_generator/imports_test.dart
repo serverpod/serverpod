@@ -3,9 +3,9 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
@@ -36,7 +36,7 @@ void main() {
         .withField(FieldDefinitionBuilder()
             .withName('user')
             .withType(
-              TypeDefinitionBuilder()
+              ClassTypeDefinitionBuilder()
                   .withClassName('User')
                   .withUrl(defaultModuleAlias)
                   .build(),

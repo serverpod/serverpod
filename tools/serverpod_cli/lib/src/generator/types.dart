@@ -18,12 +18,12 @@ const _projectRef = 'project:';
 const _packageRef = 'package:';
 
 /// Contains information about the type of fields, arguments and return values.
-class TypeDefinition {
+class ClassTypeDefinition {
   /// The class name of the type.
   final String className;
 
   /// The generics the type has.
-  final List<TypeDefinition> generics;
+  final List<ClassTypeDefinition> generics;
 
   final String? url;
 
@@ -41,7 +41,7 @@ class TypeDefinition {
 
   EnumDefinition? enumDefinition;
 
-  TypeDefinition({
+  ClassTypeDefinition({
     required this.className,
     this.generics = const [],
     required this.nullable,
@@ -91,11 +91,11 @@ class TypeDefinition {
     return url;
   }
 
-  /// Creates an [TypeDefinition] from [mixed] where the [url]
+  /// Creates an [ClassTypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
-  factory TypeDefinition.mixedUrlAndClassName({
+  factory ClassTypeDefinition.mixedUrlAndClassName({
     required String mixed,
-    List<TypeDefinition> generics = const [],
+    List<ClassTypeDefinition> generics = const [],
     required bool nullable,
     bool customClass = false,
   }) {
@@ -105,7 +105,7 @@ class TypeDefinition {
         ? (parts..removeLast()).join(':')
         : 'dart:typed_data';
 
-    return TypeDefinition(
+    return ClassTypeDefinition(
       className: classname,
       nullable: nullable,
       generics: generics,
@@ -114,13 +114,15 @@ class TypeDefinition {
     );
   }
 
-  /// Creates an [TypeDefinition] from a given [DartType].
+  /// Creates an [ClassTypeDefinition] from a given [DartType].
   /// throws [FromDartTypeClassNameException] if the class name could not be
   /// determined.
-  factory TypeDefinition.fromDartType(DartType type) {
+  factory ClassTypeDefinition.fromDartType(DartType type) {
     var generics = (type is ParameterizedType)
-        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
-        : <TypeDefinition>[];
+        ? type.typeArguments
+            .map((e) => ClassTypeDefinition.fromDartType(e))
+            .toList()
+        : <ClassTypeDefinition>[];
     var url = type.element?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
@@ -130,7 +132,7 @@ class TypeDefinition {
       throw FromDartTypeClassNameException(type);
     }
 
-    return TypeDefinition(
+    return ClassTypeDefinition(
       className: className,
       nullable: nullable,
       dartType: type,
@@ -139,12 +141,13 @@ class TypeDefinition {
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [ClassTypeDefinition] of an non null int
   /// quickly.
-  static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
+  static ClassTypeDefinition int =
+      ClassTypeDefinition(className: 'int', nullable: false);
 
-  /// Get this [TypeDefinition], but nullable.
-  TypeDefinition get asNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but nullable.
+  ClassTypeDefinition get asNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: true,
@@ -155,8 +158,8 @@ class TypeDefinition {
         projectModelDefinition: projectModelDefinition,
       );
 
-  /// Get this [TypeDefinition], but non nullable.
-  TypeDefinition get asNonNullable => TypeDefinition(
+  /// Get this [ClassTypeDefinition], but non nullable.
+  ClassTypeDefinition get asNonNullable => ClassTypeDefinition(
         className: className,
         url: url,
         nullable: false,
@@ -260,7 +263,7 @@ class TypeDefinition {
     );
   }
 
-  /// Get the pgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [ClassTypeDefinition] in the database.
   String get databaseType {
     // TODO: add all supported types here
     var enumSerialization = enumDefinition?.serialized;
@@ -286,13 +289,13 @@ class TypeDefinition {
     return 'json';
   }
 
-  /// Get the enum name of the [ColumnType], representing this [TypeDefinition]
+  /// Get the enum name of the [ColumnType], representing this [ClassTypeDefinition]
   /// in the database.
   String get databaseTypeEnum {
     return databaseTypeToLowerCamelCase(databaseType);
   }
 
-  /// Get the [Column] extending class name representing this [TypeDefinition].
+  /// Get the [Column] extending class name representing this [ClassTypeDefinition].
   String get columnType {
     // TODO: add all supported types here
     if (isEnumType) return 'ColumnEnum';
@@ -312,7 +315,7 @@ class TypeDefinition {
 
   /// Retrieves the generic from this type.
   /// Throws a [FormatException] if no generic is found.
-  TypeDefinition retrieveGenericType() {
+  ClassTypeDefinition retrieveGenericType() {
     var genericType = generics.firstOrNull;
     if (genericType == null) {
       throw FormatException('$this does not have a generic type to retrieve.');
@@ -449,7 +452,7 @@ class TypeDefinition {
   /// First, the protocol definition is parsed, then it's check for the
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
-  TypeDefinition applyProtocolReferences(
+  ClassTypeDefinition applyProtocolReferences(
     List<SerializableModelDefinition> classDefinitions,
   ) {
     var modelDefinition = classDefinitions
@@ -458,7 +461,7 @@ class TypeDefinition {
         .firstOrNull;
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
-    return TypeDefinition(
+    return ClassTypeDefinition(
         className: className,
         nullable: nullable,
         customClass: customClass,
@@ -529,17 +532,17 @@ class TypeDefinition {
 
 /// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
-/// [TypeDefinition.customClass].
-TypeDefinition parseType(
+/// [ClassTypeDefinition.customClass].
+ClassTypeDefinition parseType(
   String input, {
-  required List<TypeDefinition>? extraClasses,
+  required List<ClassTypeDefinition>? extraClasses,
 }) {
   var trimmedInput = input.trim();
 
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
 
-  var generics = <TypeDefinition>[];
+  var generics = <ClassTypeDefinition>[];
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
@@ -556,14 +559,14 @@ TypeDefinition parseType(
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
   var extraClass = extraClasses
-      ?.cast<TypeDefinition?>()
+      ?.cast<ClassTypeDefinition?>()
       .firstWhere((c) => c?.className == className, orElse: () => null);
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
   }
 
-  return TypeDefinition.mixedUrlAndClassName(
+  return ClassTypeDefinition.mixedUrlAndClassName(
     mixed: className,
     nullable: isNullable,
     generics: generics,

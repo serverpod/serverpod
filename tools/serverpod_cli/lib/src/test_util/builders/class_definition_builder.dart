@@ -1,8 +1,8 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -43,7 +43,7 @@ class ClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withName('id')
-            .withType(TypeDefinition.int.asNullable)
+            .withType(ClassTypeDefinition.int.asNullable)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -65,7 +65,7 @@ class ClassDefinitionBuilder {
       childClasses: _childClasses,
       extendsClass: _extendsClass,
       isSealed: _isSealed,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      type: ClassTypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
 
@@ -132,11 +132,11 @@ class ClassDefinitionBuilder {
           .withShouldPersist(false)
           .withScope(scope)
           .withType(
-            TypeDefinitionBuilder()
+            ClassTypeDefinitionBuilder()
                 .withNullable(nullable)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
+              ClassTypeDefinitionBuilder().withClassName(className).build()
             ]).build(),
           )
           .build(),
@@ -157,12 +157,12 @@ class ClassDefinitionBuilder {
           .withShouldPersist(false)
           .withScope(scope)
           .withType(
-            TypeDefinitionBuilder()
+            ClassTypeDefinitionBuilder()
                 .withNullable(nullable)
                 .withClassName('Map')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(keyType).build(),
-              TypeDefinitionBuilder().withClassName(valueType).build(),
+              ClassTypeDefinitionBuilder().withClassName(keyType).build(),
+              ClassTypeDefinitionBuilder().withClassName(valueType).build(),
             ]).build(),
           )
           .build(),
@@ -250,11 +250,11 @@ class ClassDefinitionBuilder {
           .withName(fieldName)
           .withShouldPersist(false)
           .withType(
-            TypeDefinitionBuilder()
+            ClassTypeDefinitionBuilder()
                 .withNullable(true)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
+              ClassTypeDefinitionBuilder().withClassName(className).build()
             ]).build(),
           )
           .withRelation(ListRelationDefinition(
@@ -280,11 +280,11 @@ class ClassDefinitionBuilder {
           .withName(fieldName)
           .withShouldPersist(false)
           .withType(
-            TypeDefinitionBuilder()
+            ClassTypeDefinitionBuilder()
                 .withNullable(true)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
+              ClassTypeDefinitionBuilder().withClassName(className).build()
             ]).build(),
           )
           .withRelation(ListRelationDefinition(
