@@ -40,8 +40,9 @@ class LibraryGenerator {
       return isSealedTopNode || isNotPartOfSealedHierarchy;
     }).toList();
 
-    var unsealedModels = allModels
-        .where((model) => !(model is ClassDefinition && model.isSealed))
+    var serializableModels = allModels
+        .where((model) => !(model is ClassDefinition &&
+            (model.isSealed || model.isInterface)))
         .toList();
 
     // exports
@@ -135,14 +136,14 @@ class LibraryGenerator {
         ..body = Block.of([
           const Code('t ??= T;'),
           ...(<Expression, Code>{
-            for (var classInfo in unsealedModels)
+            for (var classInfo in serializableModels)
               refer(
                   classInfo.className,
                   TypeDefinition.getRef(
                       classInfo)): Code.scope((a) =>
                   '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) as T'),
-            for (var classInfo in unsealedModels)
+            for (var classInfo in serializableModels)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
@@ -154,7 +155,7 @@ class LibraryGenerator {
                   '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) :null) as T'),
           }..addEntries([
-                  for (var classInfo in unsealedModels)
+                  for (var classInfo in serializableModels)
                     // Generate deserialization for fields of models.
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields.where(
@@ -227,7 +228,7 @@ class LibraryGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in unsealedModels)
+          for (var classInfo in serializableModels)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
@@ -262,7 +263,7 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(dataClassName == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in unsealedModels)
+          for (var classInfo in serializableModels)
             Code.scope((a) => 'if(dataClassName == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)

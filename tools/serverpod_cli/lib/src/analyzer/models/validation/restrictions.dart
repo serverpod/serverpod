@@ -328,6 +328,89 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateImplementedInterfaceNames(
+    String parentNodeName,
+    dynamic implementedInterfaces,
+    SourceSpan? span,
+  ) {
+    if (implementedInterfaces is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "implements" property must be a comma separated list of class names.',
+          span,
+        )
+      ];
+    }
+
+    var implementedInterfacesList =
+        implementedInterfaces.split(',').map((name) => name.trim()).toList();
+
+    var duplicates = _findDuplicates(implementedInterfacesList);
+    if (duplicates.isNotEmpty) {
+      return duplicates
+          .map((interface) => SourceSpanSeverityException(
+                'The interface name "$interface" is duplicated.',
+                span,
+              ))
+          .toList();
+    }
+
+    for (var implementedInterface in implementedInterfacesList) {
+      if (_globallyRestrictedKeywords.contains(implementedInterface)) {
+        return [
+          SourceSpanSeverityException(
+            'The interface name "$implementedInterface" is reserved and cannot be used.',
+            span,
+          )
+        ];
+      }
+
+      if (!StringValidators.isValidClassName(implementedInterface)) {
+        return [
+          SourceSpanSeverityException(
+            'The interface name "$implementedInterface" must be a valid class name (e.g. PascalCaseString).',
+            span,
+          )
+        ];
+      }
+
+      var interfaceClass = parsedModels.findByClassName(implementedInterface);
+
+      if (interfaceClass == null) {
+        return [
+          SourceSpanSeverityException(
+            'The implemented interface name "$implementedInterface" was not found in any model.',
+            span,
+          )
+        ];
+      }
+
+      if (interfaceClass is! ClassDefinition || !interfaceClass.isInterface) {
+        return [
+          SourceSpanSeverityException(
+            'The implemented node "$implementedInterface" is not an interface.',
+            span,
+          )
+        ];
+      }
+    }
+
+    return [];
+  }
+
+  List<String> _findDuplicates(List<String> list) {
+    var seen = <String>{};
+    var duplicates = <String>{};
+
+    for (var item in list) {
+      if (!seen.add(item)) {
+        duplicates.add(item);
+      }
+    }
+
+    return duplicates.toList();
+  }
+
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
