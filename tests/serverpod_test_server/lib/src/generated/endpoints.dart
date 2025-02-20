@@ -2252,7 +2252,26 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['data'],
           ),
-        )
+        ),
+        'makeFutureCallThatThrows': _i1.MethodConnector(
+          name: 'makeFutureCallThatThrows',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i45.SimpleData?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['futureCalls'] as _i18.FutureCallsEndpoint)
+                  .makeFutureCallThatThrows(
+            session,
+            params['data'],
+          ),
+        ),
       },
     );
     connectors['listParameters'] = _i1.EndpointConnector(

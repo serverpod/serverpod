@@ -977,6 +977,13 @@ class EndpointFutureCalls extends _i1.EndpointRef {
         'makeFutureCall',
         {'data': data},
       );
+
+  _i2.Future<void> makeFutureCallThatThrows(_i10.SimpleData? data) =>
+      caller.callServerEndpoint<void>(
+        'futureCalls',
+        'makeFutureCallThatThrows',
+        {'data': data},
+      );
 }
 
 /// {@category Endpoint}
