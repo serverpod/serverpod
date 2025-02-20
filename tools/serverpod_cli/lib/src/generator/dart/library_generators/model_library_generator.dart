@@ -87,7 +87,7 @@ class SerializableModelLibraryGenerator {
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(classDefinition, fields))
             _buildUndefinedClass(),
-          if (!classDefinition.isParentClass)
+          if (!classDefinition.isParentClass && !classDefinition.isInterface)
             _buildModelImplClass(
               className,
               classDefinition,
@@ -176,6 +176,19 @@ class SerializableModelLibraryGenerator {
         classBuilder.sealed = true;
       }
 
+      if (classDefinition.isInterface) {
+        classBuilder.modifier = ClassModifier.interface;
+      }
+
+      if (classDefinition.implementedInterfaces.isNotEmpty) {
+        classBuilder.implements.addAll(
+            classDefinition.implementedInterfaces.map((e) => e.type.reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                )));
+      }
+
       if (parentClass != null) {
         classBuilder.extend = parentClass.type.reference(
           serverCode,
@@ -210,18 +223,18 @@ class SerializableModelLibraryGenerator {
         ));
 
         classBuilder.methods.add(_buildModelClassTableGetter());
-      } else {
+      } else if (!classDefinition.isInterface) {
         classBuilder.implements
             .add(refer('SerializableModel', serverpodUrl(serverCode)));
       }
 
-      if (serverCode) {
+      if (serverCode && !classDefinition.isInterface) {
         classBuilder.implements
             .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
       }
 
       classBuilder.fields.addAll(_buildModelClassFields(
-        classDefinition.fields,
+        classDefinition,
         tableName,
         classDefinition.subDirParts,
       ));
@@ -232,14 +245,14 @@ class SerializableModelLibraryGenerator {
           fields,
           tableName,
         ),
-        if (!classDefinition.isParentClass)
+        if (!classDefinition.isParentClass && !classDefinition.isInterface)
           _buildModelClassFactoryConstructor(
             className,
             classDefinition,
             fields,
             tableName,
           ),
-        if (!classDefinition.isSealed)
+        if (!classDefinition.isSealed && !classDefinition.isInterface)
           _buildModelClassFromJsonConstructor(
             className,
             fields,
@@ -247,24 +260,24 @@ class SerializableModelLibraryGenerator {
           )
       ]);
 
-      if (!classDefinition.isParentClass) {
+      if (!classDefinition.isParentClass && !classDefinition.isInterface) {
         classBuilder.methods.add(_buildAbstractCopyWithMethod(
           className,
           classDefinition,
           fields,
         ));
-      } else if (!classDefinition.isSealed) {
+      } else if (!classDefinition.isSealed && !classDefinition.isInterface) {
         classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
       // Serialization
 
-      if (!classDefinition.isSealed) {
+      if (!classDefinition.isSealed && !classDefinition.isInterface) {
         classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
       }
 
       // Serialization for database and everything
       if (serverCode) {
-        if (!classDefinition.isSealed) {
+        if (!classDefinition.isSealed && !classDefinition.isInterface) {
           classBuilder.methods.add(
             _buildModelClassToJsonForProtocolMethod(fields),
           );
@@ -284,7 +297,7 @@ class SerializableModelLibraryGenerator {
         }
       }
 
-      if (!classDefinition.isSealed) {
+      if (!classDefinition.isSealed && !classDefinition.isInterface) {
         classBuilder.methods.add(_buildToStringMethod(serverCode));
       }
     });
@@ -294,7 +307,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    if (classDefinition.sealedTopNode == null) {
+    if (classDefinition.sealedTopNode == null && !classDefinition.isInterface) {
       return fields
           .where((field) => field.shouldIncludeField(serverCode))
           .any((field) => field.type.nullable);
@@ -1107,7 +1120,7 @@ class SerializableModelLibraryGenerator {
     String? tableName,
   ) {
     return Constructor((c) {
-      if (!classDefinition.isParentClass) {
+      if (!classDefinition.isParentClass && !classDefinition.isInterface) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -1187,7 +1200,7 @@ class SerializableModelLibraryGenerator {
     String? tableName, {
     required bool setAsToThis,
   }) {
-    var classFields = classDefinition.fields;
+    var classFields = classDefinition.fieldsIncludingImplemented;
     var inheritedFields = classDefinition.inheritedFields;
 
     return fields
@@ -1323,11 +1336,12 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelClassFields(
-      List<SerializableModelFieldDefinition> fields,
-      String? tableName,
-      List<String> subDirParts) {
+    ClassDefinition classDefinition,
+    String? tableName,
+    List<String> subDirParts,
+  ) {
     List<Field> modelClassFields = [];
-    var classFields = fields
+    var classFields = classDefinition.fieldsIncludingImplemented
         .where((f) =>
             f.shouldIncludeField(serverCode) ||
             (tableName != null && f.hiddenSerializableField(serverCode)))
@@ -1344,6 +1358,10 @@ class SerializableModelLibraryGenerator {
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
+
+        if (classDefinition.implementedFields.contains(field)) {
+          f.annotations.add(refer('override'));
+        }
       }));
     }
 
