@@ -61,7 +61,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       dbResponseTime =
           DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
     } catch (e, stackTrace) {
-      pod.submitEvent(
+      pod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.framework,
         context: contextFromServer(pod.server),

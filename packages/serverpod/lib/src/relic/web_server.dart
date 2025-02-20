@@ -206,7 +206,7 @@ class WebServer {
       stackTrace: stackTrace,
     );
 
-    serverpod.submitEvent(
+    serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space,
       context: session != null

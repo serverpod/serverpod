@@ -526,7 +526,7 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
-        serverpod.submitEvent(
+        serverpod.unstableInternalSubmitEvent(
           ExceptionEvent(
             Exception('Session was not created'),
             StackTrace.current,
@@ -552,7 +552,7 @@ class Server {
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
         // which may be argued is not an "application space" exception.
-        serverpod.submitEvent(
+        serverpod.unstableInternalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           OriginSpace.application,
           context: contextFromSession(session, httpRequest: request),
@@ -618,7 +618,7 @@ class Server {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
-    serverpod.submitEvent(
+    serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       OriginSpace.framework,
       context: contextFromServer(this),

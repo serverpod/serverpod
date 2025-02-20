@@ -335,7 +335,7 @@ class Serverpod {
     try {
       _innerInitializeServerpod(commandLineArgs, config: config);
     } catch (e, stackTrace) {
-      submitEvent(
+      unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -494,7 +494,7 @@ class Serverpod {
       stderr.writeln('$error');
       stderr.writeln('$stackTrace');
 
-      submitEvent(
+      unstableInternalSubmitEvent(
         ExceptionEvent(error, stackTrace, message: message),
         OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -872,7 +872,7 @@ class Serverpod {
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
-      submitEvent(
+      unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -899,7 +899,8 @@ class Serverpod {
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchrously.
-  void submitEvent(
+  /// This method is for internal framework use only.
+  void unstableInternalSubmitEvent(
     DiagnosticEvent event,
     OriginSpace space, {
     required DiagnosticEventContext context,

@@ -511,7 +511,7 @@ class MethodStreamManager {
         outputController.add(result);
       }
     } catch (e, stackTrace) {
-      session.serverpod.submitEvent(
+      session.serverpod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.application,
         context: contextFromSession(
@@ -585,7 +585,7 @@ class MethodStreamManager {
         streamParams,
       );
     } catch (e, stackTrace) {
-      session.serverpod.submitEvent(
+      session.serverpod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         OriginSpace.application,
         context: contextFromSession(

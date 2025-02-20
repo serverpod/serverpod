@@ -201,7 +201,7 @@ abstract class EndpointWebsocketRequestHandler {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
-    server.serverpod.submitEvent(
+    server.serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space,
       context: session != null
