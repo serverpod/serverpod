@@ -7,6 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
@@ -402,8 +403,13 @@ class Server {
     WebSocket webSocket;
     try {
       webSocket = await WebSocketTransformer.upgrade(request);
-    } on WebSocketException {
-      serverpod.logVerbose('Failed to upgrade connection to websocket');
+    } on WebSocketException catch (e, stackTrace) {
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Failed to upgrade connection to websocket.',
+        httpRequest: request,
+      );
       return;
     }
     webSocket.pingInterval = const Duration(seconds: 30);
@@ -520,19 +526,40 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
+        serverpod.submitEvent(
+          ExceptionEvent(
+            Exception('Session was not created'),
+            StackTrace.current,
+          ),
+          OriginSpace.framework,
+          context: contextFromHttpRequest(this, request, OperationType.method),
+        );
+
         return ResultInternalServerError(
             'Session was not created', StackTrace.current, 0);
       }
 
-      var result = await methodCallContext.method.call(
-        session,
-        methodCallContext.arguments,
-      );
+      try {
+        var result = await methodCallContext.method.call(
+          session,
+          methodCallContext.arguments,
+        );
 
-      return ResultSuccess(
-        result,
-        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
-      );
+        return ResultSuccess(
+          result,
+          sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+        );
+      } catch (e, stackTrace) {
+        // Note: In case of malformed argument, the method connector may throw,
+        // which may be argued is not an "application space" exception.
+        serverpod.submitEvent(
+          ExceptionEvent(e, stackTrace),
+          OriginSpace.application,
+          context: contextFromSession(session, httpRequest: request),
+        );
+
+        rethrow;
+      }
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
     } on InvalidEndpointMethodTypeException catch (e) {
@@ -590,6 +617,12 @@ class Server {
     }
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
+
+    serverpod.submitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      OriginSpace.framework,
+      context: contextFromServer(this),
+    );
   }
 }
 
