@@ -21,6 +21,7 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
+import 'diagnostic_events/diagnostic_events.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -897,7 +898,23 @@ class Serverpod {
     }
   }
 
-  /// Submits an event to registered event handlers.
+  /// Application method for submitting a diagnostic event
+  /// to registered event handlers.
+  /// They will execute asynchrously.
+  ///
+  /// This method is for application (user space) use.
+  void unstableSubmitDiagnosticEvent(
+    DiagnosticEvent event, {
+    required Session session,
+  }) {
+    return _eventHandler.handleEvent(
+      event,
+      OriginSpace.application,
+      context: contextFromSession(session),
+    );
+  }
+
+  /// Submits a diagnostic event to registered event handlers.
   /// They will execute asynchrously.
   /// This method is for internal framework use only.
   void unstableInternalSubmitEvent(
