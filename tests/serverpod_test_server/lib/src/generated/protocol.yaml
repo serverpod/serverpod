@@ -101,6 +101,8 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+diagnosticEventTest:
+  - submitExceptionEvent:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:

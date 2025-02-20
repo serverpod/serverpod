@@ -91,6 +91,8 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// [testGroupTagsOverride] By default Serverpod test tools tags the `withServerpod` test group with `"integration"`.
 /// This is to provide a simple way to only run unit or integration tests.
 /// This property allows this tag to be overridden to something else. Defaults to `['integration']`.
+///
+/// [unstableDiagnosticEventHandlers] A list of diagnostic event handlers that will be called for all diagnostic events. See [DiagnosticEventHandler] for more information.
 @_i1.isTestGroup
 void withServerpod(
   String testGroupName,
@@ -102,6 +104,7 @@ void withServerpod(
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
+  List<_i2.DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
@@ -113,6 +116,7 @@ void withServerpod(
       applyMigrations: applyMigrations,
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
+      unstableDiagnosticEventHandlers: unstableDiagnosticEventHandlers,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
@@ -147,6 +151,8 @@ class TestEndpoints {
   late final _EchoRequestEndpoint echoRequest;
 
   late final _EmailAuthTestMethods emailAuthTestMethods;
+
+  late final _DiagnosticEventTestEndpoint diagnosticEventTest;
 
   late final _ExceptionTestEndpoint exceptionTest;
 
@@ -266,6 +272,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     emailAuthTestMethods = _EmailAuthTestMethods(
+      endpoints,
+      serializationManager,
+    );
+    diagnosticEventTest = _DiagnosticEventTestEndpoint(
       endpoints,
       serializationManager,
     );
@@ -3186,6 +3196,44 @@ class _EmailAuthTestMethods {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _DiagnosticEventTestEndpoint {
+  _DiagnosticEventTestEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> submitExceptionEvent(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'diagnosticEventTest',
+        method: 'submitExceptionEvent',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'diagnosticEventTest',
+          methodName: 'submitExceptionEvent',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
