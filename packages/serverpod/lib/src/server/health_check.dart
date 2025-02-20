@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
@@ -59,9 +60,13 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
 
       dbResponseTime =
           DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    } catch (e, stackTrace) {
+      pod.submitEvent(
+        ExceptionEvent(e, stackTrace),
+        OriginSpace.framework,
+        context: contextFromServer(pod.server),
+      );
     }
-    // ignore: empty_catches
-    catch (e) {}
   }
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
