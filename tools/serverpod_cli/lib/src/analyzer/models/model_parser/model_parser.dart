@@ -38,6 +38,8 @@ class ModelParser {
     var isSealed = _parseIsSealed(documentContents);
     var extendsClass = _parseExtendsClass(documentContents);
 
+    var isImplementing = _parseIsImplementing(documentContents);
+
     var classType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: extraClasses,
@@ -62,6 +64,7 @@ class ModelParser {
       className: className,
       isSealed: isSealed,
       extendsClass: extendsClass,
+      isImplementing: isImplementing,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
       manageMigration: manageMigration,
@@ -71,6 +74,7 @@ class ModelParser {
       subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
+      isInterface: documentTypeName == Keyword.interfaceType,
       serverOnly: serverOnly,
       type: classType,
     );
@@ -126,6 +130,25 @@ class ModelParser {
     if (extendsClass is! String) return null;
 
     return UnresolvedInheritanceDefinition(extendsClass);
+  }
+
+  static List<UnresolvedInheritanceDefinition> _parseIsImplementing(
+    YamlMap documentContents,
+  ) {
+    var implementsNode = documentContents.nodes[Keyword.isImplementing];
+
+    if (implementsNode is! YamlScalar) return [];
+
+    // Split the string by commas and trim whitespace
+    var interfaces = implementsNode.value
+        .toString()
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .map((e) => UnresolvedInheritanceDefinition(e))
+        .toList();
+
+    return interfaces;
   }
 
   static bool _parseServerOnly(YamlMap documentContents) {

@@ -56,6 +56,9 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// `true` if this is an interface and not a class.
+  final bool isInterface;
+
   /// If set to true the class is sealed.
   final bool isSealed;
 
@@ -64,6 +67,10 @@ class ClassDefinition extends SerializableModelDefinition {
 
   /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
+
+  /// If set to a List of [InheritanceDefinitions] the class implements one or more interfaces
+  /// and stores the [ClassDefinition] of the implemented interfaces.
+  List<InheritanceDefinition> isImplementing;
 
   List<ClassDefinition>? _descendantClasses;
 
@@ -76,15 +83,18 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    required this.isInterface,
     required super.type,
     required this.isSealed,
     List<InheritanceDefinition>? childClasses,
+    List<InheritanceDefinition>? isImplementing,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
+  })  : childClasses = childClasses ?? <InheritanceDefinition>[],
+        isImplementing = isImplementing ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
@@ -99,6 +109,21 @@ class ClassDefinition extends SerializableModelDefinition {
     return extendsClass.classDefinition;
   }
 
+  /// Returns a `List<ClassDefinition>` holding all implemented interfaces.
+  /// If there are no implemented interfaces, an empty list is returned.
+  List<ClassDefinition> get implementedInterfaces => isImplementing
+      .whereType<ResolvedInheritanceDefinition>()
+      .map((e) => e.classDefinition)
+      .toList();
+
+  /// Returns a list of fields from all implemented interfaces.
+  List<SerializableModelFieldDefinition> get implementedFields =>
+      implementedInterfaces.expand((e) => e.fields).toList();
+
+  /// Returns a list of all implemented fields and the fields of this class.
+  List<SerializableModelFieldDefinition> get fieldsIncludingImplemented =>
+      [...implementedFields, ...fields];
+
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   List<SerializableModelFieldDefinition> get inheritedFields =>
@@ -112,6 +137,7 @@ class ClassDefinition extends SerializableModelDefinition {
     return [
       if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
       ...inheritedFields,
+      ...implementedFields,
       ...fields.where((element) => element.name != 'id'),
     ];
   }
