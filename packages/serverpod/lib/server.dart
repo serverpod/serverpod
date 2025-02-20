@@ -12,3 +12,8 @@ export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
 export 'src/server/command_line_args.dart' show ServerpodLoggingMode;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;
+export 'src/server/diagnostic_events/connection_info.dart';
+export 'src/server/diagnostic_events/event_handler.dart';
+export 'src/server/diagnostic_events/event_function.dart';
+export 'src/server/diagnostic_events/event_record.dart';
+export 'src/server/diagnostic_events/operation_context.dart';
