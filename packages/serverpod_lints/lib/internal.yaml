@@ -18,3 +18,9 @@ linter:
     sort_pub_dependencies: true
     unawaited_futures: true
     unnecessary_final: false
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
