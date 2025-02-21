@@ -1,3 +1,6 @@
+/// These helpers are for internal framework use only.
+library;
+
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -16,9 +19,9 @@ DiagnosticEventContext contextFromServer(Server server) {
 /// and an [HttpRequest].
 ClientCallOpContext contextFromHttpRequest(
   Server server,
-  HttpRequest httpRequest,
-  OperationType operationType,
-) {
+  HttpRequest httpRequest, [
+  OperationType? operationType,
+]) {
   return ClientCallOpContext(
     serverName: server.name,
     serverId: server.serverId,

@@ -32,7 +32,9 @@ enum OperationType {
 /// i.e. a method call, a streaming call, a web call, or a future call.
 base class OperationEventContext extends DiagnosticEventContext {
   /// The type of operation.
-  final OperationType operationType;
+  /// Null if unknown, for example if an HTTP request is invalid
+  /// and no call operation can be determined.
+  final OperationType? operationType;
 
   /// The session ID of the operation, if available.
   final UuidValue? sessionId;
@@ -45,7 +47,7 @@ base class OperationEventContext extends DiagnosticEventContext {
     required super.serverName,
     required super.serverId,
     required super.serverRunMode,
-    required this.operationType,
+    this.operationType,
     this.sessionId,
     this.userAuthInfo,
   });
@@ -105,7 +107,7 @@ base class ClientCallOpContext extends OperationEventContext {
     required super.serverName,
     required super.serverId,
     required super.serverRunMode,
-    required super.operationType,
+    super.operationType,
     super.sessionId,
     super.userAuthInfo,
     required this.connectionInfo,
