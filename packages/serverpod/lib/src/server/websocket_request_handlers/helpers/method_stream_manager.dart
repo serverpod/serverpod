@@ -137,6 +137,10 @@ typedef _OnInputStreamClosed = void Function(
 @internal
 class MethodStreamManager {
   static const Duration _closeTimeout = Duration(seconds: 6);
+
+  /// The originating HTTP request.
+  final HttpRequest httpRequest;
+
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
@@ -146,6 +150,7 @@ class MethodStreamManager {
   final _OnInputStreamClosed? _onInputStreamClosed;
 
   MethodStreamManager({
+    required this.httpRequest,
     _OnInputStreamClosed? onInputStreamClosed,
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
@@ -230,7 +235,6 @@ class MethodStreamManager {
     required MethodStreamCallContext methodStreamCallContext,
     required UuidValue methodStreamId,
     required Session session,
-    HttpRequest? httpRequest,
   }) async {
     var outputStreamContext = await _createOutputController(
       methodStreamCallContext,
@@ -252,7 +256,6 @@ class MethodStreamManager {
         _handleMethodWithStreamReturn(
           methodStreamCallContext: methodStreamCallContext,
           session: session,
-          httpRequest: httpRequest,
           streamParams: streamParams,
           outputController: outputStreamContext.controller,
           subscription: outputStreamContext.subscription,
@@ -264,7 +267,6 @@ class MethodStreamManager {
         await _handleMethodWithFutureReturn(
           methodStreamCallContext: methodStreamCallContext,
           session: session,
-          httpRequest: httpRequest,
           streamParams: streamParams,
           outputController: outputStreamContext.controller,
           methodStreamId: methodStreamId,
@@ -491,7 +493,6 @@ class MethodStreamManager {
   Future<void> _handleMethodWithFutureReturn({
     required MethodStreamCallContext methodStreamCallContext,
     required Session session,
-    required HttpRequest? httpRequest,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
     required UuidValue methodStreamId,
@@ -572,7 +573,6 @@ class MethodStreamManager {
     required MethodStreamCallContext methodStreamCallContext,
     required UuidValue methodStreamId,
     required Session session,
-    required HttpRequest? httpRequest,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
     required StreamSubscription subscription,

@@ -146,6 +146,7 @@ class MethodWebsocketRequestHandler {
     Server server,
   ) {
     return MethodStreamManager(
+      httpRequest: webSocket.httpRequest,
       onInputStreamClosed: (
         UuidValue methodStreamId,
         String parameterName,
@@ -434,7 +435,6 @@ class MethodWebsocketRequestHandler {
 
     methodStreamManager.createStream(
       session: session,
-      httpRequest: webSocket.httpRequest,
       methodStreamCallContext: methodStreamCallContext,
       methodStreamId: message.connectionId,
     );
