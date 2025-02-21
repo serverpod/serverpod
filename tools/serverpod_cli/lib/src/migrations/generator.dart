@@ -9,7 +9,6 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
-import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -21,6 +20,7 @@ class MigrationGenerator {
     required this.directory,
     required this.projectName,
   });
+
   final Directory directory;
   final String projectName;
 
@@ -323,35 +323,23 @@ class MigrationGenerator {
     List<ModuleConfig> modules, {
     required Directory directory,
   }) async {
-    var modulePaths = await locateAllModulePaths(
-      directory: directory,
-    );
-
     var selectedModules = modules.where(
       (module) => module.migrationVersions.isNotEmpty,
     );
 
-    var selectedPaths = modulePaths.where(
-      (modulePath) {
-        var moduleName = _extractModuleNameFromPath(modulePath);
-        return selectedModules.any((module) => module.name == moduleName);
-      },
-    );
-
     var moduleMigrationVersions = <MigrationVersion>[];
 
-    for (var modulePath in selectedPaths) {
-      var moduleName = _extractModuleNameFromPath(modulePath);
-
-      var versionName = selectedModules
-          .firstWhere((e) => e.name == moduleName)
-          .migrationVersions
-          .last;
+    for (var module in selectedModules) {
+      var versionName = module.migrationVersions.last;
+      var uri = Uri(
+        scheme: 'file', // assuming the module is local
+        pathSegments: module.serverPackageDirectoryPathParts,
+      );
 
       var migrationVersion = await MigrationVersion.load(
-        moduleName: moduleName,
+        moduleName: module.name,
         versionName: versionName,
-        projectDirectory: Directory.fromUri(modulePath),
+        projectDirectory: Directory.fromUri(uri),
       );
       moduleMigrationVersions.add(migrationVersion);
     }
@@ -385,11 +373,6 @@ class MigrationGenerator {
       installedModules: installedModules,
       migrationApiVersion: databaseDefinitionProject.migrationApiVersion,
     );
-  }
-
-  String _extractModuleNameFromPath(Uri path) {
-    var packageName = path.pathSegments.last;
-    return moduleNameFromServerPackageName(packageName);
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
