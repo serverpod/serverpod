@@ -22,22 +22,16 @@ class ExceptionRoute extends WidgetRoute {
 void main() {
   const timeout = Duration(seconds: 3);
 
-  group('Given a serverpod server with a diagnostic event handler,', () {
+  group(
+      'Given a serverpod server with a diagnostic event handler, '
+      'when starting serverpod with its web server port already in use', () {
     var exceptionHandler = TestExceptionHandler();
-    Serverpod? pod;
+    late Serverpod pod;
+    late DiagnosticEventRecord<ExceptionEvent> record;
 
-    setUp(() async {
+    setUpAll(() async {
       exceptionHandler = TestExceptionHandler();
-    });
 
-    tearDown(() async {
-      await pod?.shutdown(exitProcess: false);
-      exceptionHandler.eventsStreamController.close();
-    });
-
-    test(
-        'when starting serverpod with its web server port already in use '
-        'then the diagnostic event handler gets called', () async {
       final config = ServerpodConfig(
         apiServer: ServerConfig(
           port: 8080,
@@ -58,18 +52,40 @@ void main() {
           unstableDiagnosticEventHandlers: [exceptionHandler],
         ),
       );
-      pod?.webServer.addRoute(ExceptionRoute(), '/exception');
+      pod.webServer.addRoute(ExceptionRoute(), '/exception');
       final result = pod
-          ?.start(runInGuardedZone: false)
+          .start(runInGuardedZone: false)
           .timeout(const Duration(seconds: 5));
       await expectLater(result, throwsA(isA<ExitException>()));
+      record = await exceptionHandler.events.first.timeout(timeout);
+    });
 
-      final record = await exceptionHandler.events.first.timeout(timeout);
+    tearDownAll(() async {
+      await pod.shutdown(exitProcess: false);
+      exceptionHandler.eventsStreamController.close();
+    });
+
+    test('then the diagnostic event handler gets called with a SocketException',
+        () async {
       expect(record.event.exception, isA<SocketException>());
+    });
+
+    test('then the diagnostic event exception message is correct', () async {
       expect((record.event.exception as SocketException).message,
           contains('Failed to create server socket'));
+    });
+
+    test('then the diagnostic event space is framework', () async {
       expect(record.space, equals(OriginSpace.framework));
-      expect(record.context, isA<DiagnosticEventContext>());
+    });
+
+    test('then the diagnostic event context is a DiagnosticEventContext',
+        () async {
+      expect(record.context.runtimeType, DiagnosticEventContext);
+    });
+
+    test('then the diagnostic event context has the expected content',
+        () async {
       expect(
           record.context.toJson(),
           allOf([
