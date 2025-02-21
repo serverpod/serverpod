@@ -409,6 +409,7 @@ class Server {
         stackTrace,
         message: 'Failed to upgrade connection to websocket.',
         httpRequest: request,
+        operationType: OperationType.stream,
       );
       return;
     }
@@ -610,6 +611,7 @@ class Server {
     StackTrace stackTrace, {
     String? message,
     HttpRequest? httpRequest,
+    OperationType? operationType,
   }) async {
     var now = DateTime.now().toUtc();
     if (message != null) {
@@ -618,10 +620,14 @@ class Server {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
+    var context = httpRequest != null
+        ? contextFromHttpRequest(this, httpRequest, operationType)
+        : contextFromServer(this);
+
     serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       OriginSpace.framework,
-      context: contextFromServer(this),
+      context: context,
     );
   }
 }
