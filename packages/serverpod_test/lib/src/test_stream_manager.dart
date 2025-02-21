@@ -40,6 +40,7 @@ class TestStreamManager<OutputStreamType> {
   TestStreamManager()
       : outputStreamController = StreamController<OutputStreamType>() {
     _streamManager = MethodStreamManager(
+      httpRequest: null,
       onOutputStreamClosed: (
         UuidValue methodStreamId,
         CloseReason? closeReason,

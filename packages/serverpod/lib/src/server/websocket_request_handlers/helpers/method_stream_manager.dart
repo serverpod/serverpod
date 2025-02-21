@@ -139,7 +139,7 @@ class MethodStreamManager {
   static const Duration _closeTimeout = Duration(seconds: 6);
 
   /// The originating HTTP request.
-  final HttpRequest httpRequest;
+  final HttpRequest? httpRequest;
 
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
