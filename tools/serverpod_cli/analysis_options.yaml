@@ -2,3 +2,18 @@ include: package:serverpod_lints/cli.yaml
 analyzer:
   exclude:
     - test/integration/util/test_assets/pubspec_helpers/conditionally_ignored/pubspec.yaml
+  language:
+    # Temporary disable the following so that each can be fixed one by one.
+    strict-casts: false
+    strict-inference: false
+    strict-raw-types: false
+
+linter:
+  rules:
+    # Temporary disable the following so that each can be fixed one by one.
+    avoid_escaping_inner_quotes: false
+    directives_ordering: false
+    prefer_final_in_for_each: false
+    prefer_final_locals: false
+    prefer_final_parameters: false
+    sort_pub_dependencies: false
