@@ -84,7 +84,7 @@ class WebServer {
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
           message: 'Failed to bind socket, '
-              'Webserver port $_port may already be in use.');
+              'port $_port may already be in use.');
 
       return false;
     }
@@ -206,15 +206,17 @@ class WebServer {
       stackTrace: stackTrace,
     );
 
+    var context = session != null
+        ? contextFromSession(session, httpRequest: httpRequest)
+        : httpRequest != null
+            ? contextFromHttpRequest(
+                serverpod.server, httpRequest, OperationType.web)
+            : contextFromServer(serverpod.server);
+
     serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space,
-      context: session != null
-          ? contextFromSession(session, httpRequest: httpRequest)
-          : httpRequest != null
-              ? contextFromHttpRequest(
-                  serverpod.server, httpRequest, OperationType.web)
-              : contextFromServer(serverpod.server),
+      context: context,
     );
   }
 

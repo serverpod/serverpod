@@ -39,7 +39,6 @@ void main() {
         'when starting serverpod with its web server port already in use '
         'then the diagnostic event handler gets called', () async {
       final config = ServerpodConfig(
-        runMode: 'invalid',
         apiServer: ServerConfig(
           port: 8080,
           publicHost: 'localhost',
@@ -66,7 +65,9 @@ void main() {
       await expectLater(result, throwsA(isA<ExitException>()));
 
       final record = await exceptionHandler.events.first.timeout(timeout);
-      expect(record.event.exception, isA<Exception>());
+      expect(record.event.exception, isA<SocketException>());
+      expect((record.event.exception as SocketException).message,
+          contains('Failed to create server socket'));
       expect(record.space, equals(OriginSpace.framework));
       expect(record.context, isA<DiagnosticEventContext>());
       expect(
@@ -90,7 +91,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-        unstableDiagnosticEventHandlers: [exceptionHandler],
+          unstableDiagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
@@ -124,7 +125,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-        unstableDiagnosticEventHandlers: [exceptionHandler],
+          unstableDiagnosticEventHandlers: [exceptionHandler],
         ),
       );
       await pod.start();
@@ -141,10 +142,7 @@ void main() {
       final result = client.exceptionTest.throwNormalException();
       await expectLater(result, throwsA(isA<Exception>()));
 
-      // expect(exceptionHandler.stream.length, 1);
       final record = await exceptionHandler.events.first.timeout(timeout);
-      print(record.toString());
-
       expect(record.event.exception, isA<Exception>());
       expect(record.space, equals(OriginSpace.application));
       expect(record.context, isA<MethodCallOpContext>());
@@ -168,13 +166,11 @@ void main() {
         'when a client calls streaming method outStreamThrowsException '
         'then the diagnostic event handler gets called', () async {
       final stream = client.methodStreaming.outStreamThrowsException();
-      // print('Stream: ${await stream.first}');
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
 
       await Future.delayed(const Duration(seconds: 1));
 
       final record = await exceptionHandler.events.first.timeout(timeout);
-      print(record.toString());
 
       expect(record.event.exception, isA<Exception>());
       expect(record.space, equals(OriginSpace.application));
@@ -226,10 +222,8 @@ void main() {
         body: '{"name": [42]}',
       );
       await response;
-      // print('Response: ${response.statusCode} ${response.body}');
 
       final record = await exceptionHandler.events.first.timeout(timeout);
-      print(record.toString());
       expect(record.space, equals(OriginSpace.application));
       expect(record.context, isA<MethodCallOpContext>());
     });
@@ -245,7 +239,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-        unstableDiagnosticEventHandlers: [exceptionHandler],
+          unstableDiagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.webServer.addRoute(ExceptionRoute(), '/exception');
@@ -266,7 +260,6 @@ void main() {
       await response;
 
       final record = await exceptionHandler.events.first.timeout(timeout);
-      // print(record.toString());
       expect(record.event.exception, isA<UnimplementedError>());
       expect(record.space, equals(OriginSpace.application));
       expect(record.context, isA<WebCallOpContext>());

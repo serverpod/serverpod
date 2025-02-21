@@ -89,7 +89,7 @@ class DiagnosticEventContext {
 ///
 /// ## Guidelines
 ///
-/// An [DiagnosticEvent] represents an event that occurs in the server.
+/// A [DiagnosticEvent] represents an event that occurs in the server.
 /// [DiagnosticEventHandler] implementations can react to these events
 /// in order to gain insights into the behavior of the server.
 ///

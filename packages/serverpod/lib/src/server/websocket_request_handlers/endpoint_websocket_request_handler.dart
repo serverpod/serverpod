@@ -201,15 +201,16 @@ abstract class EndpointWebsocketRequestHandler {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
+    var context = session != null
+        ? contextFromSession(session, httpRequest: httpRequest)
+        : httpRequest != null
+            ? contextFromHttpRequest(server, httpRequest, OperationType.stream)
+            : contextFromServer(server);
+
     server.serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space,
-      context: session != null
-          ? contextFromSession(session, httpRequest: httpRequest)
-          : httpRequest != null
-              ? contextFromHttpRequest(
-                  server, httpRequest, OperationType.stream)
-              : contextFromServer(server),
+      context: context,
     );
   }
 }

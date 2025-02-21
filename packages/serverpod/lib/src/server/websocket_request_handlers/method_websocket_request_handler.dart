@@ -278,9 +278,6 @@ class MethodWebsocketRequestHandler {
         streamCommandMessage: message,
         webSocketIntermediary: webSocket,
       );
-      // server.serverpod.logVerbose(
-      //   'Failed to parse arguments for open stream request: $message ($e)',
-      // );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
         method: message.method,
@@ -323,9 +320,6 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      // server.serverpod.logVerbose(
-      //   'Endpoint method not found for open stream request: $message',
-      // );
       return OpenMethodStreamResponse.buildMessage(
         connectionId: message.connectionId,
         endpoint: message.endpoint,
@@ -342,9 +336,6 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      // server.serverpod.logVerbose(
-      //   'Endpoint not found for open stream request: $message',
-      // );
       return OpenMethodStreamResponse.buildMessage(
         connectionId: message.connectionId,
         endpoint: message.endpoint,
@@ -361,9 +352,6 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      // server.serverpod.logVerbose(
-      //   'Endpoint method is not a valid stream method: $message',
-      // );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
         method: message.method,
@@ -381,9 +369,6 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      // server.serverpod.logVerbose(
-      //   'Failed to parse parameters or input streams for open stream request: $message (${e.message})',
-      // );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
         method: message.method,
@@ -400,9 +385,6 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      // server.serverpod.logVerbose(
-      //   'Authentication failed for open stream request: $message',
-      // );
       return switch (e.authenticationFailedResult.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
