@@ -68,7 +68,7 @@ base class OperationEventContext extends DiagnosticEventContext {
 }
 
 /// The context of a future call operation.
-base class FutureCallOpContext extends OperationEventContext {
+final class FutureCallOpContext extends OperationEventContext {
   /// The name of the future call.
   final String futureCallName;
 
@@ -123,7 +123,7 @@ base class ClientCallOpContext extends OperationEventContext {
 }
 
 /// The context of a web call operation.
-base class WebCallOpContext extends ClientCallOpContext {
+final class WebCallOpContext extends ClientCallOpContext {
   /// Creates a new [WebCallOpContext].
   const WebCallOpContext({
     required super.serverName,
@@ -137,7 +137,7 @@ base class WebCallOpContext extends ClientCallOpContext {
 }
 
 /// The context of a method call operation.
-base class MethodCallOpContext extends ClientCallOpContext {
+final class MethodCallOpContext extends ClientCallOpContext {
   /// The name of the endpoint.
   final String endpoint;
 
@@ -169,7 +169,7 @@ base class MethodCallOpContext extends ClientCallOpContext {
 }
 
 /// The context of a stream operation / message.
-base class StreamOpContext extends MethodCallOpContext {
+final class StreamOpContext extends MethodCallOpContext {
   /// The ID of the stream connection, if available.
   final UuidValue? streamConnectionId;
 
