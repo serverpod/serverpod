@@ -109,7 +109,10 @@ enum ServerpodEnv {
   sessionPersistentLogEnabled,
 
   /// True if session console logging is enabled.
-  sessionConsoleLogEnabled;
+  sessionConsoleLogEnabled,
+
+  /// The id of the server.
+  serverId;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -140,6 +143,7 @@ enum ServerpodEnv {
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
+      (ServerpodEnv.serverId) => 'serverId',
     };
   }
 
@@ -177,6 +181,7 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
+      (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
     };
   }
 }

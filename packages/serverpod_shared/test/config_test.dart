@@ -978,4 +978,119 @@ redis:
 
     expect(config.redis?.enabled, isTrue);
   });
+
+  test(
+      'Given a Serverpod config with server id when loading from Map then serverId configuration matches supplied value.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+serverId: testServer1
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.serverId, 'testServer1');
+  });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the server id when loading from Map then the server id matches supplied value.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_SERVER_ID': 'testServer1',
+      },
+    );
+
+    expect(config.serverId, 'testServer1');
+  });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the server id given as an argument then the server id matches supplied value.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      'testServer1',
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+    );
+
+    expect(config.serverId, 'testServer1');
+  });
+
+  test(
+      'Given a Serverpod config with server id when loading from Map and the environment variables containing the server id but the server id given as an argument is the default value then the server id from environment takes the precedence.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+serverId: testServerIdFromConfig
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_SERVER_ID': 'testServerIdFromEnv',
+      },
+    );
+
+    expect(config.serverId, 'testServerIdFromEnv');
+  });
+
+  test(
+      'Given a Serverpod config with server id when loading from Map and the environment variables containing the server id and the server id given as an argument is a custom defined value then the server id from the argument takes the precedence.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+serverId: testServerIdFromConfig
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      'testServerIdFromArg',
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_SERVER_ID': 'testServerIdFromEnv',
+      },
+    );
+
+    expect(config.serverId, 'testServerIdFromArg');
+  });
 }

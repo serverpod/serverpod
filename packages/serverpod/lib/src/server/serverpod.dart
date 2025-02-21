@@ -97,8 +97,6 @@ class Serverpod {
   /// Caches used by the server.
   Caches get caches => _caches;
 
-  /// The id of the server. This is used to identify the server, if you run
-  /// multiple servers in a cluster.
   /// The id of this [Serverpod].
   String serverId = 'default';
 
@@ -290,7 +288,6 @@ class Serverpod {
     List<String> args,
     this.serializationManager,
     this.endpoints, {
-    this.serverId = 'default',
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
@@ -310,11 +307,7 @@ class Serverpod {
     stdout.writeln(commandLineArgs.toString());
 
     _runMode = commandLineArgs.runMode;
-
-    // Set the serverId to the value of commandLineArgs.serverId if it is not 'default'.
-    if (commandLineArgs.serverId != 'default') {
-      serverId = commandLineArgs.serverId;
-    }
+    serverId = commandLineArgs.serverId;
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -329,6 +322,7 @@ class Serverpod {
         );
     logVerbose(this.config.toString());
 
+    serverId = this.config.serverId;
     Features(this.config);
 
     // Create a temporary log manager with default settings, until we have
