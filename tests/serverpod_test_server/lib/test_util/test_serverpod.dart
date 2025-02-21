@@ -23,7 +23,7 @@ class IntegrationTestServer extends TestServerpod {
     ServerpodConfig? config,
     AuthenticationHandler? authenticationHandler,
     SecurityContextConfig? securityContextConfig,
-    List<DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
+    ExperimentalFeatures? experimentalFeatures,
   }) {
     return Serverpod(
       _integrationTestFlags,
@@ -33,7 +33,7 @@ class IntegrationTestServer extends TestServerpod {
       authenticationHandler:
           authenticationHandler ?? auth.authenticationHandler,
       securityContextConfig: securityContextConfig,
-      unstableDiagnosticEventHandlers: unstableDiagnosticEventHandlers,
+      experimentalFeatures: experimentalFeatures,
     );
   }
 }

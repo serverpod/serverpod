@@ -21,6 +21,7 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
+import 'experimental_features.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -306,23 +307,23 @@ class Serverpod {
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
-    List<DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
+    ExperimentalFeatures? experimentalFeatures,
   })  : _securityContextConfig = securityContextConfig,
         _eventHandler = _EventHandlers(
-          unstableDiagnosticEventHandlers ?? const [],
+          experimentalFeatures?.unstableDiagnosticEventHandlers ?? const [],
           timeout: config?.unstableDiagnosticHandlerTimeout,
         ) {
     _initializeServerpod(
       args,
       config: config,
-      unstableDiagnosticEventHandlers: unstableDiagnosticEventHandlers,
+      experimentalFeatures: experimentalFeatures,
     );
   }
 
   void _initializeServerpod(
     List<String> args, {
     ServerpodConfig? config,
-    List<DiagnosticEventHandler>? unstableDiagnosticEventHandlers,
+    ExperimentalFeatures? experimentalFeatures,
   }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
