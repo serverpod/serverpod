@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 
 /// Creates a new [DiagnosticEventContext] given a [Server] instance.
 DiagnosticEventContext contextFromServer(Server server) {
