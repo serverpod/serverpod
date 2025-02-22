@@ -66,6 +66,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
@@ -125,6 +126,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [experimentalFeatures] '),
         );
       },
       skip: testToolsFile == null,
@@ -208,6 +213,7 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
@@ -258,6 +264,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [experimentalFeatures] '),
         );
       },
       skip: testToolsFile == null,
@@ -316,6 +326,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
@@ -375,6 +386,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [experimentalFeatures] '),
         );
       },
       skip: testToolsFile == null,
@@ -451,6 +466,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
@@ -510,6 +526,10 @@ void main() {
         expect(
           testToolsFile,
           contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [experimentalFeatures] '),
         );
       },
       skip: testToolsFile == null,

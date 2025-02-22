@@ -450,6 +450,12 @@ class ServerTestToolsGenerator {
         ..name = 'serverpodStartTimeout'
         ..named = true
         ..type = refer('Duration?')),
+      Parameter(
+        (p) => p
+          ..name = 'experimentalFeatures'
+          ..named = true
+          ..type = refer('ExperimentalFeatures?', serverpodUrl(true)),
+      ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
         Parameter((p) => p
           ..name = 'rollbackDatabase'
@@ -500,6 +506,7 @@ class ServerTestToolsGenerator {
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                'experimentalFeatures': refer('experimentalFeatures'),
               },
             ),
           ],
