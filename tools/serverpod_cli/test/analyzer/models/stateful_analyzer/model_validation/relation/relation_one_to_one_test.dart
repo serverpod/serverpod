@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/relation_model_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/source_span_exception_builder.dart';
 import 'package:serverpod_cli/src/test_util/test_variants.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -972,33 +977,16 @@ void main() {
           ]
         ),
       ], (variant) {
-    var collector = CodeGenerationCollector();
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
-        class: Parent
-        table: parent
-        ''',
-      ).build()),
-      (ModelSourceBuilder().withFileName('child').withYaml(
-        '''
-        class: Child
-        table: child
-        ${variant.classIsServerOnly ? 'serverOnly: true' : ''}
-        fields:
-          parentId: int${variant.nullableField ? '?' : ''}, relation(parent=parent) ${variant.fieldScope == null ? '' : ', scope=${variant.fieldScope!.name}'}
-        ''',
-      ).build())
-    ];
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    var errors = SourceSpanExceptionBuilder(
+      models: RelationModelSourceBuilder(
+        serverOnlyChild: variant.classIsServerOnly,
+        isIdRelation: true,
+        isOptionalOrNullable: variant.nullableField,
+        fieldScope: variant.fieldScope,
+      ).build(),
+    ).build();
 
-    expect(collector.errors, hasLength(variant.errors.length));
-    expect(collector.errors.map((e) => e.message), variant.errors);
+    expect(errors.map((e) => e.message), variant.errors);
   });
 
   testWithVariants(
@@ -1043,32 +1031,14 @@ void main() {
           ]
         ),
       ], (variant) {
-    var collector = CodeGenerationCollector();
-    var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml(
-        '''
-        class: Parent
-        table: parent
-        ''',
-      ).build()),
-      (ModelSourceBuilder().withFileName('child').withYaml(
-        '''
-        class: Child
-        table: child
-        ${variant.classIsServerOnly ? 'serverOnly: true' : ''}
-        fields:
-          parent: Parent?, relation${variant.optional ? '(optional)' : ''}${variant.fieldScope == null ? '' : ', scope=${variant.fieldScope!.name}'}
-        ''',
-      ).build())
-    ];
-    var analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    var errors = SourceSpanExceptionBuilder(
+      models: RelationModelSourceBuilder(
+        serverOnlyChild: variant.classIsServerOnly,
+        isOptionalOrNullable: variant.optional,
+        fieldScope: variant.fieldScope,
+      ).build(),
+    ).build();
 
-    expect(collector.errors, hasLength(variant.errors.length));
-    expect(collector.errors.map((e) => e.message), variant.errors);
+    expect(errors.map((e) => e.message), variant.errors);
   });
 }
