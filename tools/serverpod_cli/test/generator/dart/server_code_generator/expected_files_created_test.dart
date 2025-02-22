@@ -2,10 +2,11 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/class_definition_builder.dart';
+import '../../../test_util/builders/enum_definition_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();

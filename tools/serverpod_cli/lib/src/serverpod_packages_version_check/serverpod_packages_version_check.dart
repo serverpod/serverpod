@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:yaml/yaml.dart';
@@ -78,7 +78,9 @@ List<MapEntry<String, HostedDependency>> _getHostedServerpodDependencies(
 ) {
   return dependencies.entries.fold([], (hostedDependencies, dependency) {
     if (!dependency.key.startsWith('serverpod') ||
-        dependency.value is! HostedDependency) return hostedDependencies;
+        dependency.value is! HostedDependency) {
+      return hostedDependencies;
+    }
 
     // Cast dependencies to HostedDependency type
     return [

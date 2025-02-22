@@ -1,7 +1,8 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
   group('Given a class definition with a BigInt field', () {
