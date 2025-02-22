@@ -7,7 +7,6 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/relation_model_source_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/source_span_exception_builder.dart';
-import 'package:serverpod_cli/src/test_util/test_variants.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
@@ -930,115 +929,118 @@ void main() {
     }, skip: errors.isEmpty);
   });
 
-  testWithVariants(
-      'Given a class with an id relation,',
-      describeVariant: (v) =>
-          'when the class is${v.classIsServerOnly ? '' : ' not'} serverOnly'
-          ' and the id field is${v.nullableField ? '' : ' not'} nullable'
-          '${v.fieldScope == null ? '' : ' and the field scope is ${v.fieldScope!.name}'}'
-          ', then it should cause ${v.errors.length} error(s)',
-      const [
-        (
-          classIsServerOnly: true,
-          fieldScope: null,
-          nullableField: true,
-          errors: []
-        ),
-        (
-          classIsServerOnly: true,
-          fieldScope: null,
-          nullableField: false,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.all,
-          nullableField: true,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.all,
-          nullableField: false,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.serverOnly,
-          nullableField: true,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.serverOnly,
-          nullableField: false,
-          errors: [
-            'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".',
-          ]
-        ),
-      ], (variant) {
-    var errors = SourceSpanExceptionBuilder(
-      models: RelationModelSourceBuilder(
-        serverOnlyChild: variant.classIsServerOnly,
-        isIdRelation: true,
-        isOptionalOrNullable: variant.nullableField,
-        fieldScope: variant.fieldScope,
-      ).build(),
-    ).build();
-
-    expect(errors.map((e) => e.message), variant.errors);
+  group('Given an object relation', () {
+    late RelationModelSourceBuilder builder;
+    setUp(() => builder = RelationModelSourceBuilder());
+    group('when the child is serverOnly', () {
+      setUp(() => builder.serverOnlyChild = true);
+      group('and the relation is optional', () {
+        setUp(() => builder.isOptionalOrNullable = true);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+      });
+      group('and the relation is not optional', () {
+        setUp(() => builder.isOptionalOrNullable = false);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+      });
+    });
+    group('when the child is not serverOnly', () {
+      setUp(() => builder.serverOnlyChild = false);
+      group('and the relation is optional', () {
+        setUp(() => builder.isOptionalOrNullable = true);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+        group('and the field scope is serverOnly', () {
+          setUp(
+              () => builder.fieldScope = ModelFieldScopeDefinition.serverOnly);
+          test('then validation causes no error', () {
+            var errors = builder.build().validateAll();
+            expect(errors, isEmpty);
+          });
+        });
+      });
+      group('and the relation is not optional', () {
+        setUp(() => builder.isOptionalOrNullable = false);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+        group('and the field scope is serverOnly', () {
+          setUp(
+              () => builder.fieldScope = ModelFieldScopeDefinition.serverOnly);
+          test('then validation causes an error', () {
+            var errors = builder.build().validateAll();
+            expect(errors.map((e) => e.message), [
+              'The relation with scope "serverOnly" requires the relation to be optional.'
+            ]);
+          });
+        });
+      });
+    });
   });
 
-  testWithVariants(
-      'Given a class with an object relation,',
-      describeVariant: (v) =>
-          'when the class is${v.classIsServerOnly ? '' : ' not'} serverOnly'
-          ' and the field is${v.optional ? '' : ' not'} optional'
-          '${v.fieldScope == null ? '' : ' and the field scope is ${v.fieldScope!.name}'}'
-          ', then it should cause ${v.errors.length} error(s)',
-      const [
-        (classIsServerOnly: true, fieldScope: null, optional: true, errors: []),
-        (
-          classIsServerOnly: true,
-          fieldScope: null,
-          optional: false,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: null,
-          optional: true,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: null,
-          optional: false,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.serverOnly,
-          optional: true,
-          errors: []
-        ),
-        (
-          classIsServerOnly: false,
-          fieldScope: ModelFieldScopeDefinition.serverOnly,
-          optional: false,
-          errors: [
-            'The relation with scope "serverOnly" requires the relation to be optional.'
-          ]
-        ),
-      ], (variant) {
-    var errors = SourceSpanExceptionBuilder(
-      models: RelationModelSourceBuilder(
-        serverOnlyChild: variant.classIsServerOnly,
-        isOptionalOrNullable: variant.optional,
-        fieldScope: variant.fieldScope,
-      ).build(),
-    ).build();
+  group('Given an id relation', () {
+    late RelationModelSourceBuilder builder;
+    setUp(() => builder = RelationModelSourceBuilder(isIdRelation: true));
+    group('when the child is serverOnly', () {
+      setUp(() => builder.serverOnlyChild = true);
+      group('and the field is nullable', () {
+        setUp(() => builder.isOptionalOrNullable = true);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+      });
+      group('and the field is not nullable', () {
+        setUp(() => builder.isOptionalOrNullable = false);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+      });
+    });
+    group('when the child is not serverOnly', () {
+      setUp(() => builder.serverOnlyChild = false);
+      group('and the field is nullable', () {
+        setUp(() => builder.isOptionalOrNullable = true);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
+        group('and the field scope is serverOnly', () {
+          setUp(
+              () => builder.fieldScope = ModelFieldScopeDefinition.serverOnly);
+          test('then validation causes no error', () {
+            var errors = builder.build().validateAll();
+            expect(errors, isEmpty);
+          });
+        });
+      });
+      group('and the field is not nullable', () {
+        setUp(() => builder.isOptionalOrNullable = false);
+        test('then validation causes no error', () {
+          var errors = builder.build().validateAll();
+          expect(errors, isEmpty);
+        });
 
-    expect(errors.map((e) => e.message), variant.errors);
+        group('and the field scope is serverOnly', () {
+          setUp(
+              () => builder.fieldScope = ModelFieldScopeDefinition.serverOnly);
+          test('then validation causes an error', () {
+            var errors = builder.build().validateAll();
+            expect(errors.map((e) => e.message), [
+              'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".'
+            ]);
+          });
+        });
+      });
+    });
   });
 }
