@@ -116,6 +116,7 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+  - makeFutureCallThatThrows:
 listParameters:
   - returnIntList:
   - returnIntListList:

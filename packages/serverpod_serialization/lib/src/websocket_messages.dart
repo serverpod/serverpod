@@ -66,6 +66,19 @@ sealed class WebSocketMessage {
   }
 }
 
+/// Interface of [WebSocketMessage] subclasses that have endpoint,
+/// method and connection id info.
+abstract interface class WebSocketMessageInfo {
+  /// The endpoint called.
+  String get endpoint;
+
+  /// The method called.
+  String get method;
+
+  /// The connection id that uniquely identifies the stream.
+  UuidValue get connectionId;
+}
+
 /// The response to an [OpenMethodStreamCommand].
 enum OpenMethodStreamResponseType {
   /// The stream was successfully opened.
@@ -94,17 +107,21 @@ enum OpenMethodStreamResponseType {
 
 /// A message sent over a websocket connection to respond to an
 /// [OpenMethodStreamCommand].
-class OpenMethodStreamResponse extends WebSocketMessage {
+class OpenMethodStreamResponse extends WebSocketMessage
+    implements WebSocketMessageInfo {
   static const String _messageType =
       WebSocketMessageTypeKey.openMethodStreamResponse;
 
   /// The connection id that uniquely identifies the stream.
+  @override
   final UuidValue connectionId;
 
   /// The endpoint called.
+  @override
   final String endpoint;
 
   /// The method called.
+  @override
   final String method;
 
   /// The response type.
@@ -151,14 +168,17 @@ class OpenMethodStreamResponse extends WebSocketMessage {
 /// data to an endpoint method.
 ///
 /// An [OpenMethodStreamResponse] should be sent in response to this message.
-class OpenMethodStreamCommand extends WebSocketMessage {
+class OpenMethodStreamCommand extends WebSocketMessage
+    implements WebSocketMessageInfo {
   static const String _messageType =
       WebSocketMessageTypeKey.openMethodStreamCommand;
 
   /// The endpoint to call.
+  @override
   final String endpoint;
 
   /// The method to call.
+  @override
   final String method;
 
   /// The JSON encoded arguments to pass to the method.
@@ -168,6 +188,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   final List<String> inputStreams;
 
   /// The connection id that uniquely identifies the stream.
+  @override
   final UuidValue connectionId;
 
   /// The authentication value as it is sent across the transport layer.
@@ -237,17 +258,21 @@ enum CloseReason {
 
 /// A message sent over a websocket connection to close a websocket stream of
 /// data to an endpoint method.
-class CloseMethodStreamCommand extends WebSocketMessage {
+class CloseMethodStreamCommand extends WebSocketMessage
+    implements WebSocketMessageInfo {
   static const String _messageType =
       WebSocketMessageTypeKey.closeMethodStreamCommand;
 
   /// The endpoint associated with the stream.
+  @override
   final String endpoint;
 
   /// The method associated with the stream.
+  @override
   final String method;
 
   /// The connection id that uniquely identifies the stream.
+  @override
   final UuidValue connectionId;
 
   /// The parameter associated with the stream.
@@ -322,17 +347,21 @@ class PongCommand extends WebSocketMessage {
 }
 
 /// A serializable exception sent over a method stream.
-class MethodStreamSerializableException extends WebSocketMessage {
+class MethodStreamSerializableException extends WebSocketMessage
+    implements WebSocketMessageInfo {
   static const String _messageType =
       WebSocketMessageTypeKey.methodStreamSerializableException;
 
   /// The endpoint the message is sent to.
+  @override
   final String endpoint;
 
   /// The method the message is sent to.
+  @override
   final String method;
 
   /// The connection id that uniquely identifies the stream.
+  @override
   final UuidValue connectionId;
 
   /// The parameter the message is sent to.
@@ -394,17 +423,21 @@ class MethodStreamSerializableException extends WebSocketMessage {
 }
 
 /// A message sent to a method stream.
-class MethodStreamMessage extends WebSocketMessage {
+class MethodStreamMessage extends WebSocketMessage
+    implements WebSocketMessageInfo {
   static const String _messageType =
       WebSocketMessageTypeKey.methodStreamMessage;
 
   /// The endpoint the message is sent to.
+  @override
   final String endpoint;
 
   /// The method the message is sent to.
+  @override
   final String method;
 
   /// The connection id that uniquely identifies the stream.
+  @override
   final UuidValue connectionId;
 
   /// The parameter the message is sent to.
