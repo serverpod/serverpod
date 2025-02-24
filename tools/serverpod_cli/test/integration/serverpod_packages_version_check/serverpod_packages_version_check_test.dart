@@ -15,8 +15,9 @@ void main() {
   );
   group('performServerpodPackagesAndCliVersionCheck', () {
     group('With empty folder', () {
-      var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
+      late Directory emptyFolder;
       setUp(() {
+        emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
         if (!emptyFolder.existsSync()) {
           emptyFolder.createSync();
         }
