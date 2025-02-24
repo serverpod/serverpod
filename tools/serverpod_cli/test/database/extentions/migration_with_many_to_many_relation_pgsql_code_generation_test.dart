@@ -128,6 +128,106 @@ fields:
   a: A?, relation
           ''',
         ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      expect(collector.errors, isEmpty);
+
+      sourceDefinition = createDatabaseDefinitionFromModels(
+        definitions,
+        'example',
+        [],
+      );
+    }
+
+    // renames table `target` to `target_new`
+    DatabaseDefinition targetDefinition;
+    {
+      var models = [
+        ModelSourceBuilder().withFileName('a').withYaml(
+          '''
+class: A
+table: a_new
+fields:
+  b: B?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('b').withYaml(
+          '''
+class: B
+table: b
+fields:
+  a: A?, relation
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      expect(collector.errors, isEmpty);
+
+      targetDefinition = createDatabaseDefinitionFromModels(
+        definitions,
+        'example',
+        [],
+      );
+    }
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    var psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+    var dropTableSourceIndex = psql.indexOf('DROP TABLE "b"');
+    var dropTableTargetIndex = psql.indexOf('DROP TABLE "a"');
+    var createTableTargetIndex = psql.indexOf('CREATE TABLE "a_new"');
+    var createTableSourceIndex = psql.indexOf('CREATE TABLE "b"');
+    var addForegeinKeyAIndex = psql.indexOf('ADD CONSTRAINT "a_new_fk_0"');
+    var addForegeinKeyBIndex = psql.indexOf('ADD CONSTRAINT "b_fk_0"');
+
+    expect(dropTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(createTableSourceIndex, greaterThanOrEqualTo(0));
+    expect(createTableTargetIndex, greaterThanOrEqualTo(0));
+    expect(addForegeinKeyAIndex, greaterThanOrEqualTo(0));
+    expect(addForegeinKeyBIndex, greaterThanOrEqualTo(0));
+
+    expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
+    expect(dropTableTargetIndex, lessThan(createTableSourceIndex));
+    expect(createTableTargetIndex, lessThan(createTableSourceIndex));
+    expect(createTableSourceIndex, lessThan(addForegeinKeyAIndex));
+    expect(addForegeinKeyAIndex, lessThan(addForegeinKeyBIndex));
+  });
+
+  test(
+      'Given two tables that reference each other, when one is renamed, then the migration code should not mention an unrelated table',
+      () {
+    DatabaseDefinition sourceDefinition;
+    {
+      var models = [
+        ModelSourceBuilder().withFileName('a').withYaml(
+          '''
+class: A
+table: a
+fields:
+  b: B?, relation
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('b').withYaml(
+          '''
+class: B
+table: b
+fields:
+  a: A?, relation
+          ''',
+        ).build(),
         ModelSourceBuilder().withFileName('c').withYaml(
           '''
 class: C
@@ -151,8 +251,8 @@ fields:
       );
     }
 
-    DatabaseDefinition
-        targetDefinition; // renames table `target` to `target_new`
+    // renames table `target` to `target_new`
+    DatabaseDefinition targetDefinition;
     {
       var models = [
         ModelSourceBuilder().withFileName('a').withYaml(
@@ -202,26 +302,6 @@ fields:
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
     expect(psql, isNot(contains('"c"'))); // C is unchanged
-
-    var dropTableSourceIndex = psql.indexOf('DROP TABLE "b"');
-    var dropTableTargetIndex = psql.indexOf('DROP TABLE "a"');
-    var createTableTargetIndex = psql.indexOf('CREATE TABLE "a_new"');
-    var createTableSourceIndex = psql.indexOf('CREATE TABLE "b"');
-    var addForegeinKeyAIndex = psql.indexOf('ADD CONSTRAINT "a_new_fk_0"');
-    var addForegeinKeyBIndex = psql.indexOf('ADD CONSTRAINT "b_fk_0"');
-
-    expect(dropTableSourceIndex, greaterThanOrEqualTo(0));
-    expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
-    expect(createTableSourceIndex, greaterThanOrEqualTo(0));
-    expect(createTableTargetIndex, greaterThanOrEqualTo(0));
-    expect(addForegeinKeyAIndex, greaterThanOrEqualTo(0));
-    expect(addForegeinKeyBIndex, greaterThanOrEqualTo(0));
-
-    expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
-    expect(dropTableTargetIndex, lessThan(createTableSourceIndex));
-    expect(createTableTargetIndex, lessThan(createTableSourceIndex));
-    expect(createTableSourceIndex, lessThan(addForegeinKeyAIndex));
-    expect(addForegeinKeyAIndex, lessThan(addForegeinKeyBIndex));
   });
 
   test(
