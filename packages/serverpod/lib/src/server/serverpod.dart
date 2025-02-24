@@ -337,7 +337,7 @@ class Serverpod {
     } catch (e, stackTrace) {
       unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
-        OriginSpace.framework,
+        space: OriginSpace.framework,
         context: DiagnosticEventContext(
           serverId: commandLineArgs.serverId,
           serverRunMode: commandLineArgs.runMode,
@@ -496,7 +496,7 @@ class Serverpod {
 
       unstableInternalSubmitEvent(
         ExceptionEvent(error, stackTrace, message: message),
-        OriginSpace.framework,
+        space: OriginSpace.framework,
         context: DiagnosticEventContext(
           serverId: serverId,
           serverRunMode: server.runMode,
@@ -874,7 +874,7 @@ class Serverpod {
     } catch (e, stackTrace) {
       unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
-        OriginSpace.framework,
+        space: OriginSpace.framework,
         context: DiagnosticEventContext(
           serverId: serverId,
           serverRunMode: server.runMode,
@@ -963,11 +963,11 @@ extension ServerpodInternalMethods on Serverpod {
   /// They will execute asynchrously.
   /// This method is for internal framework use only.
   void unstableInternalSubmitEvent(
-    DiagnosticEvent event,
-    OriginSpace space, {
+    DiagnosticEvent event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
-    return _eventHandler.handleEvent(event, space, context: context);
+    return _eventHandler.handleEvent(event, space: space, context: context);
   }
 }
 
@@ -989,12 +989,12 @@ class _EventHandlers implements DiagnosticEventHandler {
 
   @override
   void handleEvent(
-    DiagnosticEvent event,
-    OriginSpace space, {
+    DiagnosticEvent event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
     var futures = handlers.map((handler) => Future(
-          () => handler.handleEvent(event, space, context: context),
+          () => handler.handleEvent(event, space: space, context: context),
         ));
 
     var to = timeout;

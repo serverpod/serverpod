@@ -119,8 +119,8 @@ class DiagnosticEventContext {
 abstract interface class DiagnosticEventHandler {
   /// Handles an event.
   void handleEvent(
-    DiagnosticEvent event,
-    OriginSpace space, {
+    DiagnosticEvent event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   });
 }
@@ -139,14 +139,14 @@ abstract class TypedEventHandler<T extends DiagnosticEvent>
   @override
   @nonVirtual
   void handleEvent(
-    DiagnosticEvent event,
-    OriginSpace space, {
+    DiagnosticEvent event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
     if (event is T) {
       return handleTypedEvent(
         event,
-        space,
+        space: space,
         context: context,
       );
     }
@@ -155,8 +155,8 @@ abstract class TypedEventHandler<T extends DiagnosticEvent>
   /// Handles a typed event, called when the event type matches.
   /// To be implemented by subclasses.
   void handleTypedEvent(
-    T event,
-    OriginSpace space, {
+    T event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   });
 }

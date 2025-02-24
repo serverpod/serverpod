@@ -216,7 +216,7 @@ class WebServer {
 
     serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
-      space,
+      space: space,
       context: context,
     );
   }

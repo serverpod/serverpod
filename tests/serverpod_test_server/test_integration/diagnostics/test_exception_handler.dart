@@ -11,8 +11,8 @@ class TestExceptionHandler extends ExceptionHandler {
 
   @override
   Future<void> handleTypedEvent(
-    ExceptionEvent event,
-    OriginSpace space, {
+    ExceptionEvent event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   }) async {
     eventsStreamController.add(DiagnosticEventRecord(event, space, context));

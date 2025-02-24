@@ -533,7 +533,7 @@ class Server {
             Exception('Session was not created'),
             StackTrace.current,
           ),
-          OriginSpace.framework,
+          space: OriginSpace.framework,
           context: contextFromHttpRequest(this, request, OperationType.method),
         );
 
@@ -556,7 +556,7 @@ class Server {
         // which may be argued is not an "application space" exception.
         serverpod.unstableInternalSubmitEvent(
           ExceptionEvent(e, stackTrace),
-          OriginSpace.application,
+          space: OriginSpace.application,
           context: contextFromSession(session, httpRequest: request),
         );
 
@@ -627,7 +627,7 @@ class Server {
 
     serverpod.unstableInternalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
-      OriginSpace.framework,
+      space: OriginSpace.framework,
       context: context,
     );
   }

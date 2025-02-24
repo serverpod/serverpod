@@ -515,7 +515,7 @@ class MethodStreamManager {
     } catch (e, stackTrace) {
       session.serverpod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
-        OriginSpace.application,
+        space: OriginSpace.application,
         context: contextFromSession(
           session,
           httpRequest: httpRequest,
@@ -588,7 +588,7 @@ class MethodStreamManager {
     } catch (e, stackTrace) {
       session.serverpod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
-        OriginSpace.application,
+        space: OriginSpace.application,
         context: contextFromSession(
           session,
           httpRequest: httpRequest,

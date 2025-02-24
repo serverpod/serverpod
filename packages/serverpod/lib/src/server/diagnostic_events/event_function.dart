@@ -7,8 +7,8 @@ import 'event_handler.dart';
 ///
 /// {@macro diagnostic_event_handler}
 typedef EventHandlerFunction<T extends DiagnosticEvent> = void Function(
-  T event,
-  OriginSpace space, {
+  T event, {
+  required OriginSpace space,
   required DiagnosticEventContext context,
 });
 
@@ -30,14 +30,14 @@ class AsEventHandler<T extends DiagnosticEvent> extends TypedEventHandler<T> {
 
   @override
   void handleTypedEvent(
-    T event,
-    OriginSpace space, {
+    T event, {
+    required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
     if (spaceFilter == null || spaceFilter == space) {
       return handler(
         event,
-        space,
+        space: space,
         context: context,
       );
     }

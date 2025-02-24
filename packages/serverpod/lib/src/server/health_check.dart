@@ -63,7 +63,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     } catch (e, stackTrace) {
       pod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace),
-        OriginSpace.framework,
+        space: OriginSpace.framework,
         context: contextFromServer(pod.server),
       );
     }

@@ -137,7 +137,7 @@ class FutureCallManager {
         } catch (e, stackTrace) {
           _server.serverpod.unstableInternalSubmitEvent(
             ExceptionEvent(e, stackTrace),
-            OriginSpace.application,
+            space: OriginSpace.application,
             context: contextFromSession(futureCallSession),
           );
 
@@ -151,7 +151,7 @@ class FutureCallManager {
 
       _server.serverpod.unstableInternalSubmitEvent(
         ExceptionEvent(e, stackTrace, message: message),
-        OriginSpace.framework,
+        space: OriginSpace.framework,
         context: contextFromServer(_server),
       );
 
