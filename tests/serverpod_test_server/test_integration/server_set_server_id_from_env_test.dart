@@ -20,10 +20,11 @@ void main() {
       process.stderr.transform(utf8.decoder).listen(output.write);
 
       await Future.delayed(Duration(seconds: 8));
+      print(output.toString());
       expect(
           output.toString().contains('Server $serverId listening on'), isTrue);
 
-      process.kill();
+      await process.kill();
     });
 
     test('Server should start with serverId from command line argument',
@@ -39,10 +40,11 @@ void main() {
       process.stderr.transform(utf8.decoder).listen(output.write);
 
       await Future.delayed(Duration(seconds: 8));
+      print(output.toString());
       expect(
           output.toString().contains('Server $serverId listening on'), isTrue);
 
-      process.kill();
+      await process.kill();
     });
 
     test('Server should start without serverId and use default value',
@@ -54,9 +56,10 @@ void main() {
       process.stderr.transform(utf8.decoder).listen(output.write);
 
       await Future.delayed(Duration(seconds: 8));
+      print(output.toString());
       expect(output.toString().contains('Server default listening on'), isTrue);
 
-      process.kill();
+      await process.kill();
     });
 
     test(
@@ -74,13 +77,14 @@ void main() {
       process.stderr.transform(utf8.decoder).listen(output.write);
 
       await Future.delayed(Duration(seconds: 8));
+      print(output.toString());
       expect(
           output
               .toString()
               .contains('Server $commandLineServerId listening on'),
           isTrue);
 
-      process.kill();
+      await process.kill();
     });
   });
 }
