@@ -183,6 +183,20 @@ class TestToolsEndpoint extends Endpoint {
     return simpleDatas;
   }
 
+  Future<(String, (int, bool))> echoRecord(
+    Session session,
+    (String, (int, bool)) record,
+  ) async {
+    return record;
+  }
+
+  Future<List<(String, (int, bool))>> echoRecords(
+    Session session,
+    List<(String, (int, bool))> records,
+  ) async {
+    return records;
+  }
+
   Future<void> logMessageWithSession(Session session) async {
     session.log('test session log in endpoint');
   }
