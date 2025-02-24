@@ -2266,7 +2266,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData?>(),
+              type: _i1.getType<_i46.SimpleData?>(),
               nullable: true,
             )
           },
