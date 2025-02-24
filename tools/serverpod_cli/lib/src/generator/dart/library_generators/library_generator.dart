@@ -766,7 +766,7 @@ class LibraryGenerator {
       literalMap({
         for (var parameterDef in params)
           // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
-          // For the records we need to transform then into a map that can be handled by the shared (non-project specific) serialization code
+          // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
           literalString(parameterDef.name): parameterDef.type.isRecordType
               ? mapRecordToJsonRef.call([refer('record')]).code
               : (parameterDef.type.returnsRecordInContainer
@@ -1234,10 +1234,6 @@ extension on ProtocolDefinition {
         }
       }
     }
-
-    // TODO(tp): Once we allow `Record`s in the model definitions, we need to extract them here as well
-    //           Currently the `model.type.dartType` is always `null` here though, so we can not iterate over the models' fields
-    // for (var model in models) {}
 
     return recordTypes;
   }

@@ -1550,7 +1550,7 @@ class SerializableModelLibraryGenerator {
         subDirParts: subDirParts,
         config: config,
         nullable: false,
-      ) as TypeReference; // relations must point to another model type
+      ) as TypeReference;
       TypeReference tableType = field.type.reference(
         serverCode,
         subDirParts: subDirParts,
@@ -1573,7 +1573,7 @@ class SerializableModelLibraryGenerator {
           subDirParts: subDirParts,
           config: config,
           nullable: false,
-        ) as TypeReference; // relations must point to another model type
+        ) as TypeReference;
         tableType = (field.type.generics.first).reference(
           serverCode,
           subDirParts: subDirParts,
