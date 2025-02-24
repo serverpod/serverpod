@@ -329,18 +329,14 @@ class Serverpod {
     commandLineArgs = CommandLineArgs(args);
     stdout.writeln(commandLineArgs.toString());
 
+    _runMode = commandLineArgs.runMode;
+    serverId = commandLineArgs.serverId;
+
     try {
       _innerInitializeServerpod(commandLineArgs, config: config);
     } catch (e, stackTrace) {
-      internalSubmitEvent(
-        ExceptionEvent(e, stackTrace),
-        space: OriginSpace.framework,
-        context: DiagnosticEventContext(
-          serverId: commandLineArgs.serverId,
-          serverRunMode: commandLineArgs.runMode,
-          serverName: '',
-        ),
-      );
+      _reportException(e, stackTrace,
+          message: 'Error in Serverpod initialization');
       rethrow;
     }
 
@@ -353,9 +349,6 @@ class Serverpod {
   }) {
     _instance = this;
     _internalSerializationManager = internal.Protocol();
-
-    _runMode = commandLineArgs.runMode;
-    serverId = commandLineArgs.serverId;
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -485,21 +478,8 @@ class Serverpod {
       }
 
       _exitCode = 1;
-      var message =
-          '${DateTime.now().toUtc()} Internal server error. Zoned exception.';
-      stderr.writeln(message);
-      stderr.writeln('$error');
-      stderr.writeln('$stackTrace');
-
-      internalSubmitEvent(
-        ExceptionEvent(error, stackTrace, message: message),
-        space: OriginSpace.framework,
-        context: DiagnosticEventContext(
-          serverId: serverId,
-          serverRunMode: server.runMode,
-          serverName: '',
-        ),
-      );
+      _reportException(error, stackTrace,
+          message: 'Internal server error. Zoned exception.');
     }
 
     if (runInGuardedZone) {
@@ -869,15 +849,7 @@ class Serverpod {
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
-      internalSubmitEvent(
-        ExceptionEvent(e, stackTrace),
-        space: OriginSpace.framework,
-        context: DiagnosticEventContext(
-          serverId: serverId,
-          serverRunMode: server.runMode,
-          serverName: '',
-        ),
-      );
+      _reportException(e, stackTrace, message: 'Error in Serverpod shutdown');
       rethrow;
     }
 
@@ -892,6 +864,29 @@ class Serverpod {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
+  }
+
+  void _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+  }) {
+    if (message != null) {
+      message = '${DateTime.now().toUtc()} $message';
+      stderr.writeln(message);
+    }
+    stderr.writeln('$e');
+    stderr.writeln('$stackTrace');
+
+    internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: DiagnosticEventContext(
+        serverId: serverId,
+        serverRunMode: runMode,
+        serverName: '',
+      ),
+    );
   }
 
   /// Establishes a connection to the database. This method will retry
