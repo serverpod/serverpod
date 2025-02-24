@@ -21,9 +21,9 @@ import '../endpoints/custom_types.dart' as _i9;
 import '../endpoints/database_basic.dart' as _i10;
 import '../endpoints/database_transactions.dart' as _i11;
 import '../endpoints/deprecation.dart' as _i12;
-import '../endpoints/echo_request.dart' as _i13;
-import '../endpoints/email_auth_provider.dart' as _i14;
-import '../endpoints/exception_event_test_endpoint.dart' as _i15;
+import '../endpoints/diagnostic_event_test_endpoint.dart' as _i13;
+import '../endpoints/echo_request.dart' as _i14;
+import '../endpoints/email_auth_provider.dart' as _i15;
 import '../endpoints/exception_test_endpoint.dart' as _i16;
 import '../endpoints/failed_calls.dart' as _i17;
 import '../endpoints/field_scopes.dart' as _i18;
@@ -139,22 +139,22 @@ class Endpoints extends _i1.EndpointDispatch {
           'deprecation',
           null,
         ),
-      'echoRequest': _i13.EchoRequestEndpoint()
+      'diagnosticEventTest': _i13.DiagnosticEventTestEndpoint()
+        ..initialize(
+          server,
+          'diagnosticEventTest',
+          null,
+        ),
+      'echoRequest': _i14.EchoRequestEndpoint()
         ..initialize(
           server,
           'echoRequest',
           null,
         ),
-      'emailAuthTestMethods': _i14.EmailAuthTestMethods()
+      'emailAuthTestMethods': _i15.EmailAuthTestMethods()
         ..initialize(
           server,
           'emailAuthTestMethods',
-          null,
-        ),
-      'diagnosticEventTest': _i15.DiagnosticEventTestEndpoint()
-        ..initialize(
-          server,
-          'diagnosticEventTest',
           null,
         ),
       'exceptionTest': _i16.ExceptionTestEndpoint()
@@ -1992,6 +1992,23 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['diagnosticEventTest'] = _i1.EndpointConnector(
+      name: 'diagnosticEventTest',
+      endpoint: endpoints['diagnosticEventTest']!,
+      methodConnectors: {
+        'submitExceptionEvent': _i1.MethodConnector(
+          name: 'submitExceptionEvent',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['diagnosticEventTest']
+                      as _i13.DiagnosticEventTestEndpoint)
+                  .submitExceptionEvent(session),
+        )
+      },
+    );
     connectors['echoRequest'] = _i1.EndpointConnector(
       name: 'echoRequest',
       endpoint: endpoints['echoRequest']!,
@@ -2003,7 +2020,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['echoRequest'] as _i13.EchoRequestEndpoint)
+              (endpoints['echoRequest'] as _i14.EchoRequestEndpoint)
                   .echoAuthenticationKey(session),
         ),
         'echoHttpHeader': _i1.MethodConnector(
@@ -2019,7 +2036,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['echoRequest'] as _i13.EchoRequestEndpoint)
+              (endpoints['echoRequest'] as _i14.EchoRequestEndpoint)
                   .echoHttpHeader(
             session,
             params['headerName'],
@@ -2049,7 +2066,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAuthTestMethods'] as _i14.EmailAuthTestMethods)
+              (endpoints['emailAuthTestMethods'] as _i15.EmailAuthTestMethods)
                   .findVerificationCode(
             session,
             params['userName'],
@@ -2069,7 +2086,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAuthTestMethods'] as _i14.EmailAuthTestMethods)
+              (endpoints['emailAuthTestMethods'] as _i15.EmailAuthTestMethods)
                   .findResetCode(
             session,
             params['email'],
@@ -2082,7 +2099,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAuthTestMethods'] as _i14.EmailAuthTestMethods)
+              (endpoints['emailAuthTestMethods'] as _i15.EmailAuthTestMethods)
                   .tearDown(session),
         ),
         'createUser': _i1.MethodConnector(
@@ -2108,7 +2125,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAuthTestMethods'] as _i14.EmailAuthTestMethods)
+              (endpoints['emailAuthTestMethods'] as _i15.EmailAuthTestMethods)
                   .createUser(
             session,
             params['userName'],
@@ -2116,23 +2133,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['password'],
           ),
         ),
-      },
-    );
-    connectors['diagnosticEventTest'] = _i1.EndpointConnector(
-      name: 'diagnosticEventTest',
-      endpoint: endpoints['diagnosticEventTest']!,
-      methodConnectors: {
-        'submitExceptionEvent': _i1.MethodConnector(
-          name: 'submitExceptionEvent',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['diagnosticEventTest']
-                      as _i15.DiagnosticEventTestEndpoint)
-                  .submitExceptionEvent(session),
-        )
       },
     );
     connectors['exceptionTest'] = _i1.EndpointConnector(
@@ -2290,7 +2290,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i46.SimpleData?>(),
+              type: _i1.getType<_i47.SimpleData?>(),
               nullable: true,
             )
           },

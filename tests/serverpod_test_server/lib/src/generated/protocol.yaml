@@ -93,6 +93,8 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+diagnosticEventTest:
+  - submitExceptionEvent:
 echoRequest:
   - echoAuthenticationKey:
   - echoHttpHeader:
@@ -101,8 +103,6 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
-diagnosticEventTest:
-  - submitExceptionEvent:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:

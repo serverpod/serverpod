@@ -149,11 +149,11 @@ class TestEndpoints {
 
   late final _DeprecationEndpoint deprecation;
 
+  late final _DiagnosticEventTestEndpoint diagnosticEventTest;
+
   late final _EchoRequestEndpoint echoRequest;
 
   late final _EmailAuthTestMethods emailAuthTestMethods;
-
-  late final _DiagnosticEventTestEndpoint diagnosticEventTest;
 
   late final _ExceptionTestEndpoint exceptionTest;
 
@@ -270,15 +270,15 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    diagnosticEventTest = _DiagnosticEventTestEndpoint(
+      endpoints,
+      serializationManager,
+    );
     echoRequest = _EchoRequestEndpoint(
       endpoints,
       serializationManager,
     );
     emailAuthTestMethods = _EmailAuthTestMethods(
-      endpoints,
-      serializationManager,
-    );
-    diagnosticEventTest = _DiagnosticEventTestEndpoint(
       endpoints,
       serializationManager,
     );
@@ -3010,6 +3010,44 @@ class _DeprecationEndpoint {
   }
 }
 
+class _DiagnosticEventTestEndpoint {
+  _DiagnosticEventTestEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> submitExceptionEvent(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'diagnosticEventTest',
+        method: 'submitExceptionEvent',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'diagnosticEventTest',
+          methodName: 'submitExceptionEvent',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _EchoRequestEndpoint {
   _EchoRequestEndpoint(
     this._endpointDispatch,
@@ -3203,44 +3241,6 @@ class _EmailAuthTestMethods {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<bool>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-}
-
-class _DiagnosticEventTestEndpoint {
-  _DiagnosticEventTestEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
-
-  final _i2.EndpointDispatch _endpointDispatch;
-
-  final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<String> submitExceptionEvent(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'diagnosticEventTest',
-        method: 'submitExceptionEvent',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'diagnosticEventTest',
-          methodName: 'submitExceptionEvent',
-          parameters: _i1.testObjectToJson({}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

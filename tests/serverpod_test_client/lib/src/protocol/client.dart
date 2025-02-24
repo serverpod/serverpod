@@ -798,6 +798,21 @@ class EndpointDeprecation extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointDiagnosticEventTest extends _i1.EndpointRef {
+  EndpointDiagnosticEventTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'diagnosticEventTest';
+
+  _i2.Future<String> submitExceptionEvent() =>
+      caller.callServerEndpoint<String>(
+        'diagnosticEventTest',
+        'submitExceptionEvent',
+        {},
+      );
+}
+
 /// This class is meant for echoing / reflecting the received headers,
 /// auth keys, parameters etc in endpoint invocations.
 /// {@category Endpoint}
@@ -872,21 +887,6 @@ class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
           'email': email,
           'password': password,
         },
-      );
-}
-
-/// {@category Endpoint}
-class EndpointDiagnosticEventTest extends _i1.EndpointRef {
-  EndpointDiagnosticEventTest(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'diagnosticEventTest';
-
-  _i2.Future<String> submitExceptionEvent() =>
-      caller.callServerEndpoint<String>(
-        'diagnosticEventTest',
-        'submitExceptionEvent',
-        {},
       );
 }
 
@@ -3133,9 +3133,9 @@ class Client extends _i1.ServerpodClientShared {
     basicDatabase = EndpointBasicDatabase(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
     deprecation = EndpointDeprecation(this);
+    diagnosticEventTest = EndpointDiagnosticEventTest(this);
     echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
-    diagnosticEventTest = EndpointDiagnosticEventTest(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
@@ -3193,11 +3193,11 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointDeprecation deprecation;
 
+  late final EndpointDiagnosticEventTest diagnosticEventTest;
+
   late final EndpointEchoRequest echoRequest;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
-
-  late final EndpointDiagnosticEventTest diagnosticEventTest;
 
   late final EndpointExceptionTest exceptionTest;
 
@@ -3277,9 +3277,9 @@ class Client extends _i1.ServerpodClientShared {
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
         'deprecation': deprecation,
+        'diagnosticEventTest': diagnosticEventTest,
         'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
-        'diagnosticEventTest': diagnosticEventTest,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,
