@@ -897,17 +897,6 @@ class Serverpod {
     }
   }
 
-  /// Submits an event to registered event handlers.
-  /// They will execute asynchrously.
-  /// This method is for internal framework use only.
-  void unstableInternalSubmitEvent(
-    DiagnosticEvent event,
-    OriginSpace space, {
-    required DiagnosticEventContext context,
-  }) {
-    return _eventHandler.handleEvent(event, space, context: context);
-  }
-
   /// Establishes a connection to the database. This method will retry
   /// connecting to the database until it succeeds.
   Future<Session> _connectToDatabase({
@@ -969,6 +958,17 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// Submits an event to registered event handlers.
+  /// They will execute asynchrously.
+  /// This method is for internal framework use only.
+  void unstableInternalSubmitEvent(
+    DiagnosticEvent event,
+    OriginSpace space, {
+    required DiagnosticEventContext context,
+  }) {
+    return _eventHandler.handleEvent(event, space, context: context);
+  }
 }
 
 /// Container for a list of [DiagnosticEventHandler]s
