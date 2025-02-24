@@ -79,8 +79,13 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  /// [DiagnosticEventHandler] for optional custom exception handling.
-  final DiagnosticEventHandler _eventHandler;
+  final ExperimentalApi _experimental;
+
+  /// Access experimental features.
+  ///
+  /// Note: These features are experimental and may change or be removed
+  /// in minor version releases.
+  ExperimentalApi get experimental => _experimental;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -305,9 +310,9 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
   })  : _securityContextConfig = securityContextConfig,
-        _eventHandler = DiagnosticEventDispatcher(
-          experimentalFeatures?.diagnosticEventHandlers ?? const [],
-          timeout: config?.experimentalDiagnosticHandlerTimeout,
+        _experimental = ExperimentalApi._(
+          config: config,
+          experimentalFeatures: experimentalFeatures,
         ) {
     _initializeServerpod(
       args,
@@ -929,6 +934,38 @@ class Serverpod {
   }
 }
 
+/// Experimental API for Serverpod.
+///
+/// Note: These features are experimental and may change or be removed
+/// between minor version releases.
+class ExperimentalApi {
+  final DiagnosticEventHandler _eventDispatcher;
+
+  ExperimentalApi._({
+    ServerpodConfig? config,
+    ExperimentalFeatures? experimentalFeatures,
+  }) : _eventDispatcher = DiagnosticEventDispatcher(
+          experimentalFeatures?.diagnosticEventHandlers ?? const [],
+          timeout: config?.experimentalDiagnosticHandlerTimeout,
+        );
+
+  /// Application method for submitting a diagnostic event
+  /// to registered event handlers.
+  /// They will execute asynchrously.
+  ///
+  /// This method is for application (user space) use.
+  void submitDiagnosticEvent(
+    DiagnosticEvent event, {
+    required Session session,
+  }) {
+    return _eventDispatcher.handleEvent(
+      event,
+      space: OriginSpace.application,
+      context: contextFromSession(session),
+    );
+  }
+}
+
 /// Exception used to signal a
 class ExitException implements Exception {
   /// Creates an instance of [ExitException].
@@ -959,6 +996,10 @@ extension ServerpodInternalMethods on Serverpod {
     required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
-    return _eventHandler.handleEvent(event, space: space, context: context);
+    return _experimental._eventDispatcher.handleEvent(
+      event,
+      space: space,
+      context: context,
+    );
   }
 }

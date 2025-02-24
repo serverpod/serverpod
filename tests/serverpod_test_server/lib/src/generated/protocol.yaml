@@ -93,6 +93,8 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+diagnosticEventTest:
+  - submitExceptionEvent:
 echoRequest:
   - echoAuthenticationKey:
   - echoHttpHeader:
