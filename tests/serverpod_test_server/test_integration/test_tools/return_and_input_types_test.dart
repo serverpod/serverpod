@@ -119,6 +119,28 @@ void main() {
         expect(result[0].num, 1);
         expect(result[1].num, 2);
       });
+
+      test('when calling echoRecord then should return the record', () async {
+        final record = ('hello', (2, true));
+        var result = await endpoints.testTools.echoRecord(
+          sessionBuilder,
+          record,
+        );
+        expect(result, record);
+      });
+
+      test('when calling echoRecords then should return the records', () async {
+        final records = [
+          ('hello', (2, true)),
+          ('world', (4, false)),
+        ];
+
+        var result = await endpoints.testTools.echoRecords(
+          sessionBuilder,
+          records,
+        );
+        expect(result, records);
+      });
     },
   );
 }

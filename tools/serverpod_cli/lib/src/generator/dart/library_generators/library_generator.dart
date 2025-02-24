@@ -1155,7 +1155,7 @@ class LibraryGenerator {
   }
 }
 
-extension on TypeDefinition {
+extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {
   bool get returnsRecordInContainer {
     return ((isMapType || isListType || isSetType) &&
         generics.any((g) =>
