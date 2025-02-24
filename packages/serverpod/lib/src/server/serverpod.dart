@@ -79,13 +79,13 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  final _ExperimentalApi _experimental;
+  final ExperimentalApi _experimental;
 
   /// Access experimental features.
   ///
   /// Note: These features are experimental and may change or be removed
   /// in minor version releases.
-  _ExperimentalApi get experimental => _experimental;
+  ExperimentalApi get experimental => _experimental;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -310,7 +310,7 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
   })  : _securityContextConfig = securityContextConfig,
-        _experimental = _ExperimentalApi(
+        _experimental = ExperimentalApi._(
           config: config,
           experimentalFeatures: experimentalFeatures,
         ) {
@@ -934,10 +934,14 @@ class Serverpod {
   }
 }
 
-class _ExperimentalApi {
+/// Experimental API for Serverpod.
+///
+/// Note: These features are experimental and may change or be removed
+/// between minor version releases.
+class ExperimentalApi {
   final DiagnosticEventHandler _eventDispatcher;
 
-  _ExperimentalApi({
+  ExperimentalApi._({
     ServerpodConfig? config,
     ExperimentalFeatures? experimentalFeatures,
   }) : _eventDispatcher = DiagnosticEventDispatcher(
