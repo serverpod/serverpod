@@ -46,7 +46,9 @@ class GenerateCommand extends ServerpodCommand {
 
     // Validate cli version is compatible with serverpod packages
     var warnings = performServerpodPackagesAndCliVersionCheck(
-        Version.parse(templateVersion), Directory.current.parent);
+      Version.parse(templateVersion),
+      config,
+    );
     if (warnings.isNotEmpty) {
       log.warning(
         'The version of the CLI may be incompatible with the Serverpod '

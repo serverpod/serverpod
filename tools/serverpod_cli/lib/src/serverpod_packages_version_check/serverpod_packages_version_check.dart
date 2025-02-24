@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
 class ServerpodPackagesVersionCheckWarnings {
   static const incompatibleVersion =
@@ -19,18 +20,14 @@ class ServerpodPackagesVersionCheckWarnings {
 
 List<SourceSpanSeverityException> performServerpodPackagesAndCliVersionCheck(
   Version cliVersion,
-  Directory directory,
+  GeneratorConfig config,
 ) {
   List<SourceSpanSeverityException> accumulatedWarnings = [];
 
-  var pubspecFiles = findPubspecsFiles(
-    directory,
-    ignorePaths: ['vendor', 'serverpod'],
-  );
-  if (pubspecFiles.isEmpty) {
-    return accumulatedWarnings;
-  }
-
+  var pubspecFiles = <File>[
+    File('pubspec.yaml'), // Server pubspec file
+    File(path.joinAll(config.clientPackagePathParts)), // Client pubspec file
+  ];
   for (var pubspecFile in pubspecFiles) {
     try {
       var file = pubspecFile.readAsStringSync();
