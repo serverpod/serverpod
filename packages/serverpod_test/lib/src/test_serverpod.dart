@@ -113,6 +113,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required this.testEndpoints,
     required ServerpodLoggingMode? serverpodLoggingMode,
     required String? runMode,
+    ExperimentalFeatures? experimentalFeatures,
   }) {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
@@ -127,6 +128,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
               ),
               serializationManager,
               endpoints,
+              experimentalFeatures: experimentalFeatures,
             );
             endpoints.initializeEndpoints(serverpod.server);
             return serverpod;

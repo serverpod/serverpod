@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -80,22 +82,21 @@ class WebServer {
             _port,
           ),
       };
-    } catch (e) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
-        'port $_port may already be in use.',
-      );
-      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+    } catch (e, stackTrace) {
+      await _reportException(e, stackTrace,
+          message: 'Failed to bind socket, '
+              'port $_port may already be in use.');
+
       return false;
     }
     httpServer.autoCompress = true;
 
     runZonedGuarded(
       _start,
-      (e, stackTrace) {
+      (e, stackTrace) async {
         // Last resort error handling
-        stdout.writeln('${DateTime.now()} Relic zoned error: $e');
-        stdout.writeln('$stackTrace');
+
+        await _reportException(e, stackTrace, message: 'Relic zoned error');
       },
     );
 
@@ -103,18 +104,18 @@ class WebServer {
   }
 
   void _start() async {
-    stdout.writeln('Webserver listening on port $_port');
+    logInfo('Webserver listening on port $_port');
 
     try {
       await for (var request in httpServer) {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
-          logError(e, stackTrace: stackTrace);
+          await _reportException(e, stackTrace, httpRequest: request);
         }
       }
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(e, stackTrace);
     }
   }
 
@@ -177,7 +178,13 @@ class WebServer {
       var found = await route.handleCall(session, request);
       return found;
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(
+        e,
+        stackTrace,
+        space: OriginSpace.application,
+        session: session,
+        httpRequest: request,
+      );
 
       request.response.statusCode = HttpStatus.internalServerError;
       request.response.write('Internal Server Error');
@@ -187,17 +194,52 @@ class WebServer {
     return true;
   }
 
+  Future<void> _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    OriginSpace space = OriginSpace.framework,
+    String? message,
+    Session? session,
+    HttpRequest? httpRequest,
+  }) async {
+    logError(
+      message != null ? '$message $e' : e,
+      stackTrace: stackTrace,
+    );
+
+    var context = session != null
+        ? contextFromSession(session, httpRequest: httpRequest)
+        : httpRequest != null
+            ? contextFromHttpRequest(
+                serverpod.server, httpRequest, OperationType.web)
+            : contextFromServer(serverpod.server);
+
+    serverpod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: space,
+      context: context,
+    );
+  }
+
   /// Logs an error to stderr.
-  void logError(var e, {StackTrace? stackTrace}) {
-    stderr.writeln('ERROR: $e');
+  void logError(Object e, {StackTrace? stackTrace}) {
+    var now = DateTime.now().toUtc();
+    stderr.writeln('$now WebServer ERROR: $e');
     if (stackTrace != null) {
       stderr.writeln('$stackTrace');
     }
   }
 
-  /// Logs a message to stdout.
+  /// Logs an info message to stdout.
+  void logInfo(String msg) {
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer  INFO: $msg');
+  }
+
+  /// Logs a debug message to stdout.
   void logDebug(String msg) {
-    stdout.writeln(msg);
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer DEBUG: $msg');
   }
 
   /// Stops the webserver.

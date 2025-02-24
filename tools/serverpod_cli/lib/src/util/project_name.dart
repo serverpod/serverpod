@@ -26,6 +26,10 @@ Future<String?> getProjectName([Directory? projectDirectory]) async {
 
   try {
     return moduleNameFromServerPackageName(name);
+  } on LocateModuleNameFromServerPackageNameException catch (e) {
+    log.error('Not a server package (${e.packageName}). Please '
+        'make sure your server package name ends with \'_server\'.');
+    return null;
   } catch (e) {
     log.error(e.toString());
     return null;

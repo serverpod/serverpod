@@ -116,6 +116,7 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+  - makeFutureCallThatThrows:
 listParameters:
   - returnIntList:
   - returnIntListList:
@@ -217,6 +218,14 @@ methodStreaming:
   - simpleStreamWithParameter:
   - simpleDataStream:
   - simpleInOutDataStream:
+  - simpleListInOutIntStream:
+  - simpleListInOutDataStream:
+  - simpleListInOutOtherModuleTypeStream:
+  - simpleNullableListInOutNullableDataStream:
+  - simpleListInOutNullableDataStream:
+  - simpleSetInOutIntStream:
+  - simpleSetInOutDataStream:
+  - nestedSetInListInOutDataStream:
   - simpleEndpoint:
   - intParameter:
   - doubleInputValue:
@@ -251,6 +260,35 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+recordParameters:
+  - returnRecordOfInt:
+  - returnNullableRecordOfInt:
+  - returnRecordOfNullableInt:
+  - returnNullableRecordOfNullableInt:
+  - returnIntStringRecord:
+  - returnNullableIntStringRecord:
+  - returnIntSimpleDataRecord:
+  - returnNullableIntSimpleDataRecord:
+  - returnNamedIntStringRecord:
+  - returnNamedNullableIntStringRecord:
+  - returnRecordOfNamedIntAndObject:
+  - returnNullableRecordOfNamedIntAndObject:
+  - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnRecordTypedef:
+  - returnNullableRecordTypedef:
+  - returnListOfIntSimpleDataRecord:
+  - returnListOfNullableIntSimpleDataRecord:
+  - returnSetOfIntSimpleDataRecord:
+  - returnSetOfNullableIntSimpleDataRecord:
+  - returnNullableSetOfIntSimpleDataRecord:
+  - returnStringMapOfIntSimpleDataRecord:
+  - returnStringMapOfNullableIntSimpleDataRecord:
+  - returnRecordMapOfIntSimpleDataRecord:
+  - returnStringMapOfListOfRecord:
+  - returnNestedNamedRecord:
+  - returnNestedNullableNamedRecord:
+  - returnNestedPositionalAndNamedRecord:
+  - returnListOfNestedPositionalAndNamedRecord:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
@@ -323,6 +361,8 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoRecord:
+  - echoRecords:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:

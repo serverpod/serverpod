@@ -38,13 +38,13 @@ void main(List<String> args) async {
         // Last resort error handling.
         printInternalError(error, stackTrace);
         await _preExit();
-        exit(ExitCodeType.general.exitCode);
+        exit(ExitException.codeError);
       }
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
       await _preExit();
-      exit(ExitCodeType.general.exitCode);
+      exit(ExitException.codeError);
     },
   );
 }

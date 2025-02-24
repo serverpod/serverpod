@@ -9,6 +9,7 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
@@ -77,6 +78,9 @@ class Serverpod {
   /// check remotely if all services the server is depending on is up and
   /// running.
   final HealthCheckHandler? healthCheckHandler;
+
+  /// [DiagnosticEventHandler] for optional custom exception handling.
+  final DiagnosticEventHandler _eventHandler;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -284,6 +288,11 @@ class Serverpod {
   final SecurityContextConfig? _securityContextConfig;
 
   /// Creates a new Serverpod.
+  ///
+  /// ## Experimental features
+  ///
+  /// Features marked as experimental are new and
+  /// the API and names may change from one minor release to another.
   Serverpod(
     List<String> args,
     this.serializationManager,
@@ -294,13 +303,27 @@ class Serverpod {
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
-  }) : _securityContextConfig = securityContextConfig {
+    ExperimentalFeatures? experimentalFeatures,
+  })  : _securityContextConfig = securityContextConfig,
+        _eventHandler = DiagnosticEventDispatcher(
+          experimentalFeatures?.diagnosticEventHandlers ?? const [],
+          timeout: config?.experimentalDiagnosticHandlerTimeout,
+        ) {
+    _initializeServerpod(
+      args,
+      config: config,
+      experimentalFeatures: experimentalFeatures,
+    );
+  }
+
+  void _initializeServerpod(
+    List<String> args, {
+    ServerpodConfig? config,
+    ExperimentalFeatures? experimentalFeatures,
+  }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
-
-    _instance = this;
-    _internalSerializationManager = internal.Protocol();
 
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
@@ -308,6 +331,24 @@ class Serverpod {
 
     _runMode = commandLineArgs.runMode;
     serverId = commandLineArgs.serverId;
+
+    try {
+      _innerInitializeServerpod(commandLineArgs, config: config);
+    } catch (e, stackTrace) {
+      _reportException(e, stackTrace,
+          message: 'Error in Serverpod initialization');
+      rethrow;
+    }
+
+    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
+  }
+
+  void _innerInitializeServerpod(
+    CommandLineArgs commandLineArgs, {
+    ServerpodConfig? config,
+  }) {
+    _instance = this;
+    _internalSerializationManager = internal.Protocol();
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -413,17 +454,17 @@ class Serverpod {
         securityContext: _securityContextConfig?.webServer,
       );
     }
-
-    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
 
   int _exitCode = 0;
 
   /// Starts the Serverpod and all [Server]s that it manages.
   ///
-  /// If [runInGuardedZone] is set to true, the start function will be executed inside `runZonedGuarded`.
+  /// If [runInGuardedZone] is set to true (the default),
+  /// the start function will be executed inside `runZonedGuarded`.
   /// Any errors during the start up sequence will cause the process to exit.
   /// Any runtime errors will be in their own error zone and will not crash the server.
+  ///
   /// If [runInGuardedZone] is set to false, the start function will be executed in the same error zone as the caller.
   /// An [ExitException] will be thrown if the start up sequence fails.
   Future<void> start({bool runInGuardedZone = true}) async {
@@ -431,15 +472,15 @@ class Serverpod {
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
+        if (error.message != '') {
+          stderr.writeln(error.message);
+        }
         exit(error.exitCode);
       }
 
       _exitCode = 1;
-      stderr.writeln(
-        '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
-      );
-      stderr.writeln('$error');
-      stderr.writeln('$stackTrace');
+      _reportException(error, stackTrace,
+          message: 'Internal server error. Zoned exception.');
     }
 
     if (runInGuardedZone) {
@@ -795,17 +836,23 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
+  /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
   Future<void> shutdown({bool exitProcess = true}) async {
-    await _internalSession.close();
-    await redisController?.stop();
-    await server.shutdown();
-    await _webServer?.stop();
-    await _serviceServer?.shutdown();
-    await _futureCallManager?.stop();
-    _healthCheckManager?.stop();
+    try {
+      await _internalSession.close();
+      await redisController?.stop();
+      await server.shutdown();
+      await _webServer?.stop();
+      await _serviceServer?.shutdown();
+      await _futureCallManager?.stop();
+      _healthCheckManager?.stop();
 
-    // This needs to be closed last as it is used by the other services.
-    await _databasePoolManager?.stop();
+      // This needs to be closed last as it is used by the other services.
+      await _databasePoolManager?.stop();
+    } catch (e, stackTrace) {
+      _reportException(e, stackTrace, message: 'Error in Serverpod shutdown');
+      rethrow;
+    }
 
     if (exitProcess) {
       exit(0);
@@ -818,6 +865,29 @@ class Serverpod {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
+  }
+
+  void _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+  }) {
+    if (message != null) {
+      message = '${DateTime.now().toUtc()} $message';
+      stderr.writeln(message);
+    }
+    stderr.writeln('$e');
+    stderr.writeln('$stackTrace');
+
+    internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: DiagnosticEventContext(
+        serverId: serverId,
+        serverRunMode: runMode,
+        serverName: '',
+      ),
+    );
   }
 
   /// Establishes a connection to the database. This method will retry
@@ -881,4 +951,15 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// Submits an event to registered event handlers.
+  /// They will execute asynchrously.
+  /// This method is for internal framework use only.
+  void internalSubmitEvent(
+    DiagnosticEvent event, {
+    required OriginSpace space,
+    required DiagnosticEventContext context,
+  }) {
+    return _eventHandler.handleEvent(event, space: space, context: context);
+  }
 }
