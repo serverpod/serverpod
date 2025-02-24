@@ -360,6 +360,8 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoRecord:
+  - echoRecords:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:

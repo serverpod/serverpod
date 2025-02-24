@@ -36,12 +36,13 @@ import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i18;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i19;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i20;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
-    as _i20;
-import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
     as _i21;
-import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
     as _i22;
+import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+    as _i23;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -7609,13 +7610,16 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfInt',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int,)>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<(int,)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7638,13 +7642,16 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfInt',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int,)?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<(int,)?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7667,13 +7674,16 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNullableInt',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int?,)>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<(int?,)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7696,13 +7706,16 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNullableInt',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int?,)?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<(int?,)?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7725,13 +7738,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnIntStringRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, String)>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+                (record) => _i20.Protocol().deserialize<(int, String)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7754,13 +7771,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntStringRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, String)?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i20.Protocol().deserialize<(int, String)?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7783,13 +7804,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, _i11.SimpleData)>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i20.Protocol().deserialize<(int, _i11.SimpleData)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7812,13 +7837,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, _i11.SimpleData)?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i20.Protocol().deserialize<(int, _i11.SimpleData)?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7841,13 +7870,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedIntStringRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({int number, String text})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({int number, String text})>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7870,13 +7903,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNamedNullableIntStringRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({int number, String text})?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({int number, String text})?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7900,13 +7937,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedIntAndObject',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({_i11.SimpleData data, int number})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({_i11.SimpleData data, int number})>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7930,13 +7971,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNamedIntAndObject',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({_i11.SimpleData data, int number})?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({_i11.SimpleData data, int number})?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7960,13 +8005,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedNullableIntAndNullableObject',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({_i11.SimpleData? data, int? number})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({_i11.SimpleData? data, int? number})>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7989,13 +8038,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordTypedef',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, {_i11.SimpleData data})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<(int, {_i11.SimpleData data})>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8018,13 +8071,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordTypedef',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<(int, {_i11.SimpleData data})?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<(int, {_i11.SimpleData data})?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8047,13 +8104,18 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'recordList': recordList}),
+          parameters: _i1.testObjectToJson({
+            'recordList': _i20.mapRecordContainingContainerToJson(recordList)
+          }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<List<(int, _i11.SimpleData)>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<List<(int, _i11.SimpleData)>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8077,13 +8139,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters: _i1.testObjectToJson(
+              {'record': _i20.mapRecordContainingContainerToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<List<(int, _i11.SimpleData)?>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<List<(int, _i11.SimpleData)?>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8106,13 +8172,18 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'recordSet': recordSet}),
+          parameters: _i1.testObjectToJson({
+            'recordSet': _i20.mapRecordContainingContainerToJson(recordSet)
+          }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Set<(int, _i11.SimpleData)>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Set<(int, _i11.SimpleData)>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8136,13 +8207,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'set': set}),
+          parameters: _i1.testObjectToJson(
+              {'set': _i20.mapRecordContainingContainerToJson(set)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Set<(int, _i11.SimpleData)?>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Set<(int, _i11.SimpleData)?>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8166,13 +8241,20 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNullableSetOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'recordSet': recordSet}),
+          parameters: _i1.testObjectToJson({
+            'recordSet': recordSet == null
+                ? null
+                : _i20.mapRecordContainingContainerToJson(recordSet)
+          }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Set<(int, _i11.SimpleData)>?>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Set<(int, _i11.SimpleData)>?>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8196,13 +8278,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _i1.testObjectToJson(
+              {'map': _i20.mapRecordContainingContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Map<String, (int, _i11.SimpleData)>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Map<String, (int, _i11.SimpleData)>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8226,13 +8312,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _i1.testObjectToJson(
+              {'map': _i20.mapRecordContainingContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Map<String, (int, _i11.SimpleData)?>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Map<String, (int, _i11.SimpleData)?>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8256,13 +8346,18 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({'map': map}),
+          parameters: _i1.testObjectToJson(
+              {'map': _i20.mapRecordContainingContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Map<(String, int), (int, _i11.SimpleData)>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Map<(String, int), (int, _i11.SimpleData)>>(
+                    record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8285,13 +8380,17 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfListOfRecord',
-          parameters: _i1.testObjectToJson({'input': input}),
+          parameters: _i1.testObjectToJson(
+              {'input': _i20.mapRecordContainingContainerToJson(input)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<Map<String, List<Set<(int,)>>>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<Map<String, List<Set<(int,)>>>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8315,13 +8414,18 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNestedNamedRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({(_i11.SimpleData, double) namedSubRecord})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({(_i11.SimpleData, double) namedSubRecord})>(
+                    record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8345,13 +8449,18 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNestedNullableNamedRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<({(_i11.SimpleData, double)? namedSubRecord})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<({(_i11.SimpleData, double)? namedSubRecord})>(
+                    record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8375,14 +8484,20 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnNestedPositionalAndNamedRecord',
-          parameters: _i1.testObjectToJson({'record': record}),
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<
-            ((int, String), {(_i11.SimpleData, double) namedSubRecord})>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<
+                (
+                  (int, String), {
+                  (_i11.SimpleData, double) namedSubRecord
+                })>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8407,14 +8522,22 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNestedPositionalAndNamedRecord',
-          parameters: _i1.testObjectToJson({'recordList': recordList}),
+          parameters: _i1.testObjectToJson({
+            'recordList': _i20.mapRecordContainingContainerToJson(recordList)
+          }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<
-            List<((int, String), {(_i11.SimpleData, double) namedSubRecord})>>);
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol().deserialize<
+                List<
+                    (
+                      (int, String), {
+                      (_i11.SimpleData, double) namedSubRecord
+                    })>>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8684,7 +8807,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField(
+  _i3.Future<_i21.ScopeServerOnlyField> getScopeServerOnlyField(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -8703,7 +8826,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i20.ScopeServerOnlyField>);
+        ) as _i3.Future<_i21.ScopeServerOnlyField>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8722,7 +8845,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField(
+  _i3.Future<_i22.ScopeServerOnlyFieldChild> getProtocolField(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -8741,7 +8864,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i21.ScopeServerOnlyFieldChild>);
+        ) as _i3.Future<_i22.ScopeServerOnlyFieldChild>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -10286,6 +10409,72 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Future<(String, (int, bool))> echoRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (String, (int, bool)) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i20.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i20.Protocol().deserialize<(String, (int, bool))>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<(String, (int, bool))>> echoRecords(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<(String, (int, bool))> records,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoRecords',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoRecords',
+          parameters: _i1.testObjectToJson(
+              {'records': _i20.mapRecordContainingContainerToJson(records)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i20.Protocol()
+                .deserialize<List<(String, (int, bool))>>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<void> logMessageWithSession(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -10542,7 +10731,7 @@ class _MyFeatureEndpoint {
     });
   }
 
-  _i3.Future<_i22.MyFeatureModel> myFeatureModel(
+  _i3.Future<_i23.MyFeatureModel> myFeatureModel(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -10561,7 +10750,7 @@ class _MyFeatureEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i22.MyFeatureModel>);
+        ) as _i3.Future<_i23.MyFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

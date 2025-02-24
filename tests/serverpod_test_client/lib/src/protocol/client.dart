@@ -2966,6 +2966,21 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'simpleDatas': simpleDatas},
       );
 
+  _i2.Future<(String, (int, bool))> echoRecord((String, (int, bool)) record) =>
+      caller.callServerEndpoint<(String, (int, bool))>(
+        'testTools',
+        'echoRecord',
+        {'record': _i19.mapRecordToJson(record)},
+      );
+
+  _i2.Future<List<(String, (int, bool))>> echoRecords(
+          List<(String, (int, bool))> records) =>
+      caller.callServerEndpoint<List<(String, (int, bool))>>(
+        'testTools',
+        'echoRecords',
+        {'records': _i19.mapRecordContainingContainerToJson(records)},
+      );
+
   _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
         'testTools',
         'logMessageWithSession',

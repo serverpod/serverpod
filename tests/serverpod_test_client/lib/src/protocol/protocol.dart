@@ -2463,6 +2463,29 @@ class Protocol extends _i1.SerializationManager {
     if (t == Set<Duration?>) {
       return (data as List).map((e) => deserialize<Duration?>(e)).toSet() as T;
     }
+    if (t == _i1.getType<(String, (int, bool))>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<(int, bool)>(data['p'][1]),
+      ) as T;
+    }
+    if (t == _i1.getType<(int, bool)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<bool>(data['p'][1]),
+      ) as T;
+    }
+    if (t == List<(String, (int, bool))>) {
+      return (data as List)
+          .map((e) => deserialize<(String, (int, bool))>(e))
+          .toList() as T;
+    }
+    if (t == _i1.getType<(String, (int, bool))>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<(int, bool)>(data['p'][1]),
+      ) as T;
+    }
     if (t == _i130.CustomClass) {
       return _i130.CustomClass.fromJson(data) as T;
     }
@@ -3536,6 +3559,22 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
+    };
+  }
+  if (record is (String, (int, bool))) {
+    return {
+      "p": [
+        record.$1,
+        mapRecordToJson(record.$2),
+      ],
+    };
+  }
+  if (record is (int, bool)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
+      ],
     };
   }
   throw Exception('Unsupported record type ${record.runtimeType}');

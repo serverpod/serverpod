@@ -6366,6 +6366,47 @@ class Endpoints extends _i1.EndpointDispatch {
             params['simpleDatas'],
           ),
         ),
+        'echoRecord': _i1.MethodConnector(
+          name: 'echoRecord',
+          params: {
+            'record': _i1.ParameterDescription(
+              name: 'record',
+              type: _i1.getType<(String, (int, bool))>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
+                  .echoRecord(
+                    session,
+                    params['record'],
+                  )
+                  .then((record) => _i54.mapRecordToJson(record)),
+        ),
+        'echoRecords': _i1.MethodConnector(
+          name: 'echoRecords',
+          params: {
+            'records': _i1.ParameterDescription(
+              name: 'records',
+              type: _i1.getType<List<(String, (int, bool))>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i39.TestToolsEndpoint)
+                  .echoRecords(
+                    session,
+                    params['records'],
+                  )
+                  .then((container) =>
+                      _i54.mapRecordContainingContainerToJson(container)),
+        ),
         'logMessageWithSession': _i1.MethodConnector(
           name: 'logMessageWithSession',
           params: {},
