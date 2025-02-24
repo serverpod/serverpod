@@ -111,23 +111,32 @@ Set<String> _findDependentTables(
 }) {
   dependentTables ??= {};
 
-  for (var table in sourceTables) {
-    if (!dependentTables.contains(table.name) &&
-        table.foreignKeys.any((foreignKey) =>
-            foreignKey.referenceTable == tableName &&
-            // Check whether the reference will also be upheld in the target table.
-            // otherwise the target table will already be modified and does not need to have be fully dropped
-            targetTables.any((targetTable) =>
-                targetTable.name == table.name &&
-                targetTable.foreignKeys.any((targetForeignKey) =>
-                    targetForeignKey.constraintName ==
-                    foreignKey.constraintName)))) {
-      dependentTables.add(table.name);
+  /// Returns whether the [sourceTable] has a current and future relation to [tableName]
+  bool hasCurrentAndFutureRelationToTable(TableDefinition sourceTable) {
+    return sourceTable.foreignKeys.any((foreignKey) =>
+        foreignKey.referenceTable == tableName &&
+        // Check whether the reference will also be upheld in the target table.
+        // otherwise the target table will already be modified and does not need to have be fully dropped
+        targetTables.any((targetTable) =>
+            targetTable.name == sourceTable.name &&
+            targetTable.foreignKeys.any((targetForeignKey) =>
+                targetForeignKey.constraintName == foreignKey.constraintName)));
+  }
 
-      _findDependentTables(table.name,
-          sourceTables: sourceTables,
-          targetTables: targetTables,
-          dependentTables: dependentTables);
+  for (var sourceTable in sourceTables) {
+    if (dependentTables.contains(sourceTable.name)) {
+      continue;
+    }
+
+    if (hasCurrentAndFutureRelationToTable(sourceTable)) {
+      dependentTables.add(sourceTable.name);
+
+      _findDependentTables(
+        sourceTable.name,
+        sourceTables: sourceTables,
+        targetTables: targetTables,
+        dependentTables: dependentTables,
+      );
     }
   }
 
