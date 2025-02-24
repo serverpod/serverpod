@@ -22,7 +22,6 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'diagnostic_events/diagnostic_events.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
@@ -80,8 +79,13 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  /// [DiagnosticEventHandler] for optional custom exception handling.
-  final DiagnosticEventHandler _eventHandler;
+  final _ExperimentalApi _experimental;
+
+  /// Access experimental features.
+  ///
+  /// Note: These features are experimental and may change or be removed
+  /// in minor version releases.
+  _ExperimentalApi get experimental => _experimental;
 
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
@@ -306,9 +310,9 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
   })  : _securityContextConfig = securityContextConfig,
-        _eventHandler = DiagnosticEventDispatcher(
-          experimentalFeatures?.diagnosticEventHandlers ?? const [],
-          timeout: config?.experimentalDiagnosticHandlerTimeout,
+        _experimental = _ExperimentalApi(
+          config: config,
+          experimentalFeatures: experimentalFeatures,
         ) {
     _initializeServerpod(
       args,
@@ -867,22 +871,6 @@ class Serverpod {
     }
   }
 
-  /// Application method for submitting a diagnostic event
-  /// to registered event handlers.
-  /// They will execute asynchrously.
-  ///
-  /// This method is for application (user space) use.
-  void unstableSubmitDiagnosticEvent(
-    DiagnosticEvent event, {
-    required Session session,
-  }) {
-    return _eventHandler.handleEvent(
-      event,
-      space: OriginSpace.application,
-      context: contextFromSession(session),
-    );
-  }
-
   void _reportException(
     Object e,
     StackTrace stackTrace, {
@@ -946,6 +934,34 @@ class Serverpod {
   }
 }
 
+class _ExperimentalApi {
+  final DiagnosticEventHandler _eventDispatcher;
+
+  _ExperimentalApi({
+    ServerpodConfig? config,
+    ExperimentalFeatures? experimentalFeatures,
+  }) : _eventDispatcher = DiagnosticEventDispatcher(
+          experimentalFeatures?.diagnosticEventHandlers ?? const [],
+          timeout: config?.experimentalDiagnosticHandlerTimeout,
+        );
+
+  /// Application method for submitting a diagnostic event
+  /// to registered event handlers.
+  /// They will execute asynchrously.
+  ///
+  /// This method is for application (user space) use.
+  void submitDiagnosticEvent(
+    DiagnosticEvent event, {
+    required Session session,
+  }) {
+    return _eventDispatcher.handleEvent(
+      event,
+      space: OriginSpace.application,
+      context: contextFromSession(session),
+    );
+  }
+}
+
 /// Exception used to signal a
 class ExitException implements Exception {
   /// Creates an instance of [ExitException].
@@ -976,6 +992,10 @@ extension ServerpodInternalMethods on Serverpod {
     required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
-    return _eventHandler.handleEvent(event, space: space, context: context);
+    return _experimental._eventDispatcher.handleEvent(
+      event,
+      space: space,
+      context: context,
+    );
   }
 }

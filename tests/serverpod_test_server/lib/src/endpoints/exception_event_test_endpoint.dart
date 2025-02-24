@@ -5,7 +5,7 @@ class DiagnosticEventTestEndpoint extends Endpoint {
     try {
       throw Exception('An exception is thrown');
     } catch (e, stackTrace) {
-      session.serverpod.unstableSubmitDiagnosticEvent(
+      session.serverpod.experimental.submitDiagnosticEvent(
         ExceptionEvent(e, stackTrace),
         session: session,
       );
