@@ -135,7 +135,7 @@ class FutureCallManager {
           await call.invoke(futureCallSession, object);
           await futureCallSession.close();
         } catch (e, stackTrace) {
-          _server.serverpod.unstableInternalSubmitEvent(
+          _server.serverpod.internalSubmitEvent(
             ExceptionEvent(e, stackTrace),
             space: OriginSpace.application,
             context: contextFromSession(futureCallSession),
@@ -149,7 +149,7 @@ class FutureCallManager {
       var message =
           'Internal server error. Failed to connect to database in future call manager.';
 
-      _server.serverpod.unstableInternalSubmitEvent(
+      _server.serverpod.internalSubmitEvent(
         ExceptionEvent(e, stackTrace, message: message),
         space: OriginSpace.framework,
         context: contextFromServer(_server),

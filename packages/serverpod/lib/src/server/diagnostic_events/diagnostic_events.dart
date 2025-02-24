@@ -1,4 +1,5 @@
 export 'connection_info.dart';
+export 'event_dispatcher.dart';
 export 'event_handler.dart';
 export 'event_function.dart';
 export 'event_record.dart';

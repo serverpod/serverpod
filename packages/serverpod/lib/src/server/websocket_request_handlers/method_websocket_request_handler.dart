@@ -118,7 +118,7 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      server.serverpod.unstableInternalSubmitEvent(
+      server.serverpod.internalSubmitEvent(
         ExceptionEvent(e, stackTrace, message: 'Method stream websocket error'),
         space: OriginSpace.framework,
         context: contextFromHttpRequest(server, request, OperationType.stream),
@@ -184,7 +184,7 @@ class MethodWebsocketRequestHandler {
         StackTrace stackTrace,
         MethodStreamCallContext callContext,
       ) {
-        server.serverpod.unstableInternalSubmitEvent(
+        server.serverpod.internalSubmitEvent(
           ExceptionEvent(error, stackTrace),
           space: OriginSpace.application,
           context: _makeEventContext(
@@ -443,7 +443,7 @@ class MethodWebsocketRequestHandler {
       server.serverpod.logVerbose(message);
     }
 
-    server.serverpod.unstableInternalSubmitEvent(
+    server.serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space: OriginSpace.framework,
       context: streamCommandMessage != null

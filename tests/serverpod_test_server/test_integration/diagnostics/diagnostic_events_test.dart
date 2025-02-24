@@ -49,7 +49,7 @@ void main() {
       pod = IntegrationTestServer.create(
         config: config,
         experimentalFeatures: ExperimentalFeatures(
-          unstableDiagnosticEventHandlers: [exceptionHandler],
+          diagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.webServer.addRoute(ExceptionRoute(), '/exception');
@@ -107,7 +107,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-          unstableDiagnosticEventHandlers: [exceptionHandler],
+          diagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
@@ -141,7 +141,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-          unstableDiagnosticEventHandlers: [exceptionHandler],
+          diagnosticEventHandlers: [exceptionHandler],
         ),
       );
       await pod.start();
@@ -255,7 +255,7 @@ void main() {
       exceptionHandler = TestExceptionHandler();
       pod = IntegrationTestServer.create(
         experimentalFeatures: ExperimentalFeatures(
-          unstableDiagnosticEventHandlers: [exceptionHandler],
+          diagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.webServer.addRoute(ExceptionRoute(), '/exception');

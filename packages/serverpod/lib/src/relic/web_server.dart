@@ -214,7 +214,7 @@ class WebServer {
                 serverpod.server, httpRequest, OperationType.web)
             : contextFromServer(serverpod.server);
 
-    serverpod.unstableInternalSubmitEvent(
+    serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space: space,
       context: context,

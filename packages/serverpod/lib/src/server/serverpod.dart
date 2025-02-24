@@ -9,6 +9,7 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
@@ -290,12 +291,8 @@ class Serverpod {
   ///
   /// ## Experimental features
   ///
-  /// Features prefixed with `unstable` are new or experimental where
+  /// Features marked as experimental are new and
   /// the API and names may change from one minor release to another.
-  ///
-  /// [unstableDiagnosticEventHandlers] is a list of handlers that will be
-  /// called for all diagnostic events.
-  /// See [DiagnosticEventHandler] for more information.
   Serverpod(
     List<String> args,
     this.serializationManager,
@@ -308,9 +305,9 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
   })  : _securityContextConfig = securityContextConfig,
-        _eventHandler = _EventHandlers(
-          experimentalFeatures?.unstableDiagnosticEventHandlers ?? const [],
-          timeout: config?.unstableDiagnosticHandlerTimeout,
+        _eventHandler = DiagnosticEventDispatcher(
+          experimentalFeatures?.diagnosticEventHandlers ?? const [],
+          timeout: config?.experimentalDiagnosticHandlerTimeout,
         ) {
     _initializeServerpod(
       args,
@@ -335,7 +332,7 @@ class Serverpod {
     try {
       _innerInitializeServerpod(commandLineArgs, config: config);
     } catch (e, stackTrace) {
-      unstableInternalSubmitEvent(
+      internalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         space: OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -494,7 +491,7 @@ class Serverpod {
       stderr.writeln('$error');
       stderr.writeln('$stackTrace');
 
-      unstableInternalSubmitEvent(
+      internalSubmitEvent(
         ExceptionEvent(error, stackTrace, message: message),
         space: OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -872,7 +869,7 @@ class Serverpod {
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
-      unstableInternalSubmitEvent(
+      internalSubmitEvent(
         ExceptionEvent(e, stackTrace),
         space: OriginSpace.framework,
         context: DiagnosticEventContext(
@@ -962,58 +959,11 @@ extension ServerpodInternalMethods on Serverpod {
   /// Submits an event to registered event handlers.
   /// They will execute asynchrously.
   /// This method is for internal framework use only.
-  void unstableInternalSubmitEvent(
+  void internalSubmitEvent(
     DiagnosticEvent event, {
     required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
     return _eventHandler.handleEvent(event, space: space, context: context);
-  }
-}
-
-/// Container for a list of [DiagnosticEventHandler]s
-/// that will run concurrently with each other
-/// and asynchronously with the caller.
-class _EventHandlers implements DiagnosticEventHandler {
-  final List<DiagnosticEventHandler> handlers;
-
-  /// If set, this timeout is applied to each event handler invocation.
-  final Duration? timeout;
-
-  /// Creates a new [_EventHandlers] with the specified list of handlers.
-  const _EventHandlers(
-    this.handlers, {
-    // ignore: unused_element
-    this.timeout = const Duration(seconds: 30),
-  });
-
-  @override
-  void handleEvent(
-    DiagnosticEvent event, {
-    required OriginSpace space,
-    required DiagnosticEventContext context,
-  }) {
-    var futures = handlers.map((handler) => Future(
-          () => handler.handleEvent(event, space: space, context: context),
-        ));
-
-    var to = timeout;
-    if (to != null) {
-      futures = futures.map((future) => future.timeout(to));
-    }
-
-    futures.wait.onError((ParallelWaitError e, stackTrace) {
-      var errors = e.errors;
-      if (errors is Iterable<AsyncError?>) {
-        for (var error in errors) {
-          if (error != null) {
-            stderr.writeln('Error in event handler: $error');
-          }
-        }
-      } else {
-        stderr.writeln('Error in an event handler: $errors');
-      }
-      return e.values;
-    });
   }
 }

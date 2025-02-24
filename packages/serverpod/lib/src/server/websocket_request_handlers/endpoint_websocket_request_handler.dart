@@ -208,7 +208,7 @@ abstract class EndpointWebsocketRequestHandler {
             ? contextFromHttpRequest(server, httpRequest, OperationType.stream)
             : contextFromServer(server);
 
-    server.serverpod.unstableInternalSubmitEvent(
+    server.serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
       space: space,
       context: context,
