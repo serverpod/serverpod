@@ -11,7 +11,21 @@ void main() {
   );
 
   test(
-      'When creating a `TypeDefinition` from a `RecordType` with a positional field, then the fields are stored in `generics`',
+      'Given "RecordType", when creating "TypeDefinition", then the `className` is set to "Record"',
+      () {
+    var typeDefinition = TypeDefinition.fromDartType(
+      RecordType(
+        nullabilitySuffix: NullabilitySuffix.none,
+        positional: [],
+        named: {},
+      ),
+    );
+
+    expect(typeDefinition.className, 'Record');
+  });
+
+  test(
+      'Given "RecordType" with a positional field, when creating "TypeDefinition", then the positional field is stored in `generics` without a `recordFieldName`',
       () {
     var typeDefinition = TypeDefinition.fromDartType(
       RecordType(
@@ -21,7 +35,6 @@ void main() {
       ),
     );
 
-    expect(typeDefinition.className, 'Record');
     expect(typeDefinition.generics, [
       isA<TypeDefinition>().having(
         (t) => t.recordFieldName,
@@ -32,7 +45,7 @@ void main() {
   });
 
   test(
-      'When creating a `TypeDefinition` from a `RecordType` with a named field, then the fields are stored in `generics`',
+      'Given "RecordType" with a named field, when creating "TypeDefinition", then the positional field is stored in `generics` with its name as `recordFieldName`',
       () {
     var typeDefinition = TypeDefinition.fromDartType(
       RecordType(
@@ -42,7 +55,6 @@ void main() {
       ),
     );
 
-    expect(typeDefinition.className, 'Record');
     expect(typeDefinition.generics, [
       isA<TypeDefinition>().having(
         (t) => t.recordFieldName,
@@ -52,7 +64,7 @@ void main() {
     ]);
   });
   test(
-      'When creating a `TypeDefinition` from a `RecordType` with a mixed positional and named fields, then the fields are stored in `generics`',
+      'Given "RecordType" with a positional and a named field, when creating "TypeDefinition", then the fields are stored in `generics` without and with a `recordFieldName` respectively',
       () {
     var typeDefinition = TypeDefinition.fromDartType(
       RecordType(
@@ -62,7 +74,6 @@ void main() {
       ),
     );
 
-    expect(typeDefinition.className, 'Record');
     expect(typeDefinition.generics, [
       isA<TypeDefinition>().having(
         (t) => t.recordFieldName,
@@ -78,7 +89,7 @@ void main() {
   });
 
   test(
-      'When creating a `TypeDefinition` from a `RecordType` with a mixed positional and named field containing further nested records, then the fields are stored in `generics`',
+      'Given "RecordType" with a positional and a named field containing further records, when creating "TypeDefinition", then the fields are stored in `generics` without and with a `recordFieldName` respectively and each nested field\'s `generics` contains the record information',
       () {
     var childRecordType = RecordType(
       nullabilitySuffix: NullabilitySuffix.none,
@@ -94,7 +105,6 @@ void main() {
       ),
     );
 
-    expect(typeDefinition.className, 'Record');
     expect(typeDefinition.generics, [
       isA<TypeDefinition>()
           .having(
