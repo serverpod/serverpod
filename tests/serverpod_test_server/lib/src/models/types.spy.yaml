@@ -9,5 +9,10 @@ fields:
   aByteData: ByteData?
   aDuration: Duration?
   aUuid: UuidValue?
+  aUri: Uri?
+  aBigInt: BigInt?
   anEnum: TestEnum?
   aStringifiedEnum: TestEnumStringified?
+  aList: List<int>?
+  aMap: Map<int, int>?
+  aSet: Set<int>?

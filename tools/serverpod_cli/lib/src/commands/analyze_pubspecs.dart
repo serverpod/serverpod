@@ -45,7 +45,7 @@ class AnalyzePubspecsCommand extends ServerpodCommand {
     if (!await pubspecDependenciesMatch(
       checkLatestVersion: checkLatestVersionObj,
     )) {
-      throw ExitException();
+      throw ExitException.error();
     }
   }
 }

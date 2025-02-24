@@ -41,6 +41,32 @@ extension UuidValueJsonExtension on UuidValue {
   String toJson() => uuid;
 }
 
+/// Expose toJson on Uri
+/// Expose static fromJson builder
+extension UriJsonExtension on Uri {
+  /// Returns a deserialized version of the [UuidValue].
+  static Uri fromJson(dynamic value) {
+    if (value is Uri) return value;
+    return Uri.parse(value as String);
+  }
+
+  /// Returns a serialized version of the [Uri] as a [String].
+  String toJson() => toString();
+}
+
+/// Expose toJson on BigInt
+/// Expose static fromJson builder
+extension BigIntJsonExtension on BigInt {
+  /// Returns a deserialized version of the [BigInt].
+  static BigInt fromJson(dynamic value) {
+    if (value is BigInt) return value;
+    return BigInt.parse(value as String);
+  }
+
+  /// Returns a serialized version of the [BigInt] as a [String].
+  String toJson() => toString();
+}
+
 /// Expose toJson on ByteData
 /// Expose static fromJson builder
 extension ByteDataJsonExtension on ByteData {
@@ -104,5 +130,32 @@ extension ListJsonExtension<T> on List<T> {
     if (valueToJson == null) return this;
 
     return map<dynamic>(valueToJson).toList();
+  }
+}
+
+/// Expose toJson on Set
+extension SetJsonExtension<T> on Set<T> {
+  /// Returns a serialized version of the [Set] with values serialized.
+  List<dynamic> toJson({dynamic Function(T)? valueToJson}) {
+    if (valueToJson == null) return toList();
+
+    return map<dynamic>(valueToJson).toList();
+  }
+
+  /// Returns a deserialized version of the [Set].
+  static Set<T>? fromJson<T>(
+    dynamic value, {
+    required T Function(dynamic) itemFromJson,
+  }) {
+    if (value is Set<T>) return value;
+
+    var set = (value as List?)?.map(itemFromJson).toSet();
+
+    if (set != null && value!.length != set.length) {
+      throw Exception(
+          'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).');
+    }
+
+    return set;
   }
 }

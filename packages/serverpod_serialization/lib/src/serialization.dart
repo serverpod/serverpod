@@ -122,6 +122,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
+    } else if (_isNullableType<BigInt>(t)) {
+      if (data == null) return null as T;
+      return BigInt.parse(data) as T;
     }
 
     throw DeserializationTypeNotFoundException(
@@ -151,6 +154,8 @@ abstract class SerializationManager {
       return 'UuidValue';
     } else if (data is Uri) {
       return 'Uri';
+    } else if (data is BigInt) {
+      return 'BigInt';
     }
 
     return null;
@@ -180,6 +185,8 @@ abstract class SerializationManager {
         return deserialize<UuidValue>(data['data']);
       case 'Uri':
         return deserialize<Uri>(data['data']);
+      case 'BigInt':
+        return deserialize<BigInt>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -223,6 +230,10 @@ abstract class SerializationManager {
           return nonEncodable.uuid;
         } else if (nonEncodable is Uri) {
           return nonEncodable.toString();
+        } else if (nonEncodable is BigInt) {
+          return nonEncodable.toString();
+        } else if (nonEncodable is Set) {
+          return nonEncodable.toList();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
@@ -230,6 +241,12 @@ abstract class SerializationManager {
         } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
           return nonEncodable.toJsonForProtocol();
         } else {
+          if (object is Record) {
+            throw Exception(
+              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
+            );
+          }
+
           // ignore: avoid_dynamic_calls
           return nonEncodable?.toJson();
           // throws NoSuchMethodError if toJson is not implemented
@@ -263,7 +280,7 @@ abstract class SerializationManager {
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
-  /// name so that it can be decoded even if th class is unknown.
+  /// name so that it can be decoded even if the class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
   String encodeWithType(
@@ -304,8 +321,11 @@ const extensionSerializedTypes = [
   'ByteData',
   'Duration',
   'UuidValue',
+  'Uri',
+  'BigInt',
   'Map',
   'List',
+  'Set',
 ];
 
 extension<K, V> on Map<K, V> {

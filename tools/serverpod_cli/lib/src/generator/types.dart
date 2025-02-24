@@ -1,8 +1,10 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:code_builder/code_builder.dart';
+import 'package:code_builder/code_builder.dart' as code_builder;
+import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -22,9 +24,18 @@ class TypeDefinition {
   final String className;
 
   /// The generics the type has.
+  ///
+  /// For record types this contains the fields.
+  /// Positional fields are defined by their index in this list, and named
+  /// field have a non-`null` [recordFieldName]
   final List<TypeDefinition> generics;
 
   final String? url;
+
+  /// The name of the field when used as a named record field.
+  ///
+  /// Only set for [TypeDefinition]s used inside [generics].
+  final String? recordFieldName;
 
   /// Populated if type is a model that is defined in the project. I.e. not a
   /// module or serverpod model.
@@ -40,6 +51,55 @@ class TypeDefinition {
 
   EnumDefinition? enumDefinition;
 
+  /// Creates an [TypeDefinition] from a given [DartType].
+  /// throws [FromDartTypeClassNameException] if the class name could not be
+  /// determined.
+  factory TypeDefinition.fromDartType(
+    DartType type, {
+    String? recordFieldName,
+  }) {
+    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
+    var url = type.element?.librarySource?.uri.toString();
+
+    if (type is RecordType) {
+      var positionalField = type.positionalFields
+          .map((f) => TypeDefinition.fromDartType(f.type))
+          .toList();
+      var namedFields = type.namedFields
+          .map((f) =>
+              TypeDefinition.fromDartType(f.type, recordFieldName: f.name))
+          .toList();
+
+      return TypeDefinition(
+        className: RecordKeyword.className,
+        nullable: nullable,
+        dartType: type,
+        generics: [...positionalField, ...namedFields],
+        url: url,
+        recordFieldName: recordFieldName,
+      );
+    }
+
+    var generics = (type is ParameterizedType)
+        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
+        : <TypeDefinition>[];
+
+    var className = type is! VoidType ? type.element?.displayName : 'void';
+
+    if (className == null) {
+      throw FromDartTypeClassNameException(type);
+    }
+
+    return TypeDefinition(
+      className: className,
+      nullable: nullable,
+      dartType: type,
+      generics: generics,
+      url: url,
+      recordFieldName: recordFieldName,
+    );
+  }
+
   TypeDefinition({
     required this.className,
     this.generics = const [],
@@ -49,6 +109,7 @@ class TypeDefinition {
     this.customClass = false,
     this.enumDefinition,
     this.projectModelDefinition,
+    this.recordFieldName,
   });
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
@@ -56,9 +117,13 @@ class TypeDefinition {
   bool get isSerializedByExtension =>
       extensionSerializedTypes.contains(className);
 
-  bool get isListType => className == 'List';
+  bool get isListType => className == ListKeyword.className;
 
-  bool get isMapType => className == 'Map';
+  bool get isSetType => className == SetKeyword.className;
+
+  bool get isMapType => className == MapKeyword.className;
+
+  bool get isRecordType => className == RecordKeyword.className;
 
   bool get isIdType => className == 'int';
 
@@ -111,31 +176,6 @@ class TypeDefinition {
     );
   }
 
-  /// Creates an [TypeDefinition] from a given [DartType].
-  /// throws [FromDartTypeClassNameException] if the class name could not be
-  /// determined.
-  factory TypeDefinition.fromDartType(DartType type) {
-    var generics = (type is ParameterizedType)
-        ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
-        : <TypeDefinition>[];
-    var url = type.element?.librarySource?.uri.toString();
-    var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-
-    var className = type is! VoidType ? type.element?.displayName : 'void';
-
-    if (className == null) {
-      throw FromDartTypeClassNameException(type);
-    }
-
-    return TypeDefinition(
-      className: className,
-      nullable: nullable,
-      dartType: type,
-      generics: generics,
-      url: url,
-    );
-  }
-
   /// A convenience variable for getting a [TypeDefinition] of an non null int
   /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
@@ -150,6 +190,7 @@ class TypeDefinition {
         generics: generics,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
+        recordFieldName: recordFieldName,
       );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -162,6 +203,7 @@ class TypeDefinition {
         generics: generics,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
+        recordFieldName: recordFieldName,
       );
 
   static String getRef(SerializableModelDefinition model) {
@@ -174,14 +216,39 @@ class TypeDefinition {
     return model.fileRef();
   }
 
-  /// Generate a [TypeReference] from this definition.
-  TypeReference reference(
+  /// Generate a [Reference] from this definition.
+  ///
+  /// For classes this will be a [TypeReference],
+  /// while records return a [RecordType].
+  Reference reference(
     bool serverCode, {
     bool? nullable,
     List<String> subDirParts = const [],
     required GeneratorConfig config,
     String? typeSuffix,
   }) {
+    if (isRecordType) {
+      return code_builder.RecordType((b) {
+        b.positionalFieldTypes.addAll(
+          generics
+              .where((f) => f.recordFieldName == null)
+              .map((f) => f.reference(serverCode, config: config)),
+        );
+
+        b.namedFieldTypes.addAll({
+          for (var namedField
+              in generics.where((f) => f.recordFieldName != null))
+            namedField.recordFieldName!: namedField.reference(
+              serverCode,
+              config: config,
+            ),
+        });
+
+        b.isNullable = nullable ?? this.nullable;
+      });
+    }
+    assert(dartType is! RecordType);
+
     return TypeReference(
       (t) {
         if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
@@ -248,11 +315,13 @@ class TypeDefinition {
         }
         t.isNullable = nullable ?? this.nullable;
         t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
-        t.types.addAll(generics.map((e) => e.reference(
-              serverCode,
-              subDirParts: subDirParts,
-              config: config,
-            )));
+        t.types.addAll(generics.map(
+          (e) => e.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          ),
+        ));
       },
     );
   }
@@ -277,6 +346,8 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
+    if (className == 'Uri') return 'text';
+    if (className == 'BigInt') return 'text';
 
     return 'json';
   }
@@ -289,7 +360,6 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    // TODO: add all supported types here
     if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
     if (className == 'double') return 'ColumnDouble';
@@ -299,6 +369,8 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
+    if (className == 'Uri') return 'ColumnUri';
+    if (className == 'BigInt') return 'ColumnBigInt';
 
     return 'ColumnSerializable';
   }
@@ -319,7 +391,67 @@ class TypeDefinition {
     bool serverCode, {
     required GeneratorConfig config,
   }) {
-    if ((className == 'List' || className == 'Set') && generics.length == 1) {
+    if (isRecordType) {
+      var positionalFields =
+          generics.where((f) => f.recordFieldName == null).toList();
+      var namedFields =
+          generics.where((f) => f.recordFieldName != null).toList();
+
+      return [
+        MapEntry(
+          refer('getType', serverpodUrl(serverCode))
+              .call([], {}, [reference(serverCode, config: config)]),
+          Block.of(
+            [
+              if (nullable) const Code(' (data == null) ? null as T : '),
+              const Code('('),
+              for (final (i, positionalField) in positionalFields.indexed) ...[
+                if (positionalField.nullable)
+                  Code(
+                      "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
+                const Code('deserialize<'),
+                positionalField
+                    .reference(serverCode, config: config, nullable: false)
+                    .code,
+                const Code('>('),
+                if (i == 0 && !positionalField.nullable) ...[
+                  Code("((data as Map)['p'] as List)[$i]"),
+                ] else
+                  Code("data['p'][$i]"),
+                const Code(')'),
+                const Code(','),
+              ],
+              if (namedFields.isNotEmpty) ...[
+                for (final (i, namedField) in namedFields.indexed) ...[
+                  Code(namedField.recordFieldName!),
+                  const Code(':'),
+                  if (namedField.nullable)
+                    Code(
+                        "((data ${i == 0 && positionalFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
+                  const Code('deserialize<'),
+                  namedField
+                      .reference(serverCode, config: config, nullable: false)
+                      .code,
+                  const Code('>('),
+                  if (i == 0 &&
+                      positionalFields.isEmpty &&
+                      !namedField.nullable)
+                    Code(
+                        "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
+                  else
+                    Code("data['n']['${namedField.recordFieldName!}']"),
+                  const Code(')'),
+                  const Code(','),
+                ],
+              ],
+              const Code(') as T'),
+            ],
+          ),
+        ),
+      ];
+    } else if ((className == ListKeyword.className ||
+            className == SetKeyword.className) &&
+        generics.length == 1) {
       return [
         MapEntry(
           nullable
@@ -335,20 +467,20 @@ class TypeDefinition {
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null) as dynamic')
+                        ':null) as T')
                   ])
                 : Block.of([
                     const Code('(data as List).map((e) =>'
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as dynamic'),
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
                   ])
           ]),
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
       ];
-    } else if (className == 'Map' && generics.length == 2) {
+    } else if (className == MapKeyword.className && generics.length == 2) {
       return [
         MapEntry(
           nullable
@@ -368,7 +500,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v)))' ':null) as dynamic')
+                        const Code('>(v)))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -379,7 +511,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v))) as dynamic')
+                        const Code('>(v))) as T')
                       ])
                 : // Key is not String -> stored as list of map entries
                 nullable
@@ -393,7 +525,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\']))))' ':null) as dynamic')
+                        const Code('>(e[\'v\']))))' ':null) as T')
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
@@ -404,7 +536,7 @@ class TypeDefinition {
                             .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\'])))) as dynamic')
+                        const Code('>(e[\'v\'])))) as T')
                       ])
           ]),
         ),
@@ -450,16 +582,18 @@ class TypeDefinition {
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
-        className: className,
-        nullable: nullable,
-        customClass: customClass,
-        dartType: dartType,
-        projectModelDefinition: isProjectModel ? modelDefinition : null,
-        generics: generics
-            .map((e) => e.applyProtocolReferences(classDefinitions))
-            .toList(),
-        enumDefinition: enumDefinition,
-        url: isProjectModel ? defaultModuleAlias : url);
+      className: className,
+      nullable: nullable,
+      customClass: customClass,
+      dartType: dartType,
+      projectModelDefinition: isProjectModel ? modelDefinition : null,
+      generics: generics
+          .map((e) => e.applyProtocolReferences(classDefinitions))
+          .toList(),
+      enumDefinition: enumDefinition,
+      url: isProjectModel ? defaultModuleAlias : url,
+      recordFieldName: recordFieldName,
+    );
   }
 
   /// converts '[className]' string value to [ValueType]
@@ -470,8 +604,10 @@ class TypeDefinition {
     if (className == 'bool') return ValueType.bool;
     if (className == 'DateTime') return ValueType.dateTime;
     if (className == 'Duration') return ValueType.duration;
+    if (className == 'Uri') return ValueType.uri;
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
+    if (className == 'BigInt') return ValueType.bigInt;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -479,7 +615,7 @@ class TypeDefinition {
     return ValueType.classType;
   }
 
-  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  /// Returns [DefaultValueAllowedType] only for fields that are allowed to have defaults
   DefaultValueAllowedType? get defaultValueType {
     switch (valueType) {
       case ValueType.dateTime:
@@ -492,8 +628,12 @@ class TypeDefinition {
         return DefaultValueAllowedType.double;
       case ValueType.string:
         return DefaultValueAllowedType.string;
+      case ValueType.uri:
+        return DefaultValueAllowedType.uri;
       case ValueType.uuidValue:
         return DefaultValueAllowedType.uuidValue;
+      case ValueType.bigInt:
+        return DefaultValueAllowedType.bigInt;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
       case ValueType.isEnum:
@@ -505,6 +645,26 @@ class TypeDefinition {
 
   @override
   String toString() {
+    if (isRecordType) {
+      var positionalFields =
+          generics.where((f) => f.recordFieldName == null).toList();
+      var namedFields =
+          generics.where((f) => f.recordFieldName != null).toList();
+
+      return [
+        '(',
+        positionalFields.map((t) => t.toString()).join(', '),
+        if (namedFields.isNotEmpty) ...[
+          if (positionalFields.isNotEmpty) ', ',
+          '{',
+          namedFields.map((f) => '$f ${f.recordFieldName!}').join(', '),
+          '}',
+        ],
+        ')',
+        if (nullable) '?',
+      ].join();
+    }
+
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
     var nullableString = nullable ? '?' : '';
     var urlString = url != null ? '$url:' : '';
@@ -583,11 +743,13 @@ enum ValueType {
   duration,
   byteData,
   uuidValue,
+  bigInt,
   list,
   set,
   map,
   isEnum,
-  classType;
+  classType,
+  uri;
 }
 
 enum DefaultValueAllowedType {
@@ -597,6 +759,8 @@ enum DefaultValueAllowedType {
   double,
   string,
   uuidValue,
+  bigInt,
   duration,
+  uri,
   isEnum,
 }

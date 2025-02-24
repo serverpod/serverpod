@@ -87,6 +87,27 @@ void main() {
   });
 
   test(
+      'Given a class with only nullable fields with a Uri defined when calling toJsonForProtocol then the key and value is set.',
+      () {
+    var uri = Uri.parse('https://serverpod.dev');
+    var types = Types(aUri: uri);
+
+    var jsonMap = types.toJsonForProtocol();
+
+    expect(jsonMap, {'aUri': 'https://serverpod.dev'});
+  });
+
+  test(
+      'Given a class with only nullable fields with a BigInt defined when calling toJsonForProtocol then the key and value is set.',
+      () {
+    var types = Types(aBigInt: BigInt.one);
+
+    var jsonMap = types.toJsonForProtocol();
+
+    expect(jsonMap, {'aBigInt': '1'});
+  });
+
+  test(
       'Given a class with only nullable fields with a Duration defined when calling toJsonForProtocol then the key and value is set.',
       () {
     var types = Types(aDuration: Duration(seconds: 1));
@@ -228,6 +249,34 @@ void main() {
   });
 
   test(
+      'Given a class with a List with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+      () {
+    var object = TypesList(
+      aUri: [Uri.parse('https://serverpod.dev')],
+    );
+
+    var jsonMap = object.toJsonForProtocol();
+
+    expect(jsonMap, {
+      'aUri': ['https://serverpod.dev']
+    });
+  });
+
+  test(
+      'Given a class with a List with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+      () {
+    var object = TypesList(
+      aBigInt: [BigInt.one],
+    );
+
+    var jsonMap = object.toJsonForProtocol();
+
+    expect(jsonMap, {
+      'aBigInt': ['1']
+    });
+  });
+
+  test(
       'Given a class with a List with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
       () {
     var object = TypesList(
@@ -290,6 +339,165 @@ void main() {
           {'anInt': 123}
         ]
       ]
+    });
+  });
+
+  group('Set', () {
+    test(
+        'Given a class with a Set with a nested object when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var type = Types(anInt: 123);
+      var object = TypesSet(anObject: {type});
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'anObject': [
+          {'anInt': 123}
+        ]
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested DateTime when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        aDateTime: {DateTime.parse('2024-01-01T00:00:00.000Z')},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aDateTime': ['2024-01-01T00:00:00.000Z']
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested ByteData when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var intList = Uint8List(8);
+      for (var i = 0; i < intList.length; i++) {
+        intList[i] = i;
+      }
+
+      var object = TypesSet(
+        aByteData: {ByteData.view(intList.buffer)},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aByteData': ['decode(\'AAECAwQFBgc=\', \'base64\')']
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested Duration when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        aDuration: {Duration(seconds: 1)},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aDuration': [1000]
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested Uuid when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        // ignore: deprecated_member_use
+        aUuid: {UuidValue.nil},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aUuid': ['00000000-0000-0000-0000-000000000000']
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        aBigInt: {BigInt.one},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aBigInt': ['1']
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested enum serialized by index when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        anEnum: {TestEnum.one},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'anEnum': [0]
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested enum serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesSet(
+        aStringifiedEnum: {TestEnumStringified.one},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aStringifiedEnum': ['one']
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested Map serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var type = Types(anInt: 123);
+      var object = TypesSet(aMap: {
+        {'key': type}
+      });
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aMap': [
+          {
+            'key': {'anInt': 123}
+          }
+        ]
+      });
+    });
+
+    test(
+        'Given a class with a Set with a nested List serialized by name when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var type = Types(anInt: 123);
+      var object = TypesSet(aList: {
+        [type]
+      });
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aList': [
+          [
+            {'anInt': 123}
+          ]
+        ]
+      });
     });
   });
 
@@ -368,6 +576,34 @@ void main() {
 
       expect(jsonMap, {
         'aUuidValue': {'key': '00000000-0000-0000-0000-000000000000'}
+      });
+    });
+
+    test(
+        'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aUriValue: {'key': Uri.parse('https://serverpod.dev')},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aUriValue': {'key': 'https://serverpod.dev'}
+      });
+    });
+
+    test(
+        'Given a class with a Map with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aBigIntValue: {'key': BigInt.one},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aBigIntValue': {'key': '1'}
       });
     });
 
@@ -527,6 +763,38 @@ void main() {
       expect(jsonMap, {
         'aUuidKey': [
           {'k': '00000000-0000-0000-0000-000000000000', 'v': 'value'}
+        ]
+      });
+    });
+
+    test(
+        'Given a class with a Map with a nested Uri when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aUriKey: {Uri.parse('https://serverpod.dev'): 'value'},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aUriKey': [
+          {'k': 'https://serverpod.dev', 'v': 'value'}
+        ]
+      });
+    });
+
+    test(
+        'Given a class with a Map with a nested BigInt when calling toJsonForProtocol the entire nested structure is converted.',
+        () {
+      var object = TypesMap(
+        aBigIntKey: {BigInt.one: 'value'},
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'aBigIntKey': [
+          {'k': '1', 'v': 'value'}
         ]
       });
     });

@@ -41,6 +41,10 @@ class ServerpodConfig {
   /// Configuration for Session logs.
   final SessionLogConfig? sessionLogs;
 
+  /// The timeout for the diagnostic event handlers.
+  /// Default is 30 seconds.
+  final Duration? experimentalDiagnosticHandlerTimeout;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -53,6 +57,7 @@ class ServerpodConfig {
     this.redis,
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
+    this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,

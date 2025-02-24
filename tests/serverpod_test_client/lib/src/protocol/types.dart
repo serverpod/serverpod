@@ -25,8 +25,13 @@ abstract class Types implements _i1.SerializableModel {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.aUri,
+    this.aBigInt,
     this.anEnum,
     this.aStringifiedEnum,
+    this.aList,
+    this.aMap,
+    this.aSet,
   });
 
   factory Types({
@@ -39,8 +44,13 @@ abstract class Types implements _i1.SerializableModel {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
+    BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -62,6 +72,12 @@ abstract class Types implements _i1.SerializableModel {
       aUuid: jsonSerialization['aUuid'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+      aUri: jsonSerialization['aUri'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(jsonSerialization['aUri']),
+      aBigInt: jsonSerialization['aBigInt'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -69,6 +85,14 @@ abstract class Types implements _i1.SerializableModel {
           ? null
           : _i4.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String)),
+      aList:
+          (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
+      aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
+          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+      aSet: jsonSerialization['aSet'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
+              itemFromJson: (e) => e as int),
     );
   }
 
@@ -93,9 +117,19 @@ abstract class Types implements _i1.SerializableModel {
 
   _i1.UuidValue? aUuid;
 
+  Uri? aUri;
+
+  BigInt? aBigInt;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
+
+  List<int>? aList;
+
+  Map<int, int>? aMap;
+
+  Set<int>? aSet;
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -110,8 +144,13 @@ abstract class Types implements _i1.SerializableModel {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
+    BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,9 +164,14 @@ abstract class Types implements _i1.SerializableModel {
       if (aByteData != null) 'aByteData': aByteData?.toJson(),
       if (aDuration != null) 'aDuration': aDuration?.toJson(),
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (aUri != null) 'aUri': aUri?.toJson(),
+      if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
+      if (aList != null) 'aList': aList?.toJson(),
+      if (aMap != null) 'aMap': aMap?.toJson(),
+      if (aSet != null) 'aSet': aSet?.toJson(),
     };
   }
 
@@ -150,8 +194,13 @@ class _TypesImpl extends Types {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    Uri? aUri,
+    BigInt? aBigInt,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
+    List<int>? aList,
+    Map<int, int>? aMap,
+    Set<int>? aSet,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -162,8 +211,13 @@ class _TypesImpl extends Types {
           aByteData: aByteData,
           aDuration: aDuration,
           aUuid: aUuid,
+          aUri: aUri,
+          aBigInt: aBigInt,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
+          aList: aList,
+          aMap: aMap,
+          aSet: aSet,
         );
 
   /// Returns a shallow copy of this [Types]
@@ -180,8 +234,13 @@ class _TypesImpl extends Types {
     Object? aByteData = _Undefined,
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
+    Object? aUri = _Undefined,
+    Object? aBigInt = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
+    Object? aList = _Undefined,
+    Object? aMap = _Undefined,
+    Object? aSet = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -194,10 +253,24 @@ class _TypesImpl extends Types {
           aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
+      aUri: aUri is Uri? ? aUri : this.aUri,
+      aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
+      aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
+      aMap: aMap is Map<int, int>?
+          ? aMap
+          : this.aMap?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
     );
   }
 }

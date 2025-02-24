@@ -721,8 +721,7 @@ class Protocol extends _i1.SerializationManagerServer {
           as T;
     }
     if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
-          as dynamic;
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);

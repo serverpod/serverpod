@@ -282,6 +282,66 @@ void main() {
     });
   });
 
+  group('Given a class with nullable Uri field, ', () {
+    test(
+        'when deserializing from JSON with a Uri string, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aUri': 'https://serverpod.dev'}).aUri,
+        Uri.parse('https://serverpod.dev'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a Uri object, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aUri': Uri.parse('https://serverpod.dev')}).aUri,
+        Uri.parse('https://serverpod.dev'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        Types.fromJson({'aUri': null}).aUri,
+        isNull,
+      );
+    });
+  });
+
+  group('Given a class with nullable BigInt field, ', () {
+    test(
+        'when deserializing from JSON with a Big string, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aBigInt': '-12345678901234567890'}).aBigInt,
+        BigInt.parse('-12345678901234567890'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a BigInt object, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({
+          'aBigInt': BigInt.parse('12345678901234567890'),
+        }).aBigInt,
+        BigInt.parse('12345678901234567890'),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        Types.fromJson({'aBigInt': null}).aBigInt,
+        isNull,
+      );
+    });
+  });
+
   group('Given a class with a nullable ByteData field, ', () {
     test(
         'when deserializing from JSON with a base64-encoded string, then the result matches the expected value',
@@ -434,6 +494,91 @@ void main() {
           'anInt': ['test']
         }),
         throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the field is correctly set to null',
+        () {
+      expect(
+        TypesList.fromJson({'anInt': null}).anInt,
+        isNull,
+      );
+    });
+  });
+
+  group('Given a class with a nullable Set and nested objects, ', () {
+    test(
+        'when deserializing with correct value type in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({
+        'anObject': [
+          {'aDateTime': '2024-01-01T00:00:00.000Z'}
+        ]
+      });
+      expect(
+        typeList.anObject?.first,
+        isA<Types>(),
+      );
+    });
+
+    test(
+        'when deserializing with null in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({'aDateTime': null});
+      expect(
+        typeList.aDateTime,
+        isNull,
+      );
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'anObject': [
+            {'aDateTime': 1}
+          ]
+        }),
+        throwsA(isA<TypeError>()),
+      );
+    });
+  });
+
+  group('Given a class with a nullable Set field, ', () {
+    test(
+        'when deserializing with correct value types in JSON, then the result matches the expected value',
+        () {
+      var typeList = TypesSet.fromJson({
+        'anInt': [1, 2]
+      });
+      expect(typeList.anInt?.length, 2);
+      expect(typeList.anInt?.first, 1);
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'anInt': ['test']
+        }),
+        throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with duplicate values, then a TypeError is thrown',
+        () {
+      expect(
+        () => TypesSet.fromJson({
+          'aString': ['test', 'test']
+        }),
+        throwsA(
+          isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Input list for Set contained duplicate items')),
+        ),
       );
     });
 

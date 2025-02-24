@@ -18,15 +18,22 @@ void main() {
       'DateTime',
       'Duration',
       'UuidValue',
+      'Uri',
+      'BigInt',
       'List<String>',
       'List<String>?',
       'List<String?>?',
       'List<List<Map<String,int>>>',
+      'List<Set<int>>',
       'Map<String,String>',
       'Map<String,String?>',
       'Map<String,List<int>>',
       'Map<String,Map<String,int>>',
       'Map<String,Map<String,List<List<Map<String,int>>>>>',
+      'Map<String,Set<String?>>',
+      'Set<String>',
+      'Set<String>?',
+      'Set<String?>?',
     ];
 
     for (var datatype in datatypes) {
