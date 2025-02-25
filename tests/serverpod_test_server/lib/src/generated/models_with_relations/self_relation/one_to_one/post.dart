@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
 
-abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Post implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -62,7 +62,7 @@ abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Post? next;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
@@ -170,7 +170,7 @@ class _PostImpl extends Post {
   }
 }
 
-class PostTable extends _i1.Table {
+class PostTable extends _i1.Table<int> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
     content = _i1.ColumnString(
       'content',
@@ -255,7 +255,7 @@ class PostInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int> get table => Post.t;
 }
 
 class PostIncludeList extends _i1.IncludeList {
@@ -275,7 +275,7 @@ class PostIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Post.t;
+  _i1.Table<int> get table => Post.t;
 }
 
 class PostRepository {

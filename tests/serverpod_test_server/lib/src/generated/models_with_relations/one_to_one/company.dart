@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
 
-abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Company implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Company._({
     this.id,
     required this.name,
@@ -53,7 +53,7 @@ abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Town? town;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +148,7 @@ class _CompanyImpl extends Company {
   }
 }
 
-class CompanyTable extends _i1.Table {
+class CompanyTable extends _i1.Table<int> {
   CompanyTable({super.tableRelation}) : super(tableName: 'company') {
     name = _i1.ColumnString(
       'name',
@@ -206,7 +206,7 @@ class CompanyInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'town': _town};
 
   @override
-  _i1.Table get table => Company.t;
+  _i1.Table<int> get table => Company.t;
 }
 
 class CompanyIncludeList extends _i1.IncludeList {
@@ -226,7 +226,7 @@ class CompanyIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Company.t;
+  _i1.Table<int> get table => Company.t;
 }
 
 class CompanyRepository {

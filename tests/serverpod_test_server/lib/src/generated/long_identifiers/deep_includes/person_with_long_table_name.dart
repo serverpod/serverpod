@@ -14,7 +14,7 @@ import '../../long_identifiers/deep_includes/organization_with_long_table_name.d
     as _i2;
 
 abstract class PersonWithLongTableName
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   PersonWithLongTableName._({
     this.id,
     required this.name,
@@ -58,7 +58,7 @@ abstract class PersonWithLongTableName
   int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -203,7 +203,7 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
   }
 }
 
-class PersonWithLongTableNameTable extends _i1.Table {
+class PersonWithLongTableNameTable extends _i1.Table<int> {
   PersonWithLongTableNameTable({super.tableRelation})
       : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
     name = _i1.ColumnString(
@@ -273,7 +273,7 @@ class PersonWithLongTableNameInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table get table => PersonWithLongTableName.t;
+  _i1.Table<int> get table => PersonWithLongTableName.t;
 }
 
 class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
@@ -293,7 +293,7 @@ class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => PersonWithLongTableName.t;
+  _i1.Table<int> get table => PersonWithLongTableName.t;
 }
 
 class PersonWithLongTableNameRepository {

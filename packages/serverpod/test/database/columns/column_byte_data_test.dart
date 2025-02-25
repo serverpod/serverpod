@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnByteData', () {
     var columnName = 'configuration';
-    var column = ColumnByteData(columnName, Table(tableName: 'test'));
+    var column = ColumnByteData(columnName, Table<int>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

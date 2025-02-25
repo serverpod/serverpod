@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class StringDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   StringDefaultModel._({
     this.id,
     String? stringDefaultModel,
@@ -49,7 +49,7 @@ abstract class StringDefaultModel
   String stringDefaultModelNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -138,7 +138,7 @@ class _StringDefaultModelImpl extends StringDefaultModel {
   }
 }
 
-class StringDefaultModelTable extends _i1.Table {
+class StringDefaultModelTable extends _i1.Table<int> {
   StringDefaultModelTable({super.tableRelation})
       : super(tableName: 'string_default_model') {
     stringDefaultModel = _i1.ColumnString(
@@ -170,7 +170,7 @@ class StringDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => StringDefaultModel.t;
+  _i1.Table<int> get table => StringDefaultModel.t;
 }
 
 class StringDefaultModelIncludeList extends _i1.IncludeList {
@@ -190,7 +190,7 @@ class StringDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => StringDefaultModel.t;
+  _i1.Table<int> get table => StringDefaultModel.t;
 }
 
 class StringDefaultModelRepository {

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BoolDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   BoolDefaultMix._({
     this.id,
     bool? boolDefaultAndDefaultModel,
@@ -56,7 +56,7 @@ abstract class BoolDefaultMix
   bool boolDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [BoolDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -154,7 +154,7 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
   }
 }
 
-class BoolDefaultMixTable extends _i1.Table {
+class BoolDefaultMixTable extends _i1.Table<int> {
   BoolDefaultMixTable({super.tableRelation})
       : super(tableName: 'bool_default_mix') {
     boolDefaultAndDefaultModel = _i1.ColumnBool(
@@ -196,7 +196,7 @@ class BoolDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => BoolDefaultMix.t;
+  _i1.Table<int> get table => BoolDefaultMix.t;
 }
 
 class BoolDefaultMixIncludeList extends _i1.IncludeList {
@@ -216,7 +216,7 @@ class BoolDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => BoolDefaultMix.t;
+  _i1.Table<int> get table => BoolDefaultMix.t;
 }
 
 class BoolDefaultMixRepository {

@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
 
 abstract class ObjectWithObject
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithObject._({
     this.id,
     required this.data,
@@ -126,7 +126,7 @@ abstract class ObjectWithObject
   Map<String, Map<int, _i2.SimpleData>>? nestedDataMap;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
@@ -347,7 +347,7 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
   }
 }
 
-class ObjectWithObjectTable extends _i1.Table {
+class ObjectWithObjectTable extends _i1.Table<int> {
   ObjectWithObjectTable({super.tableRelation})
       : super(tableName: 'object_with_object') {
     data = _i1.ColumnSerializable(
@@ -428,7 +428,7 @@ class ObjectWithObjectInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithObject.t;
+  _i1.Table<int> get table => ObjectWithObject.t;
 }
 
 class ObjectWithObjectIncludeList extends _i1.IncludeList {
@@ -448,7 +448,7 @@ class ObjectWithObjectIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithObject.t;
+  _i1.Table<int> get table => ObjectWithObject.t;
 }
 
 class ObjectWithObjectRepository {

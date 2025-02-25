@@ -114,7 +114,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findById<T extends TableRow>(
     Session session,
-    int id, {
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) async {
@@ -249,7 +249,7 @@ class DatabaseConnection {
 
     return deleteWhere<T>(
       session,
-      table.id.inSet(rows.map((row) => row.id!).toSet()),
+      table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       transaction: transaction,
     );
   }
@@ -578,7 +578,8 @@ class DatabaseConnection {
     );
   }
 
-  Future<Map<String, Map<int, List<Map<String, dynamic>>>>> _queryIncludedLists(
+  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
+      _queryIncludedLists(
     Session session,
     Table table,
     Include? include,
@@ -587,7 +588,7 @@ class DatabaseConnection {
   ) async {
     if (include == null) return {};
 
-    Map<String, Map<int, List<Map<String, dynamic>>>> resolvedListRelations =
+    Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations =
         {};
 
     for (var entry in include.includes.entries) {
@@ -601,7 +602,7 @@ class DatabaseConnection {
       }
 
       if (nestedInclude is IncludeList) {
-        var ids = _extractPrimaryKeyForRelation<int>(
+        var ids = _extractPrimaryKeyForRelation<Object>(
           previousResultSet,
           tableRelation,
         );

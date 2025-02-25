@@ -14,7 +14,7 @@ import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -77,7 +77,7 @@ abstract class CloudStorageEntry
   bool verified;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
@@ -193,7 +193,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
-class CloudStorageEntryTable extends _i1.Table {
+class CloudStorageEntryTable extends _i1.Table<int> {
   CloudStorageEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
@@ -259,7 +259,7 @@ class CloudStorageEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryIncludeList extends _i1.IncludeList {
@@ -279,7 +279,7 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryRepository {

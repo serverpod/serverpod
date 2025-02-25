@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnDouble', () {
     var columnName = 'age';
-    var column = ColumnDouble(columnName, Table(tableName: 'test'));
+    var column = ColumnDouble(columnName, Table<int>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

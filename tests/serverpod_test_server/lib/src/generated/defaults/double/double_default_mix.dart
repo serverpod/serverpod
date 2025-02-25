@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DoubleDefaultMix._({
     this.id,
     double? doubleDefaultAndDefaultModel,
@@ -58,7 +58,7 @@ abstract class DoubleDefaultMix
   double doubleDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -160,7 +160,7 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
   }
 }
 
-class DoubleDefaultMixTable extends _i1.Table {
+class DoubleDefaultMixTable extends _i1.Table<int> {
   DoubleDefaultMixTable({super.tableRelation})
       : super(tableName: 'double_default_mix') {
     doubleDefaultAndDefaultModel = _i1.ColumnDouble(
@@ -202,7 +202,7 @@ class DoubleDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DoubleDefaultMix.t;
+  _i1.Table<int> get table => DoubleDefaultMix.t;
 }
 
 class DoubleDefaultMixIncludeList extends _i1.IncludeList {
@@ -222,7 +222,7 @@ class DoubleDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DoubleDefaultMix.t;
+  _i1.Table<int> get table => DoubleDefaultMix.t;
 }
 
 class DoubleDefaultMixRepository {

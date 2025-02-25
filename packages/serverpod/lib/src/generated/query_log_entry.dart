@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
 abstract class QueryLogEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -98,7 +98,7 @@ abstract class QueryLogEntry
   int order;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -242,7 +242,7 @@ class _QueryLogEntryImpl extends QueryLogEntry {
   }
 }
 
-class QueryLogEntryTable extends _i1.Table {
+class QueryLogEntryTable extends _i1.Table<int> {
   QueryLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_query_log') {
     serverId = _i1.ColumnString(
@@ -342,7 +342,7 @@ class QueryLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => QueryLogEntry.t;
+  _i1.Table<int> get table => QueryLogEntry.t;
 }
 
 class QueryLogEntryIncludeList extends _i1.IncludeList {
@@ -362,7 +362,7 @@ class QueryLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => QueryLogEntry.t;
+  _i1.Table<int> get table => QueryLogEntry.t;
 }
 
 class QueryLogEntryRepository {

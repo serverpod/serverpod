@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
 
-abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Cat implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Cat._({
     this.id,
     required this.name,
@@ -61,7 +61,7 @@ abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i2.Cat>? kittens;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
@@ -173,7 +173,7 @@ class _CatImpl extends Cat {
   }
 }
 
-class CatTable extends _i1.Table {
+class CatTable extends _i1.Table<int> {
   CatTable({super.tableRelation}) : super(tableName: 'cat') {
     name = _i1.ColumnString(
       'name',
@@ -278,7 +278,7 @@ class CatInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Cat.t;
+  _i1.Table<int> get table => Cat.t;
 }
 
 class CatIncludeList extends _i1.IncludeList {
@@ -298,7 +298,7 @@ class CatIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Cat.t;
+  _i1.Table<int> get table => Cat.t;
 }
 
 class CatRepository {

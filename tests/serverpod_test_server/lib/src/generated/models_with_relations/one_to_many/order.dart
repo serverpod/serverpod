@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 
-abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Order implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Order._({
     this.id,
     required this.description,
@@ -61,7 +61,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Comment>? comments;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -174,7 +174,7 @@ class _OrderImpl extends Order {
   }
 }
 
-class OrderTable extends _i1.Table {
+class OrderTable extends _i1.Table<int> {
   OrderTable({super.tableRelation}) : super(tableName: 'order') {
     description = _i1.ColumnString(
       'description',
@@ -279,7 +279,7 @@ class OrderInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Order.t;
+  _i1.Table<int> get table => Order.t;
 }
 
 class OrderIncludeList extends _i1.IncludeList {
@@ -299,7 +299,7 @@ class OrderIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Order.t;
+  _i1.Table<int> get table => Order.t;
 }
 
 class OrderRepository {

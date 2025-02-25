@@ -114,7 +114,7 @@ class Database {
   /// var myRow = session.db.findById<MyClass>(myId);
   /// ```
   Future<T?> findById<T extends TableRow>(
-    int id, {
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) async {

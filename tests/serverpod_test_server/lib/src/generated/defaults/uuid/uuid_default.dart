@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 
-abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UuidDefault
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UuidDefault._({
     this.id,
     _i1.UuidValue? uuidDefaultRandom,
@@ -68,7 +69,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   _i1.UuidValue? uuidDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UuidDefault]
   /// with some or all fields replaced by the given arguments.
@@ -178,7 +179,7 @@ class _UuidDefaultImpl extends UuidDefault {
   }
 }
 
-class UuidDefaultTable extends _i1.Table {
+class UuidDefaultTable extends _i1.Table<int> {
   UuidDefaultTable({super.tableRelation}) : super(tableName: 'uuid_default') {
     uuidDefaultRandom = _i1.ColumnUuid(
       'uuidDefaultRandom',
@@ -227,7 +228,7 @@ class UuidDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UuidDefault.t;
+  _i1.Table<int> get table => UuidDefault.t;
 }
 
 class UuidDefaultIncludeList extends _i1.IncludeList {
@@ -247,7 +248,7 @@ class UuidDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UuidDefault.t;
+  _i1.Table<int> get table => UuidDefault.t;
 }
 
 class UuidDefaultRepository {

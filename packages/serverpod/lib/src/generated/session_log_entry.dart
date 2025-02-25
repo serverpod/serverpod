@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Log entry for a session.
 abstract class SessionLogEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   SessionLogEntry._({
     this.id,
     required this.serverId,
@@ -118,7 +118,7 @@ abstract class SessionLogEntry
   DateTime touched;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -287,7 +287,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
   }
 }
 
-class SessionLogEntryTable extends _i1.Table {
+class SessionLogEntryTable extends _i1.Table<int> {
   SessionLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_session_log') {
     serverId = _i1.ColumnString(
@@ -413,7 +413,7 @@ class SessionLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => SessionLogEntry.t;
+  _i1.Table<int> get table => SessionLogEntry.t;
 }
 
 class SessionLogEntryIncludeList extends _i1.IncludeList {
@@ -433,7 +433,7 @@ class SessionLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => SessionLogEntry.t;
+  _i1.Table<int> get table => SessionLogEntry.t;
 }
 
 class SessionLogEntryRepository {

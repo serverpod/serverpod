@@ -102,7 +102,7 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<T?> findById<T extends TableRow>(
-    int id, {
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) {

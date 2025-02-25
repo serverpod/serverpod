@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BoolDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   BoolDefaultPersist._({
     this.id,
     this.boolDefaultPersistTrue,
@@ -47,7 +47,7 @@ abstract class BoolDefaultPersist
   bool? boolDefaultPersistFalse;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [BoolDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -143,7 +143,7 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
   }
 }
 
-class BoolDefaultPersistTable extends _i1.Table {
+class BoolDefaultPersistTable extends _i1.Table<int> {
   BoolDefaultPersistTable({super.tableRelation})
       : super(tableName: 'bool_default_persist') {
     boolDefaultPersistTrue = _i1.ColumnBool(
@@ -177,7 +177,7 @@ class BoolDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => BoolDefaultPersist.t;
+  _i1.Table<int> get table => BoolDefaultPersist.t;
 }
 
 class BoolDefaultPersistIncludeList extends _i1.IncludeList {
@@ -197,7 +197,7 @@ class BoolDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => BoolDefaultPersist.t;
+  _i1.Table<int> get table => BoolDefaultPersist.t;
 }
 
 class BoolDefaultPersistRepository {
