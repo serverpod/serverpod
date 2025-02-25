@@ -931,17 +931,21 @@ void main() {
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-serverOnly: true
-fields:
-  parent: Parent?, relation(optional)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        serverOnly: true
+        fields:
+          parent: Parent?, relation(optional)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -953,6 +957,7 @@ fields:
     var errors = collector.errors;
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an object relation'
       ' and the child is serverOnly'
@@ -960,17 +965,21 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-serverOnly: true
-fields:
-  parent: Parent?, relation
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        serverOnly: true
+        fields:
+          parent: Parent?, relation
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -991,16 +1000,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parent: Parent?, relation(optional)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parent: Parent?, relation(optional)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1013,6 +1026,7 @@ fields:
 
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an object relation'
       ' and the child is not serverOnly'
@@ -1021,16 +1035,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parent: Parent?, relation(optional), scope=serverOnly
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parent: Parent?, relation(optional), scope=serverOnly
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1051,16 +1069,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parent: Parent?, relation
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parent: Parent?, relation
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1073,6 +1095,7 @@ fields:
 
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an object relation'
       ' and the child is not serverOnly'
@@ -1081,16 +1104,20 @@ fields:
       'when analyzing '
       'then an error is collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parent: Parent?, relation, scope=serverOnly
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parent: Parent?, relation, scope=serverOnly
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1113,17 +1140,21 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-serverOnly: true
-fields:
-  parentId: int?, relation(parent=parent)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        serverOnly: true
+        fields:
+          parentId: int?, relation(parent=parent)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1135,6 +1166,7 @@ fields:
     var errors = collector.errors;
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an id relation'
       ' and the child is serverOnly'
@@ -1142,17 +1174,21 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-serverOnly: true
-fields:
-  parentId: int, relation(parent=parent)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        serverOnly: true
+        fields:
+          parentId: int, relation(parent=parent)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1164,6 +1200,7 @@ fields:
     var errors = collector.errors;
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an id relation'
       ' and the child is not serverOnly'
@@ -1171,16 +1208,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parentId: int?, relation(parent=parent)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parentId: int?, relation(parent=parent)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1192,6 +1233,7 @@ fields:
     var errors = collector.errors;
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an id relation'
       ' and the child is not serverOnly'
@@ -1200,16 +1242,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parentId: int?, relation(parent=parent), scope=serverOnly
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parentId: int?, relation(parent=parent), scope=serverOnly
+        ''',
+      ).build()
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1221,6 +1267,7 @@ fields:
     var errors = collector.errors;
     expect(errors, isEmpty);
   });
+
   test(
       'Given I have an id relation'
       ' and the child is not serverOnly'
@@ -1228,16 +1275,20 @@ fields:
       'when analyzing '
       'then no errors are collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parentId: int, relation(parent=parent)
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parentId: int, relation(parent=parent)
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
@@ -1258,16 +1309,20 @@ fields:
       'when analyzing '
       'then an error is collected', () {
     var models = [
-      (ModelSourceBuilder().withFileName('parent').withYaml('''
-class: Parent
-table: parent
-''').build()),
-      ModelSourceBuilder().withFileName('child').withYaml('''
-class: Child
-table: child
-fields:
-  parentId: int, relation(parent=parent), scope=serverOnly
-''').build()
+      (ModelSourceBuilder().withFileName('parent').withYaml(
+        '''
+        class: Parent
+        table: parent
+        ''',
+      ).build()),
+      ModelSourceBuilder().withFileName('child').withYaml(
+        '''
+        class: Child
+        table: child
+        fields:
+          parentId: int, relation(parent=parent), scope=serverOnly
+        ''',
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(
