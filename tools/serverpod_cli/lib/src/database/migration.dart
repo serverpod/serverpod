@@ -1,5 +1,6 @@
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 import 'extensions.dart';
 
 DatabaseMigration generateDatabaseMigration({
@@ -9,17 +10,25 @@ DatabaseMigration generateDatabaseMigration({
   var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
-  // Find deleted tables
-  var deleteTables = <String>[];
-  var sourceTables = databaseSource.tables.where((table) => table.isManaged);
-  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
+  var sourceTables =
+      databaseSource.tables.where((table) => table.isManaged).toList();
+  var targetTables =
+      databaseTarget.tables.where((table) => table.isManaged).toList();
+  var deleteTables = <String>{};
 
+  // Mark tables which do not exist in the target schema anymore for deletion
   for (var srcTable in sourceTables) {
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
-      deleteTables.add(srcTable.name);
+      deleteTables.addAll([
+        srcTable.name,
+        // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
+        ..._findDependentTables(srcTable.name,
+            sourceTables: sourceTables, targetTables: targetTables),
+      ]);
     }
   }
-  for (var tableName in deleteTables.reversed) {
+
+  for (var tableName in deleteTables.toList().reversed) {
     actions.add(
       DatabaseMigrationAction(
         type: DatabaseMigrationActionType.deleteTable,
@@ -43,12 +52,13 @@ DatabaseMigration generateDatabaseMigration({
         (table) => table?.name == dstTable.name,
         orElse: () => null);
 
-    if (srcTable == null || srcTable.managed == false) {
+    if (srcTable == null ||
+        srcTable.managed == false ||
+        deleteTables.contains(srcTable.name)) {
       // Added table
-
       actions.add(
         DatabaseMigrationAction(
-          type: srcTable == null
+          type: srcTable == null || deleteTables.contains(srcTable.name)
               ? DatabaseMigrationActionType.createTable
               : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
@@ -90,6 +100,47 @@ DatabaseMigration generateDatabaseMigration({
     warnings: warnings,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
+}
+
+/// Returns the set of table names for all tables which have any relation into the table mentioned by [tableName]
+Set<String> _findDependentTables(
+  String tableName, {
+  required List<TableDefinition> sourceTables,
+  required List<TableDefinition> targetTables,
+  Set<String>? dependentTables,
+}) {
+  dependentTables ??= {};
+
+  /// Returns whether the [sourceTable] has a current and future relation to [tableName]
+  bool hasCurrentAndFutureRelationToTable(TableDefinition sourceTable) {
+    return sourceTable.foreignKeys.any((foreignKey) =>
+        foreignKey.referenceTable == tableName &&
+        // Check whether the reference will also be upheld in the target table.
+        // otherwise the target table will already be modified and does not need to have be fully dropped
+        targetTables.any((targetTable) =>
+            targetTable.name == sourceTable.name &&
+            targetTable.foreignKeys.any((targetForeignKey) =>
+                targetForeignKey.constraintName == foreignKey.constraintName)));
+  }
+
+  for (var sourceTable in sourceTables) {
+    if (dependentTables.contains(sourceTable.name)) {
+      continue;
+    }
+
+    if (hasCurrentAndFutureRelationToTable(sourceTable)) {
+      dependentTables.add(sourceTable.name);
+
+      _findDependentTables(
+        sourceTable.name,
+        sourceTables: sourceTables,
+        targetTables: targetTables,
+        dependentTables: dependentTables,
+      );
+    }
+  }
+
+  return dependentTables;
 }
 
 TableMigration? generateTableMigration(
@@ -247,6 +298,7 @@ TableMigration? generateTableMigration(
     }
     if (!srcKey.like(dstKey)) {
       deleteForeignKeys.add(srcKey.constraintName);
+
       addForeignKeys.add(dstKey);
     }
   }
