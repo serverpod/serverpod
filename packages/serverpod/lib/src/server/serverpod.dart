@@ -542,6 +542,9 @@ class Serverpod {
         commandLineArgs.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
+      ProcessSignal.sigint.watch().listen(_onShutdownSignal);
+      ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
+
       // Serverpod Insights.
       if (Features.enableInsights) {
         if (_isValidSecret(config.serviceSecret)) {
@@ -710,6 +713,12 @@ class Serverpod {
     }
   }
 
+  void _onShutdownSignal(ProcessSignal signal) {
+    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
+        ', time: ${DateTime.now().toUtc()}');
+    shutdown(signalNumber: signal.signalNumber);
+  }
+
   Future<bool> _startInsightsServer() async {
     var endpoints = internal.Endpoints();
 
@@ -841,7 +850,10 @@ class Serverpod {
 
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
-  Future<void> shutdown({bool exitProcess = true}) async {
+  Future<void> shutdown({
+    bool exitProcess = true,
+    int? signalNumber,
+  }) async {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
@@ -883,7 +895,8 @@ class Serverpod {
     stdout.writeln('SERVERPOD has shutdown, time: ${DateTime.now().toUtc()}');
 
     if (exitProcess) {
-      exit(shutdownError != null ? 1 : 0);
+      int conventionalExitCode = signalNumber != null ? 128 + signalNumber : 0;
+      exit(shutdownError != null ? 1 : conventionalExitCode);
     }
 
     if (shutdownError != null) {
