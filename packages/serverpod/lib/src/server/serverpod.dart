@@ -849,7 +849,7 @@ class Serverpod {
       await _webServer?.stop();
       await _serviceServer?.shutdown();
       await _futureCallManager?.stop();
-      _healthCheckManager?.stop();
+      await _healthCheckManager?.stop();
 
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();

@@ -41,7 +41,7 @@ class HealthCheckManager {
   }
 
   /// Stops the health check manager.
-  void stop() {
+  Future<void> stop() async {
     _running = false;
     _timer?.cancel();
   }
