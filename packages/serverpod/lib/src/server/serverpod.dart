@@ -543,7 +543,9 @@ class Serverpod {
       var serversStarted = true;
 
       ProcessSignal.sigint.watch().listen(_onShutdownSignal);
-      ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
+      if (!Platform.isWindows) {
+        ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
+      }
 
       // Serverpod Insights.
       if (Features.enableInsights) {

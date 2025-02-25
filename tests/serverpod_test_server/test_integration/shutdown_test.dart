@@ -47,7 +47,7 @@ void main() {
     processOutput.errQueue.rest.listen((s) {});
     var exitCode = await processOutput.process.exitCode;
     expect(exitCode, 0);
-  });
+  }, tags: [defaultIntegrationTestTag]);
 
   group('Given a running serverpod server', () {
     test(
@@ -122,11 +122,13 @@ void main() {
         terminationTimeout,
       );
       expect(exitCode, 143);
+    }, onPlatform: {
+      'windows': Skip('SIGTERM is not supported on Windows'),
     });
 
     test(
         'with shutdown test auditor enabled '
-        'when it is sent SIGTERM '
+        'when it is sent SIGINT '
         'then it exits with exit code 1', () async {
       final processOutput = await startProcess(
         'dart',
@@ -146,12 +148,12 @@ void main() {
       if (verbose) {
         print('sending process signal...');
       }
-      processOutput.process.kill(ProcessSignal.sigterm);
+      processOutput.process.kill(ProcessSignal.sigint);
 
       await expectLater(
         processOutput.outQueue,
         emitsInOrder([
-          emitsThrough(contains('SIGTERM (15) received')),
+          emitsThrough(contains('SIGINT (2) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
           emitsThrough(contains('SERVERPOD has shutdown')),
         ]),
@@ -176,8 +178,8 @@ void main() {
 
     test(
         'with an ongoing http request '
-        'when it is sent SIGTERM '
-        'then it exits with exit code 143', () async {
+        'when it is sent SIGINT '
+        'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
@@ -205,12 +207,12 @@ void main() {
       if (verbose) {
         print('sending process signal...');
       }
-      processOutput.process.kill(ProcessSignal.sigterm);
+      processOutput.process.kill(ProcessSignal.sigint);
 
       await expectLater(
         processOutput.outQueue,
         emitsInOrder([
-          emitsThrough(contains('SIGTERM (15) received')),
+          emitsThrough(contains('SIGINT (2) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
           emitsThrough(contains('SERVERPOD has shutdown')),
         ]),
@@ -226,7 +228,7 @@ void main() {
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
-      expect(exitCode, 143);
+      expect(exitCode, 130);
     }, skip: 'Dart HTTP server does not support this graceful shutdown');
   }, tags: [defaultIntegrationTestTag]);
 }
