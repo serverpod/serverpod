@@ -57,6 +57,22 @@ void main() {
 
       expect(result, isNull);
     });
+    test(
+        'Given the test server, when a `null` simple int? record is sent to the server, then it is returned verbatim',
+        () async {
+      var values = <(int?,)?>[
+        null,
+        (2,),
+        null,
+        (4,),
+      ];
+
+      var result = client.recordParameters.streamNullableRecordOfNullableInt(
+        Stream.fromIterable(values),
+      );
+
+      expect(result, emitsInOrder(values));
+    });
   });
 
   group('Record with multiple positional fields', () {
