@@ -858,6 +858,7 @@ class Serverpod {
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
     var futures = [
+      _shutdownTestAuditor(),
       _internalSession.close(),
       redisController?.stop(),
       server.shutdown(),
@@ -973,6 +974,28 @@ class Serverpod {
   bool _isValidSecret(String? secret) {
     return secret != null && secret.isNotEmpty && secret.length > 20;
   }
+}
+
+Future<void>? _shutdownTestAuditor() {
+  var testThrowerDelaySeconds = int.tryParse(
+    Platform.environment['_SERVERPOD_SHUTDOWN_TEST_AUDITOR'] ?? '',
+  );
+  if (testThrowerDelaySeconds == null) {
+    return null;
+  }
+  return Future(() {
+    stderr.writeln('serverpod shutdown test auditor enabled');
+    if (testThrowerDelaySeconds == 0) {
+      throw Exception('serverpod shutdown test auditor throwing');
+    } else {
+      return Future.delayed(
+        Duration(seconds: testThrowerDelaySeconds),
+        () {
+          throw Exception('serverpod shutdown test auditor throwing');
+        },
+      );
+    }
+  });
 }
 
 /// Experimental API for Serverpod.

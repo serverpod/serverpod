@@ -125,6 +125,56 @@ void main() {
     });
 
     test(
+        'with shutdown test auditor enabled '
+        'when it is sent SIGTERM '
+        'then it exits with exit code 1', () async {
+      final processOutput = await startProcess(
+        'dart',
+        ['bin/main.dart', '--mode=test'],
+        environment: {
+          '_SERVERPOD_SHUTDOWN_TEST_AUDITOR': '2',
+        },
+        verbose: verbose,
+      );
+
+      await expectLater(
+        processOutput.outQueue,
+        emitsThrough(contains('SERVERPOD initialized')),
+      );
+
+      await Future.delayed(signalDelay);
+      if (verbose) {
+        print('sending process signal...');
+      }
+      processOutput.process.kill(ProcessSignal.sigterm);
+
+      await expectLater(
+        processOutput.outQueue,
+        emitsInOrder([
+          emitsThrough(contains('SIGTERM (15) received')),
+          emitsThrough(contains('SERVERPOD initiating shutdown')),
+          emitsThrough(contains('SERVERPOD has shutdown')),
+        ]),
+      );
+
+      await expectLater(
+        processOutput.errQueue,
+        emitsInOrder([
+          emitsThrough(contains('serverpod shutdown test auditor enabled')),
+          emitsThrough(
+              contains('Exception: serverpod shutdown test auditor throwing')),
+        ]),
+      );
+
+      processOutput.outQueue.rest.listen((s) {});
+      processOutput.errQueue.rest.listen((s) {});
+      var exitCode = await processOutput.process.exitCode.timeout(
+        terminationTimeout,
+      );
+      expect(exitCode, 1);
+    });
+
+    test(
         'with an ongoing http request '
         'when it is sent SIGTERM '
         'then it exits with exit code 143', () async {
