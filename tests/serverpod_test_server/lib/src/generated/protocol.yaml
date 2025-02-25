@@ -267,6 +267,7 @@ recordParameters:
   - returnNullableRecordOfInt:
   - returnRecordOfNullableInt:
   - returnNullableRecordOfNullableInt:
+  - streamNullableRecordOfNullableInt:
   - returnIntStringRecord:
   - returnNullableIntStringRecord:
   - returnIntSimpleDataRecord:
@@ -291,6 +292,7 @@ recordParameters:
   - returnNestedNullableNamedRecord:
   - returnNestedPositionalAndNamedRecord:
   - returnListOfNestedPositionalAndNamedRecord:
+  - streamNullableListOfNullableNestedPositionalAndNamedRecord:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
@@ -373,6 +375,10 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+  - recordEchoStream:
+  - listOfRecordEchoStream:
+  - nullableRecordEchoStream:
+  - nullableListOfRecordEchoStream:
 upload:
   - uploadByteData:
 myFeature:
