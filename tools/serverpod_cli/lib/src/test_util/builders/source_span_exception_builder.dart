@@ -14,8 +14,12 @@ class SourceSpanExceptionBuilder {
     Iterable<ModelSource>? models,
   }) : models = models?.toList() ?? [];
 
-  void addSourceFile(String fileName, String contents) => models.add(
-      ModelSourceBuilder().withFileName(fileName).withYaml(contents).build());
+  SourceSpanExceptionBuilder withSourceFile(String fileName, String contents) {
+    models.add(
+      ModelSourceBuilder().withFileName(fileName).withYaml(contents).build(),
+    );
+    return this;
+  }
 
   List<SourceSpanException> build() =>
       models.validateAll(generatorConfig: generatorConfig);

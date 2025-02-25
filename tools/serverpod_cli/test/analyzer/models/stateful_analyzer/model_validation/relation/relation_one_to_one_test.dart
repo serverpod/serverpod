@@ -928,32 +928,32 @@ void main() {
   group('Given an object relation', () {
     late SourceSpanExceptionBuilder builder;
     setUp(() =>
-        builder = SourceSpanExceptionBuilder()..addSourceFile('parent', '''
+        builder = SourceSpanExceptionBuilder().withSourceFile('parent', '''
 class: Parent
 table: parent
 '''));
     group('when the child is serverOnly', () {
       group('and the relation is optional', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 serverOnly: true
 fields:
   parent: Parent?, relation(optional)
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
       });
       group('and the relation is not optional', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 serverOnly: true
 fields:
   parent: Parent?, relation
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
       });
@@ -961,44 +961,44 @@ fields:
     group('when the child is not serverOnly', () {
       group('and the relation is optional', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parent: Parent?, relation(optional)
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
         group('and the field scope is serverOnly', () {
           test('then validation causes no error', () {
-            var errors = (builder..addSourceFile('child', '''
+            var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parent: Parent?, relation(optional), scope=serverOnly
-''')).build();
+''').build();
             expect(errors, isEmpty);
           });
         });
       });
       group('and the relation is not optional', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parent: Parent?, relation
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
         group('and the field scope is serverOnly', () {
           test('then validation causes an error', () {
-            var errors = (builder..addSourceFile('child', '''
+            var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parent: Parent?, relation, scope=serverOnly
-''')).build();
+''').build();
             expect(errors.map((e) => e.message), [
               'The relation with scope "serverOnly" requires the relation to be optional.'
             ]);
@@ -1011,26 +1011,26 @@ fields:
   group('Given an id relation', () {
     late SourceSpanExceptionBuilder builder;
     setUp(() =>
-        builder = SourceSpanExceptionBuilder()..addSourceFile('parent', '''
+        builder = SourceSpanExceptionBuilder().withSourceFile('parent', '''
 class: Parent
 table: parent
 '''));
     group('when the child is serverOnly', () {
       group('and the field is nullable', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 serverOnly: true
 fields:
   parentId: int?, relation(parent=parent)
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
       });
       group('and the field is not nullable', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = (builder.withSourceFile('child', '''
 class: Child
 table: child
 serverOnly: true
@@ -1044,45 +1044,45 @@ fields:
     group('when the child is not serverOnly', () {
       group('and the field is nullable', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parentId: int?, relation(parent=parent)
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
         group('and the field scope is serverOnly', () {
           test('then validation causes no error', () {
-            var errors = (builder..addSourceFile('child', '''
+            var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parentId: int?, relation(parent=parent), scope=serverOnly
-''')).build();
+''').build();
             expect(errors, isEmpty);
           });
         });
       });
       group('and the field is not nullable', () {
         test('then validation causes no error', () {
-          var errors = (builder..addSourceFile('child', '''
+          var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parentId: int, relation(parent=parent)
-''')).build();
+''').build();
           expect(errors, isEmpty);
         });
 
         group('and the field scope is serverOnly', () {
           test('then validation causes an error', () {
-            var errors = (builder..addSourceFile('child', '''
+            var errors = builder.withSourceFile('child', '''
 class: Child
 table: child
 fields:
   parentId: int, relation(parent=parent), scope=serverOnly
-''')).build();
+''').build();
             expect(errors.map((e) => e.message), [
               'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".'
             ]);
