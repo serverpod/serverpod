@@ -3,7 +3,6 @@ import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -925,307 +924,361 @@ void main() {
     }, skip: errors.isEmpty);
   });
 
-  group('Given an object relation', () {
-    late ModelSource parentModel;
-    setUp(() =>
-        parentModel = ModelSourceBuilder().withFileName('parent').withYaml('''
+  test(
+      'Given I have an object relation'
+      ' and the child is serverOnly'
+      ' and the relation is optional '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
 class: Parent
 table: parent
-''').build());
-    group('when the child is serverOnly', () {
-      group('and the relation is optional', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 serverOnly: true
 fields:
   parent: Parent?, relation(optional)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
-          expect(errors, isEmpty);
-        });
-      });
-      group('and the relation is not optional', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an object relation'
+      ' and the child is serverOnly'
+      ' and the relation is not optional '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 serverOnly: true
 fields:
   parent: Parent?, relation
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
 
-          expect(errors, isEmpty);
-        });
-      });
-    });
-    group('when the child is not serverOnly', () {
-      group('and the relation is optional', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    expect(errors, isEmpty);
+  });
+
+  test(
+      'Given I have an object relation'
+      ' and the child is not serverOnly'
+      ' and the relation is optional '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parent: Parent?, relation(optional)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
 
-          expect(errors, isEmpty);
-        });
-        group('and the field scope is serverOnly', () {
-          test('then validation causes no error', () {
-            var models = [
-              parentModel,
-              ModelSourceBuilder().withFileName('child').withYaml('''
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an object relation'
+      ' and the child is not serverOnly'
+      ' and the relation is optional '
+      ' and the field scope is serverOnly '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parent: Parent?, relation(optional), scope=serverOnly
 ''').build()
-            ];
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(
-              config,
-              models,
-              onErrorsCollector(collector),
-            );
-            analyzer.validateAll();
-            var errors = collector.errors;
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
 
-            expect(errors, isEmpty);
-          });
-        });
-      });
-      group('and the relation is not optional', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    expect(errors, isEmpty);
+  });
+
+  test(
+      'Given I have an object relation'
+      ' and the child is not serverOnly'
+      ' and the relation is not optional '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parent: Parent?, relation
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
 
-          expect(errors, isEmpty);
-        });
-        group('and the field scope is serverOnly', () {
-          test('then validation causes an error', () {
-            var models = [
-              parentModel,
-              ModelSourceBuilder().withFileName('child').withYaml('''
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an object relation'
+      ' and the child is not serverOnly'
+      ' and the relation is not optional '
+      ' and the field scope is serverOnly '
+      'when analyzing '
+      'then an error is collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parent: Parent?, relation, scope=serverOnly
 ''').build()
-            ];
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(
-              config,
-              models,
-              onErrorsCollector(collector),
-            );
-            analyzer.validateAll();
-            var errors = collector.errors;
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
 
-            expect(errors.map((e) => e.message), [
-              'The relation with scope "serverOnly" requires the relation to be optional.'
-            ]);
-          });
-        });
-      });
-    });
+    expect(errors.map((e) => e.message), [
+      'The relation with scope "serverOnly" requires the relation to be optional.'
+    ]);
   });
 
-  group('Given an id relation', () {
-    late ModelSource parentModel;
-    setUp(() =>
-        parentModel = ModelSourceBuilder().withFileName('parent').withYaml('''
+  test(
+      'Given I have an id relation'
+      ' and the child is serverOnly'
+      ' and the relation is nullable '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
 class: Parent
 table: parent
-''').build());
-    group('when the child is serverOnly', () {
-      group('and the field is nullable', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 serverOnly: true
 fields:
   parentId: int?, relation(parent=parent)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
-          expect(errors, isEmpty);
-        });
-      });
-      group('and the field is not nullable', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an id relation'
+      ' and the child is serverOnly'
+      ' and the relation is not nullable '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 serverOnly: true
 fields:
   parentId: int, relation(parent=parent)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
-          expect(errors, isEmpty);
-        });
-      });
-    });
-    group('when the child is not serverOnly', () {
-      group('and the field is nullable', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an id relation'
+      ' and the child is not serverOnly'
+      ' and the relation is nullable '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parentId: int?, relation(parent=parent)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
-          expect(errors, isEmpty);
-        });
-        group('and the field scope is serverOnly', () {
-          test('then validation causes no error', () {
-            var models = [
-              parentModel,
-              ModelSourceBuilder().withFileName('child').withYaml('''
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an id relation'
+      ' and the child is not serverOnly'
+      ' and the relation is nullable '
+      ' and the field scope is serverOnly '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parentId: int?, relation(parent=parent), scope=serverOnly
 ''').build()
-            ];
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(
-              config,
-              models,
-              onErrorsCollector(collector),
-            );
-            analyzer.validateAll();
-            var errors = collector.errors;
-            expect(errors, isEmpty);
-          });
-        });
-      });
-      group('and the field is not nullable', () {
-        test('then validation causes no error', () {
-          var models = [
-            parentModel,
-            ModelSourceBuilder().withFileName('child').withYaml('''
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
+  test(
+      'Given I have an id relation'
+      ' and the child is not serverOnly'
+      ' and the relation not is nullable '
+      'when analyzing '
+      'then no errors are collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parentId: int, relation(parent=parent)
 ''').build()
-          ];
-          var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          );
-          analyzer.validateAll();
-          var errors = collector.errors;
-          expect(errors, isEmpty);
-        });
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors, isEmpty);
+  });
 
-        group('and the field scope is serverOnly', () {
-          test('then validation causes an error', () {
-            var models = [
-              parentModel,
-              ModelSourceBuilder().withFileName('child').withYaml('''
+  test(
+      'Given I have an id relation'
+      ' and the child is not serverOnly'
+      ' and the relation is not nullable '
+      ' and the field scope is serverOnly '
+      'when analyzing '
+      'then an error is collected', () {
+    var models = [
+      (ModelSourceBuilder().withFileName('parent').withYaml('''
+class: Parent
+table: parent
+''').build()),
+      ModelSourceBuilder().withFileName('child').withYaml('''
 class: Child
 table: child
 fields:
   parentId: int, relation(parent=parent), scope=serverOnly
 ''').build()
-            ];
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(
-              config,
-              models,
-              onErrorsCollector(collector),
-            );
-            analyzer.validateAll();
-            var errors = collector.errors;
-            expect(errors.map((e) => e.message), [
-              'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".'
-            ]);
-          });
-        });
-      });
-    });
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+    expect(errors.map((e) => e.message), [
+      'The field "parentId" must be nullable when the "scope" property is set to "serverOnly".'
+    ]);
   });
 }
