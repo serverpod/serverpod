@@ -842,24 +842,52 @@ class Serverpod {
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
   Future<void> shutdown({bool exitProcess = true}) async {
-    try {
-      await _internalSession.close();
-      await redisController?.stop();
-      await server.shutdown();
-      await _webServer?.stop();
-      await _serviceServer?.shutdown();
-      await _futureCallManager?.stop();
-      await _healthCheckManager?.stop();
+    stdout.writeln(
+        'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
+    var futures = [
+      _internalSession.close(),
+      redisController?.stop(),
+      server.shutdown(),
+      _webServer?.stop(),
+      _serviceServer?.shutdown(),
+      _futureCallManager?.stop(),
+      _healthCheckManager?.stop(),
+    ].nonNulls;
+
+    Object? shutdownError;
+    await futures.wait.onError((ParallelWaitError e, stackTrace) {
+      shutdownError = e;
+      var errors = e.errors;
+      if (errors is Iterable<AsyncError?>) {
+        for (var error in errors.nonNulls) {
+          _reportException(error.error, error.stackTrace,
+              message: 'Error in server shutdown');
+        }
+      } else {
+        _reportException(errors, stackTrace,
+            message: 'Error in serverpod shutdown');
+      }
+      return e.values;
+    });
+
+    try {
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
-      _reportException(e, stackTrace, message: 'Error in Serverpod shutdown');
-      rethrow;
+      shutdownError = e;
+      _reportException(e, stackTrace,
+          message: 'Error in database pool manager shutdown');
     }
 
+    stdout.writeln('SERVERPOD has shutdown, time: ${DateTime.now().toUtc()}');
+
     if (exitProcess) {
-      exit(0);
+      exit(shutdownError != null ? 1 : 0);
+    }
+
+    if (shutdownError != null) {
+      throw shutdownError as Object;
     }
   }
 
