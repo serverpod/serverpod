@@ -1,5 +1,5 @@
-import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod/protocol.dart' as serverpod;
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {

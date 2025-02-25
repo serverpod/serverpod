@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -141,6 +142,218 @@ void main() {
         );
         expect(result, records);
       });
+
+      test('when calling recordEchoStream then should return the records',
+          () async {
+        final records =
+            <(String, (Map<String, int>, {bool flag, SimpleData simpleData}))>[
+          ('hello', ({'world': 1}, flag: true, simpleData: SimpleData(num: 2))),
+          ('hi', ({'world': 3}, flag: true, simpleData: SimpleData(num: 4))),
+        ];
+
+        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            1,
+            {Scope('user')},
+          ),
+        );
+
+        var result = endpoints.authenticatedTestTools.recordEchoStream(
+          authenticatedSessionBuilder,
+          records.first,
+          Stream.fromIterable(records.skip(1)),
+        );
+
+        expect(
+            result,
+            emitsInOrder([
+              isA<
+                      (
+                        String,
+                        (Map<String, int>, {bool flag, SimpleData simpleData})
+                      )>()
+                  .having(
+                    (r) => r.$1,
+                    'first positional',
+                    'hello',
+                  )
+                  .having(
+                    (r) => r.$2,
+                    'second positional',
+                    isA<
+                            (
+                              Map<String, int>, {
+                              bool flag,
+                              SimpleData simpleData
+                            })>()
+                        .having(
+                          (r) => r.$1,
+                          'first positional',
+                          {'world': 1},
+                        )
+                        .having((r) => r.flag, 'flag', isTrue)
+                        .having(
+                          (r) => r.simpleData,
+                          'simpleData',
+                          isA<SimpleData>().having(
+                            (s) => s.num,
+                            'num',
+                            2,
+                          ),
+                        ),
+                  ),
+              isA<
+                      (
+                        String,
+                        (Map<String, int>, {bool flag, SimpleData simpleData})
+                      )>()
+                  .having(
+                    (r) => r.$1,
+                    'first positional',
+                    'hi',
+                  )
+                  .having(
+                    (r) => r.$2,
+                    'second positional',
+                    isA<
+                            (
+                              Map<String, int>, {
+                              bool flag,
+                              SimpleData simpleData
+                            })>()
+                        .having(
+                          (r) => r.$1,
+                          'first positional',
+                          {'world': 3},
+                        )
+                        .having((r) => r.flag, 'flag', isTrue)
+                        .having(
+                          (r) => r.simpleData,
+                          'simpleData',
+                          isA<SimpleData>().having(
+                            (s) => s.num,
+                            'num',
+                            4,
+                          ),
+                        ),
+                  ),
+            ]));
+      });
+
+      test(
+        'when calling listOfRecordEchoStream then should return the records',
+        () async {
+          final lists = <List<(String, int)>>[
+            [
+              ('hello', 1),
+              ('world', 2),
+            ],
+            [
+              ('streamed', 3),
+              ('value', 4),
+            ],
+            [
+              ('value2', 5),
+              ('value3', 6),
+            ],
+          ];
+
+          var authenticatedSessionBuilder = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              1,
+              {Scope('user')},
+            ),
+          );
+
+          var result = endpoints.authenticatedTestTools.listOfRecordEchoStream(
+            authenticatedSessionBuilder,
+            lists.first,
+            Stream.fromIterable(lists.skip(1)),
+          );
+
+          expect(
+            result,
+            emitsInOrder(lists),
+          );
+        },
+      );
+
+      test(
+        'when calling nullableRecordEchoStream then should return the records',
+        () async {
+          final records = <(
+            String,
+            (Map<String, int>, {bool flag, SimpleData simpleData})
+          )?>[
+            null,
+            null,
+          ];
+
+          var authenticatedSessionBuilder = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              1,
+              {Scope('user')},
+            ),
+          );
+
+          var result =
+              endpoints.authenticatedTestTools.nullableRecordEchoStream(
+            authenticatedSessionBuilder,
+            records.first,
+            Stream.fromIterable(records.skip(1)),
+          );
+
+          expect(
+            result,
+            emitsInOrder([
+              isNull,
+              isNull,
+            ]),
+          );
+        },
+      );
+
+      test(
+        'when calling nullableListOfRecordEchoStream then should return the records',
+        () async {
+          final lists = <List<(String, int)>?>[
+            [
+              ('hello', 1),
+              ('world', 2),
+            ],
+            null,
+            [
+              ('streamed', 3),
+              ('value', 4),
+            ],
+            null,
+            [
+              ('value2', 5),
+              ('value3', 6),
+            ],
+            null,
+          ];
+
+          var authenticatedSessionBuilder = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              1,
+              {Scope('user')},
+            ),
+          );
+
+          var result =
+              endpoints.authenticatedTestTools.nullableListOfRecordEchoStream(
+            authenticatedSessionBuilder,
+            lists.first,
+            Stream.fromIterable(lists.skip(1)),
+          );
+
+          expect(
+            result,
+            emitsInOrder(lists),
+          );
+        },
+      );
     },
   );
 }

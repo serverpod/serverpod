@@ -57,6 +57,22 @@ void main() {
 
       expect(result, isNull);
     });
+    test(
+        'Given the test server, when a `null` simple int? record is sent to the server, then it is returned verbatim',
+        () async {
+      var values = <(int?,)?>[
+        null,
+        (2,),
+        null,
+        (4,),
+      ];
+
+      var result = client.recordParameters.streamNullableRecordOfNullableInt(
+        Stream.fromIterable(values),
+      );
+
+      expect(result, emitsInOrder(values));
+    });
   });
 
   group('Record with multiple positional fields', () {
@@ -529,31 +545,115 @@ void main() {
       );
       expect(result.namedSubRecord.$2, 4.5);
     });
+
+    test(
+        'Given the test server, when a `null` complex nested positioned record is sent to the server, then it is returned verbatim',
+        () async {
+      var record = (
+        (1, '2'),
+        namedSubRecord: (
+          SimpleData(num: 3),
+          4.5,
+        )
+      );
+
+      var result = await client.recordParameters
+          .returnListOfNestedPositionalAndNamedRecord([record, record]);
+
+      expect(result, hasLength(2));
+      expect(
+        result.first.$1,
+        (1, '2'),
+      );
+      expect(
+        result.first.namedSubRecord.$1,
+        isA<SimpleData>().having((d) => d.num, 'num', 3),
+      );
+      expect(result.first.namedSubRecord.$2, 4.5);
+    });
   });
 
   test(
-      'Given the test server, when a `null` complex nested positioned record is sent to the server, then it is returned verbatim',
+      'Given the test server, when a `null` complex nested positioned record stream is sent to the server, then it is returned verbatim',
       () async {
-    var record = (
-      (1, '2'),
-      namedSubRecord: (
-        SimpleData(num: 3),
-        4.5,
-      )
+    var records =
+        <List<((int, String), {(SimpleData, double) namedSubRecord})?>?>[
+      null,
+    ];
+
+    var result = client.recordParameters
+        .streamNullableListOfNullableNestedPositionalAndNamedRecord(
+      null,
+      Stream.fromIterable(records),
     );
 
-    var result = await client.recordParameters
-        .returnListOfNestedPositionalAndNamedRecord([record, record]);
+    expect(
+      result,
+      emitsInOrder(
+        [
+          isNull,
+          isNull,
+        ],
+      ),
+    );
+  });
 
-    expect(result, hasLength(2));
-    expect(
-      result.first.$1,
-      (1, '2'),
+  test(
+      'Given the test server, when a complex nested positioned record stream is sent to the server, then it is returned verbatim',
+      () async {
+    var records =
+        <List<((int, String), {(SimpleData, double) namedSubRecord})?>?>[
+      [
+        null,
+        (
+          (1, '2'),
+          namedSubRecord: (
+            SimpleData(num: 3),
+            4.5,
+          )
+        ),
+        null,
+      ],
+    ];
+
+    var result = client.recordParameters
+        .streamNullableListOfNullableNestedPositionalAndNamedRecord(
+      null,
+      Stream.fromIterable(records),
     );
+
     expect(
-      result.first.namedSubRecord.$1,
-      isA<SimpleData>().having((d) => d.num, 'num', 3),
+      result,
+      emitsInOrder(
+        [
+          isNull,
+          equals([
+            isNull,
+            isA<((int, String), {(SimpleData, double) namedSubRecord})>()
+                .having(
+                  (r) => r.$1,
+                  'first positional',
+                  (1, '2'),
+                )
+                .having(
+                  (r) => r.namedSubRecord.$1,
+                  'named subrecord SimpleData',
+                  isA<SimpleData>().having((s) => s.num, 'num', 3),
+                )
+                .having(
+                  (r) => r.$1,
+                  'first positional',
+                  (1, '2'),
+                )
+                .having(
+                  (r) => r.namedSubRecord.$2,
+                  'named subrecord double',
+                  4.5,
+                ),
+            isNull,
+          ]),
+        ],
+      ),
     );
-    expect(result.first.namedSubRecord.$2, 4.5);
   });
 }

@@ -447,6 +447,8 @@ class MethodStreamMessage extends WebSocketMessage
   /// The object that was sent.
   final dynamic object;
 
+  late final String _string;
+
   /// Creates a new [MethodStreamMessage].
   /// The [object] must be an object processed by the
   /// [SerializationManager.wrapWithClassName] method.
@@ -457,7 +459,20 @@ class MethodStreamMessage extends WebSocketMessage
             data[WebSocketMessageDataKey.connectionId]),
         parameter = data[WebSocketMessageDataKey.parameter],
         object = serializationManager
-            .deserializeByClassName(data[WebSocketMessageDataKey.object]);
+            .deserializeByClassName(data[WebSocketMessageDataKey.object]) {
+    // TODO(tp): Either this or we'd need to keep `serialization manager around`
+    _string = WebSocketMessage._buildMessage(
+      _messageType,
+      {
+        WebSocketMessageDataKey.endpoint: endpoint,
+        WebSocketMessageDataKey.method: method,
+        WebSocketMessageDataKey.connectionId: connectionId,
+        if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+        WebSocketMessageDataKey.object: serializationManager.wrapWithClassName(
+            object), // TODO: This might be a breaking change though, maybe just get `data`?
+      },
+    ).toString();
+  }
 
   /// Builds a [MethodStreamMessage] message.
   static String buildMessage({
@@ -479,16 +494,7 @@ class MethodStreamMessage extends WebSocketMessage
   }
 
   @override
-  String toString() => WebSocketMessage._buildMessage(
-        _messageType,
-        {
-          WebSocketMessageDataKey.endpoint: endpoint,
-          WebSocketMessageDataKey.method: method,
-          WebSocketMessageDataKey.connectionId: connectionId,
-          if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
-          WebSocketMessageDataKey.object: object,
-        },
-      ).toString();
+  String toString() => _string;
 }
 
 /// A message sent when a bad request is received.
