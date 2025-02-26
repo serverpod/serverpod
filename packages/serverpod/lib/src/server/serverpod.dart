@@ -718,7 +718,7 @@ class Serverpod {
   void _onShutdownSignal(ProcessSignal signal) {
     stdout.writeln('${signal.name} (${signal.signalNumber}) received'
         ', time: ${DateTime.now().toUtc()}');
-    shutdown(signalNumber: signal.signalNumber);
+    shutdown(exitProcess: true, signalNumber: signal.signalNumber);
   }
 
   Future<bool> _startInsightsServer() async {
@@ -876,12 +876,18 @@ class Serverpod {
       var errors = e.errors;
       if (errors is Iterable<AsyncError?>) {
         for (var error in errors.nonNulls) {
-          _reportException(error.error, error.stackTrace,
-              message: 'Error in server shutdown');
+          _reportException(
+            error.error,
+            error.stackTrace,
+            message: 'Error in server shutdown',
+          );
         }
       } else {
-        _reportException(errors, stackTrace,
-            message: 'Error in serverpod shutdown');
+        _reportException(
+          errors,
+          stackTrace,
+          message: 'Error in serverpod shutdown',
+        );
       }
       return e.values;
     });
@@ -891,11 +897,15 @@ class Serverpod {
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
       shutdownError = e;
-      _reportException(e, stackTrace,
-          message: 'Error in database pool manager shutdown');
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error in database pool manager shutdown',
+      );
     }
 
-    stdout.writeln('SERVERPOD has shutdown, time: ${DateTime.now().toUtc()}');
+    stdout.writeln(
+        'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}');
 
     if (exitProcess) {
       int conventionalExitCode = signalNumber != null ? 128 + signalNumber : 0;
@@ -978,6 +988,12 @@ class Serverpod {
   }
 }
 
+// _shutdownTestAuditor is a stop-gap test approach to verify the robustness
+// of the shutdown process.
+// It is not intended to be used in production and it is not an encouraged pattern.
+// The real solution is to enable dynamic service plugins for Serverpod,
+// with which could plug in custom services for test scenarios without affecting
+// production code like this.
 Future<void>? _shutdownTestAuditor() {
   var testThrowerDelaySeconds = int.tryParse(
     Platform.environment['_SERVERPOD_SHUTDOWN_TEST_AUDITOR'] ?? '',

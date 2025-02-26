@@ -75,7 +75,7 @@ void main() {
         emitsInOrder([
           emitsThrough(contains('SIGINT (2) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD has shutdown')),
+          emitsThrough(contains('SERVERPOD shutdown completed')),
         ]),
       );
 
@@ -112,7 +112,7 @@ void main() {
         emitsInOrder([
           emitsThrough(contains('SIGTERM (15) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD has shutdown')),
+          emitsThrough(contains('SERVERPOD shutdown completed')),
         ]),
       );
 
@@ -155,7 +155,7 @@ void main() {
         emitsInOrder([
           emitsThrough(contains('SIGINT (2) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD has shutdown')),
+          emitsThrough(contains('SERVERPOD shutdown completed')),
         ]),
       );
 
@@ -214,7 +214,7 @@ void main() {
         emitsInOrder([
           emitsThrough(contains('SIGINT (2) received')),
           emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD has shutdown')),
+          emitsThrough(contains('SERVERPOD shutdown completed')),
         ]),
       );
 
