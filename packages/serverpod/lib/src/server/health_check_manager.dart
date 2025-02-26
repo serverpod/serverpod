@@ -23,6 +23,7 @@ class HealthCheckManager {
 
   bool _running = false;
   Timer? _timer;
+  Completer<void>? _completer;
 
   /// Creates a new [HealthCheckManager].
   HealthCheckManager(this._pod, this.onCompleted);
@@ -44,9 +45,31 @@ class HealthCheckManager {
   Future<void> stop() async {
     _running = false;
     _timer?.cancel();
+    await _completer?.future;
   }
 
-  void _performHealthCheck() async {
+  Future<void> _performHealthCheck() async {
+    final completer = Completer<void>();
+    _completer = completer;
+
+    try {
+      await _innerPerformHealthCheck();
+      completer.complete();
+    } catch (e, stackTrace) {
+      _pod.internalSubmitEvent(
+        ExceptionEvent(e, stackTrace, message: 'Error in health check'),
+        space: OriginSpace.framework,
+        context: DiagnosticEventContext(
+          serverId: _pod.serverId,
+          serverRunMode: _pod.commandLineArgs.role.name,
+          serverName: '',
+        ),
+      );
+      completer.completeError(e, stackTrace);
+    }
+  }
+
+  Future<void> _innerPerformHealthCheck() async {
     if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
