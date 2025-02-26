@@ -34,7 +34,7 @@ class SerializableModelLibraryGenerator {
     SerializableModelDefinition modelDefinition,
   ) {
     switch (modelDefinition) {
-      case ClassDefinition():
+      case ModelClassDefinition():
         return _generateClassLibrary(modelDefinition);
       case EnumDefinition():
         return _generateEnumLibrary(modelDefinition);
@@ -43,7 +43,7 @@ class SerializableModelLibraryGenerator {
 
   /// Handle ordinary classes for [generateModelLibrary].
   Library _generateClassLibrary(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
@@ -155,7 +155,7 @@ class SerializableModelLibraryGenerator {
 
   Class _buildModelClass(
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
   ) {
@@ -304,7 +304,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldCreateUndefinedClass(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     if (classDefinition.sealedTopNode == null) {
@@ -364,7 +364,7 @@ class SerializableModelLibraryGenerator {
 
   Class _buildModelImplicitClass(
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var hiddenFields = classDefinition.fields
         .where((field) => field.hiddenSerializableField(serverCode));
@@ -480,7 +480,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldOverrideAbstractCopyWithMethod(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var parentClass = classDefinition.parentClass;
 

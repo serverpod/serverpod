@@ -44,7 +44,7 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index = definition.indexes.first;
 
@@ -74,7 +74,7 @@ void main() {
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ModelClassDefinition;
 
     var index = definition.indexes.first;
 

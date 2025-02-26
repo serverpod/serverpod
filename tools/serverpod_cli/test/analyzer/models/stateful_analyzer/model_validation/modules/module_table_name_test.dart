@@ -114,7 +114,7 @@ void main() {
       expect(errors, isEmpty);
     });
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
 
     test('then a table definition is created.', () {
       expect(definition?.tableName,
