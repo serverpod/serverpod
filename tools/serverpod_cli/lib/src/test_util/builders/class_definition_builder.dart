@@ -15,6 +15,7 @@ class ClassDefinitionBuilder {
   List<String> _subDirParts;
   bool _serverOnly;
   bool _isException;
+  bool _isInterface;
   String? _tableName;
   bool _managedMigration;
   List<_FieldBuilder> _fields;
@@ -22,6 +23,7 @@ class ClassDefinitionBuilder {
   List<String>? _documentation;
   bool _isSealed;
   List<InheritanceDefinition> _childClasses;
+  List<InheritanceDefinition> _implementedInterfaces;
   InheritanceDefinition? _extendsClass;
 
   ClassDefinitionBuilder()
@@ -33,8 +35,10 @@ class ClassDefinitionBuilder {
         _managedMigration = true,
         _serverOnly = false,
         _isException = false,
+        _isInterface = false,
         _indexes = [],
         _childClasses = [],
+        _implementedInterfaces = [],
         _isSealed = false;
 
   ClassDefinition build() {
@@ -58,10 +62,12 @@ class ClassDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       isException: _isException,
+      isInterface: _isInterface,
       tableName: _tableName,
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
+      isImplementing: _implementedInterfaces,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
       isSealed: _isSealed,
@@ -320,6 +326,21 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withIsException(bool isException) {
     _isException = isException;
+    return this;
+  }
+
+  ClassDefinitionBuilder withIsInterface(bool isInterface) {
+    _isInterface = isInterface;
+    return this;
+  }
+
+  ClassDefinitionBuilder withImplementedInterfaces(
+    List<ClassDefinition> interfaces,
+  ) {
+    _implementedInterfaces = [
+      for (var interface in interfaces)
+        ResolvedInheritanceDefinition(interface),
+    ];
     return this;
   }
 

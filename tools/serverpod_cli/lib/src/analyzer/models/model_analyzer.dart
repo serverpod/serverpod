@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/model_validator.dar
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/interface_yaml_definition.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -34,6 +35,7 @@ class SerializableModelAnalyzer {
     Keyword.classType,
     Keyword.exceptionType,
     Keyword.enumType,
+    Keyword.interfaceType,
   };
 
   /// Best effort attempt to extract a model definition from a yaml file.
@@ -82,6 +84,15 @@ class SerializableModelAnalyzer {
           outFileName,
           documentContents,
           docsExtractor,
+        );
+      case Keyword.interfaceType:
+        return ModelParser.serializeClassFile(
+          Keyword.interfaceType,
+          modelSource,
+          outFileName,
+          documentContents,
+          docsExtractor,
+          extraClasses,
         );
       default:
         return null;
@@ -163,6 +174,10 @@ class SerializableModelAnalyzer {
       case Keyword.enumType:
         documentStructure = EnumYamlDefinition(restrictions).documentStructure;
         break;
+      case Keyword.interfaceType:
+        documentStructure =
+            InterfaceYamlDefinition(restrictions).documentStructure;
+        break;
       default:
         throw UnimplementedError(
             'Validation for $definitionType is not implemented.');
@@ -212,6 +227,10 @@ class SerializableModelAnalyzer {
 
     if (documentContents.nodes[Keyword.enumType] != null) {
       return Keyword.enumType;
+    }
+
+    if (documentContents.nodes[Keyword.interfaceType] != null) {
+      return Keyword.interfaceType;
     }
 
     return null;
