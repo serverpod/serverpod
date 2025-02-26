@@ -542,7 +542,7 @@ class Serverpod {
         commandLineArgs.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
-      ProcessSignal.sigint.watch().listen(_onShutdownSignal);
+      ProcessSignal.sigint.watch().listen(_onInterruptSignal);
       if (!Platform.isWindows) {
         ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
       }
@@ -718,6 +718,22 @@ class Serverpod {
   void _onShutdownSignal(ProcessSignal signal) {
     stdout.writeln('${signal.name} (${signal.signalNumber}) received'
         ', time: ${DateTime.now().toUtc()}');
+    shutdown(exitProcess: true, signalNumber: signal.signalNumber);
+  }
+
+  bool _interruptSignalSent = false;
+
+  void _onInterruptSignal(ProcessSignal signal) {
+    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
+        ', time: ${DateTime.now().toUtc()}');
+
+    if (_interruptSignalSent) {
+      stdout
+          .writeln('SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}');
+      exit(128 + signal.signalNumber);
+    }
+
+    _interruptSignalSent = true;
     shutdown(exitProcess: true, signalNumber: signal.signalNumber);
   }
 
