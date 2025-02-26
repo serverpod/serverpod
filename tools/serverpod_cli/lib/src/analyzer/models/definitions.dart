@@ -34,7 +34,7 @@ sealed class SerializableModelDefinition {
 ///
 /// See also:
 /// - [EnumDefinition]
-class ClassDefinition extends SerializableModelDefinition {
+sealed class ClassDefinition extends SerializableModelDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;

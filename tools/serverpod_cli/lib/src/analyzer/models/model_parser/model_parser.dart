@@ -58,7 +58,7 @@ class ModelParser {
         documentContents.nodes[Keyword.managedMigration]?.value;
     var manageMigration = _parseBool(migrationValue) ?? true;
 
-    return ClassDefinition(
+    return ModelClassDefinition(
       className: className,
       isSealed: isSealed,
       extendsClass: extendsClass,
