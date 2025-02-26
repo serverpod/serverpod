@@ -596,15 +596,17 @@ int _readMaxRequestSize(
   return maxRequestSize;
 }
 
-String _readServerId(Map<dynamic, dynamic> configMap,
-    Map<String, String> environment, String serverIdFromCommandLineArg) {
+String _readServerId(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  String serverIdFromCommandLineArg,
+) {
   if (serverIdFromCommandLineArg != 'default') {
     return serverIdFromCommandLineArg;
   }
-  var serverId = configMap[ServerpodEnv.serverId.configKey];
-
-  serverId = environment[ServerpodEnv.serverId.envVariable] ?? serverId;
-  serverId ??= 'default';
+  var serverId = environment[ServerpodEnv.serverId.envVariable] ??
+      configMap[ServerpodEnv.serverId.configKey] ??
+      'default';
   return serverId;
 }
 

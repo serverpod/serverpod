@@ -330,10 +330,25 @@ class Serverpod {
     stdout.writeln(commandLineArgs.toString());
 
     _runMode = commandLineArgs.runMode;
-    serverId = commandLineArgs.serverId;
 
     try {
-      _innerInitializeServerpod(commandLineArgs, config: config);
+      // Load passwords
+      _passwordManager = PasswordManager(runMode: runMode);
+      _passwords = _passwordManager.loadPasswords();
+
+      // Load config
+      this.config = config ??
+          ServerpodConfig.load(
+            _runMode,
+            commandLineArgs.serverId,
+            _passwords,
+          );
+
+      logVerbose(this.config.toString());
+
+      serverId = this.config.serverId;
+
+      _innerInitializeServerpod();
     } catch (e, stackTrace) {
       _reportException(e, stackTrace,
           message: 'Error in Serverpod initialization');
@@ -343,35 +358,17 @@ class Serverpod {
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
 
-  void _innerInitializeServerpod(
-    CommandLineArgs commandLineArgs, {
-    ServerpodConfig? config,
-  }) {
+  void _innerInitializeServerpod() {
     _instance = this;
     _internalSerializationManager = internal.Protocol();
-
-    // Load passwords
-    _passwordManager = PasswordManager(runMode: runMode);
-    _passwords = _passwordManager.loadPasswords();
-
-    // Load config
-    this.config = config ??
-        ServerpodConfig.load(
-          _runMode,
-          serverId,
-          _passwords,
-        );
-    logVerbose(this.config.toString());
-
-    serverId = this.config.serverId;
-    Features(this.config);
+    Features(config);
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
     _updateLogSettings(_defaultRuntimeSettings);
 
     // Setup database
-    var databaseConfiguration = this.config.database;
+    var databaseConfiguration = config.database;
     if (Features.enableDatabase && databaseConfiguration != null) {
       _databasePoolManager = DatabasePoolManager(
         serializationManager,
@@ -394,7 +391,7 @@ class Serverpod {
     }
 
     // Setup Redis
-    var redis = this.config.redis;
+    var redis = config.redis;
     if (Features.enableRedis && redis != null) {
       redisController = RedisController(
         host: redis.host,
@@ -406,7 +403,7 @@ class Serverpod {
 
     _caches = Caches(
       serializationManager,
-      this.config,
+      config,
       serverId,
       redisController,
     );
@@ -416,7 +413,7 @@ class Serverpod {
     server = Server(
       serverpod: this,
       serverId: serverId,
-      port: this.config.apiServer.port,
+      port: config.apiServer.port,
       serializationManager: serializationManager,
       databasePoolManager: _databasePoolManager,
       passwords: _passwords,
