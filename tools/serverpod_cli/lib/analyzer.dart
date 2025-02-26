@@ -12,6 +12,7 @@ export 'src/analyzer/models/definitions.dart'
     show
         SerializableModelDefinition,
         ClassDefinition,
+        ModelClassDefinition,
         SerializableModelFieldDefinition,
         ModelFieldScopeDefinition,
         SerializableModelIndexDefinition,

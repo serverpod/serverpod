@@ -171,6 +171,28 @@ class ClassDefinition extends SerializableModelDefinition {
   }
 }
 
+/// A [ClassDefinition] specialization that represents a model class.
+final class ModelClassDefinition extends ClassDefinition {
+  /// Create a new [ModelClassDefinition].
+  ModelClassDefinition({
+    required super.fileName,
+    required super.sourceFileName,
+    required super.className,
+    required super.fields,
+    required super.serverOnly,
+    required super.manageMigration,
+    required super.type,
+    required super.isSealed,
+    required super.isException,
+    List<InheritanceDefinition>? childClasses,
+    super.extendsClass,
+    super.tableName,
+    super.indexes = const [],
+    super.subDirParts,
+    super.documentation,
+  });
+}
+
 /// Describes a single field of a [ClassDefinition].
 class SerializableModelFieldDefinition {
   /// The name of the field.
