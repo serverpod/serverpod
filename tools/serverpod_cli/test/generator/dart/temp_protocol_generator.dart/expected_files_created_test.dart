@@ -2,7 +2,7 @@ import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
@@ -12,7 +12,7 @@ const generator = DartTemporaryProtocolGenerator();
 void main() {
   group('Given a single class when generating the code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build()
@@ -34,11 +34,11 @@ void main() {
 
   group('Given a multiple classes when generating the code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
           .build()
@@ -62,7 +62,7 @@ void main() {
       'Given a server-side only class when generating the code then the protocol file is created',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .withServerOnly(true)

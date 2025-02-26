@@ -3,7 +3,7 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 
@@ -38,25 +38,25 @@ void main() {
       'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
@@ -237,14 +237,14 @@ void main() {
       'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withSimpleField('parentDefault', 'int', defaultValue: '0')
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
@@ -252,13 +252,13 @@ void main() {
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withSimpleField('childDefault', 'int', defaultValue: '-1')
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')

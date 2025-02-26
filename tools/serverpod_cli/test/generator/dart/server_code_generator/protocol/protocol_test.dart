@@ -2,7 +2,7 @@ import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
@@ -29,7 +29,7 @@ void main() {
       () {
     var modelName = 'example_model';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(modelName.pascalCase)
           .withFileName(modelName)
           .build()
@@ -80,13 +80,13 @@ void main() {
     var testModelFileName = 'test_model.dart';
     var modelWithListName = 'modelWithList';
     var modelWithListFileName = 'model_with_list.dart';
-    var testModel = ClassDefinitionBuilder()
+    var testModel = ModelClassDefinitionBuilder()
         .withClassName(testModelName)
         .withFileName(testModelFileName)
         .build();
     var models = [
       testModel,
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(modelWithListName)
           .withFileName(modelWithListFileName)
           .withField(
@@ -135,7 +135,7 @@ void main() {
     var testModelName = 'TestModel';
     var testModelFileName = 'test_model.dart';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build(),
@@ -195,7 +195,7 @@ void main() {
     var testModelName = 'TestModel';
     var testModelFileName = 'test_model.dart';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build(),
@@ -253,7 +253,7 @@ void main() {
     var testModelName = 'TestModel';
     var testModelFileName = 'test_model.dart';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build(),
@@ -311,7 +311,7 @@ void main() {
     var testModelName = 'TestModel';
     var testModelFileName = 'test_model.dart';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testModelName)
           .withFileName(testModelFileName)
           .build(),

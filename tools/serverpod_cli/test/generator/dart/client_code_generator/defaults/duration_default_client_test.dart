@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_d
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
@@ -45,7 +45,7 @@ void main() {
         ];
 
         var models = [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)
@@ -124,7 +124,7 @@ void main() {
                   .withDefaults(defaultModelValue: '1d 24h')
                   .build();
 
-              var normalizedModel = ClassDefinitionBuilder()
+              var normalizedModel = ModelClassDefinitionBuilder()
                   .withClassName('NormalizedDuration')
                   .withFileName('normalized_duration')
                   .withField(normalizedField)
@@ -175,7 +175,7 @@ void main() {
                   .withDefaults(defaultModelValue: '0d 48h 60min')
                   .build();
 
-              var normalizedModel = ClassDefinitionBuilder()
+              var normalizedModel = ModelClassDefinitionBuilder()
                   .withClassName('NormalizedDuration')
                   .withFileName('normalized_duration')
                   .withField(normalizedField)
@@ -248,7 +248,7 @@ void main() {
         ];
 
         var models = [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)

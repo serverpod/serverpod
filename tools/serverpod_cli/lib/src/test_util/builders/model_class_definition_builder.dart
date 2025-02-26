@@ -8,7 +8,7 @@ import 'serializable_entity_field_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
-class ClassDefinitionBuilder {
+class ModelClassDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -24,7 +24,7 @@ class ClassDefinitionBuilder {
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
 
-  ClassDefinitionBuilder()
+  ModelClassDefinitionBuilder()
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
@@ -37,7 +37,7 @@ class ClassDefinitionBuilder {
         _childClasses = [],
         _isSealed = false;
 
-  ClassDefinition build() {
+  ModelClassDefinition build() {
     if (_tableName != null) {
       _fields.insert(
         0,
@@ -50,7 +50,7 @@ class ClassDefinitionBuilder {
       );
     }
 
-    return ClassDefinition(
+    return ModelClassDefinition(
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
@@ -69,42 +69,42 @@ class ClassDefinitionBuilder {
     );
   }
 
-  ClassDefinitionBuilder withFileName(String fileName) {
+  ModelClassDefinitionBuilder withFileName(String fileName) {
     _fileName = fileName;
     return this;
   }
 
-  ClassDefinitionBuilder withSourceFileName(String sourceFileName) {
+  ModelClassDefinitionBuilder withSourceFileName(String sourceFileName) {
     _sourceFileName = sourceFileName;
     return this;
   }
 
-  ClassDefinitionBuilder withClassName(String className) {
+  ModelClassDefinitionBuilder withClassName(String className) {
     _className = className;
     return this;
   }
 
-  ClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
+  ModelClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
     _subDirParts = subDirParts;
     return this;
   }
 
-  ClassDefinitionBuilder withServerOnly(bool serverOnly) {
+  ModelClassDefinitionBuilder withServerOnly(bool serverOnly) {
     _serverOnly = serverOnly;
     return this;
   }
 
-  ClassDefinitionBuilder withTableName(String? tableName) {
+  ModelClassDefinitionBuilder withTableName(String? tableName) {
     _tableName = tableName;
     return this;
   }
 
-  ClassDefinitionBuilder withManagedMigration(bool isManaged) {
+  ModelClassDefinitionBuilder withManagedMigration(bool isManaged) {
     _managedMigration = isManaged;
     return this;
   }
 
-  ClassDefinitionBuilder withSimpleField(
+  ModelClassDefinitionBuilder withSimpleField(
     String fieldName,
     String type, {
     dynamic defaultValue,
@@ -120,7 +120,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withListField(
+  ModelClassDefinitionBuilder withListField(
     String fieldName,
     String className, {
     bool nullable = false,
@@ -144,7 +144,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withMapField(
+  ModelClassDefinitionBuilder withMapField(
     String fieldName, {
     required String keyType,
     required String valueType,
@@ -170,12 +170,13 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withField(SerializableModelFieldDefinition field) {
+  ModelClassDefinitionBuilder withField(
+      SerializableModelFieldDefinition field) {
     _fields.add(() => field);
     return this;
   }
 
-  ClassDefinitionBuilder withObjectRelationFieldNoForeignKey(
+  ModelClassDefinitionBuilder withObjectRelationFieldNoForeignKey(
     String fieldName,
     String className,
     String parentTable, {
@@ -207,7 +208,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withObjectRelationField(
+  ModelClassDefinitionBuilder withObjectRelationField(
     String fieldName,
     String className,
     String parentTable, {
@@ -241,7 +242,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withImplicitListRelationField(
+  ModelClassDefinitionBuilder withImplicitListRelationField(
     String fieldName,
     String className,
   ) {
@@ -269,7 +270,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withListRelationField(
+  ModelClassDefinitionBuilder withListRelationField(
     String fieldName,
     String className,
     String foreignKeyFieldName, {
@@ -299,43 +300,46 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withFields(
+  ModelClassDefinitionBuilder withFields(
     List<SerializableModelFieldDefinition> fields,
   ) {
     _fields = fields.map((f) => () => f).toList();
     return this;
   }
 
-  ClassDefinitionBuilder withIndexes(
+  ModelClassDefinitionBuilder withIndexes(
     List<SerializableModelIndexDefinition> indexes,
   ) {
     _indexes = indexes;
     return this;
   }
 
-  ClassDefinitionBuilder withDocumentation(List<String>? documentation) {
+  ModelClassDefinitionBuilder withDocumentation(List<String>? documentation) {
     _documentation = documentation;
     return this;
   }
 
-  ClassDefinitionBuilder withIsException(bool isException) {
+  ModelClassDefinitionBuilder withIsException(bool isException) {
     _isException = isException;
     return this;
   }
 
-  ClassDefinitionBuilder withChildClasses(List<ClassDefinition> childClasses) {
+  ModelClassDefinitionBuilder withChildClasses(
+    List<ModelClassDefinition> childClasses,
+  ) {
     _childClasses = [
       for (var child in childClasses) ResolvedInheritanceDefinition(child),
     ];
     return this;
   }
 
-  ClassDefinitionBuilder withExtendsClass(ClassDefinition parentClass) {
+  ModelClassDefinitionBuilder withExtendsClass(
+      ModelClassDefinition parentClass) {
     _extendsClass = ResolvedInheritanceDefinition(parentClass);
     return this;
   }
 
-  ClassDefinitionBuilder withIsSealed(bool isSealed) {
+  ModelClassDefinitionBuilder withIsSealed(bool isSealed) {
     _isSealed = isSealed;
     return this;
   }

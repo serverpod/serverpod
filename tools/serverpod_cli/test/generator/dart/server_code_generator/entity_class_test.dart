@@ -2,7 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
@@ -21,7 +21,7 @@ void main() {
 
   group('Given empty class named $testClassName when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build()
@@ -111,7 +111,7 @@ void main() {
 
   group('Given a class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
@@ -230,7 +230,7 @@ void main() {
 
   group('Given a class with a none nullable field when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String')
@@ -278,7 +278,7 @@ void main() {
 
   group('Given a class with a nullable field when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String', nullable: true)
@@ -328,7 +328,7 @@ void main() {
       'Given a class with a non persistent field with scope all when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -373,7 +373,7 @@ void main() {
       'Given a class with a non persistent field with scope serverOnly when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -419,7 +419,7 @@ void main() {
       'Given a class with a non persistent field with scope none when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -459,7 +459,7 @@ void main() {
 
   group('Given exception class when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withIsException(true)
@@ -499,7 +499,7 @@ void main() {
       () {
     var fieldName = 'implicit_field';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -564,7 +564,7 @@ void main() {
     () {
       var fieldName = '_implicit_field';
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withTableName(tableName)

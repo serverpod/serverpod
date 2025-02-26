@@ -2,7 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
@@ -23,7 +23,7 @@ void main() {
       'Given a class named $testClassName with two primitive vars when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('name', 'String')
@@ -163,7 +163,7 @@ void main() {
       'Given a class named $testClassName with a var with none scope when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -244,7 +244,7 @@ void main() {
       'Given a class named $testClassName with a var with serverOnly scope when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -315,7 +315,7 @@ void main() {
 
   group('Given a class named $testClassName with a list of strings', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -351,7 +351,7 @@ void main() {
 
   group('Given a class named $testClassName with a map of strings', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -388,7 +388,7 @@ void main() {
 
   group('Given a class named $testClassName with a ByteData field', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -423,7 +423,7 @@ void main() {
 
   group('Given a class named $testClassName with a nested object', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()

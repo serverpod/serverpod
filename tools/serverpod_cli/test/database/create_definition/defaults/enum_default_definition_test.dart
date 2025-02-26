@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -33,7 +33,7 @@ void main() {
             .withEnumDefinition(byNameEnumDefinition, true)
             .build();
 
-        var model = ClassDefinitionBuilder()
+        var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
@@ -85,7 +85,7 @@ void main() {
             .withDefaults(defaultPersistValue: 'byName2')
             .build();
 
-        var model = ClassDefinitionBuilder()
+        var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
@@ -148,7 +148,7 @@ void main() {
             .withDefaults(defaultModelValue: 'byName1')
             .build();
 
-        var model = ClassDefinitionBuilder()
+        var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();
@@ -213,7 +213,7 @@ void main() {
             .withDefaults(defaultPersistValue: 'byIndex2')
             .build();
 
-        var model = ClassDefinitionBuilder()
+        var model = ModelClassDefinitionBuilder()
             .withTableName('example')
             .withField(field)
             .build();

@@ -1,7 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:test/test.dart';
@@ -15,21 +15,21 @@ void main() {
     var company = 'company';
     var town = 'town';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
           .withTableName(citizen)
           .withSimpleField('name', 'String')
           .withObjectRelationField(company, company.sentenceCase, company)
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(company.sentenceCase)
           .withFileName(company)
           .withTableName(company)
           .withSimpleField('name', 'String')
           .withObjectRelationField(town, town.sentenceCase, town)
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(town.sentenceCase)
           .withFileName(town)
           .withTableName(town)

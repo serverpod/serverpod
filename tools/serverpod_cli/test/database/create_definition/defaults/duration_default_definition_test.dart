@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:test/test.dart';
 
@@ -12,7 +12,7 @@ void main() {
           .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -64,7 +64,7 @@ void main() {
           .withTypeDefinition('Duration', false)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -115,7 +115,7 @@ void main() {
           .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -176,7 +176,7 @@ void main() {
           .withTypeDefinition('Duration', true)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -236,7 +236,7 @@ void main() {
           .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -287,7 +287,7 @@ void main() {
           .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
