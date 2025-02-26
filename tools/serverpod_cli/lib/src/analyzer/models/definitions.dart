@@ -187,6 +187,22 @@ final class ModelClassDefinition extends ClassDefinition {
   }
 }
 
+/// A [ClassDefinition] specialization that represents an exception.
+final class ExceptionClassDefinition extends ClassDefinition {
+  /// Create a new [ExceptionClassDefinition].
+  ExceptionClassDefinition({
+    required super.className,
+    required super.fields,
+    required super.fileName,
+    required super.isException,
+    required super.serverOnly,
+    required super.sourceFileName,
+    required super.type,
+    super.documentation,
+    super.subDirParts,
+  });
+}
+
 /// Describes a single field of a [ClassDefinition].
 class SerializableModelFieldDefinition {
   /// The name of the field.
