@@ -34,15 +34,53 @@ class SerializableModelLibraryGenerator {
     SerializableModelDefinition modelDefinition,
   ) {
     switch (modelDefinition) {
-      case ModelClassDefinition():
+      case ClassDefinition():
         return _generateClassLibrary(modelDefinition);
       case EnumDefinition():
         return _generateEnumLibrary(modelDefinition);
     }
   }
 
+  Library _generateClassLibrary(ClassDefinition classDefinition) {
+    switch (classDefinition) {
+      case ExceptionClassDefinition():
+        return _generateExceptionLibrary(classDefinition);
+      case ModelClassDefinition():
+        return _generateModelClassLibrary(classDefinition);
+    }
+  }
+
+  Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
+    var fields = definition.fields;
+    var className = definition.className;
+    var nonNullableField = fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .any((field) => field.type.nullable);
+
+    return Library(
+      (libraryBuilder) {
+        libraryBuilder.body.addAll([
+          _buildExceptionClass(
+            className,
+            definition,
+            fields,
+          ),
+          if (nonNullableField) _buildUndefinedClass(),
+          _buildModelImplClass(
+            className,
+            null,
+            fields,
+            subDirParts: definition.subDirParts,
+            inheritedFields: [],
+            isParentClass: false,
+          ),
+        ]);
+      },
+    );
+  }
+
   /// Handle ordinary classes for [generateModelLibrary].
-  Library _generateClassLibrary(
+  Library _generateModelClassLibrary(
     ModelClassDefinition classDefinition,
   ) {
     String? tableName = classDefinition.tableName;
@@ -151,6 +189,78 @@ class SerializableModelLibraryGenerator {
         }
       },
     );
+  }
+
+  Class _buildExceptionClass(
+    String className,
+    ExceptionClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = className
+        ..docs.addAll(classDefinition.documentation ?? []);
+
+      classBuilder.abstract = true;
+
+      classBuilder.implements
+          .add(refer('SerializableException', serverpodUrl(serverCode)));
+
+      classBuilder.implements
+          .add(refer('SerializableModel', serverpodUrl(serverCode)));
+
+      if (serverCode) {
+        classBuilder.implements
+            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
+      }
+
+      classBuilder.fields.addAll(_buildModelClassFields(
+        classDefinition.fields,
+        null,
+        classDefinition.subDirParts,
+      ));
+
+      classBuilder.constructors.addAll([
+        _buildModelClassConstructor(
+          fields,
+          null,
+          isParentClass: false,
+          subDirParts: classDefinition.subDirParts,
+          inheritedFields: [],
+        ),
+        _buildModelClassFactoryConstructor(
+          className,
+          fields,
+          null,
+          inheritedFields: [],
+          subDirParts: classDefinition.subDirParts,
+        ),
+        _buildModelClassFromJsonConstructor(
+          className,
+          fields,
+          subDirParts: classDefinition.subDirParts,
+        )
+      ]);
+
+      classBuilder.methods.add(_buildAbstractCopyWithMethod(
+        className,
+        fields,
+        shouldOverrideAbstractCopyWith: () => false,
+        subDirParts: classDefinition.subDirParts,
+        inheritedFields: [],
+      ));
+
+      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+
+      // Serialization for database and everything
+      if (serverCode) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(fields),
+        );
+      }
+
+      classBuilder.methods.add(_buildToStringMethod(serverCode));
+    });
   }
 
   Class _buildModelClass(
