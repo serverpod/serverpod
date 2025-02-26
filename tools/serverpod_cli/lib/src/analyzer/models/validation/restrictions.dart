@@ -637,6 +637,10 @@ class Restrictions {
       ];
     }
 
+    if (foreignKeyField is! SerializableModelFieldDefinition) {
+      return [];
+    }
+
     if (!foreignKeyField.shouldPersist) {
       return [
         SourceSpanSeverityException(
@@ -669,7 +673,7 @@ class Restrictions {
     if (parentClass is! ClassDefinition) return [];
 
     var referenceField =
-        parentClass.findField(foreignKeyRelation.foreignFieldName);
+        parentClass.findField(foreignKeyRelation.foreignFieldName); // TODO
 
     if (foreignKeyField.type.className != referenceField?.type.className) {
       return [
@@ -711,7 +715,9 @@ class Restrictions {
     );
 
     if (foreignFields.isEmpty) return false;
-    if (foreignFields.any((element) => element.type.isListType)) return false;
+    if (foreignFields.any((element) =>
+        element is SerializableModelFieldDefinition && element.type.isListType))
+      return false;
 
     return true;
   }
@@ -828,12 +834,20 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
+    print('type: ${type.runtimeType}');
+    print('type: $type');
+    print('type: $parentNodeName');
+
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return errors;
+    if (field is! SerializableModelFieldDefinition) {
+      return [];
+    }
 
+    print('type: $field');
     errors.addAll(_validateFieldDataType(field.type, span));
 
     // Abort further validation if the field data type has errors.

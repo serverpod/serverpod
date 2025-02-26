@@ -244,6 +244,21 @@ class ModelParser {
       node,
     );
 
+    if (typeResult.isRecordType) {
+      return [
+        SerializableModelFieldDefinition(
+          name: fieldName,
+          relation: relation,
+          shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
+          scope: scope,
+          type: typeResult,
+          documentation: fieldDocumentation,
+          defaultModelValue: defaultModelValue,
+          defaultPersistValue: defaultPersistValue,
+        )
+      ];
+    }
+
     return [
       SerializableModelFieldDefinition(
         name: fieldName,
@@ -270,6 +285,8 @@ class ModelParser {
     TypeDefinition typeResult,
     YamlMap node,
   ) {
+    if (typeResult.isRecordType) return null;
+
     if (!_isRelation(node)) return null;
 
     var relationName = _parseRelationName(node);

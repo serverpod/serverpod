@@ -14,19 +14,24 @@ class ModelDependencyResolver {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       _resolveInheritance(classDefinition, modelDefinitions);
       for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
-        _resolveFieldIndexes(fieldDefinition, classDefinition);
-        _resolveProtocolReference(fieldDefinition, modelDefinitions);
-        _resolveEnumType(fieldDefinition.type, modelDefinitions);
-        _resolveObjectRelationReference(
-          classDefinition,
-          fieldDefinition,
-          modelDefinitions,
-        );
-        _resolveListRelationReference(
-          classDefinition,
-          fieldDefinition,
-          modelDefinitions,
-        );
+        if (!fieldDefinition.type.isRecordType) {
+          _resolveFieldIndexes(fieldDefinition, classDefinition);
+          _resolveProtocolReference(fieldDefinition, modelDefinitions);
+          _resolveEnumType(fieldDefinition.type, modelDefinitions);
+          _resolveObjectRelationReference(
+            classDefinition,
+            fieldDefinition,
+            modelDefinitions,
+          );
+          _resolveListRelationReference(
+            classDefinition,
+            fieldDefinition,
+            modelDefinitions,
+          );
+        } else {
+          // TODO: Should we make the field generic over the type?
+          print(fieldDefinition);
+        }
       }
     });
   }
@@ -403,7 +408,9 @@ class ModelDependencyResolver {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
         if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
-            fieldRelation is ForeignRelationDefinition)) return false;
+            fieldRelation is ForeignRelationDefinition)) {
+          return false;
+        }
         return fieldRelation?.name == relation.name;
       });
 
