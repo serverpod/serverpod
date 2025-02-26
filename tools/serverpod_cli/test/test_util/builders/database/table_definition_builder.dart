@@ -1,6 +1,7 @@
-import 'package:serverpod_cli/src/test_util/builders/database/column_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/index_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+
+import 'column_definition_builder.dart';
+import 'index_definition_builder.dart';
 
 class TableDefinitionBuilder {
   String _name;
