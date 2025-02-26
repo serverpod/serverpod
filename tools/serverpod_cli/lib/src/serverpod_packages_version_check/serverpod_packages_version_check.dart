@@ -29,18 +29,12 @@ List<SourceSpanSeverityException> performServerpodPackagesAndCliVersionCheck(
     File(path.joinAll(config.clientPackagePathParts)), // Client pubspec file
   ];
   for (var pubspecFile in pubspecFiles) {
-    try {
-      var file = pubspecFile.readAsStringSync();
-      var pubspec = Pubspec.parse(file);
-      var yaml = loadYaml(file, sourceUrl: pubspecFile.uri) as YamlMap;
-      var warnings =
-          _validateServerpodPackagesVersion(cliVersion, pubspec, yaml);
+    var file = pubspecFile.readAsStringSync();
+    var pubspec = Pubspec.parse(file);
+    var yaml = loadYaml(file, sourceUrl: pubspecFile.uri) as YamlMap;
+    var warnings = _validateServerpodPackagesVersion(cliVersion, pubspec, yaml);
 
-      accumulatedWarnings.addAll(warnings);
-    } catch (e) {
-      // TODO: Log to debug output
-      // Failed to open or parse pubspec file
-    }
+    accumulatedWarnings.addAll(warnings);
   }
 
   return accumulatedWarnings;
