@@ -39,6 +39,43 @@ void main() {
     );
 
     test(
+      'when the field is of type Enum serialized by string, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withFileName('by_name_enum').withYaml(
+            '''
+          enum: ByNameEnum
+          serialized: byName
+          values:
+            - byName1
+            - byName2
+          ''',
+          ).build(),
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultEnum: ByNameEnum, default=byName1
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.last as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          'byName1',
+        );
+      },
+    );
+
+    test(
       'when the field is of type String and the defaultModel is set to "Default model error message", then the field should have a "default model" value',
       () {
         var models = [
