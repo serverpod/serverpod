@@ -296,11 +296,6 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (classDefinition.isException) {
-        classBuilder.implements
-            .add(refer('SerializableException', serverpodUrl(serverCode)));
-      }
-
       if (serverCode && tableName != null) {
         classBuilder.implements.add(
           refer('TableRow', serverpodUrl(serverCode)),

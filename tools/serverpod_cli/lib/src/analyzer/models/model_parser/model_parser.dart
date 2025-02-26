@@ -70,7 +70,6 @@ class ModelParser {
       indexes: indexes,
       subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,
-      isException: false,
       serverOnly: serverOnly,
       type: classType,
     );
@@ -121,7 +120,6 @@ class ModelParser {
       fileName: outFileName,
       serverOnly: serverOnly,
       sourceFileName: protocolSource.yamlSourceUri.path,
-      isException: true,
       type: classType,
       subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,

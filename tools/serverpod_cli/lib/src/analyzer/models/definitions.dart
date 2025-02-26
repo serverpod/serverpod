@@ -41,9 +41,6 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
-  /// `true` if this is an exception and not a class.
-  final bool isException;
-
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -51,7 +48,6 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required super.className,
     required this.fields,
     required super.serverOnly,
-    required this.isException,
     required super.type,
     super.subDirParts,
     this.documentation,
@@ -95,7 +91,6 @@ final class ModelClassDefinition extends ClassDefinition {
     required super.fields,
     required super.serverOnly,
     required this.manageMigration,
-    required super.isException,
     required super.type,
     required this.isSealed,
     List<InheritanceDefinition>? childClasses,
@@ -194,7 +189,6 @@ final class ExceptionClassDefinition extends ClassDefinition {
     required super.className,
     required super.fields,
     required super.fileName,
-    required super.isException,
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,

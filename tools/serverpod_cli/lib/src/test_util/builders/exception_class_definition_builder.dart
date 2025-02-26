@@ -30,7 +30,6 @@ class ExceptionClassDefinitionBuilder {
       serverOnly: _serverOnly,
       documentation: _documentation,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
-      isException: true,
     );
   }
 
