@@ -59,7 +59,7 @@ class SerializableModelAnalyzer {
 
     switch (definitionType) {
       case Keyword.classType:
-        return ModelParser.serializeClassFile(
+        return ModelParser.serializeModelClassFile(
           Keyword.classType,
           modelSource,
           outFileName,
@@ -68,7 +68,7 @@ class SerializableModelAnalyzer {
           extraClasses,
         );
       case Keyword.exceptionType:
-        return ModelParser.serializeClassFile(
+        return ModelParser.serializeExceptionClassFile(
           Keyword.exceptionType,
           modelSource,
           outFileName,

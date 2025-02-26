@@ -11,7 +11,7 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 class ModelParser {
-  static SerializableModelDefinition? serializeClassFile(
+  static SerializableModelDefinition? serializeModelClassFile(
     String documentTypeName,
     ModelSource protocolSource,
     String outFileName,
@@ -70,9 +70,61 @@ class ModelParser {
       indexes: indexes,
       subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,
-      isException: documentTypeName == Keyword.exceptionType,
+      isException: false,
       serverOnly: serverOnly,
       type: classType,
+    );
+  }
+
+  static SerializableModelDefinition? serializeExceptionClassFile(
+    String documentTypeName,
+    ModelSource protocolSource,
+    String outFileName,
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+    List<TypeDefinition> extraClasses,
+  ) {
+    YamlNode? classNode = documentContents.nodes[documentTypeName];
+
+    if (classNode == null) {
+      throw ArgumentError(
+        'No $documentTypeName node found, only valid to call this function if '
+        ' the documentType exists as a top level key in the document.',
+      );
+    }
+
+    var classDocumentation = docsExtractor.getDocumentation(
+      documentContents.key(documentTypeName)!.span.start,
+    );
+
+    var className = classNode.value;
+    if (className is! String) return null;
+
+    var classType = parseType(
+      '${protocolSource.moduleAlias}:$className',
+      extraClasses: extraClasses,
+    );
+
+    var tableName = _parseTableName(documentContents);
+    var serverOnly = _parseServerOnly(documentContents);
+    var fields = _parseClassFields(
+      documentContents,
+      docsExtractor,
+      tableName != null,
+      extraClasses,
+      serverOnly,
+    );
+
+    return ExceptionClassDefinition(
+      className: className,
+      fields: fields,
+      fileName: outFileName,
+      serverOnly: serverOnly,
+      sourceFileName: protocolSource.yamlSourceUri.path,
+      isException: true,
+      type: classType,
+      subDirParts: protocolSource.subDirPathParts,
+      documentation: classDocumentation,
     );
   }
 
