@@ -259,13 +259,10 @@ class GeneratorConfig implements ModelLoadConfig {
     var name = _stripPackage(serverPackage);
 
     var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
-    Map generatorConfig = {};
-    try {
-      var yamlStr = file.readAsStringSync();
-      generatorConfig = loadYaml(yamlStr);
-    } catch (_) {}
-
-    PackageType type = getPackageType(generatorConfig);
+    YamlMap generatorConfig = await file.exists()
+        ? loadYaml(await file.readAsString(), sourceUrl: file.uri) as YamlMap
+        : YamlMap();
+    var type = getPackageType(generatorConfig);
 
     var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
