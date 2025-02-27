@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+
+import 'type_definition_builder.dart';
 
 class ParameterDefinitionBuilder {
   String _name = 'example';

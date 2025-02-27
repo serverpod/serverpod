@@ -94,6 +94,8 @@ class ServerpodConfig {
     Map configMap, {
     Map<String, String> environment = const {},
   }) {
+    serverId = _readServerId(configMap, environment, serverId);
+
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
       throw _ServerpodApiServerConfigMissing();
@@ -592,6 +594,20 @@ int _readMaxRequestSize(
 
   maxRequestSize ??= _defaultMaxRequestSize;
   return maxRequestSize;
+}
+
+String _readServerId(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  String serverIdFromCommandLineArg,
+) {
+  if (serverIdFromCommandLineArg != 'default') {
+    return serverIdFromCommandLineArg;
+  }
+  var serverId = environment[ServerpodEnv.serverId.envVariable] ??
+      configMap[ServerpodEnv.serverId.configKey] ??
+      'default';
+  return serverId;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

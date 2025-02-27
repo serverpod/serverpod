@@ -1,9 +1,8 @@
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
-
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
+import 'package:yaml/yaml.dart';
 
 List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();

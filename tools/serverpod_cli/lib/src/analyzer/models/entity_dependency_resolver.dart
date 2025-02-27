@@ -413,7 +413,9 @@ class ModelDependencyResolver {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
         if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
-            fieldRelation is ForeignRelationDefinition)) return false;
+            fieldRelation is ForeignRelationDefinition)) {
+          return false;
+        }
         return fieldRelation?.name == relation.name;
       });
 

@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:package_config/package_config.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as path;
 
 const _serverSuffix = '_server';
 

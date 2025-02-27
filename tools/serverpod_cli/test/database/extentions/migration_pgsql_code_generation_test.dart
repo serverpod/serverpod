@@ -1,8 +1,9 @@
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/builders/database/database_definition_builder.dart';
+import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(

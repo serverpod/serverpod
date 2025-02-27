@@ -1,9 +1,10 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/column_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/database/column_definition_builder.dart';
+import '../../../test_util/builders/database/database_definition_builder.dart';
+import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group('Given a database table definition with a BigInt column', () {

@@ -3,12 +3,13 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/annotation_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/annotation_definition_builder.dart';
+import '../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/type_definition_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
