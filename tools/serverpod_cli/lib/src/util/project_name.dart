@@ -1,8 +1,9 @@
 import 'dart:io';
+
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as path;
 
 Future<String?> getProjectName([Directory? projectDirectory]) async {
   projectDirectory ??= Directory.current;

@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+
+import 'type_definition_builder.dart';
 
 class EnumDefinitionBuilder {
   String _fileName;

@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+
+import 'type_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
