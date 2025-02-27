@@ -29,6 +29,15 @@ class RecordParametersEndpoint extends Endpoint {
   ) async {
     return record;
   }
+
+  Stream<(int?,)?> streamNullableRecordOfNullableInt(
+    Session session,
+    Stream<(int?,)?> values,
+  ) async* {
+    await for (var value in values) {
+      yield value;
+    }
+  }
 // #endregion
 
 // #region Records with multiple positional parameters

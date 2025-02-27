@@ -267,6 +267,7 @@ recordParameters:
   - returnNullableRecordOfInt:
   - returnRecordOfNullableInt:
   - returnNullableRecordOfNullableInt:
+  - streamNullableRecordOfNullableInt:
   - returnIntStringRecord:
   - returnNullableIntStringRecord:
   - returnIntSimpleDataRecord:
@@ -373,6 +374,10 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+  - recordEchoStream:
+  - listOfRecordEchoStream:
+  - nullableRecordEchoStream:
+  - nullableListOfRecordEchoStream:
 myFeature:
   - myFeatureMethod:
   - myFeatureModel:
