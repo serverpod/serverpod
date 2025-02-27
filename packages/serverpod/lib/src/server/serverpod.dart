@@ -330,24 +330,22 @@ class Serverpod {
     stdout.writeln(commandLineArgs.toString());
 
     _runMode = commandLineArgs.runMode;
+    // Load passwords
+    _passwordManager = PasswordManager(runMode: runMode);
+    _passwords = _passwordManager.loadPasswords();
+
+    // Load config
+    this.config = config ??
+        ServerpodConfig.load(
+          _runMode,
+          commandLineArgs.serverId,
+          _passwords,
+        );
+
+    logVerbose(this.config.toString());
+    serverId = this.config.serverId;
 
     try {
-      // Load passwords
-      _passwordManager = PasswordManager(runMode: runMode);
-      _passwords = _passwordManager.loadPasswords();
-
-      // Load config
-      this.config = config ??
-          ServerpodConfig.load(
-            _runMode,
-            commandLineArgs.serverId,
-            _passwords,
-          );
-
-      logVerbose(this.config.toString());
-
-      serverId = this.config.serverId;
-
       _innerInitializeServerpod();
     } catch (e, stackTrace) {
       _reportException(e, stackTrace,
