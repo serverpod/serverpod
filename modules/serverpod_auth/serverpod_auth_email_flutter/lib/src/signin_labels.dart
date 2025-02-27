@@ -1,95 +1,114 @@
 /// A collection of [String] used in the `SignInWithEmailDialog`.
 /// When [null] the default/english labels will be used.
 class SignInWithEmailDialogLabels {
-  /// [TextField] label for `User name`.
-  String? userName;
+  /// Label text for the username input field.
+  /// Used in the sign-up form TextField.
+  String? inputLabelUserName;
 
-  /// [TextField] label for `Email`.
-  String? email;
+  /// Label text for the email input field.
+  /// Used in both sign-in and sign-up forms TextField.
+  String? inputLabelEmail;
 
-  /// [TextField] label for `Password`.
-  String? password;
+  /// Label text for the password input field.
+  /// Used in both sign-in and sign-up forms TextField.
+  String? inputLabelPassword;
 
-  /// [Button] text for `Create Account`.
-  String? createAccount;
+  /// Button text for creating a new account.
+  /// Used in the main dialog when in sign-up mode.
+  String? buttonTitleCreateAccount;
 
-  /// [Button] text for `I have an account`.
-  String? iHaveAnAccount;
+  /// Button text for switching to sign-in mode.
+  /// Used in the sign-up form to switch back to sign-in.
+  String? buttonTitleIHaveAccount;
 
-  /// [Button] text for `Sign In`.
-  String? signIn;
+  /// Button text for signing in.
+  /// Used in the main dialog when in sign-in mode.
+  String? buttonTitleSignIn;
 
-  /// [Button] text for `Forgot Pass`.
-  String? forgotPassword;
+  /// Button text for the forgot password option.
+  /// Used in the sign-in form below the password field.
+  String? buttonTitleForgotPassword;
 
-  /// [Button] text for `Reset Password`.
-  String? resetPassword;
+  /// Button text for initiating password reset.
+  /// Used in the password reset form.
+  String? buttonTitleResetPassword;
 
-  /// [TextField] label for `New Password`.
-  String? newPassword;
+  /// Label text for the new password input field.
+  /// Used in the password reset form TextField.
+  String? inputLabelNewPassword;
 
-  /// [Button] text for `Back`.
-  String? back;
+  /// Button text for navigating back.
+  /// Used in various forms to return to the previous screen.
+  String? buttonTitleBack;
 
-  /// [Text] for `Please check your email. We have sent you a code to verify your address.`.
-  String? confirmEmailMessage;
+  /// Message shown after sending email verification code.
+  /// Displayed in the email verification screen.
+  String? messageEmailVerificationSent;
 
-  /// [TextField] label for `Validation Code`.
-  String? validationCode;
+  /// Label text for the validation code input field.
+  /// Used in both email verification and password reset forms TextField.
+  String? inputLabelValidationCode;
 
-  /// [Text] for `Please check your email. We have sent you a code to verify your account.`.
-  String? confirmPasswordResetMessage;
+  /// Message shown after sending password reset code.
+  /// Displayed in the password reset verification screen.
+  String? messagePasswordResetSent;
 
-  /// [Text] for `Please enter a user name`.
-  String? userNameRequired;
+  /// Error message shown when username is empty.
+  /// Displayed under the username field in sign-up form.
+  String? errorMessageUserNameRequired;
 
-  /// [Text] for `Invalid email`.
-  String? invalidEmail;
+  /// Error message shown for invalid email format.
+  /// Displayed under the email field in both sign-in and sign-up forms.
+  String? errorMessageInvalidEmail;
 
-  /// [Text] for `Minimum`. Used in `Minimum ${passwordLength} characters`.
-  String? minimum;
+  /// Callback function that returns a formatted string for minimum length validation.
+  /// Takes the required length as a parameter.
+  /// Used for password length validation messages.
+  String Function(int length)? minimumLengthMessage;
 
-  /// [Text] for `Maximum`. Used in `Maximum ${passwordLength} characters`.
-  String? maximum;
+  /// Callback function that returns a formatted string for maximum length validation.
+  /// Takes the maximum allowed length as a parameter.
+  /// Used for password length validation messages.
+  String Function(int length)? maximumLengthMessage;
 
-  /// [Text] for `characters`. Used in `Minimum ${passwordLength} characters` and `Maximum ${passwordLength} characters`.
-  String? characters;
+  /// Error message shown when email is already registered.
+  /// Displayed under the email field in sign-up form.
+  String? errorMessageEmailInUse;
 
-  /// [Text] for `Email already in use`.
-  String? emailInUse;
+  /// Message prompting to enter verification code.
+  /// Used in both email verification and password reset screens.
+  String? messageEnterCode;
 
-  /// [Text] for `Enter your code`.
-  String? enterCode;
+  /// Error message shown when verification code is incorrect.
+  /// Displayed in both email verification and password reset forms.
+  String? errorMessageIncorrectCode;
 
-  /// [Text] for `Incorrect code`.
-  String? incorrectCode;
-
-  /// [Text] for `Incorrect password`.
-  String? incorrectPassword;
+  /// Error message shown when password is incorrect.
+  /// Displayed under the password field in sign-in form.
+  String? errorMessageIncorrectPassword;
 
   /// Optional labels for the `SignInWithEmailDialog`.
   SignInWithEmailDialogLabels({
-    this.userName,
-    this.email,
-    this.password,
-    this.createAccount,
-    this.iHaveAnAccount,
-    this.signIn,
-    this.forgotPassword,
-    this.resetPassword,
-    this.newPassword,
-    this.back,
-    this.confirmEmailMessage,
-    this.validationCode,
-    this.confirmPasswordResetMessage,
-    this.userNameRequired,
-    this.invalidEmail,
-    this.minimum,
-    this.maximum,
-    this.characters,
-    this.emailInUse,
-    this.enterCode,
-    this.incorrectCode,
-    this.incorrectPassword,
+    this.inputLabelUserName,
+    this.inputLabelEmail,
+    this.inputLabelPassword,
+    this.buttonTitleCreateAccount,
+    this.buttonTitleIHaveAccount,
+    this.buttonTitleSignIn,
+    this.buttonTitleForgotPassword,
+    this.buttonTitleResetPassword,
+    this.inputLabelNewPassword,
+    this.buttonTitleBack,
+    this.messageEmailVerificationSent,
+    this.inputLabelValidationCode,
+    this.messagePasswordResetSent,
+    this.errorMessageUserNameRequired,
+    this.errorMessageInvalidEmail,
+    this.minimumLengthMessage,
+    this.maximumLengthMessage,
+    this.errorMessageEmailInUse,
+    this.messageEnterCode,
+    this.errorMessageIncorrectCode,
+    this.errorMessageIncorrectPassword,
   });
 }
