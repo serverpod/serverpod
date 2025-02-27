@@ -23,7 +23,7 @@ class HealthCheckManager {
 
   bool _running = false;
   Timer? _timer;
-  Completer<void>? _completer;
+  Completer<void>? _pendingHealthCheck;
 
   /// Creates a new [HealthCheckManager].
   HealthCheckManager(this._pod, this.onCompleted);
@@ -45,12 +45,12 @@ class HealthCheckManager {
   Future<void> stop() async {
     _running = false;
     _timer?.cancel();
-    await _completer?.future;
+    await _pendingHealthCheck?.future;
   }
 
   Future<void> _performHealthCheck() async {
     final completer = Completer<void>();
-    _completer = completer;
+    _pendingHealthCheck = completer;
 
     try {
       await _innerPerformHealthCheck();
