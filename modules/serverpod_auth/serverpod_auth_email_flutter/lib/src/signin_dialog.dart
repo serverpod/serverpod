@@ -30,7 +30,7 @@ class SignInWithEmailDialog extends StatefulWidget {
   final int minPasswordLength;
 
   /// Optional labels for the sign in with email dialog.
-  final SignInWithEmailDialogLabels? labels;
+  final SignInWithEmailDialogLabels? localization;
 
   /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
@@ -39,7 +39,7 @@ class SignInWithEmailDialog extends StatefulWidget {
     required this.onSignedIn,
     this.maxPasswordLength = _defaultMaxPasswordLength,
     this.minPasswordLength = _defaultMinPasswordLength,
-    this.labels,
+    this.localization,
   });
 
   @override

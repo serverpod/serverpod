@@ -32,7 +32,7 @@ class SignInWithEmailButton extends StatefulWidget {
 
   /// Labels for the sign in dialog.
   /// If [null], the default/english labels will be used.
-  final SignInWithEmailDialogLabels? labels;
+  final SignInWithEmailDialogLabels? localization;
 
   /// Creates a new Sign in with Email button.
   const SignInWithEmailButton({
@@ -43,7 +43,7 @@ class SignInWithEmailButton extends StatefulWidget {
     this.icon,
     this.maxPasswordLength,
     this.minPasswordLength,
-    this.labels,
+    this.localization,
     super.key,
   });
 
@@ -69,7 +69,7 @@ class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
           caller: widget.caller,
           maxPasswordLength: widget.maxPasswordLength,
           minPasswordLength: widget.minPasswordLength,
-          labels: widget.labels,
+          localization: widget.localization,
           onSignedIn: () {
             if (widget.onSignedIn != null) {
               widget.onSignedIn!();
