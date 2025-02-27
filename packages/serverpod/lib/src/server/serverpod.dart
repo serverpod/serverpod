@@ -542,6 +542,11 @@ class Serverpod {
         commandLineArgs.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
+      ProcessSignal.sigint.watch().listen(_onInterruptSignal);
+      if (!Platform.isWindows) {
+        ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
+      }
+
       // Serverpod Insights.
       if (Features.enableInsights) {
         if (_isValidSecret(config.serviceSecret)) {
@@ -710,6 +715,28 @@ class Serverpod {
     }
   }
 
+  void _onShutdownSignal(ProcessSignal signal) {
+    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
+        ', time: ${DateTime.now().toUtc()}');
+    shutdown(exitProcess: true, signalNumber: signal.signalNumber);
+  }
+
+  bool _interruptSignalSent = false;
+
+  void _onInterruptSignal(ProcessSignal signal) {
+    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
+        ', time: ${DateTime.now().toUtc()}');
+
+    if (_interruptSignalSent) {
+      stdout
+          .writeln('SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}');
+      exit(128 + signal.signalNumber);
+    }
+
+    _interruptSignalSent = true;
+    shutdown(exitProcess: true, signalNumber: signal.signalNumber);
+  }
+
   Future<bool> _startInsightsServer() async {
     var endpoints = internal.Endpoints();
 
@@ -841,25 +868,68 @@ class Serverpod {
 
   /// Shuts down the Serverpod and all associated servers.
   /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
-  Future<void> shutdown({bool exitProcess = true}) async {
-    try {
-      await _internalSession.close();
-      await redisController?.stop();
-      await server.shutdown();
-      await _webServer?.stop();
-      await _serviceServer?.shutdown();
-      await _futureCallManager?.stop();
-      _healthCheckManager?.stop();
+  Future<void> shutdown({
+    bool exitProcess = true,
+    int? signalNumber,
+  }) async {
+    stdout.writeln(
+        'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
+    var futures = [
+      _shutdownTestAuditor(),
+      _internalSession.close(),
+      redisController?.stop(),
+      server.shutdown(),
+      _webServer?.stop(),
+      _serviceServer?.shutdown(),
+      _futureCallManager?.stop(),
+      _healthCheckManager?.stop(),
+    ].nonNulls;
+
+    Object? shutdownError;
+    await futures.wait.onError((ParallelWaitError e, stackTrace) {
+      shutdownError = e;
+      var errors = e.errors;
+      if (errors is Iterable<AsyncError?>) {
+        for (var error in errors.nonNulls) {
+          _reportException(
+            error.error,
+            error.stackTrace,
+            message: 'Error in server shutdown',
+          );
+        }
+      } else {
+        _reportException(
+          errors,
+          stackTrace,
+          message: 'Error in serverpod shutdown',
+        );
+      }
+      return e.values;
+    });
+
+    try {
       // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
-      _reportException(e, stackTrace, message: 'Error in Serverpod shutdown');
-      rethrow;
+      shutdownError = e;
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error in database pool manager shutdown',
+      );
     }
 
+    stdout.writeln(
+        'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}');
+
     if (exitProcess) {
-      exit(0);
+      int conventionalExitCode = signalNumber != null ? 128 + signalNumber : 0;
+      exit(shutdownError != null ? 1 : conventionalExitCode);
+    }
+
+    if (shutdownError != null) {
+      throw shutdownError as Object;
     }
   }
 
@@ -932,6 +1002,34 @@ class Serverpod {
   bool _isValidSecret(String? secret) {
     return secret != null && secret.isNotEmpty && secret.length > 20;
   }
+}
+
+// _shutdownTestAuditor is a stop-gap test approach to verify the robustness
+// of the shutdown process.
+// It is not intended to be used in production and it is not an encouraged pattern.
+// The real solution is to enable dynamic service plugins for Serverpod,
+// with which could plug in custom services for test scenarios without affecting
+// production code like this.
+Future<void>? _shutdownTestAuditor() {
+  var testThrowerDelaySeconds = int.tryParse(
+    Platform.environment['_SERVERPOD_SHUTDOWN_TEST_AUDITOR'] ?? '',
+  );
+  if (testThrowerDelaySeconds == null) {
+    return null;
+  }
+  return Future(() {
+    stderr.writeln('serverpod shutdown test auditor enabled');
+    if (testThrowerDelaySeconds == 0) {
+      throw Exception('serverpod shutdown test auditor throwing');
+    } else {
+      return Future.delayed(
+        Duration(seconds: testThrowerDelaySeconds),
+        () {
+          throw Exception('serverpod shutdown test auditor throwing');
+        },
+      );
+    }
+  });
 }
 
 /// Experimental API for Serverpod.
