@@ -71,7 +71,7 @@ Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   Reference jsonReference = refer('jsonSerialization');
   return _buildFromJson(
@@ -79,8 +79,8 @@ Expression buildFromJsonForField(
     field.type,
     serverCode,
     config,
-    classDefinition,
     fieldName: field.name,
+    subDirParts: subDirParts,
   );
 }
 
@@ -105,10 +105,10 @@ Expression _buildFromJson(
   Reference jsonReference,
   TypeDefinition type,
   bool serverCode,
-  GeneratorConfig config,
-  ClassDefinition classDefinition, {
+  GeneratorConfig config, {
   String? fieldName,
   Expression? mapExpression,
+  required List<String> subDirParts,
 }) {
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
@@ -149,7 +149,7 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
       );
     case ValueType.list:
     case ValueType.set:
@@ -159,8 +159,8 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
         valueType == ValueType.list,
+        subDirParts,
       );
     case ValueType.map:
       return _buildMapTypeFromJson(
@@ -169,7 +169,7 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
       );
     case ValueType.classType:
       return _buildClassTypeFromJson(
@@ -177,7 +177,7 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
       );
   }
 }
@@ -227,11 +227,11 @@ Expression _buildEnumTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   Reference typeRef = type.asNonNullable.reference(
     serverCode,
-    subDirParts: classDefinition.subDirParts,
+    subDirParts: subDirParts,
     config: config,
   );
 
@@ -260,8 +260,8 @@ Expression _buildListOrSetTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
   bool isList,
+  List<String> subDirParts,
 ) {
   if (type.isSetType) {
     return CodeExpression(Block.of([
@@ -283,8 +283,8 @@ Expression _buildListOrSetTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e'),
+        subDirParts: subDirParts,
       ).code,
       const Code(')'),
     ]));
@@ -303,8 +303,8 @@ Expression _buildListOrSetTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e'),
+        subDirParts: subDirParts,
       ).code,
       const Code(').toList()'),
     ]),
@@ -317,7 +317,7 @@ Expression _buildMapTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   if (type.generics.first.valueType == ValueType.string) {
     return CodeExpression(
@@ -333,16 +333,16 @@ Expression _buildMapTypeFromJson(
             type.generics.first,
             serverCode,
             config,
-            classDefinition,
             mapExpression: refer('k'),
+            subDirParts: subDirParts,
           ),
           _buildFromJson(
             jsonReference,
             type.generics.last,
             serverCode,
             config,
-            classDefinition,
             mapExpression: refer('v'),
+            subDirParts: subDirParts,
           ),
         ]).code,
         const Code(')'),
@@ -359,7 +359,7 @@ Expression _buildMapTypeFromJson(
       type.generics.first
           .reference(
             serverCode,
-            subDirParts: classDefinition.subDirParts,
+            subDirParts: subDirParts,
             config: config,
           )
           .code,
@@ -367,7 +367,7 @@ Expression _buildMapTypeFromJson(
       type.generics.last
           .reference(
             serverCode,
-            subDirParts: classDefinition.subDirParts,
+            subDirParts: subDirParts,
             config: config,
           )
           .code,
@@ -377,8 +377,8 @@ Expression _buildMapTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e').index(literalString('k')),
+        subDirParts: subDirParts,
       ).code,
       const Code(':'),
       _buildFromJson(
@@ -386,8 +386,8 @@ Expression _buildMapTypeFromJson(
         type.generics.last,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e').index(literalString('v')),
+        subDirParts: subDirParts,
       ).code,
       const Code('})'),
     ]),
@@ -399,13 +399,13 @@ Expression _buildClassTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   return CodeExpression(
     type.asNonNullable
         .reference(
           serverCode,
-          subDirParts: classDefinition.subDirParts,
+          subDirParts: subDirParts,
           config: config,
         )
         .property('fromJson')

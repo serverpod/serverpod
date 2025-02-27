@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/enum_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 
@@ -12,7 +12,7 @@ const generator = DartClientCodeGenerator();
 void main() {
   group('Given generated code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .withSimpleField('title', 'String')

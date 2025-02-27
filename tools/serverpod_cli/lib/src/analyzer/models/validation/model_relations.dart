@@ -37,7 +37,7 @@ class ParsedModelsCollection {
   ) {
     Map<String, List<SerializableModelDefinition>> tableNames = {};
     for (var model in models) {
-      if (model is ClassDefinition) {
+      if (model is ModelClassDefinition) {
         var tableName = model.tableName;
         if (tableName == null) continue;
 
@@ -72,7 +72,7 @@ class ParsedModelsCollection {
   ) {
     Map<String, List<SerializableModelDefinition>> indexNames = {};
     for (var model in models) {
-      if (model is ClassDefinition) {
+      if (model is ModelClassDefinition) {
         var indexes = model.indexes;
 
         for (var index in indexes) {
@@ -196,7 +196,7 @@ class ParsedModelsCollection {
   }
 
   List<SerializableModelFieldDefinition> findNamedForeignRelationFields(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     SerializableModelFieldDefinition field,
   ) {
     var relationField = _extractRelationField(classDefinition, field);
@@ -221,7 +221,7 @@ class ParsedModelsCollection {
     if (foreignClasses.isEmpty) return [];
 
     var foreignClass = foreignClasses.first;
-    if (foreignClass is! ClassDefinition) return [];
+    if (foreignClass is! ModelClassDefinition) return [];
 
     return AnalyzeChecker.filterRelationByName(
       classDefinition,

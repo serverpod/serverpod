@@ -3,9 +3,9 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:test/test.dart';
 
-import '../../test_util/builders/class_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
+import '../../test_util/builders/model_class_definition_builder.dart';
 
 void main() {
   group('Given classes with a circular relation when generating migration', () {
@@ -16,21 +16,21 @@ void main() {
     var company = 'company';
     var town = 'town';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
           .withTableName(citizen)
           .withSimpleField('name', 'String')
           .withObjectRelationField(company, company.sentenceCase, company)
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(company.sentenceCase)
           .withFileName(company)
           .withTableName(company)
           .withSimpleField('name', 'String')
           .withObjectRelationField(town, town.sentenceCase, town)
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(town.sentenceCase)
           .withFileName(town)
           .withTableName(town)

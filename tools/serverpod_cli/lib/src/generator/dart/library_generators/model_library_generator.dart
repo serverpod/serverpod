@@ -41,9 +41,47 @@ class SerializableModelLibraryGenerator {
     }
   }
 
+  Library _generateClassLibrary(ClassDefinition classDefinition) {
+    switch (classDefinition) {
+      case ExceptionClassDefinition():
+        return _generateExceptionLibrary(classDefinition);
+      case ModelClassDefinition():
+        return _generateModelClassLibrary(classDefinition);
+    }
+  }
+
+  Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
+    var fields = definition.fields;
+    var className = definition.className;
+    var nonNullableField = fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .any((field) => field.type.nullable);
+
+    return Library(
+      (libraryBuilder) {
+        libraryBuilder.body.addAll([
+          _buildExceptionClass(
+            className,
+            definition,
+            fields,
+          ),
+          if (nonNullableField) _buildUndefinedClass(),
+          _buildModelImplClass(
+            className,
+            null,
+            fields,
+            subDirParts: definition.subDirParts,
+            inheritedFields: [],
+            isParentClass: false,
+          ),
+        ]);
+      },
+    );
+  }
+
   /// Handle ordinary classes for [generateModelLibrary].
-  Library _generateClassLibrary(
-    ClassDefinition classDefinition,
+  Library _generateModelClassLibrary(
+    ModelClassDefinition classDefinition,
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
@@ -90,9 +128,11 @@ class SerializableModelLibraryGenerator {
           if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
-              classDefinition,
               tableName,
               fields,
+              subDirParts: classDefinition.subDirParts,
+              inheritedFields: classDefinition.inheritedFields,
+              isParentClass: classDefinition.isParentClass,
             ),
           if (buildRepository.hasImplicitClassOperations(fields))
             _buildModelImplicitClass(className, classDefinition),
@@ -151,9 +191,81 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Class _buildExceptionClass(
+    String className,
+    ExceptionClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = className
+        ..docs.addAll(classDefinition.documentation ?? []);
+
+      classBuilder.abstract = true;
+
+      classBuilder.implements
+          .add(refer('SerializableException', serverpodUrl(serverCode)));
+
+      classBuilder.implements
+          .add(refer('SerializableModel', serverpodUrl(serverCode)));
+
+      if (serverCode) {
+        classBuilder.implements
+            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
+      }
+
+      classBuilder.fields.addAll(_buildModelClassFields(
+        classDefinition.fields,
+        null,
+        classDefinition.subDirParts,
+      ));
+
+      classBuilder.constructors.addAll([
+        _buildModelClassConstructor(
+          fields,
+          null,
+          isParentClass: false,
+          subDirParts: classDefinition.subDirParts,
+          inheritedFields: [],
+        ),
+        _buildModelClassFactoryConstructor(
+          className,
+          fields,
+          null,
+          inheritedFields: [],
+          subDirParts: classDefinition.subDirParts,
+        ),
+        _buildModelClassFromJsonConstructor(
+          className,
+          fields,
+          subDirParts: classDefinition.subDirParts,
+        )
+      ]);
+
+      classBuilder.methods.add(_buildAbstractCopyWithMethod(
+        className,
+        fields,
+        shouldOverrideAbstractCopyWith: () => false,
+        subDirParts: classDefinition.subDirParts,
+        inheritedFields: [],
+      ));
+
+      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+
+      // Serialization for database and everything
+      if (serverCode) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(fields),
+        );
+      }
+
+      classBuilder.methods.add(_buildToStringMethod(serverCode));
+    });
+  }
+
   Class _buildModelClass(
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
   ) {
@@ -182,11 +294,6 @@ class SerializableModelLibraryGenerator {
           subDirParts: classDefinition.subDirParts,
           config: config,
         );
-      }
-
-      if (classDefinition.isException) {
-        classBuilder.implements
-            .add(refer('SerializableException', serverpodUrl(serverCode)));
       }
 
       if (serverCode && tableName != null) {
@@ -228,33 +335,44 @@ class SerializableModelLibraryGenerator {
 
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
-          classDefinition,
           fields,
           tableName,
+          isParentClass: classDefinition.isParentClass,
+          subDirParts: classDefinition.subDirParts,
+          inheritedFields: classDefinition.inheritedFields,
         ),
         if (!classDefinition.isParentClass)
           _buildModelClassFactoryConstructor(
             className,
-            classDefinition,
             fields,
             tableName,
+            inheritedFields: classDefinition.inheritedFields,
+            subDirParts: classDefinition.subDirParts,
           ),
         if (!classDefinition.isSealed)
           _buildModelClassFromJsonConstructor(
             className,
             fields,
-            classDefinition,
+            subDirParts: classDefinition.subDirParts,
           )
       ]);
 
       if (!classDefinition.isParentClass) {
         classBuilder.methods.add(_buildAbstractCopyWithMethod(
           className,
-          classDefinition,
           fields,
+          shouldOverrideAbstractCopyWith: () =>
+              _shouldOverrideAbstractCopyWithMethod(classDefinition),
+          subDirParts: classDefinition.subDirParts,
+          inheritedFields: classDefinition.inheritedFields,
         ));
       } else if (!classDefinition.isSealed) {
-        classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
+        classBuilder.methods.add(_buildCopyWithMethod(
+          fields,
+          subDirParts: classDefinition.subDirParts,
+          className: className,
+          isParentClass: classDefinition.isParentClass,
+        ));
       }
       // Serialization
 
@@ -291,7 +409,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldCreateUndefinedClass(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     if (classDefinition.sealedTopNode == null) {
@@ -322,24 +440,36 @@ class SerializableModelLibraryGenerator {
 
   Class _buildModelImplClass(
     String className,
-    ClassDefinition classDefinition,
     String? tableName,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+    required bool isParentClass,
+  }) {
     return Class((classBuilder) {
       classBuilder
         ..name = '_${className}Impl'
         ..extend = refer(className)
         ..constructors.add(
-          _buildModelImplClassConstructor(classDefinition, fields, tableName),
+          _buildModelImplClassConstructor(
+            fields,
+            tableName,
+            subDirParts: subDirParts,
+            inheritedFields: inheritedFields,
+          ),
         )
-        ..methods.add(_buildCopyWithMethod(classDefinition, fields));
+        ..methods.add(_buildCopyWithMethod(
+          fields,
+          subDirParts: subDirParts,
+          className: className,
+          isParentClass: isParentClass,
+        ));
     });
   }
 
   Class _buildModelImplicitClass(
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var hiddenFields = classDefinition.fields
         .where((field) => field.hiddenSerializableField(serverCode));
@@ -372,10 +502,11 @@ class SerializableModelLibraryGenerator {
             ..name = '_'
             ..optionalParameters.addAll(
               _buildModelClassConstructorParameters(
-                classDefinition,
                 classDefinition.fields,
                 classDefinition.tableName,
                 setAsToThis: false,
+                subDirParts: classDefinition.subDirParts,
+                inheritedFields: classDefinition.inheritedFields,
               ),
             )
             ..optionalParameters.addAll(hiddenFields.map((field) {
@@ -454,7 +585,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldOverrideAbstractCopyWithMethod(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var parentClass = classDefinition.parentClass;
 
@@ -471,11 +602,13 @@ class SerializableModelLibraryGenerator {
 
   Method _buildAbstractCopyWithMethod(
     String className,
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required bool Function() shouldOverrideAbstractCopyWith,
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+  }) {
     return Method((methodBuilder) {
-      if (_shouldOverrideAbstractCopyWithMethod(classDefinition)) {
+      if (shouldOverrideAbstractCopyWith()) {
         methodBuilder.annotations.add(refer('override'));
       }
 
@@ -487,8 +620,9 @@ class SerializableModelLibraryGenerator {
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
-            classDefinition,
             fields,
+            subDirParts: subDirParts,
+            inheritedFields: inheritedFields,
           ),
         )
         ..returns = refer(className);
@@ -496,18 +630,19 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildCopyWithMethod(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required List<String> subDirParts,
+    required String className,
+    required bool isParentClass,
+  }) {
     return Method(
       (m) {
         m.name = 'copyWith';
-        m.docs.add(
-            '/// Returns a shallow copy of this [${classDefinition.className}] \n'
+        m.docs.add('/// Returns a shallow copy of this [$className] \n'
             '/// with some or all fields replaced by the given arguments.');
         m.annotations
             .add(refer('useResult', serverpodUrl(serverCode)).expression);
-        if (!classDefinition.isParentClass) {
+        if (!isParentClass) {
           m.annotations.add(refer('override'));
         }
         m.optionalParameters.addAll(
@@ -516,7 +651,7 @@ class SerializableModelLibraryGenerator {
               var fieldType = field.type.reference(
                 serverCode,
                 nullable: true,
-                subDirParts: classDefinition.subDirParts,
+                subDirParts: subDirParts,
                 config: config,
               );
 
@@ -534,11 +669,14 @@ class SerializableModelLibraryGenerator {
             },
           ),
         );
-        m.returns = refer(classDefinition.className);
-        m.body = refer(classDefinition.className)
+        m.returns = refer(className);
+        m.body = refer(className)
             .call(
               [],
-              _buildCopyWithAssignment(classDefinition, fields),
+              _buildCopyWithAssignment(
+                fields,
+                subDirParts: subDirParts,
+              ),
             )
             .returned
             .statement;
@@ -547,9 +685,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Map<String, Expression> _buildCopyWithAssignment(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required List<String> subDirParts,
+  }) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .fold({}, (map, field) {
@@ -565,7 +703,7 @@ class SerializableModelLibraryGenerator {
             .isA(field.type.reference(
               serverCode,
               nullable: field.type.nullable,
-              subDirParts: classDefinition.subDirParts,
+              subDirParts: subDirParts,
               config: config,
             ))
             .conditional(
@@ -1085,9 +1223,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelClassFromJsonConstructor(
-      String className,
-      List<SerializableModelFieldDefinition> fields,
-      ClassDefinition classDefinition) {
+    String className,
+    List<SerializableModelFieldDefinition> fields, {
+    required List<String> subDirParts,
+  }) {
     return Constructor((c) {
       c.factory = true;
       c.name = 'fromJson';
@@ -1102,7 +1241,11 @@ class SerializableModelLibraryGenerator {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
                 field.name: buildFromJsonForField(
-                    field, serverCode, config, classDefinition)
+                  field,
+                  serverCode,
+                  config,
+                  subDirParts,
+                )
           })
           .returned
           .statement;
@@ -1110,28 +1253,31 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelClassConstructor(
-    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+    String? tableName, {
+    required bool isParentClass,
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+  }) {
     return Constructor((c) {
-      if (!classDefinition.isParentClass) {
+      if (!isParentClass) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        classDefinition,
         fields,
         tableName,
         setAsToThis: true,
+        subDirParts: subDirParts,
+        inheritedFields: inheritedFields,
       ));
 
       for (SerializableModelFieldDefinition field in fields) {
         if (!field.hasDefaults) continue;
-        if (classDefinition.inheritedFields.contains(field)) continue;
+        if (inheritedFields.contains(field)) continue;
 
         Code? defaultCode = _getDefaultValue(
-          classDefinition,
           field,
+          subDirParts: subDirParts,
         );
         if (defaultCode == null) continue;
 
@@ -1146,17 +1292,19 @@ class SerializableModelLibraryGenerator {
 
   Constructor _buildModelClassFactoryConstructor(
     String className,
-    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+    String? tableName, {
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+  }) {
     return Constructor((c) {
       c.factory = true;
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        classDefinition,
         fields,
         tableName,
         setAsToThis: false,
+        subDirParts: subDirParts,
+        inheritedFields: inheritedFields,
       ));
 
       c.redirect = refer('_${className}Impl');
@@ -1164,16 +1312,18 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelImplClassConstructor(
-    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+    String? tableName, {
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+  }) {
     return Constructor((c) {
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
-        classDefinition,
         fields,
         tableName,
         setAsToThis: false,
+        subDirParts: subDirParts,
+        inheritedFields: inheritedFields,
       ));
 
       Map<String, Expression> namedParams = fields
@@ -1190,14 +1340,12 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Parameter> _buildModelClassConstructorParameters(
-    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required List<String> subDirParts,
     required bool setAsToThis,
+    required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
-    var classFields = classDefinition.fields;
-    var inheritedFields = classDefinition.inheritedFields;
-
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
@@ -1210,26 +1358,29 @@ class SerializableModelLibraryGenerator {
       var type = field.type.reference(
         serverCode,
         nullable: field.type.nullable || hasDefaults,
-        subDirParts: classDefinition.subDirParts,
+        subDirParts: subDirParts,
         config: config,
       );
 
-      return Parameter(
-        (p) => p
+      return Parameter((p) {
+        p
           ..named = true
-          ..required = !(field.type.nullable || hasDefaults)
-          ..type = shouldIncludeType ? type : null
-          ..toThis = !shouldIncludeType && classFields.contains(field)
-          ..toSuper = !shouldIncludeType && inheritedFields.contains(field)
-          ..name = field.name,
-      );
+          ..name = field.name
+          ..required = !(field.type.nullable || hasDefaults);
+
+        if (shouldIncludeType) {
+          p.type = type;
+        } else {
+          inheritedFields.contains(field) ? p.toSuper = true : p.toThis = true;
+        }
+      });
     }).toList();
   }
 
   Code? _getDefaultValue(
-    ClassDefinition classDefinition,
-    SerializableModelFieldDefinition field,
-  ) {
+    SerializableModelFieldDefinition field, {
+    required List<String> subDirParts,
+  }) {
     var defaultValue = field.defaultModelValue;
 
     if (defaultValue == null) return null;
@@ -1295,27 +1446,28 @@ class SerializableModelLibraryGenerator {
           serverCode,
           config: config,
           nullable: false,
-          subDirParts: classDefinition.subDirParts,
+          subDirParts: subDirParts,
         );
         return reference.property(defaultValue).code;
     }
   }
 
   List<Parameter> _buildAbstractCopyWithParameters(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required List<String> subDirParts,
+    required List<SerializableModelFieldDefinition> inheritedFields,
+  }) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       var fieldType = field.type.reference(
         serverCode,
         nullable: true,
-        subDirParts: classDefinition.subDirParts,
+        subDirParts: subDirParts,
         config: config,
       );
 
-      var isInheritedField = classDefinition.inheritedFields.contains(field);
+      var isInheritedField = inheritedFields.contains(field);
 
       var type = field.type.nullable && isInheritedField
           ? refer('Object?')

@@ -33,7 +33,7 @@ void main() {
         reason: 'Expected no errors but there was one.',
       );
 
-      var classDefinition = definitions.first as ClassDefinition;
+      var classDefinition = definitions.first as ModelClassDefinition;
 
       expect(classDefinition.manageMigration, isTrue);
     },
@@ -64,7 +64,7 @@ void main() {
         reason: 'Expected no errors but there was one.',
       );
 
-      var classDefinition = definitions.first as ClassDefinition;
+      var classDefinition = definitions.first as ModelClassDefinition;
 
       expect(classDefinition.manageMigration, isTrue);
     },
@@ -95,7 +95,7 @@ void main() {
         reason: 'Expected no errors but there was one.',
       );
 
-      var classDefinition = definitions.first as ClassDefinition;
+      var classDefinition = definitions.first as ModelClassDefinition;
 
       expect(classDefinition.manageMigration, isFalse);
     },

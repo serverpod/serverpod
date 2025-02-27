@@ -140,7 +140,7 @@ void main() {
           StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
-      var model = models.first as ClassDefinition;
+      var model = models.first as ModelClassDefinition;
       test('then the table is set in the definition', () {
         expect(model.tableName, 'example');
       });
@@ -168,7 +168,7 @@ void main() {
           StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
-      var model = models.first as ClassDefinition;
+      var model = models.first as ModelClassDefinition;
       expect(model.tableName, 'example');
     });
 
