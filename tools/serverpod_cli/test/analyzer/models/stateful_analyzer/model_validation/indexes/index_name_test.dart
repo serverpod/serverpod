@@ -189,7 +189,7 @@ void main() {
       expect(errors, isEmpty);
     });
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
 
     test('then the index definition is created.', () {
       var index = definition?.indexes.firstOrNull;

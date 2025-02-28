@@ -4,8 +4,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
@@ -24,7 +24,7 @@ void main() {
       'Given a class named $testClassName with two primitive vars when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('name', 'String')
@@ -178,7 +178,7 @@ void main() {
       'Given a class named $testClassName with a var with none scope when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -278,7 +278,7 @@ void main() {
       'Given a class named $testClassName with a var with serverOnly scope when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
@@ -379,7 +379,7 @@ void main() {
       'Given a class named $testClassName with a list var when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()

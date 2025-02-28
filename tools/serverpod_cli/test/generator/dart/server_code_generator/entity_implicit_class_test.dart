@@ -5,8 +5,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
@@ -24,7 +24,7 @@ void main() {
       'Given a class with no fields that should persist but is scoped too none then no implicit class is generated.',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -49,7 +49,7 @@ void main() {
   group('Given a class with a field that should persist but is scoped too none',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -154,7 +154,7 @@ void main() {
       'Given a class with two fields that should persist but is scoped too none',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')

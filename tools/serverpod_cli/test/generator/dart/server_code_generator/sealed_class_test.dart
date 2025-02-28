@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -28,14 +28,14 @@ void main() {
   group(
       'Given a hierarchy with a sealed parent and a normal child, when generating code',
       () {
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('Example')
         .withFileName('example')
         .withSimpleField('name', 'String')
         .withIsSealed(true) // <= sealed
         .build();
 
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int')
@@ -202,21 +202,21 @@ void main() {
   group(
       'Given a hierarchy with a sealed parent and two normal children with nullable fields when generating code',
       () {
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('Example')
         .withFileName('example')
         .withSimpleField('name', 'String')
         .withIsSealed(true) // <= sealed
         .build();
 
-    var child1 = ClassDefinitionBuilder()
+    var child1 = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int')
         .withExtendsClass(parent)
         .build();
 
-    var child2 = ClassDefinitionBuilder()
+    var child2 = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild2')
         .withFileName('example_child2')
         .withSimpleField('age', 'int', nullable: true)
@@ -290,19 +290,19 @@ void main() {
   group(
       'Given a hierarchy with a normal parent, a sealed child and a normal grandchild when generating code',
       () {
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .withIsSealed(true)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int', nullable: true)
@@ -423,25 +423,25 @@ void main() {
   group(
       'Given a hierarchy: sealed > normal > sealed > normal when generating code',
       () {
-    var greatGrandparent = ClassDefinitionBuilder()
+    var greatGrandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGreatGrandparent')
         .withFileName('example_great_grandparent')
         .withSimpleField('name', 'String')
         .withIsSealed(true)
         .build();
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .withExtendsClass(greatGrandparent)
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int', nullable: true)
@@ -596,20 +596,20 @@ void main() {
   });
 
   group('Given a hierarchy: sealed > sealed > normal when generating code', () {
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .withIsSealed(true)
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .withIsSealed(true)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int', nullable: true)
@@ -661,7 +661,7 @@ void main() {
   });
 
   group('Given a sealed class with no children when generating code', () {
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
@@ -716,20 +716,20 @@ void main() {
   group(
       'Given a hierarchy: sealed > normal > normal, when the sealed top node is in another directory',
       () {
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withSubDirParts(['sub_dir'])
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .withIsSealed(true) // <= sealed
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int', nullable: true)
@@ -817,20 +817,20 @@ void main() {
   group(
       'Given a hierarchy: sealed > normal > normal when the middle node is in another directory',
       () {
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .withIsSealed(true) // <= sealed
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSubDirParts(['sub_dir'])
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSimpleField('age', 'int', nullable: true)
@@ -917,19 +917,19 @@ void main() {
   group(
       'Given a hierarchy: sealed > normal > normal when the bottom node is in another directory',
       () {
-    var grandparent = ClassDefinitionBuilder()
+    var grandparent = ModelClassDefinitionBuilder()
         .withClassName('ExampleGrandparent')
         .withFileName('example_grandparent')
         .withSimpleField('name', 'String')
         .withIsSealed(true) // <= sealed
         .build();
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName('ExampleParent')
         .withFileName('example_parent')
         .withSimpleField('name', 'String')
         .withExtendsClass(grandparent)
         .build();
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName('ExampleChild')
         .withFileName('example_child')
         .withSubDirParts(['sub_dir'])

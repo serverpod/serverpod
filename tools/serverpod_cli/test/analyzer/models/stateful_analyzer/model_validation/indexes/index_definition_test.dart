@@ -99,7 +99,7 @@ void main() {
       var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index = definition.indexes.first;
       expect(index.name, 'example_index');
@@ -133,7 +133,7 @@ void main() {
         expect(errors, isEmpty);
       });
 
-      var definition = definitions.firstOrNull as ClassDefinition?;
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
       test('then the index definition contains the fields of the index.', () {
         var index = definition?.indexes.first;
         var field = index?.fields.first;
@@ -178,7 +178,7 @@ void main() {
         expect(errors, isEmpty);
       });
 
-      var definition = definitions.firstOrNull as ClassDefinition?;
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
       test('then index definition contains the first field.', () {
         var index = definition?.indexes.first;
         var indexFields = index?.fields;
@@ -235,7 +235,7 @@ void main() {
       var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index1 = definition.indexes.first;
       var index2 = definition.indexes.last;

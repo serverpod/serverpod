@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
@@ -13,7 +13,7 @@ void main() {
           .withDefaults(defaultPersistValue: 'true')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -63,7 +63,7 @@ void main() {
           .withTypeDefinition('bool', false)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -114,7 +114,7 @@ void main() {
           .withDefaults(defaultPersistValue: 'true')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -173,7 +173,7 @@ void main() {
           .withTypeDefinition('bool', true)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -233,7 +233,7 @@ void main() {
           .withDefaults(defaultModelValue: 'true')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -284,7 +284,7 @@ void main() {
           .withDefaults(defaultModelValue: 'true')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();

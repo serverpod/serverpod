@@ -19,8 +19,8 @@ class AnalyzeChecker {
   }
 
   static List<SerializableModelFieldDefinition> filterRelationByName(
-    ClassDefinition classDefinition,
-    ClassDefinition foreignClass,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition foreignClass,
     String relationFieldName,
     String? relationName,
   ) {

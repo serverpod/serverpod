@@ -2,9 +2,9 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
 import '../../../test_util/builders/enum_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -13,7 +13,7 @@ const generator = DartClientCodeGenerator();
 void main() {
   group('Given a single class when generating the code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build()
@@ -71,11 +71,11 @@ void main() {
 
   group('Given a multiple classes when generating the code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
           .build(),
@@ -153,7 +153,7 @@ void main() {
       'Given a server-side only class when generating the code then the client-side file is NOT created',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .withServerOnly(true)

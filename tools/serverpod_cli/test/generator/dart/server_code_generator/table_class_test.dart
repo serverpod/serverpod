@@ -4,8 +4,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
@@ -21,7 +21,7 @@ void main() {
   var tableName = 'example_table';
   group('Given a class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
@@ -110,7 +110,7 @@ void main() {
       'Given a class with table name and persistent field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -170,7 +170,7 @@ void main() {
       'Given a class with table name and NON persistent field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -232,7 +232,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -272,7 +272,7 @@ void main() {
       'Given a class with table name and persistent field with scope none when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -341,7 +341,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -391,7 +391,7 @@ void main() {
     var relationFieldName = 'employees';
     var objectRelationType = 'Citizen';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)

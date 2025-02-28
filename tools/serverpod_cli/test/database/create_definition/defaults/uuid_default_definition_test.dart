@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:test/test.dart';
 
-import '../../../test_util/builders/class_definition_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
               defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -64,7 +64,7 @@ void main() {
           .withTypeDefinition('UuidValue', false)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -116,7 +116,7 @@ void main() {
               defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -175,7 +175,7 @@ void main() {
           .withTypeDefinition('UuidValue', true)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -235,7 +235,7 @@ void main() {
           .withDefaults(defaultPersistValue: 'random')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -287,7 +287,7 @@ void main() {
               defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -339,7 +339,7 @@ void main() {
               defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();

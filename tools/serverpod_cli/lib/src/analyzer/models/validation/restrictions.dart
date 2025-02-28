@@ -259,7 +259,7 @@ class Restrictions {
 
     var currentModel = parsedModels.findByTableName(tableName);
 
-    if (currentModel is ClassDefinition) {
+    if (currentModel is ModelClassDefinition) {
       var ancestorWithTable = _findTableClassInParentClasses(currentModel);
 
       if (ancestorWithTable != null) {
@@ -311,7 +311,7 @@ class Restrictions {
     var currentModel =
         parsedModels.findByClassName(documentDefinition!.className);
 
-    if (currentModel is ClassDefinition) {
+    if (currentModel is ModelClassDefinition) {
       var ancestorServerOnlyClass =
           _findServerOnlyClassInParentClasses(currentModel);
 
@@ -461,7 +461,9 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ClassDefinition && def.tableName != null && fieldName == 'id') {
+    if (def is ModelClassDefinition &&
+        def.tableName != null &&
+        fieldName == 'id') {
       return [
         SourceSpanSeverityException(
           'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
@@ -470,7 +472,7 @@ class Restrictions {
       ];
     }
 
-    if (def is ClassDefinition &&
+    if (def is ModelClassDefinition &&
         def.tableName != null &&
         _databaseModelReservedFieldNames.contains(fieldName)) {
       return [
@@ -499,10 +501,10 @@ class Restrictions {
       ];
     }
 
-    if (def is ClassDefinition) {
+    if (def is ModelClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is ClassDefinition) {
+      if (currentModel is ModelClassDefinition) {
         var fieldWithDuplicatedName =
             _findFieldWithDuplicatedName(currentModel, fieldName);
         var parentClassWithDuplicatedFieldName =
@@ -530,7 +532,7 @@ class Restrictions {
   ) {
     var classDefinition = documentDefinition;
 
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
@@ -625,7 +627,7 @@ class Restrictions {
     if (fieldName is! String) return [];
 
     var classDefinition = documentDefinition;
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     var foreignKeyField = classDefinition.findField(fieldName);
     if (foreignKeyField == null) {
@@ -699,7 +701,7 @@ class Restrictions {
 
   bool _isOneToOneObjectRelation(
     SerializableModelFieldDefinition? field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     if (field == null) return false;
 
@@ -782,7 +784,7 @@ class Restrictions {
     }
 
     var definition = documentDefinition;
-    if (definition is ClassDefinition && definition.tableName == null) {
+    if (definition is ModelClassDefinition && definition.tableName == null) {
       return [
         SourceSpanSeverityException(
           'The "table" property must be defined in the class to set a parent on a field.',
@@ -1004,8 +1006,8 @@ class Restrictions {
       ];
     }
 
-    if (documentDefinition is! ClassDefinition) return [];
-    var definition = documentDefinition as ClassDefinition;
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
 
     var fields = definition.fieldsIncludingInherited;
     var indexFields = convertIndexList(content);
@@ -1059,7 +1061,7 @@ class Restrictions {
   ) {
     var definition = documentDefinition;
 
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     if (definition.tableName == null) {
       return [
@@ -1099,7 +1101,7 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     var errors = <SourceSpanSeverityException>[];
 
@@ -1129,7 +1131,7 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var classDefinition = documentDefinition;
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     if (name is! String) {
       return [
@@ -1426,7 +1428,7 @@ class Restrictions {
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {
-    if (classDefinition is! ClassDefinition) return false;
+    if (classDefinition is! ModelClassDefinition) return false;
 
     return classDefinition.tableName != null;
   }
@@ -1450,7 +1452,7 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
+  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
@@ -1469,8 +1471,8 @@ class Restrictions {
   /// );
   /// ```
   T? _findInParentHierarchy<T>(
-    ClassDefinition currentModel,
-    T? Function(ClassDefinition) predicate,
+    ModelClassDefinition currentModel,
+    T? Function(ModelClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
@@ -1484,32 +1486,32 @@ class Restrictions {
     return null;
   }
 
-  ClassDefinition? _findTableClassInParentClasses(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findTableClassInParentClasses(
+    ModelClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) =>
+      (ModelClassDefinition ancestor) =>
           ancestor.tableName != null ? ancestor : null,
     );
   }
 
-  ClassDefinition? _findServerOnlyClassInParentClasses(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findServerOnlyClassInParentClasses(
+    ModelClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  ClassDefinition? _findAncestorWithDuplicatedFieldName(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ModelClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) {
+      (ModelClassDefinition ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -1522,12 +1524,12 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    ClassDefinition currentModel,
+    ModelClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) {
+      (ModelClassDefinition ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;

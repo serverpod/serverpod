@@ -31,7 +31,7 @@ class LibraryGenerator {
         .toList();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! ClassDefinition) return true;
+      if (model is! ModelClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -41,7 +41,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((model) => !(model is ClassDefinition && model.isSealed))
+        .where((model) => !(model is ModelClassDefinition && model.isSealed))
         .toList();
 
     // exports
@@ -297,11 +297,12 @@ class LibraryGenerator {
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
               if (allModels.any((classInfo) =>
-                  classInfo is ClassDefinition && classInfo.tableName != null))
+                  classInfo is ModelClassDefinition &&
+                  classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in allModels)
-                    if (classInfo is ClassDefinition &&
+                    if (classInfo is ModelClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'

@@ -62,7 +62,7 @@ void main() {
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
-    var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ModelClassDefinition;
 
     var index = definition.indexes.first;
     expect(index.unique, false);
@@ -90,7 +90,7 @@ void main() {
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
-    var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ModelClassDefinition;
 
     var index = definition.indexes.first;
     expect(index.unique, false);
@@ -118,7 +118,7 @@ void main() {
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
-    var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ModelClassDefinition;
 
     var index = definition.indexes.first;
     expect(index.unique, true);
