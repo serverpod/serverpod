@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/yaml_util.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -260,7 +261,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
     var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
     YamlMap generatorConfig = await file.exists()
-        ? loadYaml(await file.readAsString(), sourceUrl: file.uri) as YamlMap
+        ? loadYamlMap(await file.readAsString(), sourceUrl: file.uri)
         : YamlMap();
     var type = getPackageType(generatorConfig);
 
