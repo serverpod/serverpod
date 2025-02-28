@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_email_flutter/src/signin_dialog.dart';
+import 'package:serverpod_auth_email_flutter/src/signin_labels.dart';
 
 /// Sign in with Email button. When pressed, a pop-up window appears with fields for entering login, email and password.
 class SignInWithEmailButton extends StatefulWidget {
@@ -29,6 +30,10 @@ class SignInWithEmailButton extends StatefulWidget {
   /// If this value is modified, the server must be updated to match.
   final int? minPasswordLength;
 
+  /// Labels for the sign in dialog.
+  /// If [null], the default/english labels will be used.
+  final SignInWithEmailDialogLabels? localization;
+
   /// Creates a new Sign in with Email button.
   const SignInWithEmailButton({
     required this.caller,
@@ -38,6 +43,7 @@ class SignInWithEmailButton extends StatefulWidget {
     this.icon,
     this.maxPasswordLength,
     this.minPasswordLength,
+    this.localization,
     super.key,
   });
 
@@ -63,6 +69,7 @@ class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
           caller: widget.caller,
           maxPasswordLength: widget.maxPasswordLength,
           minPasswordLength: widget.minPasswordLength,
+          localization: widget.localization,
           onSignedIn: () {
             if (widget.onSignedIn != null) {
               widget.onSignedIn!();
