@@ -19,60 +19,47 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
   ) {
-    YamlNode? classNode = documentContents.nodes[documentTypeName];
-
-    if (classNode == null) {
-      throw ArgumentError(
-        'No $documentTypeName node found, only valid to call this function if '
-        ' the documentType exists as a top level key in the document.',
-      );
-    }
-
-    var classDocumentation = docsExtractor.getDocumentation(
-      documentContents.key(documentTypeName)!.span.start,
-    );
-
-    var className = classNode.value;
-    if (className is! String) return null;
-
     var isSealed = _parseIsSealed(documentContents);
+
     var extendsClass = _parseExtendsClass(documentContents);
-
-    var classType = parseType(
-      '${protocolSource.moduleAlias}:$className',
-      extraClasses: extraClasses,
-    );
-
-    var tableName = _parseTableName(documentContents);
-    var serverOnly = _parseServerOnly(documentContents);
-    var fields = _parseClassFields(
-      documentContents,
-      docsExtractor,
-      tableName != null,
-      extraClasses,
-      serverOnly,
-    );
-    var indexes = _parseIndexes(documentContents, fields);
 
     var migrationValue =
         documentContents.nodes[Keyword.managedMigration]?.value;
     var manageMigration = _parseBool(migrationValue) ?? true;
 
-    return ModelClassDefinition(
-      className: className,
-      isSealed: isSealed,
-      extendsClass: extendsClass,
-      sourceFileName: protocolSource.yamlSourceUri.path,
-      tableName: tableName,
-      manageMigration: manageMigration,
-      fileName: outFileName,
-      fields: fields,
-      indexes: indexes,
-      subDirParts: protocolSource.subDirPathParts,
-      documentation: classDocumentation,
-      serverOnly: serverOnly,
-      type: classType,
-    );
+    return _initializeFromClassFields(
+        documentTypeName: documentTypeName,
+        protocolSource: protocolSource,
+        outFileName: outFileName,
+        documentContents: documentContents,
+        docsExtractor: docsExtractor,
+        extraClasses: extraClasses,
+        initialize: ({
+          required String className,
+          required TypeDefinition classType,
+          required String? tableName,
+          required bool serverOnly,
+          required List<SerializableModelFieldDefinition> fields,
+          required List<String>? classDocumentation,
+        }) {
+          var indexes = _parseIndexes(documentContents, fields);
+
+          return ModelClassDefinition(
+            className: className,
+            isSealed: isSealed,
+            extendsClass: extendsClass,
+            sourceFileName: protocolSource.yamlSourceUri.path,
+            tableName: tableName,
+            manageMigration: manageMigration,
+            fileName: outFileName,
+            fields: fields,
+            indexes: indexes,
+            subDirParts: protocolSource.subDirPathParts,
+            documentation: classDocumentation,
+            serverOnly: serverOnly,
+            type: classType,
+          );
+        });
   }
 
   static SerializableModelDefinition? serializeExceptionClassFile(
@@ -83,6 +70,55 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
   ) {
+    return _initializeFromClassFields(
+      documentTypeName: documentTypeName,
+      protocolSource: protocolSource,
+      outFileName: outFileName,
+      documentContents: documentContents,
+      docsExtractor: docsExtractor,
+      extraClasses: extraClasses,
+      initialize: ({
+        required String className,
+        required TypeDefinition classType,
+        required String? tableName,
+        required bool serverOnly,
+        required List<SerializableModelFieldDefinition> fields,
+        required List<String>? classDocumentation,
+      }) =>
+          ExceptionClassDefinition(
+        className: className,
+        fields: fields,
+        fileName: outFileName,
+        serverOnly: serverOnly,
+        sourceFileName: protocolSource.yamlSourceUri.path,
+        type: classType,
+        subDirParts: protocolSource.subDirPathParts,
+        documentation: classDocumentation,
+      ),
+    );
+  }
+
+  /// Initializes a [ClassDefinition] specialization, [T], from the shared
+  /// [ClassDefinition] fields.
+  ///
+  /// This function is used to avoid code duplication when initializing
+  /// different class definitions from the same shared fields.
+  static T? _initializeFromClassFields<T>({
+    required String documentTypeName,
+    required ModelSource protocolSource,
+    required String outFileName,
+    required YamlMap documentContents,
+    required YamlDocumentationExtractor docsExtractor,
+    required List<TypeDefinition> extraClasses,
+    required T Function({
+      required String className,
+      required TypeDefinition classType,
+      required String? tableName,
+      required bool serverOnly,
+      required List<SerializableModelFieldDefinition> fields,
+      required List<String>? classDocumentation,
+    }) initialize,
+  }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
     if (classNode == null) {
@@ -114,15 +150,13 @@ class ModelParser {
       serverOnly,
     );
 
-    return ExceptionClassDefinition(
+    return initialize(
       className: className,
-      fields: fields,
-      fileName: outFileName,
+      classType: classType,
+      tableName: tableName,
       serverOnly: serverOnly,
-      sourceFileName: protocolSource.yamlSourceUri.path,
-      type: classType,
-      subDirParts: protocolSource.subDirPathParts,
-      documentation: classDocumentation,
+      fields: fields,
+      classDocumentation: classDocumentation,
     );
   }
 
