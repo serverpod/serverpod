@@ -76,6 +76,9 @@ class Dep<T extends Dependency> {
       (PathDependency dep) => Dep<PathDependency>._(name, dep, kind, span),
       (GitDependency dep) => Dep<GitDependency>._(name, dep, kind, span),
       (SdkDependency dep) => Dep<SdkDependency>._(name, dep, kind, span),
+      // Prior to pubspec_parse 1.4.0 the Dependency class was not sealed.
+      // ignore: unreachable_switch_case
+      _ => throw StateError('Unknown dependency type: $dependency'),
     } as Dep<T>;
   }
 }
