@@ -4,7 +4,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import '../util/yaml_util.dart';
+import 'yaml_util.dart';
 
 /// A pubspec plus the yaml map it was read from, and a list of all augmented
 /// dependencies regardless of kind.

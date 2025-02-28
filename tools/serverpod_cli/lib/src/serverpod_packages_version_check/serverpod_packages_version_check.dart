@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/serverpod_packages_version_check/pubspec_plus.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 
 /// Warnings for when the package version does not match the version of the
 /// Serverpod's CLI.
