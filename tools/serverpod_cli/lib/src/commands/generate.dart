@@ -44,11 +44,18 @@ class GenerateCommand extends ServerpodCommand {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // Directory.current is the server directory
+    var pubspecsToCheck = [
+      File('pubspec.yaml'),
+      File(path.joinAll([...config.clientPackagePathParts, 'pubspec.yaml'])),
+    ].map(PubspecPlus.fromFile);
+
     // Validate cli version is compatible with serverpod packages
-    var warnings = performServerpodPackagesAndCliVersionCheck(
-      Version.parse(templateVersion),
-      config,
-    );
+    var cliVersion = Version.parse(templateVersion);
+    var warnings = [
+      for (var p in pubspecsToCheck)
+        ...validateServerpodPackagesVersion(cliVersion, p)
+    ];
     if (warnings.isNotEmpty) {
       log.warning(
         'The version of the CLI may be incompatible with the Serverpod '
