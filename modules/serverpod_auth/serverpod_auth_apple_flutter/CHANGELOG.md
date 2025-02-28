@@ -1,3 +1,26 @@
+## 2.4.0
+
+- feat: Adds support for configuring certificates for Serverpod API, Web, and Insights servers.
+- feat: Adds support for `Uri`, `BigInt`, and `Set` type in endpoints and models.
+- feat: Adds support for `Record` type in endpoint `Future` return and parameters.
+- feat: Adds support for `List` and `Set` containers in Streaming methods.
+- feat: Adds option to disable caching for static content matching a regexp path in the web server.
+- feat: Gracefully shuts down server on `SIGTERM` signal.
+- feat: Allows configuration of server id via the `SERVERPOD_SERVER_ID` environmental variable.
+- feat(EXPERIMENTAL): Adds support for exception event hooks to enable reporting diagnostic events to monitoring tools.
+- feat(EXPERIMENTAL): Adds API for submitting diagnostic events from user code.
+- fix: Fixes issue where filtering in insights didn’t work as expected with the provided Dockerfile.
+- fix: Fixes an issue so that `name` is now a supported value in Enum models.
+- fix: Removes debug prints from generated client code.
+- fix: Fixes issue where server-only relation fields didn’t enforce the relation as optional.
+- fix: Fixes crash when generator processes model many(`List`) relations without generics.
+- fix: Harmonizes local and global cache miss behavior to ensure proper cache miss handling.
+- fix: Returns a generic error message for internal server errors in web server routes.
+- fix: Adds doc comments to all generated model methods.
+- fix: Fixes issue with relative imports generating backwards slashes on Windows.
+- fix: Fixes crash in `create-migration` when server folder is renamed.
+- fix: Fixes issue where table renaming caused migrations that couldn’t be applied.
+
 ## 2.3.1
 - fix: Resolved an issue where database exceptions failed to generate informative `toString` messages.
 - fix: Improves performance of HTTP request body parsing for both endpoints and the web server.
