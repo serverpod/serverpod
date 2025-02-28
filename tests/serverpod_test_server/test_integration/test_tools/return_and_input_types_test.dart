@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -141,6 +142,34 @@ void main() {
         );
         expect(result, records);
       });
+
+      test('when calling recordEchoStream then should return the records',
+          () async {
+        final records =
+            <(String, (Map<String, int>, {bool flag, SimpleData simpleData}))>[
+          ('hello', ({'world': 1}, flag: true, simpleData: SimpleData(num: 2))),
+          ('hello', ({'world': 2}, flag: true, simpleData: SimpleData(num: 3))),
+        ];
+
+        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            1,
+            {Scope('user')},
+          ),
+        );
+
+        var result = endpoints.authenticatedTestTools.recordEchoStream(
+          authenticatedSessionBuilder,
+          records.first,
+          Stream.fromIterable(records.skip(1)),
+        );
+        expect(result, emitsInOrder(records));
+      });
+
+      // TODO: Also test list with record in stream
+      // listOfRecordEchoStream
+      // nullableRecordEchoStream
+      // nullableListOfRecordEchoStream
     },
   );
 }

@@ -59,10 +59,14 @@ class LibraryGenerator {
         .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
         .where((t) => t.isStreamType)) {
       var valueType = topLevelType.generics.first;
-      if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
-        if (valueType.dartType == null ||
-            !topLevelStreamContainerTypes.any((type) =>
-                type.dartType.toString() == valueType.dartType.toString())) {
+      if (valueType.isSetType ||
+          valueType.isListType ||
+          valueType.isMapType ||
+          valueType.isRecordType) {
+        if (!topLevelStreamContainerTypes.any((type) =>
+            type.classNameWithGenericsForProtocol(modules: config.modules) ==
+            valueType.classNameWithGenericsForProtocol(
+                modules: config.modules))) {
           topLevelStreamContainerTypes.add(valueType);
         }
       }
@@ -332,6 +336,34 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
+      // TODO: add `if` to only add when needed
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..docs.add('''
+            // TODO''')
+          ..name = 'wrapWithClassName'
+          ..returns = refer('Map<String, dynamic>')
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'data'
+            ..type = refer('Object?')))
+          ..body = const Code('''
+/// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
+   if (data is Iterable || data is Map) {
+      return {
+        'className': getClassNameForObject(data),
+        'data': mapRecordContainingContainerToJson(data!),
+      };
+    } else if (data is Record) {
+      return {
+        'className': getClassNameForObject(data),
+        'data': mapRecordToJson(data),
+      };
+    }
+
+    return super.wrapWithClassName(data);
+'''),
+      ),
     ]);
 
     library.body.add(protocol.build());
@@ -341,6 +373,8 @@ class LibraryGenerator {
         _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
       );
     }
+
+// Map<String, dynamic> wrapWithClassName(Object? data) {
 
     return library.build();
   }
@@ -1223,7 +1257,7 @@ extension on ProtocolDefinition {
 
     for (var method in endpoints.expand((e) => e.methods)) {
       var returnType = method.returnType;
-      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)
+      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)>>`
       _addTypeAndCollectRecords(returnType, recordTypes, handledTypes);
 
       for (var parameter in method.allParameters) {
@@ -1387,7 +1421,7 @@ extension on TypeDefinition {
 }
 
 extension on TypeDefinition {
-  /// Returns the class name with generic parameters (without any formatting whitespace),
+  /// Returns the class name with generic parameters (without any optional formatting whitespace),
   /// but strips all import path for a succinct representation.
   ///
   /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
@@ -1405,14 +1439,14 @@ extension on TypeDefinition {
         '(',
         positionalFields
             .map((t) => t.classNameWithGenericsForProtocol(modules: modules))
-            .join(', '),
+            .join(','),
+        if (namedFields.isNotEmpty || positionalFields.length == 1) ',',
         if (namedFields.isNotEmpty) ...[
-          if (positionalFields.isNotEmpty) ', ',
           '{',
           namedFields
               .map((f) =>
                   '${f.classNameWithGenericsForProtocol(modules: modules)} ${f.recordFieldName!}')
-              .join(', '),
+              .join(','),
           '}',
         ],
         ')',
