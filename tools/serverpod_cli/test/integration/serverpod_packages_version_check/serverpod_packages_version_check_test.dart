@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/serverpod_packages_version_check/pubspec_plus.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
@@ -14,48 +15,24 @@ void main() {
     'test_assets',
   );
   group('performServerpodPackagesAndCliVersionCheck', () {
-    group('With empty folder', () {
-      var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
-      setUp(() {
-        if (!emptyFolder.existsSync()) {
-          emptyFolder.createSync();
-        }
-      });
-
-      tearDown(() {
-        if (emptyFolder.existsSync()) {
-          emptyFolder.deleteSync();
-        }
-      });
-
-      test('performServerpodPackagesAndCliVersionCheck()', () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          Version(1, 1, 0),
-          emptyFolder,
-        );
-
-        expect(packageWarnings.isEmpty, equals(true));
-      });
-    });
-
     group('With explicit serverpod package version', () {
-      var explicitVersionPath =
-          Directory(p.join(testAssetsPath, 'explicit_1.1.0'));
+      var explicitVersion = PubspecPlus.fromFile(
+          File(p.join(testAssetsPath, 'explicit_1.1.0', 'pubspec.yaml')));
       test('performServerpodPackagesAndCliVersionCheck() with same version',
           () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 1, 0),
-          explicitVersionPath,
+          explicitVersion,
         );
 
-        expect(packageWarnings.isEmpty, equals(true));
+        expect(packageWarnings, isEmpty);
       });
 
       test('performServerpodPackagesAndCliVersionCheck() with older version',
           () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 0, 0),
-          explicitVersionPath,
+          explicitVersion,
         );
 
         expect(packageWarnings.length, equals(1));
@@ -65,9 +42,9 @@ void main() {
 
       test('performServerpodPackagesAndCliVersionCheck() with newer version',
           () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 2, 0),
-          explicitVersionPath,
+          explicitVersion,
         );
 
         expect(packageWarnings.length, equals(1));
@@ -77,12 +54,13 @@ void main() {
     });
 
     group('With approximate serverpod package version', () {
-      var approximateVersionPath =
-          Directory(p.join(testAssetsPath, 'approximate_1.1.0'));
+      var approximateVersionPath = PubspecPlus.fromFile(
+          File(p.join(testAssetsPath, 'approximate_1.1.0', 'pubspec.yaml')));
+
       test('performServerpodPackagesAndCliVersionCheck() with same version',
           () {
         var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
           approximateVersionPath,
         );
@@ -97,24 +75,21 @@ void main() {
       test('performServerpodPackagesAndCliVersionCheck() with older version',
           () {
         var cliVersion = Version(1, 0, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
           approximateVersionPath,
         );
 
-        expect(packageWarnings.length, equals(2));
-        expect(packageWarnings[0].message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
-        expect(
-            packageWarnings[1].message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
+        expect(packageWarnings.map((w) => w.message), [
+          ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
+          ServerpodPackagesVersionCheckWarnings.approximateVersion(cliVersion)
+        ]);
       });
 
       test('performServerpodPackagesAndCliVersionCheck() with newer version',
           () {
         var cliVersion = Version(1, 2, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
           approximateVersionPath,
         );
@@ -128,11 +103,15 @@ void main() {
     });
 
     group('With multiple pubspec files', () {
-      var testAssets = Directory(testAssetsPath);
+      var testAssets = Directory(testAssetsPath)
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((f) => p.basename(f.path) == 'pubspec.yaml')
+          .map(PubspecPlus.fromFile);
 
       void expectWarningTypes({
         required Version cliVersion,
-        required List<SourceSpanException> packageWarnings,
+        required Iterable<SourceSpanException> packageWarnings,
         required int expectedIncompatibleWarnings,
         required int expectedApproximateVersionWarnings,
       }) {
@@ -163,10 +142,10 @@ void main() {
       test('performServerpodPackagesAndCliVersionCheck() with same version',
           () {
         var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          Version(1, 1, 0),
-          testAssets,
-        );
+        var packageWarnings = [
+          for (var p in testAssets)
+            ...validateServerpodPackagesVersion(cliVersion, p)
+        ];
 
         expect(packageWarnings.length, equals(1));
         expect(
@@ -178,10 +157,10 @@ void main() {
       test('performServerpodPackagesAndCliVersionCheck() with older version',
           () {
         var cliVersion = Version(1, 0, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          testAssets,
-        );
+        var packageWarnings = [
+          for (var p in testAssets)
+            ...validateServerpodPackagesVersion(cliVersion, p)
+        ];
 
         expect(packageWarnings.length, equals(3));
         expectWarningTypes(
@@ -195,10 +174,10 @@ void main() {
       test('performServerpodPackagesAndCliVersionCheck() with newer version',
           () {
         var cliVersion = Version(1, 2, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          testAssets,
-        );
+        var packageWarnings = [
+          for (var p in testAssets)
+            ...validateServerpodPackagesVersion(cliVersion, p)
+        ];
 
         expect(packageWarnings.length, equals(2));
         expectWarningTypes(
@@ -207,36 +186,6 @@ void main() {
           expectedIncompatibleWarnings: 1,
           expectedApproximateVersionWarnings: 1,
         );
-      });
-    });
-
-    group('With corrupted pubspec', () {
-      var corruptedPubspecPath =
-          Directory(p.join(testAssetsPath, 'corrupted_pubspec'));
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          corruptedPubspecPath,
-        );
-
-        expect(packageWarnings.isEmpty, isTrue);
-      });
-    });
-
-    group('With approximate serverpod package version in vendor folder', () {
-      var vendorPubspecPath = Directory(p.join(testAssetsPath, 'vendor'));
-
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          vendorPubspecPath,
-        );
-
-        expect(packageWarnings.isEmpty, isTrue);
       });
     });
   });
