@@ -27,6 +27,8 @@ class ModelParser {
         documentContents.nodes[Keyword.managedMigration]?.value;
     var manageMigration = _parseBool(migrationValue) ?? true;
 
+    var tableName = _parseTableName(documentContents);
+
     return _initializeFromClassFields(
         documentTypeName: documentTypeName,
         protocolSource: protocolSource,
@@ -34,10 +36,10 @@ class ModelParser {
         documentContents: documentContents,
         docsExtractor: docsExtractor,
         extraClasses: extraClasses,
+        hasTable: tableName != null,
         initialize: ({
           required String className,
           required TypeDefinition classType,
-          required String? tableName,
           required bool serverOnly,
           required List<SerializableModelFieldDefinition> fields,
           required List<String>? classDocumentation,
@@ -77,10 +79,10 @@ class ModelParser {
       documentContents: documentContents,
       docsExtractor: docsExtractor,
       extraClasses: extraClasses,
+      hasTable: false,
       initialize: ({
         required String className,
         required TypeDefinition classType,
-        required String? tableName,
         required bool serverOnly,
         required List<SerializableModelFieldDefinition> fields,
         required List<String>? classDocumentation,
@@ -110,10 +112,10 @@ class ModelParser {
     required YamlMap documentContents,
     required YamlDocumentationExtractor docsExtractor,
     required List<TypeDefinition> extraClasses,
+    required bool hasTable,
     required T Function({
       required String className,
       required TypeDefinition classType,
-      required String? tableName,
       required bool serverOnly,
       required List<SerializableModelFieldDefinition> fields,
       required List<String>? classDocumentation,
@@ -153,7 +155,6 @@ class ModelParser {
     return initialize(
       className: className,
       classType: classType,
-      tableName: tableName,
       serverOnly: serverOnly,
       fields: fields,
       classDocumentation: classDocumentation,
