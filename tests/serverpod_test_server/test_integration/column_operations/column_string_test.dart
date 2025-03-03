@@ -151,7 +151,8 @@ void main() async {
       expect(result, hasLength(2));
     });
 
-    test('when filtering using greater than then matching rows are returned.',
+    test(
+        'when filtering using "greater than" then lexicographically posterior rows are returned.',
         () async {
       var result = await Types.db.find(
         session,
@@ -163,7 +164,7 @@ void main() async {
     });
 
     test(
-        'when filtering using greater or equal than then matching rows are returned.',
+        'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
         () async {
       var result = await Types.db.find(
         session,
@@ -174,7 +175,8 @@ void main() async {
       expect(result.map((e) => e.aString).toSet(), {'one', 'two'});
     });
 
-    test('when filtering using less than then matching rows are returned.',
+    test(
+        'when filtering using "less than" then lexicographically preceding rows are returned.',
         () async {
       var result = await Types.db.find(
         session,
@@ -186,7 +188,7 @@ void main() async {
     });
 
     test(
-        'when filtering using less or equal than then matching rows are returned.',
+        'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
         () async {
       var result = await Types.db.find(
         session,
