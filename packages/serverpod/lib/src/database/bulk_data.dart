@@ -64,13 +64,11 @@ class DatabaseBulkData {
       );
     }
 
+    String strLastId = (lastId is num?) ? '$lastId' : "'$lastId'";
+
     List<List<dynamic>> data;
-    if (lastId != null) {
-      String strLastId = (lastId is num) ? '$lastId' : "'$lastId'";
-      filterQuery = ' AND id > $strLastId$filterQuery';
-    }
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE 1=1$filterQuery ORDER BY "id" LIMIT $limit';
+        'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
     } catch (e) {
