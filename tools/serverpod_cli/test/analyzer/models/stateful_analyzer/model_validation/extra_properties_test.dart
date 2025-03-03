@@ -2,9 +2,10 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -139,7 +140,7 @@ void main() {
           StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
-      var model = models.first as ClassDefinition;
+      var model = models.first as ModelClassDefinition;
       test('then the table is set in the definition', () {
         expect(model.tableName, 'example');
       });
@@ -167,7 +168,7 @@ void main() {
           StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
-      var model = models.first as ClassDefinition;
+      var model = models.first as ModelClassDefinition;
       expect(model.tableName, 'example');
     });
 

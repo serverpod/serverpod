@@ -41,6 +41,10 @@ class ServerpodConfig {
   /// Configuration for Session logs.
   final SessionLogConfig? sessionLogs;
 
+  /// The timeout for the diagnostic event handlers.
+  /// Default is 30 seconds.
+  final Duration? experimentalDiagnosticHandlerTimeout;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -53,6 +57,7 @@ class ServerpodConfig {
     this.redis,
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
+    this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,
@@ -89,6 +94,8 @@ class ServerpodConfig {
     Map configMap, {
     Map<String, String> environment = const {},
   }) {
+    serverId = _readServerId(configMap, environment, serverId);
+
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
       throw _ServerpodApiServerConfigMissing();
@@ -587,6 +594,20 @@ int _readMaxRequestSize(
 
   maxRequestSize ??= _defaultMaxRequestSize;
   return maxRequestSize;
+}
+
+String _readServerId(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  String serverIdFromCommandLineArg,
+) {
+  if (serverIdFromCommandLineArg != 'default') {
+    return serverIdFromCommandLineArg;
+  }
+  var serverId = environment[ServerpodEnv.serverId.envVariable] ??
+      configMap[ServerpodEnv.serverId.configKey] ??
+      'default';
+  return serverId;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

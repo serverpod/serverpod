@@ -1,4 +1,4 @@
-import 'package:code_builder/code_builder.dart';
+import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
@@ -31,7 +31,7 @@ class LibraryGenerator {
         .toList();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! ClassDefinition) return true;
+      if (model is! ModelClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -41,7 +41,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((model) => !(model is ClassDefinition && model.isSealed))
+        .where((model) => !(model is ModelClassDefinition && model.isSealed))
         .toList();
 
     // exports
@@ -80,6 +80,10 @@ class LibraryGenerator {
         ..factory = true
         ..body = refer('_instance').code),
     ]);
+
+    var allTypesToDeserialize = protocolDefinition.typesToDeserialize;
+    var recordTypesToDeserialize =
+        allTypesToDeserialize.where((t) => t.isRecordType).toList();
 
     protocol.fields.addAll([
       Field((f) => f
@@ -161,26 +165,11 @@ class LibraryGenerator {
                           (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
-                  for (var endPoint in protocolDefinition.endpoints)
-                    // Generate deserialization for endpoint methods.
-                    for (var method in endPoint.methods) ...[
-                      // Generate deserialization for the return type of the method.
-                      ...method.returnType
-                          .retrieveGenericType()
-                          .generateDeserialization(serverCode, config: config),
-                      // Generate deserialization for parameters of the method.
-                      for (var parameter in method.parameters)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
-                      // Generate deserialization for positional parameters of the method.
-                      for (var parameter in method.parametersPositional)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
-                      // Generate deserialization for named parameters of the method.
-                      for (var parameter in method.parametersNamed)
-                        ...parameter.type.generateDeserialization(serverCode,
-                            config: config),
-                    ],
+                  for (var type in allTypesToDeserialize)
+                    ...type.generateDeserialization(
+                      serverCode,
+                      config: config,
+                    ),
                   // Generate deserialization for extra classes.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.generateDeserialization(serverCode,
@@ -308,11 +297,12 @@ class LibraryGenerator {
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
               if (allModels.any((classInfo) =>
-                  classInfo is ClassDefinition && classInfo.tableName != null))
+                  classInfo is ModelClassDefinition &&
+                  classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in allModels)
-                    if (classInfo is ClassDefinition &&
+                    if (classInfo is ModelClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'
@@ -345,6 +335,12 @@ class LibraryGenerator {
     ]);
 
     library.body.add(protocol.build());
+
+    if (recordTypesToDeserialize.isNotEmpty) {
+      library.body.addAll(
+        _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
+      );
+    }
 
     return library.build();
   }
@@ -752,12 +748,36 @@ class LibraryGenerator {
       ...namedParameters,
     ];
 
+    var mapRecordContainingContainerToJsonRef = refer(
+      'mapRecordContainingContainerToJson',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
+    var mapRecordToJsonRef = refer(
+      'mapRecordToJson',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
+
     return refer('caller').property('callServerEndpoint').call([
       literalString('$modulePrefix${endpointDef.name}'),
       literalString(methodDef.name),
       literalMap({
         for (var parameterDef in params)
-          literalString(parameterDef.name): refer(parameterDef.name),
+          // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
+          // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
+          literalString(parameterDef.name): parameterDef.type.isRecordType
+              ? mapRecordToJsonRef.call([refer('record')]).code
+              : (parameterDef.type.returnsRecordInContainer
+                  ? Block.of([
+                      if (parameterDef.type.nullable)
+                        Code('${parameterDef.name} == null ? null :'),
+                      mapRecordContainingContainerToJsonRef
+                          .call([refer(parameterDef.name)]).code,
+                    ])
+                  : refer(parameterDef.name)),
       })
     ], {}, [
       methodDef.returnType.generics.first.reference(false, config: config)
@@ -896,16 +916,23 @@ class LibraryGenerator {
                   '${_getMethodCallComment(method) ?? ''}${method.name}',
                 )
                 .call([
-              refer('session'),
-              for (var param in [
-                ...method.parameters,
-                ...method.parametersPositional
-              ])
-                refer('params').index(literalString(param.name)),
-            ], {
-              for (var param in [...method.parametersNamed])
-                param.name: refer('params').index(literalString(param.name)),
-            }).code,
+                  refer('session'),
+                  for (var param in [
+                    ...method.parameters,
+                    ...method.parametersPositional
+                  ])
+                    refer('params').index(literalString(param.name)),
+                ], {
+                  for (var param in [...method.parametersNamed])
+                    param.name:
+                        refer('params').index(literalString(param.name)),
+                })
+                .transformRecordReturnType(
+                  method.returnType,
+                  serverCode: serverCode,
+                  config: config,
+                )
+                .code,
         ).closure,
       });
     }
@@ -1000,6 +1027,7 @@ class LibraryGenerator {
 
   Expression _buildMethodStreamReturnType(TypeDefinition returnType) {
     var returnEnum = refer('MethodStreamReturnType', serverpodUrl(true));
+
     if (returnType.generics.first.isVoidType) {
       return returnEnum.property('voidType');
     } else if (returnType.isStreamType) {
@@ -1046,6 +1074,316 @@ class LibraryGenerator {
       return refer('params').index(literalString(param.name));
     }
   }
+
+  Iterable<Method> _deserializationMethodsForRecordTypes(
+      List<TypeDefinition> recordTypesToDeserialize) {
+    return [
+      Method(
+        (m) => m
+          ..docs.add('''
+            /// Maps any `Record`s known to this [Protocol] to their JSON representation
+            /// 
+            /// Throws in case the record type is not known.
+            /// 
+            /// This method will return `null` (only) for `null` inputs.''')
+          ..name = 'mapRecordToJson'
+          ..returns = refer('Map<String, dynamic>?')
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'record'
+            ..type = refer('Record?')))
+          ..body = _buildRecordEncode(
+            recordTypesToDeserialize,
+            'record',
+            serverCode: serverCode,
+            config: config,
+          ),
+      ),
+      Method((m) => m
+        ..docs.add('''
+          /// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+          ///
+          /// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+          ///
+          /// It is only supposed to be called from generated protocol code.
+          ///
+          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.''')
+        ..name = 'mapRecordContainingContainerToJson'
+        ..returns = refer('Object?')
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'obj'
+          ..type = refer('Object')))
+        ..body = const Code('''
+          if (obj is! Iterable && obj is! Map) {
+            throw ArgumentError.value(
+              obj, 'obj',
+              'The object to serialize should be of type List, Map, or Set',
+            );
+          }
+
+          dynamic mapIfNeeded(Object? obj) {
+            return switch (obj) {
+              Record record => mapRecordToJson(record),
+              Iterable iterable => mapRecordContainingContainerToJson(iterable),
+              Map map => mapRecordContainingContainerToJson(map),
+              Object? value => value,
+            };
+          }
+
+          switch (obj) {
+            case Map<String, dynamic>():
+              return {
+                for (var entry in obj.entries)
+                  entry.key: mapIfNeeded(entry.value),
+              };
+            case Map():
+              return [
+                for (var entry in obj.entries)
+                  {
+                    'k': mapIfNeeded(entry.key),
+                    'v': mapIfNeeded(entry.value),
+                  }
+              ];
+
+            case Iterable():
+              return [
+                for (var e in obj)
+                  mapIfNeeded(e),
+              ];
+          }
+
+          return obj;''')),
+    ];
+  }
+}
+
+extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {
+  bool get returnsRecordInContainer {
+    return ((isMapType || isListType || isSetType) &&
+        generics.any((g) =>
+            g.isRecordType ||
+            // Important to only check default container types, there is not need to descent into model classes
+            (g.isMapType || g.isListType || g.isSetType) &&
+                g.returnsRecordInContainer));
+  }
+}
+
+extension on ProtocolDefinition {
+  void _addTypeAndCollectRecords(
+    TypeDefinition classDef,
+    List<TypeDefinition> recordTypes,
+    Set<String> handledTypes,
+  ) {
+    var typeName = classDef.dartType?.toString();
+    if (typeName == null || handledTypes.contains(typeName)) {
+      return;
+    }
+
+    handledTypes.add(typeName);
+    recordTypes.add(classDef);
+
+    for (var generic in classDef.generics) {
+      if (generic.isRecordType) {
+        _addRecordType(generic, recordTypes, handledTypes);
+      } else {
+        _addTypeAndCollectRecords(generic, recordTypes, handledTypes);
+      }
+    }
+  }
+
+  void _addRecordType(
+    TypeDefinition recordType,
+    List<TypeDefinition> recordTypes,
+    Set<String> handledTypes,
+  ) {
+    var typeName = recordType.dartType.toString();
+    if (handledTypes.contains(typeName)) {
+      return;
+    }
+
+    handledTypes.add(typeName);
+    recordTypes.add(recordType);
+
+    for (var fieldType in recordType.generics.map((f) => f)) {
+      if (fieldType.isRecordType) {
+        _addRecordType(fieldType, recordTypes, handledTypes);
+      } else {
+        _addTypeAndCollectRecords(fieldType, recordTypes, handledTypes);
+      }
+    }
+  }
+
+  /// Returns all top-level types and record types referenced by the protocol.
+  ///
+  /// For records it also returns sub record types, as these are also required
+  /// to be supported by `deserialize` on the `Protocol`.
+  List<TypeDefinition> get typesToDeserialize {
+    var recordTypes = <TypeDefinition>[];
+
+    var handledTypes = <String>{};
+
+    for (var method in endpoints.expand((e) => e.methods)) {
+      var returnType = method.returnType;
+      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)
+      _addTypeAndCollectRecords(returnType, recordTypes, handledTypes);
+
+      for (var parameter in method.allParameters) {
+        var type = parameter.type;
+        if (type.isRecordType) {
+          _addRecordType(type, recordTypes, handledTypes);
+        } else {
+          _addTypeAndCollectRecords(type, recordTypes, handledTypes);
+        }
+      }
+    }
+
+    return recordTypes;
+  }
+}
+
+Code _buildRecordEncode(
+  Iterable<TypeDefinition> recordTypes,
+  String name, {
+  required bool serverCode,
+  required GeneratorConfig config,
+}) {
+  var codes = <Code>[
+    const Code('if (record == null ) {return null;}'),
+  ];
+
+  var handledTypes = <String>{};
+
+  for (var recordType in recordTypes) {
+    assert(recordType.isRecordType);
+    var nonNullTypeName = recordType.asNonNullable.toString();
+
+    if (handledTypes.contains(nonNullTypeName)) {
+      continue;
+    }
+    handledTypes.add(nonNullTypeName);
+
+    codes.addAll([
+      Code('if ($name is '),
+      recordType.reference(serverCode, config: config, nullable: false).code,
+      const Code(') {'),
+      const Code('return '),
+      recordType.recordToJsonMapCode(
+        name: name,
+        serverCode: serverCode,
+        config: config,
+        nullable: false,
+      ),
+      const Code(';'),
+      const Code('}'),
+    ]);
+  }
+
+  codes.add(
+    const Code(
+      "throw Exception('Unsupported record type \${record.runtimeType}');",
+    ),
+  );
+
+  return Block.of(codes);
+}
+
+extension on Expression {
+  Expression transformRecordReturnType(
+    TypeDefinition returnType, {
+    required bool serverCode,
+    required GeneratorConfig config,
+  }) {
+    var mapRecordToJsonRef = refer(
+      'mapRecordToJson',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
+    var mapRecordContainingContainerToJsonRef = refer(
+      'mapRecordContainingContainerToJson',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
+
+    if (returnType.generics.isNotEmpty &&
+        returnType.generics.first.isRecordType) {
+      return property('then').call([
+        CodeExpression(
+          Block.of([
+            const Code('(record) => '),
+            mapRecordToJsonRef.call([refer('record')]).code,
+          ]),
+        ),
+      ]);
+    }
+
+    if (returnType.generics.isNotEmpty &&
+        returnType.generics.first.returnsRecordInContainer) {
+      return property('then').call(
+        [
+          CodeExpression(
+            Block.of([
+              const Code('(container) => '),
+              if (returnType.generics.first.nullable)
+                const Code('container == null ? null : '),
+              mapRecordContainingContainerToJsonRef.call([
+                refer('container'),
+              ]).code,
+            ]),
+          ),
+        ],
+      );
+    }
+
+    return this;
+  }
+}
+
+extension on TypeDefinition {
+  Code recordToJsonMapCode({
+    required String name,
+    required bool serverCode,
+    required GeneratorConfig config,
+    bool? nullable,
+  }) {
+    assert(isRecordType);
+
+    var positionalFields =
+        generics.where((f) => f.recordFieldName == null).toList();
+    var namedFields = generics.where((f) => f.recordFieldName != null).toList();
+
+    return Block.of([
+      if (nullable ?? this.nullable) Code('$name == null ? null : '),
+      const Code('{'),
+      if (positionalFields.isNotEmpty) ...[
+        const Code('"p": ['),
+        for (var (index, positionalField) in positionalFields.indexed) ...[
+          if (positionalField.isRecordType) ...[
+            Code(
+              'mapRecordToJson($name.\$${index + 1})',
+            ),
+          ] else
+            Code('$name.\$${index + 1}'),
+          const Code(','),
+        ],
+        const Code('],'),
+      ],
+      if (namedFields.isNotEmpty) ...[
+        const Code('"n": {'),
+        for (final namedField in namedFields) ...[
+          Code('"${namedField.recordFieldName!}"'),
+          const Code(':'),
+          if (namedField.isRecordType) ...[
+            Code('mapRecordToJson($name.${namedField.recordFieldName!})')
+          ] else
+            Code('$name.${namedField.recordFieldName!}'),
+          const Code(','),
+        ],
+        const Code('},'),
+      ],
+      const Code('}'),
+    ]);
+  }
 }
 
 extension on TypeDefinition {
@@ -1057,6 +1395,31 @@ extension on TypeDefinition {
   String classNameWithGenericsForProtocol({
     required List<ModuleConfig> modules,
   }) {
+    if (isRecordType) {
+      var positionalFields =
+          generics.where((f) => f.recordFieldName == null).toList();
+      var namedFields =
+          generics.where((f) => f.recordFieldName != null).toList();
+
+      return [
+        '(',
+        positionalFields
+            .map((t) => t.classNameWithGenericsForProtocol(modules: modules))
+            .join(', '),
+        if (namedFields.isNotEmpty) ...[
+          if (positionalFields.isNotEmpty) ', ',
+          '{',
+          namedFields
+              .map((f) =>
+                  '${f.classNameWithGenericsForProtocol(modules: modules)} ${f.recordFieldName!}')
+              .join(', '),
+          '}',
+        ],
+        ')',
+        if (nullable) '?',
+      ].join();
+    }
+
     String? moduleName;
     for (var module in modules) {
       // NOTE(tp): Since we're iterating over types used in the endpoints, the import always refers to the server package

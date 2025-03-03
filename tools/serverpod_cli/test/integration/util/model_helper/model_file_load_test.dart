@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
 
 void main() {
   late Directory testDirectory;

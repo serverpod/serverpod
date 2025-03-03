@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:super_string/super_string.dart';
 
@@ -957,7 +957,8 @@ class BuildRepositoryClass {
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var fieldName = firstGeneric.className.camelCase;
       var otherClassFieldName =
           fieldName == classFieldName ? 'nested$className' : fieldName;
 
@@ -972,8 +973,8 @@ class BuildRepositoryClass {
 
       methodBuilder
         ..docs.add('''
-/// Creates a relation between this [$className] and the given [${field.type.generics.first.className}]s
-/// by setting each [${field.type.generics.first.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
+/// Creates a relation between this [$className] and the given [${firstGeneric.className}]s
+/// by setting each [${firstGeneric.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1033,11 +1034,12 @@ class BuildRepositoryClass {
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var fieldName = firstGeneric.className.camelCase;
       var otherClassFieldName =
           fieldName == classFieldName ? 'nested$className' : fieldName;
 
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1051,12 +1053,12 @@ class BuildRepositoryClass {
         nullable: false,
         subDirParts: classDefinition.subDirParts,
         config: config,
-      );
+      ) as TypeReference;
 
       methodBuilder
         ..docs.add('''
-/// Creates a relation between this [$className] and the given [${field.type.generics.first.className}]
-/// by setting the [${field.type.generics.first.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
+/// Creates a relation between this [$className] and the given [${firstGeneric.className}]
+/// by setting the [${firstGeneric.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1130,7 +1132,7 @@ class BuildRepositoryClass {
         nullable: false,
         subDirParts: classDefinition.subDirParts,
         config: config,
-      );
+      ) as TypeReference;
 
       methodBuilder
         ..docs.add('''
@@ -1340,11 +1342,12 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
-      var classFieldName = field.type.generics.first.className;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var classFieldName = firstGeneric.className;
+      var fieldName = firstGeneric.className.camelCase;
 
       var relation = field.relation as ListRelationDefinition;
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1356,7 +1359,7 @@ class BuildRepositoryClass {
         nullable: false,
         subDirParts: classDefinition.subDirParts,
         config: config,
-      );
+      ) as TypeReference;
 
       methodBuilder
         ..docs.add('''
@@ -1422,11 +1425,12 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
-      var classFieldName = field.type.generics.first.className;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var classFieldName = firstGeneric.className;
+      var fieldName = firstGeneric.className.camelCase;
 
       var relation = field.relation as ListRelationDefinition;
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1438,7 +1442,7 @@ class BuildRepositoryClass {
         nullable: false,
         subDirParts: classDefinition.subDirParts,
         config: config,
-      );
+      ) as TypeReference;
 
       methodBuilder
         ..docs.add('''
@@ -1510,7 +1514,7 @@ class BuildRepositoryClass {
         nullable: false,
         subDirParts: classDefinition.subDirParts,
         config: config,
-      );
+      ) as TypeReference;
 
       methodBuilder
         ..docs.add('''

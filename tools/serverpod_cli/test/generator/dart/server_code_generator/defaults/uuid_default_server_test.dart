@@ -1,12 +1,13 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -46,7 +47,7 @@ void main() {
       ];
 
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withFields(fields)
@@ -146,7 +147,7 @@ void main() {
       ];
 
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withFields(fields)

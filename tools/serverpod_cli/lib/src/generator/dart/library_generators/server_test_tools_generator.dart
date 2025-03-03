@@ -3,6 +3,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 class ServerTestToolsGenerator {
@@ -167,7 +168,18 @@ class ServerTestToolsGenerator {
   }
 
   Code _buildEndpointMethodCall(
-      EndpointDefinition endpoint, MethodDefinition method) {
+    EndpointDefinition endpoint,
+    MethodDefinition method,
+  ) {
+    var mapRecordToJsonRef = refer(
+      'mapRecordToJson',
+      'package:${config.serverPackage}/src/generated/protocol.dart',
+    );
+    var mapRecordContainingContainerToJsonRef = refer(
+      'mapRecordContainingContainerToJson',
+      'package:${config.serverPackage}/src/generated/protocol.dart',
+    );
+
     var closure = Method(
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
@@ -197,7 +209,17 @@ class ServerTestToolsGenerator {
                 'parameters': refer('testObjectToJson', serverpodTestUrl).call([
                   literalMap({
                     for (var parameter in method.allParameters)
-                      literalString(parameter.name): refer(parameter.name).code,
+                      literalString(parameter.name): parameter.type.isRecordType
+                          ? mapRecordToJsonRef
+                              .call([refer(parameter.name)]).code
+                          : (parameter.type.returnsRecordInContainer
+                              ? Block.of([
+                                  if (parameter.type.nullable)
+                                    Code('${parameter.name} == null ? null :'),
+                                  mapRecordContainingContainerToJsonRef
+                                      .call([refer(parameter.name)]).code,
+                                ])
+                              : refer(parameter.name).code)
                   })
                 ]),
                 'serializationManager': refer('_serializationManager'),
@@ -212,7 +234,7 @@ class ServerTestToolsGenerator {
                       refer('_localUniqueSession'),
                       refer('_localCallContext').property('arguments'),
                     ])
-                    .asA(method.returnType.reference(true, config: config))
+                    .transformReturnType(method.returnType, config: config)
                     .awaited,
               )
               .statement,
@@ -428,6 +450,12 @@ class ServerTestToolsGenerator {
         ..name = 'serverpodStartTimeout'
         ..named = true
         ..type = refer('Duration?')),
+      Parameter(
+        (p) => p
+          ..name = 'experimentalFeatures'
+          ..named = true
+          ..type = refer('ExperimentalFeatures?', serverpodUrl(true)),
+      ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
         Parameter((p) => p
           ..name = 'rollbackDatabase'
@@ -478,6 +506,7 @@ class ServerTestToolsGenerator {
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                'experimentalFeatures': refer('experimentalFeatures'),
               },
             ),
           ],
@@ -499,4 +528,41 @@ class ServerTestToolsGenerator {
 
   int _sortParameterByName(Parameter a, Parameter b) =>
       a.name.compareTo(b.name);
+}
+
+extension on Expression {
+  /// Adds deserialization for record return types if needed,
+  /// else cast into the desired return type.
+  Expression transformReturnType(
+    TypeDefinition returnType, {
+    required GeneratorConfig config,
+  }) {
+    if (returnType.isFutureType &&
+        (returnType.generics.single.isRecordType ||
+            returnType.generics.single.returnsRecordInContainer)) {
+      var protocolRef = refer(
+        'Protocol',
+        'package:${config.serverPackage}/src/generated/protocol.dart',
+      );
+
+      return property('then').call([
+        CodeExpression(
+          Block.of([
+            const Code('(record) => '),
+            protocolRef
+                .newInstance([])
+                .property('deserialize')
+                .call(
+                  [refer('record')],
+                  {},
+                  [returnType.generics.single.reference(true, config: config)],
+                )
+                .code,
+          ]),
+        ),
+      ]);
+    }
+
+    return asA(returnType.reference(true, config: config));
+  }
 }
