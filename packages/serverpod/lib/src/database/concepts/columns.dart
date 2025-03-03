@@ -753,7 +753,7 @@ class _NotInSetExpression extends _SetColumnExpression {
   String get operator => 'NOT IN';
 }
 
-/// An extention on iterable for Id columns.
+/// An extension on iterable for Id columns.
 extension IdColumnIterable on Iterable {
   /// Casts the elements of the iterable to the correct id type.
   Iterable castToIdType() {
@@ -765,4 +765,10 @@ extension IdColumnIterable on Iterable {
 
     throw Exception('Unsupported id column type: ${first.runtimeType}');
   }
+
+  /// Converts each id element to a string that can be used in a SQL query.
+  Iterable<String> castIdsToSqlString() => map(castIdToSqlString);
 }
+
+/// Converts an id to a string that can be used in a SQL query.
+String castIdToSqlString(dynamic id) => id is num? ? '$id' : "'$id'";

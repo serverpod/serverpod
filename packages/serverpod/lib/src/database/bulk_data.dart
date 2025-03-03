@@ -64,7 +64,7 @@ class DatabaseBulkData {
       );
     }
 
-    String strLastId = (lastId is num?) ? '$lastId' : "'$lastId'";
+    String strLastId = castIdToSqlString(lastId);
 
     List<List<dynamic>> data;
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
