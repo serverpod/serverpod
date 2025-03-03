@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
-import 'package:source_span/source_span.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:test/test.dart';
 
 void main() {
