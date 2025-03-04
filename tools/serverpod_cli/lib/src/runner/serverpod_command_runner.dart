@@ -1,4 +1,5 @@
 import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
@@ -72,8 +73,7 @@ class ServerpodCommandRunner extends BetterCommandRunner {
     super.description, {
     required bool productionMode,
     required Version cliVersion,
-    super.logError,
-    super.logInfo,
+    super.messageOutput,
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
@@ -112,8 +112,10 @@ class ServerpodCommandRunner extends BetterCommandRunner {
     return ServerpodCommandRunner(
       'serverpod',
       'Manage your serverpod app development',
-      logError: log.error,
-      logInfo: log.info,
+      messageOutput: MessageOutput(
+        logUsage: log.info,
+        logUsageException: (UsageException e) => log.error(e.toString()),
+      ),
       setLogLevel: _configureLogLevel,
       onBeforeRunCommand: onBeforeRunCommand,
       onAnalyticsEvent: (String event) => analytics.track(event: event),

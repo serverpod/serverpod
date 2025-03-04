@@ -7,7 +7,7 @@ abstract class ServerpodCommand extends BetterCommand {
 
   ServerpodCommand()
       : super(
-          logInfo: (String message) => log.info(message),
           wrapTextColumn: log.wrapTextColumn,
+          passOutput: MessageOutput(logUsage: log.info),
         );
 }
