@@ -51,6 +51,19 @@ List<SourceSpanSeverityException> validateDuplicateFileName(
 
   if (modelDefinition == null) return [];
 
+  if (const [
+    'client', // we are already generating files with these names
+    'protocol',
+    'endpoints',
+  ].contains(modelDefinition.fileName)) {
+    return [
+      SourceSpanSeverityException(
+        'The file name "${modelDefinition.fileName}" is reserved and cannot be used.',
+        documentContents.span,
+      )
+    ];
+  }
+
   if (parsedModels.isFilePathUnique(modelDefinition)) {
     return [];
   }
