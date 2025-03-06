@@ -91,4 +91,37 @@ void main() {
       );
     });
   });
+
+  for (var fileName in ['client', 'endpoints', 'protocol']) {
+    group(
+        'Given a model with the reserved file name "$fileName" when analyzing',
+        () {
+      late final modelSources = [
+        ModelSourceBuilder().withFileName(fileName).withYaml(
+          '''
+        class: Whatever
+        fields:
+          name: String
+        ''',
+        ).build(),
+      ];
+
+      late final collector = CodeGenerationCollector();
+
+      setUp(() {
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+            .validateAll();
+      });
+
+      test(
+          'then an error informs the user that there is a generated file collision.',
+          () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The file name "$fileName" is reserved and cannot be used.',
+        );
+      });
+    });
+  }
 }
