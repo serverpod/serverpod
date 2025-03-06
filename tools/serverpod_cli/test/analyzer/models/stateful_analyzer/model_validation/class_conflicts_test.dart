@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
@@ -105,4 +106,32 @@ void main() {
       reason: 'Expected no errors but some were generated.',
     );
   });
+
+  for (var className in ['Client', 'Endpoints', 'Protocol']) {
+    test(
+        'Given a model with a reserved class name, then an error is collected.',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: $className
+        fields:
+          name: String
+        ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        [
+          isA<SourceSpanSeverityException>().having((s) => s.message, 'message',
+              'The class name "$className" is reserved and cannot be used.')
+        ],
+      );
+    });
+  }
 }
