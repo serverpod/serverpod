@@ -3065,6 +3065,27 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointUpload extends _i1.EndpointRef {
+  EndpointUpload(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'upload';
+
+  _i2.Future<bool> uploadByteData(
+    String path,
+    _i4.ByteData data,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'upload',
+        'uploadByteData',
+        {
+          'path': path,
+          'data': data,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointMyFeature extends _i1.EndpointRef {
   EndpointMyFeature(_i1.EndpointCaller caller) : super(caller);
 
@@ -3167,6 +3188,7 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    upload = EndpointUpload(this);
     myFeature = EndpointMyFeature(this);
     modules = Modules(this);
   }
@@ -3260,6 +3282,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
+  late final EndpointUpload upload;
+
   late final EndpointMyFeature myFeature;
 
   late final Modules modules;
@@ -3310,6 +3334,7 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'upload': upload,
         'myFeature': myFeature,
       };
 

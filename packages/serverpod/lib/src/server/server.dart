@@ -428,16 +428,25 @@ class Server {
   }
 
   Future<String> _readBody(HttpRequest request) async {
-    var builder = BytesBuilder();
+    var builder = BytesBuilder(copy: false);
     var len = 0;
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > serverpod.config.maxRequestSize) {
-        throw _RequestTooLargeException(serverpod.config.maxRequestSize);
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    var tooLargeForSure = request.contentLength > maxRequestSize;
+    if (!tooLargeForSure) {
+      await for (var segment in request) {
+        if (tooLargeForSure) continue; // always drain request, if reading begun
+        len += segment.length;
+        tooLargeForSure = len > maxRequestSize;
+        builder.add(segment);
       }
-      builder.add(segment);
     }
-    return const Utf8Decoder().convert(builder.toBytes());
+    if (tooLargeForSure) {
+      // We defer raising the exception until we have drained the request stream
+      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
+      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
+      throw _RequestTooLargeException(maxRequestSize);
+    }
+    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Result> _handleUriCall(
