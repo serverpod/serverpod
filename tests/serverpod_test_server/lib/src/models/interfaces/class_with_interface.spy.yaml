@@ -1,0 +1,4 @@
+class: ClassWithInterface
+implements: ExampleInterface
+fields:
+  classField: String
