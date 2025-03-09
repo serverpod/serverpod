@@ -170,7 +170,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "extends" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+        'The "extends" property is not allowed for class type. Valid keys are {class, implements, table, managedMigration, serverOnly, fields, indexes}.',
       );
     });
 
@@ -509,7 +509,7 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "sealed" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+      'The "sealed" property is not allowed for class type. Valid keys are {class, implements, table, managedMigration, serverOnly, fields, indexes}.',
     );
   });
 
