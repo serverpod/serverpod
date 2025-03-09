@@ -1,0 +1,3 @@
+interface: ExampleInterface
+fields:
+  interfaceField: String
