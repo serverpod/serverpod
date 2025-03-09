@@ -343,6 +343,134 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateImplementedInterfaceNames(
+    String parentNodeName,
+    dynamic implementedInterfaceNames,
+    SourceSpan? span,
+  ) {
+    if (implementedInterfaceNames is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "implements" property must be a comma separated list of class names.',
+          span,
+        )
+      ];
+    }
+
+    var implementedInterfacesList = implementedInterfaceNames
+        .split(',')
+        .map((name) => name.trim())
+        .toList();
+
+    var duplicates = _findDuplicateNames(implementedInterfacesList);
+    if (duplicates.isNotEmpty) {
+      return duplicates
+          .map((interfaceClass) => SourceSpanSeverityException(
+                'The interface name "$interfaceClass" is duplicated.',
+                span,
+              ))
+          .toList();
+    }
+
+    for (var implementedInterface in implementedInterfacesList) {
+      if (_globallyRestrictedKeywords.contains(implementedInterface)) {
+        return [
+          SourceSpanSeverityException(
+            'The interface name "$implementedInterface" is reserved and cannot be used.',
+            span,
+          )
+        ];
+      }
+
+      if (!StringValidators.isValidClassName(implementedInterface)) {
+        return [
+          SourceSpanSeverityException(
+            'The interface name "$implementedInterface" must be a valid class name (e.g. PascalCaseString).',
+            span,
+          )
+        ];
+      }
+
+      var interfaceClass = parsedModels.findByClassName(implementedInterface);
+
+      if (interfaceClass == null) {
+        return [
+          SourceSpanSeverityException(
+            'The implemented interface name "$implementedInterface" was not found in any model.',
+            span,
+          )
+        ];
+      }
+
+      if (interfaceClass is! InterfaceClassDefinition) {
+        return [
+          SourceSpanSeverityException(
+            'The implemented node "$implementedInterface" is not an interface.',
+            span,
+          )
+        ];
+      }
+    }
+
+    if (documentDefinition is InterfaceClassDefinition) {
+      var circularPath = _detectCircularInterfaceDependency(
+        documentDefinition as ClassDefinition,
+        [],
+        {},
+      );
+
+      if (circularPath.isNotEmpty) {
+        return [
+          SourceSpanSeverityException(
+            'Circular interface dependency detected: ${circularPath.join(' → ')}',
+            span,
+          )
+        ];
+      }
+    }
+
+    return [];
+  }
+
+  List<String> _findDuplicateNames(List<String> list) {
+    var seen = <String>{};
+    var duplicates = <String>{};
+
+    for (var item in list) {
+      if (!seen.add(item)) {
+        duplicates.add(item);
+      }
+    }
+
+    return duplicates.toList();
+  }
+
+  List<String> _detectCircularInterfaceDependency(
+      ClassDefinition current, List<String> path, Set<String> visited) {
+    var className = current.className;
+
+    if (path.contains(className)) {
+      return [...path.sublist(path.indexOf(className)), className];
+    }
+
+    if (visited.contains(className)) {
+      return [];
+    }
+
+    path.add(className);
+    visited.add(className);
+
+    for (var interfaceImpl in current.implementedInterfaces) {
+      var result = _detectCircularInterfaceDependency(
+          interfaceImpl, List.from(path), visited);
+      if (result.isNotEmpty) {
+        return result;
+      }
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
@@ -519,6 +647,34 @@ class Restrictions {
           return [
             SourceSpanSeverityException(
               'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
+              span,
+            )
+          ];
+        }
+      }
+    }
+
+    if (def is ClassDefinition && def.implementedInterfaces.isNotEmpty) {
+      for (var interfaceClass in def.implementedInterfaces) {
+        if (interfaceClass is! InterfaceClassDefinition) {
+          continue;
+        }
+
+        var duplicateInterfaceField = interfaceClass.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
+
+        if (duplicateInterfaceField == null) {
+          continue;
+        }
+
+        var duplicateClassField =
+            def.fields.where((field) => field.name == fieldName).firstOrNull;
+
+        if (duplicateClassField != null && !duplicateClassField.hasDefaults) {
+          return [
+            SourceSpanSeverityException(
+              'Field "$fieldName" from interface "${interfaceClass.className}" must have a default value when redefined in the implementing class. Either set a default value or remove the field from the implementing class.',
               span,
             )
           ];
