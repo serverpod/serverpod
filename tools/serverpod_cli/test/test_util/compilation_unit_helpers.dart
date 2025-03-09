@@ -216,6 +216,22 @@ abstract class CompilationUnitHelpers {
     return matchingImplementsClauses.isNotEmpty;
   }
 
+  /// Returns [NamedType] if the class has an implements clause with the
+  /// given [name], otherwise returns `null`.
+  static NamedType? tryFindImplementedClass(
+    ClassDeclaration classDeclaration, {
+    required String name,
+  }) {
+    var implementsClause = classDeclaration.implementsClause;
+    if (implementsClause == null) {
+      return null;
+    }
+
+    return implementsClause.interfaces
+        .where((type) => type.name2.toString() == name)
+        .firstOrNull;
+  }
+
   /// Returns [ConstructorDeclaration] if the class has a constructor with the
   /// given name and parameters, otherwise returns `null`.
   ///
