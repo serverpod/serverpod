@@ -43,6 +43,7 @@ class ModelParser {
           required bool serverOnly,
           required List<SerializableModelFieldDefinition> fields,
           required List<String>? classDocumentation,
+          required List<ImplementsDefinition> isImplementing,
         }) {
           var indexes = _parseIndexes(documentContents, fields);
 
@@ -60,6 +61,7 @@ class ModelParser {
             documentation: classDocumentation,
             serverOnly: serverOnly,
             type: classType,
+            isImplementing: isImplementing,
           );
         });
   }
@@ -86,6 +88,7 @@ class ModelParser {
         required bool serverOnly,
         required List<SerializableModelFieldDefinition> fields,
         required List<String>? classDocumentation,
+        required List<ImplementsDefinition> isImplementing,
       }) =>
           ExceptionClassDefinition(
         className: className,
@@ -96,6 +99,45 @@ class ModelParser {
         type: classType,
         subDirParts: protocolSource.subDirPathParts,
         documentation: classDocumentation,
+        isImplementing: isImplementing,
+      ),
+    );
+  }
+
+  static SerializableModelDefinition? serializeInterfaceClassFile(
+    String documentTypeName,
+    ModelSource protocolSource,
+    String outFileName,
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+    List<TypeDefinition> extraClasses,
+  ) {
+    return _initializeFromClassFields(
+      documentTypeName: documentTypeName,
+      protocolSource: protocolSource,
+      outFileName: outFileName,
+      documentContents: documentContents,
+      docsExtractor: docsExtractor,
+      extraClasses: extraClasses,
+      hasTable: false,
+      initialize: ({
+        required String className,
+        required TypeDefinition classType,
+        required bool serverOnly,
+        required List<SerializableModelFieldDefinition> fields,
+        required List<String>? classDocumentation,
+        required List<ImplementsDefinition> isImplementing,
+      }) =>
+          InterfaceClassDefinition(
+        className: className,
+        fields: fields,
+        fileName: outFileName,
+        serverOnly: serverOnly,
+        sourceFileName: protocolSource.yamlSourceUri.path,
+        type: classType,
+        subDirParts: protocolSource.subDirPathParts,
+        documentation: classDocumentation,
+        isImplementing: isImplementing,
       ),
     );
   }
@@ -119,6 +161,7 @@ class ModelParser {
       required bool serverOnly,
       required List<SerializableModelFieldDefinition> fields,
       required List<String>? classDocumentation,
+      required List<ImplementsDefinition> isImplementing,
     }) initialize,
   }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
@@ -142,6 +185,8 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
+    var isImplementing = _parseIsImplementing(documentContents);
+
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
@@ -158,6 +203,7 @@ class ModelParser {
       serverOnly: serverOnly,
       fields: fields,
       classDocumentation: classDocumentation,
+      isImplementing: isImplementing,
     );
   }
 
@@ -214,6 +260,25 @@ class ModelParser {
     if (extendsClass is! String) return null;
 
     return UnresolvedInheritanceDefinition(extendsClass);
+  }
+
+  static List<UnresolvedImplementsDefinition> _parseIsImplementing(
+    YamlMap documentContents,
+  ) {
+    var implementsNode = documentContents.nodes[Keyword.isImplementing];
+
+    if (implementsNode is! YamlScalar) return [];
+
+    // Split the string by commas and trim whitespace
+    var interfaces = implementsNode.value
+        .toString()
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .map((e) => UnresolvedImplementsDefinition(e))
+        .toList();
+
+    return interfaces;
   }
 
   static bool _parseServerOnly(YamlMap documentContents) {
