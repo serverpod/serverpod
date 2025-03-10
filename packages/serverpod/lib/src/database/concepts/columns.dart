@@ -73,10 +73,10 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
 }
 
 /// A [Column] whose values can be compared equal to other values.
-abstract class ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
+abstract class _ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
     with _NullableColumnDefaultOperations<T> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnComparableEquals(
+  _ColumnComparableEquals(
     super.columnName,
     super.table, {
     super.hasDefault,
@@ -86,7 +86,7 @@ abstract class ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
 /// A [Column] whose values can be compared equal or unequal to other values.
 /// Attends full specification of default PG comparison operations:
 /// https://www.postgresql.org/docs/current/functions-comparison.html#FUNCTIONS-COMPARISON-OP-TABLE
-abstract class ColumnComparable<T> extends ColumnComparableEquals<T>
+abstract class ColumnComparable<T> extends _ColumnComparableEquals<T>
     with _ColumnComparisonDefaultOperations<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnComparable(
@@ -97,7 +97,7 @@ abstract class ColumnComparable<T> extends ColumnComparableEquals<T>
 }
 
 /// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends ColumnComparableEquals<E> {
+class ColumnEnum<E extends Enum> extends _ColumnComparableEquals<E> {
   final EnumSerialization _serialized;
 
   ColumnEnum._(
@@ -186,7 +186,7 @@ class ColumnString extends ColumnComparable<String> {
 }
 
 /// A [Column] holding an [bool].
-class ColumnBool extends ColumnComparableEquals<bool> {
+class ColumnBool extends _ColumnComparableEquals<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnBool(
     super.columnName,
