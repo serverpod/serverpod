@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
@@ -64,7 +65,7 @@ class DatabaseBulkData {
       );
     }
 
-    String strLastId = castIdToSqlString(lastId);
+    String strLastId = DatabasePoolManager.encoder.convert(lastId);
 
     List<List<dynamic>> data;
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
