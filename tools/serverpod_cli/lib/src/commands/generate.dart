@@ -45,9 +45,13 @@ class GenerateCommand extends ServerpodCommand {
     }
 
     // Directory.current is the server directory
+    var clientPubspecFile = File(path.joinAll([
+      ...config.clientPackagePathParts,
+      'pubspec.yaml',
+    ]));
     var pubspecsToCheck = [
-      File('pubspec.yaml'),
-      File(path.joinAll([...config.clientPackagePathParts, 'pubspec.yaml'])),
+      File('pubspec.yaml'), // server
+      if (await clientPubspecFile.exists()) clientPubspecFile,
     ].map(PubspecPlus.fromFile);
 
     // Validate cli version is compatible with serverpod packages
