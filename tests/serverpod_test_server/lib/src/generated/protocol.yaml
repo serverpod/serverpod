@@ -373,6 +373,8 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+upload:
+  - uploadByteData:
 myFeature:
   - myFeatureMethod:
   - myFeatureModel:

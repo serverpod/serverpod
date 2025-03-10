@@ -216,6 +216,8 @@ class TestEndpoints {
 
   late final _AuthenticatedTestToolsEndpoint authenticatedTestTools;
 
+  late final _UploadEndpoint upload;
+
   late final _MyFeatureEndpoint myFeature;
 }
 
@@ -399,6 +401,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     authenticatedTestTools = _AuthenticatedTestToolsEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    upload = _UploadEndpoint(
       endpoints,
       serializationManager,
     );
@@ -10768,6 +10774,50 @@ class _AuthenticatedTestToolsEndpoint {
       _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
+  }
+}
+
+class _UploadEndpoint {
+  _UploadEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<bool> uploadByteData(
+    _i1.TestSessionBuilder sessionBuilder,
+    String path,
+    _i5.ByteData data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'upload',
+        method: 'uploadByteData',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'upload',
+          methodName: 'uploadByteData',
+          parameters: _i1.testObjectToJson({
+            'path': path,
+            'data': data,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 
