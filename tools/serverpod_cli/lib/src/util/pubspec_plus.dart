@@ -43,7 +43,8 @@ class PubspecPlus {
       ),
     ]) {
       for (var e in x.deps.entries) {
-        var span = x.yaml!.nodes[e.key]!.span; // ! safe as we loop over entries
+        var span = x.yaml?.nodes[e.key]?.span ??
+            (throw StateError('Missing span for dependency ${e.key}'));
         yield Dep(e.key, e.value, x.type, span);
       }
     }
