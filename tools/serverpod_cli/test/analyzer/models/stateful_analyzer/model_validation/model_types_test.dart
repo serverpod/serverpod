@@ -293,6 +293,130 @@ void main() {
     },
   );
 
+  test(
+    'Given a class name with reserved value Endpoints, then give an error that the class name is reserved.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Endpoints
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "Endpoints" is reserved and cannot be used.',
+      );
+    },
+  );
+
+  test(
+    'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: DateTime
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "DateTime" is reserved and cannot be used.',
+      );
+    },
+  );
+
+  test(
+    'Given a class name with reserved value Protocol, then give an error that the class name is reserved.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Protocol
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "Protocol" is reserved and cannot be used.',
+      );
+    },
+  );
+
+  test(
+    'Given a class name with reserved value Client, then give an error that the class name is reserved.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Client
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "Client" is reserved and cannot be used.',
+      );
+    },
+  );
+
   group('Given a model without any defined model type', () {
     test(
       'Then return a human readable error message informing the user that the model type is missing.',
