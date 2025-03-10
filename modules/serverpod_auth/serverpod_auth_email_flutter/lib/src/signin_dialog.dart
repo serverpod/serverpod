@@ -141,7 +141,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _createAccount : null,
-          child: Text(_localization.buttonTitleCreateAccount),
+          child: Text(_localization.buttonTitleSignUp),
         ),
         TextButton(
           onPressed: _enabled
@@ -151,7 +151,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: Text(_localization.buttonTitleIHaveAccount),
+          child: Text(_localization.buttonTitleOpenSignIn),
         ),
       ];
     } else if (_page == _Page.signIn) {
@@ -223,7 +223,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                       });
                     }
                   : null,
-              child: Text(_localization.buttonTitleCreateAccount),
+              child: Text(_localization.buttonTitleOpenSignUp),
             ),
           ],
         ),

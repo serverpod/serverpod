@@ -13,16 +13,20 @@ class SignInWithEmailDialogLabels {
   /// Used in both sign-in and sign-up forms TextField.
   final String inputHintPassword;
 
-  /// Button text for creating a new account.
-  /// Used in the main dialog when in sign-up mode.
-  final String buttonTitleCreateAccount;
+  /// Button text for the sign-up submit button.
+  /// Used in the sign-up form to create a new account.
+  final String buttonTitleSignUp;
 
-  /// Button text for switching to sign-in mode.
-  /// Used in the sign-up form to switch back to sign-in.
-  final String buttonTitleIHaveAccount;
+  /// Button text for navigating to sign-up form.
+  /// Used in the sign-in form to switch to account creation.
+  final String buttonTitleOpenSignUp;
 
-  /// Button text for signing in.
-  /// Used in the main dialog when in sign-in mode.
+  /// Button text for navigating to sign-in form.
+  /// Used in the sign-up form to return to sign-in.
+  final String buttonTitleOpenSignIn;
+
+  /// Button text for the sign-in submit button.
+  /// Used in the sign-in form to authenticate the user.
   final String buttonTitleSignIn;
 
   /// Button text for the forgot password option.
@@ -93,8 +97,9 @@ class SignInWithEmailDialogLabels {
     required this.inputHintUserName,
     required this.inputHintEmail,
     required this.inputHintPassword,
-    required this.buttonTitleCreateAccount,
-    required this.buttonTitleIHaveAccount,
+    required this.buttonTitleSignUp,
+    required this.buttonTitleOpenSignUp,
+    required this.buttonTitleOpenSignIn,
     required this.buttonTitleSignIn,
     required this.buttonTitleForgotPassword,
     required this.buttonTitleResetPassword,
@@ -119,8 +124,9 @@ class SignInWithEmailDialogLabels {
     String? inputHintUserName,
     String? inputHintEmail,
     String? inputHintPassword,
-    String? buttonTitleCreateAccount,
-    String? buttonTitleIHaveAccount,
+    String? buttonTitleSignUp,
+    String? buttonTitleOpenSignUp,
+    String? buttonTitleOpenSignIn,
     String? buttonTitleSignIn,
     String? buttonTitleForgotPassword,
     String? buttonTitleResetPassword,
@@ -142,8 +148,9 @@ class SignInWithEmailDialogLabels {
       inputHintUserName: inputHintUserName ?? 'User name',
       inputHintEmail: inputHintEmail ?? 'Email',
       inputHintPassword: inputHintPassword ?? 'Password',
-      buttonTitleCreateAccount: buttonTitleCreateAccount ?? 'Create Account',
-      buttonTitleIHaveAccount: buttonTitleIHaveAccount ?? 'I have an account',
+      buttonTitleSignUp: buttonTitleSignUp ?? 'Sign Up',
+      buttonTitleOpenSignUp: buttonTitleOpenSignUp ?? 'Create Account',
+      buttonTitleOpenSignIn: buttonTitleOpenSignIn ?? 'I have an account',
       buttonTitleSignIn: buttonTitleSignIn ?? 'Sign In',
       buttonTitleForgotPassword: buttonTitleForgotPassword ?? 'Forgot Pass',
       buttonTitleResetPassword: buttonTitleResetPassword ?? 'Reset Password',
