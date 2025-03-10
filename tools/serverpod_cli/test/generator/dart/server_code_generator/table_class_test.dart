@@ -58,6 +58,15 @@ void main() {
             reason: 'Missing extends clause for Table.');
       });
 
+      test('has Table extends generic to the default id type int.', () {
+        expect(
+            maybeClassNamedExampleTable!
+                .extendsClause?.superclass.typeArguments?.arguments.first
+                .toString(),
+            'int',
+            reason: 'Missing generic to default id type int.');
+      });
+
       test(
           'has constructor taking table relation and passes table name to super.',
           () {

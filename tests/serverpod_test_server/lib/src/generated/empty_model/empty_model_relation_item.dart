@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class EmptyModelRelationItem
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -43,7 +43,7 @@ abstract class EmptyModelRelationItem
   int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
@@ -162,7 +162,7 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   }
 }
 
-class EmptyModelRelationItemTable extends _i1.Table {
+class EmptyModelRelationItemTable extends _i1.Table<int> {
   EmptyModelRelationItemTable({super.tableRelation})
       : super(tableName: 'empty_model_relation_item') {
     name = _i1.ColumnString(
@@ -194,7 +194,7 @@ class EmptyModelRelationItemInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
@@ -214,7 +214,7 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemRepository {

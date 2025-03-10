@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
@@ -149,6 +150,17 @@ void main() {
             reason: 'Missing extends clause for TableRow.');
       });
 
+      test('has TableRow implements generic to the default id type int.', () {
+        var typeName = maybeClassNamedExample!.implementsClause?.interfaces
+            .first.typeArguments?.arguments.first as NamedType?;
+
+        expect(
+          typeName?.name2.toString(),
+          'int',
+          reason: 'Wrong generic type for TableRow.',
+        );
+      });
+
       test('implements ProtocolSerialization', () {
         expect(
             CompilationUnitHelpers.hasImplementsClause(
@@ -196,6 +208,24 @@ void main() {
             reason: 'Missing declaration for table method.');
       });
 
+      test(
+          'has Table generic to the default id type int as table getter return type.',
+          () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.name2.toString(),
+          'int',
+          reason: 'Wrong generic type for Table getter.',
+        );
+      });
+
       test('is generated with id field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
@@ -204,6 +234,19 @@ void main() {
             ),
             isTrue,
             reason: 'Declaration for id field should be generated.');
+      });
+
+      test('has type of the id field default to int.', () {
+        var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExample!,
+          name: 'id',
+        );
+
+        expect(
+          (maybeIdField?.fields.type as NamedType).name2.toString(),
+          'int',
+          reason: 'Wrong type for the id field.',
+        );
       });
 
       test('has a static include method.', () {

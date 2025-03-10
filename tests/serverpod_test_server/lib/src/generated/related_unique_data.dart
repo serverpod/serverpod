@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
 
 abstract class RelatedUniqueData
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -54,7 +54,7 @@ abstract class RelatedUniqueData
   int number;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -151,7 +151,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   }
 }
 
-class RelatedUniqueDataTable extends _i1.Table {
+class RelatedUniqueDataTable extends _i1.Table<int> {
   RelatedUniqueDataTable({super.tableRelation})
       : super(tableName: 'related_unique_data') {
     uniqueDataId = _i1.ColumnInt(
@@ -210,7 +210,7 @@ class RelatedUniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataIncludeList extends _i1.IncludeList {
@@ -230,7 +230,7 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataRepository {

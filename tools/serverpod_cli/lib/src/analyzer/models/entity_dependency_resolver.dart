@@ -160,6 +160,7 @@ class ModelDependencyResolver {
     } else if (foreignField != null) {
       _resolveNamedForeignObjectRelation(
         classDefinition,
+        referenceClass,
         fieldDefinition,
         relation,
         tableName,
@@ -169,7 +170,8 @@ class ModelDependencyResolver {
   }
 
   static void _resolveNamedForeignObjectRelation(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition referenceClass,
     SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
@@ -196,6 +198,9 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       name: relation.name,
+      parentTableIdType: relation.isForeignKeyOrigin
+          ? classDefinition.idField.type
+          : referenceClass.idField.type,
       parentTable: tableName,
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
@@ -213,8 +218,8 @@ class ModelDependencyResolver {
     String tableName,
   ) {
     var relationFieldType = relation.nullableRelation
-        ? TypeDefinition.int.asNullable
-        : TypeDefinition.int;
+        ? referenceDefinition.idField.type.asNullable
+        : referenceDefinition.idField.type.asNonNullable;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -253,6 +258,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: foreignRelationField.name,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,
@@ -303,6 +309,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,
@@ -384,7 +391,7 @@ class ModelDependencyResolver {
 
       var foreignField = SerializableModelFieldDefinition(
         name: foreignFieldName,
-        type: TypeDefinition.int.asNullable,
+        type: classDefinition.idField.type.asNullable,
         scope: ModelFieldScopeDefinition.none,
         shouldPersist: true,
         relation: ForeignRelationDefinition(
@@ -402,6 +409,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: autoRelationName,
+        foreignKeyOwnerIdType: classDefinition.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField:
@@ -445,6 +453,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
+        foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,

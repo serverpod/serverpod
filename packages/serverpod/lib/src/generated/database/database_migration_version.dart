@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DatabaseMigrationVersion._({
     this.id,
     required this.module,
@@ -57,7 +57,7 @@ abstract class DatabaseMigrationVersion
   DateTime? timestamp;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
@@ -152,7 +152,7 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
   }
 }
 
-class DatabaseMigrationVersionTable extends _i1.Table {
+class DatabaseMigrationVersionTable extends _i1.Table<int> {
   DatabaseMigrationVersionTable({super.tableRelation})
       : super(tableName: 'serverpod_migrations') {
     module = _i1.ColumnString(
@@ -194,7 +194,7 @@ class DatabaseMigrationVersionInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DatabaseMigrationVersion.t;
+  _i1.Table<int> get table => DatabaseMigrationVersion.t;
 }
 
 class DatabaseMigrationVersionIncludeList extends _i1.IncludeList {
@@ -214,7 +214,7 @@ class DatabaseMigrationVersionIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DatabaseMigrationVersion.t;
+  _i1.Table<int> get table => DatabaseMigrationVersion.t;
 }
 
 class DatabaseMigrationVersionRepository {
