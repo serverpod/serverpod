@@ -654,9 +654,9 @@ class TypeDefinition {
       return [
         '(',
         positionalFields.map((t) => t.toString()).join(', '),
+        if (positionalFields.isNotEmpty || positionalFields.length == 1) ',',
         if (namedFields.isNotEmpty) ...[
-          if (positionalFields.isNotEmpty) ', ',
-          '{',
+          ' {',
           namedFields.map((f) => '$f ${f.recordFieldName!}').join(', '),
           '}',
         ],

@@ -365,4 +365,253 @@ void main() {
       },
     );
   });
+
+  group(
+      'Given an endpoint with Stream with a model return type when generating protocol files',
+      () {
+    var modelName = 'example_model';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.pascalCase)
+          .withFileName(modelName)
+          .build()
+    ];
+    var endpoints = [
+      EndpointDefinitionBuilder().withMethods([
+        MethodDefinitionBuilder()
+            .withName('streamingMethod')
+            .withReturnType(
+              TypeDefinitionBuilder()
+                  .withStreamOf(modelName.pascalCase)
+                  .build(),
+            )
+            .buildMethodCallDefinition()
+      ]).build()
+    ];
+
+    var protocolDefinition =
+        ProtocolDefinition(endpoints: endpoints, models: models);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test(
+      'then the protocol.dart file is created.',
+      () {
+        expect(codeMap[expectedFileName], isNotNull);
+      },
+    );
+
+    test(
+      'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
+      () {
+        expect(
+          codeMap[expectedFileName],
+          isNot(contains('wrapWithClassName')),
+        );
+      },
+    );
+  });
+
+  group(
+      'Given an endpoint with Stream with a record return type when generating protocol files',
+      () {
+    var endpoints = [
+      EndpointDefinitionBuilder().withMethods([
+        MethodDefinitionBuilder()
+            .withName('streamingMethod')
+            .withReturnType(
+              TypeDefinitionBuilder().withClassName('Stream').withGenerics([
+                TypeDefinitionBuilder().withRecordOf([
+                  TypeDefinitionBuilder().withClassName('int').build()
+                ]).build()
+              ]).build(),
+            )
+            .buildMethodCallDefinition()
+      ]).build()
+    ];
+
+    var protocolDefinition =
+        ProtocolDefinition(endpoints: endpoints, models: []);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test(
+      'then the protocol.dart file is created.',
+      () {
+        expect(codeMap[expectedFileName], isNotNull);
+      },
+    );
+
+    test(
+      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+      () {
+        expect(
+          codeMap[expectedFileName],
+          contains('wrapWithClassName'),
+        );
+      },
+    );
+  });
+
+  group(
+      'Given an endpoint with a Future record return type when generating protocol files',
+      () {
+    var endpoints = [
+      EndpointDefinitionBuilder().withMethods([
+        MethodDefinitionBuilder()
+            .withName('streamingMethod')
+            .withReturnType(
+              TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                TypeDefinitionBuilder().withRecordOf([
+                  TypeDefinitionBuilder().withClassName('int').build()
+                ]).build()
+              ]).build(),
+            )
+            .buildMethodCallDefinition()
+      ]).build()
+    ];
+
+    var protocolDefinition =
+        ProtocolDefinition(endpoints: endpoints, models: []);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test(
+      'then the protocol.dart file is created.',
+      () {
+        expect(codeMap[expectedFileName], isNotNull);
+      },
+    );
+
+    test(
+      'then the protocol.dart does not contain an overwrite of `wrapWithClassName`.',
+      () {
+        expect(
+          codeMap[expectedFileName],
+          isNot(contains('wrapWithClassName')),
+        );
+      },
+    );
+  });
+
+  group(
+      'Given an endpoint with a Future<int> return type and Stream of record parameter when generating protocol files',
+      () {
+    var endpoints = [
+      EndpointDefinitionBuilder().withMethods([
+        MethodDefinitionBuilder()
+            .withName('streamingMethod')
+            .withReturnType(
+              TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                TypeDefinitionBuilder().withRecordOf([
+                  TypeDefinitionBuilder().withClassName('int').build()
+                ]).build(),
+              ]).build(),
+            )
+            .withParameters([
+          ParameterDefinitionBuilder()
+              .withName('streamOfRecords')
+              .withType(
+                TypeDefinitionBuilder().withClassName('Stream').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder().withClassName('int').build()
+                  ]).build(),
+                ]).build(),
+              )
+              .build()
+        ]).buildMethodCallDefinition()
+      ]).build()
+    ];
+
+    var protocolDefinition =
+        ProtocolDefinition(endpoints: endpoints, models: []);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test(
+      'then the protocol.dart file is created.',
+      () {
+        expect(codeMap[expectedFileName], isNotNull);
+      },
+    );
+
+    test(
+      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+      () {
+        expect(
+          codeMap[expectedFileName],
+          contains('wrapWithClassName'),
+        );
+      },
+    );
+  });
+
+  group(
+      'Given an endpoint with a Future<int> return type and Stream of records (List) parameter when generating protocol files',
+      () {
+    var endpoints = [
+      EndpointDefinitionBuilder().withMethods([
+        MethodDefinitionBuilder()
+            .withName('streamingMethod')
+            .withReturnType(
+              TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                TypeDefinitionBuilder().withRecordOf([
+                  TypeDefinitionBuilder().withClassName('int').build()
+                ]).build(),
+              ]).build(),
+            )
+            .withParameters([
+          ParameterDefinitionBuilder()
+              .withName('streamOfRecords')
+              .withType(
+                TypeDefinitionBuilder().withClassName('Stream').withGenerics([
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder().withRecordOf([
+                      TypeDefinitionBuilder().withClassName('int').build()
+                    ]).build()
+                  ]).build(),
+                ]).build(),
+              )
+              .build()
+        ]).buildMethodCallDefinition()
+      ]).build()
+    ];
+
+    var protocolDefinition =
+        ProtocolDefinition(endpoints: endpoints, models: []);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test(
+      'then the protocol.dart file is created.',
+      () {
+        expect(codeMap[expectedFileName], isNotNull);
+      },
+    );
+
+    test(
+      'then the protocol.dart contains an overwrite of `wrapWithClassName`.',
+      () {
+        expect(
+          codeMap[expectedFileName],
+          contains('wrapWithClassName'),
+        );
+      },
+    );
+  });
 }

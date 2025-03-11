@@ -336,7 +336,7 @@ class LibraryGenerator {
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
         ),
-      if (recordTypesToDeserialize.isNotEmpty)
+      if (protocolDefinition.usesRecordsInStreams)
         Method(
           (m) => m
             ..annotations.add(refer('override'))
@@ -1208,8 +1208,8 @@ extension on ProtocolDefinition {
     List<TypeDefinition> recordTypes,
     Set<String> handledTypes,
   ) {
-    var typeName = classDef.dartType?.toString();
-    if (typeName == null || handledTypes.contains(typeName)) {
+    var typeName = classDef.dartType?.toString() ?? classDef.toString();
+    if (handledTypes.contains(typeName)) {
       return;
     }
 
@@ -1263,6 +1263,7 @@ extension on ProtocolDefinition {
 
       for (var parameter in method.allParameters) {
         var type = parameter.type;
+
         if (type.isRecordType) {
           _addRecordType(type, recordTypes, handledTypes);
         } else {
@@ -1272,6 +1273,23 @@ extension on ProtocolDefinition {
     }
 
     return recordTypes;
+  }
+
+  bool get usesRecordsInStreams {
+    for (var method in endpoints.expand((e) => e.methods)) {
+      for (var type in [
+        method.returnType,
+        ...method.allParameters.map((p) => p.type)
+      ]) {
+        if (type.isStreamType &&
+            (type.generics.first.isRecordType ||
+                type.generics.first.returnsRecordInContainer)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
 

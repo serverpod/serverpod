@@ -50,6 +50,14 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withRecordOf(
+    List<TypeDefinition> fields,
+  ) {
+    _className = 'Record';
+    _generics.addAll(fields);
+    return this;
+  }
+
   TypeDefinitionBuilder withListOf(
     String className, {
     bool nullable = false,
