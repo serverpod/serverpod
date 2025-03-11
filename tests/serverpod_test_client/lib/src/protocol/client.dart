@@ -3038,6 +3038,92 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'records': _i19.mapRecordContainingContainerToJson(records)},
       );
 
+  _i2.Stream<
+          (String, (Map<String, int>, {bool flag, _i10.SimpleData simpleData}))>
+      recordEchoStream(
+    (
+      String,
+      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+    ) initialValue,
+    _i2.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+            )>
+        stream,
+  ) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<
+                  (
+                    String,
+                    (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+                  )>,
+              (
+                String,
+                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+              )>(
+            'testTools',
+            'recordEchoStream',
+            {'initialValue': initialValue},
+            {'stream': stream},
+          );
+
+  _i2.Stream<List<(String, int)>> listOfRecordEchoStream(
+    List<(String, int)> initialValue,
+    _i2.Stream<List<(String, int)>> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>>,
+          List<(String, int)>>(
+        'testTools',
+        'listOfRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
+  _i2.Stream<
+      (
+        String,
+        (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+      )?> nullableRecordEchoStream(
+    (
+      String,
+      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+    )? initialValue,
+    _i2.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+            )?>
+        stream,
+  ) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<
+              (
+                String,
+                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+              )?>,
+          (
+            String,
+            (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+          )?>(
+        'testTools',
+        'nullableRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
+  _i2.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
+    List<(String, int)>? initialValue,
+    _i2.Stream<List<(String, int)>?> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>?>,
+          List<(String, int)>?>(
+        'testTools',
+        'nullableListOfRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
   _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
         'testTools',
         'logMessageWithSession',
@@ -3095,92 +3181,6 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
         'authenticatedTestTools',
         'intEchoStream',
         {},
-        {'stream': stream},
-      );
-
-  _i2.Stream<
-          (String, (Map<String, int>, {bool flag, _i10.SimpleData simpleData}))>
-      recordEchoStream(
-    (
-      String,
-      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-    ) initialValue,
-    _i2.Stream<
-            (
-              String,
-              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-            )>
-        stream,
-  ) =>
-          caller.callStreamingServerEndpoint<
-              _i2.Stream<
-                  (
-                    String,
-                    (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-                  )>,
-              (
-                String,
-                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-              )>(
-            'authenticatedTestTools',
-            'recordEchoStream',
-            {'initialValue': initialValue},
-            {'stream': stream},
-          );
-
-  _i2.Stream<List<(String, int)>> listOfRecordEchoStream(
-    List<(String, int)> initialValue,
-    _i2.Stream<List<(String, int)>> stream,
-  ) =>
-      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>>,
-          List<(String, int)>>(
-        'authenticatedTestTools',
-        'listOfRecordEchoStream',
-        {'initialValue': initialValue},
-        {'stream': stream},
-      );
-
-  _i2.Stream<
-      (
-        String,
-        (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-      )?> nullableRecordEchoStream(
-    (
-      String,
-      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-    )? initialValue,
-    _i2.Stream<
-            (
-              String,
-              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-            )?>
-        stream,
-  ) =>
-      caller.callStreamingServerEndpoint<
-          _i2.Stream<
-              (
-                String,
-                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-              )?>,
-          (
-            String,
-            (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
-          )?>(
-        'authenticatedTestTools',
-        'nullableRecordEchoStream',
-        {'initialValue': initialValue},
-        {'stream': stream},
-      );
-
-  _i2.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
-    List<(String, int)>? initialValue,
-    _i2.Stream<List<(String, int)>?> stream,
-  ) =>
-      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>?>,
-          List<(String, int)>?>(
-        'authenticatedTestTools',
-        'nullableListOfRecordEchoStream',
-        {'initialValue': initialValue},
         {'stream': stream},
       );
 }

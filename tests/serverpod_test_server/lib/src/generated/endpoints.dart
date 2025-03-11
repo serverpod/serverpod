@@ -6708,6 +6708,142 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['testTools'] as _i40.TestToolsEndpoint)
                   .listenForNumbersOnSharedStream(session),
         ),
+        'recordEchoStream': _i1.MethodStreamConnector(
+          name: 'recordEchoStream',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<
+                  (
+                    String,
+                    (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                  )>(),
+              nullable: false,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<
+                (
+                  String,
+                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                )>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .recordEchoStream(
+            session,
+            params['initialValue'],
+            streamParams['stream']!.cast<
+                (
+                  String,
+                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                )>(),
+          ),
+        ),
+        'listOfRecordEchoStream': _i1.MethodStreamConnector(
+          name: 'listOfRecordEchoStream',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<List<(String, int)>>(),
+              nullable: false,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<List<(String, int)>>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .listOfRecordEchoStream(
+            session,
+            params['initialValue'],
+            streamParams['stream']!.cast<List<(String, int)>>(),
+          ),
+        ),
+        'nullableRecordEchoStream': _i1.MethodStreamConnector(
+          name: 'nullableRecordEchoStream',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<
+                  (
+                    String,
+                    (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                  )?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<
+                (
+                  String,
+                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                )?>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .nullableRecordEchoStream(
+            session,
+            params['initialValue'],
+            streamParams['stream']!.cast<
+                (
+                  String,
+                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
+                )?>(),
+          ),
+        ),
+        'nullableListOfRecordEchoStream': _i1.MethodStreamConnector(
+          name: 'nullableListOfRecordEchoStream',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<List<(String, int)>?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<List<(String, int)>?>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .nullableListOfRecordEchoStream(
+            session,
+            params['initialValue'],
+            streamParams['stream']!.cast<List<(String, int)>?>(),
+          ),
+        ),
         'addWillCloseListenerToSessionIntStreamMethodAndThrow':
             _i1.MethodStreamConnector(
           name: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
@@ -6814,146 +6950,6 @@ class Endpoints extends _i1.EndpointDispatch {
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
-          ),
-        ),
-        'recordEchoStream': _i1.MethodStreamConnector(
-          name: 'recordEchoStream',
-          params: {
-            'initialValue': _i1.ParameterDescription(
-              name: 'initialValue',
-              type: _i1.getType<
-                  (
-                    String,
-                    (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                  )>(),
-              nullable: false,
-            )
-          },
-          streamParams: {
-            'stream': _i1.StreamParameterDescription<
-                (
-                  String,
-                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                )>(
-              name: 'stream',
-              nullable: false,
-            )
-          },
-          returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['authenticatedTestTools']
-                      as _i40.AuthenticatedTestToolsEndpoint)
-                  .recordEchoStream(
-            session,
-            params['initialValue'],
-            streamParams['stream']!.cast<
-                (
-                  String,
-                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                )>(),
-          ),
-        ),
-        'listOfRecordEchoStream': _i1.MethodStreamConnector(
-          name: 'listOfRecordEchoStream',
-          params: {
-            'initialValue': _i1.ParameterDescription(
-              name: 'initialValue',
-              type: _i1.getType<List<(String, int)>>(),
-              nullable: false,
-            )
-          },
-          streamParams: {
-            'stream': _i1.StreamParameterDescription<List<(String, int)>>(
-              name: 'stream',
-              nullable: false,
-            )
-          },
-          returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['authenticatedTestTools']
-                      as _i40.AuthenticatedTestToolsEndpoint)
-                  .listOfRecordEchoStream(
-            session,
-            params['initialValue'],
-            streamParams['stream']!.cast<List<(String, int)>>(),
-          ),
-        ),
-        'nullableRecordEchoStream': _i1.MethodStreamConnector(
-          name: 'nullableRecordEchoStream',
-          params: {
-            'initialValue': _i1.ParameterDescription(
-              name: 'initialValue',
-              type: _i1.getType<
-                  (
-                    String,
-                    (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                  )?>(),
-              nullable: true,
-            )
-          },
-          streamParams: {
-            'stream': _i1.StreamParameterDescription<
-                (
-                  String,
-                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                )?>(
-              name: 'stream',
-              nullable: false,
-            )
-          },
-          returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['authenticatedTestTools']
-                      as _i40.AuthenticatedTestToolsEndpoint)
-                  .nullableRecordEchoStream(
-            session,
-            params['initialValue'],
-            streamParams['stream']!.cast<
-                (
-                  String,
-                  (Map<String, int>, {bool flag, _i48.SimpleData simpleData})
-                )?>(),
-          ),
-        ),
-        'nullableListOfRecordEchoStream': _i1.MethodStreamConnector(
-          name: 'nullableListOfRecordEchoStream',
-          params: {
-            'initialValue': _i1.ParameterDescription(
-              name: 'initialValue',
-              type: _i1.getType<List<(String, int)>?>(),
-              nullable: true,
-            )
-          },
-          streamParams: {
-            'stream': _i1.StreamParameterDescription<List<(String, int)>?>(
-              name: 'stream',
-              nullable: false,
-            )
-          },
-          returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['authenticatedTestTools']
-                      as _i40.AuthenticatedTestToolsEndpoint)
-                  .nullableListOfRecordEchoStream(
-            session,
-            params['initialValue'],
-            streamParams['stream']!.cast<List<(String, int)>?>(),
           ),
         ),
       },

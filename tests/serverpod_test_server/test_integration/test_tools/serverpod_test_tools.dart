@@ -10636,6 +10636,182 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Stream<
+          (String, (Map<String, int>, {bool flag, _i11.SimpleData simpleData}))>
+      recordEchoStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    (
+      String,
+      (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+    ) initialValue,
+    _i3.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+            )>
+        stream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<
+        (
+          String,
+          (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+        )>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'recordEchoStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'recordEchoStream',
+          arguments: {
+            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
+                _i20.mapRecordToJson(initialValue)))
+          },
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<(String, int)>> listOfRecordEchoStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<(String, int)> initialValue,
+    _i3.Stream<List<(String, int)>> stream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'listOfRecordEchoStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'listOfRecordEchoStream',
+          arguments: {
+            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
+                _i20.mapRecordContainingContainerToJson(initialValue)))
+          },
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<
+      (
+        String,
+        (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+      )?> nullableRecordEchoStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    (
+      String,
+      (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+    )? initialValue,
+    _i3.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+            )?>
+        stream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<
+        (
+          String,
+          (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
+        )?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'nullableRecordEchoStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'nullableRecordEchoStream',
+          arguments: {
+            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
+                _i20.mapRecordToJson(initialValue)))
+          },
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<(String, int)>? initialValue,
+    _i3.Stream<List<(String, int)>?> stream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'nullableListOfRecordEchoStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'nullableListOfRecordEchoStream',
+          arguments: {
+            'initialValue': initialValue == null
+                ? null
+                : _i21.jsonDecode(_i2.SerializationManager.encode(
+                    _i20.mapRecordContainingContainerToJson(initialValue)))
+          },
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<void> logMessageWithSession(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -10840,182 +11016,6 @@ class _AuthenticatedTestToolsEndpoint {
           endpointPath: 'authenticatedTestTools',
           methodName: 'intEchoStream',
           arguments: {},
-          requestedInputStreams: ['stream'],
-          serializationManager: _serializationManager,
-        );
-        await _localTestStreamManager.callStreamMethod(
-          _localCallContext,
-          _localUniqueSession,
-          {'stream': stream},
-        );
-      },
-      _localTestStreamManager.outputStreamController,
-    );
-    return _localTestStreamManager.outputStreamController.stream;
-  }
-
-  _i3.Stream<
-          (String, (Map<String, int>, {bool flag, _i11.SimpleData simpleData}))>
-      recordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    (
-      String,
-      (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-    ) initialValue,
-    _i3.Stream<
-            (
-              String,
-              (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-            )>
-        stream,
-  ) {
-    var _localTestStreamManager = _i1.TestStreamManager<
-        (
-          String,
-          (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-        )>();
-    _i1.callStreamFunctionAndHandleExceptions(
-      () async {
-        var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-          endpoint: 'authenticatedTestTools',
-          method: 'recordEchoStream',
-        );
-        var _localCallContext =
-            await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'authenticatedTestTools',
-          methodName: 'recordEchoStream',
-          arguments: {
-            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
-                _i20.mapRecordToJson(initialValue)))
-          },
-          requestedInputStreams: ['stream'],
-          serializationManager: _serializationManager,
-        );
-        await _localTestStreamManager.callStreamMethod(
-          _localCallContext,
-          _localUniqueSession,
-          {'stream': stream},
-        );
-      },
-      _localTestStreamManager.outputStreamController,
-    );
-    return _localTestStreamManager.outputStreamController.stream;
-  }
-
-  _i3.Stream<List<(String, int)>> listOfRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<(String, int)> initialValue,
-    _i3.Stream<List<(String, int)>> stream,
-  ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>>();
-    _i1.callStreamFunctionAndHandleExceptions(
-      () async {
-        var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-          endpoint: 'authenticatedTestTools',
-          method: 'listOfRecordEchoStream',
-        );
-        var _localCallContext =
-            await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'authenticatedTestTools',
-          methodName: 'listOfRecordEchoStream',
-          arguments: {
-            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
-                _i20.mapRecordContainingContainerToJson(initialValue)))
-          },
-          requestedInputStreams: ['stream'],
-          serializationManager: _serializationManager,
-        );
-        await _localTestStreamManager.callStreamMethod(
-          _localCallContext,
-          _localUniqueSession,
-          {'stream': stream},
-        );
-      },
-      _localTestStreamManager.outputStreamController,
-    );
-    return _localTestStreamManager.outputStreamController.stream;
-  }
-
-  _i3.Stream<
-      (
-        String,
-        (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-      )?> nullableRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    (
-      String,
-      (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-    )? initialValue,
-    _i3.Stream<
-            (
-              String,
-              (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-            )?>
-        stream,
-  ) {
-    var _localTestStreamManager = _i1.TestStreamManager<
-        (
-          String,
-          (Map<String, int>, {bool flag, _i11.SimpleData simpleData})
-        )?>();
-    _i1.callStreamFunctionAndHandleExceptions(
-      () async {
-        var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-          endpoint: 'authenticatedTestTools',
-          method: 'nullableRecordEchoStream',
-        );
-        var _localCallContext =
-            await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'authenticatedTestTools',
-          methodName: 'nullableRecordEchoStream',
-          arguments: {
-            'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
-                _i20.mapRecordToJson(initialValue)))
-          },
-          requestedInputStreams: ['stream'],
-          serializationManager: _serializationManager,
-        );
-        await _localTestStreamManager.callStreamMethod(
-          _localCallContext,
-          _localUniqueSession,
-          {'stream': stream},
-        );
-      },
-      _localTestStreamManager.outputStreamController,
-    );
-    return _localTestStreamManager.outputStreamController.stream;
-  }
-
-  _i3.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
-    _i1.TestSessionBuilder sessionBuilder,
-    List<(String, int)>? initialValue,
-    _i3.Stream<List<(String, int)>?> stream,
-  ) {
-    var _localTestStreamManager = _i1.TestStreamManager<List<(String, int)>?>();
-    _i1.callStreamFunctionAndHandleExceptions(
-      () async {
-        var _localUniqueSession =
-            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-          endpoint: 'authenticatedTestTools',
-          method: 'nullableListOfRecordEchoStream',
-        );
-        var _localCallContext =
-            await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'authenticatedTestTools',
-          methodName: 'nullableListOfRecordEchoStream',
-          arguments: {
-            'initialValue': initialValue == null
-                ? null
-                : _i21.jsonDecode(_i2.SerializationManager.encode(
-                    _i20.mapRecordContainingContainerToJson(initialValue)))
-          },
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );

@@ -367,6 +367,10 @@ testTools:
   - echoSimpleDatas:
   - echoRecord:
   - echoRecords:
+  - recordEchoStream:
+  - listOfRecordEchoStream:
+  - nullableRecordEchoStream:
+  - nullableListOfRecordEchoStream:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:
@@ -375,10 +379,6 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
-  - recordEchoStream:
-  - listOfRecordEchoStream:
-  - nullableRecordEchoStream:
-  - nullableListOfRecordEchoStream:
 upload:
   - uploadByteData:
 myFeature:
