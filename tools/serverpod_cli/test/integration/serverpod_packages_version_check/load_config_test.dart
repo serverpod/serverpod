@@ -16,12 +16,13 @@ void main() {
 
   test(
       'Given a missing server pubspec.yaml '
-      'then a ServerpodProjectNotFoundException is thrown', () {
-    Directory.current = Directory.systemTemp.createTempSync();
-    expectLater(
-      GeneratorConfig.load(),
+      'then a ServerpodProjectNotFoundException is thrown', () async {
+    final missingPubspecDir = Directory.systemTemp.createTempSync();
+    await expectLater(
+      GeneratorConfig.load(missingPubspecDir.path),
       throwsA(isA<ServerpodProjectNotFoundException>()),
     );
+    await missingPubspecDir.delete();
   });
 
   test(
@@ -31,9 +32,8 @@ void main() {
     // This is current behavior, but I think it should be
     // the SourceSpanException raised by Pubspec.parse to give the user
     // a more detailed error message.
-    Directory.current = Directory(path.join(testAssetsPath, 'invalid_pubspec'));
     expectLater(
-      GeneratorConfig.load(),
+      GeneratorConfig.load(path.join(testAssetsPath, 'invalid_pubspec')),
       throwsA(isA<ServerpodProjectNotFoundException>()),
     );
   });
@@ -42,14 +42,13 @@ void main() {
       'Given a valid server pubspec.yaml'
       ' and a missing client pubspec.yaml '
       'then a ServerpodProjectNotFoundException is thrown', () {
-    Directory.current =
-        Directory(path.join(testAssetsPath, 'valid_pubspec_missing_client'));
     // TODO(nielsenko):
     // This is current behavior, but I perhaps it should depend on config
     // if a client project is generated or not.
     // (see https://github.com/serverpod/serverpod/pull/3273#discussion_r1982987504)
     expectLater(
-      GeneratorConfig.load(),
+      GeneratorConfig.load(
+          path.join(testAssetsPath, 'valid_pubspec_missing_client')),
       throwsA(isA<ServerpodProjectNotFoundException>()),
     );
   });
