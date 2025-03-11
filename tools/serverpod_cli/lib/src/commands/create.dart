@@ -53,13 +53,13 @@ class CreateCommand extends ServerpodCommand {
     if (rest == null || rest.isEmpty) {
       log.error('Project name missing.');
       printUsage();
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     if (rest.length > 1) {
       log.error('Multiple project names specified, please specify only.');
       printUsage();
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     var name = rest.last;
@@ -87,7 +87,7 @@ class CreateCommand extends ServerpodCommand {
       isChangeIdTypeEnabled = CommandLineExperimentalFeatures.instance.features
           .contains(ExperimentalFeature.changeIdType);
     } catch (_) {
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException.error();
     }
 
     String? defaultIdTypeName = argResults!['defaultIdType'];
@@ -97,7 +97,7 @@ class CreateCommand extends ServerpodCommand {
         'experimental feature "changeIdType" to the config file or the '
         'command line.',
       );
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+      throw ExitException.error();
     }
 
     defaultIdType = (defaultIdTypeName != null)
@@ -105,7 +105,7 @@ class CreateCommand extends ServerpodCommand {
         : defaultIdType;
 
     if (!await performCreate(name, template, force, defaultIdType)) {
-      throw ExitException();
+      throw ExitException.error();
     }
   }
 }

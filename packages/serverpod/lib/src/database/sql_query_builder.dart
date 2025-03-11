@@ -238,7 +238,7 @@ class SelectQueryBuilder {
 
     var relationFieldName = tableRelation.foreignFieldBaseQuery;
 
-    var strIds = [for (var id in ids) id is num? ? '$id' : "'$id'"].join(', ');
+    var strIds = ids.map(DatabasePoolManager.encoder.convert).join(', ');
     var whereAddition = Expression('$relationFieldName IN ($strIds)');
 
     _listQueryAdditions = _ListQueryAdditions(

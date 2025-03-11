@@ -5,6 +5,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -134,13 +135,27 @@ class FutureCallManager {
           await call.invoke(futureCallSession, object);
           await futureCallSession.close();
         } catch (e, stackTrace) {
+          _server.serverpod.internalSubmitEvent(
+            ExceptionEvent(e, stackTrace),
+            space: OriginSpace.application,
+            context: contextFromSession(futureCallSession),
+          );
+
           await futureCallSession.close(error: e, stackTrace: stackTrace);
         }
       }
     } catch (e, stackTrace) {
       // Most likely we lost connection to the database
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to database in future call manager.');
+      var message =
+          'Internal server error. Failed to connect to database in future call manager.';
+
+      _server.serverpod.internalSubmitEvent(
+        ExceptionEvent(e, stackTrace, message: message),
+        space: OriginSpace.framework,
+        context: contextFromServer(_server),
+      );
+
+      stderr.writeln('${DateTime.now().toUtc()} $message');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');

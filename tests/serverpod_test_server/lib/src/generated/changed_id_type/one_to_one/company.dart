@@ -10,22 +10,23 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/one_to_one/town.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/one_to_one/town.dart' as _i3;
 
 abstract class CompanyUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   CompanyUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     required this.townId,
     this.town,
-  });
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory CompanyUuid({
     _i1.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   }) = _CompanyUuidImpl;
 
   factory CompanyUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class CompanyUuid
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i2.TownInt.fromJson(
+          : _i3.TownInt.fromJson(
               (jsonSerialization['town'] as Map<String, dynamic>)),
     );
   }
@@ -53,7 +54,7 @@ abstract class CompanyUuid
 
   int townId;
 
-  _i2.TownInt? town;
+  _i3.TownInt? town;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -65,7 +66,7 @@ abstract class CompanyUuid
     _i1.UuidValue? id,
     String? name,
     int? townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +88,7 @@ abstract class CompanyUuid
     };
   }
 
-  static CompanyUuidInclude include({_i2.TownIntInclude? town}) {
+  static CompanyUuidInclude include({_i3.TownIntInclude? town}) {
     return CompanyUuidInclude._(town: town);
   }
 
@@ -124,7 +125,7 @@ class _CompanyUuidImpl extends CompanyUuid {
     _i1.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   }) : super._(
           id: id,
           name: name,
@@ -146,7 +147,7 @@ class _CompanyUuidImpl extends CompanyUuid {
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i2.TownInt? ? town : this.town?.copyWith(),
+      town: town is _i3.TownInt? ? town : this.town?.copyWith(),
     );
   }
 }
@@ -167,17 +168,17 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnInt townId;
 
-  _i2.TownIntTable? _town;
+  _i3.TownIntTable? _town;
 
-  _i2.TownIntTable get town {
+  _i3.TownIntTable get town {
     if (_town != null) return _town!;
     _town = _i1.createRelationTable(
       relationFieldName: 'town',
       field: CompanyUuid.t.townId,
-      foreignField: _i2.TownInt.t.id,
+      foreignField: _i3.TownInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TownIntTable(tableRelation: foreignTableRelation),
+          _i3.TownIntTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }
@@ -199,11 +200,11 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class CompanyUuidInclude extends _i1.IncludeObject {
-  CompanyUuidInclude._({_i2.TownIntInclude? town}) {
+  CompanyUuidInclude._({_i3.TownIntInclude? town}) {
     _town = town;
   }
 
-  _i2.TownIntInclude? _town;
+  _i3.TownIntInclude? _town;
 
   @override
   Map<String, _i1.Include?> get includes => {'town': _town};
@@ -461,7 +462,7 @@ class CompanyUuidAttachRowRepository {
   Future<void> town(
     _i1.Session session,
     CompanyUuid companyUuid,
-    _i2.TownInt town, {
+    _i3.TownInt town, {
     _i1.Transaction? transaction,
   }) async {
     if (companyUuid.id == null) {

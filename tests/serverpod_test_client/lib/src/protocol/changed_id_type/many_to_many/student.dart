@@ -10,19 +10,20 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/many_to_many/enrollment.dart' as _i3;
 
 abstract class StudentUuid implements _i1.SerializableModel {
   StudentUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     this.enrollments,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory StudentUuid({
     _i1.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_i3.EnrollmentInt>? enrollments,
   }) = _StudentUuidImpl;
 
   factory StudentUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,7 +33,7 @@ abstract class StudentUuid implements _i1.SerializableModel {
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i3.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -44,7 +45,7 @@ abstract class StudentUuid implements _i1.SerializableModel {
 
   String name;
 
-  List<_i2.EnrollmentInt>? enrollments;
+  List<_i3.EnrollmentInt>? enrollments;
 
   /// Returns a shallow copy of this [StudentUuid]
   /// with some or all fields replaced by the given arguments.
@@ -52,7 +53,7 @@ abstract class StudentUuid implements _i1.SerializableModel {
   StudentUuid copyWith({
     _i1.UuidValue? id,
     String? name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_i3.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -76,7 +77,7 @@ class _StudentUuidImpl extends StudentUuid {
   _StudentUuidImpl({
     _i1.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_i3.EnrollmentInt>? enrollments,
   }) : super._(
           id: id,
           name: name,
@@ -95,7 +96,7 @@ class _StudentUuidImpl extends StudentUuid {
     return StudentUuid(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
+      enrollments: enrollments is List<_i3.EnrollmentInt>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );

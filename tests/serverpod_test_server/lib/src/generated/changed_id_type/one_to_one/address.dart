@@ -10,22 +10,23 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/one_to_one/citizen.dart' as _i3;
 
 abstract class AddressUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   AddressUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.street,
     this.inhabitantId,
     this.inhabitant,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory AddressUuid({
     _i1.UuidValue? id,
     required String street,
     int? inhabitantId,
-    _i2.CitizenInt? inhabitant,
+    _i3.CitizenInt? inhabitant,
   }) = _AddressUuidImpl;
 
   factory AddressUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class AddressUuid
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i2.CitizenInt.fromJson(
+          : _i3.CitizenInt.fromJson(
               (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
     );
   }
@@ -53,7 +54,7 @@ abstract class AddressUuid
 
   int? inhabitantId;
 
-  _i2.CitizenInt? inhabitant;
+  _i3.CitizenInt? inhabitant;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -65,7 +66,7 @@ abstract class AddressUuid
     _i1.UuidValue? id,
     String? street,
     int? inhabitantId,
-    _i2.CitizenInt? inhabitant,
+    _i3.CitizenInt? inhabitant,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +88,7 @@ abstract class AddressUuid
     };
   }
 
-  static AddressUuidInclude include({_i2.CitizenIntInclude? inhabitant}) {
+  static AddressUuidInclude include({_i3.CitizenIntInclude? inhabitant}) {
     return AddressUuidInclude._(inhabitant: inhabitant);
   }
 
@@ -124,7 +125,7 @@ class _AddressUuidImpl extends AddressUuid {
     _i1.UuidValue? id,
     required String street,
     int? inhabitantId,
-    _i2.CitizenInt? inhabitant,
+    _i3.CitizenInt? inhabitant,
   }) : super._(
           id: id,
           street: street,
@@ -146,7 +147,7 @@ class _AddressUuidImpl extends AddressUuid {
       id: id is _i1.UuidValue? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i2.CitizenInt?
+      inhabitant: inhabitant is _i3.CitizenInt?
           ? inhabitant
           : this.inhabitant?.copyWith(),
     );
@@ -169,17 +170,17 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnInt inhabitantId;
 
-  _i2.CitizenIntTable? _inhabitant;
+  _i3.CitizenIntTable? _inhabitant;
 
-  _i2.CitizenIntTable get inhabitant {
+  _i3.CitizenIntTable get inhabitant {
     if (_inhabitant != null) return _inhabitant!;
     _inhabitant = _i1.createRelationTable(
       relationFieldName: 'inhabitant',
       field: AddressUuid.t.inhabitantId,
-      foreignField: _i2.CitizenInt.t.id,
+      foreignField: _i3.CitizenInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CitizenIntTable(tableRelation: foreignTableRelation),
+          _i3.CitizenIntTable(tableRelation: foreignTableRelation),
     );
     return _inhabitant!;
   }
@@ -201,11 +202,11 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class AddressUuidInclude extends _i1.IncludeObject {
-  AddressUuidInclude._({_i2.CitizenIntInclude? inhabitant}) {
+  AddressUuidInclude._({_i3.CitizenIntInclude? inhabitant}) {
     _inhabitant = inhabitant;
   }
 
-  _i2.CitizenIntInclude? _inhabitant;
+  _i3.CitizenIntInclude? _inhabitant;
 
   @override
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
@@ -465,7 +466,7 @@ class AddressUuidAttachRowRepository {
   Future<void> inhabitant(
     _i1.Session session,
     AddressUuid addressUuid,
-    _i2.CitizenInt inhabitant, {
+    _i3.CitizenInt inhabitant, {
     _i1.Transaction? transaction,
   }) async {
     if (addressUuid.id == null) {

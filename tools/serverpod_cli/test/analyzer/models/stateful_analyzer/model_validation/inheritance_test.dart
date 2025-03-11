@@ -2,9 +2,10 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
@@ -43,7 +44,7 @@ void main() {
       });
 
       test('Then the child-class is resolved', () {
-        var parent = models.first as ClassDefinition;
+        var parent = models.first as ModelClassDefinition;
         var childClasses = parent.childClasses;
         var isChildResolved =
             childClasses.first is ResolvedInheritanceDefinition;
@@ -52,7 +53,7 @@ void main() {
       });
 
       test('Then extendsClass is resolved', () {
-        var child = models.last as ClassDefinition;
+        var child = models.last as ModelClassDefinition;
         var extendsClass = child.extendsClass;
         var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
 
@@ -241,7 +242,7 @@ void main() {
         expect(errors, isEmpty);
       });
 
-      var child = models.last as ClassDefinition;
+      var child = models.last as ModelClassDefinition;
       test('then the index definition contains the fields of the index.', () {
         var index = child.indexes.first;
         var indexFields = index.fields;

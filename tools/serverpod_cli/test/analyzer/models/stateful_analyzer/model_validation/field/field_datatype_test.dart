@@ -2,9 +2,10 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -24,11 +25,16 @@ void main() {
       'List<String>?',
       'List<String?>?',
       'List<List<Map<String,int>>>',
+      'List<Set<int>>',
       'Map<String,String>',
       'Map<String,String?>',
       'Map<String,List<int>>',
       'Map<String,Map<String,int>>',
       'Map<String,Map<String,List<List<Map<String,int>>>>>',
+      'Map<String,Set<String?>>',
+      'Set<String>',
+      'Set<String>?',
+      'Set<String?>?',
     ];
 
     for (var datatype in datatypes) {

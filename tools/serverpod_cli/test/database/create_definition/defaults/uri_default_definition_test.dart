@@ -1,7 +1,8 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
   group('Given a class definition with a Uri field', () {
@@ -14,7 +15,7 @@ void main() {
           )
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -64,7 +65,7 @@ void main() {
           .withTypeDefinition('Uri', false)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -94,7 +95,7 @@ void main() {
                   "'https://serverpod.dev/defaultPersistValue'")
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -130,7 +131,7 @@ void main() {
           .withTypeDefinition('Uri', true)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -168,7 +169,7 @@ void main() {
               defaultModelValue: "'https://serverpod.dev/defaultModelValue'")
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -197,7 +198,7 @@ void main() {
               defaultModelValue: 'https://serverpod.dev/defaultModelValue')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();

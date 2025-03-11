@@ -5,11 +5,11 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
-import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
-import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
-import 'package:serverpod_cli/src/commands/generate.dart';
-import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
+import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
+import 'package:serverpod_cli/src/commands/generate.dart';
+import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -38,13 +38,13 @@ void main(List<String> args) async {
         // Last resort error handling.
         printInternalError(error, stackTrace);
         await _preExit();
-        exit(ExitCodeType.general.exitCode);
+        exit(ExitException.codeError);
       }
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
       await _preExit();
-      exit(ExitCodeType.general.exitCode);
+      exit(ExitException.codeError);
     },
   );
 }

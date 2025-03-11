@@ -1,14 +1,14 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
-import 'package:test/test.dart';
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
+import 'package:test/test.dart';
+
+import '../../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -34,14 +34,14 @@ void main() {
     var grandchildClassName = 'GrandChildExample';
     var grandchildClassFileName = 'grand_child_example';
 
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withClassName(parentClassName)
         .withFileName(parentClassFileName)
         .withSimpleField('name', 'String')
         .withIsSealed(true)
         .build();
 
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withClassName(childClassName)
         .withFileName(childClassFileName)
         .withSimpleField('age', 'int', nullable: true)
@@ -50,7 +50,7 @@ void main() {
         )
         .build();
 
-    var grandChild = ClassDefinitionBuilder()
+    var grandChild = ModelClassDefinitionBuilder()
         .withClassName(grandchildClassName)
         .withFileName(grandchildClassFileName)
         .withSimpleField('height', 'int', nullable: true)

@@ -678,6 +678,12 @@ extension SessionInternalMethods on Session {
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 
+  /// The authentication information for the session, if set.
+  /// This will be null if the session is not authenticated or not initialized.
+  AuthenticationInfo? get authInfoOrNull {
+    return _authenticated;
+  }
+
   /// Returns the next message id for the session.
   int? get messageId => _messageId;
 

@@ -4,7 +4,7 @@ import 'package:super_string/super_string.dart';
 abstract class CodeAnalysisCollector {
   List<SourceSpanException> get errors;
 
-  static bool containsSeverErrors(List<SourceSpanException> errors) {
+  static bool containsSevereErrors(List<SourceSpanException> errors) {
     return errors.where(
       (error) {
         return error is! SourceSpanSeverityException ||
@@ -14,7 +14,7 @@ abstract class CodeAnalysisCollector {
     ).isNotEmpty;
   }
 
-  bool get hasSeverErrors => containsSeverErrors(errors);
+  bool get hasSevereErrors => containsSevereErrors(errors);
 
   void addError(SourceSpanException error);
 

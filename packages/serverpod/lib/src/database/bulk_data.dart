@@ -5,16 +5,17 @@ import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
 /// using JSON. Primarily used for Serverpod Insights.
 class DatabaseBulkData {
   /// Exports data from the provided [table].
-  static Future<BulkData> exportTableData<T_ID>({
+  static Future<BulkData> exportTableData({
     required Database database,
     required String table,
-    T_ID? lastId,
+    Object? lastId,
     int limit = 100,
     Filter? filter,
   }) async {
@@ -64,13 +65,11 @@ class DatabaseBulkData {
       );
     }
 
+    String strLastId = DatabasePoolManager.encoder.convert(lastId);
+
     List<List<dynamic>> data;
-    if (lastId != null) {
-      String strLastId = (lastId is num) ? '$lastId' : "'$lastId'";
-      filterQuery = ' AND id > $strLastId$filterQuery';
-    }
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE 1=1$filterQuery ORDER BY "id" LIMIT $limit';
+        'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
     } catch (e) {

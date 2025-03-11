@@ -1,9 +1,10 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -44,7 +45,7 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index = definition.indexes.first;
 
@@ -74,7 +75,7 @@ void main() {
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ModelClassDefinition;
 
     var index = definition.indexes.first;
 

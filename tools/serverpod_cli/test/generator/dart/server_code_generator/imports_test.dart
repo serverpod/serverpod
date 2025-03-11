@@ -2,13 +2,14 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/builders/type_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -27,7 +28,7 @@ void main() {
   group(
       'Given a hierarchy with a sealed parent that has a model and a normal child, when generating code',
       () {
-    var parent = ClassDefinitionBuilder()
+    var parent = ModelClassDefinitionBuilder()
         .withSubDirParts(['subdir'])
         .withClassName('Example')
         .withFileName('example')
@@ -43,7 +44,7 @@ void main() {
         .withIsSealed(true)
         .build();
 
-    var child = ClassDefinitionBuilder()
+    var child = ModelClassDefinitionBuilder()
         .withSubDirParts(['subdir'])
         .withClassName('ExampleChild')
         .withFileName('example_child')
@@ -51,7 +52,7 @@ void main() {
         .withExtendsClass(parent)
         .build();
 
-    var user = ClassDefinitionBuilder()
+    var user = ModelClassDefinitionBuilder()
         .withSubDirParts(['subdir'])
         .withClassName('User')
         .withFileName('user')

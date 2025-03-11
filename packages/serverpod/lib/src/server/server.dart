@@ -7,7 +7,9 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
@@ -73,10 +75,16 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  late HttpServer _httpServer;
+  HttpServer? _httpServer;
 
   /// The [HttpServer] responsible for handling calls.
-  HttpServer get httpServer => _httpServer;
+  HttpServer get httpServer {
+    var httpServer = _httpServer;
+    if (httpServer == null) {
+      throw StateError('httpServer not started');
+    }
+    return httpServer;
+  }
 
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
@@ -130,22 +138,17 @@ class Server {
           ),
         _ => HttpServer.bind(InternetAddress.anyIPv6, port),
       };
-    } catch (e) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '
-        'may already be in use.',
-      );
-      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+    } catch (e, stackTrace) {
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Failed to bind socket, port $port may already be in use.');
       return false;
     }
 
     try {
       _runServer(httpServer);
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. Failed to run server.');
       return false;
     }
 
@@ -171,10 +174,8 @@ class Server {
         _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. httpSever.listen failed.');
     }
 
     stdout.writeln('$name stopped');
@@ -186,11 +187,13 @@ class Server {
     await Future.sync(() {
       return _handleRequest(request);
     }).catchError((e, stackTrace) async {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} Internal server error. _handleRequest failed with exception.',
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Internal server error. _handleRequest failed with exception.',
+        httpRequest: request,
       );
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+
       request.response.statusCode = HttpStatus.internalServerError;
       return request.response.close();
     });
@@ -209,11 +212,15 @@ class Server {
 
     try {
       uri = request.requestedUri;
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Specific log for this?
-        stderr.writeln(
-            'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Malformed call, invalid uri from '
+              '${request.connectionInfo!.remoteAddress.address}',
+          httpRequest: request,
+        );
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -291,10 +298,13 @@ class Server {
         await request.response.close();
         return;
       } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Internal server error. Failed to read body of request.',
+          httpRequest: request,
+        );
+
         request.response.statusCode = HttpStatus.badRequest;
         await request.response.close();
         return;
@@ -394,8 +404,14 @@ class Server {
     WebSocket webSocket;
     try {
       webSocket = await WebSocketTransformer.upgrade(request);
-    } on WebSocketException {
-      serverpod.logVerbose('Failed to upgrade connection to websocket');
+    } on WebSocketException catch (e, stackTrace) {
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Failed to upgrade connection to websocket.',
+        httpRequest: request,
+        operationType: OperationType.stream,
+      );
       return;
     }
     webSocket.pingInterval = const Duration(seconds: 30);
@@ -412,16 +428,25 @@ class Server {
   }
 
   Future<String> _readBody(HttpRequest request) async {
-    var builder = BytesBuilder();
+    var builder = BytesBuilder(copy: false);
     var len = 0;
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > serverpod.config.maxRequestSize) {
-        throw _RequestTooLargeException(serverpod.config.maxRequestSize);
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    var tooLargeForSure = request.contentLength > maxRequestSize;
+    if (!tooLargeForSure) {
+      await for (var segment in request) {
+        if (tooLargeForSure) continue; // always drain request, if reading begun
+        len += segment.length;
+        tooLargeForSure = len > maxRequestSize;
+        builder.add(segment);
       }
-      builder.add(segment);
     }
-    return const Utf8Decoder().convert(builder.toBytes());
+    if (tooLargeForSure) {
+      // We defer raising the exception until we have drained the request stream
+      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
+      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
+      throw _RequestTooLargeException(maxRequestSize);
+    }
+    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Result> _handleUriCall(
@@ -512,19 +537,40 @@ class Server {
 
       MethodCallSession? session = maybeSession;
       if (session == null) {
+        serverpod.internalSubmitEvent(
+          ExceptionEvent(
+            Exception('Session was not created'),
+            StackTrace.current,
+          ),
+          space: OriginSpace.framework,
+          context: contextFromHttpRequest(this, request, OperationType.method),
+        );
+
         return ResultInternalServerError(
             'Session was not created', StackTrace.current, 0);
       }
 
-      var result = await methodCallContext.method.call(
-        session,
-        methodCallContext.arguments,
-      );
+      try {
+        var result = await methodCallContext.method.call(
+          session,
+          methodCallContext.arguments,
+        );
 
-      return ResultSuccess(
-        result,
-        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
-      );
+        return ResultSuccess(
+          result,
+          sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+        );
+      } catch (e, stackTrace) {
+        // Note: In case of malformed argument, the method connector may throw,
+        // which may be argued is not an "application space" exception.
+        serverpod.internalSubmitEvent(
+          ExceptionEvent(e, stackTrace),
+          space: OriginSpace.application,
+          context: contextFromSession(session, httpRequest: request),
+        );
+
+        rethrow;
+      }
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
     } on InvalidEndpointMethodTypeException catch (e) {
@@ -556,7 +602,7 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _httpServer.close();
+    await _httpServer?.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
@@ -568,6 +614,31 @@ class Server {
     await Future.wait(webSocketCompletions);
 
     _running = false;
+  }
+
+  Future<void> _reportFrameworkException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+    HttpRequest? httpRequest,
+    OperationType? operationType,
+  }) async {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
+
+    var context = httpRequest != null
+        ? contextFromHttpRequest(this, httpRequest, operationType)
+        : contextFromServer(this);
+
+    serverpod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: context,
+    );
   }
 }
 

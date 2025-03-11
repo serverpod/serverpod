@@ -215,7 +215,7 @@ void main() {
     });
 
     test(
-        'with a single excaped single quote when splitting then it is recognized as a single token.',
+        'with a single escaped single quote when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This \\\'is a default value", controlToken',
@@ -228,7 +228,7 @@ void main() {
     });
 
     test(
-        'with a single excaped double quote when splitting then it is recognized as a single token.',
+        'with a single escaped double quote when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This \\"is a default value", controlToken',

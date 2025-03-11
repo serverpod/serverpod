@@ -64,7 +64,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     if (uploadInfo == null) return false;
 
-    await session.db.deleteRow<CloudStorageDirectUploadEntry>(uploadInfo);
+    await session.db.deleteRow(uploadInfo);
 
     if (uploadInfo.authKey != key) return false;
 

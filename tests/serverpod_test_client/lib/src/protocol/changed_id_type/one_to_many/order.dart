@@ -10,24 +10,25 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_many/customer.dart' as _i2;
-import '../../changed_id_type/one_to_many/comment.dart' as _i3;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/one_to_many/customer.dart' as _i3;
+import '../../changed_id_type/one_to_many/comment.dart' as _i4;
 
 abstract class OrderUuid implements _i1.SerializableModel {
   OrderUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.description,
     required this.customerId,
     this.customer,
     this.comments,
-  });
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory OrderUuid({
     _i1.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   }) = _OrderUuidImpl;
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,10 +40,10 @@ abstract class OrderUuid implements _i1.SerializableModel {
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.CustomerInt.fromJson(
+          : _i3.CustomerInt.fromJson(
               (jsonSerialization['customer'] as Map<String, dynamic>)),
       comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i4.CommentInt.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -56,9 +57,9 @@ abstract class OrderUuid implements _i1.SerializableModel {
 
   int customerId;
 
-  _i2.CustomerInt? customer;
+  _i3.CustomerInt? customer;
 
-  List<_i3.CommentInt>? comments;
+  List<_i4.CommentInt>? comments;
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
@@ -67,8 +68,8 @@ abstract class OrderUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     String? description,
     int? customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,8 +96,8 @@ class _OrderUuidImpl extends OrderUuid {
     _i1.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   }) : super._(
           id: id,
           description: description,
@@ -121,8 +122,8 @@ class _OrderUuidImpl extends OrderUuid {
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
       customer:
-          customer is _i2.CustomerInt? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
+          customer is _i3.CustomerInt? ? customer : this.customer?.copyWith(),
+      comments: comments is List<_i4.CommentInt>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );

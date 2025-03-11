@@ -144,7 +144,9 @@ class DatabaseLogWriter extends LogWriter {
     return id;
   }
 
-  Future<void> _databaseLogUpdate<T extends TableRow>(T entry) async {
+  Future<void> _databaseLogUpdate<T extends TableRow>(
+    T entry,
+  ) async {
     await _logWriterSession.db.updateRow<T>(entry);
   }
 

@@ -10,21 +10,22 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_one/town.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/one_to_one/town.dart' as _i3;
 
 abstract class CompanyUuid implements _i1.SerializableModel {
   CompanyUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     required this.townId,
     this.town,
-  });
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory CompanyUuid({
     _i1.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   }) = _CompanyUuidImpl;
 
   factory CompanyUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +37,7 @@ abstract class CompanyUuid implements _i1.SerializableModel {
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i2.TownInt.fromJson(
+          : _i3.TownInt.fromJson(
               (jsonSerialization['town'] as Map<String, dynamic>)),
     );
   }
@@ -50,7 +51,7 @@ abstract class CompanyUuid implements _i1.SerializableModel {
 
   int townId;
 
-  _i2.TownInt? town;
+  _i3.TownInt? town;
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
@@ -59,7 +60,7 @@ abstract class CompanyUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     String? name,
     int? townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -84,7 +85,7 @@ class _CompanyUuidImpl extends CompanyUuid {
     _i1.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3.TownInt? town,
   }) : super._(
           id: id,
           name: name,
@@ -106,7 +107,7 @@ class _CompanyUuidImpl extends CompanyUuid {
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i2.TownInt? ? town : this.town?.copyWith(),
+      town: town is _i3.TownInt? ? town : this.town?.copyWith(),
     );
   }
 }

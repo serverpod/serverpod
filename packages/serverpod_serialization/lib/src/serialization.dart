@@ -232,6 +232,8 @@ abstract class SerializationManager {
           return nonEncodable.toString();
         } else if (nonEncodable is BigInt) {
           return nonEncodable.toString();
+        } else if (nonEncodable is Set) {
+          return nonEncodable.toList();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
@@ -239,6 +241,12 @@ abstract class SerializationManager {
         } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
           return nonEncodable.toJsonForProtocol();
         } else {
+          if (object is Record) {
+            throw Exception(
+              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
+            );
+          }
+
           // ignore: avoid_dynamic_calls
           return nonEncodable?.toJson();
           // throws NoSuchMethodError if toJson is not implemented
@@ -272,7 +280,7 @@ abstract class SerializationManager {
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
-  /// name so that it can be decoded even if th class is unknown.
+  /// name so that it can be decoded even if the class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
   String encodeWithType(
@@ -317,6 +325,7 @@ const extensionSerializedTypes = [
   'BigInt',
   'Map',
   'List',
+  'Set',
 ];
 
 extension<K, V> on Map<K, V> {

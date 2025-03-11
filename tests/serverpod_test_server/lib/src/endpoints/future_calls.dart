@@ -9,4 +9,13 @@ class FutureCallsEndpoint extends Endpoint {
       const Duration(seconds: 1),
     );
   }
+
+  Future<void> makeFutureCallThatThrows(
+      Session session, SimpleData? data) async {
+    await session.serverpod.futureCallWithDelay(
+      'testExceptionCall',
+      data,
+      const Duration(seconds: 1),
+    );
+  }
 }

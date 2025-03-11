@@ -2,9 +2,10 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   for (var idType in SupportedIdType.all) {
@@ -49,8 +50,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var exampleClass = definitions.first as ClassDefinition;
-        var exampleParentClass = definitions.last as ClassDefinition;
+        var exampleClass = definitions.first as ModelClassDefinition;
+        var exampleParentClass = definitions.last as ModelClassDefinition;
 
         test('then the table Example has id type $idTypeAlias.', () {
           expect(exampleClass.idField.type.className, idClassName);
@@ -113,8 +114,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var exampleClass = definitions.first as ClassDefinition;
-        var exampleParentClass = definitions.last as ClassDefinition;
+        var exampleClass = definitions.first as ModelClassDefinition;
+        var exampleParentClass = definitions.last as ModelClassDefinition;
 
         test('then parentId is nullable', () {
           var field = exampleClass.findField('parentId');
@@ -178,8 +179,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var userClass = definitions.first as ClassDefinition;
-        var addressClass = definitions.last as ClassDefinition;
+        var userClass = definitions.first as ModelClassDefinition;
+        var addressClass = definitions.last as ModelClassDefinition;
 
         test('then the table User has id type $idTypeAlias.', () {
           expect(userClass.idField.type.className, idClassName);
@@ -226,7 +227,7 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var userClass = definitions.first as ClassDefinition;
+        var userClass = definitions.first as ModelClassDefinition;
 
         test(
             'then the parent table id type of the object relation is $idClassName.',
@@ -274,7 +275,7 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      var addressClass = definitions.last as ClassDefinition;
+      var addressClass = definitions.last as ModelClassDefinition;
 
       test(
           'then the parent table id type of the object relation on the address side is $idClassName.',
@@ -322,8 +323,8 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      var userClass = definitions.first as ClassDefinition;
-      var addressClass = definitions.last as ClassDefinition;
+      var userClass = definitions.first as ModelClassDefinition;
+      var addressClass = definitions.last as ModelClassDefinition;
 
       test(
           'then the parent table id type of the object relation on the address side is $idClassName.',
@@ -375,8 +376,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeClass = definitions.first as ClassDefinition;
-        var companyClass = definitions.last as ClassDefinition;
+        var employeeClass = definitions.first as ModelClassDefinition;
+        var companyClass = definitions.last as ModelClassDefinition;
 
         test('then the table Employee has id type $idTypeAlias.', () {
           expect(employeeClass.idField.type.className, idClassName);
@@ -446,8 +447,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeClass = definitions.first as ClassDefinition;
-        var companyClass = definitions.last as ClassDefinition;
+        var employeeClass = definitions.first as ModelClassDefinition;
+        var companyClass = definitions.last as ModelClassDefinition;
 
         group('then the list relation', () {
           test(
@@ -513,8 +514,8 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var employeeClass = definitions.first as ClassDefinition;
-        var companyClass = definitions.last as ClassDefinition;
+        var employeeClass = definitions.first as ModelClassDefinition;
+        var companyClass = definitions.last as ModelClassDefinition;
 
         group('then the list relation', () {
           test(
@@ -564,7 +565,7 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        var companyClass = definitions.last as ClassDefinition;
+        var companyClass = definitions.last as ModelClassDefinition;
 
         group('then the list relation', () {
           test(

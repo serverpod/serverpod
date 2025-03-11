@@ -10,25 +10,26 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/one_to_many/customer.dart' as _i2;
-import '../../changed_id_type/one_to_many/comment.dart' as _i3;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/one_to_many/customer.dart' as _i3;
+import '../../changed_id_type/one_to_many/comment.dart' as _i4;
 
 abstract class OrderUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   OrderUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.description,
     required this.customerId,
     this.customer,
     this.comments,
-  });
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory OrderUuid({
     _i1.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   }) = _OrderUuidImpl;
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,10 +41,10 @@ abstract class OrderUuid
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.CustomerInt.fromJson(
+          : _i3.CustomerInt.fromJson(
               (jsonSerialization['customer'] as Map<String, dynamic>)),
       comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i4.CommentInt.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -59,9 +60,9 @@ abstract class OrderUuid
 
   int customerId;
 
-  _i2.CustomerInt? customer;
+  _i3.CustomerInt? customer;
 
-  List<_i3.CommentInt>? comments;
+  List<_i4.CommentInt>? comments;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -73,8 +74,8 @@ abstract class OrderUuid
     _i1.UuidValue? id,
     String? description,
     int? customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,8 +102,8 @@ abstract class OrderUuid
   }
 
   static OrderUuidInclude include({
-    _i2.CustomerIntInclude? customer,
-    _i3.CommentIntIncludeList? comments,
+    _i3.CustomerIntInclude? customer,
+    _i4.CommentIntIncludeList? comments,
   }) {
     return OrderUuidInclude._(
       customer: customer,
@@ -143,8 +144,8 @@ class _OrderUuidImpl extends OrderUuid {
     _i1.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _i3.CustomerInt? customer,
+    List<_i4.CommentInt>? comments,
   }) : super._(
           id: id,
           description: description,
@@ -169,8 +170,8 @@ class _OrderUuidImpl extends OrderUuid {
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
       customer:
-          customer is _i2.CustomerInt? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
+          customer is _i3.CustomerInt? ? customer : this.customer?.copyWith(),
+      comments: comments is List<_i4.CommentInt>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
@@ -193,51 +194,51 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnInt customerId;
 
-  _i2.CustomerIntTable? _customer;
+  _i3.CustomerIntTable? _customer;
 
-  _i3.CommentIntTable? ___comments;
+  _i4.CommentIntTable? ___comments;
 
-  _i1.ManyRelation<_i3.CommentIntTable>? _comments;
+  _i1.ManyRelation<_i4.CommentIntTable>? _comments;
 
-  _i2.CustomerIntTable get customer {
+  _i3.CustomerIntTable get customer {
     if (_customer != null) return _customer!;
     _customer = _i1.createRelationTable(
       relationFieldName: 'customer',
       field: OrderUuid.t.customerId,
-      foreignField: _i2.CustomerInt.t.id,
+      foreignField: _i3.CustomerInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CustomerIntTable(tableRelation: foreignTableRelation),
+          _i3.CustomerIntTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
   }
 
-  _i3.CommentIntTable get __comments {
+  _i4.CommentIntTable get __comments {
     if (___comments != null) return ___comments!;
     ___comments = _i1.createRelationTable(
       relationFieldName: '__comments',
       field: OrderUuid.t.id,
-      foreignField: _i3.CommentInt.t.orderId,
+      foreignField: _i4.CommentInt.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+          _i4.CommentIntTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
 
-  _i1.ManyRelation<_i3.CommentIntTable> get comments {
+  _i1.ManyRelation<_i4.CommentIntTable> get comments {
     if (_comments != null) return _comments!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'comments',
       field: OrderUuid.t.id,
-      foreignField: _i3.CommentInt.t.orderId,
+      foreignField: _i4.CommentInt.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+          _i4.CommentIntTable(tableRelation: foreignTableRelation),
     );
-    _comments = _i1.ManyRelation<_i3.CommentIntTable>(
+    _comments = _i1.ManyRelation<_i4.CommentIntTable>(
       tableWithRelations: relationTable,
-      table: _i3.CommentIntTable(
+      table: _i4.CommentIntTable(
           tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _comments!;
@@ -264,16 +265,16 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
 
 class OrderUuidInclude extends _i1.IncludeObject {
   OrderUuidInclude._({
-    _i2.CustomerIntInclude? customer,
-    _i3.CommentIntIncludeList? comments,
+    _i3.CustomerIntInclude? customer,
+    _i4.CommentIntIncludeList? comments,
   }) {
     _customer = customer;
     _comments = comments;
   }
 
-  _i2.CustomerIntInclude? _customer;
+  _i3.CustomerIntInclude? _customer;
 
-  _i3.CommentIntIncludeList? _comments;
+  _i4.CommentIntIncludeList? _comments;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -536,7 +537,7 @@ class OrderUuidAttachRepository {
   Future<void> comments(
     _i1.Session session,
     OrderUuid orderUuid,
-    List<_i3.CommentInt> commentInt, {
+    List<_i4.CommentInt> commentInt, {
     _i1.Transaction? transaction,
   }) async {
     if (commentInt.any((e) => e.id == null)) {
@@ -548,9 +549,9 @@ class OrderUuidAttachRepository {
 
     var $commentInt =
         commentInt.map((e) => e.copyWith(orderId: orderUuid.id)).toList();
-    await session.db.update<_i3.CommentInt>(
+    await session.db.update<_i4.CommentInt>(
       $commentInt,
-      columns: [_i3.CommentInt.t.orderId],
+      columns: [_i4.CommentInt.t.orderId],
       transaction: transaction,
     );
   }
@@ -564,7 +565,7 @@ class OrderUuidAttachRowRepository {
   Future<void> customer(
     _i1.Session session,
     OrderUuid orderUuid,
-    _i2.CustomerInt customer, {
+    _i3.CustomerInt customer, {
     _i1.Transaction? transaction,
   }) async {
     if (orderUuid.id == null) {
@@ -587,7 +588,7 @@ class OrderUuidAttachRowRepository {
   Future<void> comments(
     _i1.Session session,
     OrderUuid orderUuid,
-    _i3.CommentInt commentInt, {
+    _i4.CommentInt commentInt, {
     _i1.Transaction? transaction,
   }) async {
     if (commentInt.id == null) {
@@ -598,9 +599,9 @@ class OrderUuidAttachRowRepository {
     }
 
     var $commentInt = commentInt.copyWith(orderId: orderUuid.id);
-    await session.db.updateRow<_i3.CommentInt>(
+    await session.db.updateRow<_i4.CommentInt>(
       $commentInt,
-      columns: [_i3.CommentInt.t.orderId],
+      columns: [_i4.CommentInt.t.orderId],
       transaction: transaction,
     );
   }

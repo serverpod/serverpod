@@ -16,7 +16,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
 ) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
-      if (classDefinition is ClassDefinition &&
+      if (classDefinition is ModelClassDefinition &&
           classDefinition.tableName != null)
         TableDefinition(
           module: moduleName,
@@ -89,7 +89,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
-List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
+List<ForeignKeyDefinition> _createForeignKeys(
+    ModelClassDefinition classDefinition) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();

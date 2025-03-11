@@ -32,7 +32,9 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
-    if ((definition.tableName != null) && (parentNodeName == 'id')) {
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == 'id')) {
       return _idTypeDefaultValidation(
         definition.tableName!,
         field.type,

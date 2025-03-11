@@ -10,21 +10,22 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../../changed_id_type/nested_one_to_many/team.dart' as _i3;
 
 abstract class PlayerUuid implements _i1.SerializableModel {
   PlayerUuid._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     this.teamId,
     this.team,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory PlayerUuid({
     _i1.UuidValue? id,
     required String name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i3.TeamInt? team,
   }) = _PlayerUuidImpl;
 
   factory PlayerUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +37,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.TeamInt.fromJson(
+          : _i3.TeamInt.fromJson(
               (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
@@ -50,7 +51,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
 
   int? teamId;
 
-  _i2.TeamInt? team;
+  _i3.TeamInt? team;
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
@@ -59,7 +60,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     String? name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i3.TeamInt? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -84,7 +85,7 @@ class _PlayerUuidImpl extends PlayerUuid {
     _i1.UuidValue? id,
     required String name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i3.TeamInt? team,
   }) : super._(
           id: id,
           name: name,
@@ -106,7 +107,7 @@ class _PlayerUuidImpl extends PlayerUuid {
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i2.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _i3.TeamInt? ? team : this.team?.copyWith(),
     );
   }
 }

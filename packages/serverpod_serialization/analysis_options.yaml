@@ -1,1 +1,18 @@
 include: package:serverpod_lints/public.yaml
+
+linter:
+  rules:
+    # Temporary disable the following so that each can be fixed one by one.
+    avoid_escaping_inner_quotes: false
+    directives_ordering: false
+    prefer_final_in_for_each: false
+    prefer_final_locals: false
+    prefer_final_parameters: false
+    sort_pub_dependencies: false
+
+analyzer:
+  language:
+    # Temporary disable the following so that each can be fixed one by one.
+    strict-casts: false
+    strict-inference: false
+    strict-raw-types: false

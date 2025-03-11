@@ -34,13 +34,35 @@ sealed class SerializableModelDefinition {
 ///
 /// See also:
 /// - [EnumDefinition]
-class ClassDefinition extends SerializableModelDefinition {
+sealed class ClassDefinition extends SerializableModelDefinition {
+  /// The fields of this class / exception.
+  List<SerializableModelFieldDefinition> fields;
+
+  /// The documentation of this class, line by line.
+  final List<String>? documentation;
+
+  /// Create a new [ClassDefinition].
+  ClassDefinition({
+    required super.fileName,
+    required super.sourceFileName,
+    required super.className,
+    required this.fields,
+    required super.serverOnly,
+    required super.type,
+    super.subDirParts,
+    this.documentation,
+  });
+
+  SerializableModelFieldDefinition? findField(String name) {
+    return fields.where((element) => element.name == name).firstOrNull;
+  }
+}
+
+/// A [ClassDefinition] specialization that represents a model class.
+final class ModelClassDefinition extends ClassDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
-
-  /// The fields of this class / exception.
-  List<SerializableModelFieldDefinition> fields;
 
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
@@ -48,13 +70,7 @@ class ClassDefinition extends SerializableModelDefinition {
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableModelIndexDefinition> indexes;
 
-  /// The documentation of this class, line by line.
-  final List<String>? documentation;
-
   final bool manageMigration;
-
-  /// `true` if this is an exception and not a class.
-  final bool isException;
 
   /// If set to true the class is sealed.
   final bool isSealed;
@@ -65,17 +81,16 @@ class ClassDefinition extends SerializableModelDefinition {
   /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
 
-  List<ClassDefinition>? _descendantClasses;
+  List<ModelClassDefinition>? _descendantClasses;
 
-  /// Create a new [ClassDefinition].
-  ClassDefinition({
+  /// Create a new [ModelClassDefinition].
+  ModelClassDefinition({
     required super.fileName,
     required super.sourceFileName,
     required super.className,
-    required this.fields,
+    required super.fields,
     required super.serverOnly,
     required this.manageMigration,
-    required this.isException,
     required super.type,
     required this.isSealed,
     List<InheritanceDefinition>? childClasses,
@@ -83,20 +98,16 @@ class ClassDefinition extends SerializableModelDefinition {
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
-    this.documentation,
+    super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];
-
-  SerializableModelFieldDefinition? findField(String name) {
-    return fields.where((element) => element.name == name).firstOrNull;
-  }
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
   /// If the field is not present, an error is thrown.
   SerializableModelFieldDefinition get idField => findField('id')!;
 
-  /// Returns the `ClassDefinition` of the parent class.
+  /// Returns the `ModelClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
-  ClassDefinition? get parentClass {
+  ModelClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
 
@@ -156,12 +167,12 @@ class ClassDefinition extends SerializableModelDefinition {
   /// Returns a list of all descendant classes.
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
-  List<ClassDefinition> get descendantClasses {
+  List<ModelClassDefinition> get descendantClasses {
     return _descendantClasses ??= _computeDescendantClasses();
   }
 
-  List<ClassDefinition> _computeDescendantClasses() {
-    List<ClassDefinition> descendants = [];
+  List<ModelClassDefinition> _computeDescendantClasses() {
+    List<ModelClassDefinition> descendants = [];
 
     var resolvedChildClasses =
         childClasses.whereType<ResolvedInheritanceDefinition>();
@@ -173,6 +184,21 @@ class ClassDefinition extends SerializableModelDefinition {
 
     return descendants;
   }
+}
+
+/// A [ClassDefinition] specialization that represents an exception.
+final class ExceptionClassDefinition extends ClassDefinition {
+  /// Create a new [ExceptionClassDefinition].
+  ExceptionClassDefinition({
+    required super.className,
+    required super.fields,
+    required super.fileName,
+    required super.serverOnly,
+    required super.sourceFileName,
+    required super.type,
+    super.documentation,
+    super.subDirParts,
+  });
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -358,12 +384,12 @@ class UnresolvedInheritanceDefinition extends InheritanceDefinition {
 }
 
 class ResolvedInheritanceDefinition extends InheritanceDefinition {
-  final ClassDefinition classDefinition;
+  final ModelClassDefinition classDefinition;
 
   ResolvedInheritanceDefinition(this.classDefinition);
 }
 
-abstract class RelationDefinition {
+sealed class RelationDefinition {
   String? name;
 
   bool isForeignKeyOrigin;

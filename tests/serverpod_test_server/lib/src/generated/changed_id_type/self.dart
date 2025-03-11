@@ -10,12 +10,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../changed_id_type/self.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i2;
+import '../changed_id_type/self.dart' as _i3;
 
 abstract class ChangedIdTypeSelf
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   ChangedIdTypeSelf._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     this.previous,
     this.nextId,
@@ -23,17 +24,17 @@ abstract class ChangedIdTypeSelf
     this.parentId,
     this.parent,
     this.children,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory ChangedIdTypeSelf({
     _i1.UuidValue? id,
     required String name,
-    _i2.ChangedIdTypeSelf? previous,
+    _i3.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
+    _i3.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _i3.ChangedIdTypeSelf? parent,
+    List<_i3.ChangedIdTypeSelf>? children,
   }) = _ChangedIdTypeSelfImpl;
 
   factory ChangedIdTypeSelf.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,25 +45,25 @@ abstract class ChangedIdTypeSelf
       name: jsonSerialization['name'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
+          : _i3.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['previous'] as Map<String, dynamic>)),
       nextId: jsonSerialization['nextId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
+          : _i3.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['next'] as Map<String, dynamic>)),
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
+          : _i3.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['parent'] as Map<String, dynamic>)),
       children: (jsonSerialization['children'] as List?)
           ?.map((e) =>
-              _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
+              _i3.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -76,17 +77,17 @@ abstract class ChangedIdTypeSelf
 
   String name;
 
-  _i2.ChangedIdTypeSelf? previous;
+  _i3.ChangedIdTypeSelf? previous;
 
   _i1.UuidValue? nextId;
 
-  _i2.ChangedIdTypeSelf? next;
+  _i3.ChangedIdTypeSelf? next;
 
   _i1.UuidValue? parentId;
 
-  _i2.ChangedIdTypeSelf? parent;
+  _i3.ChangedIdTypeSelf? parent;
 
-  List<_i2.ChangedIdTypeSelf>? children;
+  List<_i3.ChangedIdTypeSelf>? children;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -97,12 +98,12 @@ abstract class ChangedIdTypeSelf
   ChangedIdTypeSelf copyWith({
     _i1.UuidValue? id,
     String? name,
-    _i2.ChangedIdTypeSelf? previous,
+    _i3.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
+    _i3.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _i3.ChangedIdTypeSelf? parent,
+    List<_i3.ChangedIdTypeSelf>? children,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -135,10 +136,10 @@ abstract class ChangedIdTypeSelf
   }
 
   static ChangedIdTypeSelfInclude include({
-    _i2.ChangedIdTypeSelfInclude? previous,
-    _i2.ChangedIdTypeSelfInclude? next,
-    _i2.ChangedIdTypeSelfInclude? parent,
-    _i2.ChangedIdTypeSelfIncludeList? children,
+    _i3.ChangedIdTypeSelfInclude? previous,
+    _i3.ChangedIdTypeSelfInclude? next,
+    _i3.ChangedIdTypeSelfInclude? parent,
+    _i3.ChangedIdTypeSelfIncludeList? children,
   }) {
     return ChangedIdTypeSelfInclude._(
       previous: previous,
@@ -180,12 +181,12 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   _ChangedIdTypeSelfImpl({
     _i1.UuidValue? id,
     required String name,
-    _i2.ChangedIdTypeSelf? previous,
+    _i3.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
+    _i3.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _i3.ChangedIdTypeSelf? parent,
+    List<_i3.ChangedIdTypeSelf>? children,
   }) : super._(
           id: id,
           name: name,
@@ -214,15 +215,15 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     return ChangedIdTypeSelf(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      previous: previous is _i2.ChangedIdTypeSelf?
+      previous: previous is _i3.ChangedIdTypeSelf?
           ? previous
           : this.previous?.copyWith(),
       nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
-      next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
+      next: next is _i3.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
       parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
       parent:
-          parent is _i2.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
-      children: children is List<_i2.ChangedIdTypeSelf>?
+          parent is _i3.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
+      children: children is List<_i3.ChangedIdTypeSelf>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
     );
@@ -248,85 +249,85 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnString name;
 
-  _i2.ChangedIdTypeSelfTable? _previous;
+  _i3.ChangedIdTypeSelfTable? _previous;
 
   late final _i1.ColumnUuid nextId;
 
-  _i2.ChangedIdTypeSelfTable? _next;
+  _i3.ChangedIdTypeSelfTable? _next;
 
   late final _i1.ColumnUuid parentId;
 
-  _i2.ChangedIdTypeSelfTable? _parent;
+  _i3.ChangedIdTypeSelfTable? _parent;
 
-  _i2.ChangedIdTypeSelfTable? ___children;
+  _i3.ChangedIdTypeSelfTable? ___children;
 
-  _i1.ManyRelation<_i2.ChangedIdTypeSelfTable>? _children;
+  _i1.ManyRelation<_i3.ChangedIdTypeSelfTable>? _children;
 
-  _i2.ChangedIdTypeSelfTable get previous {
+  _i3.ChangedIdTypeSelfTable get previous {
     if (_previous != null) return _previous!;
     _previous = _i1.createRelationTable(
       relationFieldName: 'previous',
       field: ChangedIdTypeSelf.t.id,
-      foreignField: _i2.ChangedIdTypeSelf.t.nextId,
+      foreignField: _i3.ChangedIdTypeSelf.t.nextId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
+          _i3.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
     );
     return _previous!;
   }
 
-  _i2.ChangedIdTypeSelfTable get next {
+  _i3.ChangedIdTypeSelfTable get next {
     if (_next != null) return _next!;
     _next = _i1.createRelationTable(
       relationFieldName: 'next',
       field: ChangedIdTypeSelf.t.nextId,
-      foreignField: _i2.ChangedIdTypeSelf.t.id,
+      foreignField: _i3.ChangedIdTypeSelf.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
+          _i3.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
     );
     return _next!;
   }
 
-  _i2.ChangedIdTypeSelfTable get parent {
+  _i3.ChangedIdTypeSelfTable get parent {
     if (_parent != null) return _parent!;
     _parent = _i1.createRelationTable(
       relationFieldName: 'parent',
       field: ChangedIdTypeSelf.t.parentId,
-      foreignField: _i2.ChangedIdTypeSelf.t.id,
+      foreignField: _i3.ChangedIdTypeSelf.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
+          _i3.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
     );
     return _parent!;
   }
 
-  _i2.ChangedIdTypeSelfTable get __children {
+  _i3.ChangedIdTypeSelfTable get __children {
     if (___children != null) return ___children!;
     ___children = _i1.createRelationTable(
       relationFieldName: '__children',
       field: ChangedIdTypeSelf.t.id,
-      foreignField: _i2.ChangedIdTypeSelf.t.parentId,
+      foreignField: _i3.ChangedIdTypeSelf.t.parentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
+          _i3.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
     );
     return ___children!;
   }
 
-  _i1.ManyRelation<_i2.ChangedIdTypeSelfTable> get children {
+  _i1.ManyRelation<_i3.ChangedIdTypeSelfTable> get children {
     if (_children != null) return _children!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'children',
       field: ChangedIdTypeSelf.t.id,
-      foreignField: _i2.ChangedIdTypeSelf.t.parentId,
+      foreignField: _i3.ChangedIdTypeSelf.t.parentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
+          _i3.ChangedIdTypeSelfTable(tableRelation: foreignTableRelation),
     );
-    _children = _i1.ManyRelation<_i2.ChangedIdTypeSelfTable>(
+    _children = _i1.ManyRelation<_i3.ChangedIdTypeSelfTable>(
       tableWithRelations: relationTable,
-      table: _i2.ChangedIdTypeSelfTable(
+      table: _i3.ChangedIdTypeSelfTable(
           tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _children!;
@@ -360,10 +361,10 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue> {
 
 class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
   ChangedIdTypeSelfInclude._({
-    _i2.ChangedIdTypeSelfInclude? previous,
-    _i2.ChangedIdTypeSelfInclude? next,
-    _i2.ChangedIdTypeSelfInclude? parent,
-    _i2.ChangedIdTypeSelfIncludeList? children,
+    _i3.ChangedIdTypeSelfInclude? previous,
+    _i3.ChangedIdTypeSelfInclude? next,
+    _i3.ChangedIdTypeSelfInclude? parent,
+    _i3.ChangedIdTypeSelfIncludeList? children,
   }) {
     _previous = previous;
     _next = next;
@@ -371,13 +372,13 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
     _children = children;
   }
 
-  _i2.ChangedIdTypeSelfInclude? _previous;
+  _i3.ChangedIdTypeSelfInclude? _previous;
 
-  _i2.ChangedIdTypeSelfInclude? _next;
+  _i3.ChangedIdTypeSelfInclude? _next;
 
-  _i2.ChangedIdTypeSelfInclude? _parent;
+  _i3.ChangedIdTypeSelfInclude? _parent;
 
-  _i2.ChangedIdTypeSelfIncludeList? _children;
+  _i3.ChangedIdTypeSelfIncludeList? _children;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -646,7 +647,7 @@ class ChangedIdTypeSelfAttachRepository {
   Future<void> children(
     _i1.Session session,
     ChangedIdTypeSelf changedIdTypeSelf,
-    List<_i2.ChangedIdTypeSelf> nestedChangedIdTypeSelf, {
+    List<_i3.ChangedIdTypeSelf> nestedChangedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
     if (nestedChangedIdTypeSelf.any((e) => e.id == null)) {
@@ -659,9 +660,9 @@ class ChangedIdTypeSelfAttachRepository {
     var $nestedChangedIdTypeSelf = nestedChangedIdTypeSelf
         .map((e) => e.copyWith(parentId: changedIdTypeSelf.id))
         .toList();
-    await session.db.update<_i2.ChangedIdTypeSelf>(
+    await session.db.update<_i3.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
-      columns: [_i2.ChangedIdTypeSelf.t.parentId],
+      columns: [_i3.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
   }
@@ -675,7 +676,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   Future<void> previous(
     _i1.Session session,
     ChangedIdTypeSelf changedIdTypeSelf,
-    _i2.ChangedIdTypeSelf previous, {
+    _i3.ChangedIdTypeSelf previous, {
     _i1.Transaction? transaction,
   }) async {
     if (previous.id == null) {
@@ -686,9 +687,9 @@ class ChangedIdTypeSelfAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: changedIdTypeSelf.id);
-    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i3.ChangedIdTypeSelf>(
       $previous,
-      columns: [_i2.ChangedIdTypeSelf.t.nextId],
+      columns: [_i3.ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
     );
   }
@@ -698,7 +699,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   Future<void> next(
     _i1.Session session,
     ChangedIdTypeSelf changedIdTypeSelf,
-    _i2.ChangedIdTypeSelf next, {
+    _i3.ChangedIdTypeSelf next, {
     _i1.Transaction? transaction,
   }) async {
     if (changedIdTypeSelf.id == null) {
@@ -721,7 +722,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   Future<void> parent(
     _i1.Session session,
     ChangedIdTypeSelf changedIdTypeSelf,
-    _i2.ChangedIdTypeSelf parent, {
+    _i3.ChangedIdTypeSelf parent, {
     _i1.Transaction? transaction,
   }) async {
     if (changedIdTypeSelf.id == null) {
@@ -744,7 +745,7 @@ class ChangedIdTypeSelfAttachRowRepository {
   Future<void> children(
     _i1.Session session,
     ChangedIdTypeSelf changedIdTypeSelf,
-    _i2.ChangedIdTypeSelf nestedChangedIdTypeSelf, {
+    _i3.ChangedIdTypeSelf nestedChangedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
     if (nestedChangedIdTypeSelf.id == null) {
@@ -756,9 +757,9 @@ class ChangedIdTypeSelfAttachRowRepository {
 
     var $nestedChangedIdTypeSelf =
         nestedChangedIdTypeSelf.copyWith(parentId: changedIdTypeSelf.id);
-    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i3.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
-      columns: [_i2.ChangedIdTypeSelf.t.parentId],
+      columns: [_i3.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
   }
@@ -774,7 +775,7 @@ class ChangedIdTypeSelfDetachRepository {
   /// the related record.
   Future<void> children(
     _i1.Session session,
-    List<_i2.ChangedIdTypeSelf> changedIdTypeSelf, {
+    List<_i3.ChangedIdTypeSelf> changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
     if (changedIdTypeSelf.any((e) => e.id == null)) {
@@ -783,9 +784,9 @@ class ChangedIdTypeSelfDetachRepository {
 
     var $changedIdTypeSelf =
         changedIdTypeSelf.map((e) => e.copyWith(parentId: null)).toList();
-    await session.db.update<_i2.ChangedIdTypeSelf>(
+    await session.db.update<_i3.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
-      columns: [_i2.ChangedIdTypeSelf.t.parentId],
+      columns: [_i3.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
   }
@@ -817,9 +818,9 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i3.ChangedIdTypeSelf>(
       $$previous,
-      columns: [_i2.ChangedIdTypeSelf.t.nextId],
+      columns: [_i3.ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
     );
   }
@@ -875,7 +876,7 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// the related record.
   Future<void> children(
     _i1.Session session,
-    _i2.ChangedIdTypeSelf changedIdTypeSelf, {
+    _i3.ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
     if (changedIdTypeSelf.id == null) {
@@ -883,9 +884,9 @@ class ChangedIdTypeSelfDetachRowRepository {
     }
 
     var $changedIdTypeSelf = changedIdTypeSelf.copyWith(parentId: null);
-    await session.db.updateRow<_i2.ChangedIdTypeSelf>(
+    await session.db.updateRow<_i3.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
-      columns: [_i2.ChangedIdTypeSelf.t.parentId],
+      columns: [_i3.ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
   }
