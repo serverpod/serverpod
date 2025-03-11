@@ -1,4 +1,3 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -151,15 +150,8 @@ void main() {
           ('hi', ({'world': 3}, flag: true, simpleData: SimpleData(num: 4))),
         ];
 
-        var authenticatedSessionBuilder = sessionBuilder.copyWith(
-          authentication: AuthenticationOverride.authenticationInfo(
-            1,
-            {Scope('user')},
-          ),
-        );
-
-        var result = endpoints.authenticatedTestTools.recordEchoStream(
-          authenticatedSessionBuilder,
+        var result = endpoints.testTools.recordEchoStream(
+          sessionBuilder,
           records.first,
           Stream.fromIterable(records.skip(1)),
         );
@@ -258,15 +250,8 @@ void main() {
             ],
           ];
 
-          var authenticatedSessionBuilder = sessionBuilder.copyWith(
-            authentication: AuthenticationOverride.authenticationInfo(
-              1,
-              {Scope('user')},
-            ),
-          );
-
-          var result = endpoints.authenticatedTestTools.listOfRecordEchoStream(
-            authenticatedSessionBuilder,
+          var result = endpoints.testTools.listOfRecordEchoStream(
+            sessionBuilder,
             lists.first,
             Stream.fromIterable(lists.skip(1)),
           );
@@ -289,16 +274,8 @@ void main() {
             null,
           ];
 
-          var authenticatedSessionBuilder = sessionBuilder.copyWith(
-            authentication: AuthenticationOverride.authenticationInfo(
-              1,
-              {Scope('user')},
-            ),
-          );
-
-          var result =
-              endpoints.authenticatedTestTools.nullableRecordEchoStream(
-            authenticatedSessionBuilder,
+          var result = endpoints.testTools.nullableRecordEchoStream(
+            sessionBuilder,
             records.first,
             Stream.fromIterable(records.skip(1)),
           );
@@ -334,16 +311,8 @@ void main() {
             null,
           ];
 
-          var authenticatedSessionBuilder = sessionBuilder.copyWith(
-            authentication: AuthenticationOverride.authenticationInfo(
-              1,
-              {Scope('user')},
-            ),
-          );
-
-          var result =
-              endpoints.authenticatedTestTools.nullableListOfRecordEchoStream(
-            authenticatedSessionBuilder,
+          var result = endpoints.testTools.nullableListOfRecordEchoStream(
+            sessionBuilder,
             lists.first,
             Stream.fromIterable(lists.skip(1)),
           );

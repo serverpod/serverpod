@@ -197,59 +197,6 @@ class TestToolsEndpoint extends Endpoint {
     return records;
   }
 
-  Future<void> logMessageWithSession(Session session) async {
-    session.log('test session log in endpoint');
-  }
-
-  static Completer<void>? willCloseListenerCalled;
-
-  Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
-    session.addWillCloseListener((Session s) {
-      willCloseListenerCalled?.complete();
-    });
-
-    throw Exception();
-  }
-
-  Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
-    Session session,
-  ) {
-    session.addWillCloseListener((Session s) {
-      willCloseListenerCalled?.complete();
-    });
-
-    throw Exception();
-  }
-}
-
-class AuthenticatedTestToolsEndpoint extends Endpoint {
-  @override
-  get requireLogin => true;
-
-  @override
-  get requiredScopes => {Scope('user')};
-
-  Future<String> returnsString(Session session, String string) async {
-    return string;
-  }
-
-  Stream<int> returnsStream(Session session, int n) {
-    return Stream<int>.fromIterable(
-      List<int>.generate(n, (index) => index),
-    );
-  }
-
-  Future<List<int>> returnsListFromInputStream(
-      Session session, Stream<int> numbers) async {
-    return numbers.toList();
-  }
-
-  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
-    await for (var value in stream) {
-      yield value;
-    }
-  }
-
   Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))>
       recordEchoStream(
     Session session,
@@ -299,6 +246,59 @@ class AuthenticatedTestToolsEndpoint extends Endpoint {
     Stream<List<(String, int)>?> stream,
   ) async* {
     yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Future<void> logMessageWithSession(Session session) async {
+    session.log('test session log in endpoint');
+  }
+
+  static Completer<void>? willCloseListenerCalled;
+
+  Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled?.complete();
+    });
+
+    throw Exception();
+  }
+
+  Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
+    Session session,
+  ) {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled?.complete();
+    });
+
+    throw Exception();
+  }
+}
+
+class AuthenticatedTestToolsEndpoint extends Endpoint {
+  @override
+  get requireLogin => true;
+
+  @override
+  get requiredScopes => {Scope('user')};
+
+  Future<String> returnsString(Session session, String string) async {
+    return string;
+  }
+
+  Stream<int> returnsStream(Session session, int n) {
+    return Stream<int>.fromIterable(
+      List<int>.generate(n, (index) => index),
+    );
+  }
+
+  Future<List<int>> returnsListFromInputStream(
+      Session session, Stream<int> numbers) async {
+    return numbers.toList();
+  }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
     await for (var value in stream) {
       yield value;
     }
