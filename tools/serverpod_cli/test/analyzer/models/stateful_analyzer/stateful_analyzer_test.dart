@@ -123,7 +123,7 @@ fields:
   });
 
   test(
-      'Given a model with a severe error (invalid syntax), when validating all, then hasSeverErrors returns true',
+      'Given a model with a severe error (invalid syntax), when validating all, then hasSevereErrors returns true',
       () {
     var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
@@ -133,7 +133,7 @@ fields:
     );
 
     statefulAnalyzer.validateAll();
-    expect(statefulAnalyzer.hasSeverErrors, true);
+    expect(statefulAnalyzer.hasSevereErrors, true);
   });
 
   test(

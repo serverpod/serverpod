@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_email_flutter/src/auth.dart';
+import 'package:serverpod_auth_email_flutter/src/signin_labels.dart';
 
 const _defaultMaxPasswordLength = 128;
 const _defaultMinPasswordLength = 8;
@@ -28,6 +29,10 @@ class SignInWithEmailDialog extends StatefulWidget {
   /// The minimum length of the password.
   final int minPasswordLength;
 
+  /// Optional labels for the sign in with email dialog.
+  /// If null, default English labels will be used.
+  final SignInWithEmailDialogLabels? localization;
+
   /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
     super.key,
@@ -35,6 +40,7 @@ class SignInWithEmailDialog extends StatefulWidget {
     required this.onSignedIn,
     this.maxPasswordLength = _defaultMaxPasswordLength,
     this.minPasswordLength = _defaultMinPasswordLength,
+    this.localization,
   });
 
   @override
@@ -55,6 +61,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   String? _validationCodeIssue;
 
   late final EmailAuthController _emailAuth;
+  late final SignInWithEmailDialogLabels _localization;
 
   _Page _page = _Page.createAccount;
 
@@ -65,6 +72,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   void initState() {
     super.initState();
     _emailAuth = EmailAuthController(widget.caller);
+    _localization = widget.localization ?? SignInWithEmailDialogLabels.enUS();
   }
 
   @override
@@ -78,7 +86,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _usernameController,
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
-            hintText: 'User name',
+            hintText: _localization.inputHintUserName,
             helperText: ' ',
             errorText: _userNameIssue,
           ),
@@ -93,7 +101,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'Email',
+            hintText: _localization.inputHintEmail,
             helperText: ' ',
             errorText: _emailIssue,
           ),
@@ -108,7 +116,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _passwordController,
           obscureText: _isPasswordObscured,
           decoration: InputDecoration(
-            hintText: 'Password',
+            hintText: _localization.inputHintPassword,
             helperText: ' ',
             errorText: _passwordIssue,
             suffixIcon: IconButton(
@@ -133,7 +141,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _createAccount : null,
-          child: const Text('Create Account'),
+          child: Text(_localization.buttonTitleSignUp),
         ),
         TextButton(
           onPressed: _enabled
@@ -143,7 +151,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: const Text('I have an account'),
+          child: Text(_localization.buttonTitleOpenSignIn),
         ),
       ];
     } else if (_page == _Page.signIn) {
@@ -153,7 +161,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'Email',
+            hintText: _localization.inputHintEmail,
             helperText: ' ',
             errorText: _emailIssue,
           ),
@@ -168,7 +176,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _passwordController,
           obscureText: _isPasswordObscured,
           decoration: InputDecoration(
-            hintText: 'Password',
+            hintText: _localization.inputHintPassword,
             helperText: ' ',
             errorText: _passwordIssue,
             suffixIcon: IconButton(
@@ -193,7 +201,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _signIn : null,
-          child: const Text('Sign In'),
+          child: Text(_localization.buttonTitleSignIn),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -204,7 +212,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   _page = _Page.forgotPassword;
                 });
               },
-              child: const Text('Forgot Pass'),
+              child: Text(_localization.buttonTitleForgotPassword),
             ),
             const Spacer(),
             TextButton(
@@ -215,7 +223,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                       });
                     }
                   : null,
-              child: const Text('Create Account'),
+              child: Text(_localization.buttonTitleOpenSignUp),
             ),
           ],
         ),
@@ -227,7 +235,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'Email',
+            hintText: _localization.inputHintEmail,
             helperText: ' ',
             errorText: _emailIssue,
           ),
@@ -242,7 +250,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _initiatePasswordReset : null,
-          child: const Text('Reset Password'),
+          child: Text(_localization.buttonTitleResetPassword),
         ),
         TextButton(
           onPressed: _enabled
@@ -252,13 +260,13 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: const Text('Back'),
+          child: Text(_localization.buttonTitleBack),
         ),
       ];
     } else if (_page == _Page.confirmEmail) {
       widgets = [
-        const Text(
-          'Please check your email. We have sent you a code to verify your address.',
+        Text(
+          _localization.messageEmailVerificationSent,
         ),
         const SizedBox(
           height: 16,
@@ -268,7 +276,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _validationCodeController,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
-            hintText: 'Validation code',
+            hintText: _localization.inputHintValidationCode,
             helperText: ' ',
             errorText: _validationCodeIssue,
           ),
@@ -283,7 +291,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _validateAccount : null,
-          child: const Text('Sign In'),
+          child: Text(_localization.buttonTitleSignIn),
         ),
         TextButton(
           onPressed: _enabled
@@ -293,13 +301,13 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: const Text('Back'),
+          child: Text(_localization.buttonTitleBack),
         ),
       ];
     } else if (_page == _Page.confirmPasswordReset) {
       widgets = [
-        const Text(
-          'Please check your email. We have sent you a code to verify your account.',
+        Text(
+          _localization.messagePasswordResetSent,
         ),
         const SizedBox(
           height: 16,
@@ -309,7 +317,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _validationCodeController,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
-            hintText: 'Validation code',
+            hintText: _localization.inputHintValidationCode,
             helperText: ' ',
             errorText: _validationCodeIssue,
           ),
@@ -325,7 +333,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
-            hintText: 'New password',
+            hintText: _localization.inputHintNewPassword,
             helperText: ' ',
             errorText: _passwordIssue,
           ),
@@ -340,7 +348,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         ),
         ElevatedButton(
           onPressed: _enabled ? _resetPassword : null,
-          child: const Text('Sign In'),
+          child: Text(_localization.buttonTitleSignIn),
         ),
         TextButton(
           onPressed: _enabled
@@ -350,7 +358,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
                   });
                 }
               : null,
-          child: const Text('Back'),
+          child: Text(_localization.buttonTitleBack),
         ),
       ];
     } else {
@@ -375,7 +383,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var userName = _usernameController.text.trim();
     if (userName.isEmpty) {
       setState(() {
-        _userNameIssue = 'Please enter a user name';
+        _userNameIssue = _localization.errorMessageUserNameRequired;
       });
       return;
     }
@@ -383,7 +391,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
-        _emailIssue = 'Invalid email';
+        _emailIssue = _localization.errorMessageInvalidEmail;
       });
       return;
     }
@@ -391,13 +399,15 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var password = _passwordController.text;
     if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
+        _passwordIssue =
+            _localization.minimumLengthMessage(widget.minPasswordLength);
       });
       return;
     }
     if (password.length > widget.maxPasswordLength) {
       setState(() {
-        _passwordIssue = 'Maximum ${widget.maxPasswordLength} characters';
+        _passwordIssue =
+            _localization.maximumLengthMessage(widget.maxPasswordLength);
       });
       return;
     }
@@ -418,7 +428,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
       if (success) {
         _page = _Page.confirmEmail;
       } else {
-        _emailIssue = 'Email already in use';
+        _emailIssue = _localization.errorMessageEmailInUse;
       }
     });
   }
@@ -427,7 +437,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     _resetIssues();
     if (_validationCodeController.text.isEmpty) {
       setState(() {
-        _validationCodeIssue = 'Enter your code';
+        _validationCodeIssue = _localization.messageEnterCode;
       });
       return;
     }
@@ -444,7 +454,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
     if (userInfo == null) {
       setState(() {
-        _validationCodeIssue = 'Incorrect code';
+        _validationCodeIssue = _localization.errorMessageIncorrectCode;
         _enabled = true;
       });
       return;
@@ -473,7 +483,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
-        _emailIssue = 'Invalid email';
+        _emailIssue = _localization.errorMessageInvalidEmail;
       });
       return;
     }
@@ -481,7 +491,8 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var password = _passwordController.text;
     if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Minimum ${widget.minPasswordLength} characters';
+        _passwordIssue =
+            _localization.minimumLengthMessage(widget.minPasswordLength);
       });
       return;
     }
@@ -494,7 +505,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     if (result == null) {
       // Something went wrong, start over
       setState(() {
-        _passwordIssue = 'Incorrect password';
+        _passwordIssue = _localization.errorMessageIncorrectPassword;
         _enabled = true;
       });
       return;
@@ -512,7 +523,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var email = _emailController.text.trim().toLowerCase();
     if (!EmailValidator.validate(email)) {
       setState(() {
-        _emailIssue = 'Invalid email';
+        _emailIssue = _localization.errorMessageInvalidEmail;
       });
       return;
     }
@@ -533,7 +544,8 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     _resetIssues();
     if (_passwordController.text.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Min ${widget.minPasswordLength} characters';
+        _passwordIssue =
+            _localization.minimumLengthMessage(widget.minPasswordLength);
       });
       return;
     }
@@ -552,7 +564,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
     if (!success) {
       setState(() {
-        _validationCodeIssue = 'Incorrect code';
+        _validationCodeIssue = _localization.errorMessageIncorrectCode;
         _enabled = true;
       });
       return;
@@ -602,6 +614,7 @@ void showSignInWithEmailDialog({
   required VoidCallback onSignedIn,
   int? maxPasswordLength,
   int? minPasswordLength,
+  SignInWithEmailDialogLabels? localization,
 }) {
   showDialog(
     context: context,
@@ -611,6 +624,7 @@ void showSignInWithEmailDialog({
         onSignedIn: onSignedIn,
         maxPasswordLength: maxPasswordLength ?? _defaultMaxPasswordLength,
         minPasswordLength: minPasswordLength ?? _defaultMinPasswordLength,
+        localization: localization,
       );
     },
   );
