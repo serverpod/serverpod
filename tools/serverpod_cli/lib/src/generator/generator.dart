@@ -16,7 +16,7 @@ Future<bool> performGenerate({
   log.debug('Analyzing serializable models in the protocol directory.');
 
   var models = modelAnalyzer.validateAll();
-  success &= !modelAnalyzer.hasSeverErrors;
+  success &= !modelAnalyzer.hasSevereErrors;
 
   log.debug('Generating files for serializable models.');
 
@@ -34,7 +34,7 @@ Future<bool> performGenerate({
     changedFiles: generatedModelFiles.toSet(),
   );
 
-  success &= !endpointAnalyzerCollector.hasSeverErrors;
+  success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
