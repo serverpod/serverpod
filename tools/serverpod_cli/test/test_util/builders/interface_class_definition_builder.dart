@@ -5,7 +5,7 @@ import 'type_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
-class ExceptionClassDefinitionBuilder {
+class InterfaceClassDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -14,7 +14,8 @@ class ExceptionClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<String>? _documentation;
   List<ResolvedImplementsDefinition> _isImplementing;
-  ExceptionClassDefinitionBuilder()
+
+  InterfaceClassDefinitionBuilder()
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
@@ -23,8 +24,8 @@ class ExceptionClassDefinitionBuilder {
         _serverOnly = false,
         _isImplementing = [];
 
-  ExceptionClassDefinition build() {
-    return ExceptionClassDefinition(
+  InterfaceClassDefinition build() {
+    return InterfaceClassDefinition(
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
@@ -37,17 +38,12 @@ class ExceptionClassDefinitionBuilder {
     );
   }
 
-  ExceptionClassDefinitionBuilder withFileName(String fileName) {
+  InterfaceClassDefinitionBuilder withFileName(String fileName) {
     _fileName = fileName;
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withSourceFileName(String sourceFileName) {
-    _sourceFileName = sourceFileName;
-    return this;
-  }
-
-  ExceptionClassDefinitionBuilder withSimpleField(
+  InterfaceClassDefinitionBuilder withSimpleField(
     String fieldName,
     String type, {
     dynamic defaultValue,
@@ -63,41 +59,46 @@ class ExceptionClassDefinitionBuilder {
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withClassName(String className) {
+  InterfaceClassDefinitionBuilder withSourceFileName(String sourceFileName) {
+    _sourceFileName = sourceFileName;
+    return this;
+  }
+
+  InterfaceClassDefinitionBuilder withClassName(String className) {
     _className = className;
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
+  InterfaceClassDefinitionBuilder withSubDirParts(List<String> subDirParts) {
     _subDirParts = subDirParts;
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withServerOnly(bool serverOnly) {
+  InterfaceClassDefinitionBuilder withServerOnly(bool serverOnly) {
     _serverOnly = serverOnly;
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withField(
+  InterfaceClassDefinitionBuilder withField(
       SerializableModelFieldDefinition field) {
     _fields.add(() => field);
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withFields(
+  InterfaceClassDefinitionBuilder withFields(
     List<SerializableModelFieldDefinition> fields,
   ) {
     _fields = fields.map((f) => () => f).toList();
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withDocumentation(
+  InterfaceClassDefinitionBuilder withDocumentation(
       List<String>? documentation) {
     _documentation = documentation;
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withImplementedInterfaces(
+  InterfaceClassDefinitionBuilder withImplementedInterfaces(
     List<ClassDefinition> interfaces,
   ) {
     _isImplementing = [

@@ -1,0 +1,5 @@
+class: ClassOverridingInterfaceField
+implements: ExampleInterface
+fields:
+  classField: String
+  interfaceField: String, default="This is a default value"
