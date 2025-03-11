@@ -27,6 +27,9 @@ class ValidateNode {
   List<SourceSpanException>? Function(String, dynamic, SourceSpan?)?
       valueRestriction;
 
+  // A set of keys that must exist in the document for this key to be valid.
+  late Set<String> dependsOnKeys;
+
   // A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;
 
@@ -63,6 +66,7 @@ class ValidateNode {
     this.alternativeUsageMessage = '',
     this.keyRestriction,
     this.valueRestriction,
+    this.dependsOnKeys = const {},
     this.mutuallyExclusiveKeys = const {},
     this.allowStringifiedNestedValue = const StringifiedNestedValues(),
     this.allowEmptyNestedValue = false,

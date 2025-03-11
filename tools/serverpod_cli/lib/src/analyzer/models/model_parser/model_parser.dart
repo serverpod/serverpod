@@ -18,6 +18,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
+    SupportedIdType defaultIdType,
   ) {
     var isSealed = _parseIsSealed(documentContents);
 
@@ -37,6 +38,7 @@ class ModelParser {
         docsExtractor: docsExtractor,
         extraClasses: extraClasses,
         hasTable: tableName != null,
+        defaultIdType: defaultIdType,
         initialize: ({
           required String className,
           required TypeDefinition classType,
@@ -71,6 +73,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
+    SupportedIdType defaultIdType,
   ) {
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
@@ -80,6 +83,7 @@ class ModelParser {
       docsExtractor: docsExtractor,
       extraClasses: extraClasses,
       hasTable: false,
+      defaultIdType: defaultIdType,
       initialize: ({
         required String className,
         required TypeDefinition classType,
@@ -113,6 +117,7 @@ class ModelParser {
     required YamlDocumentationExtractor docsExtractor,
     required List<TypeDefinition> extraClasses,
     required bool hasTable,
+    required SupportedIdType defaultIdType,
     required T Function({
       required String className,
       required TypeDefinition classType,
@@ -150,6 +155,7 @@ class ModelParser {
       tableName != null,
       extraClasses,
       serverOnly,
+      defaultIdType,
     );
 
     return initialize(
@@ -243,28 +249,15 @@ class ModelParser {
     bool hasTable,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
+    SupportedIdType defaultIdType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
-    if (hasTable) {
-      fields.add(
-        SerializableModelFieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
-          scope: ModelFieldScopeDefinition.all,
-          shouldPersist: true,
-          documentation: [
-            '/// The database id, set if the object has been inserted into the',
-            '/// database or if it has been fetched from the database. Otherwise,',
-            '/// the id will be null.',
-          ],
-        ),
-      );
-    }
 
     var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap) return fields;
+    if (fieldsNode is! YamlMap?) return fields;
 
-    fields.addAll(fieldsNode.nodes.entries.expand((fieldNode) {
+    var fieldsNodeEntries = fieldsNode?.nodes.entries ?? [];
+    fields.addAll(fieldsNodeEntries.expand((fieldNode) {
       return _parseModelFieldDefinition(
         fieldNode,
         docsExtractor,
@@ -272,6 +265,38 @@ class ModelParser {
         serverOnlyClass,
       );
     }).toList());
+
+    if (hasTable) {
+      var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
+      var defaultValue = (maybeIdColumn != null)
+          ? maybeIdColumn.defaultPersistValue
+          : defaultIdType.defaultValue;
+
+      // The 'int' id type can be specified without a default value.
+      if (maybeIdColumn?.type.className == 'int') {
+        defaultValue ??= SupportedIdType.int.defaultValue;
+      }
+
+      var defaultIdFieldDoc = [
+        '/// The database id, set if the object has been inserted into the',
+        '/// database or if it has been fetched from the database. Otherwise,',
+        '/// the id will be null.',
+      ];
+
+      fields.removeWhere((f) => f.name == 'id');
+      fields.insert(
+        0,
+        SerializableModelFieldDefinition(
+          name: 'id',
+          type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
+          scope: ModelFieldScopeDefinition.all,
+          defaultModelValue: defaultValue,
+          defaultPersistValue: defaultValue,
+          shouldPersist: true,
+          documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
+        ),
+      );
+    }
 
     return fields;
   }

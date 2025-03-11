@@ -38,7 +38,10 @@ class SerializableModelAnalyzer {
 
   /// Best effort attempt to extract a model definition from a yaml file.
   static SerializableModelDefinition? extractModelDefinition(
-      ModelSource modelSource, List<TypeDefinition> extraClasses) {
+    ModelSource modelSource,
+    List<TypeDefinition> extraClasses,
+    SupportedIdType defaultIdType,
+  ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
       modelSource.yamlSourceUri,
     );
@@ -66,6 +69,7 @@ class SerializableModelAnalyzer {
           documentContents,
           docsExtractor,
           extraClasses,
+          defaultIdType,
         );
       case Keyword.exceptionType:
         return ModelParser.serializeExceptionClassFile(
@@ -75,6 +79,7 @@ class SerializableModelAnalyzer {
           documentContents,
           docsExtractor,
           extraClasses,
+          defaultIdType,
         );
       case Keyword.enumType:
         return ModelParser.serializeEnumFile(

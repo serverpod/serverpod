@@ -98,6 +98,34 @@ void main() {
     });
 
     test(
+        'when generating SQL with columnDefault set to "gen_random_uuid_v7()", then the table should have gen_random_uuid_v7() as the default value.',
+        () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('uuid')
+                      .withColumnType(ColumnType.uuid)
+                      .withColumnDefault('gen_random_uuid_v7()')
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(
+        sql,
+        contains(
+          '"uuid" uuid NOT NULL DEFAULT gen_random_uuid_v7()',
+        ),
+      );
+    });
+
+    test(
         'when generating SQL with nullable UUID field and columnDefault, then the table should be nullable with the correct default value.',
         () {
       var databaseDefinition = DatabaseDefinitionBuilder()

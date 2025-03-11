@@ -1,0 +1,1013 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "address_uuid",
+        "dartName": "AddressUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "street",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "inhabitantId",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "address_uuid_fk_0",
+            "columns": [
+              "inhabitantId"
+            ],
+            "referenceTable": "citizen_int",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "address_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "inhabitant_uuid_index_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "inhabitantId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "arena_uuid",
+        "dartName": "ArenaUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "arena_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "changed_id_type_self",
+        "dartName": "ChangedIdTypeSelf",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "nextId",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "parentId",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "changed_id_type_self_fk_0",
+            "columns": [
+              "nextId"
+            ],
+            "referenceTable": "changed_id_type_self",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          },
+          {
+            "constraintName": "changed_id_type_self_fk_1",
+            "columns": [
+              "parentId"
+            ],
+            "referenceTable": "changed_id_type_self",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "changed_id_type_self_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "changed_id_type_self_next_unique_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "nextId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "citizen_int",
+        "dartName": "CitizenInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('citizen_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "companyId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "oldCompanyId",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "citizen_int_fk_0",
+            "columns": [
+              "companyId"
+            ],
+            "referenceTable": "company_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          },
+          {
+            "constraintName": "citizen_int_fk_1",
+            "columns": [
+              "oldCompanyId"
+            ],
+            "referenceTable": "company_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "citizen_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "comment_int",
+        "dartName": "CommentInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('comment_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "description",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "orderId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "comment_int_fk_0",
+            "columns": [
+              "orderId"
+            ],
+            "referenceTable": "order_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "comment_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "company_uuid",
+        "dartName": "CompanyUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "townId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "company_uuid_fk_0",
+            "columns": [
+              "townId"
+            ],
+            "referenceTable": "town_int",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "company_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "course_uuid",
+        "dartName": "CourseUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "course_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "customer_int",
+        "dartName": "CustomerInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('customer_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "customer_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "enrollment_int",
+        "dartName": "EnrollmentInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('enrollment_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "studentId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "courseId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "enrollment_int_fk_0",
+            "columns": [
+              "studentId"
+            ],
+            "referenceTable": "student_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          },
+          {
+            "constraintName": "enrollment_int_fk_1",
+            "columns": [
+              "courseId"
+            ],
+            "referenceTable": "course_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "enrollment_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "enrollment_int_index_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "studentId"
+              },
+              {
+                "type": 0,
+                "definition": "courseId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "order_uuid",
+        "dartName": "OrderUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "description",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "customerId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "order_uuid_fk_0",
+            "columns": [
+              "customerId"
+            ],
+            "referenceTable": "customer_int",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "order_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "player_uuid",
+        "dartName": "PlayerUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "teamId",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "player_uuid_fk_0",
+            "columns": [
+              "teamId"
+            ],
+            "referenceTable": "team_int",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 0
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "player_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "student_uuid",
+        "dartName": "StudentUuid",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "student_uuid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "team_int",
+        "dartName": "TeamInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('team_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "arenaId",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "team_int_fk_0",
+            "columns": [
+              "arenaId"
+            ],
+            "referenceTable": "arena_uuid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 0
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "team_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "arena_uuid_index_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "arenaId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "town_int",
+        "dartName": "TownInt",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('town_int_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "mayorId",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "town_int_fk_0",
+            "columns": [
+              "mayorId"
+            ],
+            "referenceTable": "citizen_int",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "town_int_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "uuid_default",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "uuidDefaultRandomV7",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "tableDropped",
+            "message": "One or more columns are added to table \"uuid_default_model\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+            "table": "uuid_default_model",
+            "columns": [
+              "uuidDefaultModelRandomV7"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "deleteTable",
+      "deleteTable": "uuid_default_model"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "uuid_default_model",
+        "dartName": "UuidDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('uuid_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "uuidDefaultModelRandom",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "uuidDefaultModelRandomV7",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "uuidDefaultModelRandomNull",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "uuidDefaultModelStr",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "uuidDefaultModelStrNull",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "uuid_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "uuid_default_persist",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "uuidDefaultPersistRandomV7",
+            "columnType": 7,
+            "isNullable": true,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "tableDropped",
+            "message": "One or more columns are added to table \"uuid_default_model\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+            "table": "uuid_default_model",
+            "columns": [
+              "uuidDefaultModelRandomV7"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"uuid_default_model\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "uuid_default_model",
+      "columns": [
+        "uuidDefaultModelRandomV7"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

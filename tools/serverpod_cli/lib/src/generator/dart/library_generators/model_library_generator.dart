@@ -1381,7 +1381,8 @@ class SerializableModelLibraryGenerator {
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool shouldIncludeType = !setAsToThis ||
-          (field.defaultModelValue != null) &&
+          ((field.defaultModelValue != null) &&
+                  (field.defaultModelValue != defaultIntSerial)) &&
               (!inheritedFields.contains(field));
 
       bool hasDefaults = field.hasDefaults;
@@ -1436,6 +1437,7 @@ class SerializableModelLibraryGenerator {
           _ => null,
         };
       case DefaultValueAllowedType.int:
+        if (defaultValue == defaultIntSerial) return null;
         return literalNum(int.parse(defaultValue)).code;
       case DefaultValueAllowedType.double:
         return literalNum(double.parse(defaultValue)).code;
@@ -1444,9 +1446,11 @@ class SerializableModelLibraryGenerator {
       case DefaultValueAllowedType.uuidValue:
         if (defaultValue is! String) return null;
 
-        if (defaultUuidValueRandom == defaultValue) {
+        if ((defaultValue == defaultUuidValueRandom) ||
+            (defaultValue == defaultUuidValueRandomV7)) {
           return refer('Uuid()', 'package:uuid/uuid.dart')
-              .property('v4obj')
+              .property(
+                  (defaultValue == defaultUuidValueRandom) ? 'v4obj' : 'v7obj')
               .call([]).code;
         }
 

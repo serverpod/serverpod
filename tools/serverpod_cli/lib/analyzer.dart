@@ -21,5 +21,5 @@ export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
 export 'src/config/config.dart' show GeneratorConfig, PackageType;
 export 'src/database/extensions.dart';
 export 'src/database/migration.dart';
-export 'src/generator/types.dart' show TypeDefinition;
+export 'src/generator/types.dart' show SupportedIdType, TypeDefinition;
 export 'src/migrations/generator.dart';
