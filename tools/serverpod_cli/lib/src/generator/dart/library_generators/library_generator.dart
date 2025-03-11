@@ -53,24 +53,8 @@ class LibraryGenerator {
 
     var protocol = ClassBuilder();
 
-    var topLevelStreamContainerTypes = <TypeDefinition>[];
-    for (var topLevelType in protocolDefinition.endpoints
-        .expand((e) => e.methods)
-        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
-        .where((t) => t.isStreamType)) {
-      var valueType = topLevelType.generics.first;
-      if (valueType.isSetType ||
-          valueType.isListType ||
-          valueType.isMapType ||
-          valueType.isRecordType) {
-        if (!topLevelStreamContainerTypes.any((type) =>
-            type.classNameWithGenericsForProtocol(modules: config.modules) ==
-            valueType.classNameWithGenericsForProtocol(
-                modules: config.modules))) {
-          topLevelStreamContainerTypes.add(valueType);
-        }
-      }
-    }
+    var nonModelStreamTypes = protocolDefinition
+        .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
 
     protocol
       ..name = 'Protocol'
@@ -183,7 +167,7 @@ class LibraryGenerator {
                     ...extraClass.asNullable
                         .generateDeserialization(serverCode, config: config),
                   // Generate deserialization for containers used in streams
-                  for (var type in topLevelStreamContainerTypes)
+                  for (var type in nonModelStreamTypes)
                     ...type.generateDeserialization(serverCode, config: config)
                 ]))
               .entries
@@ -229,7 +213,7 @@ class LibraryGenerator {
           for (var module in config.modules)
             _buildGetClassNameForObjectDelegation(
                 module.dartImportUrl(serverCode), module.name),
-          for (var containerType in topLevelStreamContainerTypes)
+          for (var containerType in nonModelStreamTypes)
             Block.of([
               const Code('if(data is '),
               containerType.reference(serverCode, config: config).code,
@@ -268,7 +252,7 @@ class LibraryGenerator {
               module.dartImportUrl(serverCode),
               module.name,
             ),
-          for (final containerType in topLevelStreamContainerTypes) ...[
+          for (final containerType in nonModelStreamTypes) ...[
             Code(
                 "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {"),
             const Code('return deserialize<'),
@@ -1275,6 +1259,8 @@ extension on ProtocolDefinition {
     return recordTypes;
   }
 
+  /// Returns whether the endpoints use records in combination with `Stream`s
+  /// Either as return type or parameters, and either directly or wrapped in a container.
   bool get usesRecordsInStreams {
     for (var method in endpoints.expand((e) => e.methods)) {
       for (var type in [
@@ -1290,6 +1276,36 @@ extension on ProtocolDefinition {
     }
 
     return false;
+  }
+
+  //// Returns all non-model/non-primiate types used with `Streams`
+  ///
+  /// E.g. for a return or parameter type of `Stream<Set<(int,)>>` this would return the `Set<(int,)>`.
+  ///
+  /// This is because those containers can not be handled by the normal (de)serialize flow but need custom code generated
+  List<TypeDefinition> getNonModelOrPrimitiveStreamTypes({
+    required List<ModuleConfig> modules,
+  }) {
+    var nonModelOrPrimitiveStreamTypes = <TypeDefinition>[];
+
+    for (var topLevelType in endpoints
+        .expand((e) => e.methods)
+        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
+        .where((t) => t.isStreamType)) {
+      var valueType = topLevelType.generics.first;
+      if (valueType.isSetType ||
+          valueType.isListType ||
+          valueType.isMapType ||
+          valueType.isRecordType) {
+        if (!nonModelOrPrimitiveStreamTypes.any((type) =>
+            type.classNameWithGenericsForProtocol(modules: modules) ==
+            valueType.classNameWithGenericsForProtocol(modules: modules))) {
+          nonModelOrPrimitiveStreamTypes.add(valueType);
+        }
+      }
+    }
+
+    return nonModelOrPrimitiveStreamTypes;
   }
 }
 
