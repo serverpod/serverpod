@@ -12,23 +12,23 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Given a class with a table defined and no id field', () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
         class: Example
         table: example
         fields:
           name: String
         ''',
-        ).build()
-      ];
+      ).build()
+    ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ClassDefinition;
 
     test('then an id field is added to the generated model.', () {
       expect(definition.fields.first.name, 'id');
@@ -221,4 +221,31 @@ void main() {
       );
     },
   );
+
+  test(
+      'Given a class with the UuidValue id type and an invalid default value, then an error is collected.',
+      () {
+    var invalidDefaultValue = "'550e8400-e29b-41d4-a716-446655440000'";
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          id: UuidValue, default=$invalidDefaultValue
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, models, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors.first.message,
+      contains(
+        'The default value "$invalidDefaultValue" is not supported for the id type "UuidValue". Valid options are:',
+      ),
+    );
+  });
 }

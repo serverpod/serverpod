@@ -181,6 +181,11 @@ class TypeDefinition {
   /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
+  /// A convenience variable for getting a [TypeDefinition] of a non null
+  /// UuidValue quickly.
+  static TypeDefinition uuid =
+      TypeDefinition(className: 'UuidValue', nullable: false);
+
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
         className: className,
@@ -706,8 +711,14 @@ class SupportedIdType {
         defaultValue: defaultIntSerial,
       );
 
+  static SupportedIdType get uuidV4 => SupportedIdType(
+        type: TypeDefinition.uuid,
+        aliases: ['uuidV4'],
+        defaultValue: defaultUuidValueRandom,
+      );
+
   /// All supported id types.
-  static List<SupportedIdType> get all => [int];
+  static List<SupportedIdType> get all => [int, uuidV4];
 
   /// All aliases exposed to the user.
   static List<String> get userOptions => all.expand((e) => e.aliases).toList();
