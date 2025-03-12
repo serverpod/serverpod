@@ -1278,7 +1278,7 @@ extension on ProtocolDefinition {
     return false;
   }
 
-  //// Returns all non-model/non-primiate types used with `Streams`
+  //// Returns all non-model/non-primitive types used with `Streams`
   ///
   /// E.g. for a return or parameter type of `Stream<Set<(int,)>>` this would return the `Set<(int,)>`.
   ///
