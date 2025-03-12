@@ -1,0 +1,6 @@
+class: ArenaUuid
+table: arena_uuid
+fields:
+  id: UuidValue, default=random
+  name: String
+  team: TeamInt?, relation(name=arena_team)
