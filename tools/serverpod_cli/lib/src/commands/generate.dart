@@ -45,12 +45,13 @@ class GenerateCommand extends ServerpodCommand {
     }
 
     // Directory.current is the server directory
+    var serverPubspecFile = File('pubspec.yaml');
     var clientPubspecFile = File(path.joinAll([
       ...config.clientPackagePathParts,
       'pubspec.yaml',
     ]));
     var pubspecsToCheck = [
-      File('pubspec.yaml'), // server
+      serverPubspecFile,
       if (await clientPubspecFile.exists()) clientPubspecFile,
     ].map(PubspecPlus.fromFile);
 
