@@ -28,10 +28,7 @@ void main() {
   test(
       'Given an invalid server pubspec.yaml '
       'then a ServerpodProjectNotFoundException is thrown', () {
-    // TODO(nielsenko):
-    // This is current behavior, but I think it should be
-    // the SourceSpanException raised by Pubspec.parse to give the user
-    // a more detailed error message.
+    // TODO: https://github.com/serverpod/serverpod/issues/3298
     expectLater(
       GeneratorConfig.load(path.join(testAssetsPath, 'invalid_pubspec')),
       throwsA(isA<ServerpodProjectNotFoundException>()),
@@ -39,13 +36,10 @@ void main() {
   });
 
   test(
-      'Given a valid server pubspec.yaml'
-      ' and a missing client pubspec.yaml '
+      'Given a valid server pubspec.yaml '
+      'and a missing client pubspec.yaml '
       'then a ServerpodProjectNotFoundException is thrown', () {
-    // TODO(nielsenko):
-    // This is current behavior, but I perhaps it should depend on config
-    // if a client project is generated or not.
-    // (see https://github.com/serverpod/serverpod/pull/3273#discussion_r1982987504)
+    // TODO: https://github.com/serverpod/serverpod/issues/3298
     expectLater(
       GeneratorConfig.load(
           path.join(testAssetsPath, 'valid_pubspec_missing_client')),
