@@ -100,9 +100,7 @@ dependencies:
           approximateVersion,
         );
 
-        test(
-            'then one warning is returned '
-            'and the message is correct', () {
+        test('then one warning is returned with the correct message', () {
           expect(packageWarnings, [
             isASpanWith(
                 (s) => s.message,
@@ -112,17 +110,13 @@ dependencies:
           ]);
         });
 
-        test(
-            'then one warning is returned '
-            ' and the span is correct', () {
+        test('then one warning is returned with correct span text', () {
           expect(packageWarnings, [
             isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0'),
           ]);
         });
 
-        test(
-            'then one warning is returned '
-            ' and severity is warning', () {
+        test('then one warning is returned with severity warning', () {
           expect(packageWarnings, [
             isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning),
@@ -137,9 +131,7 @@ dependencies:
           cliVersion,
           approximateVersion,
         );
-        test(
-            'then two warnings are returned'
-            ' and the messages are correct', () {
+        test('then two warnings are returned with correct messages', () {
           expect(packageWarnings, [
             isASpanWith(
               (s) => s.message,
@@ -179,9 +171,7 @@ dependencies:
           approximateVersion,
         );
 
-        test(
-            'then one warning is returned '
-            'and the message is correct', () {
+        test('then one warning is returned with correct message', () {
           expect(packageWarnings, [
             isASpanWith(
                 (s) => s.message,
@@ -191,16 +181,12 @@ dependencies:
           ]);
         });
 
-        test(
-            'then one warning is returned '
-            'and the span text is correct', () {
+        test('then one warning is returned with correct span text', () {
           expect(packageWarnings,
               [isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0')]);
         });
 
-        test(
-            'then one warning is returned '
-            'and severity is warning', () {
+        test('then one warning is returned with severity warning', () {
           expect(packageWarnings, [
             isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning)
