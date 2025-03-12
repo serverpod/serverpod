@@ -41,6 +41,25 @@ void main() {
       });
     });
 
+    group('with gen_random_uuid_v7() as default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'uuid',
+        columnType: ColumnType.uuid,
+        isNullable: false,
+        columnDefault: 'gen_random_uuid_v7()',
+        dartType: 'UuidValue',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"uuid" uuid NOT NULL DEFAULT gen_random_uuid_v7()',
+        );
+      });
+    });
+
     group('with a specific UUID string as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'uuid',
