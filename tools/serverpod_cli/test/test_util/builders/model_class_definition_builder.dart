@@ -15,6 +15,7 @@ class ModelClassDefinitionBuilder {
   List<String> _subDirParts;
   bool _serverOnly;
   String? _tableName;
+  SupportedIdType? _idType;
   bool _managedMigration;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
@@ -27,6 +28,7 @@ class ModelClassDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
+        _idType = SupportedIdType.int,
         _fields = [],
         _subDirParts = [],
         _managedMigration = true,
@@ -40,8 +42,7 @@ class ModelClassDefinitionBuilder {
       _fields.insert(
         0,
         () => FieldDefinitionBuilder()
-            .withName('id')
-            .withType(TypeDefinition.int.asNullable)
+            .withPrimaryKey(type: _idType, isNullable: true)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -233,7 +234,7 @@ class ModelClassDefinitionBuilder {
           .build(),
       () => FieldDefinitionBuilder()
           .withName(foreignFieldName)
-          .withIdType(nullableRelation)
+          .withIdType(type: foreignTableIdType, isNullable: nullableRelation)
           .withShouldPersist(true)
           .withRelation(ForeignRelationDefinitionBuilder()
               .withParentTable(parentTable)
@@ -303,6 +304,11 @@ class ModelClassDefinitionBuilder {
           .build();
     });
 
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withIdFieldType(SupportedIdType type) {
+    _idType = type;
     return this;
   }
 

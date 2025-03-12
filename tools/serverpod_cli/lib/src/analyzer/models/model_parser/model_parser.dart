@@ -245,28 +245,12 @@ class ModelParser {
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
-    if (hasTable) {
-      fields.add(
-        SerializableModelFieldDefinition(
-          name: 'id',
-          type: SupportedIdType.int.type.asNullable,
-          scope: ModelFieldScopeDefinition.all,
-          defaultModelValue: SupportedIdType.int.defaultValue,
-          defaultPersistValue: SupportedIdType.int.defaultValue,
-          shouldPersist: true,
-          documentation: [
-            '/// The database id, set if the object has been inserted into the',
-            '/// database or if it has been fetched from the database. Otherwise,',
-            '/// the id will be null.',
-          ],
-        ),
-      );
-    }
 
     var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap) return fields;
+    if (fieldsNode is! YamlMap?) return fields;
 
-    fields.addAll(fieldsNode.nodes.entries.expand((fieldNode) {
+    var fieldsNodeEntries = fieldsNode?.nodes.entries ?? [];
+    fields.addAll(fieldsNodeEntries.expand((fieldNode) {
       return _parseModelFieldDefinition(
         fieldNode,
         docsExtractor,
@@ -274,6 +258,39 @@ class ModelParser {
         serverOnlyClass,
       );
     }).toList());
+
+    if (hasTable) {
+      final defaultIdType = SupportedIdType.int;
+      var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
+      var defaultValue = (maybeIdColumn != null)
+          ? maybeIdColumn.defaultPersistValue
+          : defaultIdType.defaultValue;
+
+      // The 'int' id type can be specified without a default value.
+      if (maybeIdColumn?.type.className == 'int') {
+        defaultValue ??= SupportedIdType.int.defaultValue;
+      }
+
+      var defaultIdFieldDoc = [
+        '/// The database id, set if the object has been inserted into the',
+        '/// database or if it has been fetched from the database. Otherwise,',
+        '/// the id will be null.',
+      ];
+
+      fields.removeWhere((f) => f.name == 'id');
+      fields.insert(
+        0,
+        SerializableModelFieldDefinition(
+          name: 'id',
+          type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
+          scope: ModelFieldScopeDefinition.all,
+          defaultModelValue: defaultValue,
+          defaultPersistValue: defaultValue,
+          shouldPersist: true,
+          documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
+        ),
+      );
+    }
 
     return fields;
   }
