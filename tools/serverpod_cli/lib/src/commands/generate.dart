@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
@@ -12,6 +11,7 @@ import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class GenerateCommand extends ServerpodCommand {
@@ -44,9 +44,23 @@ class GenerateCommand extends ServerpodCommand {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // Directory.current is the server directory
+    var serverPubspecFile = File('pubspec.yaml');
+    var clientPubspecFile = File(path.joinAll([
+      ...config.clientPackagePathParts,
+      'pubspec.yaml',
+    ]));
+    var pubspecsToCheck = [
+      serverPubspecFile,
+      if (await clientPubspecFile.exists()) clientPubspecFile,
+    ].map(PubspecPlus.fromFile);
+
     // Validate cli version is compatible with serverpod packages
-    var warnings = performServerpodPackagesAndCliVersionCheck(
-        Version.parse(templateVersion), Directory.current.parent);
+    var cliVersion = Version.parse(templateVersion);
+    var warnings = [
+      for (var p in pubspecsToCheck)
+        ...validateServerpodPackagesVersion(cliVersion, p)
+    ];
     if (warnings.isNotEmpty) {
       log.warning(
         'The version of the CLI may be incompatible with the Serverpod '
