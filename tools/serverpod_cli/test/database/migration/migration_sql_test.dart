@@ -18,4 +18,25 @@ void main() {
 
     expect(sql, contains('"id" bigserial PRIMARY KEY'));
   });
+
+  for (var (idClassName, definitionContains) in [
+    ('int', '"id" bigserial PRIMARY KEY'),
+  ]) {
+    test(
+        'Given database table definition when generating sql with id set to $idClassName then table id column contains $definitionContains.',
+        () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withIdType(idClassName)
+                .withName('example_table')
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(sql, contains(definitionContains));
+    });
+  }
 }

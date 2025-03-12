@@ -748,8 +748,7 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return const [];
 
-    var type = field.type;
-    if (type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
+    if (field.type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
       return [
         SourceSpanSeverityException(
           'The "parent" property must be defined on id fields.',

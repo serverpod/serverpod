@@ -1381,7 +1381,8 @@ class SerializableModelLibraryGenerator {
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool shouldIncludeType = !setAsToThis ||
-          (field.defaultModelValue != null) &&
+          ((field.defaultModelValue != null) &&
+                  (field.defaultModelValue != defaultIntSerial)) &&
               (!inheritedFields.contains(field));
 
       bool hasDefaults = field.hasDefaults;
@@ -1436,6 +1437,7 @@ class SerializableModelLibraryGenerator {
           _ => null,
         };
       case DefaultValueAllowedType.int:
+        if (defaultValue == defaultIntSerial) return null;
         return literalNum(int.parse(defaultValue)).code;
       case DefaultValueAllowedType.double:
         return literalNum(double.parse(defaultValue)).code;

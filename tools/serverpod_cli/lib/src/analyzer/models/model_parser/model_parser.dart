@@ -249,8 +249,10 @@ class ModelParser {
       fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
-          type: TypeDefinition.int.asNullable,
+          type: SupportedIdType.int.type.asNullable,
           scope: ModelFieldScopeDefinition.all,
+          defaultModelValue: SupportedIdType.int.defaultValue,
+          defaultPersistValue: SupportedIdType.int.defaultValue,
           shouldPersist: true,
           documentation: [
             '/// The database id, set if the object has been inserted into the',

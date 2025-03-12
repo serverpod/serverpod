@@ -4,6 +4,7 @@ import 'package:code_builder/code_builder.dart' as code_builder;
 import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -125,7 +126,7 @@ class TypeDefinition {
 
   bool get isRecordType => className == RecordKeyword.className;
 
-  bool get isIdType => className == 'int';
+  bool get isIdType => SupportedIdType.all.any((e) => e.className == className);
 
   bool get isVoidType => className == 'void';
 
@@ -176,7 +177,7 @@ class TypeDefinition {
     );
   }
 
-  /// A convenience variable for getting a [TypeDefinition] of an non null int
+  /// A convenience variable for getting a [TypeDefinition] of a non null int
   /// quickly.
   static TypeDefinition int = TypeDefinition(className: 'int', nullable: false);
 
@@ -669,6 +670,56 @@ class TypeDefinition {
     var nullableString = nullable ? '?' : '';
     var urlString = url != null ? '$url:' : '';
     return '$urlString$className$genericsString$nullableString';
+  }
+}
+
+/// Supported ID type definitions.
+/// All configuration to support other types is done only on this class. For
+/// new variants of id types, add a new static getter and update the [all]
+/// getter. For different types, it is necessary to also update the `Table`
+/// constructor at `packages:serverpod/src/database/concepts/table.dart`.
+class SupportedIdType {
+  const SupportedIdType({
+    required this.type,
+    required this.aliases,
+    required this.defaultValue,
+  });
+
+  /// The supported id type.
+  final TypeDefinition type;
+
+  /// The aliases for the id type as exposed to the user. Supports multiple,
+  /// even though it is not recommended to use more than one to avoid confusion.
+  final List<String> aliases;
+
+  /// The default value for the column on the database definition. Must be one
+  /// of the supported defaults for the type.
+  final String defaultValue;
+
+  /// The class name of the id type.
+  String get className => type.className;
+
+  /// If no id type is specified, the default id type is [int].
+  static SupportedIdType get int => SupportedIdType(
+        type: TypeDefinition.int,
+        aliases: ['int'],
+        defaultValue: defaultIntSerial,
+      );
+
+  /// All supported id types.
+  static List<SupportedIdType> get all => [int];
+
+  /// All aliases exposed to the user.
+  static List<String> get userOptions => all.expand((e) => e.aliases).toList();
+
+  /// Get the [SupportedIdType] from a valid string alias. If the input is
+  /// invalid, will throw a [FormatException].
+  static SupportedIdType fromString(String input) {
+    for (var idType in all) {
+      if (idType.aliases.contains(input)) return idType;
+    }
+    var options = all.map((e) => "'${e.aliases.join("'|'")}'").join(', ');
+    throw FormatException('Invalid id type $input. Valid options: $options.');
   }
 }
 
