@@ -1,29 +1,23 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:test/test.dart';
 
-Matcher isASpanHaving(Object? Function(SourceSpanSeverityException) feature,
+Matcher isASpanWith(Object? Function(SourceSpanSeverityException) feature,
     String description, Object? matcher) {
   return isA<SourceSpanSeverityException>()
       .having(feature, description, wrapMatcher(matcher));
 }
 
 void main() {
-  var testAssetsPath = p.join(
-    'test',
-    'integration',
-    'serverpod_packages_version_check',
-    'test_assets',
-  );
   group('Given a pubspec.yaml', () {
     group('with explicit serverpod package version', () {
-      late final explicitVersion = PubspecPlus.fromFile(
-          File(p.join(testAssetsPath, 'explicit_1.1.0', 'pubspec.yaml')));
+      late final explicitVersion = PubspecPlus.parse('''
+name: x
+dependencies:
+  serverpod_shared: 1.1.0
+''');
 
       test(
           'when calling validateServerpodPackagesVersion with same version '
@@ -43,27 +37,21 @@ void main() {
           explicitVersion,
         );
 
-        test(
-            'then one warning is returned '
-            'and the message is correct', () {
+        test('then one warning is returned with correct message', () {
           expect(packageWarnings, [
-            isASpanHaving((s) => s.message, 'message',
+            isASpanWith((s) => s.message, 'message',
                 ServerpodPackagesVersionCheckWarnings.incompatibleVersion)
           ]);
         });
 
-        test(
-            'then one warning is returned '
-            'and the span text is correct', () {
+        test('then one warning is returned with correct span text', () {
           expect(packageWarnings,
-              [isASpanHaving((s) => s.span?.text, 'span?.text', '1.1.0')]);
+              [isASpanWith((s) => s.span?.text, 'span?.text', '1.1.0')]);
         });
 
-        test(
-            'then one warning is returned '
-            'and severity is warning', () {
+        test('then one warning is returned with warning as severity', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning),
           ]);
         });
@@ -76,27 +64,21 @@ void main() {
           explicitVersion,
         );
 
-        test(
-            'then one warning is returned '
-            'and the message is correct', () {
+        test('then one warning is returned with correct message', () {
           expect(packageWarnings, [
-            isASpanHaving((s) => s.message, 'message',
+            isASpanWith((s) => s.message, 'message',
                 ServerpodPackagesVersionCheckWarnings.incompatibleVersion)
           ]);
         });
 
-        test(
-            'then one warning is returned '
-            'and the span text is correct', () {
+        test('then one warning is returned with correct span text', () {
           expect(packageWarnings,
-              [isASpanHaving((s) => s.span?.text, 'span?.text', '1.1.0')]);
+              [isASpanWith((s) => s.span?.text, 'span?.text', '1.1.0')]);
         });
 
-        test(
-            'then one warning is returned '
-            'and severity is warning', () {
+        test('then one warning is returned with severity warning', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning),
           ]);
         });
@@ -104,8 +86,11 @@ void main() {
     });
 
     group('with approximate serverpod package version', () {
-      late final approximateVersion = PubspecPlus.fromFile(
-          File(p.join(testAssetsPath, 'approximate_1.1.0', 'pubspec.yaml')));
+      late final approximateVersion = PubspecPlus.parse('''
+name: x
+dependencies:
+  serverpod_shared: ^1.1.0
+''');
 
       group('when calling validateServerpodPackagesVersion matching version',
           () {
@@ -119,7 +104,7 @@ void main() {
             'then one warning is returned '
             'and the message is correct', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.message,
                 'message',
                 ServerpodPackagesVersionCheckWarnings.approximateVersion(
@@ -129,17 +114,17 @@ void main() {
 
         test(
             'then one warning is returned '
-            'and the span is correct', () {
+            ' and the span is correct', () {
           expect(packageWarnings, [
-            isASpanHaving((s) => s.span?.text, 'span?.text', '^1.1.0'),
+            isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0'),
           ]);
         });
 
         test(
             'then one warning is returned '
-            'and severity is warning', () {
+            ' and severity is warning', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning),
           ]);
         });
@@ -153,15 +138,15 @@ void main() {
           approximateVersion,
         );
         test(
-            'then two warnings are returned '
-            'and the messages are correct', () {
+            'then two warnings are returned'
+            ' and the messages are correct', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
               (s) => s.message,
               'message',
               ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
             ),
-            isASpanHaving(
+            isASpanWith(
               (s) => s.message,
               'message',
               ServerpodPackagesVersionCheckWarnings.approximateVersion(
@@ -175,13 +160,13 @@ void main() {
           expect(
               packageWarnings,
               everyElement(
-                  isASpanHaving((s) => s.span?.text, 'span?.text', '^1.1.0')));
+                  isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0')));
         });
 
         test('then the severity is warning', () {
           expect(
               packageWarnings,
-              everyElement(isASpanHaving(
+              everyElement(isASpanWith(
                   (s) => s.severity, 'severity', SourceSpanSeverity.warning)));
         });
       });
@@ -198,7 +183,7 @@ void main() {
             'then one warning is returned '
             'and the message is correct', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.message,
                 'message',
                 ServerpodPackagesVersionCheckWarnings.approximateVersion(
@@ -210,14 +195,14 @@ void main() {
             'then one warning is returned '
             'and the span text is correct', () {
           expect(packageWarnings,
-              [isASpanHaving((s) => s.span?.text, 'span?.text', '^1.1.0')]);
+              [isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0')]);
         });
 
         test(
             'then one warning is returned '
             'and severity is warning', () {
           expect(packageWarnings, [
-            isASpanHaving(
+            isASpanWith(
                 (s) => s.severity, 'severity', SourceSpanSeverity.warning)
           ]);
         });
