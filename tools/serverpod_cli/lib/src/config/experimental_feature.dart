@@ -12,9 +12,13 @@ class CommandLineExperimentalFeatures {
 
 enum ExperimentalFeature {
   all,
+
   // TODO: Remove when inheritance is enabled by default.
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/2711
-  inheritance;
+  inheritance,
+
+  // TODO: Remove when the feature is considered stable.
+  changeIdType;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {
