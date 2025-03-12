@@ -197,6 +197,60 @@ class TestToolsEndpoint extends Endpoint {
     return records;
   }
 
+  Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))>
+      recordEchoStream(
+    Session session,
+    (
+      String,
+      (Map<String, int>, {SimpleData simpleData, bool flag})
+    ) initialValue,
+    Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))>
+        stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<List<(String, int)>> listOfRecordEchoStream(
+    Session session,
+    List<(String, int)> initialValue,
+    Stream<List<(String, int)>> stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))?>
+      nullableRecordEchoStream(
+    Session session,
+    (
+      String,
+      (Map<String, int>, {SimpleData simpleData, bool flag})
+    )? initialValue,
+    Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))?>
+        stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
+    Session session,
+    List<(String, int)>? initialValue,
+    Stream<List<(String, int)>?> stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
   Future<void> logMessageWithSession(Session session) async {
     session.log('test session log in endpoint');
   }

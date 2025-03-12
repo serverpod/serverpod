@@ -447,16 +447,18 @@ class MethodStreamMessage extends WebSocketMessage
   /// The object that was sent.
   final dynamic object;
 
+  final SerializationManager _serializationManager;
+
   /// Creates a new [MethodStreamMessage].
   /// The [object] must be an object processed by the
   /// [SerializationManager.wrapWithClassName] method.
-  MethodStreamMessage(Map data, SerializationManager serializationManager)
+  MethodStreamMessage(Map data, this._serializationManager)
       : endpoint = data[WebSocketMessageDataKey.endpoint],
         method = data[WebSocketMessageDataKey.method],
         connectionId = UuidValueJsonExtension.fromJson(
             data[WebSocketMessageDataKey.connectionId]),
         parameter = data[WebSocketMessageDataKey.parameter],
-        object = serializationManager
+        object = _serializationManager
             .deserializeByClassName(data[WebSocketMessageDataKey.object]);
 
   /// Builds a [MethodStreamMessage] message.
@@ -479,16 +481,14 @@ class MethodStreamMessage extends WebSocketMessage
   }
 
   @override
-  String toString() => WebSocketMessage._buildMessage(
-        _messageType,
-        {
-          WebSocketMessageDataKey.endpoint: endpoint,
-          WebSocketMessageDataKey.method: method,
-          WebSocketMessageDataKey.connectionId: connectionId,
-          if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
-          WebSocketMessageDataKey.object: object,
-        },
-      ).toString();
+  String toString() => buildMessage(
+        endpoint: endpoint,
+        method: method,
+        connectionId: connectionId,
+        parameter: parameter,
+        object: object,
+        serializationManager: _serializationManager,
+      );
 }
 
 /// A message sent when a bad request is received.

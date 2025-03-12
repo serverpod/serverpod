@@ -2388,6 +2388,45 @@ class Protocol extends _i1.SerializationManager {
             data['n']['namedSubRecord']),
       ) as T;
     }
+    if (t ==
+        _i1.getType<
+            List<
+                (
+                  (int, String), {
+                  (_i131.SimpleData, double) namedSubRecord
+                })?>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<
+                  (
+                    (int, String), {
+                    (_i131.SimpleData, double) namedSubRecord
+                  })?>(e))
+              .toList()
+          : null) as T;
+    }
+    if (t ==
+        _i1.getType<
+            ((int, String), {(_i131.SimpleData, double) namedSubRecord})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
+              namedSubRecord: deserialize<(_i131.SimpleData, double)>(
+                  data['n']['namedSubRecord']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            ((int, String), {(_i131.SimpleData, double) namedSubRecord})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
+              namedSubRecord: deserialize<(_i131.SimpleData, double)>(
+                  data['n']['namedSubRecord']),
+            ) as T;
+    }
     if (t == Set<Set<int>>) {
       return (data as List).map((e) => deserialize<Set<int>>(e)).toSet() as T;
     }
@@ -2486,6 +2525,70 @@ class Protocol extends _i1.SerializationManager {
         deserialize<(int, bool)>(data['p'][1]),
       ) as T;
     }
+    if (t ==
+        _i1.getType<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+            )>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<
+            (
+              Map<String, int>, {
+              bool flag,
+              _i131.SimpleData simpleData
+            })>(data['p'][1]),
+      ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (Map<String, int>, {bool flag, _i131.SimpleData simpleData})>()) {
+      return (
+        deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),
+        flag: deserialize<bool>(data['n']['flag']),
+        simpleData: deserialize<_i131.SimpleData>(data['n']['simpleData']),
+      ) as T;
+    }
+    if (t == List<(String, int)>) {
+      return (data as List).map((e) => deserialize<(String, int)>(e)).toList()
+          as T;
+    }
+    if (t == _i1.getType<(String, int)>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<int>(data['p'][1]),
+      ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+            )?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<String>(((data as Map)['p'] as List)[0]),
+              deserialize<
+                  (
+                    Map<String, int>, {
+                    bool flag,
+                    _i131.SimpleData simpleData
+                  })>(data['p'][1]),
+            ) as T;
+    }
+    if (t == _i1.getType<List<(String, int)>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<(String, int)>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<(String, int)>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<int>(data['p'][1]),
+      ) as T;
+    }
     if (t == _i130.CustomClass) {
       return _i130.CustomClass.fromJson(data) as T;
     }
@@ -2538,6 +2641,94 @@ class Protocol extends _i1.SerializationManager {
       return (data != null
           ? (data as List).map((e) => deserialize<_i131.SimpleData>(e)).toList()
           : null) as T;
+    }
+    if (t == _i1.getType<(int?,)?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              ((data as Map)['p'] as List)[0] == null
+                  ? null
+                  : deserialize<int>(data['p'][0]),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            List<
+                (
+                  (int, String), {
+                  (_i131.SimpleData, double) namedSubRecord
+                })?>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<
+                  (
+                    (int, String), {
+                    (_i131.SimpleData, double) namedSubRecord
+                  })?>(e))
+              .toList()
+          : null) as T;
+    }
+    if (t ==
+        _i1.getType<
+            ((int, String), {(_i131.SimpleData, double) namedSubRecord})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
+              namedSubRecord: deserialize<(_i131.SimpleData, double)>(
+                  data['n']['namedSubRecord']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+            )>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<
+            (
+              Map<String, int>, {
+              bool flag,
+              _i131.SimpleData simpleData
+            })>(data['p'][1]),
+      ) as T;
+    }
+    if (t == _i1.getType<(String, int)>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<int>(data['p'][1]),
+      ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+            )?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<String>(((data as Map)['p'] as List)[0]),
+              deserialize<
+                  (
+                    Map<String, int>, {
+                    bool flag,
+                    _i131.SimpleData simpleData
+                  })>(data['p'][1]),
+            ) as T;
+    }
+    if (t == _i1.getType<List<(String, int)>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<(String, int)>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<(String, int)>()) {
+      return (
+        deserialize<String>(((data as Map)['p'] as List)[0]),
+        deserialize<int>(data['p'][1]),
+      ) as T;
     }
     try {
       return _i133.Protocol().deserialize<T>(data, t);
@@ -2992,6 +3183,31 @@ class Protocol extends _i1.SerializationManager {
     if (data is List<Set<_i131.SimpleData>>) {
       return 'List<Set<SimpleData>>';
     }
+    if (data is (int?,)?) {
+      return '(int?,)?';
+    }
+    if (data is List<
+        ((int, String), {(_i131.SimpleData, double) namedSubRecord})?>?) {
+      return 'List<((int,String),{(SimpleData,double) namedSubRecord})?>?';
+    }
+    if (data is (
+      String,
+      (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+    )) {
+      return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))';
+    }
+    if (data is List<(String, int)>) {
+      return 'List<(String,int)>';
+    }
+    if (data is (
+      String,
+      (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+    )?) {
+      return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?';
+    }
+    if (data is List<(String, int)>?) {
+      return 'List<(String,int)>?';
+    }
     return null;
   }
 
@@ -3444,7 +3660,63 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'List<Set<SimpleData>>') {
       return deserialize<List<Set<_i131.SimpleData>>>(data['data']);
     }
+    if (dataClassName == '(int?,)?') {
+      return deserialize<(int?,)?>(data['data']);
+    }
+    if (dataClassName ==
+        'List<((int,String),{(SimpleData,double) namedSubRecord})?>?') {
+      return deserialize<
+          List<
+              (
+                (int, String), {
+                (_i131.SimpleData, double) namedSubRecord
+              })?>?>(data['data']);
+    }
+    if (dataClassName ==
+        '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))') {
+      return deserialize<
+          (
+            String,
+            (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+          )>(data['data']);
+    }
+    if (dataClassName == 'List<(String,int)>') {
+      return deserialize<List<(String, int)>>(data['data']);
+    }
+    if (dataClassName ==
+        '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?') {
+      return deserialize<
+          (
+            String,
+            (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+          )?>(data['data']);
+    }
+    if (dataClassName == 'List<(String,int)>?') {
+      return deserialize<List<(String, int)>?>(data['data']);
+    }
     return super.deserializeByClassName(data);
+  }
+
+  /// Wraps serialized data with its class name so that it can be deserialized
+  /// with [deserializeByClassName].
+  ///
+  /// Records and containers containing records will be return in their JSON representation in the returned map.
+  @override
+  Map<String, dynamic> wrapWithClassName(Object? data) {
+    /// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
+    if (data is Iterable || data is Map) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapRecordContainingContainerToJson(data!),
+      };
+    } else if (data is Record) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapRecordToJson(data),
+      };
+    }
+
+    return super.wrapWithClassName(data);
   }
 }
 
@@ -3575,6 +3847,28 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
         record.$1,
         record.$2,
       ],
+    };
+  }
+  if (record is (
+    String,
+    (Map<String, int>, {bool flag, _i131.SimpleData simpleData})
+  )) {
+    return {
+      "p": [
+        record.$1,
+        mapRecordToJson(record.$2),
+      ],
+    };
+  }
+  if (record is (Map<String, int>, {bool flag, _i131.SimpleData simpleData})) {
+    return {
+      "p": [
+        record.$1,
+      ],
+      "n": {
+        "flag": record.flag,
+        "simpleData": record.simpleData,
+      },
     };
   }
   throw Exception('Unsupported record type ${record.runtimeType}');

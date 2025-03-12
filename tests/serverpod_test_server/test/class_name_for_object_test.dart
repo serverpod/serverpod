@@ -42,6 +42,25 @@ void main() {
   });
 
   test(
+      'Given a serialized record `(int?,)?`, when "deserializeByClassName" is called, then both server and client can decode the data',
+      () {
+    var serialized = {
+      'className': '(int?,)?',
+      'data': {
+        'p': [1234],
+      },
+    };
+
+    var serverResult = serverProtocol.deserializeByClassName(serialized);
+
+    expect(serverResult, (1234,));
+
+    var clientResult = clientProtocol.deserializeByClassName(serialized);
+
+    expect(clientResult, (1234,));
+  });
+
+  test(
       'Given a list with a type from another module, when "getClassNameForObject" is called, then both server and client generate the same string with the module name included',
       () {
     var serverName = serverProtocol.getClassNameForObject(
