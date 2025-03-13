@@ -1,3 +1,5 @@
+import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ColumnDefinitionBuilder {
@@ -24,12 +26,21 @@ class ColumnDefinitionBuilder {
     );
   }
 
-  ColumnDefinitionBuilder withIdColumn() {
+  ColumnDefinitionBuilder withIdColumn(
+    String tableName, {
+    String type = 'int',
+  }) {
+    var idType = SupportedIdType.fromString(type);
+
     _name = 'id';
-    _columnType = ColumnType.integer;
     _isNullable = false;
-    _columnDefault = "nextval('test_id_seq'::regclass)";
-    _dartType = 'int';
+    _columnType = ColumnType.values.byName(idType.type.databaseTypeEnum);
+    _columnDefault = getColumnDefault(
+      idType.type,
+      idType.defaultValue,
+      tableName,
+    );
+    _dartType = idType.type.className;
     return this;
   }
 
