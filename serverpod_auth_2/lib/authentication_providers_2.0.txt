@@ -1,0 +1,6 @@
+
+// how to "get" an auth provider from the server code / an endpoint method (e.g. triggering e-mail invite)?
+
+// ensure multi-tenant would be supported, maybe we could even log into a specific tenant with "the same" credential?
+
+// see auth.AuthConfig
