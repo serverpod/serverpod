@@ -33,6 +33,7 @@ abstract class TypesSet implements _i1.SerializableModel {
     this.aMap,
     this.aList,
     this.aRecord,
+    this.aNullableRecord,
   });
 
   factory TypesSet({
@@ -51,6 +52,7 @@ abstract class TypesSet implements _i1.SerializableModel {
     Set<Map<String, _i5.Types>>? aMap,
     Set<List<_i5.Types>>? aList,
     Set<(int,)>? aRecord,
+    Set<(int,)?>? aNullableRecord,
   }) = _TypesSetImpl;
 
   factory TypesSet.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -132,6 +134,14 @@ abstract class TypesSet implements _i1.SerializableModel {
               (jsonSerialization['aRecord'] as List),
               itemFromJson: (e) => _i6.Protocol()
                   .deserialize<(int,)>((e as Map<String, dynamic>))),
+      aNullableRecord: jsonSerialization['aNullableRecord'] == null
+          ? null
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aNullableRecord'] as List),
+              itemFromJson: (e) => e == null
+                  ? null
+                  : _i6.Protocol()
+                      .deserialize<(int,)?>((e as Map<String, dynamic>))),
     );
   }
 
@@ -165,6 +175,8 @@ abstract class TypesSet implements _i1.SerializableModel {
 
   Set<(int,)>? aRecord;
 
+  Set<(int,)?>? aNullableRecord;
+
   /// Returns a shallow copy of this [TypesSet]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -184,6 +196,7 @@ abstract class TypesSet implements _i1.SerializableModel {
     Set<Map<String, _i5.Types>>? aMap,
     Set<List<_i5.Types>>? aList,
     Set<(int,)>? aRecord,
+    Set<(int,)?>? aNullableRecord,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -216,6 +229,9 @@ abstract class TypesSet implements _i1.SerializableModel {
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
       if (aRecord != null)
         'aRecord': _i6.mapRecordContainingContainerToJson(aRecord!),
+      if (aNullableRecord != null)
+        'aNullableRecord':
+            _i6.mapRecordContainingContainerToJson(aNullableRecord!),
     };
   }
 
@@ -244,6 +260,7 @@ class _TypesSetImpl extends TypesSet {
     Set<Map<String, _i5.Types>>? aMap,
     Set<List<_i5.Types>>? aList,
     Set<(int,)>? aRecord,
+    Set<(int,)?>? aNullableRecord,
   }) : super._(
           anInt: anInt,
           aBool: aBool,
@@ -260,6 +277,7 @@ class _TypesSetImpl extends TypesSet {
           aMap: aMap,
           aList: aList,
           aRecord: aRecord,
+          aNullableRecord: aNullableRecord,
         );
 
   /// Returns a shallow copy of this [TypesSet]
@@ -282,6 +300,7 @@ class _TypesSetImpl extends TypesSet {
     Object? aMap = _Undefined,
     Object? aList = _Undefined,
     Object? aRecord = _Undefined,
+    Object? aNullableRecord = _Undefined,
   }) {
     return TypesSet(
       anInt: anInt is Set<int>? ? anInt : this.anInt?.map((e0) => e0).toSet(),
@@ -337,7 +356,13 @@ class _TypesSetImpl extends TypesSet {
               .toSet(),
       aRecord: aRecord is Set<(int,)>?
           ? aRecord
-          : this.aRecord?.map((e0) => e0).toSet(),
+          : this.aRecord?.map((e0) => (e0.$1,)).toSet(),
+      aNullableRecord: aNullableRecord is Set<(int,)?>?
+          ? aNullableRecord
+          : this
+              .aNullableRecord
+              ?.map((e0) => e0 == null ? null : (e0.$1,))
+              .toSet(),
     );
   }
 }

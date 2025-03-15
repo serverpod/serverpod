@@ -6722,6 +6722,28 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<(String,)>()) {
       return (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
+    if (t == _i1.getType<Map<String, (String,)?>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) =>
+              MapEntry(deserialize<String>(k), deserialize<(String,)?>(v)))
+          : null) as T;
+    }
+    if (t == _i1.getType<(String,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<Map<(String,)?, String>?>()) {
+      return (data != null
+          ? Map.fromEntries((data as List).map((e) => MapEntry(
+              deserialize<(String,)?>(e['k']), deserialize<String>(e['v']))))
+          : null) as T;
+    }
+    if (t == _i1.getType<(String,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
+    }
     if (t == _i1.getType<(int,)?>()) {
       return (data == null)
           ? null as T
@@ -6808,6 +6830,55 @@ class Protocol extends _i1.SerializationManagerServer {
           : (deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
+    if (t == _i1.getType<({_i120.SimpleData namedModel})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              namedModel: deserialize<_i120.SimpleData>(
+                  ((data as Map)['n'] as Map)['namedModel']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<(_i120.SimpleData, {_i120.SimpleData namedModel})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),
+              namedModel:
+                  deserialize<_i120.SimpleData>(data['n']['namedModel']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<((int, String), {(int, String) namedNestedRecord})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
+              namedNestedRecord:
+                  deserialize<(int, String)>(data['n']['namedNestedRecord']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (
+              (List<(_i120.SimpleData,)>,), {
+              (
+                _i120.SimpleData,
+                Map<String, _i120.SimpleData>
+              ) namedNestedRecord
+            })?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(List<(_i120.SimpleData,)>,)>(
+                  ((data as Map)['p'] as List)[0]),
+              namedNestedRecord: deserialize<
+                  (
+                    _i120.SimpleData,
+                    Map<String, _i120.SimpleData>
+                  )>(data['n']['namedNestedRecord']),
+            ) as T;
+    }
     if (t == _i1.getType<Set<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toSet()
@@ -6889,6 +6960,16 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<Set<(int,)?>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<(int,)?>(e)).toSet()
+          : null) as T;
+    }
+    if (t == _i1.getType<(int,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
@@ -7674,6 +7755,33 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<(String,)>()) {
       return (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
+    if (t == _i1.getType<Map<String, (String,)?>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) =>
+              MapEntry(deserialize<String>(k), deserialize<(String,)?>(v)))
+          : null) as T;
+    }
+    if (t == _i1.getType<(String,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(String,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<Map<(String,)?, String>?>()) {
+      return (data != null
+          ? Map.fromEntries((data as List).map((e) => MapEntry(
+              deserialize<(String,)?>(e['k']), deserialize<String>(e['v']))))
+          : null) as T;
+    }
+    if (t == _i1.getType<(String,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
+    }
     if (t == _i1.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
@@ -7688,11 +7796,6 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data == null)
           ? null as T
           : (deserialize<DateTime>(((data as Map)['p'] as List)[0]),) as T;
-    }
-    if (t == _i1.getType<(String,)?>()) {
-      return (data == null)
-          ? null as T
-          : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
     if (t == _i1.getType<(_i134.ByteData,)?>()) {
       return (data == null)
@@ -7755,6 +7858,85 @@ class Protocol extends _i1.SerializationManagerServer {
           : (deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
+    if (t == _i1.getType<({_i120.SimpleData namedModel})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              namedModel: deserialize<_i120.SimpleData>(
+                  ((data as Map)['n'] as Map)['namedModel']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<(_i120.SimpleData, {_i120.SimpleData namedModel})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),
+              namedModel:
+                  deserialize<_i120.SimpleData>(data['n']['namedModel']),
+            ) as T;
+    }
+    if (t ==
+        _i1.getType<((int, String), {(int, String) namedNestedRecord})?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
+              namedNestedRecord:
+                  deserialize<(int, String)>(data['n']['namedNestedRecord']),
+            ) as T;
+    }
+    if (t == _i1.getType<(int, String)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t ==
+        _i1.getType<
+            (
+              (List<(_i120.SimpleData,)>,), {
+              (
+                _i120.SimpleData,
+                Map<String, _i120.SimpleData>
+              ) namedNestedRecord
+            })?>()) {
+      return (data == null)
+          ? null as T
+          : (
+              deserialize<(List<(_i120.SimpleData,)>,)>(
+                  ((data as Map)['p'] as List)[0]),
+              namedNestedRecord: deserialize<
+                  (
+                    _i120.SimpleData,
+                    Map<String, _i120.SimpleData>
+                  )>(data['n']['namedNestedRecord']),
+            ) as T;
+    }
+    if (t == _i1.getType<(List<(_i120.SimpleData,)>,)>()) {
+      return (
+        deserialize<List<(_i120.SimpleData,)>>(((data as Map)['p'] as List)[0]),
+      ) as T;
+    }
+    if (t == List<(_i120.SimpleData,)>) {
+      return (data as List)
+          .map((e) => deserialize<(_i120.SimpleData,)>(e))
+          .toList() as T;
+    }
+    if (t == _i1.getType<(_i120.SimpleData,)>()) {
+      return (deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
+    if (t == _i1.getType<(_i120.SimpleData,)>()) {
+      return (deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
+    if (t == _i1.getType<(_i120.SimpleData, Map<String, _i120.SimpleData>)>()) {
+      return (
+        deserialize<_i120.SimpleData>(((data as Map)['p'] as List)[0]),
+        deserialize<Map<String, _i120.SimpleData>>(data['p'][1]),
+      ) as T;
+    }
     if (t == _i1.getType<Set<(int,)>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<(int,)>(e)).toSet()
@@ -7762,6 +7944,16 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<Set<(int,)?>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<(int,)?>(e)).toSet()
+          : null) as T;
+    }
+    if (t == _i1.getType<(int,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
     if (t == _i135.CustomClass) {
       return _i135.CustomClass.fromJson(data) as T;
@@ -9406,6 +9598,69 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
+      ],
+    };
+  }
+  if (record is ({_i120.SimpleData namedModel})) {
+    return {
+      "n": {
+        "namedModel": record.namedModel,
+      },
+    };
+  }
+  if (record is (_i120.SimpleData, {_i120.SimpleData namedModel})) {
+    return {
+      "p": [
+        record.$1,
+      ],
+      "n": {
+        "namedModel": record.namedModel,
+      },
+    };
+  }
+  if (record is ((int, String), {(int, String) namedNestedRecord})) {
+    return {
+      "p": [
+        mapRecordToJson(record.$1),
+      ],
+      "n": {
+        "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
+      },
+    };
+  }
+  if (record is (int, String)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
+      ],
+    };
+  }
+  if (record is (
+    (List<(_i120.SimpleData,)>,), {
+    (_i120.SimpleData, Map<String, _i120.SimpleData>) namedNestedRecord
+  })) {
+    return {
+      "p": [
+        mapRecordToJson(record.$1),
+      ],
+      "n": {
+        "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
+      },
+    };
+  }
+  if (record is (List<(_i120.SimpleData,)>,)) {
+    return {
+      "p": [
+        record.$1,
+      ],
+    };
+  }
+  if (record is (_i120.SimpleData, Map<String, _i120.SimpleData>)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
       ],
     };
   }

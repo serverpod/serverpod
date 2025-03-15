@@ -338,8 +338,14 @@ class _TypesImpl extends Types {
                     value0,
                   )),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
-      aRecord:
-          aRecord is (String, {Uri? optionalUri})? ? aRecord : this.aRecord,
+      aRecord: aRecord is (String, {Uri? optionalUri})?
+          ? aRecord
+          : this.aRecord == null
+              ? null
+              : (
+                  this.aRecord!.$1,
+                  optionalUri: this.aRecord!.optionalUri,
+                ),
     );
   }
 }

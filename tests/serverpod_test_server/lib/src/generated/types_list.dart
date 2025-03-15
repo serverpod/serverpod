@@ -381,10 +381,13 @@ class _TypesListImpl extends TypesList {
               .toList(),
       aRecord: aRecord is List<(int,)>?
           ? aRecord
-          : this.aRecord?.map((e0) => e0).toList(),
+          : this.aRecord?.map((e0) => (e0.$1,)).toList(),
       aNullableRecord: aNullableRecord is List<(int,)?>?
           ? aNullableRecord
-          : this.aNullableRecord?.map((e0) => e0).toList(),
+          : this
+              .aNullableRecord
+              ?.map((e0) => e0 == null ? null : (e0.$1,))
+              .toList(),
     );
   }
 }

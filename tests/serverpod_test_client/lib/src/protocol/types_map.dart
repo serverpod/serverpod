@@ -50,6 +50,8 @@ abstract class TypesMap implements _i1.SerializableModel {
     this.aMapValue,
     this.aListValue,
     this.aRecordValue,
+    this.aNullableRecordValue,
+    this.aNullableRecordKey,
   });
 
   factory TypesMap({
@@ -85,6 +87,8 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
+    Map<String, (String,)?>? aNullableRecordValue,
+    Map<(String,)?, String>? aNullableRecordKey,
   }) = _TypesMapImpl;
 
   factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -283,6 +287,24 @@ abstract class TypesMap implements _i1.SerializableModel {
                 _i6.Protocol()
                     .deserialize<(String,)>((v as Map<String, dynamic>)),
               )),
+      aNullableRecordValue: (jsonSerialization['aNullableRecordValue'] as Map?)
+          ?.map((k, v) => MapEntry(
+                k as String,
+                v == null
+                    ? null
+                    : _i6.Protocol()
+                        .deserialize<(String,)?>((v as Map<String, dynamic>)),
+              )),
+      aNullableRecordKey: (jsonSerialization['aNullableRecordKey'] as List?)
+          ?.fold<Map<(String,)?, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    e['k'] == null
+                        ? null
+                        : _i6.Protocol().deserialize<(String,)?>(
+                            (e['k'] as Map<String, dynamic>)): e['v'] as String
+                  }),
     );
   }
 
@@ -350,6 +372,10 @@ abstract class TypesMap implements _i1.SerializableModel {
 
   Map<String, (String,)>? aRecordValue;
 
+  Map<String, (String,)?>? aNullableRecordValue;
+
+  Map<(String,)?, String>? aNullableRecordKey;
+
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -386,6 +412,8 @@ abstract class TypesMap implements _i1.SerializableModel {
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
+    Map<String, (String,)?>? aNullableRecordValue,
+    Map<(String,)?, String>? aNullableRecordKey,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -455,6 +483,12 @@ abstract class TypesMap implements _i1.SerializableModel {
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
       if (aRecordValue != null)
         'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
+      if (aNullableRecordValue != null)
+        'aNullableRecordValue':
+            _i6.mapRecordContainingContainerToJson(aNullableRecordValue!),
+      if (aNullableRecordKey != null)
+        'aNullableRecordKey':
+            _i6.mapRecordContainingContainerToJson(aNullableRecordKey!),
     };
   }
 
@@ -500,6 +534,8 @@ class _TypesMapImpl extends TypesMap {
     Map<String, Map<String, _i5.Types>>? aMapValue,
     Map<String, List<_i5.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
+    Map<String, (String,)?>? aNullableRecordValue,
+    Map<(String,)?, String>? aNullableRecordKey,
   }) : super._(
           anIntKey: anIntKey,
           aBoolKey: aBoolKey,
@@ -533,6 +569,8 @@ class _TypesMapImpl extends TypesMap {
           aMapValue: aMapValue,
           aListValue: aListValue,
           aRecordValue: aRecordValue,
+          aNullableRecordValue: aNullableRecordValue,
+          aNullableRecordKey: aNullableRecordKey,
         );
 
   /// Returns a shallow copy of this [TypesMap]
@@ -572,6 +610,8 @@ class _TypesMapImpl extends TypesMap {
     Object? aMapValue = _Undefined,
     Object? aListValue = _Undefined,
     Object? aRecordValue = _Undefined,
+    Object? aNullableRecordValue = _Undefined,
+    Object? aNullableRecordKey = _Undefined,
   }) {
     return TypesMap(
       anIntKey: anIntKey is Map<int, String>?
@@ -739,7 +779,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    key0,
+                    (key0.$1,),
                     value0,
                   )),
       anIntValue: anIntValue is Map<String, int>?
@@ -908,6 +948,26 @@ class _TypesMapImpl extends TypesMap {
               ) =>
                   MapEntry(
                     key0,
+                    (value0.$1,),
+                  )),
+      aNullableRecordValue: aNullableRecordValue is Map<String, (String,)?>?
+          ? aNullableRecordValue
+          : this.aNullableRecordValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0 == null ? null : (value0.$1,),
+                  )),
+      aNullableRecordKey: aNullableRecordKey is Map<(String,)?, String>?
+          ? aNullableRecordKey
+          : this.aNullableRecordKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0 == null ? null : (key0.$1,),
                     value0,
                   )),
     );
