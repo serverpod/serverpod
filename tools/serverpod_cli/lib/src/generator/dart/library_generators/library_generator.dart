@@ -8,6 +8,8 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+const _mapRecordToJsonFuncName = 'mapRecordToJson';
+
 /// Generates all the [ProtocolDefinition] based
 /// dart libraries (basically the content of a standalone dart file).
 class LibraryGenerator {
@@ -774,7 +776,7 @@ class LibraryGenerator {
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
     );
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      _mapRecordToJsonFuncName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -1095,7 +1097,8 @@ class LibraryGenerator {
   }
 
   Iterable<Method> _deserializationMethodsForRecordTypes(
-      List<TypeDefinition> recordTypesToDeserialize) {
+    List<TypeDefinition> recordTypesToDeserialize,
+  ) {
     return [
       Method(
         (m) => m
@@ -1105,7 +1108,7 @@ class LibraryGenerator {
             /// Throws in case the record type is not known.
             /// 
             /// This method will return `null` (only) for `null` inputs.''')
-          ..name = 'mapRecordToJson'
+          ..name = _mapRecordToJsonFuncName
           ..returns = refer('Map<String, dynamic>?')
           ..requiredParameters.add(Parameter((p) => p
             ..name = 'record'
@@ -1214,7 +1217,7 @@ extension on ProtocolDefinition {
     List<TypeDefinition> recordTypes,
     Set<String> handledTypes,
   ) {
-    var typeName = recordType.dartType.toString();
+    var typeName = recordType.dartType?.toString() ?? recordType.toString();
     if (handledTypes.contains(typeName)) {
       return;
     }
@@ -1252,6 +1255,16 @@ extension on ProtocolDefinition {
           _addRecordType(type, recordTypes, handledTypes);
         } else {
           _addTypeAndCollectRecords(type, recordTypes, handledTypes);
+        }
+      }
+    }
+
+    for (var model in models.whereType<ClassDefinition>()) {
+      for (var field in model.fields) {
+        if (field.type.isRecordType) {
+          _addRecordType(field.type, recordTypes, handledTypes);
+        } else if (field.type.returnsRecordInContainer) {
+          _addTypeAndCollectRecords(field.type, recordTypes, handledTypes);
         }
       }
     }
@@ -1362,7 +1375,7 @@ extension on Expression {
     required GeneratorConfig config,
   }) {
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      _mapRecordToJsonFuncName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -1429,7 +1442,7 @@ extension on TypeDefinition {
         for (var (index, positionalField) in positionalFields.indexed) ...[
           if (positionalField.isRecordType) ...[
             Code(
-              'mapRecordToJson($name.\$${index + 1})',
+              '$_mapRecordToJsonFuncName($name.\$${index + 1})',
             ),
           ] else
             Code('$name.\$${index + 1}'),
@@ -1442,9 +1455,11 @@ extension on TypeDefinition {
         for (final namedField in namedFields) ...[
           Code('"${namedField.recordFieldName!}"'),
           const Code(':'),
-          if (namedField.isRecordType) ...[
-            Code('mapRecordToJson($name.${namedField.recordFieldName!})')
-          ] else
+          if (namedField.isRecordType)
+            Code(
+              '$_mapRecordToJsonFuncName($name.${namedField.recordFieldName!})',
+            )
+          else
             Code('$name.${namedField.recordFieldName!}'),
           const Code(','),
         ],

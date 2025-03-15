@@ -251,6 +251,17 @@ class TestToolsEndpoint extends Endpoint {
     }
   }
 
+  Stream<TypesRecord?> modelWithRecordsEchoStream(
+    Session session,
+    TypesRecord? initialValue,
+    Stream<TypesRecord?> stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
   Future<void> logMessageWithSession(Session session) async {
     session.log('test session log in endpoint');
   }

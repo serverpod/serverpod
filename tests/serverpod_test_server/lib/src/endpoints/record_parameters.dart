@@ -255,4 +255,30 @@ class RecordParametersEndpoint extends Endpoint {
     }
   }
 // #endregion
+
+// #region Records inside model class
+  Stream<TypesRecord> streamOfModelClassWithRecordField(
+    Session session,
+    TypesRecord initialValue,
+    Stream<TypesRecord> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
+  Stream<TypesRecord?> streamOfNullableModelClassWithRecordField(
+    Session session,
+    TypesRecord? initialValue,
+    Stream<TypesRecord?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+// #endregion
 }

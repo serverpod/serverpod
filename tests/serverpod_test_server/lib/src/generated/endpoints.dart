@@ -69,6 +69,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i54;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i55;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i56;
+import 'package:serverpod_test_server/src/generated/types_record.dart' as _i57;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -5550,6 +5551,62 @@ class Endpoints extends _i1.EndpointDispatch {
                     })?>?>(),
           ),
         ),
+        'streamOfModelClassWithRecordField': _i1.MethodStreamConnector(
+          name: 'streamOfModelClassWithRecordField',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i57.TypesRecord>(),
+              nullable: false,
+            )
+          },
+          streamParams: {
+            'values': _i1.StreamParameterDescription<_i57.TypesRecord>(
+              name: 'values',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .streamOfModelClassWithRecordField(
+            session,
+            params['initialValue'],
+            streamParams['values']!.cast<_i57.TypesRecord>(),
+          ),
+        ),
+        'streamOfNullableModelClassWithRecordField': _i1.MethodStreamConnector(
+          name: 'streamOfNullableModelClassWithRecordField',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i57.TypesRecord?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'values': _i1.StreamParameterDescription<_i57.TypesRecord?>(
+              name: 'values',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .streamOfNullableModelClassWithRecordField(
+            session,
+            params['initialValue'],
+            streamParams['values']!.cast<_i57.TypesRecord?>(),
+          ),
+        ),
       },
     );
     connectors['redis'] = _i1.EndpointConnector(
@@ -6842,6 +6899,34 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['initialValue'],
             streamParams['stream']!.cast<List<(String, int)>?>(),
+          ),
+        ),
+        'modelWithRecordsEchoStream': _i1.MethodStreamConnector(
+          name: 'modelWithRecordsEchoStream',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i57.TypesRecord?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<_i57.TypesRecord?>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .modelWithRecordsEchoStream(
+            session,
+            params['initialValue'],
+            streamParams['stream']!.cast<_i57.TypesRecord?>(),
           ),
         ),
         'addWillCloseListenerToSessionIntStreamMethodAndThrow':

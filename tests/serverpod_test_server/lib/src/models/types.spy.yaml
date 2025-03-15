@@ -16,3 +16,4 @@ fields:
   aList: List<int>?
   aMap: Map<int, int>?
   aSet: Set<int>?
+  aRecord: (String id, {Uri? optionalUri})?
