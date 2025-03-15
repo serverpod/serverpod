@@ -829,23 +829,24 @@ Iterable<TypeDefinition> _parseNamedRecordFields(
   var end = namedRecordFieldsPart.lastIndexOf('}');
   var typesMap = namedRecordFieldsPart.substring(start + 1, end);
 
-  var splitFields = splitIgnoringBracketsAndQuotes(typesMap);
+  var namedFieldWithTypes = splitIgnoringBracketsAndQuotes(typesMap);
 
-  for (var splitField in splitFields) {
-    if (splitField.startsWith('(')) {
-      yield parseType(splitField, extraClasses: extraClasses);
-    } else {
-      // e.g. `String foo`
-      var parts = splitField.split(' ');
-      assert(parts.length >= 2);
+  for (var namedFieldWithType in namedFieldWithTypes) {
+    namedFieldWithType = namedFieldWithType.trim();
 
-      var type = parseType(
-        parts.take(parts.length - 1).join(),
-        extraClasses: extraClasses,
-      );
+    var typeDescription = namedFieldWithType
+        .substring(0, namedFieldWithType.lastIndexOf(' '))
+        .trim();
+    var name = namedFieldWithType
+        .substring(namedFieldWithType.lastIndexOf(' '))
+        .trim();
 
-      yield type.asNamedRecordField(parts.last);
-    }
+    var type = parseType(
+      typeDescription,
+      extraClasses: extraClasses,
+    );
+
+    yield type.asNamedRecordField(name);
   }
 }
 

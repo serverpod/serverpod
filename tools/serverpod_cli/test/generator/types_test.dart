@@ -411,4 +411,136 @@ void main() {
       ),
     ]);
   });
+
+  test(
+      'Given a field type of a record holding positional and named fields with nested record types on the type definition, when it is parsed, then the correct type definition is returned.',
+      () {
+    var type = parseType(
+      '((int, String?) nestedPositionalRecord, {(bool, Duration?) namedNestedRecord})?',
+      extraClasses: [],
+    );
+
+    expect(type.className, 'Record');
+    expect(type.nullable, isTrue);
+    expect(type.generics, [
+      isA<TypeDefinition>()
+          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.recordFieldName, 'recordFieldName', isNull)
+          .having((t) => t.nullable, 'nullable', isFalse)
+          .having(
+        (t) => t.generics,
+        'generics',
+        [
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'int')
+              .having((t) => t.nullable, 'nullable', isFalse),
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'String')
+              .having((t) => t.nullable, 'nullable', isTrue),
+        ],
+      ),
+      isA<TypeDefinition>()
+          .having((t) => t.className, 'className', 'Record')
+          .having(
+            (t) => t.recordFieldName,
+            'recordFieldName',
+            'namedNestedRecord',
+          )
+          .having((t) => t.nullable, 'nullable', isFalse)
+          .having(
+        (t) => t.generics,
+        'generics',
+        [
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'bool')
+              .having((t) => t.nullable, 'nullable', isFalse),
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'Duration')
+              .having((t) => t.nullable, 'nullable', isTrue),
+        ],
+      ),
+    ]);
+  });
+
+  test(
+      'Given a field type of a record holding positional and named field with nested generics in record types on the type definition, when it is parsed, then the correct type definition is returned.',
+      () {
+    var type = parseType(
+      '((List<(SimpleData,)>,) nestedRecordWithList, {(SimpleData, Map<String, SimpleData>) namedNestedRecord})?',
+      extraClasses: [],
+    );
+
+    expect(type.className, 'Record');
+    expect(type.nullable, isTrue);
+    expect(type.generics, [
+      isA<TypeDefinition>()
+          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.recordFieldName, 'recordFieldName', isNull)
+          .having((t) => t.nullable, 'nullable', isFalse)
+          .having(
+        (t) => t.generics,
+        'generics',
+        [
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'List')
+              .having((t) => t.nullable, 'nullable', isFalse)
+              .having(
+            (t) => t.generics,
+            'generics',
+            [
+              isA<TypeDefinition>()
+                  .having((t) => t.className, 'className', 'Record')
+                  .having((t) => t.nullable, 'nullable', isFalse)
+                  .having(
+                (t) => t.generics,
+                'generics',
+                [
+                  isA<TypeDefinition>()
+                      .having((t) => t.className, 'className', 'SimpleData')
+                      .having((t) => t.nullable, 'nullable', isFalse)
+                      .having(
+                        (t) => t.recordFieldName,
+                        'recordFieldName',
+                        isNull,
+                      ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      isA<TypeDefinition>()
+          .having((t) => t.className, 'className', 'Record')
+          .having(
+            (t) => t.recordFieldName,
+            'recordFieldName',
+            'namedNestedRecord',
+          )
+          .having((t) => t.nullable, 'nullable', isFalse)
+          .having(
+        (t) => t.generics,
+        'generics',
+        [
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'SimpleData')
+              .having((t) => t.nullable, 'nullable', isFalse),
+          isA<TypeDefinition>()
+              .having((t) => t.className, 'className', 'Map')
+              .having((t) => t.nullable, 'nullable', isFalse)
+              .having(
+            (t) => t.generics,
+            'generics',
+            [
+              isA<TypeDefinition>()
+                  .having((t) => t.className, 'className', 'String')
+                  .having((t) => t.nullable, 'nullable', isFalse),
+              isA<TypeDefinition>()
+                  .having((t) => t.className, 'className', 'SimpleData')
+                  .having((t) => t.nullable, 'nullable', isFalse),
+            ],
+          ),
+        ],
+      ),
+    ]);
+  });
 }
