@@ -34,3 +34,5 @@ fields:
   aMapValue: Map<String, Map<String, Types>>?
   aListValue: Map<String, List<Types>>?
   aRecordValue: Map<String, (String,)>?
+  aNullableRecordValue: Map<String, (String,)?>?
+  aNullableRecordKey: Map<(String,)?, String>?

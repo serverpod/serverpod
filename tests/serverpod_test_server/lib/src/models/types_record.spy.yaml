@@ -16,3 +16,7 @@ fields:
   aMap: (Map<int, int>,)?
   aSet: (Set<int>,)?
   aSimpleData: (SimpleData,)?
+  aNamedModel: ({SimpleData namedModel})?
+  aPositionalAndNamedModel: (SimpleData, {SimpleData namedModel})?
+  aNestedRecord: ((int, String) nestedRecord, {(int, String) namedNestedRecord})?
+  aNestedContainers: ((List<(SimpleData,)>,) nestedRecordWithList, {(SimpleData, Map<String, SimpleData>) namedNestedRecord})?

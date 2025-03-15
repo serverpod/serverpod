@@ -36,5 +36,4 @@ const _nonMutableTypes = [
   UuidValue,
   Uri,
   BigInt,
-  Record,
 ];

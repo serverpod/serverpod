@@ -750,11 +750,24 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
-      {int depth = 0, bool isRoot = false}) {
+  Expression _buildDeepCloneTree(
+    TypeDefinition type,
+    String variableName, {
+    int depth = 0,
+    bool isRoot = false,
+  }) {
     var isLeafNode = type.generics.isEmpty;
-    if (isLeafNode || type.isRecordType) {
+    if (isLeafNode) {
       return _buildShallowClone(type, variableName, isRoot);
+    }
+
+    if (type.isRecordType) {
+      return _buildRecordCloneCallback(
+        variableName,
+        type.nullable,
+        type.generics,
+        depth,
+      );
     }
 
     // For now the model types do not contain records, so casting is valid
@@ -871,6 +884,43 @@ class SerializableModelLibraryGenerator {
         builder.body = refer(MapKeyword.mapEntry).call([keyArg, valueArg]).code;
       },
     ).closure;
+  }
+
+  Expression _buildRecordCloneCallback(
+    String name,
+    bool nullable,
+    List<TypeDefinition> fields,
+    int depth,
+  ) {
+    var positionalFields =
+        fields.where((f) => f.recordFieldName == null).toList();
+    var namedFields = fields.where((f) => f.recordFieldName != null).toList();
+
+    var prefix = depth == 0 ? 'this.' : '';
+    var accessor = nullable && depth == 0 ? '!' : '';
+
+    return CodeExpression(
+      Block.of([
+        if (nullable) ...[Code('$prefix$name == null ? null :')],
+        const Code('('),
+        for (var (i, positionalField) in positionalFields.indexed) ...[
+          _buildDeepCloneTree(
+                  positionalField, '$prefix$name$accessor.\$${i + 1}',
+                  depth: depth + 1)
+              .code,
+          const Code(','),
+        ],
+        for (var namedField in namedFields) ...[
+          Code('${namedField.recordFieldName!}:'),
+          _buildDeepCloneTree(namedField,
+                  '$prefix$name$accessor.${namedField.recordFieldName!}',
+                  depth: depth + 1)
+              .code,
+          const Code(','),
+        ],
+        const Code(')'),
+      ]),
+    );
   }
 
   Expression _buildMaybeNullMethodCall(
@@ -2427,3 +2477,5 @@ class SerializableModelLibraryGenerator {
     return refer(field.name);
   }
 }
+
+class SimpleData {}

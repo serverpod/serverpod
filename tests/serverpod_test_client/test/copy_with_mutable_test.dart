@@ -137,6 +137,24 @@ void main() {
     });
 
     test(
+        'Given an object with a Record containing a Map when mutating the Map of the original then the copy is unmodified because it has been deep-copied.',
+        () {
+      var types = TypesRecord(aMap: ({1: 2},));
+      var typesCopy = types.copyWith();
+
+      types.aMap!.$1.clear();
+
+      expect(
+        types.aMap?.$1,
+        isEmpty,
+      );
+      expect(
+        typesCopy.aMap?.$1,
+        equals({1: 2}),
+      );
+    });
+
+    test(
         'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
         () {
       // ignore: deprecated_member_use
