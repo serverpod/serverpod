@@ -770,8 +770,10 @@ TypeDefinition _parseRecord(
   String trimmedRecordInput, {
   List<TypeDefinition>? extraClasses,
 }) {
-  assert(trimmedRecordInput.startsWith('('));
-  assert(trimmedRecordInput.endsWith(')') || trimmedRecordInput.endsWith('?'));
+  if (!(trimmedRecordInput.startsWith('(') &&
+      (trimmedRecordInput.endsWith(')') || trimmedRecordInput.endsWith('?')))) {
+    throw Exception('"$trimmedRecordInput" does not describe a Record');
+  }
 
   var (fields, nullable) = _unwrapRecord(trimmedRecordInput);
 
@@ -816,8 +818,12 @@ Iterable<TypeDefinition> _parseNamedRecordFields(
   String namedRecordFieldsPart, {
   List<TypeDefinition>? extraClasses,
 }) sync* {
-  assert(namedRecordFieldsPart.startsWith('{'));
-  assert(namedRecordFieldsPart.endsWith('}'));
+  if (!namedRecordFieldsPart.startsWith('{') ||
+      !namedRecordFieldsPart.endsWith('}')) {
+    throw Exception(
+      '"$namedRecordFieldsPart" does not described the named parameters of a Record',
+    );
+  }
 
   var start = namedRecordFieldsPart.indexOf('{');
   var end = namedRecordFieldsPart.lastIndexOf('}');
