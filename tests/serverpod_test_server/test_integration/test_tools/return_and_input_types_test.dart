@@ -1,3 +1,4 @@
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -150,6 +151,146 @@ void main() {
         expect(result, hasLength(2));
         expect(result.first.aRecord?.$1, 'hello');
         expect(result.last.aRecord?.$1, 'world');
+      });
+
+      test('when calling echoModuleDatatype then should return the model',
+          () async {
+        final model = ModuleDatatype(
+          model: ModuleClass(name: 'hello', data: 1, record: (true,)),
+          list: [],
+          map: {},
+          record: (ModuleClass(name: 'world', data: 2, record: (false,)),),
+        );
+
+        var result = await endpoints.testTools.echoModuleDatatype(
+          sessionBuilder,
+          model,
+        );
+
+        expect(
+          result.model,
+          isA<ModuleClass>()
+              .having((m) => m.name, 'name', 'hello')
+              .having((m) => m.data, 'data', 1)
+              .having((m) => m.record, 'record', (true,)),
+        );
+        expect(
+          result.record?.$1,
+          isA<ModuleClass>()
+              .having((m) => m.name, 'name', 'world')
+              .having((m) => m.data, 'data', 2)
+              .having((m) => m.record, 'record', (false,)),
+        );
+      });
+
+      test('when calling streamModuleDatatype then should return the models',
+          () async {
+        final initial = ModuleDatatype(
+          model: ModuleClass(name: 'hello', data: 1, record: (true,)),
+          list: [],
+          map: {},
+          record: (ModuleClass(name: 'world', data: 2, record: (false,)),),
+        );
+        final streamed = [
+          ModuleDatatype(
+            model: ModuleClass(name: 'lorem', data: 3, record: (true,)),
+            list: [],
+            map: {},
+            record: (ModuleClass(name: 'ipsum', data: 4, record: (false,)),),
+          ),
+        ];
+
+        var result = endpoints.testTools.streamModuleDatatype(
+          sessionBuilder,
+          initial,
+          Stream.fromIterable(streamed),
+        );
+
+        expect(
+          result,
+          emitsInOrder(
+            [
+              isA<ModuleDatatype>()
+                  .having(
+                    ((m) => m.model),
+                    'model',
+                    isA<ModuleClass>()
+                        .having((m) => m.name, 'name', 'hello')
+                        .having((m) => m.data, 'data', 1)
+                        .having((m) => m.record, 'record', (true,)),
+                  )
+                  .having(
+                    ((m) => m.record?.$1),
+                    'record.\$1',
+                    isA<ModuleClass>()
+                        .having((m) => m.name, 'name', 'world')
+                        .having((m) => m.data, 'data', 2)
+                        .having((m) => m.record, 'record', (false,)),
+                  ),
+              isA<ModuleDatatype>()
+                  .having(
+                    ((m) => m.model),
+                    'model',
+                    isA<ModuleClass>()
+                        .having((m) => m.name, 'name', 'lorem')
+                        .having((m) => m.data, 'data', 3)
+                        .having((m) => m.record, 'record', (true,)),
+                  )
+                  .having(
+                    ((m) => m.record?.$1),
+                    'record.\$1',
+                    isA<ModuleClass>()
+                        .having((m) => m.name, 'name', 'ipsum')
+                        .having((m) => m.data, 'data', 4)
+                        .having((m) => m.record, 'record', (false,)),
+                  ),
+            ],
+          ),
+        );
+      });
+
+      test('when calling echoModuleClass then should return the model',
+          () async {
+        final model = ModuleClass(name: 'hello', data: 1, record: (true,));
+
+        var result = await endpoints.testTools.echoModuleClass(
+          sessionBuilder,
+          model,
+        );
+
+        expect(result.name, 'hello');
+        expect(result.data, 1);
+        expect(result.record, (true,));
+      });
+
+      test('when calling streamModuleClass then should return the models',
+          () async {
+        final initial = ModuleClass(name: 'hello', data: 1, record: (true,));
+        final streamed = [
+          ModuleClass(name: 'world', data: 2, record: (false,)),
+        ];
+
+        var result = endpoints.testTools.streamModuleClass(
+          sessionBuilder,
+          initial,
+          Stream.fromIterable(streamed),
+        );
+
+        expect(
+          result,
+          emitsInOrder(
+            [
+              isA<ModuleClass>()
+                  .having((m) => m.name, 'name', 'hello')
+                  .having((m) => m.data, 'data', 1)
+                  .having((m) => m.record, 'record', (true,)),
+              isA<ModuleClass>()
+                  .having((m) => m.name, 'name', 'world')
+                  .having((m) => m.data, 'data', 2)
+                  .having((m) => m.record, 'record', (false,)),
+            ],
+          ),
+        );
       });
 
       test('when calling echoRecord then should return the record', () async {

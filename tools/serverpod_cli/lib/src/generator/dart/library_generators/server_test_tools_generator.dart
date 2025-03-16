@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class ServerTestToolsGenerator {
   final ProtocolDefinition protocolDefinition;
@@ -568,12 +569,13 @@ extension on ParameterDefinition {
           ]),
         ]).code,
       ]);
-    } else if (isModelFromProject) {
-      if (type.nullable) {
-        return refer(name).nullSafeProperty('toJson').call([]).code;
-      } else {
-        return refer(name).property('toJson').call([]).code;
-      }
+    } else if ((!autoSerializedTypes.contains(type.className) &&
+        !extensionSerializedTypes.contains(type.className))) {
+      return refer('jsonDecode', 'dart:convert').call([
+        refer('SerializationManager', serverpodUrl(true))
+            .property('encode')
+            .call([refer(name)]),
+      ]).code;
     } else {
       return refer(name).code;
     }

@@ -2,3 +2,4 @@ class: ModuleClass
 fields:
   name: String
   data: int
+  record: (bool,)?

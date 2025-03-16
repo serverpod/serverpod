@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class TestToolsEndpoint extends Endpoint {
@@ -195,6 +196,48 @@ class TestToolsEndpoint extends Endpoint {
     List<Types> typesList,
   ) async {
     return typesList;
+  }
+
+  /// Returns a model class which fields reference `ModuleClass` defined in another module
+  Future<ModuleDatatype> echoModuleDatatype(
+    Session session,
+    ModuleDatatype moduleDatatype,
+  ) async {
+    return moduleDatatype;
+  }
+
+  Stream<ModuleDatatype?> streamModuleDatatype(
+    Session session,
+    ModuleDatatype? initialValue,
+    Stream<ModuleDatatype?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
+  /// Returns the given `ModuleClass` instance
+  ///
+  /// `ModuleClass` is defined in another module
+  Future<ModuleClass> echoModuleClass(
+    Session session,
+    ModuleClass moduleClass,
+  ) async {
+    return moduleClass;
+  }
+
+  Stream<ModuleClass?> streamModuleClass(
+    Session session,
+    ModuleClass? initialValue,
+    Stream<ModuleClass?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
   }
 
   Future<(String, (int, bool))> echoRecord(
