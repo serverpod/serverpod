@@ -309,4 +309,30 @@ and neither is this line
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
   });
+
+  test(
+      'Given a yaml model with a field type wrapped in (), when parsing, then an error should be returned',
+      () {
+    var yamlSource = ModelSourceBuilder().withFileName('example').withYaml(
+      '''
+      class: Example
+      fields:
+        name: (String)
+      ''',
+    ).build();
+
+    CodeGenerationCollector? reportedErrors;
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [yamlSource], (uri, errors) {
+      reportedErrors = errors;
+    });
+
+    statefulAnalyzer.validateAll();
+
+    expect(reportedErrors?.errors, hasLength(1));
+    expect(
+      reportedErrors?.errors.single.message,
+      contains('invalid datatype "(String)"'),
+    );
+  });
 }
