@@ -120,6 +120,38 @@ void main() {
         expect(result[1].num, 2);
       });
 
+      test('when calling echoTypes then should return the `Types` model',
+          () async {
+        final types = Types(
+          aRecord: ('hello', optionalUri: Uri.parse('world://')),
+        );
+        var result = await endpoints.testTools.echoTypes(
+          sessionBuilder,
+          types,
+        );
+
+        expect(
+          result.aRecord,
+          ('hello', optionalUri: Uri.parse('world://')),
+        );
+      });
+
+      test('when calling echoTypesList then should return the `Types` models',
+          () async {
+        final typesList = [
+          Types(aRecord: ('hello', optionalUri: null)),
+          Types(aRecord: ('world', optionalUri: null)),
+        ];
+        var result = await endpoints.testTools.echoTypesList(
+          sessionBuilder,
+          typesList,
+        );
+
+        expect(result, hasLength(2));
+        expect(result.first.aRecord?.$1, 'hello');
+        expect(result.last.aRecord?.$1, 'world');
+      });
+
       test('when calling echoRecord then should return the record', () async {
         final record = ('hello', (2, true));
         var result = await endpoints.testTools.echoRecord(

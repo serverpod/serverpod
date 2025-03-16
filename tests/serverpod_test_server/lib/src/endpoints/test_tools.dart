@@ -183,6 +183,20 @@ class TestToolsEndpoint extends Endpoint {
     return simpleDatas;
   }
 
+  Future<Types> echoTypes(
+    Session session,
+    Types typesModel,
+  ) async {
+    return typesModel;
+  }
+
+  Future<List<Types>> echoTypesList(
+    Session session,
+    List<Types> typesList,
+  ) async {
+    return typesList;
+  }
+
   Future<(String, (int, bool))> echoRecord(
     Session session,
     (String, (int, bool)) record,
