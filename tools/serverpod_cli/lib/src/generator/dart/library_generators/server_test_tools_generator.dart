@@ -538,9 +538,6 @@ extension on ParameterDefinition {
   /// Records and record-containing containers need to be mapped to their JSON (Map) representation,
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
-    var isModelFromProject =
-        type.url?.startsWith('package:${config.serverPackage}/') == true;
-
     var mapRecordToJsonRef = refer(
       'mapRecordToJson',
       'package:${config.serverPackage}/src/generated/protocol.dart',
