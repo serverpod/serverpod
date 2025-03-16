@@ -152,6 +152,7 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i131;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i132;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i133;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i134;
+import 'package:serverpod_test_client/src/protocol/types.dart' as _i135;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'defaults/bigint/bigint_default.dart';
@@ -2730,6 +2731,10 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == Set<Duration?>) {
       return (data as List).map((e) => deserialize<Duration?>(e)).toSet() as T;
+    }
+    if (t == List<_i135.Types>) {
+      return (data as List).map((e) => deserialize<_i135.Types>(e)).toList()
+          as T;
     }
     if (t == _i1.getType<(String, (int, bool))>()) {
       return (

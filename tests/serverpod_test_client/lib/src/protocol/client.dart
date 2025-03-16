@@ -3048,6 +3048,20 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'simpleDatas': simpleDatas},
       );
 
+  _i2.Future<_i12.Types> echoTypes(_i12.Types typesModel) =>
+      caller.callServerEndpoint<_i12.Types>(
+        'testTools',
+        'echoTypes',
+        {'typesModel': typesModel},
+      );
+
+  _i2.Future<List<_i12.Types>> echoTypesList(List<_i12.Types> typesList) =>
+      caller.callServerEndpoint<List<_i12.Types>>(
+        'testTools',
+        'echoTypesList',
+        {'typesList': typesList},
+      );
+
   _i2.Future<(String, (int, bool))> echoRecord((String, (int, bool)) record) =>
       caller.callServerEndpoint<(String, (int, bool))>(
         'testTools',

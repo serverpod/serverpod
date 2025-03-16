@@ -6538,6 +6538,42 @@ class Endpoints extends _i1.EndpointDispatch {
             params['simpleDatas'],
           ),
         ),
+        'echoTypes': _i1.MethodConnector(
+          name: 'echoTypes',
+          params: {
+            'typesModel': _i1.ParameterDescription(
+              name: 'typesModel',
+              type: _i1.getType<_i49.Types>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint).echoTypes(
+            session,
+            params['typesModel'],
+          ),
+        ),
+        'echoTypesList': _i1.MethodConnector(
+          name: 'echoTypesList',
+          params: {
+            'typesList': _i1.ParameterDescription(
+              name: 'typesList',
+              type: _i1.getType<List<_i49.Types>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint).echoTypesList(
+            session,
+            params['typesList'],
+          ),
+        ),
         'echoRecord': _i1.MethodConnector(
           name: 'echoRecord',
           params: {

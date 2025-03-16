@@ -367,6 +367,8 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoTypes:
+  - echoTypesList:
   - echoRecord:
   - echoRecords:
   - recordEchoStream:

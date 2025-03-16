@@ -155,6 +155,7 @@ import 'dart:typed_data' as _i134;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i135;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i136;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i137;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i138;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'defaults/bigint/bigint_default.dart';
@@ -7618,6 +7619,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == Set<Duration?>) {
       return (data as List).map((e) => deserialize<Duration?>(e)).toSet() as T;
+    }
+    if (t == List<_i138.Types>) {
+      return (data as List).map((e) => deserialize<_i138.Types>(e)).toList()
+          as T;
     }
     if (t == _i1.getType<(String, (int, bool))>()) {
       return (
