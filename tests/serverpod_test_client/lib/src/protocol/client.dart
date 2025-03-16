@@ -3062,6 +3062,49 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'typesList': typesList},
       );
 
+  /// Returns a model class which fields reference `ModuleClass` defined in another module
+  _i2.Future<_i18.ModuleDatatype> echoModuleDatatype(
+          _i18.ModuleDatatype moduleDatatype) =>
+      caller.callServerEndpoint<_i18.ModuleDatatype>(
+        'testTools',
+        'echoModuleDatatype',
+        {'moduleDatatype': moduleDatatype},
+      );
+
+  _i2.Stream<_i18.ModuleDatatype?> streamModuleDatatype(
+    _i18.ModuleDatatype? initialValue,
+    _i2.Stream<_i18.ModuleDatatype?> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i18.ModuleDatatype?>,
+          _i18.ModuleDatatype?>(
+        'testTools',
+        'streamModuleDatatype',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
+  /// Returns the given `ModuleClass` instance
+  ///
+  /// `ModuleClass` is defined in another module
+  _i2.Future<_i17.ModuleClass> echoModuleClass(_i17.ModuleClass moduleClass) =>
+      caller.callServerEndpoint<_i17.ModuleClass>(
+        'testTools',
+        'echoModuleClass',
+        {'moduleClass': moduleClass},
+      );
+
+  _i2.Stream<_i17.ModuleClass?> streamModuleClass(
+    _i17.ModuleClass? initialValue,
+    _i2.Stream<_i17.ModuleClass?> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i17.ModuleClass?>,
+          _i17.ModuleClass?>(
+        'testTools',
+        'streamModuleClass',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
   _i2.Future<(String, (int, bool))> echoRecord((String, (int, bool)) record) =>
       caller.callServerEndpoint<(String, (int, bool))>(
         'testTools',

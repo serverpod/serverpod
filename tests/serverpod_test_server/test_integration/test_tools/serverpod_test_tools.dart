@@ -8725,7 +8725,10 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'streamOfModelClassWithRecordField',
-          arguments: {'initialValue': initialValue.toJson()},
+          arguments: {
+            'initialValue':
+                _i21.jsonDecode(_i2.SerializationManager.encode(initialValue))
+          },
           requestedInputStreams: ['values'],
           serializationManager: _serializationManager,
         );
@@ -8758,7 +8761,10 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'streamOfNullableModelClassWithRecordField',
-          arguments: {'initialValue': initialValue?.toJson()},
+          arguments: {
+            'initialValue':
+                _i21.jsonDecode(_i2.SerializationManager.encode(initialValue))
+          },
           requestedInputStreams: ['values'],
           serializationManager: _serializationManager,
         );
@@ -10695,6 +10701,136 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Future<_i19.ModuleDatatype> echoModuleDatatype(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i19.ModuleDatatype moduleDatatype,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoModuleDatatype',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoModuleDatatype',
+          parameters: _i1.testObjectToJson({'moduleDatatype': moduleDatatype}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i19.ModuleDatatype>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Stream<_i19.ModuleDatatype?> streamModuleDatatype(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i19.ModuleDatatype? initialValue,
+    _i3.Stream<_i19.ModuleDatatype?> values,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i19.ModuleDatatype?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'streamModuleDatatype',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'streamModuleDatatype',
+          arguments: {
+            'initialValue':
+                _i21.jsonDecode(_i2.SerializationManager.encode(initialValue))
+          },
+          requestedInputStreams: ['values'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'values': values},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Future<_i18.ModuleClass> echoModuleClass(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i18.ModuleClass moduleClass,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoModuleClass',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoModuleClass',
+          parameters: _i1.testObjectToJson({'moduleClass': moduleClass}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i18.ModuleClass>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Stream<_i18.ModuleClass?> streamModuleClass(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i18.ModuleClass? initialValue,
+    _i3.Stream<_i18.ModuleClass?> values,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<_i18.ModuleClass?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'testTools',
+          method: 'streamModuleClass',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'streamModuleClass',
+          arguments: {
+            'initialValue':
+                _i21.jsonDecode(_i2.SerializationManager.encode(initialValue))
+          },
+          requestedInputStreams: ['values'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'values': values},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<(String, (int, bool))> echoRecord(
     _i1.TestSessionBuilder sessionBuilder,
     (String, (int, bool)) record,
@@ -10955,7 +11091,10 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'modelWithRecordsEchoStream',
-          arguments: {'initialValue': initialValue?.toJson()},
+          arguments: {
+            'initialValue':
+                _i21.jsonDecode(_i2.SerializationManager.encode(initialValue))
+          },
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );

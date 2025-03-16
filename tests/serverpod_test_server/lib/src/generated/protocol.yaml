@@ -369,6 +369,10 @@ testTools:
   - echoSimpleDatas:
   - echoTypes:
   - echoTypesList:
+  - echoModuleDatatype:
+  - streamModuleDatatype:
+  - echoModuleClass:
+  - streamModuleClass:
   - echoRecord:
   - echoRecords:
   - recordEchoStream:

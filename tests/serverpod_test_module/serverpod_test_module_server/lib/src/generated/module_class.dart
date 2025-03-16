@@ -10,23 +10,31 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_test_module_server/src/generated/protocol.dart'
+    as _i2;
 
 abstract class ModuleClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModuleClass._({
     required this.name,
     required this.data,
+    this.record,
   });
 
   factory ModuleClass({
     required String name,
     required int data,
+    (bool,)? record,
   }) = _ModuleClassImpl;
 
   factory ModuleClass.fromJson(Map<String, dynamic> jsonSerialization) {
     return ModuleClass(
       name: jsonSerialization['name'] as String,
       data: jsonSerialization['data'] as int,
+      record: jsonSerialization['record'] == null
+          ? null
+          : _i2.Protocol().deserialize<(bool,)?>(
+              (jsonSerialization['record'] as Map<String, dynamic>)),
     );
   }
 
@@ -34,18 +42,22 @@ abstract class ModuleClass
 
   int data;
 
+  (bool,)? record;
+
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ModuleClass copyWith({
     String? name,
     int? data,
+    (bool,)? record,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'data': data,
+      if (record != null) 'record': _i2.mapRecordToJson(record),
     };
   }
 
@@ -54,6 +66,7 @@ abstract class ModuleClass
     return {
       'name': name,
       'data': data,
+      if (record != null) 'record': _i2.mapRecordToJson(record),
     };
   }
 
@@ -63,13 +76,17 @@ abstract class ModuleClass
   }
 }
 
+class _Undefined {}
+
 class _ModuleClassImpl extends ModuleClass {
   _ModuleClassImpl({
     required String name,
     required int data,
+    (bool,)? record,
   }) : super._(
           name: name,
           data: data,
+          record: record,
         );
 
   /// Returns a shallow copy of this [ModuleClass]
@@ -79,10 +96,16 @@ class _ModuleClassImpl extends ModuleClass {
   ModuleClass copyWith({
     String? name,
     int? data,
+    Object? record = _Undefined,
   }) {
     return ModuleClass(
       name: name ?? this.name,
       data: data ?? this.data,
+      record: record is (bool,)?
+          ? record
+          : this.record == null
+              ? null
+              : (this.record!.$1,),
     );
   }
 }

@@ -52,7 +52,9 @@ Future<void> callStreamFunctionAndHandleExceptions<T>(
 ) async {
   try {
     await call();
-  } catch (e) {
+  } catch (e, s) {
+    print(e);
+    print(s);
     controllerToCloseUponFailure.addError(_getException(e));
     await controllerToCloseUponFailure.close();
     return;

@@ -6116,6 +6116,12 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<_i4.ModuleClass>(v)))
           as T;
     }
+    if (t == _i1.getType<(_i4.ModuleClass,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<_i4.ModuleClass>(((data as Map)['p'] as List)[0]),)
+              as T;
+    }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
@@ -7710,6 +7716,12 @@ class Protocol extends _i1.SerializationManagerServer {
         deserialize<String>(((data as Map)['p'] as List)[0]),
         deserialize<int>(data['p'][1]),
       ) as T;
+    }
+    if (t == _i1.getType<(_i4.ModuleClass,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<_i4.ModuleClass>(((data as Map)['p'] as List)[0]),)
+              as T;
     }
     if (t == _i1.getType<(String, {Uri? optionalUri})?>()) {
       return (data == null)
@@ -9489,6 +9501,13 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
         "flag": record.flag,
         "simpleData": record.simpleData,
       },
+    };
+  }
+  if (record is (_i4.ModuleClass,)) {
+    return {
+      "p": [
+        record.$1,
+      ],
     };
   }
   if (record is (String, {Uri? optionalUri})) {

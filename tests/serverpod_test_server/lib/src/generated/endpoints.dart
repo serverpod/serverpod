@@ -70,6 +70,8 @@ import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i55;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i56;
 import 'package:serverpod_test_server/src/generated/types_record.dart' as _i57;
+import 'package:serverpod_test_server/src/generated/module_datatype.dart'
+    as _i58;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -6574,6 +6576,44 @@ class Endpoints extends _i1.EndpointDispatch {
             params['typesList'],
           ),
         ),
+        'echoModuleDatatype': _i1.MethodConnector(
+          name: 'echoModuleDatatype',
+          params: {
+            'moduleDatatype': _i1.ParameterDescription(
+              name: 'moduleDatatype',
+              type: _i1.getType<_i58.ModuleDatatype>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .echoModuleDatatype(
+            session,
+            params['moduleDatatype'],
+          ),
+        ),
+        'echoModuleClass': _i1.MethodConnector(
+          name: 'echoModuleClass',
+          params: {
+            'moduleClass': _i1.ParameterDescription(
+              name: 'moduleClass',
+              type: _i1.getType<_i55.ModuleClass>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .echoModuleClass(
+            session,
+            params['moduleClass'],
+          ),
+        ),
         'echoRecord': _i1.MethodConnector(
           name: 'echoRecord',
           params: {
@@ -6800,6 +6840,62 @@ class Endpoints extends _i1.EndpointDispatch {
           ) =>
               (endpoints['testTools'] as _i40.TestToolsEndpoint)
                   .listenForNumbersOnSharedStream(session),
+        ),
+        'streamModuleDatatype': _i1.MethodStreamConnector(
+          name: 'streamModuleDatatype',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i58.ModuleDatatype?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'values': _i1.StreamParameterDescription<_i58.ModuleDatatype?>(
+              name: 'values',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .streamModuleDatatype(
+            session,
+            params['initialValue'],
+            streamParams['values']!.cast<_i58.ModuleDatatype?>(),
+          ),
+        ),
+        'streamModuleClass': _i1.MethodStreamConnector(
+          name: 'streamModuleClass',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i55.ModuleClass?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'values': _i1.StreamParameterDescription<_i55.ModuleClass?>(
+              name: 'values',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i40.TestToolsEndpoint)
+                  .streamModuleClass(
+            session,
+            params['initialValue'],
+            streamParams['values']!.cast<_i55.ModuleClass?>(),
+          ),
         ),
         'recordEchoStream': _i1.MethodStreamConnector(
           name: 'recordEchoStream',
