@@ -154,7 +154,7 @@ void main() {
   });
 
   test(
-      'Given a field type in parentheses, when it is parsed, then the it is used as `className` verbatim',
+      'Given a field type in parentheses, when it is parsed, then it is used as `className` verbatim',
       () {
     var type = parseType('(int)', extraClasses: []);
 
