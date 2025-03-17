@@ -782,33 +782,29 @@ TypeDefinition _parseRecord(
 
   var splitFields = splitIgnoringBracketsAndQuotes(fields);
 
-  var recordFields = <TypeDefinition>[];
-
-  for (var splitField in splitFields) {
+  var recordFields = splitFields.expand((splitField) {
     if (splitField.startsWith('{')) {
-      recordFields.addAll(_parseNamedRecordFields(
+      return _parseNamedRecordFields(
         splitField,
         extraClasses: extraClasses,
-      ));
-    } else {
-      // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
-
-      var parts = splitIgnoringBracketsAndQuotes(splitField, separator: ' ');
-
-      if (parts.length > 1 && !parts.last.startsWith('<')) {
-        // if the last part is a name (and not a generic parameter), then we need to drop that
-
-        recordFields.add(
-          parseType(
-            parts.take(parts.length - 1).join(),
-            extraClasses: extraClasses,
-          ),
-        );
-      } else {
-        recordFields.add(parseType(splitField, extraClasses: extraClasses));
-      }
+      );
     }
-  }
+
+    // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
+    var parts = splitIgnoringBracketsAndQuotes(splitField, separator: ' ');
+
+    if (parts.length > 1 && !parts.last.startsWith('<')) {
+      // if the last part is a name (and not a generic parameter), then we need to drop that
+      splitField = parts.take(parts.length - 1).join();
+    }
+
+    return [
+      parseType(
+        splitField,
+        extraClasses: extraClasses,
+      ),
+    ];
+  }).toList();
 
   return TypeDefinition(
     className: RecordKeyword.className,
