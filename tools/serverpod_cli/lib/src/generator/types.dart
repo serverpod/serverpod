@@ -706,7 +706,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndBracesAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))
@@ -746,7 +746,7 @@ bool _describesRecord(String trimmedInput) {
 
   var (fields, _) = _unwrapRecord(trimmedInput);
 
-  var splitFields = splitIgnoringBracketsAndQuotes(
+  var splitFields = splitIgnoringBracketsAndBracesAndQuotes(
     fields,
     includeEmpty: true,
   );
@@ -780,7 +780,7 @@ TypeDefinition _parseRecord(
 
   var (fields, nullable) = _unwrapRecord(trimmedRecordInput);
 
-  var splitFields = splitIgnoringBracketsAndQuotes(fields);
+  var splitFields = splitIgnoringBracketsAndBracesAndQuotes(fields);
 
   var recordFields = splitFields.expand((splitField) {
     if (splitField.startsWith('{')) {
@@ -791,7 +791,8 @@ TypeDefinition _parseRecord(
     }
 
     // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
-    var parts = splitIgnoringBracketsAndQuotes(splitField, separator: ' ');
+    var parts =
+        splitIgnoringBracketsAndBracesAndQuotes(splitField, separator: ' ');
 
     if (parts.length > 1 && !parts.last.startsWith('<')) {
       // if the last part is a name (and not a generic parameter), then we need to drop that
@@ -828,7 +829,7 @@ Iterable<TypeDefinition> _parseNamedRecordFields(
   var end = namedRecordFieldsPart.lastIndexOf('}');
   var typesMap = namedRecordFieldsPart.substring(start + 1, end);
 
-  var namedFieldWithTypes = splitIgnoringBracketsAndQuotes(typesMap);
+  var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(typesMap);
 
   for (var namedFieldWithType in namedFieldWithTypes) {
     namedFieldWithType = namedFieldWithType.trim();
