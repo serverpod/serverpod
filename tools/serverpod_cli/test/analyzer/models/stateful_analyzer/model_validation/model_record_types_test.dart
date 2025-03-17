@@ -221,12 +221,28 @@ void main() {
       var modelDefinition = definitions.first as ClassDefinition;
 
       var testField = modelDefinition.findField('testField');
+
       expect(testField?.type.isRecordType, isTrue);
-      expect(testField?.type.generics, hasLength(2));
-      expect(testField?.type.generics.first.className, 'int');
-      expect(testField?.type.generics.first.recordFieldName, isNull);
-      expect(testField?.type.generics.last.className, 'String');
-      expect(testField?.type.generics.last.recordFieldName, 'named');
+      expect(testField!.type.nullable, false);
+      expect(testField.type.generics, hasLength(2));
+
+      var intField = testField.type.generics.first;
+      expect(intField.className, 'int');
+      expect(intField.nullable, isFalse);
+      expect(intField.recordFieldName, isNull);
+      expect(intField.generics, isEmpty);
+
+      var nestedRecord = testField.type.generics.last;
+      expect(nestedRecord.isRecordType, isTrue);
+      expect(nestedRecord.nullable, isFalse);
+      expect(nestedRecord.recordFieldName, isNull);
+      expect(nestedRecord.generics, hasLength(1));
+
+      var namedField = nestedRecord.generics.single;
+      expect(namedField.className, 'String');
+      expect(namedField.nullable, isFalse);
+      expect(namedField.recordFieldName, 'named');
+      expect(namedField.generics, isEmpty);
     });
   });
 
