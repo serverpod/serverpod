@@ -416,7 +416,7 @@ class DatabaseConnection {
         exception: serverpodException,
         trace: trace,
       );
-      throw serverpodException;
+      Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
       var serverpodException = _PgDatabaseQueryException(exception.message);
       _logQuery(
@@ -426,7 +426,7 @@ class DatabaseConnection {
         exception: serverpodException,
         trace: trace,
       );
-      throw serverpodException;
+      Error.throwWithStackTrace(serverpodException, trace);
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
