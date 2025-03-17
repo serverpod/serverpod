@@ -164,6 +164,26 @@ void main() {
   });
 
   test(
+      'Given a record-ish looking input of `(,)`, when it is parsed, then it is used as `className` verbatim',
+      () {
+    var type = parseType('(,)', extraClasses: []);
+
+    // This is practically wrong, but at least it's not parsed as a record
+    // The analyzer will then warn about this not being a known type, just like it does for `(int)` above
+    expect(type.className, '(,)');
+  });
+
+  test(
+      'Given a record-ish looking input of `()`, when it is parsed, then it is used as `className` verbatim',
+      () {
+    var type = parseType('()', extraClasses: []);
+
+    // This is practically wrong, but at least it's not parsed as a record
+    // The analyzer will then warn about this not being a known type, just like it does for `(int)` above
+    expect(type.className, '()');
+  });
+
+  test(
       'Given a field type of a record holding a single positional field, when it is parsed, then the correct type definition is returned.',
       () {
     var type = parseType('(int,)', extraClasses: []);

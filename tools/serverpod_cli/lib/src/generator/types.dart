@@ -754,7 +754,7 @@ bool _describesRecord(String trimmedInput) {
   // Field into split from string must have at least 2 parts,
   // meaning the record is using a `,` even if it has only 1 fields, e.g. `(int,)`
   // or some named parameter like `({String foo})`.
-  return splitFields.length > 1 ||
+  return (splitFields.length > 1 && !splitFields.every((f) => f.isEmpty)) ||
       (splitFields.length == 1 &&
           splitFields.single.startsWith('{') &&
           splitFields.single.endsWith('}'));
