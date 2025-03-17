@@ -1417,7 +1417,7 @@ class Restrictions {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
         _isCustomType(type) ||
-        (type.isRecordType && type.generics.every(_isValidType));
+        _isRecordType(type);
   }
 
   bool _isUnsupportedType(TypeDefinition type) {
@@ -1453,6 +1453,10 @@ class Restrictions {
 
   bool _isCustomType(TypeDefinition type) {
     return config.extraClasses.any((c) => c.className == type.className);
+  }
+
+  bool _isRecordType(TypeDefinition type) {
+    return type.isRecordType && type.generics.every(_isValidType);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {
