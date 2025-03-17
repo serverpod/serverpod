@@ -74,6 +74,29 @@ void main() {
   });
 
   test(
+      'Given a string where some separators are right next to each other when it is split with returnEmptyParts=true then the empty parts are returned',
+      () {
+    var result = splitIgnoringBracketsAndBracesAndQuotes(
+      ',,',
+      returnEmptyParts: true,
+    );
+
+    expect(result, [
+      '',
+      '',
+      '',
+    ]);
+  });
+
+  test(
+      'Given a string where some separators are right next to each other when it is split with returnEmptyParts=false then no empty parts are returned',
+      () {
+    var result = splitIgnoringBracketsAndBracesAndQuotes('a,,');
+
+    expect(result, ['a']);
+  });
+
+  test(
       'Given a string with a custom separator token when splitting with that separator token then the string is split.',
       () {
     var result = splitIgnoringBracketsAndBracesAndQuotes(

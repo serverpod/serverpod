@@ -748,7 +748,7 @@ bool _describesRecord(String trimmedInput) {
 
   var splitFields = splitIgnoringBracketsAndBracesAndQuotes(
     fields,
-    includeEmpty: true,
+    returnEmptyParts: true,
   );
 
   // Field into split from string must have at least 2 parts,

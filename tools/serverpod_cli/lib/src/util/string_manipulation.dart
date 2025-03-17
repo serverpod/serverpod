@@ -5,7 +5,7 @@ import 'package:super_string/super_string.dart';
 List<String> splitIgnoringBracketsAndBracesAndQuotes(
   String input, {
   String separator = ',',
-  bool includeEmpty = false,
+  bool returnEmptyParts = false,
 }) {
   List<String> result = [];
   StringBuffer current = StringBuffer();
@@ -16,7 +16,10 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
 
   for (var (index, char) in input.iterable.indexed) {
     if (char == separator && depth == 0) {
-      result.add(current.toString().trim());
+      var trimmed = current.toString().trim();
+      if (trimmed.isNotEmpty || returnEmptyParts) {
+        result.add(trimmed);
+      }
       current.clear();
     } else {
       current.write(char);
@@ -50,8 +53,9 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
     }
   }
 
-  if (current.toString().trim().isNotEmpty || includeEmpty) {
-    result.add(current.toString().trim());
+  var trimmed = current.toString().trim();
+  if (trimmed.isNotEmpty || returnEmptyParts) {
+    result.add(trimmed);
   }
 
   return result;
