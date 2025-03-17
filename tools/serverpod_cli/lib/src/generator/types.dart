@@ -735,26 +735,29 @@ TypeDefinition parseType(
 }
 
 bool _describesRecord(String trimmedInput) {
-  if (trimmedInput.startsWith('(') &&
-      (trimmedInput.endsWith(')') ||
-          trimmedInput.replaceAll(' ', '').endsWith(')?'))) {
-    var (fields, _) = _unwrapRecord(trimmedInput);
-
-    var splitFields = splitIgnoringBracketsAndQuotes(
-      fields,
-      includeEmpty: true,
-    );
-
-    // Field into split from string must have at least 2 parts,
-    // meaning the record is using a `,` even if it has only 1 fields, e.g. `(int,)`
-    // or some named parameter like `({String foo})`.
-    return splitFields.length > 1 ||
-        (splitFields.length == 1 &&
-            splitFields.single.startsWith('{') &&
-            splitFields.single.endsWith('}'));
+  if (!trimmedInput.startsWith('(')) {
+    return false;
   }
 
-  return false;
+  if (!trimmedInput.endsWith(')') &&
+      !trimmedInput.replaceAll(' ', '').endsWith(')?')) {
+    return false;
+  }
+
+  var (fields, _) = _unwrapRecord(trimmedInput);
+
+  var splitFields = splitIgnoringBracketsAndQuotes(
+    fields,
+    includeEmpty: true,
+  );
+
+  // Field into split from string must have at least 2 parts,
+  // meaning the record is using a `,` even if it has only 1 fields, e.g. `(int,)`
+  // or some named parameter like `({String foo})`.
+  return splitFields.length > 1 ||
+      (splitFields.length == 1 &&
+          splitFields.single.startsWith('{') &&
+          splitFields.single.endsWith('}'));
 }
 
 (String fields, bool nullable) _unwrapRecord(String trimmedRecordInput) {
