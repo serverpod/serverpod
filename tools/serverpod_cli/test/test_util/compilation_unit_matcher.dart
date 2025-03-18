@@ -8,6 +8,7 @@ import 'compilation_unit_matcher/chainable_matcher.dart';
 part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
+part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
 
 /// A custom matcher that checks if a CompilationUnit contains a class with a
 /// specific name.
@@ -40,6 +41,22 @@ abstract interface class ClassMatcher {
   /// Use [isNullable] to match field nullability. If the value is not set, the
   /// matcher will ignore the nullability of the field.
   FieldMatcher withField(String fieldName, {bool? isNullable});
+
+  /// Chains a [MethodMatcher] that checks if the class contains a method with a
+  /// specific name.
+  ///
+  /// Use [isOverride] to match overridden methods. If the value is not set, the
+  /// matcher will ignore the override status of the method.
+  ///
+  /// Use [returnType] to match the return type of the method. The value should
+  /// be a string representation of the return type. For example, `void`, `int`
+  /// or `Map<String, User>?`. If the value is not set, the matcher will ignore
+  /// the return type of the method.
+  MethodMatcher withMethod(
+    String methodName, {
+    bool? isOverride,
+    String? returnType,
+  });
 
   /// Chains a [ConstructorMatcher] that checks if the class contains a named
   /// constructor.
@@ -80,3 +97,6 @@ class FormattedCompilationUnit {
     return DartFormatter().format(compilationUnit.toSource());
   }
 }
+
+/// A chainable matcher that matches a method in a compilation unit.
+abstract interface class MethodMatcher {}

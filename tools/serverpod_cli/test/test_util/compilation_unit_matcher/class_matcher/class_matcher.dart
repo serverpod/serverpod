@@ -55,6 +55,25 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   }
 
   @override
+  MethodMatcher withMethod(
+    String methodName, {
+    bool? isOverride,
+    String? returnType,
+  }) {
+    return _MethodMatcherImpl._(
+      ChainableMatcher(
+        this,
+        (actual) => _matchedFeatureValueOf(actual)
+            ?.members
+            .whereType<MethodDeclaration>(),
+      ),
+      methodName,
+      isOverride: isOverride,
+      returnType: returnType,
+    );
+  }
+
+  @override
   ConstructorMatcher withNamedConstructor(
     String constructorName, {
     bool? isFactory,
