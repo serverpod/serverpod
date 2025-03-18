@@ -102,6 +102,16 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 
   @override
+  SuperInitializerMatcher withSuperInitializer() {
+    return _SuperInitializerMatcherImpl._(ChainableMatcher(
+      this,
+      (actual) => _matchedFeatureValueOf(actual)
+          ?.initializers
+          .whereType<SuperConstructorInvocation>(),
+    ));
+  }
+
+  @override
   ParameterMatcher withTypedParameter(
     String parameterName,
     String type, {

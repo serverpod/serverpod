@@ -10,6 +10,7 @@ part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
 part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
 part 'compilation_unit_matcher/parameter_matcher/parameter_matcher.dart';
+part 'compilation_unit_matcher/super_initializer_matcher/super_initializer_matcher.dart';
 
 /// A custom matcher that checks if a CompilationUnit contains a class with a
 /// specific name.
@@ -108,6 +109,10 @@ abstract interface class ConstructorMatcher {
     bool? isRequired,
   });
 
+  /// Chains an [SuperInitializerMatcher] that checks if the constructor has an
+  /// initializer.
+  SuperInitializerMatcher withSuperInitializer();
+
   /// Chains a [ParameterMatcher] that checks if the constructor contains a
   /// typed parameter with a specific name.
   ///
@@ -173,3 +178,6 @@ abstract interface class MethodMatcher {
 
 /// A chainable matcher that matches a parameter in a compilation unit.
 abstract interface class ParameterMatcher {}
+
+/// A chainable matcher that matches a super initializer in a compilation unit.
+abstract interface class SuperInitializerMatcher {}
