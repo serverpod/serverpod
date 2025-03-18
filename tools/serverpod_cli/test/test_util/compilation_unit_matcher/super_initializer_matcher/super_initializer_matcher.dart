@@ -36,7 +36,22 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
 
   @override
   bool matches(item, Map matchState) {
-    return _featureValueOf(item) != null;
+    return _matches(_featureValueOf(item));
+  }
+
+  @override
+  ArgumentMatcher withArgument(String name) {
+    return _withArgument(name);
+  }
+
+  @override
+  ArgumentMatcher withNamedArgument(String name, String parameterName) {
+    return _withArgument(name, parameterType: _NamedParameter(parameterName));
+  }
+
+  @override
+  ArgumentMatcher withPositionalArgument(String name) {
+    return _withArgument(name, parameterType: _PositionalParameter());
   }
 
   SuperConstructorInvocation? _featureValueOf(actual) {
@@ -44,5 +59,28 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
     if (superConstructorInvocations == null) return null;
 
     return superConstructorInvocations.firstOrNull;
+  }
+
+  SuperConstructorInvocation? _matchedFeatureValueOf(actual) {
+    var superConstructorInvocation = _featureValueOf(actual);
+    if (superConstructorInvocation == null) return null;
+
+    if (!_matches(superConstructorInvocation)) return null;
+
+    return superConstructorInvocation;
+  }
+
+  bool _matches(item) {
+    return item != null;
+  }
+
+  ArgumentMatcher _withArgument(String name, {_ParameterType? parameterType}) {
+    return _ArgumentMatcherImpl._(
+        ChainableMatcher(
+          this,
+          (actual) => _matchedFeatureValueOf(actual)?.argumentList.arguments,
+        ),
+        name,
+        parameterType);
   }
 }

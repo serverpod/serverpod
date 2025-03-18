@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import 'compilation_unit_matcher/chainable_matcher.dart';
 
+part 'compilation_unit_matcher/argument_matcher/argument_matcher.dart';
 part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
@@ -24,6 +25,9 @@ ClassMatcher containsClass(String className) => _ClassMatcherImpl._(className);
 /// Parses a string of Dart code into a FormattedCompilationUnit.
 FormattedCompilationUnit parseCode(String code) =>
     FormattedCompilationUnit(parseString(content: code).unit);
+
+/// A chainable matcher that matches an argument in a compilation unit.
+abstract interface class ArgumentMatcher {}
 
 /// A matcher that checks if a CompilationUnit contains a class that matches
 /// certain criteria.
@@ -180,4 +184,19 @@ abstract interface class MethodMatcher {
 abstract interface class ParameterMatcher {}
 
 /// A chainable matcher that matches a super initializer in a compilation unit.
-abstract interface class SuperInitializerMatcher {}
+abstract interface class SuperInitializerMatcher {
+  /// Chains an [ArgumentMatcher] that checks if the super initializer is called
+  /// with a specific argument.
+  ArgumentMatcher withArgument(String value);
+
+  /// Chains an [ArgumentMatcher] that checks if the super initializer is called
+  /// with a specific argument for a named parameter.
+  ///
+  /// Use [parameterName] to match the name of the super parameter. If the value
+  /// is not set, the matcher will ignore the name of the parameter.
+  ArgumentMatcher withNamedArgument(String value, String parameterName);
+
+  /// Chains an [ArgumentMatcher] that checks if the super initializer is called
+  /// with a specific argument for a positional parameter.
+  ArgumentMatcher withPositionalArgument(String value);
+}
