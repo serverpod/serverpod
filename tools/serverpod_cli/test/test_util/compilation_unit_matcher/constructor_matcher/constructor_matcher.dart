@@ -74,11 +74,44 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   @override
   bool matches(item, Map matchState) {
     var constructor = _featureValueOf(item);
-    if (constructor is! ConstructorDeclaration) return false;
+    return _matches(constructor);
+  }
 
-    if (!constructor._hasMatchingFactory(_isFactory)) return false;
+  @override
+  ParameterMatcher withInitializerParameter(
+    String parameterName,
+    Initializer initializer, {
+    bool? isRequired,
+  }) {
+    return _withParameter(
+      parameterName,
+      initializer: initializer,
+      isRequired: isRequired,
+    );
+  }
 
-    return true;
+  @override
+  ParameterMatcher withParameter(
+    String parameterName, {
+    bool? isRequired,
+  }) {
+    return _withParameter(
+      parameterName,
+      isRequired: isRequired,
+    );
+  }
+
+  @override
+  ParameterMatcher withTypedParameter(
+    String parameterName,
+    String type, {
+    bool? isRequired,
+  }) {
+    return _withParameter(
+      parameterName,
+      type: type,
+      isRequired: isRequired,
+    );
   }
 
   ConstructorDeclaration? _featureValueOf(actual) {
@@ -88,6 +121,39 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     return classConstructors
         .where((c) => c._hasMatchingName(_name))
         .firstOrNull;
+  }
+
+  ConstructorDeclaration? _matchedFeatureValueOf(dynamic actual) {
+    var constructorDecl = _featureValueOf(actual);
+    if (constructorDecl == null) return null;
+
+    if (!_matches(constructorDecl)) return null;
+
+    return constructorDecl;
+  }
+
+  bool _matches(ConstructorDeclaration? constructor) {
+    if (constructor is! ConstructorDeclaration) return false;
+
+    if (!constructor._hasMatchingFactory(_isFactory)) return false;
+
+    return true;
+  }
+
+  ParameterMatcher _withParameter(
+    String parameterName, {
+    bool? isRequired,
+    String? type,
+    Initializer? initializer,
+  }) {
+    return _ParameterMatcherImpl._(
+      ChainableMatcher(this,
+          (actual) => _matchedFeatureValueOf(actual)?.parameters.parameters),
+      parameterName,
+      type: type,
+      isRequired: isRequired,
+      initializer: initializer,
+    );
   }
 }
 

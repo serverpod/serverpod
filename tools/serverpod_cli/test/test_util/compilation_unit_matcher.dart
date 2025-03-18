@@ -9,6 +9,7 @@ part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
 part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
+part 'compilation_unit_matcher/parameter_matcher/parameter_matcher.dart';
 
 /// A custom matcher that checks if a CompilationUnit contains a class with a
 /// specific name.
@@ -82,7 +83,42 @@ abstract interface class ClassMatcher {
 }
 
 /// A chainable matcher that matches a constructor in a compilation unit.
-abstract interface class ConstructorMatcher {}
+abstract interface class ConstructorMatcher {
+  /// Chains a [ParameterMatcher] that checks if the constructor contains a
+  /// parameter with a specific name that is initialized with an initializer.
+  ///
+  /// Use [isRequired] to match required parameters. If the value is not set, the
+  /// matcher will ignore the requirement of the parameter.
+  ParameterMatcher withInitializerParameter(
+    String parameterName,
+    Initializer initializer, {
+    bool? isRequired,
+  });
+
+  /// Chains a [ParameterMatcher] that checks if the constructor contains a parameter
+  /// with a specific name.
+  ///
+  /// Use [isRequired] to match required parameters. If the value is not set, the
+  /// matcher will ignore the requirement of the parameter.
+  ///
+  /// Use [withTypedParameter] or has [withInitializerParameter] to match typed or
+  /// initializer parameters.
+  ParameterMatcher withParameter(
+    String parameterName, {
+    bool? isRequired,
+  });
+
+  /// Chains a [ParameterMatcher] that checks if the constructor contains a
+  /// typed parameter with a specific name.
+  ///
+  /// Use [isRequired] to match required parameters. If the value is not set, the
+  /// matcher will ignore the requirement of the parameter.
+  ParameterMatcher withTypedParameter(
+    String parameterName,
+    String type, {
+    bool? isRequired,
+  });
+}
 
 /// A chainable matcher that matches a field in a compilation unit.
 abstract interface class FieldMatcher {}
@@ -98,5 +134,42 @@ class FormattedCompilationUnit {
   }
 }
 
-/// A chainable matcher that matches a method in a compilation unit.
-abstract interface class MethodMatcher {}
+/// Initializer types for parameters.
+enum Initializer {
+  /// The parameter is initialized with `this`.
+  this_,
+
+  /// The parameter is initialized with `super`.
+  super_;
+
+  /// Returns the token representation of the initializer.
+  String toToken() {
+    switch (this) {
+      case Initializer.this_:
+        return 'this';
+      case Initializer.super_:
+        return 'super';
+    }
+  }
+}
+
+/// A matcher that can be chained to a [ClassMatcher] to check if the class
+/// contains a method that matches certain criteria.
+abstract interface class MethodMatcher {
+  /// Chains a [ParameterMatcher] that checks if the constructor contains a parameter
+  /// with a specific name.
+  ///
+  /// Use [isRequired] to match required parameters. If the value is not set, the
+  /// matcher will ignore the requirement of the parameter.
+  ///
+  /// Use [withTypedParameter] or has [withInitializerParameter] to match typed or
+  /// initializer parameters.
+  ParameterMatcher withParameter(
+    String parameterName, {
+    String? type,
+    bool? isRequired,
+  });
+}
+
+/// A chainable matcher that matches a parameter in a compilation unit.
+abstract interface class ParameterMatcher {}

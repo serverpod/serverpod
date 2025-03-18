@@ -74,12 +74,22 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
   @override
   bool matches(item, Map matchState) {
     var method = _featureValueOf(item);
-    if (method is! MethodDeclaration) return false;
+    return _matches(method);
+  }
 
-    if (!method._hasMatchingOverride(_isOverride)) return false;
-    if (!method._hasMatchingReturnType(_returnType)) return false;
-
-    return true;
+  @override
+  ParameterMatcher withParameter(
+    String parameterName, {
+    String? type,
+    bool? isRequired,
+  }) {
+    return _ParameterMatcherImpl._(
+      ChainableMatcher(this,
+          (actual) => _matchedFeatureValueOf(actual)?.parameters?.parameters),
+      parameterName,
+      type: type,
+      isRequired: isRequired,
+    );
   }
 
   MethodDeclaration? _featureValueOf(actual) {
@@ -87,6 +97,24 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     if (methodDeclarations == null) return null;
 
     return methodDeclarations.where((m) => m.name.lexeme == _name).firstOrNull;
+  }
+
+  MethodDeclaration? _matchedFeatureValueOf(dynamic actual) {
+    var methodDeclarations = _featureValueOf(actual);
+    if (methodDeclarations == null) return null;
+
+    if (!_matches(methodDeclarations)) return null;
+
+    return methodDeclarations;
+  }
+
+  bool _matches(MethodDeclaration? method) {
+    if (method is! MethodDeclaration) return false;
+
+    if (!method._hasMatchingOverride(_isOverride)) return false;
+    if (!method._hasMatchingReturnType(_returnType)) return false;
+
+    return true;
   }
 }
 
