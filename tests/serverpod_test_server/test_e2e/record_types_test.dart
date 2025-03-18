@@ -1,4 +1,5 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
@@ -574,6 +575,56 @@ void main() {
   });
 
   test(
+      'Given the test server, when a model class with a record field is sent to the server, then it is returned verbatim',
+      () async {
+    var model = TypesRecord(
+      aNestedRecord: ((1, 'hello'), namedNestedRecord: (2, 'world')),
+    );
+
+    var result =
+        await client.recordParameters.echoModelClassWithRecordField(model);
+
+    expect(
+      result.aNestedRecord,
+      ((1, 'hello'), namedNestedRecord: (2, 'world')),
+    );
+  });
+
+  test(
+      'Given the test server, when a nullable model class with a record field is sent to the server, then it is returned verbatim',
+      () async {
+    var model = TypesRecord(
+      aNestedRecord: ((1, 'hello'), namedNestedRecord: (2, 'world')),
+    );
+
+    var result = await client.recordParameters
+        .echoNullableModelClassWithRecordField(model);
+
+    expect(
+      result?.aNestedRecord,
+      ((1, 'hello'), namedNestedRecord: (2, 'world')),
+    );
+  });
+
+  test(
+      'Given the test server, when a nullable model class defined in another module with a record field is sent to the server, then it is returned verbatim',
+      () async {
+    var model = ModuleClass(
+      data: 1,
+      name: '',
+      record: (true,),
+    );
+
+    var result = await client.recordParameters
+        .echoNullableModelClassWithRecordFieldFromExternalModule(model);
+
+    expect(
+      result?.record,
+      (true,),
+    );
+  });
+
+  test(
       'Given the test server, when a `null` complex nested positioned record stream is sent to the server, then it is returned verbatim',
       () async {
     var records =
@@ -715,6 +766,41 @@ void main() {
             (m) => m.aSimpleData?.$1,
             'aSimpleData',
             isA<SimpleData>().having((s) => s.num, 'num', 2),
+          ),
+          isNull,
+        ],
+      ),
+    );
+  });
+
+  test(
+      'Given the test server, when a nullable model class from another module with record fields stream is sent to the server, then it is returned verbatim',
+      () async {
+    var models = [
+      null,
+      ModuleClass(
+        data: 1,
+        name: '',
+        record: (true,),
+      ),
+      null,
+    ];
+
+    var result = client.recordParameters
+        .streamOfNullableModelClassWithRecordFieldFromExternalModule(
+      models.first,
+      Stream.fromIterable(models.skip(1)),
+    );
+
+    expect(
+      result,
+      emitsInOrder(
+        [
+          isNull,
+          isA<ModuleClass>().having(
+            (m) => m.record,
+            'record',
+            (true,),
           ),
           isNull,
         ],

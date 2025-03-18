@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 typedef _MixedRecordTypeDef = (int number, {SimpleData data});
@@ -257,6 +258,27 @@ class RecordParametersEndpoint extends Endpoint {
 // #endregion
 
 // #region Records inside model class
+  Future<TypesRecord> echoModelClassWithRecordField(
+    Session session,
+    TypesRecord value,
+  ) async {
+    return value;
+  }
+
+  Future<TypesRecord?> echoNullableModelClassWithRecordField(
+    Session session,
+    TypesRecord? value,
+  ) async {
+    return value;
+  }
+
+  Future<ModuleClass?> echoNullableModelClassWithRecordFieldFromExternalModule(
+    Session session,
+    ModuleClass? value,
+  ) async {
+    return value;
+  }
+
   Stream<TypesRecord> streamOfModelClassWithRecordField(
     Session session,
     TypesRecord initialValue,
@@ -273,6 +295,19 @@ class RecordParametersEndpoint extends Endpoint {
     Session session,
     TypesRecord? initialValue,
     Stream<TypesRecord?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
+  Stream<ModuleClass?>
+      streamOfNullableModelClassWithRecordFieldFromExternalModule(
+    Session session,
+    ModuleClass? initialValue,
+    Stream<ModuleClass?> values,
   ) async* {
     yield initialValue;
 
