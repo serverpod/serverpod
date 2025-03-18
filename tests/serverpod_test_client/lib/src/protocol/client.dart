@@ -2467,6 +2467,31 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
+  _i2.Future<_i20.TypesRecord> echoModelClassWithRecordField(
+          _i20.TypesRecord value) =>
+      caller.callServerEndpoint<_i20.TypesRecord>(
+        'recordParameters',
+        'echoModelClassWithRecordField',
+        {'value': value},
+      );
+
+  _i2.Future<_i20.TypesRecord?> echoNullableModelClassWithRecordField(
+          _i20.TypesRecord? value) =>
+      caller.callServerEndpoint<_i20.TypesRecord?>(
+        'recordParameters',
+        'echoNullableModelClassWithRecordField',
+        {'value': value},
+      );
+
+  _i2.Future<_i17.ModuleClass?>
+      echoNullableModelClassWithRecordFieldFromExternalModule(
+              _i17.ModuleClass? value) =>
+          caller.callServerEndpoint<_i17.ModuleClass?>(
+            'recordParameters',
+            'echoNullableModelClassWithRecordFieldFromExternalModule',
+            {'value': value},
+          );
+
   _i2.Stream<_i20.TypesRecord> streamOfModelClassWithRecordField(
     _i20.TypesRecord initialValue,
     _i2.Stream<_i20.TypesRecord> values,
@@ -2490,6 +2515,19 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'initialValue': initialValue},
         {'values': values},
       );
+
+  _i2.Stream<_i17.ModuleClass?>
+      streamOfNullableModelClassWithRecordFieldFromExternalModule(
+    _i17.ModuleClass? initialValue,
+    _i2.Stream<_i17.ModuleClass?> values,
+  ) =>
+          caller.callStreamingServerEndpoint<_i2.Stream<_i17.ModuleClass?>,
+              _i17.ModuleClass?>(
+            'recordParameters',
+            'streamOfNullableModelClassWithRecordFieldFromExternalModule',
+            {'initialValue': initialValue},
+            {'values': values},
+          );
 }
 
 /// {@category Endpoint}

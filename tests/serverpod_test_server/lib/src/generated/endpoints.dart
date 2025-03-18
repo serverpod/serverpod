@@ -5488,6 +5488,64 @@ class Endpoints extends _i1.EndpointDispatch {
                   .then((container) =>
                       _i56.mapRecordContainingContainerToJson(container)),
         ),
+        'echoModelClassWithRecordField': _i1.MethodConnector(
+          name: 'echoModelClassWithRecordField',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i57.TypesRecord>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .echoModelClassWithRecordField(
+            session,
+            params['value'],
+          ),
+        ),
+        'echoNullableModelClassWithRecordField': _i1.MethodConnector(
+          name: 'echoNullableModelClassWithRecordField',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i57.TypesRecord?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .echoNullableModelClassWithRecordField(
+            session,
+            params['value'],
+          ),
+        ),
+        'echoNullableModelClassWithRecordFieldFromExternalModule':
+            _i1.MethodConnector(
+          name: 'echoNullableModelClassWithRecordFieldFromExternalModule',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i55.ModuleClass?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .echoNullableModelClassWithRecordFieldFromExternalModule(
+            session,
+            params['value'],
+          ),
+        ),
         'streamNullableRecordOfNullableInt': _i1.MethodStreamConnector(
           name: 'streamNullableRecordOfNullableInt',
           params: {},
@@ -5607,6 +5665,35 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['initialValue'],
             streamParams['values']!.cast<_i57.TypesRecord?>(),
+          ),
+        ),
+        'streamOfNullableModelClassWithRecordFieldFromExternalModule':
+            _i1.MethodStreamConnector(
+          name: 'streamOfNullableModelClassWithRecordFieldFromExternalModule',
+          params: {
+            'initialValue': _i1.ParameterDescription(
+              name: 'initialValue',
+              type: _i1.getType<_i55.ModuleClass?>(),
+              nullable: true,
+            )
+          },
+          streamParams: {
+            'values': _i1.StreamParameterDescription<_i55.ModuleClass?>(
+              name: 'values',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .streamOfNullableModelClassWithRecordFieldFromExternalModule(
+            session,
+            params['initialValue'],
+            streamParams['values']!.cast<_i55.ModuleClass?>(),
           ),
         ),
       },

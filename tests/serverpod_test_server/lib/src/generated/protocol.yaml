@@ -293,8 +293,12 @@ recordParameters:
   - returnNestedPositionalAndNamedRecord:
   - returnListOfNestedPositionalAndNamedRecord:
   - streamNullableListOfNullableNestedPositionalAndNamedRecord:
+  - echoModelClassWithRecordField:
+  - echoNullableModelClassWithRecordField:
+  - echoNullableModelClassWithRecordFieldFromExternalModule:
   - streamOfModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordFieldFromExternalModule:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
