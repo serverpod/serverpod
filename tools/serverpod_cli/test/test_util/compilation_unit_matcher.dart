@@ -20,6 +20,16 @@ part 'compilation_unit_matcher/super_initializer_matcher/super_initializer_match
 /// ```dart
 /// expect(compilationUnit, isNot(containsClass('NonExistentClass')));
 /// ```
+///
+/// The available matchers are:
+///   ClassMatcher
+///   ├── FieldMatcher
+///   ├── ConstructorMatcher
+///   │   ├── SuperInitializerMatcher
+///   │   │   └── ArgumentMatcher
+///   │   └── ParameterMatcher
+///   └── MethodMatcher
+///       └── ParameterMatcher
 ClassMatcher containsClass(String className) => _ClassMatcherImpl._(className);
 
 /// Parses a string of Dart code into a FormattedCompilationUnit.
