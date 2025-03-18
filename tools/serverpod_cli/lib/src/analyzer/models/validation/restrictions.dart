@@ -965,6 +965,7 @@ class Restrictions {
           ),
         );
       } else {
+        // The current parser would not create a `Record` type without generics (fields), but we guard against it just in case that ever changes
         errors.add(
           SourceSpanSeverityException(
             'A record type must have at least one field defined (e.g. (int,)).',
