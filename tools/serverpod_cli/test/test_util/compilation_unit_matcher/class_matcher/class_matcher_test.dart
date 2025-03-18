@@ -82,4 +82,14 @@ void main() {
       equals('a CompilationUnit containing class "User"'),
     );
   });
+
+  test(
+      'Given class and named constructor matcher when matching on empty name then exception is thrown',
+      () {
+    expect(
+      () => containsClass('User').withNamedConstructor(''),
+      throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
+          equals('constructorName cannot be empty'))),
+    );
+  });
 }

@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 import 'compilation_unit_matcher/chainable_matcher.dart';
 
 part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
+part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
 
 /// A custom matcher that checks if a CompilationUnit contains a class with a
@@ -39,7 +40,32 @@ abstract interface class ClassMatcher {
   /// Use [isNullable] to match field nullability. If the value is not set, the
   /// matcher will ignore the nullability of the field.
   FieldMatcher withField(String fieldName, {bool? isNullable});
+
+  /// Chains a [ConstructorMatcher] that checks if the class contains a named
+  /// constructor.
+  ///
+  /// [constructorName] is the name of the constructor to match and can not be
+  /// empty.
+  ///
+  /// Use [isFactory] to match factory constructors. If the value is not set, the
+  /// matcher will ignore the factory status of the constructor.
+  ConstructorMatcher withNamedConstructor(
+    String constructorName, {
+    bool? isFactory,
+  });
+
+  /// Chains a [ConstructorMatcher] that checks if the class contains an unnamed
+  /// constructor.
+  ///
+  /// Use [isFactory] to match factory constructors. If the value is not set, the
+  /// matcher will ignore the factory status of the constructor.
+  ConstructorMatcher withUnnamedConstructor({
+    bool? isFactory,
+  });
 }
+
+/// A chainable matcher that matches a constructor in a compilation unit.
+abstract interface class ConstructorMatcher {}
 
 /// A chainable matcher that matches a field in a compilation unit.
 abstract interface class FieldMatcher {}

@@ -54,6 +54,25 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
     );
   }
 
+  @override
+  ConstructorMatcher withNamedConstructor(
+    String constructorName, {
+    bool? isFactory,
+  }) {
+    if (constructorName.isEmpty) {
+      throw ArgumentError('constructorName cannot be empty');
+    }
+
+    return _withConstructor(constructorName, isFactory: isFactory);
+  }
+
+  @override
+  ConstructorMatcher withUnnamedConstructor({
+    bool? isFactory,
+  }) {
+    return _withConstructor('', isFactory: isFactory);
+  }
+
   ClassDeclaration? _featureValueOf(dynamic actual) {
     var resolvedActual = actual;
     if (resolvedActual is FormattedCompilationUnit) {
@@ -79,6 +98,22 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
 
   bool _matches(Object? item) {
     return item != null;
+  }
+
+  ConstructorMatcher _withConstructor(
+    String constructorName, {
+    bool? isFactory,
+  }) {
+    return _ConstructorMatcherImpl._(
+      ChainableMatcher(
+        this,
+        (actual) => _matchedFeatureValueOf(actual)
+            ?.members
+            .whereType<ConstructorDeclaration>(),
+      ),
+      name: constructorName,
+      isFactory: isFactory,
+    );
   }
 }
 
