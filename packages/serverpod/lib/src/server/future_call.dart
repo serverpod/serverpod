@@ -15,6 +15,9 @@ abstract class FutureCall<T extends SerializableModel> {
   /// The type of the data provided by when calling [invoke].
   Type get dataType => T;
 
+  /// The maximum number of concurrent running calls with the same [name].
+  int get concurrentLimit => 1;
+
   late Server _server;
 
   /// The [Server] where the call is registered.
