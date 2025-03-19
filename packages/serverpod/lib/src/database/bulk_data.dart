@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
@@ -14,7 +15,7 @@ class DatabaseBulkData {
   static Future<BulkData> exportTableData({
     required Database database,
     required String table,
-    int lastId = 0,
+    Object? lastId,
     int limit = 100,
     Filter? filter,
   }) async {
@@ -64,9 +65,11 @@ class DatabaseBulkData {
       );
     }
 
+    String strLastId = DatabasePoolManager.encoder.convert(lastId);
+
     List<List<dynamic>> data;
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
+        'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
     } catch (e) {

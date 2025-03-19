@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UniqueData
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UniqueData._({
     this.id,
     required this.number,
@@ -44,7 +45,7 @@ abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   String email;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -132,7 +133,7 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
-class UniqueDataTable extends _i1.Table {
+class UniqueDataTable extends _i1.Table<int> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
     number = _i1.ColumnInt(
       'number',
@@ -163,7 +164,7 @@ class UniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int> get table => UniqueData.t;
 }
 
 class UniqueDataIncludeList extends _i1.IncludeList {
@@ -183,7 +184,7 @@ class UniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int> get table => UniqueData.t;
 }
 
 class UniqueDataRepository {

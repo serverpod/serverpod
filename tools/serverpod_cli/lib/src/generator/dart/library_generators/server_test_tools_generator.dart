@@ -294,7 +294,8 @@ class ServerTestToolsGenerator {
                 'methodName': literalString(method.name),
                 'arguments': literalMap({
                   for (var parameter in parameters)
-                    literalString(parameter.name): refer(parameter.name).code,
+                    literalString(parameter.name): parameter
+                        .methodArgumentSerializationCode(config: config),
                 }),
                 'requestedInputStreams':
                     literalList(streamParameters.map((p) => p.name)),
@@ -528,6 +529,46 @@ class ServerTestToolsGenerator {
 
   int _sortParameterByName(Parameter a, Parameter b) =>
       a.name.compareTo(b.name);
+}
+
+extension on ParameterDefinition {
+  /// Returns the tests tools serialization code for arguments
+  ///
+  /// Records and record-containing containers need to be mapped to their JSON (Map) representation,
+  /// whereas models and primitives can be returned verbatim.
+  Code methodArgumentSerializationCode({required GeneratorConfig config}) {
+    var mapRecordToJsonRef = refer(
+      'mapRecordToJson',
+      'package:${config.serverPackage}/src/generated/protocol.dart',
+    );
+    var mapRecordContainingContainerToJsonRef = refer(
+      'mapRecordContainingContainerToJson',
+      'package:${config.serverPackage}/src/generated/protocol.dart',
+    );
+
+    if (type.isRecordType) {
+      return refer('jsonDecode', 'dart:convert').call([
+        refer('SerializationManager', serverpodUrl(true))
+            .property('encode')
+            .call([
+          mapRecordToJsonRef.call([refer(name)])
+        ]),
+      ]).code;
+    } else if (type.returnsRecordInContainer) {
+      return Block.of([
+        if (type.nullable) Code('$name == null ? null :'),
+        refer('jsonDecode', 'dart:convert').call([
+          refer('SerializationManager', serverpodUrl(true))
+              .property('encode')
+              .call([
+            mapRecordContainingContainerToJsonRef.call([refer(name)]),
+          ]),
+        ]).code,
+      ]);
+    } else {
+      return refer(name).code;
+    }
+  }
 }
 
 extension on Expression {

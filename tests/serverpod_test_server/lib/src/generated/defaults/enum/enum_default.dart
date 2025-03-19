@@ -13,7 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
-abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class EnumDefault
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   EnumDefault._({
     this.id,
     _i2.ByNameEnum? byNameEnumDefault,
@@ -69,7 +70,7 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   _i3.ByIndexEnum? byIndexEnumDefaultNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
@@ -179,7 +180,7 @@ class _EnumDefaultImpl extends EnumDefault {
   }
 }
 
-class EnumDefaultTable extends _i1.Table {
+class EnumDefaultTable extends _i1.Table<int> {
   EnumDefaultTable({super.tableRelation}) : super(tableName: 'enum_default') {
     byNameEnumDefault = _i1.ColumnEnum(
       'byNameEnumDefault',
@@ -232,7 +233,7 @@ class EnumDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EnumDefault.t;
+  _i1.Table<int> get table => EnumDefault.t;
 }
 
 class EnumDefaultIncludeList extends _i1.IncludeList {
@@ -252,7 +253,7 @@ class EnumDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EnumDefault.t;
+  _i1.Table<int> get table => EnumDefault.t;
 }
 
 class EnumDefaultRepository {

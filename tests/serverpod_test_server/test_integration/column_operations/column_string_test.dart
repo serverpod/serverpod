@@ -150,5 +150,53 @@ void main() async {
 
       expect(result, hasLength(2));
     });
+
+    test(
+        'when filtering using "greater than" then lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString > 'one',
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aString, 'two');
+    });
+
+    test(
+        'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString >= 'one',
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aString).toSet(), {'one', 'two'});
+    });
+
+    test(
+        'when filtering using "less than" then lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString < 'two',
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aString, 'one');
+    });
+
+    test(
+        'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString <= 'two',
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aString).toSet(), {'one', 'two'});
+    });
   });
 }

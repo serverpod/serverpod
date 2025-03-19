@@ -53,20 +53,8 @@ class LibraryGenerator {
 
     var protocol = ClassBuilder();
 
-    var topLevelStreamContainerTypes = <TypeDefinition>[];
-    for (var topLevelType in protocolDefinition.endpoints
-        .expand((e) => e.methods)
-        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
-        .where((t) => t.isStreamType)) {
-      var valueType = topLevelType.generics.first;
-      if (valueType.isSetType || valueType.isListType || valueType.isMapType) {
-        if (valueType.dartType == null ||
-            !topLevelStreamContainerTypes.any((type) =>
-                type.dartType.toString() == valueType.dartType.toString())) {
-          topLevelStreamContainerTypes.add(valueType);
-        }
-      }
-    }
+    var nonModelStreamTypes = protocolDefinition
+        .getNonModelOrPrimitiveStreamTypes(modules: config.modules);
 
     protocol
       ..name = 'Protocol'
@@ -179,7 +167,7 @@ class LibraryGenerator {
                     ...extraClass.asNullable
                         .generateDeserialization(serverCode, config: config),
                   // Generate deserialization for containers used in streams
-                  for (var type in topLevelStreamContainerTypes)
+                  for (var type in nonModelStreamTypes)
                     ...type.generateDeserialization(serverCode, config: config)
                 ]))
               .entries
@@ -225,7 +213,7 @@ class LibraryGenerator {
           for (var module in config.modules)
             _buildGetClassNameForObjectDelegation(
                 module.dartImportUrl(serverCode), module.name),
-          for (var containerType in topLevelStreamContainerTypes)
+          for (var containerType in nonModelStreamTypes)
             Block.of([
               const Code('if(data is '),
               containerType.reference(serverCode, config: config).code,
@@ -264,7 +252,7 @@ class LibraryGenerator {
               module.dartImportUrl(serverCode),
               module.name,
             ),
-          for (final containerType in topLevelStreamContainerTypes) ...[
+          for (final containerType in nonModelStreamTypes) ...[
             Code(
                 "if (dataClassName == '${containerType.classNameWithGenericsForProtocol(modules: config.modules)}') {"),
             const Code('return deserialize<'),
@@ -331,6 +319,37 @@ class LibraryGenerator {
             ..annotations.add(refer('override'))
             ..returns = TypeReference((t) => t..symbol = 'String')
             ..body = literalString(config.name).code,
+        ),
+      if (protocolDefinition.usesRecordsInStreams)
+        Method(
+          (m) => m
+            ..annotations.add(refer('override'))
+            ..docs.add('''
+  /// Wraps serialized data with its class name so that it can be deserialized
+  /// with [deserializeByClassName].
+  /// 
+  /// Records and containers containing records will be return in their JSON representation in the returned map.''')
+            ..name = 'wrapWithClassName'
+            ..returns = refer('Map<String, dynamic>')
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'data'
+              ..type = refer('Object?')))
+            ..body = const Code('''
+/// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
+   if (data is Iterable || data is Map) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapRecordContainingContainerToJson(data!),
+      };
+    } else if (data is Record) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapRecordToJson(data),
+      };
+    }
+
+    return super.wrapWithClassName(data);
+'''),
         ),
     ]);
 
@@ -1173,8 +1192,8 @@ extension on ProtocolDefinition {
     List<TypeDefinition> recordTypes,
     Set<String> handledTypes,
   ) {
-    var typeName = classDef.dartType?.toString();
-    if (typeName == null || handledTypes.contains(typeName)) {
+    var typeName = classDef.dartType?.toString() ?? classDef.toString();
+    if (handledTypes.contains(typeName)) {
       return;
     }
 
@@ -1223,11 +1242,12 @@ extension on ProtocolDefinition {
 
     for (var method in endpoints.expand((e) => e.methods)) {
       var returnType = method.returnType;
-      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)
+      // all endpoints are either Stream or Future, but may also use containers like `Stream<List<(int,)>>`
       _addTypeAndCollectRecords(returnType, recordTypes, handledTypes);
 
       for (var parameter in method.allParameters) {
         var type = parameter.type;
+
         if (type.isRecordType) {
           _addRecordType(type, recordTypes, handledTypes);
         } else {
@@ -1237,6 +1257,55 @@ extension on ProtocolDefinition {
     }
 
     return recordTypes;
+  }
+
+  /// Returns whether the endpoints use records in combination with `Stream`s
+  /// Either as return type or parameters, and either directly or wrapped in a container.
+  bool get usesRecordsInStreams {
+    for (var method in endpoints.expand((e) => e.methods)) {
+      for (var type in [
+        method.returnType,
+        ...method.allParameters.map((p) => p.type)
+      ]) {
+        if (type.isStreamType &&
+            (type.generics.first.isRecordType ||
+                type.generics.first.returnsRecordInContainer)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  //// Returns all non-model/non-primitive types used with `Streams`
+  ///
+  /// E.g. for a return or parameter type of `Stream<Set<(int,)>>` this would return the `Set<(int,)>`.
+  ///
+  /// This is because those containers can not be handled by the normal (de)serialize flow but need custom code generated
+  List<TypeDefinition> getNonModelOrPrimitiveStreamTypes({
+    required List<ModuleConfig> modules,
+  }) {
+    var nonModelOrPrimitiveStreamTypes = <TypeDefinition>[];
+
+    for (var topLevelType in endpoints
+        .expand((e) => e.methods)
+        .expand((m) => [m.returnType, ...m.allParameters.map((p) => p.type)])
+        .where((t) => t.isStreamType)) {
+      var valueType = topLevelType.generics.first;
+      if (valueType.isSetType ||
+          valueType.isListType ||
+          valueType.isMapType ||
+          valueType.isRecordType) {
+        if (!nonModelOrPrimitiveStreamTypes.any((type) =>
+            type.classNameWithGenericsForProtocol(modules: modules) ==
+            valueType.classNameWithGenericsForProtocol(modules: modules))) {
+          nonModelOrPrimitiveStreamTypes.add(valueType);
+        }
+      }
+    }
+
+    return nonModelOrPrimitiveStreamTypes;
   }
 }
 
@@ -1387,7 +1456,7 @@ extension on TypeDefinition {
 }
 
 extension on TypeDefinition {
-  /// Returns the class name with generic parameters (without any formatting whitespace),
+  /// Returns the class name with generic parameters (without any optional formatting whitespace),
   /// but strips all import path for a succinct representation.
   ///
   /// A simple `List<int>` becomes `"List<int>"`, a list referring to a model object in the project for example `"List<MyModel>"`
@@ -1405,14 +1474,14 @@ extension on TypeDefinition {
         '(',
         positionalFields
             .map((t) => t.classNameWithGenericsForProtocol(modules: modules))
-            .join(', '),
+            .join(','),
+        if (namedFields.isNotEmpty || positionalFields.length == 1) ',',
         if (namedFields.isNotEmpty) ...[
-          if (positionalFields.isNotEmpty) ', ',
           '{',
           namedFields
               .map((f) =>
                   '${f.classNameWithGenericsForProtocol(modules: modules)} ${f.recordFieldName!}')
-              .join(', '),
+              .join(','),
           '}',
         ],
         ')',

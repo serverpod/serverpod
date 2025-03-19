@@ -14,8 +14,8 @@ class StatefulAnalyzer {
   final Map<String, _ModelState> _modelStates = {};
 
   /// Returns true if any of the models have severe errors.
-  bool get hasSeverErrors => _modelStates.values.any(
-        (state) => CodeAnalysisCollector.containsSeverErrors(state.errors),
+  bool get hasSevereErrors => _modelStates.values.any(
+        (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
       );
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
@@ -38,7 +38,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> get _validProjectModels => _modelStates
       .values
       .where(
-          (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
+          (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors))
       .where((state) => state.source.moduleAlias == defaultModuleAlias)
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
@@ -139,7 +139,7 @@ class StatefulAnalyzer {
         parsedModels,
       );
 
-      if (collector.hasSeverErrors) {
+      if (collector.hasSevereErrors) {
         state.errors = collector.errors;
       } else {
         state.errors = [];

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UuidDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   UuidDefaultMix._({
     this.id,
     _i1.UuidValue? uuidDefaultAndDefaultModel,
@@ -58,7 +58,7 @@ abstract class UuidDefaultMix
   _i1.UuidValue uuidDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -158,7 +158,7 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
   }
 }
 
-class UuidDefaultMixTable extends _i1.Table {
+class UuidDefaultMixTable extends _i1.Table<int> {
   UuidDefaultMixTable({super.tableRelation})
       : super(tableName: 'uuid_default_mix') {
     uuidDefaultAndDefaultModel = _i1.ColumnUuid(
@@ -200,7 +200,7 @@ class UuidDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UuidDefaultMix.t;
+  _i1.Table<int> get table => UuidDefaultMix.t;
 }
 
 class UuidDefaultMixIncludeList extends _i1.IncludeList {
@@ -220,7 +220,7 @@ class UuidDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UuidDefaultMix.t;
+  _i1.Table<int> get table => UuidDefaultMix.t;
 }
 
 class UuidDefaultMixRepository {

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Arena implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -48,7 +48,7 @@ abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Team? team;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
@@ -136,7 +136,7 @@ class _ArenaImpl extends Arena {
   }
 }
 
-class ArenaTable extends _i1.Table {
+class ArenaTable extends _i1.Table<int> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
     name = _i1.ColumnString(
       'name',
@@ -187,7 +187,7 @@ class ArenaInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int> get table => Arena.t;
 }
 
 class ArenaIncludeList extends _i1.IncludeList {
@@ -207,7 +207,7 @@ class ArenaIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int> get table => Arena.t;
 }
 
 class ArenaRepository {

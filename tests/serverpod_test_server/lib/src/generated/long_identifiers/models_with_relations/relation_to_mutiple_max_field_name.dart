@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
 
 abstract class RelationToMultipleMaxFieldName
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   RelationToMultipleMaxFieldName._({
     this.id,
     required this.name,
@@ -51,7 +51,7 @@ abstract class RelationToMultipleMaxFieldName
   List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,7 @@ class _RelationToMultipleMaxFieldNameImpl
   }
 }
 
-class RelationToMultipleMaxFieldNameTable extends _i1.Table {
+class RelationToMultipleMaxFieldNameTable extends _i1.Table<int> {
   RelationToMultipleMaxFieldNameTable({super.tableRelation})
       : super(tableName: 'relation_to_multiple_max_field_name') {
     name = _i1.ColumnString(
@@ -225,7 +225,7 @@ class RelationToMultipleMaxFieldNameInclude extends _i1.IncludeObject {
       {'multipleMaxFieldNames': _multipleMaxFieldNames};
 
   @override
-  _i1.Table get table => RelationToMultipleMaxFieldName.t;
+  _i1.Table<int> get table => RelationToMultipleMaxFieldName.t;
 }
 
 class RelationToMultipleMaxFieldNameIncludeList extends _i1.IncludeList {
@@ -245,7 +245,7 @@ class RelationToMultipleMaxFieldNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RelationToMultipleMaxFieldName.t;
+  _i1.Table<int> get table => RelationToMultipleMaxFieldName.t;
 }
 
 class RelationToMultipleMaxFieldNameRepository {

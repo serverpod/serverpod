@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithUuid
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithUuid._({
     this.id,
     required this.uuid,
@@ -48,7 +48,7 @@ abstract class ObjectWithUuid
   _i1.UuidValue? uuidNullable;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +137,7 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   }
 }
 
-class ObjectWithUuidTable extends _i1.Table {
+class ObjectWithUuidTable extends _i1.Table<int> {
   ObjectWithUuidTable({super.tableRelation})
       : super(tableName: 'object_with_uuid') {
     uuid = _i1.ColumnUuid(
@@ -169,7 +169,7 @@ class ObjectWithUuidInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithUuid.t;
+  _i1.Table<int> get table => ObjectWithUuid.t;
 }
 
 class ObjectWithUuidIncludeList extends _i1.IncludeList {
@@ -189,7 +189,7 @@ class ObjectWithUuidIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithUuid.t;
+  _i1.Table<int> get table => ObjectWithUuid.t;
 }
 
 class ObjectWithUuidRepository {

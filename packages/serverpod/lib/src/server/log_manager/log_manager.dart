@@ -338,14 +338,13 @@ class SessionLogManager {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         stderr.writeln(
             'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$logStackTrace');
+        if (exception != null) {
+          stderr.writeln('CALL error: $exception');
+          stderr.writeln('$stackTrace');
+        }
 
-        stderr.writeln('LOG ERRORS');
-        stderr.writeln('$e');
+        stderr.writeln('LOG ERROR: $e');
         stderr.writeln('$logStackTrace');
-        stderr.writeln('Current stacktrace:');
-        stderr.writeln('${StackTrace.current}');
       }
     }
     return null;

@@ -101,6 +101,10 @@ final class ModelClassDefinition extends ClassDefinition {
     super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
+  /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
+  /// If the field is not present, an error is thrown.
+  SerializableModelFieldDefinition get idField => findField('id')!;
+
   /// Returns the `ModelClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
   ModelClassDefinition? get parentClass {
@@ -413,6 +417,9 @@ class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
 
+  /// Type of the id of the table that owns the [foreignFieldName] field.
+  TypeDefinition foreignKeyOwnerIdType;
+
   /// References the field in the other object holding the data for the relation.
   /// Meaning either an object of the type of the current object.
   /// If this is null then there is no link from the other side.
@@ -427,6 +434,7 @@ class ListRelationDefinition extends RelationDefinition {
     String? name,
     required this.fieldName,
     required this.foreignFieldName,
+    required this.foreignKeyOwnerIdType,
     this.foreignContainerField,
     required this.nullableRelation,
     this.implicitForeignField = false,
@@ -441,6 +449,11 @@ class ObjectRelationDefinition extends RelationDefinition {
   /// For now, the foreign key only references the id column of the
   /// [parentTable].
   String parentTable;
+
+  /// Type of the primary key of the [parentTable]. It is the type that the
+  /// generator needs to build attach/detach methods. It is not the type of
+  /// the [foreignFieldName].
+  TypeDefinition parentTableIdType;
 
   /// References the field in the current object that points to the foreign table.
   final String fieldName;
@@ -457,6 +470,7 @@ class ObjectRelationDefinition extends RelationDefinition {
 
   ObjectRelationDefinition({
     String? name,
+    required this.parentTableIdType,
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,

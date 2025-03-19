@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DurationDefaultMix
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   DurationDefaultMix._({
     this.id,
     Duration? durationDefaultAndDefaultModel,
@@ -77,7 +77,7 @@ abstract class DurationDefaultMix
   Duration durationDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -181,7 +181,7 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
   }
 }
 
-class DurationDefaultMixTable extends _i1.Table {
+class DurationDefaultMixTable extends _i1.Table<int> {
   DurationDefaultMixTable({super.tableRelation})
       : super(tableName: 'duration_default_mix') {
     durationDefaultAndDefaultModel = _i1.ColumnDuration(
@@ -223,7 +223,7 @@ class DurationDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DurationDefaultMix.t;
+  _i1.Table<int> get table => DurationDefaultMix.t;
 }
 
 class DurationDefaultMixIncludeList extends _i1.IncludeList {
@@ -243,7 +243,7 @@ class DurationDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DurationDefaultMix.t;
+  _i1.Table<int> get table => DurationDefaultMix.t;
 }
 
 class DurationDefaultMixRepository {

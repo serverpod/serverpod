@@ -178,6 +178,7 @@ class ModelClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignIdType,
     bool nullableRelation = false,
   }) {
     _fields.addAll([
@@ -194,6 +195,7 @@ class ModelClassDefinitionBuilder {
             .withShouldPersist(false)
             .withRelation(ObjectRelationDefinition(
               parentTable: parentTable,
+              parentTableIdType: foreignIdType ?? TypeDefinition.int,
               fieldName: foreignFieldName,
               foreignFieldName: 'id',
               isForeignKeyOrigin: false,
@@ -210,9 +212,11 @@ class ModelClassDefinitionBuilder {
     String className,
     String parentTable, {
     String? foreignKeyFieldName,
+    TypeDefinition? foreignKeyParentTableIdType,
     bool nullableRelation = false,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
+    var foreignTableIdType = foreignKeyParentTableIdType ?? TypeDefinition.int;
     _fields.addAll([
       () => FieldDefinitionBuilder()
           .withName(fieldName)
@@ -220,6 +224,7 @@ class ModelClassDefinitionBuilder {
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
             parentTable: parentTable,
+            parentTableIdType: foreignTableIdType,
             fieldName: foreignFieldName,
             foreignFieldName: 'id',
             nullableRelation: nullableRelation,
@@ -241,8 +246,9 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withImplicitListRelationField(
     String fieldName,
-    String className,
-  ) {
+    String className, {
+    TypeDefinition? foreignKeyOwnerIdType,
+  }) {
     _fields.add(() {
       return FieldDefinitionBuilder()
           .withName(fieldName)
@@ -257,6 +263,7 @@ class ModelClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName:
                 '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
             nullableRelation: true,
@@ -271,6 +278,7 @@ class ModelClassDefinitionBuilder {
     String fieldName,
     String className,
     String foreignKeyFieldName, {
+    TypeDefinition? foreignKeyOwnerIdType,
     bool nullableRelation = false,
   }) {
     _fields.add(() {
@@ -287,6 +295,7 @@ class ModelClassDefinitionBuilder {
           )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
+            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
             foreignFieldName: foreignKeyFieldName,
             nullableRelation: nullableRelation,
             implicitForeignField: false,

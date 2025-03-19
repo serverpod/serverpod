@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 
-abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Comment implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Comment._({
     this.id,
     required this.description,
@@ -53,7 +53,7 @@ abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Order? order;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +148,7 @@ class _CommentImpl extends Comment {
   }
 }
 
-class CommentTable extends _i1.Table {
+class CommentTable extends _i1.Table<int> {
   CommentTable({super.tableRelation}) : super(tableName: 'comment') {
     description = _i1.ColumnString(
       'description',
@@ -206,7 +206,7 @@ class CommentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'order': _order};
 
   @override
-  _i1.Table get table => Comment.t;
+  _i1.Table<int> get table => Comment.t;
 }
 
 class CommentIncludeList extends _i1.IncludeList {
@@ -226,7 +226,7 @@ class CommentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Comment.t;
+  _i1.Table<int> get table => Comment.t;
 }
 
 class CommentRepository {

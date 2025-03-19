@@ -69,7 +69,7 @@ class MigrationGenerator {
     var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
       collector.printErrors();
 
-      if (collector.hasSeverErrors) {
+      if (collector.hasSevereErrors) {
         throw GenerateMigrationDatabaseDefinitionException();
       }
     }).validateAll();

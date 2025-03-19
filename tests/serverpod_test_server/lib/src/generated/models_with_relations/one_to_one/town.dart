@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 
-abstract class Town implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Town implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Town._({
     this.id,
     required this.name,
@@ -53,7 +53,7 @@ abstract class Town implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Citizen? mayor;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +148,7 @@ class _TownImpl extends Town {
   }
 }
 
-class TownTable extends _i1.Table {
+class TownTable extends _i1.Table<int> {
   TownTable({super.tableRelation}) : super(tableName: 'town') {
     name = _i1.ColumnString(
       'name',
@@ -206,7 +206,7 @@ class TownInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
 
   @override
-  _i1.Table get table => Town.t;
+  _i1.Table<int> get table => Town.t;
 }
 
 class TownIncludeList extends _i1.IncludeList {
@@ -226,7 +226,7 @@ class TownIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Town.t;
+  _i1.Table<int> get table => Town.t;
 }
 
 class TownRepository {

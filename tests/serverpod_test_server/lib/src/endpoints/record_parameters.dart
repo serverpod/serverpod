@@ -29,6 +29,15 @@ class RecordParametersEndpoint extends Endpoint {
   ) async {
     return record;
   }
+
+  Stream<(int?,)?> streamNullableRecordOfNullableInt(
+    Session session,
+    Stream<(int?,)?> values,
+  ) async* {
+    await for (var value in values) {
+      yield value;
+    }
+  }
 // #endregion
 
 // #region Records with multiple positional parameters
@@ -230,6 +239,20 @@ class RecordParametersEndpoint extends Endpoint {
     List<((int, String), {(SimpleData, double) namedSubRecord})> recordList,
   ) async {
     return recordList;
+  }
+
+  Stream<List<((int, String), {(SimpleData, double) namedSubRecord})?>?>
+      streamNullableListOfNullableNestedPositionalAndNamedRecord(
+    Session session,
+    List<((int, String), {(SimpleData, double) namedSubRecord})?>? initialValue,
+    Stream<List<((int, String), {(SimpleData, double) namedSubRecord})?>?>
+        values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
   }
 // #endregion
 }

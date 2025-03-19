@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnDateTime', () {
     var columnName = 'age';
-    var column = ColumnDateTime(columnName, Table(tableName: 'test'));
+    var column = ColumnDateTime(columnName, Table<int>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

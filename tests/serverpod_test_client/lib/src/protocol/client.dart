@@ -2212,6 +2212,15 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'record': _i19.mapRecordToJson(record)},
       );
 
+  _i2.Stream<(int?,)?> streamNullableRecordOfNullableInt(
+          _i2.Stream<(int?,)?> values) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<(int?,)?>, (int?,)?>(
+        'recordParameters',
+        'streamNullableRecordOfNullableInt',
+        {},
+        {'values': values},
+      );
+
   _i2.Future<(int, String)> returnIntStringRecord((int, String) record) =>
       caller.callServerEndpoint<(int, String)>(
         'recordParameters',
@@ -2430,6 +2439,32 @@ class EndpointRecordParameters extends _i1.EndpointRef {
             'returnListOfNestedPositionalAndNamedRecord',
             {'recordList': _i19.mapRecordContainingContainerToJson(recordList)},
           );
+
+  _i2.Stream<
+      List<
+          (
+            (int, String), {
+            (_i10.SimpleData, double) namedSubRecord
+          })?>?> streamNullableListOfNullableNestedPositionalAndNamedRecord(
+    List<((int, String), {(_i10.SimpleData, double) namedSubRecord})?>?
+        initialValue,
+    _i2.Stream<
+            List<((int, String), {(_i10.SimpleData, double) namedSubRecord})?>?>
+        values,
+  ) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<
+              List<
+                  (
+                    (int, String), {
+                    (_i10.SimpleData, double) namedSubRecord
+                  })?>?>,
+          List<((int, String), {(_i10.SimpleData, double) namedSubRecord})?>?>(
+        'recordParameters',
+        'streamNullableListOfNullableNestedPositionalAndNamedRecord',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
 }
 
 /// {@category Endpoint}
@@ -3003,6 +3038,92 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'records': _i19.mapRecordContainingContainerToJson(records)},
       );
 
+  _i2.Stream<
+          (String, (Map<String, int>, {bool flag, _i10.SimpleData simpleData}))>
+      recordEchoStream(
+    (
+      String,
+      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+    ) initialValue,
+    _i2.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+            )>
+        stream,
+  ) =>
+          caller.callStreamingServerEndpoint<
+              _i2.Stream<
+                  (
+                    String,
+                    (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+                  )>,
+              (
+                String,
+                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+              )>(
+            'testTools',
+            'recordEchoStream',
+            {'initialValue': initialValue},
+            {'stream': stream},
+          );
+
+  _i2.Stream<List<(String, int)>> listOfRecordEchoStream(
+    List<(String, int)> initialValue,
+    _i2.Stream<List<(String, int)>> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>>,
+          List<(String, int)>>(
+        'testTools',
+        'listOfRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
+  _i2.Stream<
+      (
+        String,
+        (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+      )?> nullableRecordEchoStream(
+    (
+      String,
+      (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+    )? initialValue,
+    _i2.Stream<
+            (
+              String,
+              (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+            )?>
+        stream,
+  ) =>
+      caller.callStreamingServerEndpoint<
+          _i2.Stream<
+              (
+                String,
+                (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+              )?>,
+          (
+            String,
+            (Map<String, int>, {bool flag, _i10.SimpleData simpleData})
+          )?>(
+        'testTools',
+        'nullableRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
+  _i2.Stream<List<(String, int)>?> nullableListOfRecordEchoStream(
+    List<(String, int)>? initialValue,
+    _i2.Stream<List<(String, int)>?> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<List<(String, int)>?>,
+          List<(String, int)>?>(
+        'testTools',
+        'nullableListOfRecordEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
   _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
         'testTools',
         'logMessageWithSession',
@@ -3061,6 +3182,27 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
         'intEchoStream',
         {},
         {'stream': stream},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointUpload extends _i1.EndpointRef {
+  EndpointUpload(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'upload';
+
+  _i2.Future<bool> uploadByteData(
+    String path,
+    _i4.ByteData data,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'upload',
+        'uploadByteData',
+        {
+          'path': path,
+          'data': data,
+        },
       );
 }
 
@@ -3167,6 +3309,7 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    upload = EndpointUpload(this);
     myFeature = EndpointMyFeature(this);
     modules = Modules(this);
   }
@@ -3260,6 +3403,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
+  late final EndpointUpload upload;
+
   late final EndpointMyFeature myFeature;
 
   late final Modules modules;
@@ -3310,6 +3455,7 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'upload': upload,
         'myFeature': myFeature,
       };
 

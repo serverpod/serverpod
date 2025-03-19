@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithIndex
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   ObjectWithIndex._({
     this.id,
     required this.indexed,
@@ -45,7 +45,7 @@ abstract class ObjectWithIndex
   int indexed2;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
@@ -133,7 +133,7 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-class ObjectWithIndexTable extends _i1.Table {
+class ObjectWithIndexTable extends _i1.Table<int> {
   ObjectWithIndexTable({super.tableRelation})
       : super(tableName: 'object_with_index') {
     indexed = _i1.ColumnInt(
@@ -165,7 +165,7 @@ class ObjectWithIndexInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexIncludeList extends _i1.IncludeList {
@@ -185,7 +185,7 @@ class ObjectWithIndexIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexRepository {
