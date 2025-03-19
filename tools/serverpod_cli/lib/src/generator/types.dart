@@ -796,6 +796,38 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     String trimmedRecordInput, {
     List<TypeDefinition>? extraClasses,
   }) {
+    var recordDescription = _tryReadRecord(trimmedRecordInput);
+    if (recordDescription == null) {
+      return null;
+    }
+
+    if (recordDescription.positionalFieldType.isEmpty &&
+        recordDescription.namedFields.isEmpty) {
+      return null;
+    }
+
+    var recordFields = [
+      for (var positionalFieldType in recordDescription.positionalFieldType)
+        parseType(positionalFieldType, extraClasses: extraClasses),
+      for (var MapEntry(key: name, value: type)
+          in recordDescription.namedFields.entries)
+        parseType(type, extraClasses: extraClasses).asNamedRecordField(name),
+    ];
+
+    return TypeDefinition(
+      className: RecordKeyword.className,
+      generics: recordFields,
+      nullable: recordDescription.nullable,
+    );
+  }
+
+  static ({
+    List<String> positionalFieldType,
+    Map<String, String> namedFields,
+    bool nullable,
+  })? _tryReadRecord(
+    String trimmedRecordInput,
+  ) {
     if (!trimmedRecordInput.startsWith('(')) {
       return null;
     }
@@ -805,98 +837,79 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       return null;
     }
 
-    var (fieldsString, nullable) = _unwrapRecord(trimmedRecordInput);
-
-    var splitFields = splitIgnoringBracketsAndBracesAndQuotes(
-      fieldsString,
-      returnEmptyParts: true,
-    );
-
-    // Field into split from string must have at least 2 parts,
-    // meaning the record is using a `,` even if it has only 1 fields, e.g. `(int,)`
-    // or some named parameter like `({String foo})`.
-    if ((splitFields.length < 2 || splitFields.every((f) => f.isEmpty)) &&
-        !(splitFields.length == 1 &&
-            splitFields.single.startsWith('{') &&
-            splitFields.single.endsWith('}'))) {
-      return null;
-    }
-
-    try {
-      var recordFields =
-          splitFields.where((s) => s.isNotEmpty).expand((splitField) {
-        if (splitField.startsWith('{') && splitField.endsWith('}')) {
-          return _parseNamedRecordFields(
-            splitField,
-            extraClasses: extraClasses,
-          );
-        }
-
-        // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
-        var parts = splitIgnoringBracketsAndBracesAndQuotes(
-          splitField,
-          separator: ' ',
-        );
-
-        if (parts.length > 1 && !parts.last.startsWith('<')) {
-          // if the last part is a name (and not a generic parameter), then we need to drop that
-          splitField = parts.take(parts.length - 1).join();
-        }
-
-        return [
-          parseType(
-            splitField,
-            extraClasses: extraClasses,
-          ),
-        ];
-      }).toList();
-
-      return TypeDefinition(
-        className: RecordKeyword.className,
-        generics: recordFields,
-        nullable: nullable,
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static Iterable<TypeDefinition> _parseNamedRecordFields(
-    String namedRecordFieldsPart, {
-    List<TypeDefinition>? extraClasses,
-  }) sync* {
-    var start = namedRecordFieldsPart.indexOf('{');
-    var end = namedRecordFieldsPart.lastIndexOf('}');
-    var typesMap = namedRecordFieldsPart.substring(start + 1, end);
-
-    var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(typesMap);
-
-    for (var namedFieldWithType in namedFieldWithTypes) {
-      namedFieldWithType = namedFieldWithType.trim();
-
-      var typeDescription = namedFieldWithType
-          .substring(0, namedFieldWithType.lastIndexOf(' '))
-          .trim();
-      var name = namedFieldWithType
-          .substring(namedFieldWithType.lastIndexOf(' '))
-          .trim();
-
-      var type = parseType(
-        typeDescription,
-        extraClasses: extraClasses,
-      );
-
-      yield type.asNamedRecordField(name);
-    }
-  }
-
-  static (String fields, bool nullable) _unwrapRecord(
-      String trimmedRecordInput) {
     var start = trimmedRecordInput.indexOf('(');
     var end = trimmedRecordInput.lastIndexOf(')');
-    var nullable = trimmedRecordInput.endsWith('?');
-    var fields = trimmedRecordInput.substring(start + 1, end);
 
-    return (fields, nullable);
+    var nullable = trimmedRecordInput.endsWith('?');
+    var recordBody = trimmedRecordInput.substring(start + 1, end);
+
+    var recordParts = splitIgnoringBracketsAndBracesAndQuotes(
+      recordBody,
+    );
+
+    var positionalFieldStrings = <String>[];
+    String? namedFieldsString;
+    for (var part in recordParts) {
+      if (namedFieldsString != null) {
+        // no more entries are allowed after the named part
+        return null;
+      }
+
+      if (part.startsWith('{')) {
+        namedFieldsString = part;
+      } else {
+        positionalFieldStrings.add(part);
+      }
+    }
+
+    var positionalFieldType =
+        positionalFieldStrings.map((positionalFieldStrings) {
+      // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
+      var parts = splitIgnoringBracketsAndBracesAndQuotes(
+        positionalFieldStrings,
+        separator: ' ',
+      );
+
+      if (parts.length > 1 && !parts.last.startsWith('<')) {
+        // if the last part is a name (and not a generic parameter), then we need to drop that
+        positionalFieldStrings = parts.take(parts.length - 1).join();
+      }
+
+      return positionalFieldStrings;
+    }).toList();
+
+    var namedFields = <String, String>{};
+    if (namedFieldsString != null) {
+      var start = namedFieldsString.indexOf('{');
+      var end = namedFieldsString.lastIndexOf('}');
+
+      if (start < 0 || end < 0 || end <= start) {
+        return null;
+      }
+
+      var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(
+        namedFieldsString.substring(start + 1, end),
+      );
+
+      for (var namedFieldWithType in namedFieldWithTypes) {
+        namedFieldWithType = namedFieldWithType.trim();
+        var lastWhitespaceIndex = namedFieldWithType.lastIndexOf(' ');
+        if (lastWhitespaceIndex < 0) {
+          return null;
+        }
+
+        var typeDescription =
+            namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+        var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
+
+        namedFields[name] = typeDescription;
+      }
+    }
+
+    return (
+      positionalFieldType: positionalFieldType,
+      namedFields: namedFields,
+      nullable: nullable,
+    );
   }
 }
