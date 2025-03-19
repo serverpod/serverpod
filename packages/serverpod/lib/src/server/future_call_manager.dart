@@ -125,8 +125,7 @@ class FutureCallManager {
       var now = DateTime.now().toUtc();
       var hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
 
-      // Make sure all future calls that were overdue at the start of maintenance
-      // mode are run before proceeding.
+      // Ensure all future calls that were overdue are run before proceeding.
       while (hasPostponedFutureCalls && !_shuttingDown) {
         await Future.delayed(const Duration(milliseconds: 100));
         // Keep the same due time to run all overdue future calls.
@@ -213,16 +212,17 @@ class FutureCallManager {
     return !hasPostponedFutureCalls;
   }
 
-  /// Tries to run a [FutureCallEntry]. If the concurrency limit allows it,
-  /// the [FutureCall] is invoked and the [FutureCallEntry] is deleted from the
-  /// database. If the future call limit is reached, the future call is not
-  /// invoked and `false` is returned.
+  /// Tries to start a [FutureCall] as configured by the [FutureCallEntry].
+  /// If the concurrency limit allows it, the [FutureCall] is invoked, the
+  /// [FutureCallEntry] is deleted from the database and `true` is returned.
+  /// If the future call limit is reached, the future call is not invoked and
+  /// `false` is returned.
   Future<bool> _tryRunFutureCallEntry({
     required Session session,
     required FutureCallEntry futureCallEntry,
     required FutureCall<SerializableModel> futureCall,
   }) async {
-    // Run the following code in a synchronized block to avoid race conditions..
+    // Run in a synchronized block to avoid race conditions
     return _runningFutureCallsMutex.synchronized(() async {
       final futureCallName = futureCallEntry.name;
 
@@ -244,6 +244,8 @@ class FutureCallManager {
         return false;
       }
 
+      // Increment the number of running future calls.
+      // We are in a synchronized block, no race conditions here.
       _runningFutureCalls.update(
         futureCallName,
         (value) => value + 1,
