@@ -6,7 +6,7 @@ void main() {
   group(
       'Given compilation unit with class with constructor without initializer',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {
         User();
@@ -27,7 +27,7 @@ void main() {
   group(
       'Given compilation unit with class with constructor with super initializer',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class Super {
         Super();
@@ -52,7 +52,7 @@ void main() {
   group(
       'Given compilation unit with class with constructor with local initializer',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {
         final String _name;

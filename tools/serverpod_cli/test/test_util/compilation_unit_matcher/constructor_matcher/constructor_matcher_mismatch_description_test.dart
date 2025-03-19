@@ -80,7 +80,7 @@ void main() {
 
   group('Given compilation unit with class with multiple named constructors',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {
         User();

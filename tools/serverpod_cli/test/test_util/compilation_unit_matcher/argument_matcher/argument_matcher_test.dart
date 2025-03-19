@@ -6,7 +6,7 @@ void main() {
   group(
       'Given compilation unit with class with super initializer without arguments',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User extends Super {
         User(String name) : super();
@@ -32,7 +32,7 @@ void main() {
   group(
       'Given compilation unit with class with super initializer with positional argument',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User extends Super {
         User(String name) : super(name);
@@ -82,7 +82,7 @@ void main() {
   group(
       'Given compilation unit with class with super initializer with argument for named parameter',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User extends Super {
         User(String name) : super(name: name);
@@ -145,7 +145,7 @@ void main() {
   group(
       'Given compilation unit with class with super initializer with same argument for multiple positional parameters',
       () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User extends Super {
         User(String name) : super(name, name);

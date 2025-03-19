@@ -4,7 +4,7 @@ import '../../compilation_unit_matcher.dart';
 
 void main() {
   group('Given compilation unit with class with no methods', () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {}
       ''',
@@ -21,7 +21,7 @@ void main() {
   });
 
   group('Given compilation unit with class with void method', () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {
         void methodName() {}
@@ -86,7 +86,7 @@ void main() {
   });
 
   group('Given compilation unit with class with override method', () {
-    final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {
         @override

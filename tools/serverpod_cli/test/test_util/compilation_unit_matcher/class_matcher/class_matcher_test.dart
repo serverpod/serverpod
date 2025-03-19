@@ -24,7 +24,7 @@ void main() {
   test(
       'Given empty compilation unit when negate matching with class name then test passes',
       () {
-    final compilationUnit = parseCode('');
+    late final compilationUnit = parseCode('');
 
     expect(
       compilationUnit,
@@ -33,7 +33,7 @@ void main() {
   });
 
   group('Given compilation unit with class', () {
-    late final compilationUnit = parseCode(
+    late late final compilationUnit = parseCode(
       '''
       class User {}
       ''',
