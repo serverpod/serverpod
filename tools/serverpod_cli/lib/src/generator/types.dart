@@ -801,13 +801,13 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       return null;
     }
 
-    if (recordDescription.positionalFieldType.isEmpty &&
+    if (recordDescription.positionalFieldTypes.isEmpty &&
         recordDescription.namedFields.isEmpty) {
       return null;
     }
 
     var recordFields = [
-      for (var positionalFieldType in recordDescription.positionalFieldType)
+      for (var positionalFieldType in recordDescription.positionalFieldTypes)
         parseType(positionalFieldType, extraClasses: extraClasses),
       for (var MapEntry(key: name, value: type)
           in recordDescription.namedFields.entries)
@@ -822,7 +822,7 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
   }
 
   static ({
-    List<String> positionalFieldType,
+    List<String> positionalFieldTypes,
     Map<String, String> namedFields,
     bool nullable,
   })? _tryReadRecord(
@@ -843,6 +843,31 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     var nullable = trimmedRecordInput.endsWith('?');
     var recordBody = trimmedRecordInput.substring(start + 1, end);
 
+    var recordParts = _parseRecordBody(recordBody);
+    if (recordParts == null) {
+      return null;
+    }
+
+    var positionalFieldTypes = _getTypesFromPositionalFields(
+      recordParts.positionalFieldStrings,
+    );
+
+    var namedFields = _tryParseNamedFieldsString(recordParts.namedFieldsString);
+    if (namedFields == null) {
+      return null;
+    }
+
+    return (
+      positionalFieldTypes: positionalFieldTypes,
+      namedFields: namedFields,
+      nullable: nullable,
+    );
+  }
+
+  static ({
+    List<String> positionalFieldStrings,
+    String? namedFieldsString,
+  })? _parseRecordBody(String recordBody) {
     var recordParts = splitIgnoringBracketsAndBracesAndQuotes(
       recordBody,
     );
@@ -862,8 +887,16 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       }
     }
 
-    var positionalFieldType =
-        positionalFieldStrings.map((positionalFieldStrings) {
+    return (
+      positionalFieldStrings: positionalFieldStrings,
+      namedFieldsString: namedFieldsString
+    );
+  }
+
+  static List<String> _getTypesFromPositionalFields(
+    List<String> positionalFieldStrings,
+  ) {
+    return positionalFieldStrings.map((positionalFieldStrings) {
       // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
       var parts = splitIgnoringBracketsAndBracesAndQuotes(
         positionalFieldStrings,
@@ -877,39 +910,41 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
 
       return positionalFieldStrings;
     }).toList();
+  }
+
+  static Map<String, String>? _tryParseNamedFieldsString(
+    String? namedFieldsString,
+  ) {
+    if (namedFieldsString == null) {
+      return {};
+    }
 
     var namedFields = <String, String>{};
-    if (namedFieldsString != null) {
-      var start = namedFieldsString.indexOf('{');
-      var end = namedFieldsString.lastIndexOf('}');
+    var start = namedFieldsString.indexOf('{');
+    var end = namedFieldsString.lastIndexOf('}');
 
-      if (start < 0 || end < 0 || end <= start) {
+    if (start < 0 || end < 0 || end <= start) {
+      return null;
+    }
+
+    var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(
+      namedFieldsString.substring(start + 1, end),
+    );
+
+    for (var namedFieldWithType in namedFieldWithTypes) {
+      namedFieldWithType = namedFieldWithType.trim();
+      var lastWhitespaceIndex = namedFieldWithType.lastIndexOf(' ');
+      if (lastWhitespaceIndex < 0) {
         return null;
       }
 
-      var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(
-        namedFieldsString.substring(start + 1, end),
-      );
+      var typeDescription =
+          namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+      var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
 
-      for (var namedFieldWithType in namedFieldWithTypes) {
-        namedFieldWithType = namedFieldWithType.trim();
-        var lastWhitespaceIndex = namedFieldWithType.lastIndexOf(' ');
-        if (lastWhitespaceIndex < 0) {
-          return null;
-        }
-
-        var typeDescription =
-            namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
-        var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
-
-        namedFields[name] = typeDescription;
-      }
+      namedFields[name] = typeDescription;
     }
 
-    return (
-      positionalFieldType: positionalFieldType,
-      namedFields: namedFields,
-      nullable: nullable,
-    );
+    return namedFields;
   }
 }
