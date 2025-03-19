@@ -33,7 +33,7 @@ void main() {
   });
 
   group('Given compilation unit with class', () {
-    late late final compilationUnit = parseCode(
+    late final compilationUnit = parseCode(
       '''
       class User {}
       ''',
