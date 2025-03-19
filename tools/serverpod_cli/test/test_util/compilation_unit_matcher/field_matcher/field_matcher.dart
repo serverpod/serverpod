@@ -66,7 +66,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   }
 }
 
-extension _FieldDeclarationExtensions on FieldDeclaration {
+extension on FieldDeclaration {
   bool _hasMatchingNullable(bool? isNullable) {
     if (isNullable == null) return true;
 

@@ -118,7 +118,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
   }
 }
 
-extension _MethodDeclarationExtention on MethodDeclaration {
+extension on MethodDeclaration {
   bool _hasMatchingOverride(bool? isOverride) {
     if (isOverride == null) return true;
 

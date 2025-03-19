@@ -107,7 +107,7 @@ final class _PositionalParameter extends _ParameterType {
   _PositionalParameter();
 }
 
-extension _ArgumentExpressionExtention on Expression {
+extension on Expression {
   bool _hasMatchingNamedParameter(_ParameterType? argumentType) {
     if (argumentType is! _NamedParameter) return true;
 

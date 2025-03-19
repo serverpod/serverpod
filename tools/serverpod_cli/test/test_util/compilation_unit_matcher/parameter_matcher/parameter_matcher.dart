@@ -118,7 +118,7 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
   }
 }
 
-extension _FormalParameterExtensions on FormalParameter {
+extension on FormalParameter {
   Initializer? _getInitializer() {
     var resolvedThis = this;
     if (resolvedThis is DefaultFormalParameter) {

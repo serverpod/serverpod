@@ -136,7 +136,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   }
 }
 
-extension _ClassDeclarationExtensions on ClassDeclaration {
+extension on ClassDeclaration {
   bool _hasMatchingClass(String name) {
     return this.name.lexeme == name;
   }

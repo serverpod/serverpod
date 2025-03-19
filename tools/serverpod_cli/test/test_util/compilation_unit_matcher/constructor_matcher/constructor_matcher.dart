@@ -167,7 +167,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 }
 
-extension _ConstructorDeclarationExtensions on ConstructorDeclaration {
+extension on ConstructorDeclaration {
   bool _hasMatchingFactory(bool? isFactory) {
     if (isFactory == null) return true;
 
