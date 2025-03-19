@@ -3,9 +3,22 @@ import 'package:test/test.dart';
 import '../../compilation_unit_matcher.dart';
 
 void main() {
-  test('Given empty string when negate matching with class then test passes',
-      () {
-    expect('', isNot(containsClass('User')));
+  group('Given empty string', () {
+    const actual = '';
+    test('when negate matching with class then test passes', () {
+      expect(actual, isNot(containsClass('User')));
+    });
+
+    test('when matching with class then mismatch description is correct', () {
+      final matcher = containsClass('User') as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(actual, description, {}, false);
+
+      expect(
+        description.toString(),
+        equals('"String" is not a CompilationUnit'),
+      );
+    });
   });
 
   test(
@@ -53,19 +66,6 @@ void main() {
         equals(
           'does not contain class "NonExistentClass". Found classes: [User]',
         ),
-      );
-    });
-
-    test(
-        'when matching with non-compilation unit then mismatch description is correct',
-        () {
-      final matcher = containsClass('User') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch('Not a CompilationUnit', description, {}, false);
-
-      expect(
-        description.toString(),
-        equals('"String" is not a CompilationUnit'),
       );
     });
   });
