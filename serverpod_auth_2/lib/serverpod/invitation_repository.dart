@@ -1,17 +1,4 @@
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
-
-class SampleInvitationEndpint {
-  bool checkInvitation(String invitationCode) {
-    return true;
-  }
-
-  void resolveInvitation(String sessionId, String invitationCode) {}
-
-  TemporaryUserSession resolveInvitation(/* guest */ String invitationCode) {
-    // this would create the user, session without 2FA
-  }
-}
 
 // hook for before/after user creation with invitation
 // -> But account is not always created, maybe user is already logged it
