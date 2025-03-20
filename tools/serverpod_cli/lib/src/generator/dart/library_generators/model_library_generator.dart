@@ -222,8 +222,7 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           definition.fields,
           null,
-          isParentClass: false,
-          isInterface: true,
+          isPrivateConstructor: false,
           subDirParts: definition.subDirParts,
           inheritedFields: [],
         ),
@@ -267,9 +266,8 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           fields,
           null,
-          isParentClass: false,
+          isPrivateConstructor: true,
           subDirParts: classDefinition.subDirParts,
-          isInterface: false,
           inheritedFields: [],
         ),
         _buildModelClassFactoryConstructor(
@@ -384,8 +382,7 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           fields,
           tableName,
-          isParentClass: classDefinition.isParentClass,
-          isInterface: false,
+          isPrivateConstructor: !classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
         ),
@@ -1319,13 +1316,12 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
-    required bool isParentClass,
-    required bool isInterface,
+    required bool isPrivateConstructor,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
     return Constructor((c) {
-      if (!isParentClass && !isInterface) {
+      if (isPrivateConstructor) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -1551,7 +1547,7 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
     List<String> subDirParts,
-    List<SerializableModelFieldDefinition> implementedFields,
+    List<SerializableModelFieldDefinition> overriddenFields,
   ) {
     List<Field> modelClassFields = [];
     var classFields = fields
@@ -1572,10 +1568,10 @@ class SerializableModelLibraryGenerator {
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
 
-        var isInterfaceField =
-            implementedFields.any((element) => element.name == field.name);
+        var overriddenField =
+            overriddenFields.any((element) => element.name == field.name);
 
-        if (isInterfaceField) {
+        if (overriddenField) {
           f.annotations.add(refer('override'));
         }
       }));
