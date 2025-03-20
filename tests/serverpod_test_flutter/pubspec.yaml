@@ -9,8 +9,8 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
-  flutter: '>=3.19.0'
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -25,6 +25,8 @@ dev_dependencies:
     path: ../serverpod_test_client
   serverpod_auth_shared_flutter:
     path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_test:
+    path: ../../packages/serverpod_test
 
 dependency_overrides:
   serverpod_auth_client:
