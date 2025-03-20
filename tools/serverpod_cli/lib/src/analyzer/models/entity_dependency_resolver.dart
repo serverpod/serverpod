@@ -18,7 +18,7 @@ class ModelDependencyResolver {
       _resolveImplements(classDefinition, modelDefinitions);
 
       var fields = classDefinition is ModelClassDefinition
-          ? classDefinition.fieldsIncludingInherited
+          ? classDefinition.allFields
           : classDefinition.fields;
 
       for (var fieldDefinition in fields) {

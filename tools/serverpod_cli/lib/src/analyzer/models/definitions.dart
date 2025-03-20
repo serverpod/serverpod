@@ -154,18 +154,6 @@ final class ModelClassDefinition extends ClassDefinition {
   List<SerializableModelFieldDefinition> get inheritedFields =>
       parentClass?.allFields ?? [];
 
-  /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
-  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    bool hasIdField = fields.any((element) => element.name == 'id');
-
-    return [
-      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...inheritedFields,
-      ...fields.where((element) => element.name != 'id'),
-    ];
-  }
-
   /// Returns a list of all fields this class has.
   /// This includes:
   /// - Fields from parent class

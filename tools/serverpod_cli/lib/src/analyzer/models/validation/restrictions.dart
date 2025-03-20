@@ -1237,7 +1237,7 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
-    var fields = definition.fieldsIncludingInherited;
+    var fields = definition.allFields;
     var indexFields = convertCommaSeparatedList(content);
 
     var validDatabaseFieldNames = fields
