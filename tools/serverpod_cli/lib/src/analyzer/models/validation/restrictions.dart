@@ -432,6 +432,11 @@ class Restrictions {
       }
     }
 
+    if (validInterfaces.length > 1) {
+      errors
+          .addAll(_validateInterfaceFieldTypeConflicts(validInterfaces, span));
+    }
+
     return errors;
   }
 
@@ -478,6 +483,41 @@ class Restrictions {
     }
 
     return [];
+  }
+
+  List<SourceSpanSeverityException> _validateInterfaceFieldTypeConflicts(
+    List<InterfaceClassDefinition> implementedInterfaces,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var fieldsByName = <String, List<SerializableModelFieldDefinition>>{};
+
+    // Group fields by name across all interfaces
+    for (var interfaceClass in implementedInterfaces) {
+      for (var field in interfaceClass.fields) {
+        fieldsByName.putIfAbsent(field.name, () => []).add(field);
+      }
+    }
+
+    // Check for type conflicts in fields with the same name
+    for (var entry in fieldsByName.entries) {
+      var fields = entry.value;
+      if (fields.length > 1) {
+        var type = fields.first.type.className;
+        for (var field in fields) {
+          if (field.type.className != type) {
+            errors.add(
+              SourceSpanSeverityException(
+                'Conflicting types for field "${entry.key}" in implemented interfaces: $type vs ${field.type.className}',
+                span,
+              ),
+            );
+          }
+        }
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateParentKey(

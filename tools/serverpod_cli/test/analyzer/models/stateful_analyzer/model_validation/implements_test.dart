@@ -385,5 +385,137 @@ void main() {
       expect(error.message,
           'Circular interface dependency detected: Interface1 → Interface2 → Interface3 → Interface1');
     });
+
+    test(
+        'Given a class implementing multiple interfaces with same field name and type, when analyzed, then no errors are collected',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withFileName('example1').withYaml('''
+          class: ExampleClass
+          implements: Interface1, Interface2
+          fields:
+            age: int
+          ''').build(),
+        ModelSourceBuilder().withFileName('interface1').withYaml('''
+          interface: Interface1
+          fields:
+            name: String
+          ''').build(),
+        ModelSourceBuilder().withFileName('interface2').withYaml('''
+          interface: Interface2
+          fields:
+            name: String
+          ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isEmpty);
+    });
+
+    test(
+        'Given a class implementing multiple interfaces with same field name but different type, when analyzed, then an error is collected',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withFileName('example1').withYaml('''
+          class: ExampleClass
+          implements: Interface1, Interface2
+          fields:
+            age: int
+          ''').build(),
+        ModelSourceBuilder().withFileName('interface1').withYaml('''
+          interface: Interface1
+          fields:
+            name: String
+          ''').build(),
+        ModelSourceBuilder().withFileName('interface2').withYaml('''
+          interface: Interface2
+          fields:
+            name: int
+          ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'Conflicting types for field "name" in implemented interfaces: String vs int',
+      );
+    });
+
+    test(
+        'Given a class implementing an interface from a different module, when analyzed, then no errors are collected',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withFileName('example1').withYaml('''
+          class: ExampleClass
+          implements: Interface1
+          fields:
+            age: int
+          ''').build(),
+        ModelSourceBuilder()
+            .withFileName('interface1')
+            .withModuleAlias('other_module')
+            .withYaml('''
+          interface: Interface1
+          fields:
+            name: string
+          ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isEmpty);
+    });
+
+    test(
+        'Given a class implementing multiple interfaces with the same name from different modules, when analyzed, then an error is collected',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withFileName('example1').withYaml('''
+          class: ExampleClass
+          implements: Interface1, Interface1
+          fields:
+            age: int
+          ''').build(),
+        ModelSourceBuilder()
+            .withFileName('interface1')
+            .withModuleAlias('module1')
+            .withYaml('''
+          interface: Interface1
+          fields:
+            name: String
+          ''').build(),
+        ModelSourceBuilder()
+            .withFileName('interface2')
+            .withModuleAlias('module2')
+            .withYaml('''
+          interface: Interface1
+          fields:
+            email: String
+          ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isNotEmpty);
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The interface name "Interface1" is duplicated.',
+      );
+    });
   });
 }
