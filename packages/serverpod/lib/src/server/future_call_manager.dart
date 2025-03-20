@@ -29,6 +29,7 @@ class FutureCallManager {
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
   final Map<String, int> _runningFutureCalls = {};
+  final _runningFutureCallFutures = <Future>[];
   final _runningFutureCallsMutex = Mutex();
   bool _shuttingDown = false;
 
@@ -127,7 +128,15 @@ class FutureCallManager {
 
       // Ensure all future calls that were overdue are run before proceeding.
       while (hasPostponedFutureCalls && !_shuttingDown) {
-        await Future.delayed(const Duration(milliseconds: 100));
+        // TODO To increase performance and make sure invoke is only called if
+        // there is a future call that can be run, in a later iteration checking
+        // the map of running future calls for any postponed future call that is
+        // now allowed to run would be more efficient.
+
+        if (_runningFutureCallFutures.isNotEmpty) {
+          await Future.any(_runningFutureCallFutures);
+        }
+
         // Keep the same due time to run all overdue future calls.
         hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
       }
@@ -162,9 +171,10 @@ class FutureCallManager {
   }
 
   Future<void> _waitForRunningFutureCalls() async {
-    while (_runningFutureCalls.values.any((value) => value > 0)) {
-      await Future.delayed(const Duration(milliseconds: 100));
-    }
+    await Future.wait(_runningFutureCallFutures);
+    // while (_runningFutureCalls.values.any((value) => value > 0)) {
+    //   await Future.delayed(const Duration(milliseconds: 100));
+    // }
   }
 
   /// Starts all overdue future calls.
@@ -252,19 +262,25 @@ class FutureCallManager {
         ifAbsent: () => 1,
       );
 
+      final futureCallFuture = _runFutureCall(
+        session: session,
+        futureCallEntry: futureCallEntry,
+        futureCall: futureCall,
+      ).whenComplete(
+        () => _runningFutureCallsMutex.synchronized(
+          () async => _runningFutureCalls.update(
+            futureCallName,
+            (value) => value - 1,
+            ifAbsent: () => 0,
+          ),
+        ),
+      );
+
+      _runningFutureCallFutures.add(futureCallFuture);
+
       unawaited(
-        _runFutureCall(
-          session: session,
-          futureCallEntry: futureCallEntry,
-          futureCall: futureCall,
-        ).whenComplete(
-          () => _runningFutureCallsMutex.synchronized(() async {
-            _runningFutureCalls.update(
-              futureCallName,
-              (value) => value - 1,
-              ifAbsent: () => 0,
-            );
-          }),
+        futureCallFuture.whenComplete(
+          () => _runningFutureCallFutures.remove(futureCallFuture),
         ),
       );
 
@@ -280,18 +296,16 @@ class FutureCallManager {
   }) async {
     final futureCallName = futureCallEntry.name;
 
-    // Future call is now running, so we can delete it from the database.
-    await FutureCallEntry.db.deleteRow(session, futureCallEntry);
-
     final futureCallSession = FutureCallSession(
       server: _server,
       futureCallName: futureCallName,
     );
 
-    // TODO add running future call completion handling, maybe not here but
-    // using a while loop awaiting total future call runs to become 0
-
     try {
+      // Future call is now running, so we can delete it from the database.
+      // This might fail if the session is closed.
+      await FutureCallEntry.db.deleteRow(session, futureCallEntry);
+
       dynamic object;
       if (futureCallEntry.serializedObject != null) {
         object = _serializationManager.decode(
