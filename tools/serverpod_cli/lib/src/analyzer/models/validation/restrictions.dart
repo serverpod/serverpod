@@ -357,64 +357,69 @@ class Restrictions {
       ];
     }
 
+    var errors = <SourceSpanSeverityException>[];
+
     var implementedInterfacesList = implementedInterfaceNames
         .split(',')
         .map((name) => name.trim())
         .toList();
 
     var duplicates = _findDuplicateNames(implementedInterfacesList);
-    if (duplicates.isNotEmpty) {
-      return duplicates
-          .map((interfaceClass) => SourceSpanSeverityException(
-                'The interface name "$interfaceClass" is duplicated.',
-                span,
-              ))
-          .toList();
-    }
+    errors.addAll(
+      duplicates.map(
+        (interfaceClass) => SourceSpanSeverityException(
+          'The interface name "$interfaceClass" is duplicated.',
+          span,
+        ),
+      ),
+    );
+
+    var validInterfaces = <InterfaceClassDefinition>[];
 
     for (var implementedInterface in implementedInterfacesList) {
-      if (_globallyRestrictedKeywords.contains(implementedInterface)) {
-        return [
-          SourceSpanSeverityException(
-            'The interface name "$implementedInterface" is reserved and cannot be used.',
-            span,
-          )
-        ];
-      }
-
       if (!StringValidators.isValidClassName(implementedInterface)) {
-        return [
+        errors.add(
           SourceSpanSeverityException(
             'The interface name "$implementedInterface" must be a valid class name (e.g. PascalCaseString).',
             span,
-          )
-        ];
+          ),
+        );
       }
 
       var interfaceClass = parsedModels.findByClassName(implementedInterface);
 
       if (interfaceClass == null) {
-        return [
+        errors.add(
           SourceSpanSeverityException(
             'The implemented interface name "$implementedInterface" was not found in any model.',
             span,
-          )
-        ];
+          ),
+        );
+        continue;
       }
 
       if (interfaceClass is! InterfaceClassDefinition) {
-        return [
+        errors.add(
           SourceSpanSeverityException(
             'The referenced class "$implementedInterface" is not an interface. Only interfaces can be implemented.',
             span,
-          )
-        ];
+          ),
+        );
+        continue;
       }
+
+      validInterfaces.add(interfaceClass);
     }
 
-    if (documentDefinition is InterfaceClassDefinition) {
+    if (documentDefinition is InterfaceClassDefinition &&
+        validInterfaces.isNotEmpty) {
+      var definition = documentDefinition;
+      if (definition is! InterfaceClassDefinition) {
+        return errors;
+      }
+
       var circularPath = _detectCircularInterfaceDependency(
-        documentDefinition as ClassDefinition,
+        definition,
         [],
         {},
       );
@@ -429,7 +434,7 @@ class Restrictions {
       }
     }
 
-    return [];
+    return errors;
   }
 
   List<String> _findDuplicateNames(List<String> list) {
@@ -446,7 +451,9 @@ class Restrictions {
   }
 
   List<String> _detectCircularInterfaceDependency(
-      ClassDefinition current, List<String> path, Set<String> visited) {
+      InterfaceClassDefinition current,
+      List<String> path,
+      Set<String> visited) {
     var className = current.className;
 
     if (path.contains(className)) {
@@ -461,6 +468,10 @@ class Restrictions {
     visited.add(className);
 
     for (var interfaceImpl in current.implementedInterfaces) {
+      if (interfaceImpl is! InterfaceClassDefinition) {
+        continue;
+      }
+
       var result = _detectCircularInterfaceDependency(
           interfaceImpl, List.from(path), visited);
       if (result.isNotEmpty) {
