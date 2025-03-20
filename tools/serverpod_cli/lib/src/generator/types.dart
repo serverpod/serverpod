@@ -887,6 +887,12 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       }
     }
 
+    if (positionalFieldStrings.length == 1 &&
+        namedFieldsString == null &&
+        !recordBody.contains(',')) {
+      return null;
+    }
+
     return (
       positionalFieldStrings: positionalFieldStrings,
       namedFieldsString: namedFieldsString
