@@ -405,7 +405,7 @@ class Restrictions {
       if (interfaceClass is! InterfaceClassDefinition) {
         return [
           SourceSpanSeverityException(
-            'The implemented node "$implementedInterface" is not an interface.',
+            'The referenced class "$implementedInterface" is not an interface. Only interfaces can be implemented.',
             span,
           )
         ];

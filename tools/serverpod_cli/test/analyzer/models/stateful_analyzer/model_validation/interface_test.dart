@@ -240,7 +240,7 @@ void main() {
 
       expect(
         error.message,
-        'The implemented node "NonInterfaceClass" is not an interface.',
+        'The referenced class "NonInterfaceClass" is not an interface. Only interfaces can be implemented.',
       );
     });
 
