@@ -250,8 +250,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       test('then the field definition contains index.', () {
-        var field = child.fieldsIncludingInherited
-            .firstWhere((field) => field.name == 'name');
+        var field = child.allFields.firstWhere((field) => field.name == 'name');
         var index = field.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
