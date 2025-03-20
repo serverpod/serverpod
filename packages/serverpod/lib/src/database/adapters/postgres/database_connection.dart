@@ -183,14 +183,11 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    var selectedColumns = columns ?? table.columns;
+    var selectedColumns = (columns ?? table.columns).toSet();
 
     if (columns != null) {
-      _validateColumnsExists(columns, table);
-      selectedColumns = [
-        ...columns,
-        if (!columns.contains(table.id)) table.id,
-      ];
+      _validateColumnsExists(selectedColumns, table);
+      selectedColumns.add(table.id);
     }
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);
@@ -674,7 +671,7 @@ class DatabaseConnection {
     return resolvedListRelations;
   }
 
-  void _validateColumnsExists(List<Column> columns, Table table) {
+  void _validateColumnsExists(Set<Column> columns, Table table) {
     for (var column in columns) {
       if (!table.columns.any((c) => c.columnName == column.columnName)) {
         throw ArgumentError.value(
