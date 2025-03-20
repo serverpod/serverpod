@@ -234,23 +234,12 @@ class FutureCallManager {
   }) async {
     // Run in a synchronized block to avoid race conditions
     return _runningFutureCallsMutex.synchronized(() async {
-      final futureCallName = futureCallEntry.name;
+      final futureCallName = futureCall.name;
 
-      final totalRunningFutureCalls =
-          _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
+      final isConcurrentLimitReached =
+          _isFutureCallConcurrentLimitReached(futureCall);
 
-      final isGlobalLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
-
-      if (isGlobalLimitReached) {
-        return false;
-      }
-
-      final runningInstances = _runningFutureCalls[futureCallName] ?? 0;
-
-      final isFutureCallLimitReached =
-          runningInstances >= futureCall.concurrentLimit;
-
-      if (isFutureCallLimitReached) {
+      if (isConcurrentLimitReached) {
         return false;
       }
 
@@ -286,6 +275,33 @@ class FutureCallManager {
 
       return true;
     });
+  }
+
+  /// Returns `true` if the concurrent limit for the [FutureCall] is reached.
+  /// Returns `false` otherwise.
+  /// Should be called in a synchronized block.
+  bool _isFutureCallConcurrentLimitReached(FutureCall futureCall) {
+    final futureCallName = futureCall.name;
+
+    final totalRunningFutureCalls =
+        _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
+
+    final isGlobalLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
+
+    if (isGlobalLimitReached) {
+      return true;
+    }
+
+    final runningInstances = _runningFutureCalls[futureCallName] ?? 0;
+
+    final isFutureCallLimitReached =
+        runningInstances >= futureCall.concurrentLimit;
+
+    if (isFutureCallLimitReached) {
+      return true;
+    }
+
+    return false;
   }
 
   /// Runs a [FutureCallEntry] and completes when the future call is completed.
