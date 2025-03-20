@@ -198,7 +198,6 @@ class DatabaseConnection {
     var values = _createQueryValueList(rows, selectedColumns);
 
     var setColumns = selectedColumnNames
-        .where((columnName) => columnName != 'id')
         .map((columnName) => '"$columnName" = data."$columnName"')
         .join(', ');
 

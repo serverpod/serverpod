@@ -783,4 +783,24 @@ void main() async {
       expect(updated.first.anEnum, equals(TestEnum.one));
     });
   });
+
+  group('Given empty model in database', () {
+    late EmptyModelWithTable model;
+    setUp(() async {
+      model = await EmptyModelWithTable.db
+          .insertRow(session, EmptyModelWithTable());
+    });
+
+    tearDown(() async {
+      await EmptyModelWithTable.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+    });
+
+    test('when model is updated then update completes', () async {
+      expect(
+        EmptyModelWithTable.db.updateRow(session, model),
+        completes,
+      );
+    });
+  });
 }
