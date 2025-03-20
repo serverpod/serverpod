@@ -811,5 +811,25 @@ void main() async {
         completes,
       );
     });
+
+    test('when with columns from different model then error is thrown',
+        () async {
+      var invalidColumns = [SimpleData.t.num, Types.t.anInt];
+      expect(
+        EmptyModelWithTable.db
+            .updateRow(session, model, columns: (t) => invalidColumns),
+        throwsA(
+          isA<ArgumentError>()
+              .having(
+                (e) => e.message,
+                'message',
+                equals('Columns do not exist in table'),
+              )
+              .having((e) => e.name, 'name', 'columns')
+              .having((e) => e.invalidValue, 'invalidValue',
+                  invalidColumns.toString()),
+        ),
+      );
+    });
   });
 }

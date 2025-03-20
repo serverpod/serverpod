@@ -186,7 +186,7 @@ class DatabaseConnection {
     var selectedColumns = (columns ?? table.columns).toSet();
 
     if (columns != null) {
-      _validateColumnsExists(selectedColumns, table);
+      _validateColumnsExists(selectedColumns, table.columns.toSet());
       selectedColumns.add(table.id);
     }
 
@@ -671,15 +671,15 @@ class DatabaseConnection {
     return resolvedListRelations;
   }
 
-  void _validateColumnsExists(Set<Column> columns, Table table) {
-    for (var column in columns) {
-      if (!table.columns.any((c) => c.columnName == column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
+  void _validateColumnsExists(Set<Column> columns, Set<Column> tableColumns) {
+    var additionalColumns = columns.difference(tableColumns);
+
+    if (additionalColumns.isNotEmpty) {
+      throw ArgumentError.value(
+        additionalColumns.toList().toString(),
+        'columns',
+        'Columns do not exist in table',
+      );
     }
   }
 
