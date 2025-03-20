@@ -10,6 +10,7 @@ part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/extends_matcher/extends_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
+part 'compilation_unit_matcher/generic_matcher/generic_matcher.dart';
 part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
 part 'compilation_unit_matcher/parameter_matcher/parameter_matcher.dart';
 part 'compilation_unit_matcher/super_initializer_matcher/super_initializer_matcher.dart';
@@ -146,7 +147,9 @@ abstract interface class ConstructorMatcher {
 }
 
 /// A chainable matcher that matches the extension in a compilation unit.
-abstract interface class ExtendsMatcher {}
+abstract interface class ExtendsMatcher {
+  GenericMatcher withGeneric(String genericType);
+}
 
 /// A chainable matcher that matches a field in a compilation unit.
 abstract interface class FieldMatcher {}
@@ -161,6 +164,9 @@ class FormattedCompilationUnit {
     return DartFormatter().format(compilationUnit.toSource());
   }
 }
+
+/// A chainable matcher that matches a generic type in a compilation unit.
+abstract interface class GenericMatcher {}
 
 /// Initializer types for parameters.
 enum Initializer {

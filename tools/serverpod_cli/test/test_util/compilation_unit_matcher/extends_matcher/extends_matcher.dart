@@ -41,9 +41,7 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
   @override
   bool matches(item, Map matchState) {
     var extendsClause = _featureValueOf(item);
-    if (extendsClause is! ExtendsClause) return false;
-
-    return extendsClause._hasMatchingClassName(_name);
+    return _matches(extendsClause);
   }
 
   ExtendsClause? _featureValueOf(actual) {
@@ -51,6 +49,34 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
     if (match == null) return null;
 
     return match.value;
+  }
+
+  ExtendsClause? _matchedFeatureValueOf(dynamic actual) {
+    var extendsDeclaration = _featureValueOf(actual);
+    if (extendsDeclaration == null) return null;
+
+    if (!_matches(extendsDeclaration)) return null;
+
+    return extendsDeclaration;
+  }
+
+  bool _matches(ExtendsClause? extendsClause) {
+    if (extendsClause == null) return false;
+
+    return extendsClause._hasMatchingClassName(_name);
+  }
+
+  @override
+  GenericMatcher withGeneric(String genericType) {
+    return _GenericMatcherImpl._(
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (extendsClause) =>
+            extendsClause.superclass.typeArguments?.arguments ?? [],
+      ),
+      genericType,
+    );
   }
 }
 
