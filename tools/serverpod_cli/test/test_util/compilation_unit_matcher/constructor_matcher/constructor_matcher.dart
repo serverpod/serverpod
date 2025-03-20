@@ -36,8 +36,8 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     Map matchState,
     bool verbose,
   ) {
-    var classConstructors = parent.matchedFeatureValueOf(item);
-    if (classConstructors == null) {
+    var match = parent.matchedFeatureValueOf(item);
+    if (match == null) {
       return parent.describeMismatch(
         item,
         mismatchDescription,
@@ -56,9 +56,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
       output.write(
           'does not contain "$_name" named constructor. Found named constructors: [');
       output.writeAll(
-        classConstructors
-            .where((e) => e.name != null)
-            .map((c) => c.name?.lexeme),
+        match.value.where((e) => e.name != null).map((c) => c.name?.lexeme),
         ', ',
       );
       output.write(']');
@@ -103,12 +101,16 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
 
   @override
   SuperInitializerMatcher withSuperInitializer() {
-    return _SuperInitializerMatcherImpl._(ChainableMatcher(
-      this,
-      (actual) => _matchedFeatureValueOf(actual)
-          ?.initializers
-          .whereType<SuperConstructorInvocation>(),
-    ));
+    return _SuperInitializerMatcherImpl._(
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (constructorDeclaration) => constructorDeclaration
+            .initializers
+            .whereType<SuperConstructorInvocation>()
+            .firstOrNull,
+      ),
+    );
   }
 
   @override
@@ -125,12 +127,10 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 
   ConstructorDeclaration? _featureValueOf(actual) {
-    var classConstructors = parent.matchedFeatureValueOf(actual);
-    if (classConstructors == null) return null;
+    var match = parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return classConstructors
-        .where((c) => c._hasMatchingName(_name))
-        .firstOrNull;
+    return match.value.where((c) => c._hasMatchingName(_name)).firstOrNull;
   }
 
   ConstructorDeclaration? _matchedFeatureValueOf(dynamic actual) {
@@ -157,8 +157,12 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     Initializer? initializer,
   }) {
     return _ParameterMatcherImpl._(
-      ChainableMatcher(this,
-          (actual) => _matchedFeatureValueOf(actual)?.parameters.parameters),
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (constructorDeclaration) =>
+            constructorDeclaration.parameters.parameters,
+      ),
       parameterName,
       type: type,
       isRequired: isRequired,

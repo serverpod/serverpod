@@ -38,8 +38,8 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     Map matchState,
     bool verbose,
   ) {
-    var methodDeclarations = _parent.matchedFeatureValueOf(item);
-    if (methodDeclarations == null) {
+    var match = _parent.matchedFeatureValueOf(item);
+    if (match == null) {
       return _parent.describeMismatch(
         item,
         mismatchDescription,
@@ -53,7 +53,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     if (methodDecl == null) {
       output.write('does not contain method "$_name". Found methods: [');
       output.writeAll(
-        methodDeclarations.map((m) => m.name.lexeme),
+        match.value.map((m) => m.name.lexeme),
         ', ',
       );
       output.write(']');
@@ -84,8 +84,12 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     bool? isRequired,
   }) {
     return _ParameterMatcherImpl._(
-      ChainableMatcher(this,
-          (actual) => _matchedFeatureValueOf(actual)?.parameters?.parameters),
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (methodDeclaration) =>
+            methodDeclaration.parameters?.parameters ?? [],
+      ),
       parameterName,
       type: type,
       isRequired: isRequired,
@@ -93,10 +97,10 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
   }
 
   MethodDeclaration? _featureValueOf(actual) {
-    var methodDeclarations = _parent.matchedFeatureValueOf(actual);
-    if (methodDeclarations == null) return null;
+    var match = _parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return methodDeclarations.where((m) => m.name.lexeme == _name).firstOrNull;
+    return match.value.where((m) => m.name.lexeme == _name).firstOrNull;
   }
 
   MethodDeclaration? _matchedFeatureValueOf(dynamic actual) {

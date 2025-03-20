@@ -47,7 +47,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
         'does not contain argument "$_value" in super initializer. Found arguments: [',
       );
       output.writeAll(
-        arguments.map((e) => e.toSource()),
+        arguments.value.map((e) => e.toSource()),
         ', ',
       );
       output.write(']');
@@ -89,10 +89,10 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
   }
 
   Iterable<Expression>? _featureValueOf(actual) {
-    var superInitializer = _parent.matchedFeatureValueOf(actual);
-    if (superInitializer == null) return null;
+    var match = _parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return superInitializer.where((e) => e._hasMatchingValue(_value));
+    return match.value.where((e) => e._hasMatchingValue(_value));
   }
 }
 

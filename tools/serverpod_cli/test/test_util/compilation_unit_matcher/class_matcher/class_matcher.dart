@@ -44,11 +44,11 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   @override
   FieldMatcher withField(String fieldName, {bool? isNullable}) {
     return _FieldMatcherImpl._(
-      ChainableMatcher(
+      ChainableMatcher.createMatcher(
         this,
-        (actual) => _matchedFeatureValueOf(actual)
-            ?.members
-            .whereType<FieldDeclaration>(),
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (classDeclaration) =>
+            classDeclaration.members.whereType<FieldDeclaration>(),
       ),
       fieldName,
       isNullable: isNullable,
@@ -62,11 +62,11 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
     String? returnType,
   }) {
     return _MethodMatcherImpl._(
-      ChainableMatcher(
+      ChainableMatcher.createMatcher(
         this,
-        (actual) => _matchedFeatureValueOf(actual)
-            ?.members
-            .whereType<MethodDeclaration>(),
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (classDeclaration) =>
+            classDeclaration.members.whereType<MethodDeclaration>(),
       ),
       methodName,
       isOverride: isOverride,
@@ -125,11 +125,11 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
     bool? isFactory,
   }) {
     return _ConstructorMatcherImpl._(
-      ChainableMatcher(
+      ChainableMatcher.createMatcher(
         this,
-        (actual) => _matchedFeatureValueOf(actual)
-            ?.members
-            .whereType<ConstructorDeclaration>(),
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (classDeclaration) =>
+            classDeclaration.members.whereType<ConstructorDeclaration>(),
       ),
       name: constructorName,
       isFactory: isFactory,

@@ -23,8 +23,8 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     Map matchState,
     bool verbose,
   ) {
-    var fieldDeclarations = parent.matchedFeatureValueOf(item);
-    if (fieldDeclarations == null) {
+    var match = parent.matchedFeatureValueOf(item);
+    if (match == null) {
       return parent.describeMismatch(
         item,
         mismatchDescription,
@@ -35,7 +35,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
 
     var fieldDecl = _featureValueOf(item);
     if (fieldDecl is! FieldDeclaration) {
-      final fieldNames = fieldDeclarations
+      final fieldNames = match.value
           .expand((f) => f.fields.variables)
           .map((v) => v.name.lexeme)
           .join(', ');
@@ -57,10 +57,10 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   }
 
   FieldDeclaration? _featureValueOf(actual) {
-    var fieldDeclarations = parent.matchedFeatureValueOf(actual);
-    if (fieldDeclarations == null) return null;
+    var match = parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return fieldDeclarations
+    return match.value
         .where((f) => f._hasMatchingVariable(fieldName))
         .firstOrNull;
   }
