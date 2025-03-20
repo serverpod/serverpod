@@ -8,61 +8,7 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Interface Class Tests', () {
-    test(
-        'Given an interface class with an invalid class name, when analyzed, then an error is collected that the name is not valid',
-        () {
-      var modelSources = [
-        ModelSourceBuilder().withFileName('example1').withYaml(
-          '''
-          interface: example
-          fields:
-            name: String
-          ''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "interface" type must be a valid class name (e.g. PascalCaseString).',
-      );
-    });
-
-    test(
-        'Given an interface class with a reserved keyword name, when analyzed, then an error is collected that the class name is reserved',
-        () {
-      var modelSources = [
-        ModelSourceBuilder().withFileName('example1').withYaml(
-          '''
-          interface: List
-          fields:
-            name: String
-          ''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The class name "List" is reserved and cannot be used.',
-      );
-    });
-
+  group('Implements Tests', () {
     test(
         'Given a class that implements a single valid interface, when analyzed, then no errors are collected',
         () {
