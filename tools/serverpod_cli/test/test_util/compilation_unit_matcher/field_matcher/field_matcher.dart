@@ -5,11 +5,13 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   final String fieldName;
   final bool? isNullable;
   final bool? isFinal;
+  final bool? isLate;
   _FieldMatcherImpl._(
     this.parent,
     this.fieldName, {
     required this.isNullable,
     required this.isFinal,
+    required this.isLate,
   });
 
   @override
@@ -17,6 +19,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     var output = StringBuffer(' with a ');
     output.writeAll([
       if (isNullable != null) isNullable == true ? 'nullable' : 'non-nullable',
+      if (isLate != null) isLate == true ? 'late' : 'non-late',
       if (isFinal != null) isFinal == true ? 'final' : 'non-final',
       'field "$fieldName"',
     ], ' ');
@@ -56,10 +59,12 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     var output = StringBuffer('contains field "$fieldName" but the field is ');
     output.writeAll(
       [
-        if (!fieldDecl._hasMatchingFinal(isFinal))
-          isFinal == true ? 'non-final' : 'final',
         if (!fieldDecl._hasMatchingNullable(isNullable))
           isNullable == true ? 'non-nullable' : 'nullable',
+        if (!fieldDecl._hasMatchingLate(isLate))
+          isLate == true ? 'non-late' : 'late',
+        if (!fieldDecl._hasMatchingFinal(isFinal))
+          isFinal == true ? 'non-final' : 'final',
       ],
       ' and ',
     );
@@ -74,6 +79,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
 
     if (!field._hasMatchingNullable(isNullable)) return false;
     if (!field._hasMatchingFinal(isFinal)) return false;
+    if (!field._hasMatchingLate(isLate)) return false;
     return true;
   }
 
@@ -98,6 +104,12 @@ extension on FieldDeclaration {
     if (isFinal == null) return true;
 
     return fields.isFinal == isFinal;
+  }
+
+  bool _hasMatchingLate(bool? isLate) {
+    if (isLate == null) return true;
+
+    return fields.isLate == isLate;
   }
 
   bool _hasMatchingVariable(String name) {

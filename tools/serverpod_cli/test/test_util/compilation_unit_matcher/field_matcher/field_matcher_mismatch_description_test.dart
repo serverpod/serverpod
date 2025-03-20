@@ -26,7 +26,9 @@ void main() {
     });
   });
 
-  group('Given compilation unit with class and non-nullable final field', () {
+  group(
+      'Given compilation unit with class and non-nullable non-late final field',
+      () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -78,18 +80,31 @@ void main() {
       );
     });
 
-    test(
-        'when matching with nullable non-final field then mismatch description is correct',
+    test('when matching with late field then mismatch description is correct',
         () {
-      final matcher = containsClass('User')
-          .withField('name', isFinal: false, isNullable: true) as Matcher;
+      final matcher =
+          containsClass('User').withField('name', isLate: true) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        contains('contains field "name" but the field is non-late'),
+      );
+    });
+
+    test(
+        'when matching with nullable late non-final field then mismatch description is correct',
+        () {
+      final matcher = containsClass('User').withField('name',
+          isFinal: false, isNullable: true, isLate: true) as Matcher;
       final description = StringDescription();
       matcher.describeMismatch(compilationUnit, description, {}, false);
 
       expect(
         description.toString(),
         contains(
-            'contains field "name" but the field is final and non-nullable'),
+            'contains field "name" but the field is non-nullable and non-late and final'),
       );
     });
   });
@@ -137,6 +152,30 @@ void main() {
       expect(
         description.toString(),
         contains('contains field "name" but the field is non-final'),
+      );
+    });
+  });
+
+  group('Given compilation unit with class and late field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        late String name;
+      }
+    ''',
+    );
+
+    test(
+        'when matching with non-late field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', isLate: false) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        contains('contains field "name" but the field is late'),
       );
     });
   });

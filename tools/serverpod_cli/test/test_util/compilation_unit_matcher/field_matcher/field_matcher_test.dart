@@ -19,7 +19,9 @@ void main() {
     });
   });
 
-  group('Given compilation unit with class and non-nullable final field', () {
+  group(
+      'Given compilation unit with class and non-nullable non-late final field',
+      () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -49,12 +51,20 @@ void main() {
       );
     });
 
-    test('when matching class and non-nullable final field then test passes',
+    test('when matching class and non-late field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isLate: false),
+      );
+    });
+
+    test(
+        'when matching class and non-nullable non-late final field then test passes',
         () {
       expect(
         compilationUnit,
         containsClass('User')
-            .withField('name', isNullable: false, isFinal: true),
+            .withField('name', isNullable: false, isFinal: true, isLate: false),
       );
     });
 
@@ -69,6 +79,13 @@ void main() {
       expect(
         compilationUnit,
         isNot(containsClass('User').withField('name', isFinal: false)),
+      );
+    });
+
+    test('when negate matching class and late field then test passes', () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isLate: true)),
       );
     });
 
@@ -134,6 +151,31 @@ void main() {
       expect(
         compilationUnit,
         isNot(containsClass('User').withField('name', isFinal: true)),
+      );
+    });
+  });
+
+  group('Given compilation unit with class and late final field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        late final String name;
+      }
+    ''',
+    );
+
+    test('when matching class and late final field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isLate: true),
+      );
+    });
+
+    test('when negate matching class and non-late final field then test passes',
+        () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isLate: false)),
       );
     });
   });

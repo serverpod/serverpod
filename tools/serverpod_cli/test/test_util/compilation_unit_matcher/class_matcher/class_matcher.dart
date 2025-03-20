@@ -54,17 +54,24 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   }
 
   @override
-  FieldMatcher withField(String fieldName, {bool? isNullable, bool? isFinal}) {
+  FieldMatcher withField(
+    String fieldName, {
+    bool? isNullable,
+    bool? isFinal,
+    bool? isLate,
+  }) {
     return _FieldMatcherImpl._(
-        ChainableMatcher.createMatcher(
-          this,
-          resolveMatch: _matchedFeatureValueOf,
-          extractValue: (classDeclaration) =>
-              classDeclaration.members.whereType<FieldDeclaration>(),
-        ),
-        fieldName,
-        isNullable: isNullable,
-        isFinal: isFinal);
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (classDeclaration) =>
+            classDeclaration.members.whereType<FieldDeclaration>(),
+      ),
+      fieldName,
+      isNullable: isNullable,
+      isFinal: isFinal,
+      isLate: isLate,
+    );
   }
 
   @override

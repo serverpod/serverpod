@@ -66,7 +66,15 @@ abstract interface class ClassMatcher {
   ///
   /// Use [isFinal] to match final fields. If the value is not set, the matcher
   /// will ignore the final status of the field
-  FieldMatcher withField(String fieldName, {bool? isNullable, bool? isFinal});
+  ///
+  /// Use [isLate] to match late fields. If the value is not set, the matcher
+  /// will ignore the late status of the field
+  FieldMatcher withField(
+    String fieldName, {
+    bool? isNullable,
+    bool? isFinal,
+    bool? isLate,
+  });
 
   /// Chains a [MethodMatcher] that checks if the class contains a method with a
   /// specific name.
