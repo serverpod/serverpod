@@ -515,7 +515,7 @@ class UnresolvedImplementsDefinition extends ImplementsDefinition {
 /// See also:
 /// - [UnresolvedImplementsDefinition]
 class ResolvedImplementsDefinition extends ImplementsDefinition {
-  final ClassDefinition interfaceDefinition;
+  final InterfaceClassDefinition interfaceDefinition;
 
   ResolvedImplementsDefinition(this.interfaceDefinition);
 }
