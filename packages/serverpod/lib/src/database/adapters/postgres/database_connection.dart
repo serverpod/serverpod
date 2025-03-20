@@ -187,7 +187,10 @@ class DatabaseConnection {
 
     if (columns != null) {
       _validateColumnsExists(columns, table);
-      selectedColumns = [table.id, ...columns];
+      selectedColumns = [
+        ...columns,
+        if (!columns.contains(table.id)) table.id,
+      ];
     }
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);

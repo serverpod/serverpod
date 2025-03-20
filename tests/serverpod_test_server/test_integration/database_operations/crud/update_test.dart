@@ -782,6 +782,15 @@ void main() async {
 
       expect(updated.first.anEnum, equals(TestEnum.one));
     });
+
+    test(
+        'when listing id column in an update query of a row then update completes successfully.',
+        () async {
+      expect(
+        Types.db.updateRow(session, type, columns: (t) => [t.id]),
+        completes,
+      );
+    });
   });
 
   group('Given empty model in database', () {
