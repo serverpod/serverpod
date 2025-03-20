@@ -680,10 +680,15 @@ class Restrictions {
         var duplicateClassField =
             def.fields.where((field) => field.name == fieldName).firstOrNull;
 
-        if (duplicateClassField != null && !duplicateClassField.hasDefaults) {
+        if (duplicateClassField != null &&
+            // If ANY property is different, it's a valid redefinition
+            duplicateClassField.hasDefaults ==
+                duplicateInterfaceField.hasDefaults &&
+            duplicateClassField.scope == duplicateInterfaceField.scope &&
+            duplicateClassField.relation == duplicateInterfaceField.relation) {
           return [
             SourceSpanSeverityException(
-              'Field "$fieldName" from interface "${interfaceClass.className}" must have a default value when redefined in the implementing class. Either set a default value or remove the field from the implementing class.',
+              'Field "$fieldName" from interface "${interfaceClass.className}" must modify at least one property (defaults, scope, or relations) when redefined. Otherwise, remove the field from the implementing class.',
               span,
             )
           ];
