@@ -10,7 +10,7 @@ void main() {
 
   group('Interface Class Tests', () {
     test(
-        'Given an interface class, when the class name is not a valid class name, then an error is collected that the name is not valid',
+        'Given an interface class with an invalid class name, when analyzed, then an error is collected that the name is not valid',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -40,7 +40,7 @@ void main() {
     });
 
     test(
-        'Given an interface class, when the class name is a reserved keyword, then an error is collected that the class name is reserved',
+        'Given an interface class with a reserved keyword name, when analyzed, then an error is collected that the class name is reserved',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -64,7 +64,7 @@ void main() {
     });
 
     test(
-        'Given a class, when implementing a single valid interface, then no errors are collected',
+        'Given a class that implements a single valid interface, when analyzed, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -96,7 +96,7 @@ void main() {
     });
 
     test(
-        'Given a class, when implementing multiple interfaces, then no errors are collected if all interfaces are valid',
+        'Given a class that implements multiple valid interfaces, when analyzed, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -135,7 +135,7 @@ void main() {
     });
 
     test(
-        'Given a class, when implementing a non-existent interface, then an error is collected',
+        'Given a class that implements a non-existent interface, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -166,7 +166,7 @@ void main() {
     });
 
     test(
-        'Given a class, when implementing duplicate interfaces, then an error is collected',
+        'Given a class that implements duplicate interfaces, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -204,7 +204,7 @@ void main() {
     });
 
     test(
-        'Given a class implementing a non-interface class, then an error is collected',
+        'Given a class that implements a non-interface class, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1 ').withYaml(
@@ -243,7 +243,7 @@ void main() {
     });
 
     test(
-        'Given an exception implementing a valid interface, when generating code, then no errors are collected',
+        'Given an exception class that implements a valid interface, when analyzed, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -275,7 +275,7 @@ void main() {
     });
 
     test(
-        'Given a class implementing an interface, when the interface also implements another interface, then no errors are collected',
+        'Given a class that implements an interface which implements another interface, when analyzed, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -311,7 +311,7 @@ void main() {
     });
 
     test(
-        'Given a class implementing an interface and assigning a default value to a field from the interface, when generating code, then no errors are collected',
+        'Given a class that implements an interface and assigns a default value to an interface field, when analyzed, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -339,7 +339,7 @@ void main() {
     });
 
     test(
-        'Given a class implementing an interface with a duplicate field without default value, when generating code, then an error is collected',
+        'Given a class that implements an interface with a duplicate field without default value, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -371,7 +371,7 @@ void main() {
     });
 
     test(
-        'Given a circular interface dependency, when generating code, then an error is collected',
+        'Given interfaces with circular dependencies, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('example1').withYaml(
@@ -402,7 +402,7 @@ void main() {
     });
 
     test(
-        'Given a complex circular interface dependency with 3 interfaces, when generating code, then an error is collected',
+        'Given three interfaces with complex circular dependencies, when analyzed, then an error is collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withFileName('interface1').withYaml(
