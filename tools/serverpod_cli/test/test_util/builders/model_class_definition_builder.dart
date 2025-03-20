@@ -329,7 +329,7 @@ class ModelClassDefinitionBuilder {
   }
 
   ModelClassDefinitionBuilder withImplementedInterfaces(
-    List<ClassDefinition> interfaces,
+    List<InterfaceClassDefinition> interfaces,
   ) {
     _isImplementing = [
       for (var implementedInterface in interfaces)

@@ -84,7 +84,7 @@ class ModelDependencyResolver {
       }
 
       var interfaceClass = modelDefinitions
-          .whereType<ClassDefinition>()
+          .whereType<InterfaceClassDefinition>()
           .where((element) => element.className == implementedClass.className)
           .firstOrNull;
 
