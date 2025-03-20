@@ -848,14 +848,14 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       return null;
     }
 
-    var positionalFieldTypes = _getTypesFromPositionalFields(
-      recordParts.positionalFieldStrings,
-    );
-
     var namedFields = _tryParseNamedFieldsString(recordParts.namedFieldsString);
     if (namedFields == null) {
       return null;
     }
+
+    var positionalFieldTypes = _getTypesFromPositionalFields(
+      recordParts.positionalFieldStrings,
+    );
 
     return (
       positionalFieldTypes: positionalFieldTypes,
