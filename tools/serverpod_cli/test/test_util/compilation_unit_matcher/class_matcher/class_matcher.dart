@@ -1,12 +1,13 @@
 part of '../../compilation_unit_matcher.dart';
 
 class _ClassMatcherImpl implements Matcher, ClassMatcher {
-  final String className;
-  _ClassMatcherImpl._(this.className);
+  final String _className;
+
+  _ClassMatcherImpl._(this._className);
 
   @override
   Description describe(Description description) {
-    return description.add('a CompilationUnit containing class "$className"');
+    return description.add('a CompilationUnit containing class "$_className"');
   }
 
   @override
@@ -32,7 +33,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
         .join(', ');
 
     return mismatchDescription.add(
-        'does not contain class "$className". Found classes: [$classNames]');
+        'does not contain class "$_className". Found classes: [$classNames]');
   }
 
   @override
@@ -102,7 +103,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
 
     return resolvedActual.declarations
         .whereType<ClassDeclaration>()
-        .where((d) => d._hasMatchingClass(className))
+        .where((d) => d._hasMatchingClass(_className))
         .firstOrNull;
   }
 
