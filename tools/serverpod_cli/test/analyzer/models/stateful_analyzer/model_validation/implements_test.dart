@@ -313,7 +313,7 @@ void main() {
 
       var error = collector.errors.first;
       expect(error.message,
-          'Field "status" from interface "Interface1" must have a default value when redefined in the implementing class. Either set a default value or remove the field from the implementing class.');
+          'Field "status" from interface "Interface1" must modify at least one property (defaults, scope, or relations) when redefined. Otherwise, remove the field from the implementing class.');
     });
 
     test(
