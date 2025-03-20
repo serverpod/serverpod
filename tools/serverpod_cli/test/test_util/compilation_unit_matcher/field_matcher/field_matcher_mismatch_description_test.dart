@@ -26,7 +26,7 @@ void main() {
     });
   });
 
-  group('Given compilation unit with class and non-nullable field', () {
+  group('Given compilation unit with class and non-nullable final field', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -63,6 +63,35 @@ void main() {
         contains('contains field "name" but the field is non-nullable'),
       );
     });
+
+    test(
+        'when matching with non-final field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', isFinal: false) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        contains('contains field "name" but the field is final'),
+      );
+    });
+
+    test(
+        'when matching with nullable non-final field then mismatch description is correct',
+        () {
+      final matcher = containsClass('User')
+          .withField('name', isFinal: false, isNullable: true) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        contains(
+            'contains field "name" but the field is final and non-nullable'),
+      );
+    });
   });
 
   group('Given compilation unit with class and nullable field', () {
@@ -85,6 +114,29 @@ void main() {
       expect(
         description.toString(),
         contains('contains field "name" but the field is nullable'),
+      );
+    });
+  });
+
+  group('Given compilation unit with class and non-final field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        String name;
+      }
+    ''',
+    );
+
+    test('when matching with final field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', isFinal: true) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        contains('contains field "name" but the field is non-final'),
       );
     });
   });

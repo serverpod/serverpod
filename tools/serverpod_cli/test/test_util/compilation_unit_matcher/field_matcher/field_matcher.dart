@@ -4,15 +4,24 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   final ChainableMatcher<Iterable<FieldDeclaration>> parent;
   final String fieldName;
   final bool? isNullable;
-  _FieldMatcherImpl._(this.parent, this.fieldName, {this.isNullable});
+  final bool? isFinal;
+  _FieldMatcherImpl._(
+    this.parent,
+    this.fieldName, {
+    required this.isNullable,
+    required this.isFinal,
+  });
 
   @override
   Description describe(Description description) {
-    var nullable = isNullable != null
-        ? '${isNullable == true ? '' : 'non-'}nullable '
-        : '';
+    var output = StringBuffer(' with a ');
+    output.writeAll([
+      if (isNullable != null) isNullable == true ? 'nullable' : 'non-nullable',
+      if (isFinal != null) isFinal == true ? 'final' : 'non-final',
+      'field "$fieldName"',
+    ], ' ');
     return parent.describe(description).add(
-          ' with a ${nullable}field "$fieldName"',
+          output.toString(),
         );
   }
 
@@ -44,8 +53,18 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
           'does not contain field "$fieldName". Found fields: [$fieldNames]');
     }
 
-    return mismatchDescription.add(
-        'contains field "$fieldName" but the field is ${isNullable == true ? 'non-nullable' : 'nullable'}');
+    var output = StringBuffer('contains field "$fieldName" but the field is ');
+    output.writeAll(
+      [
+        if (!fieldDecl._hasMatchingFinal(isFinal))
+          isFinal == true ? 'non-final' : 'final',
+        if (!fieldDecl._hasMatchingNullable(isNullable))
+          isNullable == true ? 'non-nullable' : 'nullable',
+      ],
+      ' and ',
+    );
+
+    return mismatchDescription.add(output.toString());
   }
 
   @override
@@ -53,7 +72,9 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     var field = _featureValueOf(item);
     if (field is! FieldDeclaration) return false;
 
-    return field._hasMatchingNullable(isNullable);
+    if (!field._hasMatchingNullable(isNullable)) return false;
+    if (!field._hasMatchingFinal(isFinal)) return false;
+    return true;
   }
 
   FieldDeclaration? _featureValueOf(actual) {
@@ -71,6 +92,12 @@ extension on FieldDeclaration {
     if (isNullable == null) return true;
 
     return fields.type?.question == null ? !isNullable : isNullable;
+  }
+
+  bool _hasMatchingFinal(bool? isFinal) {
+    if (isFinal == null) return true;
+
+    return fields.isFinal == isFinal;
   }
 
   bool _hasMatchingVariable(String name) {

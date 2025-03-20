@@ -63,7 +63,10 @@ abstract interface class ClassMatcher {
   ///
   /// Use [isNullable] to match field nullability. If the value is not set, the
   /// matcher will ignore the nullability of the field.
-  FieldMatcher withField(String fieldName, {bool? isNullable});
+  ///
+  /// Use [isFinal] to match final fields. If the value is not set, the matcher
+  /// will ignore the final status of the field
+  FieldMatcher withField(String fieldName, {bool? isNullable, bool? isFinal});
 
   /// Chains a [MethodMatcher] that checks if the class contains a method with a
   /// specific name.
