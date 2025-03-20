@@ -78,9 +78,9 @@ sealed class ClassDefinition extends SerializableModelDefinition {
         .toList();
   }
 
-  /// Returns a list of all implemented fields that are not assigned a default
-  ///  in this class.
-  List<SerializableModelFieldDefinition> get uniqueImplementedFields {
+  /// Returns a list of all implemented fields that are not redefined
+  /// in this class.
+  List<SerializableModelFieldDefinition> get nonOverriddenImplementedFields {
     return implementedFields
         .where((f) => !fields.any((field) => field.name == f.name))
         .toList();
@@ -88,7 +88,7 @@ sealed class ClassDefinition extends SerializableModelDefinition {
 
   /// Returns a list of all (unique) implemented fields and the fields of this class.
   List<SerializableModelFieldDefinition> get fieldsIncludingImplemented =>
-      [...uniqueImplementedFields, ...fields];
+      [...nonOverriddenImplementedFields, ...fields];
 }
 
 /// A [ClassDefinition] specialization that represents a model class.
@@ -165,7 +165,7 @@ final class ModelClassDefinition extends ClassDefinition {
     return [
       if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
       ...inheritedFields,
-      ...uniqueImplementedFields,
+      ...nonOverriddenImplementedFields,
       ...fields.where((element) => element.name != 'id'),
     ];
   }
