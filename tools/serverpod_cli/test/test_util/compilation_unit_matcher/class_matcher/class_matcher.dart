@@ -42,6 +42,18 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   }
 
   @override
+  ExtendsMatcher thatExtends(String className) {
+    return _ExtendsMatcherImpl._(
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (classDeclaration) => classDeclaration.extendsClause,
+      ),
+      name: className,
+    );
+  }
+
+  @override
   FieldMatcher withField(String fieldName, {bool? isNullable}) {
     return _FieldMatcherImpl._(
       ChainableMatcher.createMatcher(
