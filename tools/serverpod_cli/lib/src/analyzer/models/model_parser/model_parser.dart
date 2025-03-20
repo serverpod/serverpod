@@ -690,7 +690,7 @@ class ModelParser {
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
 
-    var indexFields = convertIndexList(stringifiedFields);
+    var indexFields = convertCommaSeparatedList(stringifiedFields);
 
     return indexFields;
   }
