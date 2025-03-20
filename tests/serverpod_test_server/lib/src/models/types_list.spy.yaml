@@ -15,3 +15,5 @@ fields:
   anObject: List<Types>?
   aMap: List<Map<String, Types>>?
   aList: List<List<Types>>?
+  aRecord: List<(int,)>?
+  aNullableRecord: List<(int,)?>?

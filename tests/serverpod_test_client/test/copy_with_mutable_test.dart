@@ -40,6 +40,16 @@ void main() {
       expect(typesCopy.anInt, isNull);
       expect(types.anInt, 1);
     });
+
+    test(
+        'Given an object with a nullable record when copying the object setting it to null then the copy is null but not the original.',
+        () {
+      var types = Types(aRecord: ('hello', optionalUri: null));
+      var typesCopy = types.copyWith(aRecord: null);
+
+      expect(typesCopy.aRecord, isNull);
+      expect(types.aRecord, isNotNull);
+    });
   });
 
   group('mutability', () {
@@ -108,6 +118,39 @@ void main() {
       expect(
         typesCopy.aBigInt,
         BigInt.one,
+      );
+    });
+
+    test(
+        'Given an object with a Record and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var record = ('1', optionalUri: null);
+
+      var types = Types(aRecord: record);
+      var typesCopy = types.copyWith();
+      types.aRecord = ('2', optionalUri: null);
+
+      expect(
+        typesCopy.aRecord,
+        record,
+      );
+    });
+
+    test(
+        'Given an object with a Record containing a Map when mutating the Map of the original then the copy is unmodified because it has been deep-copied.',
+        () {
+      var types = TypesRecord(aMap: ({1: 2},));
+      var typesCopy = types.copyWith();
+
+      types.aMap!.$1.clear();
+
+      expect(
+        types.aMap?.$1,
+        isEmpty,
+      );
+      expect(
+        typesCopy.aMap?.$1,
+        equals({1: 2}),
       );
     });
 

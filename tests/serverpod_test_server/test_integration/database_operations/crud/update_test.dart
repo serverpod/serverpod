@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -166,6 +167,7 @@ void main() async {
       aDuration: Duration(milliseconds: 1000),
       aUuid: UuidValue.fromString(Uuid().v4()),
       anEnum: TestEnum.one,
+      aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
     );
 
     late Types type;
@@ -294,6 +296,19 @@ void main() async {
 
       expect(updated.anEnum, isNull);
     });
+
+    test(
+        'when updating aRecord to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aRecord: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aRecord, isNull);
+    });
   });
 
   group('Given a typed entry in the database', () {
@@ -307,6 +322,7 @@ void main() async {
       aDuration: null,
       aUuid: null,
       anEnum: null,
+      aRecord: null,
     );
 
     late Types type;
@@ -446,6 +462,22 @@ void main() async {
 
       expect(updated.anEnum, equals(TestEnum.one));
     });
+
+    test(
+        'when updating aRecord to a new value then the database is updated with the value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(
+        updated.aRecord,
+        equals(('test', optionalUri: Uri.parse('https://serverpod.dev'))),
+      );
+    });
   });
 
   group('Given a typed entry in the database', () {
@@ -460,6 +492,7 @@ void main() async {
         aDuration: Duration(milliseconds: 1000),
         aUuid: UuidValue.fromString(Uuid().v4()),
         anEnum: TestEnum.one,
+        aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
       ),
     ];
 
@@ -608,6 +641,21 @@ void main() async {
 
       expect(updated.first.anEnum, isNull);
     });
+
+    test(
+        'when batch updating aRecord to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aRecord: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aRecord, isNull);
+    });
   });
 
   group('Given a typed entry in the database', () {
@@ -622,6 +670,7 @@ void main() async {
         aDuration: null,
         aUuid: null,
         anEnum: null,
+        aRecord: null,
       ),
     ];
 
@@ -781,6 +830,26 @@ void main() async {
       var updated = await Types.db.update(session, toUpdate);
 
       expect(updated.first.anEnum, equals(TestEnum.one));
+    });
+
+    test(
+        'when batch updating aRecord then the database is updated with the given value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(
+        updated.first.aRecord,
+        equals(
+          ('test', optionalUri: Uri.parse('https://serverpod.dev')),
+        ),
+      );
     });
 
     test(
