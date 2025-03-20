@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -7,8 +6,7 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-      [ExperimentalFeature.inheritance]).build();
+  var config = GeneratorConfigBuilder().build();
 
   group('Interface Class Tests', () {
     test(
