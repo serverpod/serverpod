@@ -44,9 +44,8 @@ class LibraryGenerator {
     }).toList();
 
     var serializableModels = allModels
-        .where((model) =>
-            !(model is ModelClassDefinition && model.isSealed) &&
-            (model is! InterfaceClassDefinition))
+        .where((model) => !(model is ModelClassDefinition && model.isSealed))
+        .where((model) => model is! InterfaceClassDefinition)
         .toList();
 
     // exports
