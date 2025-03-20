@@ -134,8 +134,6 @@ extension on Expression {
       return resolvedThis.expression._hasMatchingValue(name);
     }
 
-    if (resolvedThis is! SimpleIdentifier) return false;
-
-    return resolvedThis.name == name;
+    return resolvedThis.toSource() == name;
   }
 }

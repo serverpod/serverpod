@@ -196,7 +196,7 @@ abstract interface class ParameterMatcher {}
 /// A chainable matcher that matches a super initializer in a compilation unit.
 abstract interface class SuperInitializerMatcher {
   /// Chains an [ArgumentMatcher] that checks if the super initializer is called
-  /// with a specific argument.
+  /// with a specific literal argument.
   ArgumentMatcher withArgument(String value);
 
   /// Chains an [ArgumentMatcher] that checks if the super initializer is called
