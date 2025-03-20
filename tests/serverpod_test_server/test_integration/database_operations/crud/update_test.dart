@@ -851,5 +851,54 @@ void main() async {
         ),
       );
     });
+
+    test(
+        'when listing id column in an update query of a row then update completes successfully.',
+        () async {
+      expect(
+        Types.db.updateRow(session, type, columns: (t) => [t.id]),
+        completes,
+      );
+    });
+  });
+
+  group('Given empty model in database', () {
+    late EmptyModelWithTable model;
+    setUp(() async {
+      model = await EmptyModelWithTable.db
+          .insertRow(session, EmptyModelWithTable());
+    });
+
+    tearDown(() async {
+      await EmptyModelWithTable.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+    });
+
+    test('when model is updated then update completes', () async {
+      expect(
+        EmptyModelWithTable.db.updateRow(session, model),
+        completes,
+      );
+    });
+
+    test('when with columns from different model then error is thrown',
+        () async {
+      var invalidColumns = [SimpleData.t.num, Types.t.anInt];
+      expect(
+        EmptyModelWithTable.db
+            .updateRow(session, model, columns: (t) => invalidColumns),
+        throwsA(
+          isA<ArgumentError>()
+              .having(
+                (e) => e.message,
+                'message',
+                equals('Columns do not exist in table'),
+              )
+              .having((e) => e.name, 'name', 'columns')
+              .having((e) => e.invalidValue, 'invalidValue',
+                  invalidColumns.toString()),
+        ),
+      );
+    });
   });
 }
