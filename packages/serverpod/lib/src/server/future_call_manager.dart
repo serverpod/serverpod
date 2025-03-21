@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/util/mutex.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -18,15 +19,28 @@ class FutureCallManager {
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
 
+  /// The maximum number of concurrent running future calls.
+  /// Takes precedence over the [FutureCall.concurrentLimit] setting.
+  /// Even if a single FutureCall has a higher limit, the total number of
+  /// concurrent future calls will not exceed this limit.
+  final int _concurrencyLimit;
+
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
-  Completer<void> _pendingFutureCall = Completer<void>()..complete();
+  final Map<String, int> _runningFutureCalls = {};
+  final _runningFutureCallFutures = <Future>[];
+  final _runningFutureCallsMutex = Mutex();
   bool _shuttingDown = false;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
   /// the [Serverpod].
-  FutureCallManager(this._server, this._serializationManager, this.onCompleted);
+  FutureCallManager(
+    this._server,
+    this._serializationManager,
+    this.onCompleted,
+    this._concurrencyLimit,
+  );
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
   /// passed as an argument. The `invoke` method of the [FutureCall] will
@@ -88,75 +102,57 @@ class FutureCallManager {
     _timer = null;
     _shuttingDown = true;
 
-    await _pendingFutureCall.future;
+    await _waitForRunningFutureCalls();
   }
 
-  void _run() async {
+  void _run() {
     unawaited(_checkQueue());
   }
 
   Future<void> _checkQueue() async {
-    var pendingFutureCall = Completer<void>();
-    _pendingFutureCall = pendingFutureCall;
+    if (_shuttingDown) {
+      return;
+    }
 
-    if (_server.serverpod.commandLineArgs.role == ServerpodRole.maintenance) {
+    final serverpodRole = _server.serverpod.commandLineArgs.role;
+    final isMaintenance = serverpodRole == ServerpodRole.maintenance;
+    final isMonolith = serverpodRole == ServerpodRole.monolith;
+
+    if (isMaintenance) {
       stdout.writeln('Processing future calls.');
     }
 
     try {
-      // Get calls
       var now = DateTime.now().toUtc();
+      var hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
 
-      var tempSession = _server.serverpod.internalSession;
+      // Ensure all future calls that were overdue are run before proceeding.
+      while (hasPostponedFutureCalls && !_shuttingDown) {
+        // TODO To increase performance and make sure invoke is only called if
+        // there is a future call that can be run, in a later iteration checking
+        // the map of running future calls for any postponed future call that is
+        // now allowed to run would be more efficient.
 
-      var rows = await FutureCallEntry.db.deleteWhere(
-        tempSession,
-        where: (t) => t.time <= now,
-      );
-
-      for (var entry in rows) {
-        var call = _futureCalls[entry.name];
-        if (call == null) {
-          continue;
+        if (_runningFutureCallFutures.isNotEmpty) {
+          await Future.any(_runningFutureCallFutures);
         }
 
-        dynamic object;
-        if (entry.serializedObject != null) {
-          object = _serializationManager.decode(
-              entry.serializedObject!, call.dataType);
-        }
-
-        var futureCallSession = FutureCallSession(
-          server: _server,
-          futureCallName: entry.name,
-        );
-
-        try {
-          await call.invoke(futureCallSession, object);
-          await futureCallSession.close();
-        } catch (e, stackTrace) {
-          _server.serverpod.internalSubmitEvent(
-            ExceptionEvent(e, stackTrace),
-            space: OriginSpace.application,
-            context: contextFromSession(futureCallSession),
-          );
-
-          await futureCallSession.close(error: e, stackTrace: stackTrace);
-        }
+        // Keep the same due time to run all overdue future calls.
+        hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
       }
-    } catch (e, stackTrace) {
+    } catch (error, stackTrace) {
       // Most likely we lost connection to the database
       var message =
           'Internal server error. Failed to connect to database in future call manager.';
 
       _server.serverpod.internalSubmitEvent(
-        ExceptionEvent(e, stackTrace, message: message),
+        ExceptionEvent(error, stackTrace, message: message),
         space: OriginSpace.framework,
         context: contextFromServer(_server),
       );
 
       stderr.writeln('${DateTime.now().toUtc()} $message');
-      stderr.writeln('$e');
+      stderr.writeln('$error');
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');
       stderr.writeln('${StackTrace.current}');
@@ -164,15 +160,186 @@ class FutureCallManager {
 
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
-    if (_server.serverpod.commandLineArgs.role == ServerpodRole.monolith &&
-        !_shuttingDown) {
-      // Check the queue again in 5 seconds
-      _timer = Timer(const Duration(seconds: 5), _checkQueue);
-    } else if (_server.serverpod.commandLineArgs.role ==
-        ServerpodRole.maintenance) {
+    if (isMonolith && !_shuttingDown) {
+      // Check the queue again in 1 second
+      _timer = Timer(const Duration(seconds: 1), _checkQueue);
+    } else if (isMaintenance) {
+      await _waitForRunningFutureCalls();
+
       onCompleted();
     }
+  }
 
-    pendingFutureCall.complete();
+  Future<void> _waitForRunningFutureCalls() async {
+    await Future.wait(_runningFutureCallFutures);
+    // while (_runningFutureCalls.values.any((value) => value > 0)) {
+    //   await Future.delayed(const Duration(milliseconds: 100));
+    // }
+  }
+
+  /// Starts all overdue future calls.
+  /// Returns `true` if all due future calls have been run.
+  /// Returns `false` if there are future calls which are due but have not been
+  /// run due to concurrency limits.
+  Future<bool> _invokeFutureCalls({required DateTime due}) async {
+    var internalSession = _server.serverpod.internalSession;
+
+    // Create a copy of the overdue future calls to enable modifying the list
+    var overdueFutureCalls = await FutureCallEntry.db.find(
+      internalSession,
+      where: (row) => row.time <= due,
+      orderBy: (row) => row.time,
+    );
+
+    var hasPostponedFutureCalls = false;
+
+    for (var futureCallEntry in overdueFutureCalls) {
+      if (_shuttingDown) {
+        break;
+      }
+
+      final futureCall = _futureCalls[futureCallEntry.name];
+
+      if (futureCall == null) {
+        overdueFutureCalls.remove(futureCallEntry);
+        // Delete the entry from the database before invoking the future call.
+        await FutureCallEntry.db.deleteRow(internalSession, futureCallEntry);
+        // TODO this should be logged and not fail silently
+        continue;
+      }
+
+      final isFutureCallInvoked = await _tryRunFutureCallEntry(
+        session: internalSession,
+        futureCallEntry: futureCallEntry,
+        futureCall: futureCall,
+      );
+
+      if (!isFutureCallInvoked) {
+        hasPostponedFutureCalls = true;
+      }
+    }
+
+    return !hasPostponedFutureCalls;
+  }
+
+  /// Tries to start a [FutureCall] as configured by the [FutureCallEntry].
+  /// If the concurrency limit allows it, the [FutureCall] is invoked, the
+  /// [FutureCallEntry] is deleted from the database and `true` is returned.
+  /// If the future call limit is reached, the future call is not invoked and
+  /// `false` is returned.
+  Future<bool> _tryRunFutureCallEntry({
+    required Session session,
+    required FutureCallEntry futureCallEntry,
+    required FutureCall<SerializableModel> futureCall,
+  }) async {
+    // Run in a synchronized block to avoid race conditions
+    return _runningFutureCallsMutex.synchronized(() async {
+      final futureCallName = futureCall.name;
+
+      final isConcurrentLimitReached =
+          _isFutureCallConcurrentLimitReached(futureCall);
+
+      if (isConcurrentLimitReached) {
+        return false;
+      }
+
+      // Increment the number of running future calls.
+      // We are in a synchronized block, no race conditions here.
+      _runningFutureCalls.update(
+        futureCallName,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
+
+      final futureCallFuture = _runFutureCall(
+        session: session,
+        futureCallEntry: futureCallEntry,
+        futureCall: futureCall,
+      ).whenComplete(
+        () => _runningFutureCallsMutex.synchronized(
+          () async => _runningFutureCalls.update(
+            futureCallName,
+            (value) => value - 1,
+            ifAbsent: () => 0,
+          ),
+        ),
+      );
+
+      _runningFutureCallFutures.add(futureCallFuture);
+
+      unawaited(
+        futureCallFuture.whenComplete(
+          () => _runningFutureCallFutures.remove(futureCallFuture),
+        ),
+      );
+
+      return true;
+    });
+  }
+
+  /// Returns `true` if the concurrent limit for the [FutureCall] is reached.
+  /// Returns `false` otherwise.
+  /// Should be called in a synchronized block.
+  bool _isFutureCallConcurrentLimitReached(FutureCall futureCall) {
+    final futureCallName = futureCall.name;
+
+    final totalRunningFutureCalls =
+        _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
+
+    final isGlobalLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
+
+    if (isGlobalLimitReached) {
+      return true;
+    }
+
+    final runningInstances = _runningFutureCalls[futureCallName] ?? 0;
+
+    final isFutureCallLimitReached =
+        runningInstances >= futureCall.concurrentLimit;
+
+    if (isFutureCallLimitReached) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Runs a [FutureCallEntry] and completes when the future call is completed.
+  Future<void> _runFutureCall({
+    required Session session,
+    required FutureCallEntry futureCallEntry,
+    required FutureCall<SerializableModel> futureCall,
+  }) async {
+    final futureCallName = futureCallEntry.name;
+
+    final futureCallSession = FutureCallSession(
+      server: _server,
+      futureCallName: futureCallName,
+    );
+
+    try {
+      // Future call is now running, so we can delete it from the database.
+      // This might fail if the session is closed.
+      await FutureCallEntry.db.deleteRow(session, futureCallEntry);
+
+      dynamic object;
+      if (futureCallEntry.serializedObject != null) {
+        object = _serializationManager.decode(
+          futureCallEntry.serializedObject!,
+          futureCall.dataType,
+        );
+      }
+
+      await futureCall.invoke(futureCallSession, object);
+      await futureCallSession.close();
+    } catch (error, stackTrace) {
+      _server.serverpod.internalSubmitEvent(
+        ExceptionEvent(error, stackTrace),
+        space: OriginSpace.application,
+        context: contextFromSession(futureCallSession),
+      );
+
+      await futureCallSession.close(error: error, stackTrace: stackTrace);
+    }
   }
 }

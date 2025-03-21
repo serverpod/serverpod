@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as path;
 
 /// The configuration sections for the serverpod configuration file.
 typedef Convert<T> = T Function(String value);
 
 const int _defaultMaxRequestSize = 524288;
+const int _defaultFutureCallConcurrencyLimit = 1;
 
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
@@ -45,6 +46,12 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
 
+  /// The maximum number of concurrent running future calls.
+  /// Takes precedence over the [FutureCall.concurrentLimit] setting.
+  /// Even if a single FutureCall has a higher limit, the total number of
+  /// concurrent future calls will not exceed this limit.
+  final int futureCallConcurrencyLimit;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -58,6 +65,7 @@ class ServerpodConfig {
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
+    this.futureCallConcurrencyLimit = 1,
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,
@@ -154,6 +162,11 @@ class ServerpodConfig {
           )
         : null;
 
+    var futureCallConcurrencyLimit = _readFutureCallConcurrencyLimit(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -165,6 +178,7 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
       sessionLogs: sessionLogsConfig,
+      futureCallConcurrencyLimit: futureCallConcurrencyLimit,
     );
   }
 
@@ -608,6 +622,26 @@ String _readServerId(
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
+}
+
+int _readFutureCallConcurrencyLimit(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var futureCallConcurrencyLimit =
+      configMap[ServerpodEnv.futureCallConcurrencyLimit.configKey];
+
+  futureCallConcurrencyLimit =
+      environment[ServerpodEnv.futureCallConcurrencyLimit.envVariable] ??
+          futureCallConcurrencyLimit;
+
+  if (futureCallConcurrencyLimit is String) {
+    futureCallConcurrencyLimit = int.tryParse(futureCallConcurrencyLimit);
+  }
+
+  futureCallConcurrencyLimit ??= _defaultFutureCallConcurrencyLimit;
+
+  return futureCallConcurrencyLimit;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

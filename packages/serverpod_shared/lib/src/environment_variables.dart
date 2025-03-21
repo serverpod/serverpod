@@ -105,6 +105,9 @@ enum ServerpodEnv {
   /// The maximum request size for the server.
   maxRequestSize,
 
+  /// The maximum number of concurrent running future calls.
+  futureCallConcurrencyLimit,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
@@ -141,6 +144,7 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => ServerpodServerConfigMap.publicPort,
       (ServerpodEnv.webPublicScheme) => ServerpodServerConfigMap.publicScheme,
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
+      (ServerpodEnv.futureCallConcurrencyLimit) => 'futureCallConcurrencyLimit',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.serverId) => 'serverId',
@@ -177,6 +181,8 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_SERVER_PUBLIC_PORT',
       (ServerpodEnv.webPublicScheme) => 'SERVERPOD_WEB_SERVER_PUBLIC_SCHEME',
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
+      (ServerpodEnv.futureCallConcurrencyLimit) =>
+        'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
