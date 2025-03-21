@@ -1,10 +1,46 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_2/providers/2fa/sms/sms.dart';
-import 'package:serverpod_auth_2/providers/email/email_account_provider.dart';
+import 'package:serverpod_auth_2/providers/email/email_account_repository.dart';
 import 'package:serverpod_auth_2/serverpod/invitation_repository.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
+import 'package:serverpod_auth_2/serverpod_auth_module/user_session_repository.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
 import 'package:serverpod_auth_2/util/sms_service.dart';
+
+// Now that the provider modules would not provide ready to use endpoints
+// (as integrations between for example session and other components like 2FA just became too opaque)
+// a developer would create their own endpoint where they can make use of the building blocks
+// but gain the ability to clearly define the flow they want to enforce in their app
+class EmailRegistrationEndpoint {
+  EmailRegistrationEndpoint({
+    required this.sessionRepository,
+    required this.emailAuthenticationRepository,
+  });
+
+  final SessionRepository sessionRepository;
+
+  final EmailAuthenticationRepository emailAuthenticationRepository;
+
+  /// In practice a Serverpod project would only implement 1 registration function
+  /// from either
+  /// - [registerDirectly]
+  /// - [registerWithVerification]
+  /// - [registerWithVerificationAnd2FA]
+  ///
+  /// Or they might for example build one that is akin to [registerWithVerificationAnd2FA],
+  /// but then has custom rules where some users might also get to enter without 2FA (e.g. it might only be enforced for "admins")
+  void registerDirectly() {}
+
+  void registerWithVerification() {}
+
+  void registerWithVerificationAnd2FA() {}
+
+  void verifyEmail(String verificationToken) {}
+
+  void login(String email, String password) {}
+
+  void verify2FA() {}
+}
 
 void main() {
   // test('E-mail based registration without verification and subsequent login',
@@ -63,7 +99,7 @@ void main() {
     final mailService = MailService();
     final smsService = SmsService();
     // registers itself with serverpod
-    final emailProvider = EmailAccountProvider(
+    final emailProvider = EmailAuthenticationRepository(
       serverpod: serverpod,
       mailService: mailService,
       requiresSecondFactor: true,
@@ -126,7 +162,7 @@ void main() {
         invitationRepository.useExistingUserIfInvited;
 
     final mailService = MailService();
-    final emailProvider = EmailAccountProvider(
+    final emailProvider = EmailAuthenticationRepository(
       serverpod: serverpod,
       mailService: mailService,
       requiresSecondFactor: false,

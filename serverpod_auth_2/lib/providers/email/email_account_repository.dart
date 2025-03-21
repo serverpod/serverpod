@@ -4,8 +4,8 @@ import 'package:serverpod_auth_2/serverpod_auth_module/user_info.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
 
 /// Simple provider that supports e-mail backed accounts ("username/password")
-class EmailAccountProvider {
-  EmailAccountProvider({
+class EmailAuthenticationRepository {
+  EmailAuthenticationRepository({
     required this.serverpod,
     // Can only be `null` if no mails need to be sent
     required this.mailService,
@@ -25,6 +25,8 @@ class EmailAccountProvider {
 
   final MailService? mailService;
 
+  // TODO: This config would probably have to be global (or non existent),
+  //       so that different instances don't use varying rules
   final bool requiresVerifiedEmails;
 
   final bool requiresSecondFactor;
@@ -33,6 +35,34 @@ class EmailAccountProvider {
   final _pendingVerification = <PendingEmailVerification>[];
 
   static const providerName = 'email';
+
+// returns the user ID for successful login
+  int? login(String email, String password,
+      {
+      /// Whether the email must be verified to log in
+      bool requireVerifiedEmail = true}) {
+    throw 'asdf;';
+  }
+
+  void startVerificationFlow({
+    required String email,
+    required String password,
+  }) {}
+
+  void restartVerificationFlow({
+    required String email,
+  }) {}
+
+  void addEmailAuthenticationForUser(
+      {required int userId,
+      required String email,
+      required String password,
+      required bool sendVerificationEmail}) {}
+
+  /// Returns the user ID
+  // but what if there is no user yet?
+  // maybe would need to store some "process ID", such that the developer-built endpoint could proceed
+  int? verifyEmailWithToken() {}
 
   /// Returns `null` if the user needs to verify their mail
   /// (Response would be more explict in real case)
@@ -236,7 +266,7 @@ class PendingEmailVerification {
     required this.password,
     required this.createdAt,
     required this.verificationToken,
-    required this.additionalData,
+    required this.userId,
   });
 
   final String id;
@@ -250,5 +280,5 @@ class PendingEmailVerification {
   // DB: unique constraint
   final String verificationToken;
 
-  final AdditionalData? additionalData;
+  final int? userId;
 }
