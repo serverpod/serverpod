@@ -1,7 +1,6 @@
-import 'package:serverpod_auth_2/serverpod/invitation_repository.dart';
+import 'package:serverpod_auth_2/additional_data.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_info.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
 
 /// Simple provider that supports e-mail backed accounts ("username/password")
@@ -14,7 +13,6 @@ class EmailAccountProvider {
     // should really always be true, but maybe somebody wants to test initially and does not have a "mailService"
     this.requiresVerifiedEmails = true,
     this.requiresSecondFactor = false,
-    this.invitationRepository,
   }) {
     // serverpod.relic.registerEndpoint(path, handler);
 
@@ -31,8 +29,6 @@ class EmailAccountProvider {
 
   final bool requiresSecondFactor;
 
-  final NewUserInvitationRepository? invitationRepository;
-
   final _credentials = <EmailCredential>[];
   final _pendingVerification = <PendingEmailVerification>[];
 
@@ -42,13 +38,13 @@ class EmailAccountProvider {
   /// (Response would be more explict in real case)
   ///
   /// Throws in all error cases
-  UserSession? register(
+  String? register(
     /// If given, then the this will add another authentication pass for the given user
     /// (This should be supported by all providers, maybe providers themselves would want to set a limit of how many accounts are allowed)
     String? sessionId,
     String email,
     String password, {
-    String? invitationToken,
+    required AdditionalData? additionalData,
   }) {
     // TODO: normalize email, maybe even remove `+` part etc.
 
@@ -68,7 +64,7 @@ class EmailAccountProvider {
           password: password,
           createdAt: DateTime.now(),
           verificationToken: DateTime.now().microsecondsSinceEpoch.toString(),
-          invitationToken: invitationToken,
+          additionalData: additionalData,
         ),
       );
 
@@ -78,15 +74,15 @@ class EmailAccountProvider {
     }
 
     // can only support one, as both might refer to a user and we can not merge them
-    assert(invitationToken == null || sessionId == null);
+
     final user = _getOrCreateUser(
-      invitationToken: invitationToken,
       sessionId: sessionId,
+      addditionalData: additionalData,
     );
 
     var credential = EmailCredential(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      userInfoId: user.id!.toString(),
+      userInfoId: user.id!,
       createdAt: DateTime.now(),
       email: email,
       password: password,
@@ -103,11 +99,14 @@ class EmailAccountProvider {
       );
     }
 
-    return serverpod.userSessionRepository
-        .createSession(user.id!, authProvider: providerName);
+    return serverpod.userSessionRepository.createSession(
+      user.id!,
+      authProvider: providerName,
+      additionalData: additionalData,
+    );
   }
 
-  UserSession? verifyEmail(String token) {
+  String verifyEmail(String token) {
     final verification =
         _pendingVerification.firstWhere((v) => v.verificationToken == token);
 
@@ -122,12 +121,13 @@ class EmailAccountProvider {
     }
 
     final user = _getOrCreateUser(
-      invitationToken: verification.invitationToken,
+      sessionId: null,
+      addditionalData: verification.additionalData,
     );
 
     var credential = EmailCredential(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      userInfoId: user.id!.toString(),
+      userInfoId: user.id!,
       createdAt: verification.createdAt,
       email: verification.email,
       password: verification.password,
@@ -149,14 +149,17 @@ class EmailAccountProvider {
       );
     }
 
-    return serverpod.userSessionRepository
-        .createSession(user.id!, authProvider: providerName);
+    return serverpod.userSessionRepository.createSession(
+      user.id!,
+      authProvider: providerName,
+      additionalData: verification.additionalData,
+    );
   }
 
-  UserSession login(
+  String login(
     String email,
     String password, {
-    Map<String, dynamic>? additionalData,
+    AdditionalData? additionalData,
   }) {
     final credential = _credentials
         .firstWhere((c) => c.email == email && c.password == password);
@@ -171,8 +174,8 @@ class EmailAccountProvider {
       );
     }
 
-    return serverpod.userSessionRepository
-        .createSession(user.id!, authProvider: providerName);
+    return serverpod.userSessionRepository.createSession(user.id!,
+        authProvider: providerName, additionalData: additionalData);
   }
 
   void requestPasswordReset(String email) {
@@ -183,25 +186,19 @@ class EmailAccountProvider {
     // similiar to verification flow
   }
 
-  UserInfo _getOrCreateUser({String? invitationToken, String? sessionId}) {
+  UserInfo _getOrCreateUser({
+    required String? sessionId,
+    required AdditionalData? addditionalData,
+  }) {
     if (sessionId != null) {
-      final session = serverpod.userSessionRepository.getSessionById(sessionId);
-      return serverpod.userInfoRepository.getUser(session.userId.toString());
+      final session = serverpod.userSessionRepository.resolveSessionToUserId(
+        sessionId,
+      );
+
+      return serverpod.userInfoRepository.getUser(session.$1);
     }
 
-    if (invitationToken != null) {
-      final (valid, userId) =
-          invitationRepository!.resolveInvitation(invitationToken);
-      if (!valid) {
-        throw Exception('Invitation token "$invitationToken" is not valid');
-      }
-
-      if (userId != null) {
-        return serverpod.userInfoRepository.getUser(userId.toString());
-      }
-    }
-
-    return serverpod.userInfoRepository.createUser();
+    return serverpod.userInfoRepository.createUser(null, addditionalData);
   }
 }
 
@@ -221,7 +218,7 @@ class EmailCredential {
   /// (database relation)
   ///
   /// Could be `int` or `UUID` now…
-  final String userInfoId;
+  final int userInfoId;
 
   final DateTime createdAt;
 
@@ -239,7 +236,7 @@ class PendingEmailVerification {
     required this.password,
     required this.createdAt,
     required this.verificationToken,
-    required this.invitationToken,
+    required this.additionalData,
   });
 
   final String id;
@@ -253,5 +250,5 @@ class PendingEmailVerification {
   // DB: unique constraint
   final String verificationToken;
 
-  final String? invitationToken;
+  final AdditionalData? additionalData;
 }

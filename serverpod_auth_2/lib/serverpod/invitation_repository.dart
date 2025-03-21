@@ -1,22 +1,12 @@
+import 'package:serverpod_auth_2/additional_data.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
+import 'package:serverpod_auth_2/serverpod_auth_module/user_info.dart';
 
 // hook for before/after user creation with invitation
 // -> But account is not always created, maybe user is already logged it
 // -> Before / after login user?
 
 // 2FA package Ruby/Django
-
-abstract class InvitationRepository {
-  // A subclass might then implement something like `Future<String> createInvite(…)` however it sees fit
-  //
-  // For many implementations this can only ever be called once, as the code will then become invalid
-  // Thus authentication provider should make sure to only call this once all pre-conditions are fulfilled and the will link their authentication method with this in the next step
-  //
-  // TODO: Maybe this would need to be extended into 2 APIs, so app's could show some info "about the invitation"
-  //       But we should be careful to not make it harder to use correctly (such that each code can only be redeemed once for those "single user invites")
-  (bool isValid, int? userId) resolveInvitation(String invitationCode,
-      [int? userId]);
-}
 
 /// We could image 3 approaches outright:
 ///  - Invitation code (either static, or DB-counted with a limit), allowing "closed" registrations so that no public endpoints can be used (if the providers check this)
@@ -32,7 +22,7 @@ abstract class InvitationRepository {
 ///
 /// This user can then already be used in the app (e.g. assigned to a team),
 /// and the link to an authentication will be done when one is registered with the return code.
-class NewUserInvitationRepository implements InvitationRepository {
+class NewUserInvitationRepository {
   NewUserInvitationRepository({
     required this.serverpod,
   });
@@ -41,8 +31,8 @@ class NewUserInvitationRepository implements InvitationRepository {
 
   final _invitations = <String, int>{};
 
-  (String invitationCode, int userId) createInvitation() {
-    final user = serverpod.userInfoRepository.createUser();
+  (String, int userId) createInvitation() {
+    final user = serverpod.userInfoRepository.createUser(null, null);
 
     final code = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -51,15 +41,21 @@ class NewUserInvitationRepository implements InvitationRepository {
     return (code, user.id!);
   }
 
-  @override
-  (bool, int?) resolveInvitation(String invitationCode) {
-    final userId = _invitations.remove(invitationCode);
+  /// Key used in `AdditionalData`
+  static const newUserInvitationKey = "new_user_invitation";
 
-    if (userId == null) {
-      // this one always expect having created a user beforehand
-      return (false, null);
+  UserInfo? useExistingUserIfInvited(
+    UserInfo? user,
+    AdditionalData? additionalData,
+  ) {
+    if (additionalData?[newUserInvitationKey] != null) {
+      assert(user == null);
+      // tricky, but how would we handle having both at this point?
+      // or maybe create user must always be a 2 step operation with the repostory creating an empty one (such that middleware could even overwrite)
+      final userId = _invitations[additionalData![newUserInvitationKey]!]!;
+      return serverpod.userInfoRepository.getUser(userId);
     }
 
-    return (true, userId);
+    return null;
   }
 }

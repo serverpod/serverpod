@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
+import 'package:serverpod_auth_2/additional_data.dart';
 
 abstract class SessionRepository {
   String createSession(
-    String userId, {
-    String authProvider,
+    int userId, {
+    required String authProvider,
+    required AdditionalData? additionalData,
   });
 
   String createSessionPendingSecondFactorVerification(
-    String userId, {
+    int userId, {
     required String authProvider,
   });
 
@@ -17,80 +18,95 @@ abstract class SessionRepository {
     required String secondFactorAuthProvider,
   });
 
-  /// TODO: Should this also return something around the 2FA?
-  ///       Some implementations use a time-window on the 2FA login when accessing critical components
-  String? resolveSessionToUserId(String session);
+  (int userId, bool stillNeedsSecondFactor) resolveSessionToUserId(
+    String sessionId,
+  );
+}
+
+// TODO: Also thinkg about patterns like GitHub where you need to verify your password again
+//       Is this an additional data on top of a 2FA flow? Maybe only that would be time-limited, while the normal 2FA is just done post login.
+
+sealed class SecondFactorStatus {}
+
+class SecondFactorNone implements SecondFactorStatus {}
+
+class SecondFactorPending implements SecondFactorStatus {}
+
+class SecondFactorActive implements SecondFactorStatus {
+  SecondFactorActive({
+    required this.provider,
+    required this.verifiedAt,
+  });
+
+  /// The second factor provider used
+  final String provider;
+
+  /// The time when the second factor was last verified
+  final DateTime verifiedAt;
 }
 
 class UserSessionRepository implements SessionRepository {
   @visibleForTesting
-  final activeSessions = <ActiveUserSession>[];
+  final sessionsBySessionId =
+      <String, (int userId, String provider, SecondFactorStatus secondFacor)>{};
 
-  @visibleForTesting
-  final pendingSessions = <UserSessionPendingSecondFactor>[];
-
-  ActiveUserSession createSession(
+  @override
+  String createSession(
     int userId, {
     required String authProvider,
-    bool isWaitingForSecondFactor = false,
-    String secondFactorProvider = '',
+    // TODO: Should this be retained?
+    required AdditionalData? additionalData,
   }) {
-    final session = ActiveUserSession()
-      ..id = DateTime.now().microsecondsSinceEpoch.toString()
-      ..authenticationProvider = authProvider
-      ..createdAt = DateTime.now()
-      ..userId = userId
-      ..secondFactor = secondFactorUsed;
+    final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    activeSessions.add(session);
+    sessionsBySessionId[sessionId] = (userId, authProvider, SecondFactorNone());
 
-    return session;
+    return sessionId;
   }
 
-  void destroySession(String sessionId) {
-    final session = activeSessions.firstWhere((s) => s.id == sessionId);
-
-    activeSessions.remove(session);
-  }
-
-  List<ActiveUserSession> sessionsForUser(int userId) {
-    return activeSessions.where((s) => s.userId == userId).toList();
-  }
-
-  ActiveUserSession getSessionById(String sessionId) {
-    return activeSessions.firstWhere((s) => s.id == sessionId);
-  }
-
-  UserSessionPendingSecondFactor createSessionPendingSecondFactorVerification(
+  @override
+  String createSessionPendingSecondFactorVerification(
     int userId, {
     required String authProvider,
   }) {
-    final pendingSession = UserSessionPendingSecondFactor()
-      ..id = DateTime.now().microsecondsSinceEpoch.toString()
-      ..authenticationProvider = authProvider
-      ..createdAt = DateTime.now()
-      ..userId = userId;
+    final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    pendingSessions.add(pendingSession);
+    sessionsBySessionId[sessionId] =
+        (userId, authProvider, SecondFactorPending());
 
-    return pendingSession;
+    return sessionId;
   }
 
-  ActiveUserSession verifyPendingSession(String pendingSessionId) {
-    final pendingSession =
-        pendingSessions.firstWhere((p) => p.id == pendingSessionId);
+  @override
+  (int, bool) resolveSessionToUserId(String sessionId) {
+    // final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    pendingSessions.remove(pendingSession);
+    final session = sessionsBySessionId[sessionId];
 
-    if (DateTime.now()
-        .isAfter(pendingSession.createdAt.add(Duration(minutes: 10)))) {
-      throw Exception('2FA window expired');
-    }
+    return (session!.$1, session.$3 is SecondFactorPending);
+  }
 
-    return createSession(
-      pendingSession.userId,
-      authProvider: pendingSession.authenticationProvider,
-      secondFactorUsed: true,
+  @override
+  String upgradeSessionWithSecondFactor(
+    String sessionId, {
+    required String secondFactorAuthProvider,
+  }) {
+    final session = sessionsBySessionId.remove(sessionId);
+
+    assert(session!.$3 is SecondFactorPending);
+
+    // needs to handle rotating session keys (= return value), e.g. when implemented via signed token
+    var newSessionId = DateTime.now().microsecondsSinceEpoch.toString();
+
+    sessionsBySessionId[sessionId] = (
+      session!.$1,
+      session.$2,
+      SecondFactorActive(
+        provider: secondFactorAuthProvider,
+        verifiedAt: DateTime.now(),
+      ),
     );
+
+    return newSessionId;
   }
 }
