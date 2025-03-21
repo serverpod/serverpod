@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
 import 'package:serverpod_auth_2/util/sms_service.dart';
 
@@ -7,8 +8,9 @@ import 'package:serverpod_auth_2/util/sms_service.dart';
 ///
 /// The variety of methods could potentially be reduced if we support the logged in and "pending verification" session into a single parameter,
 /// where the endpoint can then make the appropriate lookup.
-class SMS2FAProvider {
-  SMS2FAProvider({
+// TODO: Maybe this could even be generalized away from 2FA to facilitate building "SMS-backed accounts"
+class SMS2FARepository {
+  SMS2FARepository({
     required this.serverpod,
     required this.smsService,
   });
@@ -18,65 +20,68 @@ class SMS2FAProvider {
   final SmsService smsService;
 
   // todo: Also store time to get expiration data
-  final pendingTokensBySessionId = <String, String>{};
+  @visibleForTesting
+  final pendingRegistrationsByProcessId =
+      <String, ({String phoneNumber, String token})>{};
+
+  final _verifiedPhoneNumbersByUserId = <int, String>{};
+
+  @visibleForTesting
+  final inProgressLogins = <String, ({String token, int userId})>{};
 
   static const providerName = 'sms';
 
-  String _getToken() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
-  }
-
-  // in this case there is not yet a user object, as the registration is not complete
-  void setupDuringRegistration({
-    required String pendingSessionId,
-    required String phoneNumber,
-  }) {
-    // todo: verify pending session exists
+  String startEnrollment(String phoneNumber) {
+    final processId = DateTime.now().millisecondsSinceEpoch.toString();
 
     final token = _getToken();
 
-    pendingTokensBySessionId[pendingSessionId] = token;
+    pendingRegistrationsByProcessId[processId] =
+        (phoneNumber: phoneNumber, token: token);
 
     smsService.sendSms(phoneNumber, token);
+
+    return processId;
   }
 
-  void setupWhenLoggedIn({
-    required String sessionId,
-    required String phoneNumber,
-  }) {
-    throw UnimplementedError();
+  String verifyEnrollment(String smsToken) {
+    final pendingRegistration = pendingRegistrationsByProcessId.entries
+        .firstWhere((e) => e.value.token == smsToken);
+
+    return pendingRegistration.key;
   }
 
-  void requestTokenWhenLoggingIn({
-    required String pendingSessionId,
-  }) {
-    throw UnimplementedError();
+  void finishEnrollment(String secondFactorRegistrationId, int userId) {
+    final pendingRegistration =
+        pendingRegistrationsByProcessId.remove(secondFactorRegistrationId)!;
+
+    _verifiedPhoneNumbersByUserId[userId] = pendingRegistration.phoneNumber;
   }
 
-  String verifyTokenWhenLoggingIn({
-    required String pendingSessionId,
-    required String token,
-  }) {
-    if (pendingTokensBySessionId[pendingSessionId] != token) {
-      throw Exception('invalid token');
-    }
+  String startVerification(int userId) {
+    final phoneNumber = _verifiedPhoneNumbersByUserId[userId]!;
+    final processId = DateTime.now().millisecondsSinceEpoch.toString();
 
-    return serverpod.userSessionRepository.upgradeSessionWithSecondFactor(
-      pendingSessionId,
-      secondFactorAuthProvider: providerName,
+    final token = _getToken();
+    smsService.sendSms(phoneNumber, token);
+
+    inProgressLogins[processId] = (token: token, userId: userId);
+
+    return processId;
+  }
+
+  // TODO: Should this return the user ID? Else the caller would always have to store the indirection
+  //       But then on the other hand they would have to make sure, that the user being verified here is actually the one they want to login in (e.g. userid == "main authentication user id")
+  String finishVerification(String smsToken) {
+    final entry = inProgressLogins.entries.firstWhere(
+      (e) => e.value.token == smsToken,
     );
+    inProgressLogins.remove(entry.key);
+
+    return entry.key;
   }
 
-  void requestTokenWhenLoggedIn({
-    required String sessionId,
-  }) {
-    throw UnimplementedError();
-  }
-
-  void verifyTokenWhenLoggedIn({
-    required String sessionId,
-    required String token,
-  }) {
-    throw UnimplementedError();
+  String _getToken() {
+    return DateTime.now().millisecondsSinceEpoch.toString();
   }
 }

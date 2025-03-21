@@ -8,17 +8,8 @@ abstract class SessionRepository {
     required AdditionalData? additionalData,
   });
 
-  String createSessionPendingSecondFactorVerification(
-    int userId, {
-    required String authProvider,
-  });
-
-  String upgradeSessionWithSecondFactor(
-    String sessionId, {
-    required String secondFactorAuthProvider,
-  });
-
-  (int userId, bool stillNeedsSecondFactor) resolveSessionToUserId(
+  /// Returns the user ID for the given session
+  int resolveSessionToUserId(
     String sessionId,
   );
 }
@@ -47,8 +38,7 @@ class SecondFactorActive implements SecondFactorStatus {
 
 class UserSessionRepository implements SessionRepository {
   @visibleForTesting
-  final sessionsBySessionId =
-      <String, (int userId, String provider, SecondFactorStatus secondFacor)>{};
+  final sessionsBySessionId = <String, (int userId, String provider)>{};
 
   @override
   String createSession(
@@ -59,54 +49,15 @@ class UserSessionRepository implements SessionRepository {
   }) {
     final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    sessionsBySessionId[sessionId] = (userId, authProvider, SecondFactorNone());
+    sessionsBySessionId[sessionId] = (userId, authProvider);
 
     return sessionId;
   }
 
   @override
-  String createSessionPendingSecondFactorVerification(
-    int userId, {
-    required String authProvider,
-  }) {
-    final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
-
-    sessionsBySessionId[sessionId] =
-        (userId, authProvider, SecondFactorPending());
-
-    return sessionId;
-  }
-
-  @override
-  (int, bool) resolveSessionToUserId(String sessionId) {
-    // final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
-
+  int resolveSessionToUserId(String sessionId) {
     final session = sessionsBySessionId[sessionId];
 
-    return (session!.$1, session.$3 is SecondFactorPending);
-  }
-
-  @override
-  String upgradeSessionWithSecondFactor(
-    String sessionId, {
-    required String secondFactorAuthProvider,
-  }) {
-    final session = sessionsBySessionId.remove(sessionId);
-
-    assert(session!.$3 is SecondFactorPending);
-
-    // needs to handle rotating session keys (= return value), e.g. when implemented via signed token
-    var newSessionId = DateTime.now().microsecondsSinceEpoch.toString();
-
-    sessionsBySessionId[newSessionId] = (
-      session!.$1,
-      session.$2,
-      SecondFactorActive(
-        provider: secondFactorAuthProvider,
-        verifiedAt: DateTime.now(),
-      ),
-    );
-
-    return newSessionId;
+    return session!.$1;
   }
 }
