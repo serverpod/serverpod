@@ -98,7 +98,7 @@ class UserSessionRepository implements SessionRepository {
     // needs to handle rotating session keys (= return value), e.g. when implemented via signed token
     var newSessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    sessionsBySessionId[sessionId] = (
+    sessionsBySessionId[newSessionId] = (
       session!.$1,
       session.$2,
       SecondFactorActive(

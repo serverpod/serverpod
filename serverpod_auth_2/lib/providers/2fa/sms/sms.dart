@@ -1,5 +1,4 @@
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
 import 'package:serverpod_auth_2/util/sms_service.dart';
 
 /// Showcases an intermediate 2FA step using SMS (e-mail would work differently)
@@ -20,6 +19,8 @@ class SMS2FAProvider {
 
   // todo: Also store time to get expiration data
   final pendingTokensBySessionId = <String, String>{};
+
+  static const providerName = 'sms';
 
   String _getToken() {
     return DateTime.now().millisecondsSinceEpoch.toString();
@@ -52,7 +53,7 @@ class SMS2FAProvider {
     throw UnimplementedError();
   }
 
-  ActiveUserSession verifyTokenWhenLoggingIn({
+  String verifyTokenWhenLoggingIn({
     required String pendingSessionId,
     required String token,
   }) {
@@ -60,8 +61,10 @@ class SMS2FAProvider {
       throw Exception('invalid token');
     }
 
-    return serverpod.userSessionRepository
-        .verifyPendingSession(pendingSessionId);
+    return serverpod.userSessionRepository.upgradeSessionWithSecondFactor(
+      pendingSessionId,
+      secondFactorAuthProvider: providerName,
+    );
   }
 
   void requestTokenWhenLoggedIn({

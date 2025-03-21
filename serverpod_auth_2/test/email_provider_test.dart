@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:serverpod_auth_2/providers/2fa/sms/sms.dart';
 import 'package:serverpod_auth_2/providers/email/email_account_provider.dart';
 import 'package:serverpod_auth_2/serverpod/invitation_repository.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
+import 'package:serverpod_auth_2/util/sms_service.dart';
 
 void main() {
   // test('E-mail based registration without verification and subsequent login',
@@ -54,54 +56,65 @@ void main() {
   //   expect(verificationResult, isA<ActiveUserSession>());
   // });
 
-  // test(
-  //     'E-mail based registration with verification, 2FA enrollment, and subsequent login',
-  //     () {
-  //   final serverpod = Serverpod();
-  //   final mailService = MailService();
-  //   final smsService = SmsService();
-  //   // registers itself with serverpod
-  //   final emailProvider = EmailAccountProvider(
-  //     serverpod: serverpod,
-  //     mailService: mailService,
-  //     requiresSecondFactor: true,
-  //   );
-  //   final sms2FaProvider = SMS2FAProvider(
-  //     serverpod: serverpod,
-  //     smsService: smsService,
-  //   );
+  test(
+      'E-mail based registration with verification, 2FA enrollment, and subsequent login',
+      () {
+    final serverpod = Serverpod();
+    final mailService = MailService();
+    final smsService = SmsService();
+    // registers itself with serverpod
+    final emailProvider = EmailAccountProvider(
+      serverpod: serverpod,
+      mailService: mailService,
+      requiresSecondFactor: true,
+    );
+    final sms2FaProvider = SMS2FAProvider(
+      serverpod: serverpod,
+      smsService: smsService,
+    );
 
-  //   final registerResult =
-  //       emailProvider.register(null, 'timm@lunaone.de', 'admin');
+    final registerResult = emailProvider.register(
+      null,
+      'timm@lunaone.de',
+      'admin',
+      additionalData: null,
+    );
 
-  //   expect(registerResult, isNull);
+    expect(registerResult, isNull);
 
-  //   expect(mailService.sentMails, hasLength(1));
+    expect(mailService.sentMails, hasLength(1));
 
-  //   final verificationResult = emailProvider.verifyEmail(
-  //     mailService.sentMails.last.$2,
-  //   );
+    final postVerificationSession = emailProvider.verifyEmail(
+      mailService.sentMails.last.$2,
+    );
 
-  //   expect(verificationResult, isA<UserSessionPendingSecondFactor>());
+    expect(
+      serverpod.userSessionRepository
+          .resolveSessionToUserId(postVerificationSession)
+          .$2,
+      isTrue, // still needs second factor
+    );
 
-  //   final pendingSessionId =
-  //       (verificationResult as UserSessionPendingSecondFactor).id;
+    sms2FaProvider.setupDuringRegistration(
+      pendingSessionId: postVerificationSession,
+      phoneNumber: '0123',
+    );
 
-  //   sms2FaProvider.setupDuringRegistration(
-  //     pendingSessionId: pendingSessionId,
-  //     phoneNumber: '0123',
-  //   );
+    expect(smsService.sentTexts, hasLength(1));
 
-  //   expect(smsService.sentTexts, hasLength(1));
+    final secondFactorVerificationResponse =
+        sms2FaProvider.verifyTokenWhenLoggingIn(
+      pendingSessionId: postVerificationSession,
+      token: smsService.sentTexts.last.$2,
+    );
 
-  //   final secondFactorVerificationResponse =
-  //       sms2FaProvider.verifyTokenWhenLoggingIn(
-  //     pendingSessionId: pendingSessionId,
-  //     token: smsService.sentTexts.last.$2,
-  //   );
-
-  //   expect(secondFactorVerificationResponse, isA<ActiveUserSession>());
-  // });
+    expect(
+      serverpod.userSessionRepository
+          .resolveSessionToUserId(secondFactorVerificationResponse)
+          .$2,
+      isFalse, // second factor verified
+    );
+  });
 
   test('E-mail based registration with invitation code', () async {
     final serverpod = Serverpod();
