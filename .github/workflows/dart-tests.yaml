@@ -149,10 +149,20 @@ jobs:
     name: Unit tests Web
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         flutter-version: ['3.19.0', '3.29.0']
-        os: [ubuntu-latest]
-        path: ['packages/serverpod_client']
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - compiler: dart2js
+          - os: ubuntu-latest
+            platform: chrome
+          - os: windows-latest
+            platform: edge
+          - flutter-version: '3.29.0'
+            platform: chrome
+            compiler: dart2wasm
+
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -160,8 +170,11 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - uses: browser-actions/setup-chrome@v1
       - name: Run unit tests
-        run: dart test -p chrome
-        working-directory: ${{ matrix.path }}
+        run: >-
+          dart test
+          --platform=${{ matrix.platform }}
+          --compiler=${{ matrix.compiler }}
+        working-directory: packages/serverpod_client
 
   e2e_io_tests:
     name: Serverpod E2E IO tests
