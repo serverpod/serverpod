@@ -679,10 +679,13 @@ class TypeDefinition {
 }
 
 /// Supported ID type definitions.
-/// All configuration to support other types is done only on this class. For
-/// new variants of id types, add a new static getter and update the [all]
-/// getter. For different types, it is necessary to also update the `Table`
-/// constructor at `packages:serverpod/src/database/concepts/table.dart`.
+/// All configuration to support other types is done only on this class. A
+/// supported id type is a combination of a type and a default value. It is
+/// possible to support multiple default values for a same type (e.g. uuid type
+/// with default of versions 4 and 7), with each having its getter. For new
+/// entries, add a new static getter and update the [all] getter. If the entry
+/// contains a type not yet used by existing id types, it's necessary to update
+/// the `Table` constructor at `packages:serverpod/src/database/concepts/table.dart`.
 class SupportedIdType {
   const SupportedIdType({
     required this.type,
