@@ -305,8 +305,6 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
   String toPgSqlFragment() {
-    String out = '';
-
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -358,8 +356,7 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       nullable = '';
     }
 
-    out += '"$name" $type$nullable$defaultValue';
-    return out;
+    return '"$name" $type$nullable$defaultValue';
   }
 }
 
