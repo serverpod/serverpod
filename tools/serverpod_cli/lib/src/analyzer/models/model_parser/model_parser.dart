@@ -182,9 +182,9 @@ class ModelParser {
       extraClasses: [],
     );
     var defaultValue = _parseDefaultValue(documentContents, Keyword.defaultKey);
+    print(defaultValue);
     var defaultEnumDefinitionValue =
         values.where((value) => value.name == defaultValue).firstOrNull;
-    print(defaultValue);
     print(defaultEnumDefinitionValue);
 
     var enumDef = EnumDefinition(

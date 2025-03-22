@@ -20,6 +20,9 @@ class EnumYamlDefinition {
             EnumValueRestriction(enums: EnumSerialization.values).validate,
       ),
       ValidateNode(
+        Keyword.defaultKey,
+      ),
+      ValidateNode(
         Keyword.serverOnly,
         valueRestriction: BooleanValueRestriction().validate,
       ),
