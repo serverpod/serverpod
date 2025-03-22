@@ -50,6 +50,13 @@ void main() {
     test('then generated enum has toJson method', () {
       expect(codeMap[expectedFileName], contains('int toJson() => index;'));
     });
+
+    test('then generated enum has throw ArgumentError', () {
+      expect(
+          codeMap[expectedFileName],
+          contains(
+              'default:\n        throw ArgumentError(\'Value "\$index" cannot be converted to "Example"\');'));
+    });
   });
 
   group('Given an enum named Example serialized by name when generating code',
@@ -80,6 +87,13 @@ void main() {
         codeMap[expectedFileName],
         contains('String toString() => name;'),
       );
+    });
+
+    test('then generated enum has throw ArgumentError', () {
+      expect(
+          codeMap[expectedFileName],
+          contains(
+              'default:\n        throw ArgumentError(\'Value "\$name" cannot be converted to "Example"\');'));
     });
   });
 
@@ -170,6 +184,32 @@ void main() {
     test('then generated enum includes second value', () {
       expect(codeMap[expectedFileName],
           contains('// This is a comment for the second value'));
+    });
+  });
+
+  group('Given an enum with a default value when generating code', () {
+    var models = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withValues([
+            ProtocolEnumValueDefinition('one', []),
+            ProtocolEnumValueDefinition('two', []),
+          ])
+          .withDefaultValue(
+            ProtocolEnumValueDefinition('one', []),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    test('then generated enum has the correct default value', () {
+      expect(codeMap[expectedFileName],
+          contains('default:\n        return Example.one;'));
     });
   });
 }
