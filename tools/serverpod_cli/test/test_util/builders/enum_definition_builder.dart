@@ -8,6 +8,7 @@ class EnumDefinitionBuilder {
   String _sourceFileName;
   String _className;
   EnumSerialization _serialized;
+  ProtocolEnumValueDefinition? defaultValue;
   List<String> _subDirParts;
   bool _serverOnly;
 
@@ -21,6 +22,7 @@ class EnumDefinitionBuilder {
         _serialized = EnumSerialization.byIndex,
         _subDirParts = [],
         _serverOnly = false,
+        defaultValue = ProtocolEnumValueDefinition('A'),
         _values = [
           ProtocolEnumValueDefinition('A'),
           ProtocolEnumValueDefinition('B'),
@@ -35,6 +37,7 @@ class EnumDefinitionBuilder {
       className: _className,
       serialized: _serialized,
       values: _values,
+      defaultValue: defaultValue,
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,

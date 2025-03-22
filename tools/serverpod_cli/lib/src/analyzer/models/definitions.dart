@@ -342,6 +342,9 @@ class EnumDefinition extends SerializableModelDefinition {
   /// The type of serialization this enum should use.
   final EnumSerialization serialized;
 
+  /// The default value of the enum when parsing of the enum fails.
+  final ProtocolEnumValueDefinition? defaultValue;
+
   /// All the values of the enum.
   /// This also contains possible documentation for them.
   List<ProtocolEnumValueDefinition> values;
@@ -355,6 +358,7 @@ class EnumDefinition extends SerializableModelDefinition {
     required super.sourceFileName,
     required super.className,
     required this.serialized,
+    required this.defaultValue,
     required this.values,
     required super.serverOnly,
     required super.type,
