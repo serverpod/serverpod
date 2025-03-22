@@ -15,10 +15,10 @@ void main() {
 
   for (var idType1 in SupportedIdType.all) {
     var idTypeAlias1 = idType1.aliases.first;
-    var idClassName1 = idType1.className;
+    var idClassName1 = idType1.type.className;
 
     for (var idType2 in SupportedIdType.all) {
-      var idClassName2 = idType2.className;
+      var idClassName2 = idType2.type.className;
       var idTypeAlias2 = idType2.aliases.first;
 
       group('For id type combination of $idTypeAlias1 and $idTypeAlias2', () {

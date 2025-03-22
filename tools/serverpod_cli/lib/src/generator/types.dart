@@ -126,7 +126,8 @@ class TypeDefinition {
 
   bool get isRecordType => className == RecordKeyword.className;
 
-  bool get isIdType => SupportedIdType.all.any((e) => e.className == className);
+  bool get isIdType =>
+      SupportedIdType.all.any((e) => e.type.className == className);
 
   bool get isVoidType => className == 'void';
 
@@ -703,9 +704,6 @@ class SupportedIdType {
   /// The default value for the column on the database definition. Must be one
   /// of the supported defaults for the type.
   final String defaultValue;
-
-  /// The class name of the id type.
-  String get className => type.className;
 
   /// If no id type is specified, the default id type is [int].
   static SupportedIdType get int => SupportedIdType(

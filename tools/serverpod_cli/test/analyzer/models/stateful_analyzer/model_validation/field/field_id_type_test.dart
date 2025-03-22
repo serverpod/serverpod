@@ -81,7 +81,7 @@ void main() {
   });
 
   for (var idType in SupportedIdType.all) {
-    var idClassName = idType.className;
+    var idClassName = idType.type.className;
     var defaultValue = idType.defaultValue;
 
     group('Given a class with the $idClassName id type', () {

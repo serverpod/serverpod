@@ -20,7 +20,7 @@ void main() {
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
 
   for (var idType in SupportedIdType.all) {
-    var idClassName = idType.className;
+    var idClassName = idType.type.className;
     var idTypeAlias = idType.aliases.first;
 
     group('Given the id type is $idTypeAlias', () {
