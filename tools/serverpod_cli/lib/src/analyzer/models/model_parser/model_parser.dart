@@ -247,9 +247,8 @@ class ModelParser {
     List<SerializableModelFieldDefinition> fields = [];
 
     var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap?) return fields;
-
-    var fieldsNodeEntries = fieldsNode?.nodes.entries ?? [];
+    if (fieldsNode is YamlMap) {
+      var fieldsNodeEntries = fieldsNode.nodes.entries;
     fields.addAll(fieldsNodeEntries.expand((fieldNode) {
       return _parseModelFieldDefinition(
         fieldNode,
@@ -258,6 +257,7 @@ class ModelParser {
         serverOnlyClass,
       );
     }).toList());
+    }
 
     if (hasTable) {
       final defaultIdType = SupportedIdType.int;
