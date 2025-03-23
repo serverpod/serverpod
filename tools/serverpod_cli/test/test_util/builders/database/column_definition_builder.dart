@@ -28,9 +28,9 @@ class ColumnDefinitionBuilder {
 
   ColumnDefinitionBuilder withIdColumn(
     String tableName, {
-    String type = 'int',
+    SupportedIdType? type,
   }) {
-    var idType = SupportedIdType.fromString(type);
+    var idType = type ?? SupportedIdType.int;
 
     _name = 'id';
     _isNullable = false;

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'column_definition_builder.dart';
@@ -8,7 +9,7 @@ class TableDefinitionBuilder {
   String? _dartName;
   String? _module;
   String _schema;
-  String _idType;
+  SupportedIdType _idType;
   List<ColumnDefinition> _columns;
   List<ForeignKeyDefinition> _foreignKeys;
   List<IndexDefinition> _indexes;
@@ -18,7 +19,7 @@ class TableDefinitionBuilder {
       : _name = 'example',
         _dartName = 'Example',
         _schema = 'public',
-        _idType = 'int',
+        _idType = SupportedIdType.int,
         _module = 'test_project',
         _columns = [
           ColumnDefinitionBuilder().withNameColumn().build(),
@@ -61,7 +62,7 @@ class TableDefinitionBuilder {
     return this;
   }
 
-  TableDefinitionBuilder withIdType(String idType) {
+  TableDefinitionBuilder withIdType(SupportedIdType idType) {
     _idType = idType;
     return this;
   }

@@ -19,17 +19,17 @@ void main() {
     expect(sql, contains('"id" bigserial PRIMARY KEY'));
   });
 
-  for (var (idClassName, definitionContains) in [
-    ('int', '"id" bigserial PRIMARY KEY'),
-    ('uuidV4', '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()'),
+  for (var (idType, definitionContains) in [
+    (SupportedIdType.int, '"id" bigserial PRIMARY KEY'),
+    (SupportedIdType.uuidV4, '"id" uuid PRIMARY KEY DEFAULT gen_random_uuid()'),
   ]) {
     test(
-        'Given database table definition when generating sql with id set to $idClassName then table id column contains $definitionContains.',
+        'Given database table definition when generating sql with id set to ${idType.aliases.first} then table id column contains $definitionContains.',
         () {
       var databaseDefinition = DatabaseDefinitionBuilder()
           .withTable(
             TableDefinitionBuilder()
-                .withIdType(idClassName)
+                .withIdType(idType)
                 .withName('example_table')
                 .build(),
           )
