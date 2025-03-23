@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -342,7 +343,7 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
     var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
 
     // The id column is special.
-    if (name == 'id') {
+    if (name == defaultPrimaryKeyName) {
       if (isNullable != false) {
         throw (const FormatException('The id column must be non-nullable'));
       }

@@ -34,7 +34,7 @@ class DefaultValueRestriction extends ValueRestriction {
 
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
-        (parentNodeName == 'id')) {
+        (parentNodeName == defaultPrimaryKeyName)) {
       return _idTypeDefaultValidation(
         definition.tableName!,
         field.type,

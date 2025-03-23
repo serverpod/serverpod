@@ -838,7 +838,7 @@ class Restrictions {
 
     if ((classDefinition is ModelClassDefinition) &&
         (classDefinition.tableName != null) &&
-        (parentNodeName == 'id')) {
+        (parentNodeName == defaultPrimaryKeyName)) {
       var typeClassName = field.type.className;
       var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
 
@@ -1140,7 +1140,7 @@ class Restrictions {
 
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
-        (parentNodeName == 'id')) {
+        (parentNodeName == defaultPrimaryKeyName)) {
       errors.add(SourceSpanSeverityException(
         'The "${Keyword.scope}" key is not allowed on the "id" field.',
         span,
@@ -1165,7 +1165,7 @@ class Restrictions {
         'The "persist" property requires a table to be set on the class.',
         span,
       ));
-    } else if (parentNodeName == 'id') {
+    } else if (parentNodeName == defaultPrimaryKeyName) {
       return [
         SourceSpanSeverityException(
           'The "${Keyword.persist}" key is not allowed on the "id" field.',
@@ -1368,7 +1368,7 @@ class Restrictions {
 
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
-        (parentNodeName == 'id')) {
+        (parentNodeName == defaultPrimaryKeyName)) {
       errors.add(
         SourceSpanSeverityException(
           'The "${Keyword.defaultModelKey}" key is not allowed on the "id" '
@@ -1394,7 +1394,7 @@ class Restrictions {
 
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
-        (parentNodeName == 'id')) {
+        (parentNodeName == defaultPrimaryKeyName)) {
       return [
         SourceSpanSeverityException(
           'The "${Keyword.defaultPersistKey}" key is not allowed on the "id" '

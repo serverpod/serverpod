@@ -261,7 +261,8 @@ class ModelParser {
 
     if (hasTable) {
       final defaultIdType = SupportedIdType.int;
-      var maybeIdColumn = fields.where((f) => f.name == 'id').firstOrNull;
+      var maybeIdColumn =
+          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
       var defaultValue = (maybeIdColumn != null)
           ? maybeIdColumn.defaultPersistValue
           : defaultIdType.defaultValue;
@@ -277,11 +278,11 @@ class ModelParser {
         '/// the id will be null.',
       ];
 
-      fields.removeWhere((f) => f.name == 'id');
+      fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
       fields.insert(
         0,
         SerializableModelFieldDefinition(
-          name: 'id',
+          name: defaultPrimaryKeyName,
           type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
           defaultModelValue: defaultValue,
