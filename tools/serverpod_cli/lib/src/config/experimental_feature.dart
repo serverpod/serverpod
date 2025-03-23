@@ -18,6 +18,7 @@ enum ExperimentalFeature {
   inheritance,
 
   // TODO: Remove when the feature is considered stable.
+  // Feature tracked by issue: https://github.com/serverpod/serverpod/issues/3255
   changeIdType;
 
   static ExperimentalFeature fromString(String value) {
