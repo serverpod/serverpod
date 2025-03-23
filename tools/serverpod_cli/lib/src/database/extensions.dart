@@ -305,6 +305,15 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
+  /// Whether the column is the default primary key column.
+  bool get isIdColumn => name == defaultPrimaryKeyName;
+
+  /// Whether the column is a primary key of type int serial.
+  bool get isIntSerialIdColumn =>
+      isIdColumn &&
+      (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
+      (columnDefault?.startsWith('nextval') ?? false);
+
   String toPgSqlFragment() {
     String type;
     switch (columnType) {
@@ -343,12 +352,12 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
     var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
 
     // The id column is special.
-    if (name == defaultPrimaryKeyName) {
-      if (isNullable != false) {
-        throw (const FormatException('The id column must be non-nullable'));
+    if (isIdColumn) {
+      if (isNullable) {
+        throw const FormatException('The id column must be non-nullable');
       }
-      if (((type == 'integer') || (type == 'bigint')) &&
-          (columnDefault?.startsWith('nextval') ?? false)) {
+
+      if (isIntSerialIdColumn) {
         type = 'bigserial';
         defaultValue = '';
       }
