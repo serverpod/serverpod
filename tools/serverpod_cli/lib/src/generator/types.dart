@@ -71,7 +71,7 @@ class TypeDefinition {
           .toList();
 
       return TypeDefinition(
-        className: RecordKeyword.className,
+        className: recordTypeClassName,
         nullable: nullable,
         dartType: type,
         generics: [...positionalField, ...namedFields],
@@ -112,6 +112,8 @@ class TypeDefinition {
     this.recordFieldName,
   });
 
+  static const recordTypeClassName = '_Record';
+
   bool get isSerializedValue => autoSerializedTypes.contains(className);
 
   bool get isSerializedByExtension =>
@@ -123,7 +125,7 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
-  bool get isRecordType => className == RecordKeyword.className;
+  bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType => className == 'int';
 
@@ -624,7 +626,7 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
-    if (className == 'Record') return ValueType.record;
+    if (className == '_Record') return ValueType.record;
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
   }
@@ -815,7 +817,7 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     ];
 
     return TypeDefinition(
-      className: RecordKeyword.className,
+      className: TypeDefinition.recordTypeClassName,
       generics: recordFields,
       nullable: recordDescription.nullable,
     );
