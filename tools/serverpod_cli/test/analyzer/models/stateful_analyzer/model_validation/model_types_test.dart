@@ -417,37 +417,6 @@ void main() {
     },
   );
 
-  test(
-    'Given a class name with reserved value Record, then give an error that the class name is reserved.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Record
-          fields:
-            name: String
-          ''',
-        ).build()
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The class name "Record" is reserved and cannot be used.',
-      );
-    },
-  );
-
   group('Given a model without any defined model type', () {
     test(
       'Then return a human readable error message informing the user that the model type is missing.',

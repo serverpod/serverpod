@@ -21,7 +21,7 @@ void main() {
       ),
     );
 
-    expect(typeDefinition.className, 'Record');
+    expect(typeDefinition.className, '_Record');
   });
 
   test(
@@ -188,7 +188,7 @@ void main() {
       () {
     var type = parseType('(int,)', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -203,7 +203,7 @@ void main() {
       () {
     var type = parseType('(int,)?', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isTrue);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -218,7 +218,7 @@ void main() {
       () {
     var type = parseType('(int?,)', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -233,7 +233,7 @@ void main() {
       () {
     var type = parseType('({String foo})', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -248,7 +248,7 @@ void main() {
       () {
     var type = parseType('({String? foo,})', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -263,7 +263,7 @@ void main() {
       () {
     var type = parseType('({List< String >? namedList,})', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -286,11 +286,11 @@ void main() {
       () {
     var type = parseType('((String, int),)?', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isTrue);
     expect(type.generics, [
       isA<TypeDefinition>()
-          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.className, 'className', '_Record')
           .having((t) => t.recordFieldName, 'recordFieldName', isNull)
           .having((t) => t.nullable, 'nullable', isFalse)
           .having(
@@ -310,7 +310,7 @@ void main() {
       () {
     var type = parseType('(String namedPositional,)', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -325,7 +325,7 @@ void main() {
       () {
     var type = parseType('(Map<String, int> positionalMap,)', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -352,7 +352,7 @@ void main() {
       extraClasses: [],
     );
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(
       type.generics,
@@ -385,7 +385,7 @@ void main() {
     var type =
         parseType('( List < bool > ? optionalListOfBool, )', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(
       type.generics,
@@ -411,7 +411,7 @@ void main() {
       () {
     var type = parseType('(Map<String, bool?>,)', extraClasses: []);
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isFalse);
     expect(type.generics, [
       isA<TypeDefinition>()
@@ -440,11 +440,11 @@ void main() {
       extraClasses: [],
     );
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isTrue);
     expect(type.generics, [
       isA<TypeDefinition>()
-          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.className, 'className', '_Record')
           .having((t) => t.recordFieldName, 'recordFieldName', isNull)
           .having((t) => t.nullable, 'nullable', isFalse)
           .having(
@@ -460,7 +460,7 @@ void main() {
         ],
       ),
       isA<TypeDefinition>()
-          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.className, 'className', '_Record')
           .having(
             (t) => t.recordFieldName,
             'recordFieldName',
@@ -490,11 +490,11 @@ void main() {
       extraClasses: [],
     );
 
-    expect(type.className, 'Record');
+    expect(type.className, '_Record');
     expect(type.nullable, isTrue);
     expect(type.generics, [
       isA<TypeDefinition>()
-          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.className, 'className', '_Record')
           .having((t) => t.recordFieldName, 'recordFieldName', isNull)
           .having((t) => t.nullable, 'nullable', isFalse)
           .having(
@@ -509,7 +509,7 @@ void main() {
             'generics',
             [
               isA<TypeDefinition>()
-                  .having((t) => t.className, 'className', 'Record')
+                  .having((t) => t.className, 'className', '_Record')
                   .having((t) => t.nullable, 'nullable', isFalse)
                   .having(
                 (t) => t.generics,
@@ -530,7 +530,7 @@ void main() {
         ],
       ),
       isA<TypeDefinition>()
-          .having((t) => t.className, 'className', 'Record')
+          .having((t) => t.className, 'className', '_Record')
           .having(
             (t) => t.recordFieldName,
             'recordFieldName',
