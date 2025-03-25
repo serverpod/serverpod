@@ -1,12 +1,10 @@
-import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
+class PasskeyAuthenticationRepository {
+  // In this version it would not need to depend on either the user or session info
+  // (At least not directly, as it would never create the user, leaving that to the caller,
+  // but in the database each active credential would be linked to a user.)
+  PasskeyAuthenticationRepository();
 
-class PasskeyProvider {
-  PasskeyProvider({
-    required this.serverpod,
-  });
-
-  final Serverpod serverpod;
+  // final Serverpod serverpod;
 
   // ignore: unused_field
   final String _privateKey = 'asdf1234';
@@ -23,43 +21,40 @@ class PasskeyProvider {
     return DateTime.now().microsecondsSinceEpoch.toString();
   }
 
-  ActiveUserSession solveChallenge({
-    // This is only passed on the first "registration"
-    required String? clientPublicKey,
+  /// Stores the credential in the database if the challenge was successful (and the credential ID not used already), else throws
+  void storeKeyIfValid({
+    required String clientPublicKey,
     required String signedChallenge,
     required String credentialId,
-    // TODO "username"?
   }) {
-    if (clientPublicKey == null) {
-      clientPublicKey = userKeysByCredentialId[credentialId]!;
-    } else {
-      if (userKeysByCredentialId.containsKey(credentialId)) {
-        throw Exception('credetial id already in use');
-      }
-
-      userKeysByCredentialId[credentialId] = clientPublicKey;
+    if (userKeysByCredentialId.containsKey(credentialId)) {
+      throw Exception('credential id already in use');
     }
 
     if (!_ensureIsSigned(signedChallenge, clientPublicKey)) {
       throw Exception('not properly signed');
     }
 
-    final userId = userIdsByCredentialId[credentialId];
-    if (userId == null) {
-      final newUser = serverpod.userInfoRepository.createUser();
+    userKeysByCredentialId[credentialId] = clientPublicKey;
+  }
 
-      userIdsByCredentialId[credentialId] = newUser.id!;
-
-      return serverpod.userSessionRepository.createSession(
-        newUser.id!,
-        authProvider: providerName,
-      );
-    } else {
-      return serverpod.userSessionRepository.createSession(
-        userId,
-        authProvider: providerName,
-      );
+  void linkCredential(String credentialId, int userId) {
+    if (userIdsByCredentialId.containsKey(credentialId)) {
+      throw 'already linked';
     }
+
+    userIdsByCredentialId[credentialId] = userId;
+  }
+
+  // Checks the signed challenge, returns the user ID linked to the credential ID
+  int verifyCredential(
+      {required String signedChallenge, required String credentialId}) {
+    final clientPublicKey = userKeysByCredentialId[credentialId]!;
+    if (!_ensureIsSigned(signedChallenge, clientPublicKey)) {
+      throw Exception('not properly signed');
+    }
+
+    return userIdsByCredentialId[credentialId]!;
   }
 
   bool _ensureIsSigned(String _, String __) {
@@ -67,6 +62,4 @@ class PasskeyProvider {
     // and that the challenge is actually from our server
     return true;
   }
-
-  // TODO: Ability to set up an additional passkey for logged-in user
 }
