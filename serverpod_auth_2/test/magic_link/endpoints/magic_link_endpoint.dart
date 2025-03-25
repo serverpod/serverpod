@@ -1,12 +1,20 @@
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
+import 'package:serverpod_auth_2/serverpod_auth_module/user_info.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
 
-class MagicLinkProvider {
-  MagicLinkProvider({
+// This would be entirely implemented by the developer
+//
+// Potentially the "Email authentication provider" could offer some support here by having "passwordless accounts", but that would probably make that interface worse,
+// and also the concept of "email verification" does not apply directly, since that happens in each login.
+class MagicLinkEndpoint {
+  MagicLinkEndpoint({
     required this.serverpod,
     required this.mailService,
+
+    // Parametesr like these 2 are optional, depending on whether the developer wants to support logins into existing account
+    // (which then should be looked up through the repositories, as the user info can not expected to hold the current and valid email)
     required this.userLookupFunc,
+    // For the developer, this would likely not be a flag, but rather the implicit behavior of their "login"/send link function
     required this.accountMustExist,
   });
 
@@ -26,9 +34,6 @@ class MagicLinkProvider {
   /// Whether magic links can only be created for existing accounts,
   /// or whether they could also be used to create an account implicitly
   final bool accountMustExist;
-
-  // TODO: Would we want to support this here?
-  // final bool requiresSecondFactor;
 
   static const providerName = 'magic_link';
 
@@ -68,16 +73,17 @@ class MagicLinkProvider {
     mailService.sendMail(email, magicLink.token);
   }
 
-  ActiveUserSession logInViaMagicLink(String token) {
+  String logInViaMagicLink(String token) {
     final magicLink = pendingMagicLinks.firstWhere((p) => p.token == token);
 
     pendingMagicLinks.remove(magicLink);
 
     final int userId;
     if (magicLink.userId == null) {
-      final newUser = serverpod.userInfoRepository.createUser();
-      // TODO: Immutable / non-memory user would need to be written back…
-      newUser.email = magicLink.email;
+      final newUser = serverpod.userInfoRepository.createUser(
+        UserInfo()..email = magicLink.email,
+        null,
+      );
 
       userId = newUser.id!;
       usersByEmail[magicLink.email] = userId;
@@ -88,6 +94,7 @@ class MagicLinkProvider {
     return serverpod.userSessionRepository.createSession(
       userId,
       authProvider: providerName,
+      additionalData: null,
     );
   }
 }

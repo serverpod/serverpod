@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_2/providers/magic_link/magic_link_provider.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
+
+import 'endpoints/magic_link_endpoint.dart';
 
 void main() {
   test('Register via magic link', () {
     final serverpod = Serverpod();
     final mailService = MailService();
-    final magicLinkProvider = MagicLinkProvider(
+    final magicLinkProvider = MagicLinkEndpoint(
       serverpod: serverpod,
       mailService: mailService,
       accountMustExist: false,
@@ -19,13 +19,15 @@ void main() {
 
     expect(mailService.sentMails, hasLength(1));
 
-    final session = magicLinkProvider.logInViaMagicLink(
+    final sessionKey = magicLinkProvider.logInViaMagicLink(
       mailService.sentMails.last.$2,
     );
 
-    expect(session, isA<ActiveUserSession>());
+    expect(
+      serverpod.userSessionRepository.resolveSessionToUserId(sessionKey),
+      isNotNull,
+    );
     expect(serverpod.userInfoRepository.users, hasLength(1));
-    expect(serverpod.userSessionRepository.activeSessions, hasLength(1));
   });
 
   test('Use magic link to log into an existing account', () {
@@ -34,9 +36,9 @@ void main() {
     // an account that was using the verified & double-checked Apple ID beforehand
 
     final serverpod = Serverpod();
-    final existingUser = serverpod.userInfoRepository.createUser();
+    final existingUser = serverpod.userInfoRepository.createUser(null, null);
     final mailService = MailService();
-    final magicLinkProvider = MagicLinkProvider(
+    final magicLinkProvider = MagicLinkEndpoint(
       serverpod: serverpod,
       mailService: mailService,
       accountMustExist: true,
@@ -57,12 +59,14 @@ void main() {
 
     expect(mailService.sentMails, hasLength(1));
 
-    final session = magicLinkProvider.logInViaMagicLink(
+    final sessionKey = magicLinkProvider.logInViaMagicLink(
       mailService.sentMails.last.$2,
     );
 
-    expect(session, isA<ActiveUserSession>());
+    expect(
+      serverpod.userSessionRepository.resolveSessionToUserId(sessionKey),
+      isNotNull,
+    );
     expect(serverpod.userInfoRepository.users, hasLength(1));
-    expect(serverpod.userSessionRepository.activeSessions, hasLength(1));
   });
 }

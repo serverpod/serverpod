@@ -11,5 +11,6 @@ class Serverpod {
 
   // TODO: If this were typed to the project's user info, we'd need to provide a way to create that instance with it
   var userInfoRepository = UserInfoRepository();
+
   final SessionRepository userSessionRepository = UserSessionRepository();
 }
