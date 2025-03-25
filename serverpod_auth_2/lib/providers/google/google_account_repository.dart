@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
-import 'package:serverpod_auth_2/serverpod_auth_module/user_session.dart';
 
-class GoogleAccountProvider {
-  GoogleAccountProvider({
+class GoogleAccountRepository {
+  GoogleAccountRepository({
     required this.serverpod,
   }) {
     /// e.g. https://developers.google.com/identity/protocols/oauth2/web-server#cross-account-protection
@@ -12,15 +11,14 @@ class GoogleAccountProvider {
 
       for (final account
           in accounts.where((a) => a.googleUserId == disabledGoogleUserId)) {
-        for (final activeSession in serverpod.userSessionRepository
-            .sessionsForUser(account.userId)
-            .where((s) => s.authenticationProvider == providerName)) {
-          serverpod.userSessionRepository.destroySession(activeSession.id);
-        }
+        // TODO: If we wanted, we could further filter on "provider" to only revoke the Google login for the affected user
+        serverpod.userSessionRepository
+            .revokeAllSessionsForUser(account.userId);
       }
 
       return '';
     });
+
     // TODO: Similary set up a future call to periodically pull the current Google-backed accounts and updater their info or revoke them it needed
   }
 
@@ -45,7 +43,7 @@ class GoogleAccountProvider {
   /// The client calls this with the token it has received
   // TODO: This should probably also support adding the Google login as a second method to the account
   // TODO: Maybe support nonces or similar to verify that we're actually waiting for this token
-  ActiveUserSession createSessionFromToken(String googleToken) {
+  String createSessionFromToken(String googleToken) {
     // in practice we'd have to call Google's API to look up the user with the token
     final googleUserId = googleToken;
 
@@ -53,11 +51,16 @@ class GoogleAccountProvider {
         accounts.where((a) => a.googleUserId == googleUserId);
     if (existingAccounts.isNotEmpty) {
       return serverpod.userSessionRepository.createSession(
-          existingAccounts.single.userId,
-          authProvider: providerName);
+        existingAccounts.single.userId,
+        authProvider: providerName,
+        additionalData: null,
+      );
     }
 
-    final newUser = serverpod.userInfoRepository.createUser();
+    final newUser = serverpod.userInfoRepository.createUser(
+      null,
+      null,
+    );
 
     final account = GoogleUserAccount(
       googleUserId: googleUserId,
@@ -71,6 +74,7 @@ class GoogleAccountProvider {
     return serverpod.userSessionRepository.createSession(
       newUser.id!,
       authProvider: providerName,
+      additionalData: null,
     );
   }
 }

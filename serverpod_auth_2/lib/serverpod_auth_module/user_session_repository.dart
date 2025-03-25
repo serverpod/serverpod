@@ -10,8 +10,12 @@ abstract class SessionRepository {
 
   /// Returns the user ID for the given session
   int resolveSessionToUserId(
-    String sessionId,
+    String sessionKey,
   );
+
+  void revokeSession(String sessionKey);
+
+  void revokeAllSessionsForUser(int userId);
 }
 
 // TODO: Also thinkg about patterns like GitHub where you need to verify your password again
@@ -38,7 +42,7 @@ class SecondFactorActive implements SecondFactorStatus {
 
 class UserSessionRepository implements SessionRepository {
   @visibleForTesting
-  final sessionsBySessionId = <String, (int userId, String provider)>{};
+  final sessionsBySessionKey = <String, (int userId, String provider)>{};
 
   @override
   String createSession(
@@ -49,15 +53,25 @@ class UserSessionRepository implements SessionRepository {
   }) {
     final sessionId = DateTime.now().microsecondsSinceEpoch.toString();
 
-    sessionsBySessionId[sessionId] = (userId, authProvider);
+    sessionsBySessionKey[sessionId] = (userId, authProvider);
 
     return sessionId;
   }
 
   @override
-  int resolveSessionToUserId(String sessionId) {
-    final session = sessionsBySessionId[sessionId];
+  int resolveSessionToUserId(String sessionKey) {
+    final session = sessionsBySessionKey[sessionKey];
 
     return session!.$1;
+  }
+
+  @override
+  void revokeSession(String sessionKey) {
+    sessionsBySessionKey.remove(sessionKey);
+  }
+
+  @override
+  void revokeAllSessionsForUser(int userId) {
+    sessionsBySessionKey.removeWhere((_, value) => value.$1 == userId);
   }
 }
