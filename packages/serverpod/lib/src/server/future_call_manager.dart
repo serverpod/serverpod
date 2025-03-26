@@ -126,12 +126,8 @@ class FutureCallManager {
       var hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
 
       // Ensure all future calls that were overdue are run before proceeding.
+      // If there are postponed future calls, wait for one to complete.
       while (hasPostponedFutureCalls && !_shuttingDown) {
-        // TODO To increase performance and make sure invoke is only called if
-        // there is a future call that can be run, in a later iteration checking
-        // the map of running future calls for any postponed future call that is
-        // now allowed to run would be more efficient.
-
         if (_runningFutureCallFutures.isNotEmpty) {
           await Future.any(_runningFutureCallFutures);
         }
