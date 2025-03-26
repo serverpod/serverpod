@@ -337,6 +337,16 @@ void main() {
           reason: '"\$_fieldName" is missing in constructor getter.',
         );
       });
+
+      test('has managedColumns override for columns', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'managedColumns',
+            ),
+            isTrue,
+            reason: 'Missing declaration for managedColumns override.');
+      });
     });
   });
   group(

@@ -1619,6 +1619,9 @@ class SerializableModelLibraryGenerator {
       List<SerializableModelFieldDefinition> fields,
       ClassDefinition classDefinition,
       TypeReference idTypeReference) {
+    var serializedFields = fields
+        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
+        .toList();
     return Class((c) {
       c.name = '${className}Table';
       c.extend = TypeReference((f) => f
@@ -1640,7 +1643,16 @@ class SerializableModelLibraryGenerator {
           classDefinition.subDirParts,
         ),
         ..._buildModelTableClassManyRelationGetters(fields, classDefinition),
-        _buildModelTableClassColumnGetter(fields),
+        _buildModelTableClassColumnGetter(
+          serializedFields,
+          name: 'columns',
+        ),
+        if (serializedFields.any((f) => f.hiddenSerializableField(serverCode)))
+          _buildModelTableClassColumnGetter(
+            serializedFields
+                .where((f) => !f.hiddenSerializableField(serverCode)),
+            name: 'managedColumns',
+          ),
       ]);
 
       var relationFields = fields.where((f) =>
@@ -1695,7 +1707,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelTableClassColumnGetter(
-      List<SerializableModelFieldDefinition> fields) {
+    Iterable<SerializableModelFieldDefinition> fields, {
+    required String name,
+  }) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1706,14 +1720,12 @@ class SerializableModelLibraryGenerator {
               refer('Column', serverpodUrl(true)),
             ),
         )
-        ..name = 'columns'
+        ..name = name
         ..lambda = true
         ..type = MethodType.getter
-        ..body = literalList([
-          for (var field in fields)
-            if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(createFieldName(serverCode, field))
-        ]).code,
+        ..body = literalList(
+          fields.map((f) => refer(createFieldName(serverCode, f))),
+        ).code,
     );
   }
 
