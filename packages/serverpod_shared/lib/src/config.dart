@@ -47,9 +47,6 @@ class ServerpodConfig {
   final Duration? experimentalDiagnosticHandlerTimeout;
 
   /// The maximum number of concurrent running future calls.
-  /// Takes precedence over the [FutureCall.concurrentLimit] setting.
-  /// Even if a single FutureCall has a higher limit, the total number of
-  /// concurrent future calls will not exceed this limit.
   final int futureCallConcurrencyLimit;
 
   /// Creates a new [ServerpodConfig].

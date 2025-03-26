@@ -26,9 +26,6 @@ class FutureCallManager {
   final void Function() onCompleted;
 
   /// The maximum number of concurrent running future calls.
-  /// Takes precedence over the [FutureCall.concurrentLimit] setting.
-  /// Even if a single FutureCall has a higher limit, the total number of
-  /// concurrent future calls will not exceed this limit.
   final int _concurrencyLimit;
 
   final SerializationManager _serializationManager;
@@ -236,8 +233,7 @@ class FutureCallManager {
     return _runningFutureCallsMutex.synchronized(() async {
       final futureCallName = futureCall.name;
 
-      final isConcurrentLimitReached =
-          _isFutureCallConcurrentLimitReached(futureCall);
+      final isConcurrentLimitReached = _isFutureCallConcurrentLimitReached();
 
       if (isConcurrentLimitReached) {
         return _FutureCallInvocationResult.postponed;
@@ -306,31 +302,16 @@ class FutureCallManager {
     });
   }
 
-  /// Returns `true` if the concurrent limit for the [FutureCall] is reached.
+  /// Returns `true` if the concurrent limit for FutureCalls is reached.
   /// Returns `false` otherwise.
   /// Should be called in a synchronized block.
-  bool _isFutureCallConcurrentLimitReached(FutureCall futureCall) {
-    final futureCallName = futureCall.name;
-
+  bool _isFutureCallConcurrentLimitReached() {
     final totalRunningFutureCalls =
         _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
 
-    final isGlobalLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
+    final isLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
 
-    if (isGlobalLimitReached) {
-      return true;
-    }
-
-    final runningInstances = _runningFutureCalls[futureCallName] ?? 0;
-
-    final isFutureCallLimitReached =
-        runningInstances >= futureCall.concurrentLimit;
-
-    if (isFutureCallLimitReached) {
-      return true;
-    }
-
-    return false;
+    return isLimitReached;
   }
 
   /// Runs a [FutureCallEntry] and completes when the future call is completed.
