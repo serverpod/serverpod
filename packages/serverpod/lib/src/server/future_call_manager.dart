@@ -221,7 +221,7 @@ class FutureCallManager {
   /// If the concurrency limit allows it, the [FutureCall] is invoked, the
   /// [FutureCallEntry] is deleted from the database and
   /// `_FutureCallInvocationResult.success` is returned.
-  /// If the future call limit is reached, the future call is not invoked and
+  /// If the concurrency limit is reached, the future call is not invoked and
   /// `_FutureCallInvocationResult.postponed` is returned.
   /// If the future call entry does not exist in the database, it is deleted and
   /// `_FutureCallInvocationResult.deleted` is returned.
@@ -243,7 +243,7 @@ class FutureCallManager {
       final currentFutureCallEntry =
           await session.db.transaction((transaction) async {
         // Ensure the future call entry still exists in the database. It might
-        // have been run and thus deleted by another instance.
+        // have been run and thus been deleted by another instance.
         final currentFutureCallEntry = await FutureCallEntry.db.findById(
           session,
           futureCallEntry.id!,
@@ -254,8 +254,7 @@ class FutureCallManager {
           return null;
         }
 
-        // Future call is now running, so we can delete it from the database.
-        // This might fail if the session is closed.
+        // The future call is now running, so we can delete it from the database.
         await FutureCallEntry.db.deleteRow(
           session,
           currentFutureCallEntry,
