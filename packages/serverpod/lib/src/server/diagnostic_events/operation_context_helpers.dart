@@ -94,7 +94,7 @@ WebCallOpContext _fromWebCall(
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
       connectionInfo: _safeHttpToConnInfo(httpRequest?.connectionInfo),
-      uri: httpRequest?.uri ?? Uri.http('localhost'),
+      uri: httpRequest?.uri ?? Uri.http('', session.endpoint),
     );
 
 MethodCallOpContext _fromMethodCall(

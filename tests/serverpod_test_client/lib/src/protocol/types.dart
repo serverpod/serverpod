@@ -13,6 +13,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
 abstract class Types implements _i1.SerializableModel {
   Types._({
@@ -32,6 +33,7 @@ abstract class Types implements _i1.SerializableModel {
     this.aList,
     this.aMap,
     this.aSet,
+    this.aRecord,
   });
 
   factory Types({
@@ -51,6 +53,7 @@ abstract class Types implements _i1.SerializableModel {
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -93,6 +96,10 @@ abstract class Types implements _i1.SerializableModel {
           ? null
           : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
               itemFromJson: (e) => e as int),
+      aRecord: jsonSerialization['aRecord'] == null
+          ? null
+          : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
+              (jsonSerialization['aRecord'] as Map<String, dynamic>)),
     );
   }
 
@@ -131,6 +138,8 @@ abstract class Types implements _i1.SerializableModel {
 
   Set<int>? aSet;
 
+  (String, {Uri? optionalUri})? aRecord;
+
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -151,6 +160,7 @@ abstract class Types implements _i1.SerializableModel {
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -172,6 +182,7 @@ abstract class Types implements _i1.SerializableModel {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
     };
   }
 
@@ -201,6 +212,7 @@ class _TypesImpl extends Types {
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -218,6 +230,7 @@ class _TypesImpl extends Types {
           aList: aList,
           aMap: aMap,
           aSet: aSet,
+          aRecord: aRecord,
         );
 
   /// Returns a shallow copy of this [Types]
@@ -241,6 +254,7 @@ class _TypesImpl extends Types {
     Object? aList = _Undefined,
     Object? aMap = _Undefined,
     Object? aSet = _Undefined,
+    Object? aRecord = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -271,6 +285,14 @@ class _TypesImpl extends Types {
                     value0,
                   )),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
+      aRecord: aRecord is (String, {Uri? optionalUri})?
+          ? aRecord
+          : this.aRecord == null
+              ? null
+              : (
+                  this.aRecord!.$1,
+                  optionalUri: this.aRecord!.optionalUri,
+                ),
     );
   }
 }

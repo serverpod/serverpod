@@ -1,0 +1,22 @@
+class: TypesRecord
+fields:
+  anInt: (int,)?
+  aBool: (bool,)?
+  aDouble: (double,)?
+  aDateTime: (DateTime,)?
+  aString: (String,)?
+  aByteData: (ByteData,)?
+  aDuration: (Duration,)?
+  aUuid: (UuidValue,)?
+  aUri: (Uri,)?
+  aBigInt: (BigInt,)?
+  anEnum: (TestEnum,)?
+  aStringifiedEnum: (TestEnumStringified,)?
+  aList: (List<int>,)?
+  aMap: (Map<int, int>,)?
+  aSet: (Set<int>,)?
+  aSimpleData: (SimpleData,)?
+  aNamedModel: ({SimpleData namedModel})?
+  aPositionalAndNamedModel: (SimpleData, {SimpleData namedModel})?
+  aNestedRecord: ((int, String) nestedRecord, {(int, String) namedNestedRecord})?
+  aNestedContainers: ((List<(SimpleData,)>,) nestedRecordWithList, {(SimpleData, Map<String, SimpleData>) namedNestedRecord})?

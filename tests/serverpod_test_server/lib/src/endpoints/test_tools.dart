@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class TestToolsEndpoint extends Endpoint {
@@ -183,6 +184,62 @@ class TestToolsEndpoint extends Endpoint {
     return simpleDatas;
   }
 
+  Future<Types> echoTypes(
+    Session session,
+    Types typesModel,
+  ) async {
+    return typesModel;
+  }
+
+  Future<List<Types>> echoTypesList(
+    Session session,
+    List<Types> typesList,
+  ) async {
+    return typesList;
+  }
+
+  /// Returns a model class which fields reference `ModuleClass` defined in another module
+  Future<ModuleDatatype> echoModuleDatatype(
+    Session session,
+    ModuleDatatype moduleDatatype,
+  ) async {
+    return moduleDatatype;
+  }
+
+  Stream<ModuleDatatype?> streamModuleDatatype(
+    Session session,
+    ModuleDatatype? initialValue,
+    Stream<ModuleDatatype?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
+  /// Returns the given `ModuleClass` instance
+  ///
+  /// `ModuleClass` is defined in another module
+  Future<ModuleClass> echoModuleClass(
+    Session session,
+    ModuleClass moduleClass,
+  ) async {
+    return moduleClass;
+  }
+
+  Stream<ModuleClass?> streamModuleClass(
+    Session session,
+    ModuleClass? initialValue,
+    Stream<ModuleClass?> values,
+  ) async* {
+    yield initialValue;
+
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
   Future<(String, (int, bool))> echoRecord(
     Session session,
     (String, (int, bool)) record,
@@ -244,6 +301,17 @@ class TestToolsEndpoint extends Endpoint {
     Session session,
     List<(String, int)>? initialValue,
     Stream<List<(String, int)>?> stream,
+  ) async* {
+    yield initialValue;
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<TypesRecord?> modelWithRecordsEchoStream(
+    Session session,
+    TypesRecord? initialValue,
+    Stream<TypesRecord?> stream,
   ) async* {
     yield initialValue;
     await for (var value in stream) {

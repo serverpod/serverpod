@@ -165,6 +165,7 @@ class Restrictions {
       'Client',
       'Endpoints',
       'Protocol',
+      '_Record',
     };
     if (reservedClassNames.contains(className)) {
       return [
@@ -913,10 +914,12 @@ class Restrictions {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
         'The field has an invalid datatype "$typeName".',
-        span?.subspan(
-          span.text.indexOf(typeName),
-          span.text.indexOf(typeName) + typeName.length,
-        ),
+        span?.text.contains(typeName) == true
+            ? span?.subspan(
+                span.text.indexOf(typeName),
+                span.text.indexOf(typeName) + typeName.length,
+              )
+            : span,
       ));
     }
 
@@ -950,6 +953,22 @@ class Restrictions {
         errors.add(
           SourceSpanSeverityException(
             'The Set type must have one generic type defined (e.g. Set<String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.isRecordType) {
+      if (fieldType.generics.isNotEmpty) {
+        errors.addAll(
+          fieldType.generics.expand(
+            (field) => _validateFieldDataType(field, span),
+          ),
+        );
+      } else {
+        // The current parser would not create a `Record` type without generics (fields), but we guard against it just in case that ever changes
+        errors.add(
+          SourceSpanSeverityException(
+            'A record type must have at least one field defined (e.g. (int,)).',
             span,
           ),
         );
@@ -1398,7 +1417,8 @@ class Restrictions {
   bool _isValidType(TypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
-        _isCustomType(type);
+        _isCustomType(type) ||
+        _isRecordType(type);
   }
 
   bool _isUnsupportedType(TypeDefinition type) {
@@ -1434,6 +1454,10 @@ class Restrictions {
 
   bool _isCustomType(TypeDefinition type) {
     return config.extraClasses.any((c) => c.className == type.className);
+  }
+
+  bool _isRecordType(TypeDefinition type) {
+    return type.isRecordType && type.generics.every(_isValidType);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

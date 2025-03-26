@@ -9,7 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'serverpod_client_shared_private.dart';
 
 import 'serverpod_client_io.dart'
-    if (dart.library.js) 'serverpod_client_browser.dart'
+    if (dart.library.js_interop) 'serverpod_client_browser.dart'
     if (dart.library.io) 'serverpod_client_io.dart';
 
 /// A callback with no parameters or return value.
