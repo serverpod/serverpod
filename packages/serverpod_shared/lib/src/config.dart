@@ -46,7 +46,10 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
 
-  /// The maximum number of concurrent running future calls.
+  /// The maximum number of concurrent running future calls. If the limit is
+  /// reached, future calls will be postponed until a slot is available.
+  ///
+  /// If the limit is set to a value <= 0, the concurrency limit is disabled.
   final int futureCallConcurrencyLimit;
 
   /// Creates a new [ServerpodConfig].

@@ -25,7 +25,10 @@ class FutureCallManager {
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
 
-  /// The maximum number of concurrent running future calls.
+  /// The maximum number of concurrent running future calls. If the limit is
+  /// reached, future calls will be postponed until a slot is available.
+  ///
+  /// If the limit is set to a value <= 0, the concurrency limit is disabled.
   final int _concurrencyLimit;
 
   final SerializationManager _serializationManager;
@@ -314,6 +317,10 @@ class FutureCallManager {
   /// Returns `false` otherwise.
   /// Should be called in a synchronized block.
   bool _isFutureCallConcurrentLimitReached() {
+    if (_concurrencyLimit <= 0) {
+      return false;
+    }
+
     final totalRunningFutureCalls =
         _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
 
