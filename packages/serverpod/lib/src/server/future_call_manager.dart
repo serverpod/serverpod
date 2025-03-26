@@ -197,7 +197,7 @@ class FutureCallManager {
       final futureCall = _futureCalls[futureCallEntry.name];
 
       if (futureCall == null) {
-        // Delete the entry from the database before invoking the future call.
+        // If the future call is not found, delete the entry from the database.
         await FutureCallEntry.db.deleteRow(internalSession, futureCallEntry);
         // TODO this should be logged and not fail silently
         continue;
