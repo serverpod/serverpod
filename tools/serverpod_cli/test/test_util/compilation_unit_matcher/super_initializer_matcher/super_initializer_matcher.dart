@@ -1,7 +1,7 @@
 part of '../../compilation_unit_matcher.dart';
 
 class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
-  final ChainableMatcher<Iterable<SuperConstructorInvocation>> parent;
+  final ChainableMatcher<SuperConstructorInvocation?> parent;
 
   _SuperInitializerMatcherImpl._(this.parent);
 
@@ -55,10 +55,10 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
   }
 
   SuperConstructorInvocation? _featureValueOf(actual) {
-    var superConstructorInvocations = parent.matchedFeatureValueOf(actual);
-    if (superConstructorInvocations == null) return null;
+    var match = parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return superConstructorInvocations.firstOrNull;
+    return match.value;
   }
 
   SuperConstructorInvocation? _matchedFeatureValueOf(actual) {
@@ -76,9 +76,11 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
 
   ArgumentMatcher _withArgument(String name, {_ParameterType? parameterType}) {
     return _ArgumentMatcherImpl._(
-        ChainableMatcher(
+        ChainableMatcher.createMatcher(
           this,
-          (actual) => _matchedFeatureValueOf(actual)?.argumentList.arguments,
+          resolveMatch: _matchedFeatureValueOf,
+          extractValue: (superInitializer) =>
+              superInitializer.argumentList.arguments,
         ),
         name,
         parameterType);
