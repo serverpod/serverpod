@@ -93,7 +93,7 @@ class FutureCallManager {
 
   /// Starts the manager.
   void start() {
-    _run();
+    unawaited(_checkQueue());
   }
 
   /// Stops the manager.
@@ -103,10 +103,6 @@ class FutureCallManager {
     _shuttingDown = true;
 
     await _waitForRunningFutureCalls();
-  }
-
-  void _run() {
-    unawaited(_checkQueue());
   }
 
   Future<void> _checkQueue() async {
@@ -161,8 +157,8 @@ class FutureCallManager {
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
     if (isMonolith && !_shuttingDown) {
-      // Check the queue again in 1 second
-      _timer = Timer(const Duration(seconds: 1), _checkQueue);
+      // Check the queue again in 5 seconds
+      _timer = Timer(const Duration(seconds: 5), _checkQueue);
     } else if (isMaintenance) {
       await _waitForRunningFutureCalls();
 
@@ -172,9 +168,6 @@ class FutureCallManager {
 
   Future<void> _waitForRunningFutureCalls() async {
     await Future.wait(_runningFutureCallFutures);
-    // while (_runningFutureCalls.values.any((value) => value > 0)) {
-    //   await Future.delayed(const Duration(milliseconds: 100));
-    // }
   }
 
   /// Starts all overdue future calls.
@@ -184,7 +177,6 @@ class FutureCallManager {
   Future<bool> _invokeFutureCalls({required DateTime due}) async {
     var internalSession = _server.serverpod.internalSession;
 
-    // Create a copy of the overdue future calls to enable modifying the list
     var overdueFutureCalls = await FutureCallEntry.db.find(
       internalSession,
       where: (row) => row.time <= due,
