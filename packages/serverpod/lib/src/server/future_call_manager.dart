@@ -276,25 +276,33 @@ class FutureCallManager {
         ifAbsent: () => 1,
       );
 
-      final futureCallFuture = _runFutureCall(
-        session: session,
-        futureCallEntry: currentFutureCallEntry,
-        futureCall: futureCall,
-      ).whenComplete(
-        () => _runningFutureCallsMutex.synchronized(
-          () async => _runningFutureCalls.update(
-            futureCallName,
-            (value) => value - 1,
-            ifAbsent: () => 0,
-          ),
+      final futureCallCompleter = Completer<void>();
+
+      _runningFutureCallFutures.add(futureCallCompleter.future);
+
+      unawaited(
+        _runFutureCall(
+          session: session,
+          futureCallEntry: currentFutureCallEntry,
+          futureCall: futureCall,
+        ).whenComplete(
+          () async {
+            await _runningFutureCallsMutex.synchronized(
+              () async => _runningFutureCalls.update(
+                futureCallName,
+                (value) => value - 1,
+                ifAbsent: () => 0,
+              ),
+            );
+
+            futureCallCompleter.complete();
+          },
         ),
       );
 
-      _runningFutureCallFutures.add(futureCallFuture);
-
       unawaited(
-        futureCallFuture.whenComplete(
-          () => _runningFutureCallFutures.remove(futureCallFuture),
+        futureCallCompleter.future.then(
+          (_) => _runningFutureCallFutures.remove(futureCallCompleter.future),
         ),
       );
 
