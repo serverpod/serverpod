@@ -188,6 +188,12 @@ class UserNoteWithALongNameTable extends _i1.Table<int> {
         name,
         $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class UserNoteWithALongNameInclude extends _i1.IncludeObject {

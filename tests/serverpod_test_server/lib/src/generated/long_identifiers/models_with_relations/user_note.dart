@@ -186,6 +186,12 @@ class UserNoteTable extends _i1.Table<int> {
         name,
         $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class UserNoteInclude extends _i1.IncludeObject {

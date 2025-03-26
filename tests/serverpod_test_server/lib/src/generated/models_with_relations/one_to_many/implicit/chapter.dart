@@ -177,6 +177,12 @@ class ChapterTable extends _i1.Table<int> {
         title,
         $_bookChaptersBookId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        title,
+      ];
 }
 
 class ChapterInclude extends _i1.IncludeObject {
