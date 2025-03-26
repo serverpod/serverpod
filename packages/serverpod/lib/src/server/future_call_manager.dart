@@ -136,6 +136,11 @@ class FutureCallManager {
           await Future.any(_runningFutureCallFutures);
         }
 
+        // If we are shutting down, stop processing future calls.
+        if (_shuttingDown) {
+          break;
+        }
+
         // Keep the same due time to run all overdue future calls.
         hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
       }
