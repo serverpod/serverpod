@@ -438,7 +438,6 @@ class Serverpod {
         server,
         serializationManager,
         _onCompletedFutureCalls,
-        config.futureCallConcurrencyLimit,
       );
     }
 

@@ -17,6 +17,9 @@ class ServerpodConfigMap {
 
   /// The logs configuration.
   static const String sessionLogs = 'sessionLogs';
+
+  /// The future call configuration.
+  static const String futureCall = 'futureCall';
 }
 
 /// The configuration sections for the serverpod server configuration file.
@@ -32,6 +35,15 @@ class ServerpodServerConfigMap {
 
   /// The public scheme for the server.
   static const String publicScheme = 'publicScheme';
+}
+
+/// The configuration sections for the future call configuration.
+class ServerpodFutureCallConfigMap {
+  /// The maximum number of concurrent running future calls.
+  static const String concurrencyLimit = 'concurrencyLimit';
+
+  /// The delay for the future call queue.
+  static const String queueDelay = 'queueDelay';
 }
 
 /// The default environment variables used by the server.
@@ -108,6 +120,9 @@ enum ServerpodEnv {
   /// The maximum number of concurrent running future calls.
   futureCallConcurrencyLimit,
 
+  /// How long to wait before checking the queue again in milliseconds.
+  futureCallQueueDelay,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
@@ -144,7 +159,10 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => ServerpodServerConfigMap.publicPort,
       (ServerpodEnv.webPublicScheme) => ServerpodServerConfigMap.publicScheme,
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
-      (ServerpodEnv.futureCallConcurrencyLimit) => 'futureCallConcurrencyLimit',
+      (ServerpodEnv.futureCallConcurrencyLimit) =>
+        ServerpodFutureCallConfigMap.concurrencyLimit,
+      (ServerpodEnv.futureCallQueueDelay) =>
+        ServerpodFutureCallConfigMap.queueDelay,
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.serverId) => 'serverId',
@@ -183,6 +201,8 @@ enum ServerpodEnv {
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
       (ServerpodEnv.futureCallConcurrencyLimit) =>
         'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT',
+      (ServerpodEnv.futureCallQueueDelay) =>
+        'SERVERPOD_FUTURE_CALL_QUEUE_DELAY',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>

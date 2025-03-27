@@ -25,12 +25,6 @@ class FutureCallManager {
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
 
-  /// The maximum number of concurrent running future calls. If the limit is
-  /// reached, future calls will be postponed until a slot is available.
-  ///
-  /// If the limit is set to a value <= 0, the concurrency limit is disabled.
-  final int _concurrencyLimit;
-
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
@@ -45,7 +39,6 @@ class FutureCallManager {
     this._server,
     this._serializationManager,
     this.onCompleted,
-    this._concurrencyLimit,
   );
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
@@ -164,8 +157,9 @@ class FutureCallManager {
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
     if (isMonolith && !_shuttingDown) {
-      // Check the queue again in 5 seconds
-      _timer = Timer(const Duration(seconds: 5), _checkQueue);
+      final queueDelay = _server.serverpod.config.futureCall.queueDelay;
+
+      _timer = Timer(queueDelay, _checkQueue);
     } else if (isMaintenance) {
       await _waitForRunningFutureCalls();
 
@@ -317,14 +311,17 @@ class FutureCallManager {
   /// Returns `false` otherwise.
   /// Should be called in a synchronized block.
   bool _isFutureCallConcurrentLimitReached() {
-    if (_concurrencyLimit <= 0) {
+    final concurrencyLimit =
+        _server.serverpod.config.futureCall.concurrencyLimit;
+
+    if (concurrencyLimit <= 0) {
       return false;
     }
 
     final totalRunningFutureCalls =
         _runningFutureCalls.values.fold(0, (sum, value) => sum + value);
 
-    final isLimitReached = totalRunningFutureCalls >= _concurrencyLimit;
+    final isLimitReached = totalRunningFutureCalls >= concurrencyLimit;
 
     return isLimitReached;
   }
