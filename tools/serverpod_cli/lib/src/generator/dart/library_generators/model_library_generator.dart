@@ -509,11 +509,14 @@ class SerializableModelLibraryGenerator {
         ..fields.addAll(hiddenFields.map((field) {
           return Field((fieldBuilder) {
             fieldBuilder
-              ..name = createFieldName(serverCode, field)
+              ..name = _createSerializableFieldName(serverCode, field)
               ..type = field.type.reference(
                 serverCode,
                 config: config,
-              );
+                subDirParts: classDefinition.subDirParts,
+              )
+              ..modifier = FieldModifier.final$
+              ..annotations.add(refer('override'));
           });
         }))
         ..constructors.add(Constructor((constructorBuilder) {
@@ -537,14 +540,24 @@ class SerializableModelLibraryGenerator {
               ),
             )
             ..optionalParameters.addAll(hiddenFields.map((field) {
-              return Parameter(
-                (p) => p
-                  ..name = createFieldName(serverCode, field)
-                  ..named = true
-                  ..toThis = true,
-              );
+              return Parameter((p) => p
+                ..name = createFieldName(serverCode, field)
+                ..named = true
+                ..type = field.type.reference(
+                  serverCode,
+                  config: config,
+                  subDirParts: classDefinition.subDirParts,
+                ));
             }))
-            ..initializers.add(refer('super').call([], namedParams).code);
+            ..initializers.addAll([
+              for (var field in hiddenFields)
+                refer(_createSerializableFieldName(serverCode, field))
+                    .assign(
+                      refer(createFieldName(serverCode, field)),
+                    )
+                    .code,
+              refer('super').call([], namedParams).code,
+            ]);
         }))
         ..constructors.add(Constructor((constructorBuilder) {
           constructorBuilder
@@ -556,7 +569,11 @@ class SerializableModelLibraryGenerator {
               return Parameter((p) => p
                 ..name = createFieldName(serverCode, field)
                 ..named = true
-                ..type = field.type.reference(serverCode, config: config));
+                ..type = field.type.reference(
+                  serverCode,
+                  config: config,
+                  subDirParts: classDefinition.subDirParts,
+                ));
             }))
             ..body = Block((blockBuilder) {
               blockBuilder.statements.add(refer('${className}Implicit')
@@ -596,7 +613,8 @@ class SerializableModelLibraryGenerator {
               var values = hiddenFields.fold({}, (map, field) {
                 return {
                   ...map,
-                  "'${field.name}'": createFieldName(serverCode, field),
+                  "'${field.name}'":
+                      _createSerializableFieldName(serverCode, field),
                 };
               });
 
@@ -2503,12 +2521,17 @@ class SerializableModelLibraryGenerator {
     bool serverCode,
     SerializableModelFieldDefinition field,
   ) {
+    return refer(_createSerializableFieldName(serverCode, field));
+  }
+
+  String _createSerializableFieldName(
+      bool serverCode, SerializableModelFieldDefinition field) {
     if (field.hiddenSerializableField(serverCode) &&
         !field.name.startsWith('_')) {
-      return refer('_${field.name}');
+      return '_${field.name}';
     }
 
-    return refer(field.name);
+    return field.name;
   }
 
   Code _buildDefaultSwitchCase(
