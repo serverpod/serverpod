@@ -6,7 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
-import 'package:serverpod/src/util/mutex.dart';
+import 'package:synchronized/synchronized.dart';
 
 enum _FutureCallInvocationResult {
   success,
@@ -30,7 +30,7 @@ class FutureCallManager {
   Timer? _timer;
   final Map<String, int> _runningFutureCalls = {};
   final _runningFutureCallFutures = <Future>[];
-  final _runningFutureCallsMutex = Mutex();
+  final _runningFutureCallsLock = Lock();
   bool _shuttingDown = false;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
@@ -228,7 +228,7 @@ class FutureCallManager {
     required FutureCall<SerializableModel> futureCall,
   }) async {
     // Run in a synchronized block to avoid race conditions
-    return _runningFutureCallsMutex.synchronized(() async {
+    return _runningFutureCallsLock.synchronized(() async {
       final futureCallName = futureCall.name;
 
       final isConcurrentLimitReached = _isFutureCallConcurrentLimitReached();
@@ -284,7 +284,7 @@ class FutureCallManager {
           futureCall: futureCall,
         ).whenComplete(
           () async {
-            await _runningFutureCallsMutex.synchronized(
+            await _runningFutureCallsLock.synchronized(
               () async => _runningFutureCalls.update(
                 futureCallName,
                 (value) => value - 1,
