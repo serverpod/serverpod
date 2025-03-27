@@ -614,6 +614,7 @@ class ModelParser {
   ) {
     final defaultValue =
         _parseDefaultValue(documentContents, Keyword.defaultKey);
+    if (defaultValue == null) return null;
     return ProtocolEnumValueDefinition(defaultValue);
   }
 
