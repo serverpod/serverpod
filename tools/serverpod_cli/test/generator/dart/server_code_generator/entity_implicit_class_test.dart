@@ -69,10 +69,16 @@ void main() {
       expect(compilationUnit, containsClass(implicitClassName));
     });
 
-    test('then the implicit class has the the field as nullable type', () {
+    test('then the implicit class overrides the field from inherited class',
+        () {
       expect(
         compilationUnit,
-        containsClass(implicitClassName).withField('\$_name', isNullable: true),
+        containsClass(implicitClassName).withField(
+          '_name',
+          isNullable: true,
+          isFinal: true,
+          isOverride: true,
+        ),
       );
     });
 
@@ -84,13 +90,25 @@ void main() {
     });
 
     test(
-        'then implicit class has private constructor with "this" initialized private field',
+        'then implicit class has private constructor that takes private field prefixed with "\$"',
         () {
       expect(
         compilationUnit,
         containsClass(implicitClassName)
             .withNamedConstructor('_')
-            .withInitializerParameter('\$_name', Initializer.this_),
+            .withTypedParameter('\$_name', 'String?'),
+      );
+    });
+
+    test(
+        'then implicit class has private constructor with initializer for private fields from prefixed with "\$"',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withFieldInitializer('_name')
+            .withArgument('\$_name'),
       );
     });
 
@@ -190,12 +208,16 @@ void main() {
     late var compilationUnit = parseCode(codeMap[expectedFilePath]!);
 
     test(
-        'then the implicit class has the field name with type set to nullable int',
+        'then the implicit class has the field name with type set to nullable String',
         () {
       expect(
         compilationUnit,
-        containsClass('${testClassName}Implicit')
-            .withField('\$_firstName', isNullable: true),
+        containsClass('${testClassName}Implicit').withField(
+          '_firstName',
+          isNullable: true,
+          isOverride: true,
+          type: 'String',
+        ),
       );
     });
 
@@ -204,8 +226,12 @@ void main() {
         () {
       expect(
         compilationUnit,
-        containsClass('${testClassName}Implicit')
-            .withField('\$_age', isNullable: true),
+        containsClass('${testClassName}Implicit').withField(
+          '_age',
+          isNullable: true,
+          isOverride: true,
+          type: 'int',
+        ),
       );
     });
 
@@ -222,13 +248,13 @@ void main() {
         compilationUnit,
         containsClass('${testClassName}Implicit')
             .withNamedConstructor('_')
-            .withInitializerParameter('\$_firstName', Initializer.this_),
+            .withTypedParameter('\$_firstName', 'String?'),
       );
       expect(
         compilationUnit,
         containsClass('${testClassName}Implicit')
             .withNamedConstructor('_')
-            .withInitializerParameter('\$_age', Initializer.this_),
+            .withTypedParameter('\$_age', 'int?'),
       );
     });
 
