@@ -1250,18 +1250,13 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! EnumDefinition) return [];
     final values = definition.values;
-    var defaultEnumDsefinitionValue =
-        values.where((value) => value.name == content).firstOrNull;
-    if (defaultEnumDsefinitionValue == null) {
-      return [
-        SourceSpanSeverityException(
-          '"$content" is not a valid default value. Allowed values are: ${values.map((e) => e.name).join(', ')}.',
-          span,
-        )
-      ];
-    }
-
-    return [];
+    if (values.any((value) => value.name == content)) return [];
+    return [
+      SourceSpanSeverityException(
+        '"$content" is not a valid default value. Allowed values are: ${values.map((e) => e.name).join(', ')}.',
+        span,
+      )
+    ];
   }
 
   List<SourceSpanSeverityException> validateEnumValues(
