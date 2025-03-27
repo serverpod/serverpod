@@ -443,13 +443,16 @@ class FutureCallConfig {
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
-    this.concurrencyLimit = _defaultFutureCallConcurrencyLimit,
+    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.queueDelay =
-        const Duration(milliseconds: _defaultFutureCallQueueDelayMs),
+        const Duration(milliseconds: defaultFutureCallQueueDelayMs),
   });
 
-  static const int _defaultFutureCallConcurrencyLimit = 1;
-  static const int _defaultFutureCallQueueDelayMs = 5000;
+  /// The default concurrency limit for future calls.
+  static const int defaultFutureCallConcurrencyLimit = 1;
+
+  /// The default queue delay for future calls.
+  static const int defaultFutureCallQueueDelayMs = 5000;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
     _validateJsonConfig(
@@ -467,9 +470,9 @@ class FutureCallConfig {
         futureCallConfigJson[ServerpodEnv.futureCallQueueDelay.configKey];
 
     return FutureCallConfig(
-      concurrencyLimit: concurrencyLimit ?? _defaultFutureCallConcurrencyLimit,
+      concurrencyLimit: concurrencyLimit ?? defaultFutureCallConcurrencyLimit,
       queueDelay: Duration(
-        milliseconds: queueDelay ?? _defaultFutureCallQueueDelayMs,
+        milliseconds: queueDelay ?? defaultFutureCallQueueDelayMs,
       ),
     );
   }
