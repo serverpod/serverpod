@@ -1,0 +1,5 @@
+enum: DefaultValueEnum
+default: value2
+values:
+  - value1
+  - value2

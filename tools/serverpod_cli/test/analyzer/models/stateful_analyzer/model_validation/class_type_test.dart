@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/generator_config_builder.dart';
@@ -54,6 +55,8 @@ void main() {
 
     expect(model.type.className, model.className);
     expect(model.type.enumDefinition, model);
+    expect(model.defaultValue, isNull);
+    expect(model.serialized, EnumSerialization.byIndex);
   });
 
   test(

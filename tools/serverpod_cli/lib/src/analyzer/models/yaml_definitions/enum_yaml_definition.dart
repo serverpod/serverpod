@@ -21,6 +21,7 @@ class EnumYamlDefinition {
       ),
       ValidateNode(
         Keyword.defaultKey,
+        valueRestriction: restrictions.validateEnumDefaultValue,
       ),
       ValidateNode(
         Keyword.serverOnly,

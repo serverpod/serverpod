@@ -139,5 +139,41 @@ void main() async {
         );
       },
     );
+
+    group('Given a class with "default" enum fields,', () {
+      test(
+        'when deserializing an invalid index for DefaultValueEnum, it should default to value2',
+        () async {
+          var object = DefaultValueEnum.fromJson(-1);
+          expect(DefaultValueEnum.values.length, 2);
+          expect(object, DefaultValueEnum.value2);
+        },
+      );
+
+      test(
+        'when deserializing an invalid index for ByIndexEnum, it should throw an ArgumentError',
+        () async {
+          expect(
+            () => ByIndexEnum.fromJson(-1),
+            throwsA(predicate((e) =>
+                e is ArgumentError &&
+                e.message == 'Value "2" cannot be converted to "ByIndexEnum"')),
+          );
+        },
+      );
+
+      test(
+        'when deserializing an invalid name for ByNameEnum, it should throw an ArgumentError',
+        () async {
+          expect(
+            () => ByNameEnum.fromJson('Invalid'),
+            throwsA(predicate((e) =>
+                e is ArgumentError &&
+                e.message ==
+                    'Value "Invalid" cannot be converted to "ByNameEnum"')),
+          );
+        },
+      );
+    });
   });
 }

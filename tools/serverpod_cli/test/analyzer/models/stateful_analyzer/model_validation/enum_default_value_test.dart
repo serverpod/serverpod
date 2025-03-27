@@ -9,35 +9,6 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  group('Given a valid enum definition when validating', () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
-        enum: ExampleEnum
-        values:
-          - first
-          - second
-        ''',
-      ).build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
-
-    var definitions = analyzer.validateAll();
-
-    var definition = definitions.first as EnumDefinition;
-
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then defaultValue is set to null.', () {
-      expect(definition.defaultValue, isNull);
-    });
-  });
-
   group(
       'Given a valid enum definition with default value set to valid value when validating',
       () {
@@ -70,33 +41,72 @@ void main() {
   });
 
   group(
-      'Given a valid enum definition with default value set to an invalid value when validating',
+      'Given a valid enum definition with default value set to an invalid String value when validating',
       () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    late CodeGenerationCollector collector;
+
+    setUp(() {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         enum: ExampleEnum
+        default: Invalid
         values:
           - first
           - second
         ''',
-      ).build()
-    ];
+        ).build()
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
-    var definitions = analyzer.validateAll();
-
-    var definition = definitions.first as EnumDefinition;
-
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
+      analyzer.validateAll();
     });
 
-    test('then defaultValue is set to valid value.', () {
-      expect(definition.defaultValue, isNull);
+    test('then 1 error is collected', () {
+      expect(collector.errors, isNotEmpty);
+      expect(collector.errors.length, 1);
+      expect(
+        collector.errors.first.message,
+        '"Invalid" is not a valid default value. Allowed values are: first, second.',
+      );
+    });
+  });
+
+  group(
+      'Given a valid enum definition with default value set to and invalid int value when validating',
+      () {
+    late CodeGenerationCollector collector;
+
+    setUp(() {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+        enum: ExampleEnum
+        default: 0
+        values:
+          - first
+          - second
+        ''',
+        ).build()
+      ];
+
+      collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+
+      analyzer.validateAll();
+    });
+
+    test('then 1 error is collected', () {
+      expect(collector.errors, isNotEmpty);
+      expect(collector.errors.length, 1);
+      expect(
+        collector.errors.first.message,
+        'The "default" property must be a String.',
+      );
     });
   });
 }
