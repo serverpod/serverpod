@@ -1374,10 +1374,11 @@ class SerializableModelLibraryGenerator {
         inheritedFields: inheritedFields,
       ));
 
-      for (var field in fields) {
-        if (!field.hasDefaults) continue;
-        if (inheritedFields.contains(field)) continue;
+      var classFields =
+          fields.where((field) => !inheritedFields.contains(field)).toList();
 
+      var defaultValueFields = classFields.where((field) => field.hasDefaults);
+      for (var field in defaultValueFields) {
         Code? defaultCode = _getDefaultValue(
           field,
           subDirParts: subDirParts,
@@ -1388,6 +1389,17 @@ class SerializableModelLibraryGenerator {
           refer(field.name).code,
           const Code('='),
           refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
+        ]));
+      }
+
+      var implicitFields = classFields.where(
+        (field) => field.hiddenSerializableField(serverCode),
+      );
+      for (var field in implicitFields) {
+        c.initializers.add(Block.of([
+          _createSerializableFieldNameReference(serverCode, field).code,
+          const Code('='),
+          literalNull.code,
         ]));
       }
     });
@@ -1598,15 +1610,18 @@ class SerializableModelLibraryGenerator {
 
     for (var field in classFields) {
       modelClassFields.add(Field((f) {
-        f.type = field.type.reference(
-          serverCode,
-          subDirParts: subDirParts,
-          config: config,
-        );
         f
+          ..type = field.type.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          )
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
+        if (field.hiddenSerializableField(serverCode)) {
+          f.modifier = FieldModifier.final$;
+        }
       }));
     }
 
