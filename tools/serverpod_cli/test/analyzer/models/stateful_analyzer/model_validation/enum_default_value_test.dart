@@ -12,31 +12,36 @@ void main() {
   group(
       'Given a valid enum definition with default value set to valid value when validating',
       () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    late CodeGenerationCollector collector;
+    late EnumDefinition definition;
+    setUp(() {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         enum: ExampleEnum
         default: first
         values:
           - first
           - second
         ''',
-      ).build()
-    ];
+        ).build()
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
-    var definitions = analyzer.validateAll();
-    var definition = definitions.first as EnumDefinition;
+      var definitions = analyzer.validateAll();
+      definition = definitions.first as EnumDefinition;
+    });
 
     test('then no errors are collected', () {
       expect(collector.errors, isEmpty);
     });
 
     test('then defaultValue is set to valid value.', () {
-      expect(definition.defaultValue, definition.values.first);
+      expect(definition.defaultValue, isNotNull);
+      expect(definition.defaultValue!.name, definition.values.first.name);
     });
   });
 
