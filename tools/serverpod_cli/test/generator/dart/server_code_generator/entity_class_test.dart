@@ -30,12 +30,13 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
     test('then generated class imports server version of serverpod.', () {
       expect(
@@ -47,7 +48,8 @@ void main() {
           reason: 'Missing import of package:serverpod/serverpod.dart');
     });
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -109,7 +111,7 @@ void main() {
             isTrue,
             reason: 'Missing declaration for toJsonForProtocol method.');
       });
-    }, skip: maybeClassNamedExample == null);
+    });
   });
 
   group('Given a class with table name when generating code', () {
@@ -120,13 +122,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -270,7 +274,7 @@ void main() {
             isTrue,
             reason: 'Missing declaration for static includeList method.');
       });
-    }, skip: maybeClassNamedExample == null);
+    });
   });
 
   group('Given a class with a none nullable field when generating code', () {
@@ -282,13 +286,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -315,10 +321,7 @@ void main() {
           reason: 'Missing declaration for title field.',
         );
       });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+    });
   });
 
   group('Given a class with a nullable field when generating code', () {
@@ -330,13 +333,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -363,10 +368,7 @@ void main() {
           reason: 'Missing declaration for title field.',
         );
       });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+    });
   });
 
   group(
@@ -386,13 +388,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -408,9 +412,6 @@ void main() {
             isTrue,
             reason: 'Missing declaration for title field');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -432,13 +433,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -454,9 +457,6 @@ void main() {
             isTrue,
             reason: 'Missing declaration for title field.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -478,15 +478,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: testClassName);
     test(
       'then a class is NOT generated with that class variable.',
       () {
@@ -496,9 +497,6 @@ void main() {
             isFalse,
             reason: 'Found declaration for field that should not exist.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -510,14 +508,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -532,9 +532,6 @@ void main() {
             isTrue,
             reason: 'Class should implement SerializableException.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -558,14 +555,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -597,9 +596,6 @@ void main() {
                   'Missing use of hidden class variable in setColumn method.');
         });
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -623,15 +619,15 @@ void main() {
             .build()
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late final codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit =
+      late final compilationUnit =
           parseString(content: codeMap[expectedFilePath]!).unit;
 
-      var maybeClassNamedExample =
+      late final maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: testClassName,
@@ -648,9 +644,6 @@ void main() {
               isTrue,
               reason: 'Field declaration missing for $fieldName.');
         },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false,
       );
     },
   );
