@@ -2407,9 +2407,7 @@ class SerializableModelLibraryGenerator {
                   Code(
                     'case $i: return ${enumDefinition.className}.${enumDefinition.values[i].name};',
                   ),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
-                ),
+                _buildDefaultSwitchCase(enumDefinition, 'index'),
                 const Code('}'),
               ]))
             .build()),
@@ -2443,9 +2441,7 @@ class SerializableModelLibraryGenerator {
                   Code(
                     "case '${value.name}': return ${enumDefinition.className}.${value.name};",
                   ),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
-                ),
+                _buildDefaultSwitchCase(enumDefinition, 'name'),
                 const Code('}'),
               ]))
             .build()),
@@ -2489,6 +2485,18 @@ class SerializableModelLibraryGenerator {
     }
 
     return refer(field.name);
+  }
+
+  Code _buildDefaultSwitchCase(
+      EnumDefinition enumDefinition, String valueFieldName) {
+    if (enumDefinition.defaultValue == null) {
+      return Code(
+        'default: throw ArgumentError(\'Value "\$$valueFieldName" cannot be converted to "${enumDefinition.className}"\');',
+      );
+    }
+    return Code(
+      'default: return ${enumDefinition.className}.${enumDefinition.defaultValue!.name};',
+    );
   }
 }
 
