@@ -27,7 +27,7 @@ void main() {
   });
 
   group(
-      'Given compilation unit with class and non-nullable non-late non-override final field',
+      'Given compilation unit with class and non-nullable non-late non-override final String field',
       () {
     late final compilationUnit = parseCode(
       '''
@@ -107,8 +107,22 @@ void main() {
       );
     });
 
+    test('when matching with int field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', type: 'int') as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        equals(
+            'contains field "name" but the field is of type "String" instead of "int"'),
+      );
+    });
+
     test(
-        'when matching with nullable late non-final override field then mismatch description is correct',
+        'when matching with nullable late non-final override int field then mismatch description is correct',
         () {
       final matcher = containsClass('User').withField(
         'name',
@@ -116,6 +130,7 @@ void main() {
         isNullable: true,
         isLate: true,
         isOverride: true,
+        type: 'int',
       ) as Matcher;
       final description = StringDescription();
       matcher.describeMismatch(compilationUnit, description, {}, false);
@@ -123,7 +138,7 @@ void main() {
       expect(
         description.toString(),
         equals(
-            'contains field "name" but the field is non-nullable and non-late and final and non-override'),
+            'contains field "name" but the field is non-nullable and non-late and final and non-override and of type "String" instead of "int"'),
       );
     });
   });

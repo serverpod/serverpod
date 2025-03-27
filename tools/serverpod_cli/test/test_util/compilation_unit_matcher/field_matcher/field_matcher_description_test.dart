@@ -137,7 +137,22 @@ void main() {
   });
 
   test(
-      'Given field matcher for nullable late non-final field when describing matcher then description is correct',
+      'Given field matcher with type when describing matcher then description is correct',
+      () {
+    final matcher =
+        containsClass('User').withField('name', type: 'String') as Matcher;
+    final description = StringDescription();
+    matcher.describe(description);
+
+    expect(
+      description.toString(),
+      contains(
+          'a CompilationUnit containing class "User" with a String field "name"'),
+    );
+  });
+
+  test(
+      'Given field matcher for nullable late non-final String field when describing matcher then description is correct',
       () {
     final matcher = containsClass('User').withField(
       'name',
@@ -145,6 +160,7 @@ void main() {
       isNullable: true,
       isLate: true,
       isOverride: true,
+      type: 'String',
     ) as Matcher;
     final description = StringDescription();
     matcher.describe(description);
@@ -152,7 +168,7 @@ void main() {
     expect(
       description.toString(),
       contains(
-          'a CompilationUnit containing class "User" with a nullable late non-final override field "name"'),
+          'a CompilationUnit containing class "User" with a nullable late non-final override String field "name"'),
     );
   });
 }
