@@ -310,12 +310,13 @@ void main() {
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
-      test('has that class variable.', () {
+      test('has that class variable as a mutable field.', () {
         expect(
           CompilationUnitHelpers.hasFieldDeclaration(
             maybeClassNamedExample!,
             name: 'title',
             type: 'String',
+            isFinal: false,
           ),
           isTrue,
           reason: 'Missing declaration for title field.',
@@ -575,9 +576,11 @@ void main() {
         test('is generated with field as hidden class variable.', () {
           expect(
               CompilationUnitHelpers.hasFieldDeclaration(
-                  maybeClassNamedExample!,
-                  name: '_$fieldName',
-                  type: 'String?'),
+                maybeClassNamedExample!,
+                name: '_$fieldName',
+                type: 'String?',
+                isFinal: true,
+              ),
               isTrue,
               reason: 'Field declaration missing for $fieldName.');
         });
@@ -594,6 +597,20 @@ void main() {
               maybeToJson!.toSource(), contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
+        });
+
+        test('then constructor initializes private field with null', () {
+          var maybeConstructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+            maybeClassNamedExample!,
+            name: '_',
+          );
+
+          expect(
+            maybeConstructor?.toSource(),
+            contains('_$fieldName = null'),
+            reason: 'Missing initialization of private field in constructor.',
+          );
         });
       },
     );

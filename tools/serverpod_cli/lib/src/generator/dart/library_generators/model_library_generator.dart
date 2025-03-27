@@ -1163,9 +1163,14 @@ class SerializableModelLibraryGenerator {
   Expression _toJsonCallConversionMethod(
     Reference fieldRef,
     TypeDefinition fieldType,
-    String methodName,
-  ) {
+    String methodName, {
+    bool nullCheckedReference = false,
+  }) {
     if (fieldType.isSerializedValue) return fieldRef;
+
+    // If the field is nullable and we have not already null checked it, we need
+    // to treat it as potentially null.
+    var nullableField = nullCheckedReference ? false : fieldType.nullable;
 
     if (fieldType.isRecordType) {
       var mapRecordToJsonRef = refer(
@@ -1184,8 +1189,9 @@ class SerializableModelLibraryGenerator {
             : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
       );
 
-      return mapRecordContainingContainerToJsonRef
-          .call([refer('${fieldRef.symbol}${fieldType.nullable ? '!' : ''}')]);
+      return mapRecordContainingContainerToJsonRef.call(
+        [refer('${fieldRef.symbol}${nullableField ? '!' : ''}')],
+      );
     }
 
     Expression fieldExpression = fieldRef;
@@ -1200,7 +1206,7 @@ class SerializableModelLibraryGenerator {
         serverpodUrl(serverCode),
       );
 
-      var toJsonForProtocolExpression = switch (fieldType.nullable) {
+      var toJsonForProtocolExpression = switch (nullableField) {
         true => fieldExpression
             .asA(protocolSerialization)
             .nullSafeProperty(_toJsonForProtocolMethodName),
@@ -1209,7 +1215,7 @@ class SerializableModelLibraryGenerator {
             .property(_toJsonForProtocolMethodName),
       };
 
-      var toJsonExpression = switch (fieldType.nullable) {
+      var toJsonExpression = switch (nullableField) {
         true => fieldExpression.nullSafeProperty(_toJsonMethodName),
         false => fieldExpression.property(_toJsonMethodName),
       };
@@ -1233,7 +1239,7 @@ class SerializableModelLibraryGenerator {
         ? _toJsonMethodName
         : methodName;
 
-    if (fieldType.nullable) {
+    if (nullableField) {
       fieldExpression = fieldExpression.nullSafeProperty(toJson);
     } else {
       fieldExpression = fieldExpression.property(toJson);
@@ -1312,6 +1318,9 @@ class SerializableModelLibraryGenerator {
         fieldName,
         field.type,
         toJsonMethodName,
+        // Hidden serializable fields are final so no additional null check
+        // is needed.
+        nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
       return {
@@ -1374,10 +1383,11 @@ class SerializableModelLibraryGenerator {
         inheritedFields: inheritedFields,
       ));
 
-      for (var field in fields) {
-        if (!field.hasDefaults) continue;
-        if (inheritedFields.contains(field)) continue;
+      var classFields =
+          fields.where((field) => !inheritedFields.contains(field)).toList();
 
+      var defaultValueFields = classFields.where((field) => field.hasDefaults);
+      for (var field in defaultValueFields) {
         Code? defaultCode = _getDefaultValue(
           field,
           subDirParts: subDirParts,
@@ -1388,6 +1398,17 @@ class SerializableModelLibraryGenerator {
           refer(field.name).code,
           const Code('='),
           refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
+        ]));
+      }
+
+      var implicitFields = classFields.where(
+        (field) => field.hiddenSerializableField(serverCode),
+      );
+      for (var field in implicitFields) {
+        c.initializers.add(Block.of([
+          _createSerializableFieldNameReference(serverCode, field).code,
+          const Code('='),
+          literalNull.code,
         ]));
       }
     });
@@ -1598,15 +1619,18 @@ class SerializableModelLibraryGenerator {
 
     for (var field in classFields) {
       modelClassFields.add(Field((f) {
-        f.type = field.type.reference(
-          serverCode,
-          subDirParts: subDirParts,
-          config: config,
-        );
         f
+          ..type = field.type.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          )
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
+        if (field.hiddenSerializableField(serverCode)) {
+          f.modifier = FieldModifier.final$;
+        }
       }));
     }
 
