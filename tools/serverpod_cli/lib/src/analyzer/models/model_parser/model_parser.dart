@@ -614,7 +614,7 @@ class ModelParser {
   ) {
     final defaultValue =
         _parseDefaultValue(documentContents, Keyword.defaultKey);
-    return values.where((value) => value.name == defaultValue).firstOrNull;
+    return ProtocolEnumValueDefinition(defaultValue);
   }
 
   static List<ProtocolEnumValueDefinition> _parseEnumValues(
