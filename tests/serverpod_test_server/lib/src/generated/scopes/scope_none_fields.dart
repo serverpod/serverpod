@@ -136,6 +136,9 @@ class ScopeNoneFieldsTable extends _i1.Table<int> {
         id,
         $name,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [id];
 }
 
 class ScopeNoneFieldsInclude extends _i1.IncludeObject {

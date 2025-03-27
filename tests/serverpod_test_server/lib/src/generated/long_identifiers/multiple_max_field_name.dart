@@ -242,6 +242,13 @@ class MultipleMaxFieldNameTable extends _i1.Table<int> {
         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
         $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+      ];
 }
 
 class MultipleMaxFieldNameInclude extends _i1.IncludeObject {

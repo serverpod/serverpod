@@ -187,6 +187,12 @@ class LongImplicitIdFieldTable extends _i1.Table<int> {
         name,
         $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class LongImplicitIdFieldInclude extends _i1.IncludeObject {
