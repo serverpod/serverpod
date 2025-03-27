@@ -165,7 +165,7 @@ class Restrictions {
       'Client',
       'Endpoints',
       'Protocol',
-      'Record',
+      '_Record',
     };
     if (reservedClassNames.contains(className)) {
       return [

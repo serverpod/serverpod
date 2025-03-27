@@ -8,7 +8,9 @@ import 'compilation_unit_matcher/chainable_matcher.dart';
 part 'compilation_unit_matcher/argument_matcher/argument_matcher.dart';
 part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
+part 'compilation_unit_matcher/extends_matcher/extends_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
+part 'compilation_unit_matcher/generic_matcher/generic_matcher.dart';
 part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
 part 'compilation_unit_matcher/parameter_matcher/parameter_matcher.dart';
 part 'compilation_unit_matcher/super_initializer_matcher/super_initializer_matcher.dart';
@@ -28,8 +30,10 @@ part 'compilation_unit_matcher/super_initializer_matcher/super_initializer_match
 ///   │   ├── SuperInitializerMatcher
 ///   │   │   └── ArgumentMatcher
 ///   │   └── ParameterMatcher
-///   └── MethodMatcher
-///       └── ParameterMatcher
+///   ├── MethodMatcher
+///   │   └── ParameterMatcher
+///   └── ExtendsMatcher
+///
 ClassMatcher containsClass(String className) => _ClassMatcherImpl._(className);
 
 /// Parses a string of Dart code into a FormattedCompilationUnit.
@@ -42,6 +46,9 @@ abstract interface class ArgumentMatcher {}
 /// A matcher that checks if a CompilationUnit contains a class that matches
 /// certain criteria.
 abstract interface class ClassMatcher {
+  /// Chains a [ExtendsMatcher] that checks if the class extends a specific class.
+  ExtendsMatcher thatExtends(String className);
+
   /// Chains a [FieldMatcher] that checks if the class contains a field with a
   /// specific name.
   ///
@@ -56,7 +63,18 @@ abstract interface class ClassMatcher {
   ///
   /// Use [isNullable] to match field nullability. If the value is not set, the
   /// matcher will ignore the nullability of the field.
-  FieldMatcher withField(String fieldName, {bool? isNullable});
+  ///
+  /// Use [isFinal] to match final fields. If the value is not set, the matcher
+  /// will ignore the final status of the field
+  ///
+  /// Use [isLate] to match late fields. If the value is not set, the matcher
+  /// will ignore the late status of the field
+  FieldMatcher withField(
+    String fieldName, {
+    bool? isNullable,
+    bool? isFinal,
+    bool? isLate,
+  });
 
   /// Chains a [MethodMatcher] that checks if the class contains a method with a
   /// specific name.
@@ -139,6 +157,11 @@ abstract interface class ConstructorMatcher {
   });
 }
 
+/// A chainable matcher that matches the extension in a compilation unit.
+abstract interface class ExtendsMatcher {
+  GenericMatcher withGeneric(String genericType);
+}
+
 /// A chainable matcher that matches a field in a compilation unit.
 abstract interface class FieldMatcher {}
 
@@ -152,6 +175,9 @@ class FormattedCompilationUnit {
     return DartFormatter().format(compilationUnit.toSource());
   }
 }
+
+/// A chainable matcher that matches a generic type in a compilation unit.
+abstract interface class GenericMatcher {}
 
 /// Initializer types for parameters.
 enum Initializer {
@@ -196,7 +222,7 @@ abstract interface class ParameterMatcher {}
 /// A chainable matcher that matches a super initializer in a compilation unit.
 abstract interface class SuperInitializerMatcher {
   /// Chains an [ArgumentMatcher] that checks if the super initializer is called
-  /// with a specific argument.
+  /// with a specific literal argument.
   ArgumentMatcher withArgument(String value);
 
   /// Chains an [ArgumentMatcher] that checks if the super initializer is called

@@ -53,7 +53,7 @@ class TypeDefinitionBuilder {
   TypeDefinitionBuilder withRecordOf(
     List<TypeDefinition> fields,
   ) {
-    _className = 'Record';
+    _className = '_Record';
     _generics.addAll(fields);
     return this;
   }

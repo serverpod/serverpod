@@ -191,4 +191,51 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given compilation unit with class with super initializer with literal argument',
+      () {
+    late final compilationUnit = parseCode(
+      '''
+      class User extends Super {
+        User() : super('name');
+      }
+    ''',
+    );
+
+    test(
+        'when matching class, constructor, super initializer and argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('User')
+            .withUnnamedConstructor()
+            .withSuperInitializer()
+            .withArgument("'name'"),
+      );
+    });
+  });
+
+  group(
+      'Given compilation unit with class with super initializer with identifier argument',
+      () {
+    late final compilationUnit = parseCode(
+      '''
+      class User extends Super {
+        User() : super(name);
+      }
+    ''',
+    );
+    test(
+        'when matching class, constructor, super initializer and argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('User')
+            .withUnnamedConstructor()
+            .withSuperInitializer()
+            .withArgument('name'),
+      );
+    });
+  });
 }

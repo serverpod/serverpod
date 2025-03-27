@@ -4,15 +4,27 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   final ChainableMatcher<Iterable<FieldDeclaration>> parent;
   final String fieldName;
   final bool? isNullable;
-  _FieldMatcherImpl._(this.parent, this.fieldName, {this.isNullable});
+  final bool? isFinal;
+  final bool? isLate;
+  _FieldMatcherImpl._(
+    this.parent,
+    this.fieldName, {
+    required this.isNullable,
+    required this.isFinal,
+    required this.isLate,
+  });
 
   @override
   Description describe(Description description) {
-    var nullable = isNullable != null
-        ? '${isNullable == true ? '' : 'non-'}nullable '
-        : '';
+    var output = StringBuffer(' with a ');
+    output.writeAll([
+      if (isNullable != null) isNullable == true ? 'nullable' : 'non-nullable',
+      if (isLate != null) isLate == true ? 'late' : 'non-late',
+      if (isFinal != null) isFinal == true ? 'final' : 'non-final',
+      'field "$fieldName"',
+    ], ' ');
     return parent.describe(description).add(
-          ' with a ${nullable}field "$fieldName"',
+          output.toString(),
         );
   }
 
@@ -23,8 +35,8 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     Map matchState,
     bool verbose,
   ) {
-    var fieldDeclarations = parent.matchedFeatureValueOf(item);
-    if (fieldDeclarations == null) {
+    var match = parent.matchedFeatureValueOf(item);
+    if (match == null) {
       return parent.describeMismatch(
         item,
         mismatchDescription,
@@ -35,7 +47,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
 
     var fieldDecl = _featureValueOf(item);
     if (fieldDecl is! FieldDeclaration) {
-      final fieldNames = fieldDeclarations
+      final fieldNames = match.value
           .expand((f) => f.fields.variables)
           .map((v) => v.name.lexeme)
           .join(', ');
@@ -44,8 +56,20 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
           'does not contain field "$fieldName". Found fields: [$fieldNames]');
     }
 
-    return mismatchDescription.add(
-        'contains field "$fieldName" but the field is ${isNullable == true ? 'non-nullable' : 'nullable'}');
+    var output = StringBuffer('contains field "$fieldName" but the field is ');
+    output.writeAll(
+      [
+        if (!fieldDecl._hasMatchingNullable(isNullable))
+          isNullable == true ? 'non-nullable' : 'nullable',
+        if (!fieldDecl._hasMatchingLate(isLate))
+          isLate == true ? 'non-late' : 'late',
+        if (!fieldDecl._hasMatchingFinal(isFinal))
+          isFinal == true ? 'non-final' : 'final',
+      ],
+      ' and ',
+    );
+
+    return mismatchDescription.add(output.toString());
   }
 
   @override
@@ -53,14 +77,17 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     var field = _featureValueOf(item);
     if (field is! FieldDeclaration) return false;
 
-    return field._hasMatchingNullable(isNullable);
+    if (!field._hasMatchingNullable(isNullable)) return false;
+    if (!field._hasMatchingFinal(isFinal)) return false;
+    if (!field._hasMatchingLate(isLate)) return false;
+    return true;
   }
 
   FieldDeclaration? _featureValueOf(actual) {
-    var fieldDeclarations = parent.matchedFeatureValueOf(actual);
-    if (fieldDeclarations == null) return null;
+    var match = parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return fieldDeclarations
+    return match.value
         .where((f) => f._hasMatchingVariable(fieldName))
         .firstOrNull;
   }
@@ -71,6 +98,18 @@ extension on FieldDeclaration {
     if (isNullable == null) return true;
 
     return fields.type?.question == null ? !isNullable : isNullable;
+  }
+
+  bool _hasMatchingFinal(bool? isFinal) {
+    if (isFinal == null) return true;
+
+    return fields.isFinal == isFinal;
+  }
+
+  bool _hasMatchingLate(bool? isLate) {
+    if (isLate == null) return true;
+
+    return fields.isLate == isLate;
   }
 
   bool _hasMatchingVariable(String name) {

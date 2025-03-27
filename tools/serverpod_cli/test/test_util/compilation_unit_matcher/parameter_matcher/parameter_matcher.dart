@@ -43,8 +43,8 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
     Map matchState,
     bool verbose,
   ) {
-    var formalParameters = parent.matchedFeatureValueOf(item);
-    if (formalParameters == null) {
+    var match = parent.matchedFeatureValueOf(item);
+    if (match == null) {
       return parent.describeMismatch(
         item,
         mismatchDescription,
@@ -55,7 +55,7 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
 
     var parameterDecl = _featureValueOf(item);
     if (parameterDecl is! FormalParameter) {
-      final parameterNames = formalParameters
+      final parameterNames = match.value
           .map((p) => p.name?.lexeme)
           .where((e) => e != null)
           .join(', ');
@@ -109,10 +109,10 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
   }
 
   FormalParameter? _featureValueOf(actual) {
-    var constructorDecl = parent.matchedFeatureValueOf(actual);
-    if (constructorDecl == null) return null;
+    var match = parent.matchedFeatureValueOf(actual);
+    if (match == null) return null;
 
-    return constructorDecl
+    return match.value
         .where((p) => p.name?.lexeme == parameterName)
         .firstOrNull;
   }

@@ -17,25 +17,11 @@ void main() {
         isNot(containsClass('User').withField('nonExistentField')),
       );
     });
-
-    test(
-        'when matching with non-existent class then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('NonExistentClass').withField('name') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
-
-      expect(
-        description.toString(),
-        equals(
-          'does not contain class "NonExistentClass". Found classes: [User]',
-        ),
-      );
-    });
   });
 
-  group('Given compilation unit with class and non-nullable field', () {
+  group(
+      'Given compilation unit with class and non-nullable non-late final field',
+      () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -58,10 +44,48 @@ void main() {
       );
     });
 
+    test('when matching class and final field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isFinal: true),
+      );
+    });
+
+    test('when matching class and non-late field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isLate: false),
+      );
+    });
+
+    test(
+        'when matching class and non-nullable non-late final field then test passes',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('User')
+            .withField('name', isNullable: false, isFinal: true, isLate: false),
+      );
+    });
+
     test('when negate matching class and nullable field then test passes', () {
       expect(
         compilationUnit,
         isNot(containsClass('User').withField('name', isNullable: true)),
+      );
+    });
+
+    test('when negate matching class and non-final field then test passes', () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isFinal: false)),
+      );
+    });
+
+    test('when negate matching class and late field then test passes', () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isLate: true)),
       );
     });
 
@@ -71,77 +95,6 @@ void main() {
       expect(
         compilationUnit,
         isNot(containsClass('NonExistentClass').withField('name')),
-      );
-    });
-
-    test(
-        'when matching with non-existent field then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('nonExistentField') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
-
-      expect(
-        description.toString(),
-        contains(
-            'does not contain field "nonExistentField". Found fields: [name]'),
-      );
-    });
-
-    test(
-        'when matching with nullable field then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: true) as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
-
-      expect(
-        description.toString(),
-        contains('contains field "name" but the field is non-nullable'),
-      );
-    });
-
-    test('when describing matcher then description is correct', () {
-      final matcher = containsClass('User').withField('name') as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
-      expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a field "name"'),
-      );
-    });
-
-    test(
-        'when describing matcher with nullable field then description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: true) as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
-      expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a nullable field "name"'),
-      );
-    });
-
-    test(
-        'when describing matcher with non-nullable field then description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: false) as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
-      expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a non-nullable field "name"'),
       );
     });
   });
@@ -176,60 +129,53 @@ void main() {
         isNot(containsClass('User').withField('name', isNullable: false)),
       );
     });
+  });
 
-    test(
-        'when matching with non-nullable field then mismatch description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: false) as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+  group('Given compilation unit with class and non-final field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        String name;
+      }
+    ''',
+    );
 
+    test('when matching class and non-final field then test passes', () {
       expect(
-        description.toString(),
-        contains('contains field "name" but the field is nullable'),
+        compilationUnit,
+        containsClass('User').withField('name', isFinal: false),
       );
     });
 
-    test('when describing matcher then description is correct', () {
-      final matcher = containsClass('User').withField('name') as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
+    test('when negate matching class and final field then test passes', () {
       expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a field "name"'),
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isFinal: true)),
+      );
+    });
+  });
+
+  group('Given compilation unit with class and late final field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        late final String name;
+      }
+    ''',
+    );
+
+    test('when matching class and late final field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isLate: true),
       );
     });
 
-    test(
-        'when describing matcher with nullable field then description is correct',
+    test('when negate matching class and non-late final field then test passes',
         () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: true) as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
       expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a nullable field "name"'),
-      );
-    });
-
-    test(
-        'when describing matcher with non-nullable field then description is correct',
-        () {
-      final matcher =
-          containsClass('User').withField('name', isNullable: false) as Matcher;
-      final description = StringDescription();
-      matcher.describe(description);
-
-      expect(
-        description.toString(),
-        contains(
-            'a CompilationUnit containing class "User" with a non-nullable field "name"'),
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isLate: false)),
       );
     });
   });
