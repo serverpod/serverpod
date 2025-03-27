@@ -157,7 +157,8 @@ void main() async {
             () => ByIndexEnum.fromJson(-1),
             throwsA(predicate((e) =>
                 e is ArgumentError &&
-                e.message == 'Value "2" cannot be converted to "ByIndexEnum"')),
+                e.message ==
+                    'Value "-1" cannot be converted to "ByIndexEnum"')),
           );
         },
       );
