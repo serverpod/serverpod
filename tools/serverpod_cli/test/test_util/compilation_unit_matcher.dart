@@ -75,6 +75,7 @@ abstract interface class ClassMatcher {
     bool? isFinal,
     bool? isLate,
     bool? isOverride,
+    String? type,
   });
 
   /// Chains a [MethodMatcher] that checks if the class contains a method with a
