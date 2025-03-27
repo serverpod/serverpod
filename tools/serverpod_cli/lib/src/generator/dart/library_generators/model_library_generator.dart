@@ -1621,7 +1621,10 @@ class SerializableModelLibraryGenerator {
       TypeReference idTypeReference) {
     var serializedFields = fields
         .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
-        .toList();
+        .toSet();
+    var hiddenSerializedFields = serializedFields
+        .where((f) => f.hiddenSerializableField(serverCode))
+        .toSet();
     return Class((c) {
       c.name = '${className}Table';
       c.extend = TypeReference((f) => f
@@ -1647,10 +1650,9 @@ class SerializableModelLibraryGenerator {
           serializedFields,
           name: 'columns',
         ),
-        if (serializedFields.any((f) => f.hiddenSerializableField(serverCode)))
+        if (hiddenSerializedFields.isNotEmpty)
           _buildModelTableClassColumnGetter(
-            serializedFields
-                .where((f) => !f.hiddenSerializableField(serverCode)),
+            serializedFields.difference(hiddenSerializedFields),
             name: 'managedColumns',
           ),
       ]);
