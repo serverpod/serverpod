@@ -6,12 +6,15 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   final bool? isNullable;
   final bool? isFinal;
   final bool? isLate;
+  final bool? isOverride;
+
   _FieldMatcherImpl._(
     this.parent,
     this.fieldName, {
     required this.isNullable,
     required this.isFinal,
     required this.isLate,
+    required this.isOverride,
   });
 
   @override
@@ -21,6 +24,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
       if (isNullable != null) isNullable == true ? 'nullable' : 'non-nullable',
       if (isLate != null) isLate == true ? 'late' : 'non-late',
       if (isFinal != null) isFinal == true ? 'final' : 'non-final',
+      if (isOverride != null) isOverride == true ? 'override' : 'non-override',
       'field "$fieldName"',
     ], ' ');
     return parent.describe(description).add(
@@ -65,6 +69,8 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
           isLate == true ? 'non-late' : 'late',
         if (!fieldDecl._hasMatchingFinal(isFinal))
           isFinal == true ? 'non-final' : 'final',
+        if (!fieldDecl._hasMatchingOverride(isOverride))
+          isOverride == true ? 'non-override' : 'override',
       ],
       ' and ',
     );
@@ -80,6 +86,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     if (!field._hasMatchingNullable(isNullable)) return false;
     if (!field._hasMatchingFinal(isFinal)) return false;
     if (!field._hasMatchingLate(isLate)) return false;
+    if (!field._hasMatchingOverride(isOverride)) return false;
     return true;
   }
 
@@ -114,5 +121,14 @@ extension on FieldDeclaration {
 
   bool _hasMatchingVariable(String name) {
     return fields.variables.any((variable) => variable.name.toString() == name);
+  }
+
+  bool _hasMatchingOverride(bool? isOverride) {
+    if (isOverride == null) return true;
+
+    return switch (isOverride) {
+      true => metadata.any((m) => m.name.name == 'override'),
+      false => metadata.every((m) => m.name.name != 'override'),
+    };
   }
 }

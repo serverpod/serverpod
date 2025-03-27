@@ -20,7 +20,7 @@ void main() {
   });
 
   group(
-      'Given compilation unit with class and non-nullable non-late final field',
+      'Given compilation unit with class and non-nullable non-late non-override final field',
       () {
     late final compilationUnit = parseCode(
       '''
@@ -59,12 +59,24 @@ void main() {
     });
 
     test(
-        'when matching class and non-nullable non-late final field then test passes',
+        'when matching class and non-nullable non-late non-override final field then test passes',
         () {
       expect(
         compilationUnit,
-        containsClass('User')
-            .withField('name', isNullable: false, isFinal: true, isLate: false),
+        containsClass('User').withField(
+          'name',
+          isNullable: false,
+          isFinal: true,
+          isLate: false,
+          isOverride: false,
+        ),
+      );
+    });
+
+    test('when matching class and non-override field then test passes', () {
+      expect(
+        compilationUnit,
+        containsClass('User').withField('name', isOverride: false),
       );
     });
 
@@ -86,6 +98,13 @@ void main() {
       expect(
         compilationUnit,
         isNot(containsClass('User').withField('name', isLate: true)),
+      );
+    });
+
+    test('when negate matching class and override field then test passes', () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User').withField('name', isOverride: true)),
       );
     });
 
