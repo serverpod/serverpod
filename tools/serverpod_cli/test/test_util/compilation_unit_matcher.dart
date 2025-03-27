@@ -9,6 +9,7 @@ part 'compilation_unit_matcher/argument_matcher/argument_matcher.dart';
 part 'compilation_unit_matcher/class_matcher/class_matcher.dart';
 part 'compilation_unit_matcher/constructor_matcher/constructor_matcher.dart';
 part 'compilation_unit_matcher/extends_matcher/extends_matcher.dart';
+part 'compilation_unit_matcher/field_initializer_matcher/field_initializer_matcher.dart';
 part 'compilation_unit_matcher/field_matcher/field_matcher.dart';
 part 'compilation_unit_matcher/generic_matcher/generic_matcher.dart';
 part 'compilation_unit_matcher/method_matcher/method_matcher.dart';
@@ -119,6 +120,10 @@ abstract interface class ClassMatcher {
 
 /// A chainable matcher that matches a constructor in a compilation unit.
 abstract interface class ConstructorMatcher {
+  /// Chains an [InitializerMatcher] that checks if the constructor initializes
+  /// a field with a specific value.
+  InitializerMatcher withFieldInitializer(String fieldName);
+
   /// Chains a [ParameterMatcher] that checks if the constructor contains a
   /// parameter with a specific name that is initialized with an initializer.
   ///
@@ -159,7 +164,6 @@ abstract interface class ConstructorMatcher {
   });
 }
 
-/// A chainable matcher that matches the extension in a compilation unit.
 abstract interface class ExtendsMatcher {
   GenericMatcher withGeneric(String genericType);
 }
@@ -198,6 +202,20 @@ enum Initializer {
         return 'super';
     }
   }
+}
+
+/// A chainable matcher that matches a field initializer in a constructor.
+abstract interface class InitializerMatcher {
+  /// Chains an [ArgumentMatcher] that checks if the initializer has a specific value.
+  ArgumentMatcher withArgument(String value);
+
+  /// Chains an [ArgumentMatcher] that checks if the initializer has a specific
+  /// named argument value.
+  ArgumentMatcher withNamedArgument(String value, String parameterName);
+
+  /// Chains an [ArgumentMatcher] that checks if the initializer has a specific
+  /// positional argument value.
+  ArgumentMatcher withPositionalArgument(String value);
 }
 
 /// A matcher that can be chained to a [ClassMatcher] to check if the class
