@@ -435,7 +435,8 @@ class FutureCallConfig {
   /// The maximum number of concurrent running future calls. If the limit is
   /// reached, future calls will be postponed until a slot is available.
   ///
-  /// If the limit is set to a value <= 0, the concurrency limit is disabled.
+  /// If the limit is set to a value < 1, the amount of concurrent future calls
+  /// will be unlimited.
   final int concurrencyLimit;
 
   /// How long to wait before checking the queue again.
