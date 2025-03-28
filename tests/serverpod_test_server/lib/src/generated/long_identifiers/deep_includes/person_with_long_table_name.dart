@@ -198,16 +198,6 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
 
   @override
   final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
-          _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
-    });
-    return jsonMap;
-  }
 }
 
 class PersonWithLongTableNameTable extends _i1.Table<int> {

@@ -187,13 +187,6 @@ class PersonImplicit extends _PersonImpl {
 
   @override
   final int? _cityCitizensCityId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'_cityCitizensCityId': _cityCitizensCityId});
-    return jsonMap;
-  }
 }
 
 class PersonTable extends _i1.Table<int> {

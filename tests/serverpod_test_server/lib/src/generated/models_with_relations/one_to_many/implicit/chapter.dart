@@ -149,13 +149,6 @@ class ChapterImplicit extends _ChapterImpl {
 
   @override
   final int? _bookChaptersBookId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'_bookChaptersBookId': _bookChaptersBookId});
-    return jsonMap;
-  }
 }
 
 class ChapterTable extends _i1.Table<int> {

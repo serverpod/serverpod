@@ -157,16 +157,6 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
 
   @override
   final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
-          _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
-    });
-    return jsonMap;
-  }
 }
 
 class LongImplicitIdFieldTable extends _i1.Table<int> {

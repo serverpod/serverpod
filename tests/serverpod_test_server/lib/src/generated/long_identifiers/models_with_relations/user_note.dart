@@ -157,16 +157,6 @@ class UserNoteImplicit extends _UserNoteImpl {
 
   @override
   final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
-    });
-    return jsonMap;
-  }
 }
 
 class UserNoteTable extends _i1.Table<int> {
