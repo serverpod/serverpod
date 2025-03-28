@@ -123,9 +123,11 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
     Object? id = _Undefined,
     String? name,
   }) {
-    return EmptyModelRelationItem(
+    return EmptyModelRelationItemImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          this._relationEmptyModelItemsRelationEmptyModelId,
     );
   }
 }

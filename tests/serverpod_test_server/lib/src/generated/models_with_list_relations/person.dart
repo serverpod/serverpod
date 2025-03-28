@@ -145,7 +145,7 @@ class _PersonImpl extends Person {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return Person(
+    return PersonImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -153,6 +153,7 @@ class _PersonImpl extends Person {
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
+      $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }
 }

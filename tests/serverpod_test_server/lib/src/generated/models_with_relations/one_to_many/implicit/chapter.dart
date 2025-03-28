@@ -118,9 +118,10 @@ class _ChapterImpl extends Chapter {
     Object? id = _Undefined,
     String? title,
   }) {
-    return Chapter(
+    return ChapterImplicit._(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
+      $_bookChaptersBookId: this._bookChaptersBookId,
     );
   }
 }

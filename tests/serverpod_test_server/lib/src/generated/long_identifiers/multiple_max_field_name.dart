@@ -152,7 +152,7 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
   }) {
-    return MultipleMaxFieldName(
+    return MultipleMaxFieldNameImplicit._(
       id: id is int? ? id : this.id,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1 ??
@@ -160,6 +160,8 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2 ??
               this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+      $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId:
+          this._relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     );
   }
 }

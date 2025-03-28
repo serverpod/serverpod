@@ -154,7 +154,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -162,6 +162,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organization: organization is _i2.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );
   }
 }

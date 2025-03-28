@@ -125,9 +125,11 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
     Object? id = _Undefined,
     String? name,
   }) {
-    return UserNoteWithALongName(
+    return UserNoteWithALongNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
+          this._userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
     );
   }
 }
