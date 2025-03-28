@@ -170,7 +170,8 @@ class FutureCallManager {
   }
 
   Future<void> _waitForRunningFutureCalls() async {
-    await Future.wait(_runningFutureCallFutures);
+    // Avoiding ConcurrentModificationError by copying the list.
+    await Future.wait(_runningFutureCallFutures.toList());
   }
 
   /// Starts all overdue future calls.
