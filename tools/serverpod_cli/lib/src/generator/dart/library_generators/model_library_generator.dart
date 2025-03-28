@@ -74,6 +74,7 @@ class SerializableModelLibraryGenerator {
             subDirParts: definition.subDirParts,
             inheritedFields: [],
             isParentClass: false,
+            hasImplicitClass: false,
           ),
         ]);
       },
@@ -138,6 +139,7 @@ class SerializableModelLibraryGenerator {
               subDirParts: classDefinition.subDirParts,
               inheritedFields: classDefinition.inheritedFields,
               isParentClass: classDefinition.isParentClass,
+              hasImplicitClass: requiresImplicitClass,
             ),
           if (requiresImplicitClass)
             _buildModelImplicitClass(className, classDefinition),
@@ -406,6 +408,7 @@ class SerializableModelLibraryGenerator {
           subDirParts: classDefinition.subDirParts,
           className: className,
           isParentClass: classDefinition.isParentClass,
+          hasImplicitClass: hasImplicitClass,
         ));
       }
       // Serialization
@@ -479,6 +482,7 @@ class SerializableModelLibraryGenerator {
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
     required bool isParentClass,
+    required bool hasImplicitClass,
   }) {
     return Class((classBuilder) {
       classBuilder
@@ -497,6 +501,7 @@ class SerializableModelLibraryGenerator {
           subDirParts: subDirParts,
           className: className,
           isParentClass: isParentClass,
+          hasImplicitClass: hasImplicitClass,
         ));
     });
   }
@@ -658,6 +663,7 @@ class SerializableModelLibraryGenerator {
     required List<String> subDirParts,
     required String className,
     required bool isParentClass,
+    required hasImplicitClass,
   }) {
     return Method(
       (m) {
@@ -694,7 +700,7 @@ class SerializableModelLibraryGenerator {
           ),
         );
         m.returns = refer(className);
-        m.body = refer(className)
+        m.body = createClassExpression(hasImplicitClass, className)
             .call(
               [],
               _buildCopyWithAssignment(
@@ -712,9 +718,12 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required List<String> subDirParts,
   }) {
-    return fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .fold({}, (map, field) {
+    var visibleFields =
+        fields.where((field) => field.shouldIncludeField(serverCode));
+    var hiddenSerializableFields =
+        fields.where((field) => field.hiddenSerializableField(serverCode));
+
+    var visibleAssignments = visibleFields.fold({}, (map, field) {
       Expression assignment = _buildDeepCloneTree(
         field.type,
         field.name,
@@ -740,11 +749,22 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      return {
-        ...map,
-        field.name: valueDefinition,
-      };
+      return map..[field.name] = valueDefinition;
     });
+
+    var hiddenAssignments = hiddenSerializableFields.fold({}, (map, field) {
+      return map
+        ..[createFieldName(serverCode, field)] = _buildDeepCloneTree(
+          field.type,
+          _createSerializableFieldName(serverCode, field),
+          isRoot: true,
+        );
+    });
+
+    return {
+      ...visibleAssignments,
+      ...hiddenAssignments,
+    };
   }
 
   Expression _buildDeepCloneTree(
@@ -1337,11 +1357,6 @@ class SerializableModelLibraryGenerator {
     required List<String> subDirParts,
     required bool hasImplicitClass,
   }) {
-    var outputClass = switch (hasImplicitClass) {
-      true => refer('${className}Implicit').property('_'),
-      false => refer(className),
-    };
-
     var visibleFields =
         fields.where((field) => field.shouldIncludeField(serverCode));
     var hiddenSerializableFields =
@@ -1355,7 +1370,7 @@ class SerializableModelLibraryGenerator {
           p.type = refer('Map<String,dynamic>');
         }),
       ]);
-      c.body = outputClass
+      c.body = createClassExpression(hasImplicitClass, className)
           .call([], {
             for (var field in visibleFields)
               field.name: buildFromJsonForField(

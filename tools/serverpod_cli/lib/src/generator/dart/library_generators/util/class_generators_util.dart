@@ -5,6 +5,13 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+Expression createClassExpression(bool hasImplicitClass, String className) {
+  return switch (hasImplicitClass) {
+    true => refer('${className}Implicit').property('_'),
+    false => refer(className),
+  };
+}
+
 String createFieldName(
   bool serverCode,
   SerializableModelFieldDefinition field,

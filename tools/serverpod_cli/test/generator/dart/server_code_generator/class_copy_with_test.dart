@@ -233,9 +233,12 @@ void main() {
           );
         }, skip: copyWithMethod == null);
 
-        test('with the code body returning a new $testClassName object.', () {
+        test(
+            'with the code body returning a new ${testClassName}Implicit object with hidden field.',
+            () {
           var sourceCode = copyWithMethod?.body.toSource();
-          expect(sourceCode, '{return $testClassName();}');
+          expect(sourceCode,
+              '{return ${testClassName}Implicit._(\$noneName: this._noneName);}');
         }, skip: copyWithMethod == null);
       });
     }, skip: copyWithClass == null);
