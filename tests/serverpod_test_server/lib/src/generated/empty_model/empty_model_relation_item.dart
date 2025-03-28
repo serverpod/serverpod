@@ -16,7 +16,7 @@ abstract class EmptyModelRelationItem
   EmptyModelRelationItem._({
     this.id,
     required this.name,
-  });
+  }) : _relationEmptyModelItemsRelationEmptyModelId = null;
 
   factory EmptyModelRelationItem({
     int? id,
@@ -40,7 +40,7 @@ abstract class EmptyModelRelationItem
 
   String name;
 
-  int? _relationEmptyModelItemsRelationEmptyModelId;
+  final int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   _i1.Table<int> get table => t;

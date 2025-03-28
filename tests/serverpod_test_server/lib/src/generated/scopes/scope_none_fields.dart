@@ -15,7 +15,9 @@ import 'simple_data.dart' as _i3;
 
 abstract class ScopeNoneFields
     implements _i1.TableRow<int>, _i1.ProtocolSerialization {
-  ScopeNoneFields._({this.id});
+  ScopeNoneFields._({this.id})
+      : _name = null,
+        _object = null;
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
 
@@ -30,9 +32,9 @@ abstract class ScopeNoneFields
   @override
   int? id;
 
-  String? _name;
+  final String? _name;
 
-  _i2.SimpleData? _object;
+  final _i2.SimpleData? _object;
 
   @override
   _i1.Table<int> get table => t;
@@ -46,7 +48,7 @@ abstract class ScopeNoneFields
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
-      if (_object != null) 'object': _object?.toJson(),
+      if (_object != null) 'object': _object.toJson(),
     };
   }
 

@@ -15,7 +15,7 @@ abstract class Chapter implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   Chapter._({
     this.id,
     required this.title,
-  });
+  }) : _bookChaptersBookId = null;
 
   factory Chapter({
     int? id,
@@ -38,7 +38,7 @@ abstract class Chapter implements _i1.TableRow<int>, _i1.ProtocolSerialization {
 
   String title;
 
-  int? _bookChaptersBookId;
+  final int? _bookChaptersBookId;
 
   @override
   _i1.Table<int> get table => t;

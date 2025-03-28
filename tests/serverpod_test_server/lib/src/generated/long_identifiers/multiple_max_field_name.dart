@@ -17,7 +17,7 @@ abstract class MultipleMaxFieldName
     this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-  });
+  }) : _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId = null;
 
   factory MultipleMaxFieldName({
     int? id,
@@ -53,7 +53,7 @@ abstract class MultipleMaxFieldName
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2;
 
-  int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
+  final int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
 
   @override
   _i1.Table<int> get table => t;

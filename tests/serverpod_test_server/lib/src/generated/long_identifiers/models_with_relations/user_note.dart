@@ -16,7 +16,7 @@ abstract class UserNote
   UserNote._({
     this.id,
     required this.name,
-  });
+  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = null;
 
   factory UserNote({
     int? id,
@@ -39,7 +39,7 @@ abstract class UserNote
 
   String name;
 
-  int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
   _i1.Table<int> get table => t;
