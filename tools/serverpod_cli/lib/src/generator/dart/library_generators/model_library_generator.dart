@@ -94,6 +94,9 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
+    var requiresImplicitClass =
+        buildRepository.hasImplicitClassOperations(fields);
+
     return Library(
       (libraryBuilder) {
         if (classDefinition.isSealedTopNode) {
@@ -120,6 +123,7 @@ class SerializableModelLibraryGenerator {
             classDefinition,
             tableName,
             fields,
+            hasImplicitClass: requiresImplicitClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -135,7 +139,7 @@ class SerializableModelLibraryGenerator {
               inheritedFields: classDefinition.inheritedFields,
               isParentClass: classDefinition.isParentClass,
             ),
-          if (buildRepository.hasImplicitClassOperations(fields))
+          if (requiresImplicitClass)
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
@@ -251,6 +255,7 @@ class SerializableModelLibraryGenerator {
           className,
           fields,
           subDirParts: classDefinition.subDirParts,
+          hasImplicitClass: false,
         )
       ]);
 
@@ -279,8 +284,9 @@ class SerializableModelLibraryGenerator {
     String className,
     ModelClassDefinition classDefinition,
     String? tableName,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+    List<SerializableModelFieldDefinition> fields, {
+    required bool hasImplicitClass,
+  }) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
@@ -381,6 +387,7 @@ class SerializableModelLibraryGenerator {
             className,
             fields,
             subDirParts: classDefinition.subDirParts,
+            hasImplicitClass: hasImplicitClass,
           )
       ]);
 
@@ -1356,7 +1363,17 @@ class SerializableModelLibraryGenerator {
     String className,
     List<SerializableModelFieldDefinition> fields, {
     required List<String> subDirParts,
+    required bool hasImplicitClass,
   }) {
+    var outputClass = switch (hasImplicitClass) {
+      true => refer('${className}Implicit').property('_'),
+      false => refer(className),
+    };
+
+    var visibleFields =
+        fields.where((field) => field.shouldIncludeField(serverCode));
+    var hiddenSerializableFields =
+        fields.where((field) => field.hiddenSerializableField(serverCode));
     return Constructor((c) {
       c.factory = true;
       c.name = 'fromJson';
@@ -1366,16 +1383,22 @@ class SerializableModelLibraryGenerator {
           p.type = refer('Map<String,dynamic>');
         }),
       ]);
-      c.body = refer(className)
+      c.body = outputClass
           .call([], {
-            for (var field in fields)
-              if (field.shouldIncludeField(serverCode))
-                field.name: buildFromJsonForField(
-                  field,
-                  serverCode,
-                  config,
-                  subDirParts,
-                )
+            for (var field in visibleFields)
+              field.name: buildFromJsonForField(
+                field,
+                serverCode,
+                config,
+                subDirParts,
+              ),
+            for (var field in hiddenSerializableFields)
+              createFieldName(serverCode, field): buildFromJsonForField(
+                field,
+                serverCode,
+                config,
+                subDirParts,
+              )
           })
           .returned
           .statement;
