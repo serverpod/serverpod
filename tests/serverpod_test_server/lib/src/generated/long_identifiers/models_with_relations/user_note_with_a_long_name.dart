@@ -158,16 +158,6 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
 
   @override
   final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId':
-          _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
-    });
-    return jsonMap;
-  }
 }
 
 class UserNoteWithALongNameTable extends _i1.Table<int> {

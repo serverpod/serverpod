@@ -133,13 +133,6 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
 
   @override
   final _i2.SimpleData? _object;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'name': _name, 'object': _object});
-    return jsonMap;
-  }
 }
 
 class ScopeNoneFieldsTable extends _i1.Table<int> {

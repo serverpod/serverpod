@@ -201,16 +201,6 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
 
   @override
   final int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-          _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
-    });
-    return jsonMap;
-  }
 }
 
 class MultipleMaxFieldNameTable extends _i1.Table<int> {

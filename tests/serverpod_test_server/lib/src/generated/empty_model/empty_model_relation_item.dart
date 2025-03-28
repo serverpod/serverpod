@@ -156,16 +156,6 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
 
   @override
   final int? _relationEmptyModelItemsRelationEmptyModelId;
-
-  @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_relationEmptyModelItemsRelationEmptyModelId':
-          _relationEmptyModelItemsRelationEmptyModelId
-    });
-    return jsonMap;
-  }
 }
 
 class EmptyModelRelationItemTable extends _i1.Table<int> {
