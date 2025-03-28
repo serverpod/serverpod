@@ -16,7 +16,7 @@ abstract class LongImplicitIdField
   LongImplicitIdField._({
     this.id,
     required this.name,
-  });
+  }) : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id = null;
 
   factory LongImplicitIdField({
     int? id,
@@ -39,7 +39,7 @@ abstract class LongImplicitIdField
 
   String name;
 
-  int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
+  final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
   _i1.Table<int> get table => t;

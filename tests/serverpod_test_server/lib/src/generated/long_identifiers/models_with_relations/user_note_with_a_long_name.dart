@@ -16,7 +16,7 @@ abstract class UserNoteWithALongName
   UserNoteWithALongName._({
     this.id,
     required this.name,
-  });
+  }) : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId = null;
 
   factory UserNoteWithALongName({
     int? id,
@@ -40,7 +40,7 @@ abstract class UserNoteWithALongName
 
   String name;
 
-  int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
+  final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
   _i1.Table<int> get table => t;

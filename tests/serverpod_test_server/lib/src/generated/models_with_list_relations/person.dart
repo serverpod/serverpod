@@ -18,7 +18,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityCitizensCityId = null;
 
   factory Person({
     int? id,
@@ -52,7 +52,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
 
   _i2.Organization? organization;
 
-  int? _cityCitizensCityId;
+  final int? _cityCitizensCityId;
 
   @override
   _i1.Table<int> get table => t;

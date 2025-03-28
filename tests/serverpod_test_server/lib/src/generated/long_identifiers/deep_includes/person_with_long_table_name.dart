@@ -20,7 +20,7 @@ abstract class PersonWithLongTableName
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id = null;
 
   factory PersonWithLongTableName({
     int? id,
@@ -55,7 +55,7 @@ abstract class PersonWithLongTableName
 
   _i2.OrganizationWithLongTableName? organization;
 
-  int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
   _i1.Table<int> get table => t;
