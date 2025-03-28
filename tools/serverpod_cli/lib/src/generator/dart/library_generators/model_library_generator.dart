@@ -604,34 +604,6 @@ class SerializableModelLibraryGenerator {
                   .returned
                   .statement);
             });
-        }))
-        ..methods.add(Method((methodBuilder) {
-          methodBuilder
-            ..name = _toJsonMethodName
-            ..annotations.add(refer('override'))
-            ..returns = refer('Map<String, dynamic>')
-            ..body = Block((blockBuilder) {
-              blockBuilder.statements.add(
-                refer('var jsonMap')
-                    .assign(refer('super').property(_toJsonMethodName).call([]))
-                    .statement,
-              );
-
-              var values = hiddenFields.fold({}, (map, field) {
-                return {
-                  ...map,
-                  "'${field.name}'":
-                      _createSerializableFieldName(serverCode, field),
-                };
-              });
-
-              blockBuilder.statements.add(
-                refer('jsonMap').property('addAll').call(
-                  [refer('$values')],
-                ).statement,
-              );
-              blockBuilder.statements.add(refer('jsonMap').returned.statement);
-            });
         }));
     });
   }
