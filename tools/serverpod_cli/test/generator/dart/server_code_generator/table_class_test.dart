@@ -27,14 +27,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExampleTable =
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -112,7 +113,7 @@ void main() {
             isFalse,
             reason: 'Declaration for id field should not be generated.');
       });
-    }, skip: maybeClassNamedExampleTable == null);
+    });
   });
 
   group(
@@ -134,13 +135,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -169,10 +171,7 @@ void main() {
             isTrue,
             reason: 'Missing title field in columns.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found'
-            : false);
+    });
   });
 
   group(
@@ -194,13 +193,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -231,10 +231,7 @@ void main() {
             isTrue,
             reason: 'Should not include field in columns.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
@@ -249,13 +246,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -271,10 +269,7 @@ void main() {
           ),
           isTrue,
           reason: 'Missing declaration for getRelationTable method.');
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
@@ -296,13 +291,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -340,10 +336,17 @@ void main() {
           contains('\$_fieldName'),
           reason: '"\$_fieldName" is missing in constructor getter.',
         );
-      },
-          skip: maybeClassNamedExampleTable == null
-              ? 'Could not run test because ${testClassName}Table class was not found.'
-              : false);
+      });
+
+      test('has managedColumns override for columns', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'managedColumns',
+            ),
+            isTrue,
+            reason: 'Missing declaration for managedColumns override.');
+      });
     });
   });
   group(
@@ -358,13 +361,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
             name: '${testClassName}Table');
 
@@ -388,10 +392,7 @@ void main() {
             isTrue,
             reason: 'Missing declaration for relation table getter.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
@@ -409,13 +410,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -467,9 +469,6 @@ void main() {
             reason:
                 'Missing declaration for __$relationFieldName many relation getter.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 }

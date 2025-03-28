@@ -183,7 +183,7 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    var selectedColumns = (columns ?? table.columns).toSet();
+    var selectedColumns = (columns ?? table.managedColumns).toSet();
 
     if (columns != null) {
       _validateColumnsExists(selectedColumns, table.columns.toSet());

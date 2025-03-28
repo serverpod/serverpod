@@ -253,6 +253,13 @@ class PersonWithLongTableNameTable extends _i1.Table<int> {
       ];
 
   @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+        organizationId,
+      ];
+
+  @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'organization') {
       return organization;

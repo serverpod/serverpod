@@ -185,6 +185,12 @@ class EmptyModelRelationItemTable extends _i1.Table<int> {
         name,
         $_relationEmptyModelItemsRelationEmptyModelId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class EmptyModelRelationItemInclude extends _i1.IncludeObject {

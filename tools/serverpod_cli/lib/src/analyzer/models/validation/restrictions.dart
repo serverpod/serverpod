@@ -1233,6 +1233,32 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateEnumDefaultValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "default" property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! EnumDefinition) return [];
+    final values = definition.values;
+    if (values.any((value) => value.name == content)) return [];
+    return [
+      SourceSpanSeverityException(
+        '"$content" is not a valid default value. Allowed values are: ${values.map((e) => e.name).join(', ')}.',
+        span,
+      )
+    ];
+  }
+
   List<SourceSpanSeverityException> validateEnumValues(
     String parentNodeName,
     dynamic content,

@@ -11,55 +11,52 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
-  UserNote._({
+abstract class Chapter implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+  Chapter._({
     this.id,
-    required this.name,
+    required this.title,
   });
 
-  factory UserNote({
+  factory Chapter({
     int? id,
-    required String name,
-  }) = _UserNoteImpl;
+    required String title,
+  }) = _ChapterImpl;
 
-  factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
-    return UserNote(
+  factory Chapter.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Chapter(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
+      title: jsonSerialization['title'] as String,
     );
   }
 
-  static final t = UserNoteTable();
+  static final t = ChapterTable();
 
-  static const db = UserNoteRepository._();
+  static const db = ChapterRepository._();
 
   @override
   int? id;
 
-  String name;
+  String title;
 
-  int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  int? _bookChaptersBookId;
 
   @override
   _i1.Table<int> get table => t;
 
-  /// Returns a shallow copy of this [UserNote]
+  /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserNote copyWith({
+  Chapter copyWith({
     int? id,
-    String? name,
+    String? title,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
-      if (_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId !=
-          null)
-        '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-            _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+      'title': title,
+      if (_bookChaptersBookId != null)
+        '_bookChaptersBookId': _bookChaptersBookId,
     };
   }
 
@@ -67,30 +64,30 @@ abstract class UserNote
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
     };
   }
 
-  static UserNoteInclude include() {
-    return UserNoteInclude._();
+  static ChapterInclude include() {
+    return ChapterInclude._();
   }
 
-  static UserNoteIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+  static ChapterIncludeList includeList({
+    _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    _i1.OrderByBuilder<ChapterTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    UserNoteInclude? include,
+    _i1.OrderByListBuilder<ChapterTable>? orderByList,
+    ChapterInclude? include,
   }) {
-    return UserNoteIncludeList._(
+    return ChapterIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(UserNote.t),
+      orderBy: orderBy?.call(Chapter.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(UserNote.t),
+      orderByList: orderByList?.call(Chapter.t),
       include: include,
     );
   }
@@ -103,110 +100,104 @@ abstract class UserNote
 
 class _Undefined {}
 
-class _UserNoteImpl extends UserNote {
-  _UserNoteImpl({
+class _ChapterImpl extends Chapter {
+  _ChapterImpl({
     int? id,
-    required String name,
+    required String title,
   }) : super._(
           id: id,
-          name: name,
+          title: title,
         );
 
-  /// Returns a shallow copy of this [UserNote]
+  /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserNote copyWith({
+  Chapter copyWith({
     Object? id = _Undefined,
-    String? name,
+    String? title,
   }) {
-    return UserNote(
+    return Chapter(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
+      title: title ?? this.title,
     );
   }
 }
 
-class UserNoteImplicit extends _UserNoteImpl {
-  UserNoteImplicit._({
+class ChapterImplicit extends _ChapterImpl {
+  ChapterImplicit._({
     int? id,
-    required String name,
-    this.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+    required String title,
+    this.$_bookChaptersBookId,
   }) : super(
           id: id,
-          name: name,
+          title: title,
         );
 
-  factory UserNoteImplicit(
-    UserNote userNote, {
-    int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  factory ChapterImplicit(
+    Chapter chapter, {
+    int? $_bookChaptersBookId,
   }) {
-    return UserNoteImplicit._(
-      id: userNote.id,
-      name: userNote.name,
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
-          $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+    return ChapterImplicit._(
+      id: chapter.id,
+      title: chapter.title,
+      $_bookChaptersBookId: $_bookChaptersBookId,
     );
   }
 
-  int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  int? $_bookChaptersBookId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
-    });
+    jsonMap.addAll({'_bookChaptersBookId': $_bookChaptersBookId});
     return jsonMap;
   }
 }
 
-class UserNoteTable extends _i1.Table<int> {
-  UserNoteTable({super.tableRelation}) : super(tableName: 'user_note') {
-    name = _i1.ColumnString(
-      'name',
+class ChapterTable extends _i1.Table<int> {
+  ChapterTable({super.tableRelation}) : super(tableName: 'chapter') {
+    title = _i1.ColumnString(
+      'title',
       this,
     );
-    $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
-        _i1.ColumnInt(
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
+    $_bookChaptersBookId = _i1.ColumnInt(
+      '_bookChaptersBookId',
       this,
     );
   }
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnString title;
 
-  late final _i1.ColumnInt
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  late final _i1.ColumnInt $_bookChaptersBookId;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        name,
-        $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        title,
+        $_bookChaptersBookId,
       ];
 
   @override
   List<_i1.Column> get managedColumns => [
         id,
-        name,
+        title,
       ];
 }
 
-class UserNoteInclude extends _i1.IncludeObject {
-  UserNoteInclude._();
+class ChapterInclude extends _i1.IncludeObject {
+  ChapterInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UserNote.t;
+  _i1.Table<int> get table => Chapter.t;
 }
 
-class UserNoteIncludeList extends _i1.IncludeList {
-  UserNoteIncludeList._({
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+class ChapterIncludeList extends _i1.IncludeList {
+  ChapterIncludeList._({
+    _i1.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -214,20 +205,20 @@ class UserNoteIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(UserNote.t);
+    super.where = where?.call(Chapter.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UserNote.t;
+  _i1.Table<int> get table => Chapter.t;
 }
 
-class UserNoteRepository {
-  const UserNoteRepository._();
+class ChapterRepository {
+  const ChapterRepository._();
 
-  /// Returns a list of [UserNote]s matching the given query parameters.
+  /// Returns a list of [Chapter]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -249,20 +240,20 @@ class UserNoteRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<UserNote>> find(
+  Future<List<Chapter>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    _i1.OrderByBuilder<ChapterTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
+    _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserNote>(
-      where: where?.call(UserNote.t),
-      orderBy: orderBy?.call(UserNote.t),
-      orderByList: orderByList?.call(UserNote.t),
+    return session.db.find<Chapter>(
+      where: where?.call(Chapter.t),
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -270,7 +261,7 @@ class UserNoteRepository {
     );
   }
 
-  /// Returns the first matching [UserNote] matching the given query parameters.
+  /// Returns the first matching [Chapter] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -287,136 +278,136 @@ class UserNoteRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<UserNote?> findFirstRow(
+  Future<Chapter?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    _i1.OrderByBuilder<ChapterTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
+    _i1.OrderByListBuilder<ChapterTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserNote>(
-      where: where?.call(UserNote.t),
-      orderBy: orderBy?.call(UserNote.t),
-      orderByList: orderByList?.call(UserNote.t),
+    return session.db.findFirstRow<Chapter>(
+      where: where?.call(Chapter.t),
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [UserNote] by its [id] or null if no such row exists.
-  Future<UserNote?> findById(
+  /// Finds a single [Chapter] by its [id] or null if no such row exists.
+  Future<Chapter?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserNote>(
+    return session.db.findById<Chapter>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [UserNote]s in the list and returns the inserted rows.
+  /// Inserts all [Chapter]s in the list and returns the inserted rows.
   ///
-  /// The returned [UserNote]s will have their `id` fields set.
+  /// The returned [Chapter]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<UserNote>> insert(
+  Future<List<Chapter>> insert(
     _i1.Session session,
-    List<UserNote> rows, {
+    List<Chapter> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNote>(
+    return session.db.insert<Chapter>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [UserNote] and returns the inserted row.
+  /// Inserts a single [Chapter] and returns the inserted row.
   ///
-  /// The returned [UserNote] will have its `id` field set.
-  Future<UserNote> insertRow(
+  /// The returned [Chapter] will have its `id` field set.
+  Future<Chapter> insertRow(
     _i1.Session session,
-    UserNote row, {
+    Chapter row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNote>(
+    return session.db.insertRow<Chapter>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserNote]s in the list and returns the updated rows. If
+  /// Updates all [Chapter]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<UserNote>> update(
+  Future<List<Chapter>> update(
     _i1.Session session,
-    List<UserNote> rows, {
-    _i1.ColumnSelections<UserNoteTable>? columns,
+    List<Chapter> rows, {
+    _i1.ColumnSelections<ChapterTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserNote>(
+    return session.db.update<Chapter>(
       rows,
-      columns: columns?.call(UserNote.t),
+      columns: columns?.call(Chapter.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [UserNote]. The row needs to have its id set.
+  /// Updates a single [Chapter]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<UserNote> updateRow(
+  Future<Chapter> updateRow(
     _i1.Session session,
-    UserNote row, {
-    _i1.ColumnSelections<UserNoteTable>? columns,
+    Chapter row, {
+    _i1.ColumnSelections<ChapterTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserNote>(
+    return session.db.updateRow<Chapter>(
       row,
-      columns: columns?.call(UserNote.t),
+      columns: columns?.call(Chapter.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [UserNote]s in the list and returns the deleted rows.
+  /// Deletes all [Chapter]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<UserNote>> delete(
+  Future<List<Chapter>> delete(
     _i1.Session session,
-    List<UserNote> rows, {
+    List<Chapter> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNote>(
+    return session.db.delete<Chapter>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [UserNote].
-  Future<UserNote> deleteRow(
+  /// Deletes a single [Chapter].
+  Future<Chapter> deleteRow(
     _i1.Session session,
-    UserNote row, {
+    Chapter row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNote>(
+    return session.db.deleteRow<Chapter>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<UserNote>> deleteWhere(
+  Future<List<Chapter>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserNoteTable> where,
+    required _i1.WhereExpressionBuilder<ChapterTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserNote>(
-      where: where(UserNote.t),
+    return session.db.deleteWhere<Chapter>(
+      where: where(Chapter.t),
       transaction: transaction,
     );
   }
@@ -425,12 +416,12 @@ class UserNoteRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserNote>(
-      where: where?.call(UserNote.t),
+    return session.db.count<Chapter>(
+      where: where?.call(Chapter.t),
       limit: limit,
       transaction: transaction,
     );

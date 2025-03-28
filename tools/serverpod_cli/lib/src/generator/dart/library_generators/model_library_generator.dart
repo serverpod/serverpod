@@ -1619,6 +1619,12 @@ class SerializableModelLibraryGenerator {
       List<SerializableModelFieldDefinition> fields,
       ClassDefinition classDefinition,
       TypeReference idTypeReference) {
+    var serializedFields = fields
+        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
+        .toSet();
+    var hiddenSerializedFields = serializedFields
+        .where((f) => f.hiddenSerializableField(serverCode))
+        .toSet();
     return Class((c) {
       c.name = '${className}Table';
       c.extend = TypeReference((f) => f
@@ -1640,7 +1646,15 @@ class SerializableModelLibraryGenerator {
           classDefinition.subDirParts,
         ),
         ..._buildModelTableClassManyRelationGetters(fields, classDefinition),
-        _buildModelTableClassColumnGetter(fields),
+        _buildModelTableClassColumnGetter(
+          serializedFields,
+          name: 'columns',
+        ),
+        if (hiddenSerializedFields.isNotEmpty)
+          _buildModelTableClassColumnGetter(
+            serializedFields.difference(hiddenSerializedFields),
+            name: 'managedColumns',
+          ),
       ]);
 
       var relationFields = fields.where((f) =>
@@ -1695,7 +1709,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildModelTableClassColumnGetter(
-      List<SerializableModelFieldDefinition> fields) {
+    Iterable<SerializableModelFieldDefinition> fields, {
+    required String name,
+  }) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1706,14 +1722,12 @@ class SerializableModelLibraryGenerator {
               refer('Column', serverpodUrl(true)),
             ),
         )
-        ..name = 'columns'
+        ..name = name
         ..lambda = true
         ..type = MethodType.getter
-        ..body = literalList([
-          for (var field in fields)
-            if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(createFieldName(serverCode, field))
-        ]).code,
+        ..body = literalList(
+          fields.map((f) => refer(createFieldName(serverCode, f))),
+        ).code,
     );
   }
 
@@ -2393,9 +2407,7 @@ class SerializableModelLibraryGenerator {
                   Code(
                     'case $i: return ${enumDefinition.className}.${enumDefinition.values[i].name};',
                   ),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
-                ),
+                _buildDefaultSwitchCase(enumDefinition, 'index'),
                 const Code('}'),
               ]))
             .build()),
@@ -2429,9 +2441,7 @@ class SerializableModelLibraryGenerator {
                   Code(
                     "case '${value.name}': return ${enumDefinition.className}.${value.name};",
                   ),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
-                ),
+                _buildDefaultSwitchCase(enumDefinition, 'name'),
                 const Code('}'),
               ]))
             .build()),
@@ -2475,6 +2485,18 @@ class SerializableModelLibraryGenerator {
     }
 
     return refer(field.name);
+  }
+
+  Code _buildDefaultSwitchCase(
+      EnumDefinition enumDefinition, String valueFieldName) {
+    if (enumDefinition.defaultValue == null) {
+      return Code(
+        'default: throw ArgumentError(\'Value "\$$valueFieldName" cannot be converted to "${enumDefinition.className}"\');',
+      );
+    }
+    return Code(
+      'default: return ${enumDefinition.className}.${enumDefinition.defaultValue!.name};',
+    );
   }
 }
 
