@@ -131,8 +131,10 @@ class UserNoteImplicit extends _UserNoteImpl {
   UserNoteImplicit._({
     int? id,
     required String name,
-    this.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-  }) : super(
+    int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  })  : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
+            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        super(
           id: id,
           name: name,
         );
@@ -149,14 +151,15 @@ class UserNoteImplicit extends _UserNoteImpl {
     );
   }
 
-  int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  @override
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
+          _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
     });
     return jsonMap;
   }

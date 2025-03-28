@@ -131,8 +131,10 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   LongImplicitIdFieldImplicit._({
     int? id,
     required String name,
-    this.$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-  }) : super(
+    int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+  })  : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id =
+            $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+        super(
           id: id,
           name: name,
         );
@@ -149,14 +151,15 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
     );
   }
 
-  int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
+  @override
+  final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
-          $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
+          _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
     });
     return jsonMap;
   }

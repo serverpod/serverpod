@@ -131,8 +131,10 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   EmptyModelRelationItemImplicit._({
     int? id,
     required String name,
-    this.$_relationEmptyModelItemsRelationEmptyModelId,
-  }) : super(
+    int? $_relationEmptyModelItemsRelationEmptyModelId,
+  })  : _relationEmptyModelItemsRelationEmptyModelId =
+            $_relationEmptyModelItemsRelationEmptyModelId,
+        super(
           id: id,
           name: name,
         );
@@ -149,14 +151,15 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
     );
   }
 
-  int? $_relationEmptyModelItemsRelationEmptyModelId;
+  @override
+  final int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_relationEmptyModelItemsRelationEmptyModelId':
-          $_relationEmptyModelItemsRelationEmptyModelId
+          _relationEmptyModelItemsRelationEmptyModelId
     });
     return jsonMap;
   }

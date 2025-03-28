@@ -168,8 +168,10 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     required String name,
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
-    this.$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-  }) : super(
+    int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+  })  : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
+            $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -190,14 +192,15 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     );
   }
 
-  int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
+  @override
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
-          $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
+          _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
     });
     return jsonMap;
   }
