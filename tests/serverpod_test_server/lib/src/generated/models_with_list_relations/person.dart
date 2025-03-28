@@ -28,7 +28,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   }) = _PersonImpl;
 
   factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Person(
+    return PersonImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -36,6 +36,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
           ? null
           : _i2.Organization.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
     );
   }
 

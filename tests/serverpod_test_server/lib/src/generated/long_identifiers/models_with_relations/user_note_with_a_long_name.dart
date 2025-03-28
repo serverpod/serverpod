@@ -25,9 +25,13 @@ abstract class UserNoteWithALongName
 
   factory UserNoteWithALongName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return UserNoteWithALongName(
+    return UserNoteWithALongNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
+          jsonSerialization[
+                  '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId']
+              as int?,
     );
   }
 

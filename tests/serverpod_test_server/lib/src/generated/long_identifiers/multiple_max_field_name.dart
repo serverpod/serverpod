@@ -29,7 +29,7 @@ abstract class MultipleMaxFieldName
 
   factory MultipleMaxFieldName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return MultipleMaxFieldName(
+    return MultipleMaxFieldNameImplicit._(
       id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
           jsonSerialization[
@@ -39,6 +39,10 @@ abstract class MultipleMaxFieldName
           jsonSerialization[
                   'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2']
               as String,
+      $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId:
+          jsonSerialization[
+                  '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId']
+              as int?,
     );
   }
 

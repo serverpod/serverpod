@@ -31,7 +31,7 @@ abstract class PersonWithLongTableName
 
   factory PersonWithLongTableName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -39,6 +39,10 @@ abstract class PersonWithLongTableName
           ? null
           : _i2.OrganizationWithLongTableName.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          jsonSerialization[
+                  '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
+              as int?,
     );
   }
 
