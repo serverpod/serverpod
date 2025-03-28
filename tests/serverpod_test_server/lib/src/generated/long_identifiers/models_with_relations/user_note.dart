@@ -124,9 +124,11 @@ class _UserNoteImpl extends UserNote {
     Object? id = _Undefined,
     String? name,
   }) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          this._userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
     );
   }
 }

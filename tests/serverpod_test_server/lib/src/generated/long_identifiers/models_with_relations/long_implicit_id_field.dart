@@ -124,9 +124,11 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
     Object? id = _Undefined,
     String? name,
   }) {
-    return LongImplicitIdField(
+    return LongImplicitIdFieldImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+          this._longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
     );
   }
 }

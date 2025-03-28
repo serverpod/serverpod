@@ -103,7 +103,11 @@ class _ScopeNoneFieldsImpl extends ScopeNoneFields {
   @_i1.useResult
   @override
   ScopeNoneFields copyWith({Object? id = _Undefined}) {
-    return ScopeNoneFields(id: id is int? ? id : this.id);
+    return ScopeNoneFieldsImplicit._(
+      id: id is int? ? id : this.id,
+      $name: this._name,
+      $object: this._object?.copyWith(),
+    );
   }
 }
 
