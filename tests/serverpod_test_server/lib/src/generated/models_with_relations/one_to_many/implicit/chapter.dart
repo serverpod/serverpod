@@ -23,9 +23,10 @@ abstract class Chapter implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   }) = _ChapterImpl;
 
   factory Chapter.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Chapter(
+    return ChapterImplicit._(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
+      $_bookChaptersBookId: jsonSerialization['_bookChaptersBookId'] as int?,
     );
   }
 

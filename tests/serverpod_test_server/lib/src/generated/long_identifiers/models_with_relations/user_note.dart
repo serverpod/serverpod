@@ -24,9 +24,13 @@ abstract class UserNote
   }) = _UserNoteImpl;
 
   factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          jsonSerialization[
+                  '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
+              as int?,
     );
   }
 

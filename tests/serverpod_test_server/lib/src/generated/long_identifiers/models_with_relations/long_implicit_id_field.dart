@@ -24,9 +24,13 @@ abstract class LongImplicitIdField
   }) = _LongImplicitIdFieldImpl;
 
   factory LongImplicitIdField.fromJson(Map<String, dynamic> jsonSerialization) {
-    return LongImplicitIdField(
+    return LongImplicitIdFieldImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+          jsonSerialization[
+                  '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id']
+              as int?,
     );
   }
 

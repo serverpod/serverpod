@@ -21,7 +21,14 @@ abstract class ScopeNoneFields
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
 
   factory ScopeNoneFields.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ScopeNoneFields(id: jsonSerialization['id'] as int?);
+    return ScopeNoneFieldsImplicit._(
+      id: jsonSerialization['id'] as int?,
+      $name: jsonSerialization['name'] as String?,
+      $object: jsonSerialization['object'] == null
+          ? null
+          : _i2.SimpleData.fromJson(
+              (jsonSerialization['object'] as Map<String, dynamic>)),
+    );
   }
 
   static final t = ScopeNoneFieldsTable();

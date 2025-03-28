@@ -25,9 +25,12 @@ abstract class EmptyModelRelationItem
 
   factory EmptyModelRelationItem.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return EmptyModelRelationItem(
+    return EmptyModelRelationItemImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          jsonSerialization['_relationEmptyModelItemsRelationEmptyModelId']
+              as int?,
     );
   }
 
