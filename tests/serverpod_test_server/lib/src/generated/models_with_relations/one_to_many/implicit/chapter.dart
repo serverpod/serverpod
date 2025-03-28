@@ -128,8 +128,9 @@ class ChapterImplicit extends _ChapterImpl {
   ChapterImplicit._({
     int? id,
     required String title,
-    this.$_bookChaptersBookId,
-  }) : super(
+    int? $_bookChaptersBookId,
+  })  : _bookChaptersBookId = $_bookChaptersBookId,
+        super(
           id: id,
           title: title,
         );
@@ -145,12 +146,13 @@ class ChapterImplicit extends _ChapterImpl {
     );
   }
 
-  int? $_bookChaptersBookId;
+  @override
+  final int? _bookChaptersBookId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll({'_bookChaptersBookId': $_bookChaptersBookId});
+    jsonMap.addAll({'_bookChaptersBookId': _bookChaptersBookId});
     return jsonMap;
   }
 }

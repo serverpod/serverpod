@@ -162,8 +162,9 @@ class PersonImplicit extends _PersonImpl {
     required String name,
     int? organizationId,
     _i2.Organization? organization,
-    this.$_cityCitizensCityId,
-  }) : super(
+    int? $_cityCitizensCityId,
+  })  : _cityCitizensCityId = $_cityCitizensCityId,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -183,12 +184,13 @@ class PersonImplicit extends _PersonImpl {
     );
   }
 
-  int? $_cityCitizensCityId;
+  @override
+  final int? _cityCitizensCityId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
+    jsonMap.addAll({'_cityCitizensCityId': _cityCitizensCityId});
     return jsonMap;
   }
 }

@@ -167,8 +167,10 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required String
         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-    this.$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
-  }) : super(
+    int? $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
+  })  : _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId =
+            $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
+        super(
           id: id,
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
               thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -193,14 +195,15 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
     );
   }
 
-  int? $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
+  @override
+  final int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-          $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
+          _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
     });
     return jsonMap;
   }

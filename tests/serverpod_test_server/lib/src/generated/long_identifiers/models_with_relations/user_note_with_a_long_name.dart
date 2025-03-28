@@ -132,8 +132,10 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
   UserNoteWithALongNameImplicit._({
     int? id,
     required String name,
-    this.$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-  }) : super(
+    int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+  })  : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId =
+            $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+        super(
           id: id,
           name: name,
         );
@@ -150,14 +152,15 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
     );
   }
 
-  int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
+  @override
+  final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
     jsonMap.addAll({
       '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId':
-          $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
+          _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
     });
     return jsonMap;
   }
