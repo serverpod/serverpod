@@ -91,7 +91,19 @@ class FutureCallManager {
 
   /// Starts the manager.
   void start() {
-    unawaited(_checkQueue());
+    final serverpodRole = _server.serverpod.commandLineArgs.role;
+
+    switch (serverpodRole) {
+      case ServerpodRole.maintenance:
+        unawaited(_runFutureCallsForMaintenance());
+        break;
+      case ServerpodRole.monolith:
+        unawaited(_runFutureCallsForMonolith());
+        break;
+      case ServerpodRole.serverless:
+        // Serverless does not support future calls.
+        break;
+    }
   }
 
   /// Stops the manager.
@@ -103,21 +115,32 @@ class FutureCallManager {
     await _waitForRunningFutureCalls();
   }
 
-  Future<void> _checkQueue() async {
+  Future<void> _runFutureCallsForMaintenance() async {
+    stdout.writeln('Processing future calls.');
+
+    await _checkQueue();
+
+    await _waitForRunningFutureCalls();
+
+    onCompleted();
+  }
+
+  Future<void> _runFutureCallsForMonolith() async {
+    await _checkQueue();
+
     if (_shuttingDown) {
       return;
     }
 
-    final serverpodRole = _server.serverpod.commandLineArgs.role;
-    final isMaintenance = serverpodRole == ServerpodRole.maintenance;
-    final isMonolith = serverpodRole == ServerpodRole.monolith;
+    final scanInterval = _server.serverpod.config.futureCall.scanInterval;
 
-    if (isMaintenance) {
-      stdout.writeln('Processing future calls.');
-    }
+    _timer = Timer(scanInterval, _checkQueue);
+  }
+
+  Future<void> _checkQueue() async {
+    var now = DateTime.now().toUtc();
 
     try {
-      var now = DateTime.now().toUtc();
       var postponedFutureCalls = await _invokeFutureCalls(due: now);
 
       // Ensure all future calls that were overdue are run before proceeding.
@@ -154,18 +177,6 @@ class FutureCallManager {
       stderr.writeln('$stackTrace');
       stderr.writeln('Local stacktrace:');
       stderr.writeln('${StackTrace.current}');
-    }
-
-    // If we are running as a maintenance task, we shouldn't check the queue
-    // again.
-    if (isMonolith && !_shuttingDown) {
-      final scanInterval = _server.serverpod.config.futureCall.scanInterval;
-
-      _timer = Timer(scanInterval, _checkQueue);
-    } else if (isMaintenance) {
-      await _waitForRunningFutureCalls();
-
-      onCompleted();
     }
   }
 
