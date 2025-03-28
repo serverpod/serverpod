@@ -2,3 +2,4 @@ class: ScopeNoneFields
 table: scope_none_fields
 fields:
   name: String?, scope=none
+  object: SimpleData?, scope=none
