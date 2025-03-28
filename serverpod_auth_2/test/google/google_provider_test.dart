@@ -61,4 +61,6 @@ void main() {
       expect(serverpod.userInfoRepository.users, hasLength(1));
     }
   });
+
+  // TODO: Create example with account merging
 }
