@@ -158,4 +158,63 @@ futureCall:
           equals(const Duration(milliseconds: 2000)));
     },
   );
+
+  test(
+    'Given a Serverpod config with only concurrencyLimit configured when loading from Map then scanInterval uses default value',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  concurrencyLimit: 5
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.futureCall.concurrencyLimit, equals(5));
+      expect(
+        config.futureCall.scanInterval.inMilliseconds,
+        equals(FutureCallConfig.defaultFutureCallScanIntervalMs),
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with only scanInterval configured when loading from Map then concurrencyLimit uses default value',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  scanInterval: 2000
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(
+        config.futureCall.concurrencyLimit,
+        equals(FutureCallConfig.defaultFutureCallConcurrencyLimit),
+      );
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
+    },
+  );
 }

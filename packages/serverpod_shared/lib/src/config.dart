@@ -455,15 +455,6 @@ class FutureCallConfig {
   static const int defaultFutureCallScanIntervalMs = 5000;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
-    _validateJsonConfig(
-      {
-        ServerpodEnv.futureCallConcurrencyLimit.configKey: int,
-        ServerpodEnv.futureCallQueueDelay.configKey: int,
-      },
-      futureCallConfigJson,
-      name,
-    );
-
     var concurrencyLimit =
         futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
     var scanInterval =
