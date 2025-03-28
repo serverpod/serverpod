@@ -157,9 +157,9 @@ class FutureCallManager {
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
     if (isMonolith && !_shuttingDown) {
-      final queueDelay = _server.serverpod.config.futureCall.queueDelay;
+      final scanInterval = _server.serverpod.config.futureCall.scanInterval;
 
-      _timer = Timer(queueDelay, _checkQueue);
+      _timer = Timer(scanInterval, _checkQueue);
     } else if (isMaintenance) {
       await _waitForRunningFutureCalls();
 

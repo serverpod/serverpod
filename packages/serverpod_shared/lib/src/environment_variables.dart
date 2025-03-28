@@ -43,7 +43,7 @@ class ServerpodFutureCallConfigMap {
   static const String concurrencyLimit = 'concurrencyLimit';
 
   /// The delay for the future call queue.
-  static const String queueDelay = 'queueDelay';
+  static const String scanInterval = 'scanInterval';
 }
 
 /// The default environment variables used by the server.
@@ -162,7 +162,7 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallConcurrencyLimit) =>
         ServerpodFutureCallConfigMap.concurrencyLimit,
       (ServerpodEnv.futureCallQueueDelay) =>
-        ServerpodFutureCallConfigMap.queueDelay,
+        ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.serverId) => 'serverId',

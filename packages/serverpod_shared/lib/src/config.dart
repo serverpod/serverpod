@@ -439,20 +439,20 @@ class FutureCallConfig {
   final int concurrencyLimit;
 
   /// How long to wait before checking the queue again.
-  final Duration queueDelay;
+  final Duration scanInterval;
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
-    this.queueDelay =
-        const Duration(milliseconds: defaultFutureCallQueueDelayMs),
+    this.scanInterval =
+        const Duration(milliseconds: defaultFutureCallScanIntervalMs),
   });
 
   /// The default concurrency limit for future calls.
   static const int defaultFutureCallConcurrencyLimit = 1;
 
-  /// The default queue delay for future calls.
-  static const int defaultFutureCallQueueDelayMs = 5000;
+  /// The default scan interval for future calls.
+  static const int defaultFutureCallScanIntervalMs = 5000;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
     _validateJsonConfig(
@@ -466,13 +466,13 @@ class FutureCallConfig {
 
     var concurrencyLimit =
         futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
-    var queueDelay =
+    var scanInterval =
         futureCallConfigJson[ServerpodEnv.futureCallQueueDelay.configKey];
 
     return FutureCallConfig(
       concurrencyLimit: concurrencyLimit ?? defaultFutureCallConcurrencyLimit,
-      queueDelay: Duration(
-        milliseconds: queueDelay ?? defaultFutureCallQueueDelayMs,
+      scanInterval: Duration(
+        milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
     );
   }

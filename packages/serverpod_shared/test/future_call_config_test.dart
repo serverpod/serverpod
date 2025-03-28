@@ -33,8 +33,8 @@ apiServer:
         equals(FutureCallConfig.defaultFutureCallConcurrencyLimit),
       );
       expect(
-        config.futureCall.queueDelay.inMilliseconds,
-        equals(FutureCallConfig.defaultFutureCallQueueDelayMs),
+        config.futureCall.scanInterval.inMilliseconds,
+        equals(FutureCallConfig.defaultFutureCallScanIntervalMs),
       );
     },
   );
@@ -50,7 +50,7 @@ apiServer:
   publicScheme: http
 futureCall:
   concurrencyLimit: 5
-  queueDelay: 2000
+  scanInterval: 2000
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -61,7 +61,7 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(5));
-      expect(config.futureCall.queueDelay,
+      expect(config.futureCall.scanInterval,
           equals(const Duration(milliseconds: 2000)));
     },
   );
@@ -82,7 +82,7 @@ futureCall:
           },
           'futureCall': {
             'concurrencyLimit': 5,
-            'queueDelay': 2000,
+            'scanInterval': 2000,
           },
         },
         environment: {
@@ -92,7 +92,7 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.queueDelay,
+      expect(config.futureCall.scanInterval,
           equals(const Duration(milliseconds: 3000)));
     },
   );
@@ -145,7 +145,7 @@ futureCall:
           },
           'futureCall': {
             'concurrencyLimit': 5,
-            'queueDelay': 2000,
+            'scanInterval': 2000,
           },
         },
         environment: {
@@ -154,7 +154,7 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.queueDelay,
+      expect(config.futureCall.scanInterval,
           equals(const Duration(milliseconds: 2000)));
     },
   );
