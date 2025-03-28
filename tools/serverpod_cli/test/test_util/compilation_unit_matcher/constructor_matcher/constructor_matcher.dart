@@ -76,6 +76,20 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 
   @override
+  InitializerMatcher withFieldInitializer(String fieldName) {
+    return _InitializerMatcherImpl._(
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue: (constructorDeclaration) => constructorDeclaration
+            .initializers
+            .whereType<ConstructorFieldInitializer>(),
+      ),
+      fieldName,
+    );
+  }
+
+  @override
   ParameterMatcher withInitializerParameter(
     String parameterName,
     Initializer initializer, {

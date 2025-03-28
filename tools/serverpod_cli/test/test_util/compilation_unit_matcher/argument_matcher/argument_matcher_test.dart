@@ -238,4 +238,67 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given compilation unit with class with field initializer with argument',
+      () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        final String name;
+        User(String name) : name = name;
+      }
+    ''',
+    );
+
+    test(
+        'when matching class, constructor, field initializer and argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('User')
+            .withUnnamedConstructor()
+            .withFieldInitializer('name')
+            .withArgument('name'),
+      );
+    });
+
+    test(
+        'when matching class, constructor, field initializer and positional argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('User')
+            .withUnnamedConstructor()
+            .withFieldInitializer('name')
+            .withPositionalArgument('name'),
+      );
+    });
+
+    test(
+        'when negate matching class, constructor, field initializer and named argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        isNot(
+          containsClass('User')
+              .withUnnamedConstructor()
+              .withFieldInitializer('name')
+              .withNamedArgument('name', 'name'),
+        ),
+      );
+    });
+
+    test(
+        'when negate matching class, constructor, field initializer and invalid argument then test passes',
+        () {
+      expect(
+        compilationUnit,
+        isNot(containsClass('User')
+            .withUnnamedConstructor()
+            .withFieldInitializer('name')
+            .withArgument('invalidArgument')),
+      );
+    });
+  });
 }

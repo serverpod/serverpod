@@ -23,6 +23,25 @@ void main() async {
       });
 
       test(
+          'when fetching "many" side, then implicit fields are included in toJson',
+          () async {
+        var chapter = await Chapter.db.findFirstRow(session);
+
+        var chapterJson = chapter?.toJson();
+        expect(chapterJson, containsPair('_bookChaptersBookId', isNotNull));
+      });
+
+      test(
+          'when copying many side entity, then implicit fields are included in toJson',
+          () async {
+        var chapter = await Chapter.db.findFirstRow(session);
+
+        var newChapter = chapter!.copyWith();
+        var newChapterJson = newChapter.toJson();
+        expect(newChapterJson, containsPair('_bookChaptersBookId', isNotNull));
+      });
+
+      test(
           'when updating field on "many" side then relation is still preserved',
           () async {
         var chapter = await Chapter.db.findFirstRow(session);
