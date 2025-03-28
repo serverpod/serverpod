@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as path;
 
 /// The configuration sections for the serverpod configuration file.
 typedef Convert<T> = T Function(String value);
@@ -45,6 +45,9 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
 
+  /// Configuration for future call handling.
+  final FutureCallConfig futureCall;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -58,6 +61,7 @@ class ServerpodConfig {
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
+    this.futureCall = const FutureCallConfig(),
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,
@@ -154,6 +158,15 @@ class ServerpodConfig {
           )
         : null;
 
+    var futureCallConfigJson =
+        _buildFutureCallConfigMap(configMap, environment);
+    var futureCallConfig = futureCallConfigJson != null
+        ? FutureCallConfig._fromJson(
+            futureCallConfigJson,
+            ServerpodConfigMap.futureCall,
+          )
+        : const FutureCallConfig();
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -165,6 +178,7 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
       sessionLogs: sessionLogsConfig,
+      futureCall: futureCallConfig,
     );
   }
 
@@ -416,6 +430,46 @@ class RedisConfig {
   }
 }
 
+/// Configuration for future call handling.
+class FutureCallConfig {
+  /// The maximum number of concurrent running future calls. If the limit is
+  /// reached, future calls will be postponed until a slot is available.
+  ///
+  /// If the limit is set to a value < 1, the amount of concurrent future calls
+  /// will be unlimited.
+  final int concurrencyLimit;
+
+  /// How long to wait before checking the queue again.
+  final Duration scanInterval;
+
+  /// Creates a new [FutureCallConfig].
+  const FutureCallConfig({
+    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
+    this.scanInterval =
+        const Duration(milliseconds: defaultFutureCallScanIntervalMs),
+  });
+
+  /// The default concurrency limit for future calls.
+  static const int defaultFutureCallConcurrencyLimit = 1;
+
+  /// The default scan interval for future calls.
+  static const int defaultFutureCallScanIntervalMs = 5000;
+
+  factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
+    var concurrencyLimit =
+        futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
+    var scanInterval =
+        futureCallConfigJson[ServerpodEnv.futureCallQueueDelay.configKey];
+
+    return FutureCallConfig(
+      concurrencyLimit: concurrencyLimit ?? defaultFutureCallConcurrencyLimit,
+      scanInterval: Duration(
+        milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
+      ),
+    );
+  }
+}
+
 /// Configuration for session logging.
 class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
@@ -542,6 +596,15 @@ Map? _buildSessionLogsConfigMap(
   return _buildConfigMap(logsConfig, environment, [
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
+  ]);
+}
+
+Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
+  var futureCallConfig = configMap[ServerpodConfigMap.futureCall] ?? {};
+
+  return _buildConfigMap(futureCallConfig, environment, [
+    (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
+    (ServerpodEnv.futureCallQueueDelay, int.parse),
   ]);
 }
 
