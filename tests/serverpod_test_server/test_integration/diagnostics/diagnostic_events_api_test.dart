@@ -22,6 +22,7 @@ void main() {
 
       final record = await exceptionHandler.events.first.timeout(timeout);
       expect(record.event.exception, isA<Exception>());
+      expect(record.event.custom, equals({'customKey': 'customValue'}));
       expect(record.space, equals(OriginSpace.application));
       expect(record.context, isA<DiagnosticEventContext>());
       expect(
