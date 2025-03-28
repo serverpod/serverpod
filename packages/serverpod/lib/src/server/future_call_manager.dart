@@ -10,8 +10,7 @@ import 'package:synchronized/synchronized.dart';
 
 enum _FutureCallInvocationResult {
   success,
-  postponed,
-  deleted;
+  postponed;
 }
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
@@ -119,11 +118,11 @@ class FutureCallManager {
 
     try {
       var now = DateTime.now().toUtc();
-      var hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
+      var postponedFutureCalls = await _invokeFutureCalls(due: now);
 
       // Ensure all future calls that were overdue are run before proceeding.
       // If there are postponed future calls, wait for one to complete.
-      while (hasPostponedFutureCalls && !_shuttingDown) {
+      while (postponedFutureCalls.isNotEmpty && !_shuttingDown) {
         if (_runningFutureCallFutures.isNotEmpty) {
           await Future.any(_runningFutureCallFutures);
         }
@@ -134,7 +133,10 @@ class FutureCallManager {
         }
 
         // Keep the same due time to run all overdue future calls.
-        hasPostponedFutureCalls = !(await _invokeFutureCalls(due: now));
+        postponedFutureCalls = await _invokeFutureCalls(
+          due: now,
+          futureCallEntries: postponedFutureCalls,
+        );
       }
     } catch (error, stackTrace) {
       // Most likely we lost connection to the database
@@ -172,19 +174,22 @@ class FutureCallManager {
   }
 
   /// Starts all overdue future calls.
-  /// Returns `true` if all due future calls have been started.
-  /// Returns `false` if there are future calls which are due but have not been
+  /// Returns a list of future call entries which are due but have not been
   /// started due to concurrency limits.
-  Future<bool> _invokeFutureCalls({required DateTime due}) async {
+  Future<List<FutureCallEntry>> _invokeFutureCalls({
+    required DateTime due,
+    List<FutureCallEntry>? futureCallEntries,
+  }) async {
     var internalSession = _server.serverpod.internalSession;
 
-    var overdueFutureCalls = await FutureCallEntry.db.find(
-      internalSession,
-      where: (row) => row.time <= due,
-      orderBy: (row) => row.time,
-    );
-
-    var hasPostponedFutureCalls = false;
+    var overdueFutureCalls = List<FutureCallEntry>.from(
+      futureCallEntries ??
+          await FutureCallEntry.db.deleteWhere(
+            internalSession,
+            where: (row) => row.time <= due,
+          ),
+    )..sort((a, b) => a.time.compareTo(b.time));
+    // Ensure earliest scheduled future call is first
 
     for (final futureCallEntry in overdueFutureCalls) {
       if (_shuttingDown) {
@@ -194,8 +199,6 @@ class FutureCallManager {
       final futureCall = _futureCalls[futureCallEntry.name];
 
       if (futureCall == null) {
-        // If the future call is not found, delete the entry from the database.
-        await FutureCallEntry.db.deleteRow(internalSession, futureCallEntry);
         // TODO this should be logged and not fail silently
         continue;
       }
@@ -207,11 +210,14 @@ class FutureCallManager {
       );
 
       if (result == _FutureCallInvocationResult.postponed) {
-        hasPostponedFutureCalls = true;
+        // Return the remaining future calls to be invoked
+        return overdueFutureCalls
+            .sublist(overdueFutureCalls.indexOf(futureCallEntry));
       }
     }
 
-    return !hasPostponedFutureCalls;
+    // Reaching this point means that all future calls were started
+    return [];
   }
 
   /// Tries to start a [FutureCall] as configured by the [FutureCallEntry].
@@ -220,8 +226,6 @@ class FutureCallManager {
   /// `_FutureCallInvocationResult.success` is returned.
   /// If the concurrency limit is reached, the future call is not invoked and
   /// `_FutureCallInvocationResult.postponed` is returned.
-  /// If the future call entry does not exist in the database, it is deleted and
-  /// `_FutureCallInvocationResult.deleted` is returned.
   Future<_FutureCallInvocationResult> _tryRunFutureCallEntry({
     required Session session,
     required FutureCallEntry futureCallEntry,
@@ -237,33 +241,9 @@ class FutureCallManager {
         return _FutureCallInvocationResult.postponed;
       }
 
-      final currentFutureCallEntry =
-          await session.db.transaction((transaction) async {
-        // Ensure the future call entry still exists in the database. It might
-        // have been run and thus been deleted by another instance.
-        final currentFutureCallEntry = await FutureCallEntry.db.findById(
-          session,
-          futureCallEntry.id!,
-          transaction: transaction,
-        );
-
-        if (currentFutureCallEntry == null) {
-          return null;
-        }
-
-        // The future call is now running, so we can delete it from the database.
-        await FutureCallEntry.db.deleteRow(
-          session,
-          currentFutureCallEntry,
-          transaction: transaction,
-        );
-
-        return currentFutureCallEntry;
-      });
-
-      if (currentFutureCallEntry == null) {
-        return _FutureCallInvocationResult.deleted;
-      }
+      // TODO: Later on, here would be the place to check if the future call entry is still in the database and delete it.
+      //  The FutureCallEntry should not be deleted prior, because the server process might exit before it is even started.
+      //  When implementing this, keep in mind to ensure no race conditions with other server instances occur.
 
       // Increment the number of running future calls.
       // We are in a synchronized block, no race conditions here.
@@ -280,7 +260,7 @@ class FutureCallManager {
       unawaited(
         _runFutureCall(
           session: session,
-          futureCallEntry: currentFutureCallEntry,
+          futureCallEntry: futureCallEntry,
           futureCall: futureCall,
         ).whenComplete(
           () async {
