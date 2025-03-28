@@ -10,6 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../simple_data.dart' as _i2;
+import 'simple_data.dart' as _i3;
 
 abstract class ScopeNoneFields
     implements _i1.TableRow<int>, _i1.ProtocolSerialization {
@@ -30,6 +32,8 @@ abstract class ScopeNoneFields
 
   String? _name;
 
+  _i2.SimpleData? _object;
+
   @override
   _i1.Table<int> get table => t;
 
@@ -42,6 +46,7 @@ abstract class ScopeNoneFields
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
+      if (_object != null) 'object': _object?.toJson(),
     };
   }
 
@@ -98,24 +103,29 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   ScopeNoneFieldsImplicit._({
     int? id,
     this.$name,
+    this.$object,
   }) : super(id: id);
 
   factory ScopeNoneFieldsImplicit(
     ScopeNoneFields scopeNoneFields, {
     String? $name,
+    _i3.SimpleData? $object,
   }) {
     return ScopeNoneFieldsImplicit._(
       id: scopeNoneFields.id,
       $name: $name,
+      $object: $object,
     );
   }
 
   String? $name;
 
+  _i3.SimpleData? $object;
+
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll({'name': $name});
+    jsonMap.addAll({'name': $name, 'object': $object});
     return jsonMap;
   }
 }
@@ -127,14 +137,21 @@ class ScopeNoneFieldsTable extends _i1.Table<int> {
       'name',
       this,
     );
+    $object = _i1.ColumnSerializable(
+      'object',
+      this,
+    );
   }
 
   late final _i1.ColumnString $name;
+
+  late final _i1.ColumnSerializable $object;
 
   @override
   List<_i1.Column> get columns => [
         id,
         $name,
+        $object,
       ];
 
   @override
