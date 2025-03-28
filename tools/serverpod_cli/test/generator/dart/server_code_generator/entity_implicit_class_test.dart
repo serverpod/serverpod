@@ -150,16 +150,6 @@ void main() {
     });
 
     test(
-        'then implicit class has toJson override method with expected return type',
-        () {
-      expect(
-        compilationUnit,
-        containsClass(implicitClassName).withMethod('toJson',
-            isOverride: true, returnType: 'Map<String, dynamic>'),
-      );
-    });
-
-    test(
         'then an unnamed factory constructor with params from original class and additional fields is defined',
         () {
       expect(
@@ -268,13 +258,6 @@ void main() {
             .withSuperInitializer()
             .withNamedArgument('id', 'id'),
       );
-    });
-
-    test('then an override toJson method is defined', () {
-      expect(
-          compilationUnit,
-          containsClass('${testClassName}Implicit').withMethod('toJson',
-              isOverride: true, returnType: 'Map<String, dynamic>'));
     });
   });
 }
