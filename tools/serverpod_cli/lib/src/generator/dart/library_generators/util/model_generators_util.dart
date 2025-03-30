@@ -132,3 +132,12 @@ extension SerializableModelPath on SerializableModelDefinition {
     ]);
   }
 }
+
+extension ImplementedInterfaces on ClassDefinition {
+  /// Returns a `List<ClassDefinition>` holding all implemented interfaces.
+  /// If there are no implemented interfaces, an empty list is returned.
+  List<ClassDefinition> get implementedInterfaces => isImplementing
+      .whereType<ResolvedImplementsDefinition>()
+      .map((e) => e.interfaceDefinition)
+      .toList();
+}
