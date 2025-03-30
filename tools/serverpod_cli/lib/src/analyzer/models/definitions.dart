@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -60,13 +61,6 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
   }
-
-  /// Returns a `List<ClassDefinition>` holding all implemented interfaces.
-  /// If there are no implemented interfaces, an empty list is returned.
-  List<ClassDefinition> get implementedInterfaces => isImplementing
-      .whereType<ResolvedImplementsDefinition>()
-      .map((e) => e.interfaceDefinition)
-      .toList();
 
   /// Returns a list of fields from all implemented interfaces.
   List<SerializableModelFieldDefinition> get implementedFields {
