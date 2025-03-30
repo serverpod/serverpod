@@ -72,13 +72,13 @@ class ModelDependencyResolver {
     ClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
-    if (classDefinition.isImplementing.isEmpty) {
+    if (classDefinition.interfaceImplementations.isEmpty) {
       return;
     }
 
     var resolvedImplements = <ImplementsDefinition>[];
 
-    for (var implementedClass in classDefinition.isImplementing) {
+    for (var implementedClass in classDefinition.interfaceImplementations) {
       if (implementedClass is! UnresolvedImplementsDefinition) {
         continue;
       }
@@ -94,7 +94,7 @@ class ModelDependencyResolver {
         resolvedImplements.add(ResolvedImplementsDefinition(interfaceClass));
       }
     }
-    classDefinition.isImplementing = resolvedImplements;
+    classDefinition.interfaceImplementations = resolvedImplements;
   }
 
   static void _resolveFieldIndexes(
