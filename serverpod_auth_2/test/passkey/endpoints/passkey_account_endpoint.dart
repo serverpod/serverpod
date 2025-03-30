@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_2/providers/passkey/passkey_provider.dart';
+import 'package:serverpod_auth_2/providers/passkey/passkey_authentication_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_info_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_session_repository.dart';
 

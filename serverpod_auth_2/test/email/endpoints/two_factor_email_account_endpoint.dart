@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_2/providers/2fa/sms/sms.dart';
-import 'package:serverpod_auth_2/providers/email/email_account_repository.dart';
+import 'package:serverpod_auth_2/providers/email/email_authentication_repository.dart';
+import 'package:serverpod_auth_2/providers/sms/sms_authentication_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_info_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_session_repository.dart';
 
@@ -18,7 +18,7 @@ class TwoFactorEmailRegistrationEndpoint {
 
   final EmailAuthenticationRepository emailAuthenticationRepository;
 
-  final SMS2FARepository sms2faRepository;
+  final SMSAuthenticationRepository sms2faRepository;
 
 // #region Registration
 

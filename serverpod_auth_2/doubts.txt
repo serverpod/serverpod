@@ -1,7 +1,0 @@
-maybe we've been slicing it all wrong
-
-maybe a "provider module" should not expose their own endpoints and then do some hook-ups behind the scenes,
-but rather a module should provide some core functionality (like e-mail sign-up / verification),
-and if the developer wants to support (a certain) 2FA they just wrap it up in their own APIs
-
-This would also make the flows much clearer, and eg. you could see "always require 2FA" in e-mail but never to so in Passkey, instead of having it implicitly look at "additional data" and ignore requests sometimes…

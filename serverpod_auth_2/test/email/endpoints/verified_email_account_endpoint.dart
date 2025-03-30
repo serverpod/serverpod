@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_2/providers/email/email_account_repository.dart';
+import 'package:serverpod_auth_2/providers/email/email_authentication_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_info_repository.dart';
 import 'package:serverpod_auth_2/serverpod_auth_module/user_session_repository.dart';
 

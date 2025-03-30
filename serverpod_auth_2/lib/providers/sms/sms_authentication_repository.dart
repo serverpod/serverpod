@@ -8,9 +8,8 @@ import 'package:serverpod_auth_2/util/sms_service.dart';
 ///
 /// The variety of methods could potentially be reduced if we support the logged in and "pending verification" session into a single parameter,
 /// where the endpoint can then make the appropriate lookup.
-// TODO: Maybe this could even be generalized away from 2FA to facilitate building "SMS-backed accounts"
-class SMS2FARepository {
-  SMS2FARepository({
+class SMSAuthenticationRepository {
+  SMSAuthenticationRepository({
     required this.serverpod,
     required this.smsService,
   });

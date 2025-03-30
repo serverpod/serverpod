@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_2/providers/2fa/sms/sms.dart';
-import 'package:serverpod_auth_2/providers/email/email_account_repository.dart';
+import 'package:serverpod_auth_2/providers/email/email_authentication_repository.dart';
+import 'package:serverpod_auth_2/providers/sms/sms_authentication_repository.dart';
 import 'package:serverpod_auth_2/serverpod/serverpod.dart';
 import 'package:serverpod_auth_2/util/mail_service.dart';
 import 'package:serverpod_auth_2/util/sms_service.dart';
@@ -123,7 +123,7 @@ void main() {
       serverpod: serverpod,
       mailService: mailService,
     );
-    final sms2FaRepository = SMS2FARepository(
+    final sms2FaRepository = SMSAuthenticationRepository(
       serverpod: serverpod,
       smsService: smsService,
     );
