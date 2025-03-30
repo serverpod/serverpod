@@ -40,13 +40,6 @@ class InterfaceYamlDefinition {
                 valueRestriction: restrictions.validateFieldType,
               ),
               ValidateNode(
-                Keyword.parent,
-                isDeprecated: true,
-                isRemoved: true,
-                alternativeUsageMessage:
-                    'Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
-              ),
-              ValidateNode(
                 Keyword.relation,
                 keyRestriction: restrictions.validateRelationKey,
                 valueRestriction:
