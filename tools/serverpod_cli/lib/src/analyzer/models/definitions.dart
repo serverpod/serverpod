@@ -43,7 +43,7 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   final List<String>? documentation;
 
   /// If set to a List of [ImplementsDefinitions] the class implements one or more interfaces and stores the [ClassDefinition] of the implemented interfaces.
-  List<ImplementsDefinition> isImplementing;
+  List<ImplementsDefinition> interfaceImplementations;
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
@@ -56,7 +56,7 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     super.subDirParts,
     this.documentation,
     List<ImplementsDefinition>? isImplementing,
-  }) : isImplementing = isImplementing ?? <ImplementsDefinition>[];
+  }) : interfaceImplementations = isImplementing ?? <ImplementsDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
