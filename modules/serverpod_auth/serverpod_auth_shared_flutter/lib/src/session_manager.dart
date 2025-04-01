@@ -34,6 +34,8 @@ class SessionManager with ChangeNotifier {
     _instance = this;
     assert(caller.client.authenticationKeyManager != null,
         'The client needs an associated key manager');
+    // TODO: This seems problematic, why would this require a certain subclass?
+    //       And if this is really needed in practice, shouldn't we change `client` to require this interface?
     keyManager = caller.client.authenticationKeyManager!
         as FlutterAuthenticationKeyManager;
   }
@@ -65,6 +67,9 @@ class SessionManager with ChangeNotifier {
     await keyManager.put(
       key,
     );
+    // TODO: This is the user being stored in shared prefs, with care taking that this matches with the authentication key
+    //       (The problem being, that this requires an interface that could also remove the authentication key externally (without going through the session manager),
+    //        in which case the underlying user object would not be cleaned up.)
     await _storeSharedPrefs();
 
     // Update streaming connection, if it's open.

@@ -5,9 +5,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
-// const _configFilePath = 'config/google_client_secret.json';
-
-/// Endpoint for handling Sign in with Google.
+/// Endpoint for handling authentication via email and password
 class EmailEndpoint extends Endpoint {
   /// Authenticates a user with email and password. Returns an
   /// [AuthenticationResponse] with the users information.
@@ -21,7 +19,10 @@ class EmailEndpoint extends Endpoint {
 
   /// Changes a users password.
   Future<bool> changePassword(
-      Session session, String oldPassword, String newPassword) async {
+    Session session,
+    String oldPassword,
+    String newPassword,
+  ) async {
     var userId = (await session.authenticated)?.userId;
     if (userId == null) return false;
 
@@ -36,7 +37,10 @@ class EmailEndpoint extends Endpoint {
 
   /// Resets a users password using the reset code.
   Future<bool> resetPassword(
-      Session session, String verificationCode, String password) {
+    Session session,
+    String verificationCode,
+    String password,
+  ) {
     return Emails.resetPassword(session, verificationCode, password);
   }
 
