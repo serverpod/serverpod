@@ -1,0 +1,5 @@
+type: module
+nickname: serverpod_auth_email
+
+client_package_path: ../serverpod_auth_email_client
+server_test_tools_path: test/integration/test_tools
