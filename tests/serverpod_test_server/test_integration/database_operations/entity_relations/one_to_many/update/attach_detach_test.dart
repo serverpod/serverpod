@@ -14,6 +14,7 @@ void main() async {
     await Organization.db
         .deleteWhere(session, where: (t) => Constant.bool(true));
   });
+
   test(
       'Given an implicit list relation of a city and person when attaching the person to the city then the city list contains the person',
       () async {
@@ -30,12 +31,13 @@ void main() async {
         citizens: Person.includeList(),
       ),
     );
+    var updatedCitizen = await Person.db.findById(session, citizen.id!);
 
     expect(
       updatedCity?.citizens?.toJson(
         valueToJson: (el) => jsonEncode(el.toJson()),
       ),
-      contains(jsonEncode(citizen.toJson())),
+      contains(jsonEncode(updatedCitizen?.toJson())),
     );
   });
 
@@ -66,19 +68,17 @@ void main() async {
         citizens: Person.includeList(),
       ),
     );
+    var updatedCitizen1 = await Person.db.findById(session, citizen1.id!);
+    var updatedCitizen2 = await Person.db.findById(session, citizen2.id!);
 
     expect(
       updatedCity?.citizens?.toJson(
         valueToJson: (el) => jsonEncode(el.toJson()),
       ),
-      contains(jsonEncode(citizen1.toJson())),
-    );
-
-    expect(
-      updatedCity?.citizens?.toJson(
-        valueToJson: (el) => jsonEncode(el.toJson()),
-      ),
-      contains(jsonEncode(citizen2.toJson())),
+      containsAll([
+        jsonEncode(updatedCitizen1?.toJson()),
+        jsonEncode(updatedCitizen2?.toJson()),
+      ]),
     );
   });
 
@@ -343,15 +343,17 @@ void main() async {
         citizens: Person.includeList(),
       ),
     );
+    var updatedPerson1 = await Person.db.findById(session, person1.id!);
+    var updatedPerson2 = await Person.db.findById(session, person2.id!);
 
     expect(
       updatedCity?.citizens?.toJson(
         valueToJson: (el) => jsonEncode(el.toJson()),
       ),
       allOf(
-        contains(jsonEncode(person1.toJson())),
+        contains(jsonEncode(updatedPerson1?.toJson())),
         isNot(
-          contains(jsonEncode(person2.toJson())),
+          contains(jsonEncode(updatedPerson2?.toJson())),
         ),
       ),
     );
@@ -378,15 +380,17 @@ void main() async {
         citizens: Person.includeList(),
       ),
     );
+    var updatedPerson1 = await Person.db.findById(session, person1.id!);
+    var updatedPerson2 = await Person.db.findById(session, person2.id!);
 
     expect(
       updatedCity?.citizens?.toJson(
         valueToJson: (el) => jsonEncode(el.toJson()),
       ),
       allOf(
-        contains(jsonEncode(person1.toJson())),
+        contains(jsonEncode(updatedPerson1?.toJson())),
         isNot(
-          contains(jsonEncode(person2.toJson())),
+          contains(jsonEncode(updatedPerson2?.toJson())),
         ),
       ),
     );
