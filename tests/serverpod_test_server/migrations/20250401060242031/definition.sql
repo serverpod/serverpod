@@ -674,7 +674,8 @@ CREATE TABLE "relation_to_multiple_max_field_name" (
 --
 CREATE TABLE "scope_none_fields" (
     "id" bigserial PRIMARY KEY,
-    "name" text
+    "name" text,
+    "object" json
 );
 
 --
@@ -1565,9 +1566,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250325155839760', now())
+    VALUES ('serverpod_test', '20250401060242031', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250325155839760', "timestamp" = now();
+    DO UPDATE SET "version" = '20250401060242031', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

@@ -99,6 +99,28 @@
         ],
         "managed": true
       }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "scope_none_fields",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "object",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "protocol:SimpleData?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
     }
   ],
   "warnings": [],
