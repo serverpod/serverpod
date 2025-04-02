@@ -4,7 +4,7 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/src/equality.dart';
 import 'package:yaml/yaml.dart';
 
-List<String> convertIndexList(String stringifiedFields) {
+List<String> convertCommaSeparatedList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
