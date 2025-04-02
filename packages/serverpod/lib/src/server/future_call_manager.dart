@@ -304,7 +304,7 @@ class FutureCallManager {
   bool _isFutureCallConcurrentLimitReached() {
     final concurrencyLimit = _config.concurrencyLimit;
 
-    if (concurrencyLimit <= 0) {
+    if (concurrencyLimit == null) {
       return false;
     }
 

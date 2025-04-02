@@ -165,7 +165,10 @@ class ServerpodConfig {
             futureCallConfigJson,
             ServerpodConfigMap.futureCall,
           )
-        : const FutureCallConfig();
+        : const FutureCallConfig(
+            concurrencyLimit:
+                FutureCallConfig.defaultFutureCallConcurrencyLimit,
+          );
 
     return ServerpodConfig(
       runMode: runMode,
@@ -435,16 +438,16 @@ class FutureCallConfig {
   /// The maximum number of concurrent running future calls. If the limit is
   /// reached, future calls will be postponed until a slot is available.
   ///
-  /// If the limit is set to a value < 1, the amount of concurrent future calls
-  /// will be unlimited.
-  final int concurrencyLimit;
+  /// If the limit is `null`, the amount of concurrent future calls will be
+  /// unlimited.
+  final int? concurrencyLimit;
 
   /// How long to wait before checking the queue again.
   final Duration scanInterval;
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
-    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
+    this.concurrencyLimit,
     this.scanInterval =
         const Duration(milliseconds: defaultFutureCallScanIntervalMs),
   });
@@ -456,13 +459,42 @@ class FutureCallConfig {
   static const int defaultFutureCallScanIntervalMs = 5000;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
-    var concurrencyLimit =
+    // Since the value can be configured as null, parsing has to be done here
+    var concurrencyLimitJson =
         futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
     var scanInterval =
         futureCallConfigJson[ServerpodEnv.futureCallScanInterval.configKey];
 
+    final hasConcurrencyLimitKey = futureCallConfigJson.containsKey(
+      ServerpodEnv.futureCallConcurrencyLimit.configKey,
+    );
+
+    int? concurrencyLimit;
+
+    if (hasConcurrencyLimitKey && concurrencyLimitJson != null) {
+      try {
+        concurrencyLimit = concurrencyLimitJson is int
+            ? concurrencyLimitJson
+            : int.parse(concurrencyLimitJson);
+      } catch (_) {
+        throw Exception(
+          'The `concurrencyLimit` setting was set to $concurrencyLimitJson, but must be an integer.',
+        );
+      }
+
+      if (concurrencyLimit < 1) {
+        throw Exception(
+          'The `concurrencyLimit` setting was set to $concurrencyLimit, but must be at least 1.\n'
+          'If you want to disable the concurrency limit, set it to null.',
+        );
+      }
+    }
+
     return FutureCallConfig(
-      concurrencyLimit: concurrencyLimit ?? defaultFutureCallConcurrencyLimit,
+      // If the user did not configure the concurrency limit, use the default
+      concurrencyLimit: hasConcurrencyLimitKey
+          ? concurrencyLimit
+          : defaultFutureCallConcurrencyLimit,
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
@@ -603,7 +635,9 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   var futureCallConfig = configMap[ServerpodConfigMap.futureCall] ?? {};
 
   return _buildConfigMap(futureCallConfig, environment, [
-    (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
+    // passing null to the convert function will not convert the value, since
+    // the config value itself can be null
+    (ServerpodEnv.futureCallConcurrencyLimit, null),
     (ServerpodEnv.futureCallScanInterval, int.parse),
   ]);
 }

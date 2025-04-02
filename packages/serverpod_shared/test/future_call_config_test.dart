@@ -122,7 +122,7 @@ futureCall:
             (e) => e.toString(),
             'message',
             contains(
-                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT'),
+                'The `concurrencyLimit` setting was set to invalid, but must be an integer'),
           ),
         ),
       );
@@ -214,6 +214,99 @@ futureCall:
       expect(
         config.futureCall.scanInterval,
         equals(const Duration(milliseconds: 2000)),
+      );
+    },
+  );
+
+  test(
+    'Given a negative concurrencyLimit when loading from Map then throws Exception',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  concurrencyLimit: -1
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+                'The `concurrencyLimit` setting was set to -1, but must be at least 1'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a null concurrencyLimit when loading from Map then allows unlimited concurrency',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  concurrencyLimit: null
+  scanInterval: 2000
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.futureCall.concurrencyLimit, isNull);
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
+    },
+  );
+
+  test(
+    'Given an invalid scanInterval in environment variable when loading from Map then throws Exception',
+    () {
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {
+            'apiServer': {
+              'port': 8080,
+              'publicHost': 'localhost',
+              'publicPort': 8080,
+              'publicScheme': 'http',
+            },
+          },
+          environment: {
+            'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': 'invalid',
+          },
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_SCAN_INTERVAL'),
+          ),
+        ),
       );
     },
   );
