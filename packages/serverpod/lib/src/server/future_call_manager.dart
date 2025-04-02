@@ -207,10 +207,6 @@ class FutureCallManager {
     // Ensure earliest scheduled future call is first
 
     for (final futureCallEntry in overdueFutureCalls) {
-      if (_shuttingDown) {
-        break;
-      }
-
       final futureCall = _futureCalls[futureCallEntry.name];
 
       if (futureCall == null) {
