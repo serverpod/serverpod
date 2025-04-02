@@ -20,6 +20,8 @@ enum _FutureCallInvocationResult {
 class FutureCallManager {
   final Server _server;
 
+  final FutureCallConfig _config;
+
   /// Called when pending future calls have been completed, if the server is
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
@@ -36,6 +38,7 @@ class FutureCallManager {
   /// the [Serverpod].
   FutureCallManager(
     this._server,
+    this._config,
     this._serializationManager,
     this.onCompleted,
   );
@@ -132,7 +135,7 @@ class FutureCallManager {
       return;
     }
 
-    final scanInterval = _server.serverpod.config.futureCall.scanInterval;
+    final scanInterval = _config.scanInterval;
 
     _timer = Timer(scanInterval, _checkQueue);
   }
@@ -303,8 +306,7 @@ class FutureCallManager {
   /// Returns `false` otherwise.
   /// Should be called in a synchronized block.
   bool _isFutureCallConcurrentLimitReached() {
-    final concurrencyLimit =
-        _server.serverpod.config.futureCall.concurrencyLimit;
+    final concurrencyLimit = _config.concurrencyLimit;
 
     if (concurrencyLimit <= 0) {
       return false;

@@ -436,6 +436,7 @@ class Serverpod {
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
         server,
+        server.serverpod.config.futureCall,
         serializationManager,
         _onCompletedFutureCalls,
       );
