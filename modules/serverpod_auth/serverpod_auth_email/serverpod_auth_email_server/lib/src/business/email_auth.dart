@@ -2,11 +2,9 @@ import 'dart:math';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_auth_server/src/business/email_secrets.dart';
-import 'package:serverpod_auth_server/src/business/password_hash.dart';
-import 'package:serverpod_auth_server/src/business/user_authentication.dart';
-import 'package:serverpod_auth_server/src/business/user_images.dart';
+import 'package:serverpod_auth_email_server/src/business/email_secrets.dart';
+import 'package:serverpod_auth_email_server/src/business/password_hash.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 /// The default generate password hash, using argon2id.
 ///

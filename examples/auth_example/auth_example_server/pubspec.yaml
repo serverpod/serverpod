@@ -7,21 +7,29 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   mailer: ^6.0.1
   serverpod: 2.4.0
   serverpod_auth_server: 2.4.0
+  # TODO: This would be needed only for the protocol / endpoints files which import the module class here
+  #       This could be solved with a re-export of the used models from the server class, and get it from there
+  serverpod_auth_email_server: 2.4.0
+  serverpod_auth_email_endpoint_server: 2.4.0
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: ">=3.0.0 <6.0.0"
 
 dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
   serverpod_auth_server:
-      path: ../../../modules/serverpod_auth/serverpod_auth_server
+    path: ../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_auth_email_endpoint_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_endpoint/serverpod_auth_email_endpoint_server
+  serverpod_auth_email_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
   serverpod_shared:

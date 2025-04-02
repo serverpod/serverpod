@@ -4,13 +4,6 @@ admin:
   - unblockUser:
 apple:
   - authenticate:
-email:
-  - authenticate:
-  - changePassword:
-  - initiatePasswordReset:
-  - resetPassword:
-  - createAccountRequest:
-  - createAccount:
 firebase:
   - authenticate:
 google:

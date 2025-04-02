@@ -14,6 +14,7 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
 import 'package:serverpod_auth_email_endpoint_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_email_endpoint_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -98,7 +99,7 @@ void withServerpod(
 }
 
 class TestEndpoints {
-  late final _ModuleEndpoint module;
+  late final _EmailEndpoint email;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -108,15 +109,15 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
-    module = _ModuleEndpoint(
+    email = _EmailEndpoint(
       endpoints,
       serializationManager,
     );
   }
 }
 
-class _ModuleEndpoint {
-  _ModuleEndpoint(
+class _EmailEndpoint {
+  _EmailEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -125,28 +126,195 @@ class _ModuleEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String> hello(
+  _i3.Future<_i4.AuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
-    String name,
+    String email,
+    String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'module',
-        method: 'hello',
+        endpoint: 'email',
+        method: 'authenticate',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'module',
-          methodName: 'hello',
-          parameters: _i1.testObjectToJson({'name': name}),
+          endpointPath: 'email',
+          methodName: 'authenticate',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'password': password,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<String>);
+        ) as _i3.Future<_i4.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> changePassword(
+    _i1.TestSessionBuilder sessionBuilder,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'changePassword',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'changePassword',
+          parameters: _i1.testObjectToJson({
+            'oldPassword': oldPassword,
+            'newPassword': newPassword,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> initiatePasswordReset(
+    _i1.TestSessionBuilder sessionBuilder,
+    String email,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'initiatePasswordReset',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'initiatePasswordReset',
+          parameters: _i1.testObjectToJson({'email': email}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> resetPassword(
+    _i1.TestSessionBuilder sessionBuilder,
+    String verificationCode,
+    String password,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'resetPassword',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'resetPassword',
+          parameters: _i1.testObjectToJson({
+            'verificationCode': verificationCode,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> createAccountRequest(
+    _i1.TestSessionBuilder sessionBuilder,
+    String userName,
+    String email,
+    String password,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'createAccountRequest',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'createAccountRequest',
+          parameters: _i1.testObjectToJson({
+            'userName': userName,
+            'email': email,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserInfo?> createAccount(
+    _i1.TestSessionBuilder sessionBuilder,
+    String email,
+    String verificationCode,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'createAccount',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'createAccount',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

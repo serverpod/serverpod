@@ -1,2 +1,7 @@
-module:
-  - hello:
+email:
+  - authenticate:
+  - changePassword:
+  - initiatePasswordReset:
+  - resetPassword:
+  - createAccountRequest:
+  - createAccount:

@@ -70,98 +70,6 @@ class EndpointApple extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for handling Sign in with Google.
-/// {@category Endpoint}
-class EndpointEmail extends _i1.EndpointRef {
-  EndpointEmail(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'serverpod_auth.email';
-
-  /// Authenticates a user with email and password. Returns an
-  /// [AuthenticationResponse] with the users information.
-  _i2.Future<_i4.AuthenticationResponse> authenticate(
-    String email,
-    String password,
-  ) =>
-      caller.callServerEndpoint<_i4.AuthenticationResponse>(
-        'serverpod_auth.email',
-        'authenticate',
-        {
-          'email': email,
-          'password': password,
-        },
-      );
-
-  /// Changes a users password.
-  _i2.Future<bool> changePassword(
-    String oldPassword,
-    String newPassword,
-  ) =>
-      caller.callServerEndpoint<bool>(
-        'serverpod_auth.email',
-        'changePassword',
-        {
-          'oldPassword': oldPassword,
-          'newPassword': newPassword,
-        },
-      );
-
-  /// Initiates a password reset and sends an email with the reset code to the
-  /// user.
-  _i2.Future<bool> initiatePasswordReset(String email) =>
-      caller.callServerEndpoint<bool>(
-        'serverpod_auth.email',
-        'initiatePasswordReset',
-        {'email': email},
-      );
-
-  /// Resets a users password using the reset code.
-  _i2.Future<bool> resetPassword(
-    String verificationCode,
-    String password,
-  ) =>
-      caller.callServerEndpoint<bool>(
-        'serverpod_auth.email',
-        'resetPassword',
-        {
-          'verificationCode': verificationCode,
-          'password': password,
-        },
-      );
-
-  /// Starts the procedure for creating an account by sending an email with
-  /// a verification code.
-  _i2.Future<bool> createAccountRequest(
-    String userName,
-    String email,
-    String password,
-  ) =>
-      caller.callServerEndpoint<bool>(
-        'serverpod_auth.email',
-        'createAccountRequest',
-        {
-          'userName': userName,
-          'email': email,
-          'password': password,
-        },
-      );
-
-  /// Creates a new account using a verification code.
-  _i2.Future<_i3.UserInfo?> createAccount(
-    String email,
-    String verificationCode,
-  ) =>
-      caller.callServerEndpoint<_i3.UserInfo?>(
-        'serverpod_auth.email',
-        'createAccount',
-        {
-          'email': email,
-          'verificationCode': verificationCode,
-        },
-      );
-}
-
 /// Endpoint for handling Sign in with Firebase.
 /// {@category Endpoint}
 class EndpointFirebase extends _i1.EndpointRef {
@@ -314,7 +222,6 @@ class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     admin = EndpointAdmin(this);
     apple = EndpointApple(this);
-    email = EndpointEmail(this);
     firebase = EndpointFirebase(this);
     google = EndpointGoogle(this);
     status = EndpointStatus(this);
@@ -324,8 +231,6 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointAdmin admin;
 
   late final EndpointApple apple;
-
-  late final EndpointEmail email;
 
   late final EndpointFirebase firebase;
 
@@ -339,7 +244,6 @@ class Caller extends _i1.ModuleEndpointCaller {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'serverpod_auth.admin': admin,
         'serverpod_auth.apple': apple,
-        'serverpod_auth.email': email,
         'serverpod_auth.firebase': firebase,
         'serverpod_auth.google': google,
         'serverpod_auth.status': status,

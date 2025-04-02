@@ -4,12 +4,12 @@ description: Starting point for a Serverpod module client.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 dependencies:
   serverpod_client: 2.4.0
 
-dependency_overrides: 
-  serverpod_client: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_client 
-  serverpod_serialization: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization

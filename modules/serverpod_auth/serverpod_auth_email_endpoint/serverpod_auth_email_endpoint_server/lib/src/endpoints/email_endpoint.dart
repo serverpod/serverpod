@@ -3,6 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 /// Endpoint for handling authentication via email and password

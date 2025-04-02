@@ -11,8 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
-import 'example.dart' as _i4;
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+    as _i3;
+import 'package:serverpod_auth_email_endpoint_server/serverpod_auth_email_endpoint_server.dart'
+    as _i4;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
+import 'example.dart' as _i6;
 export 'example.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -24,6 +28,8 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     ..._i3.Protocol.targetTableDefinitions,
+    ..._i4.Protocol.targetTableDefinitions,
+    ..._i5.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
@@ -33,14 +39,20 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i4.Example) {
-      return _i4.Example.fromJson(data) as T;
+    if (t == _i6.Example) {
+      return _i6.Example.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.Example?>()) {
-      return (data != null ? _i4.Example.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.Example?>()) {
+      return (data != null ? _i6.Example.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i4.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i5.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -52,7 +64,7 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.Example) {
+    if (data is _i6.Example) {
       return 'Example';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -60,6 +72,14 @@ class Protocol extends _i1.SerializationManagerServer {
       return 'serverpod.$className';
     }
     className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_email.$className';
+    }
+    className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_email_endpoint.$className';
+    }
+    className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -73,15 +93,23 @@ class Protocol extends _i1.SerializationManagerServer {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'Example') {
-      return deserialize<_i4.Example>(data['data']);
+      return deserialize<_i6.Example>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_email.')) {
+      data['className'] = dataClassName.substring(21);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_email_endpoint.')) {
+      data['className'] = dataClassName.substring(30);
+      return _i4.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -90,6 +118,18 @@ class Protocol extends _i1.SerializationManagerServer {
   _i1.Table? getTableForType(Type t) {
     {
       var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i4.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i5.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
