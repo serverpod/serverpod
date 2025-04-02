@@ -121,7 +121,7 @@ enum ServerpodEnv {
   futureCallConcurrencyLimit,
 
   /// How long to wait before checking the queue again in milliseconds.
-  futureCallQueueDelay,
+  futureCallScanInterval,
 
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
@@ -161,7 +161,7 @@ enum ServerpodEnv {
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
       (ServerpodEnv.futureCallConcurrencyLimit) =>
         ServerpodFutureCallConfigMap.concurrencyLimit,
-      (ServerpodEnv.futureCallQueueDelay) =>
+      (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
@@ -201,8 +201,8 @@ enum ServerpodEnv {
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
       (ServerpodEnv.futureCallConcurrencyLimit) =>
         'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT',
-      (ServerpodEnv.futureCallQueueDelay) =>
-        'SERVERPOD_FUTURE_CALL_QUEUE_DELAY',
+      (ServerpodEnv.futureCallScanInterval) =>
+        'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>

@@ -459,7 +459,7 @@ class FutureCallConfig {
     var concurrencyLimit =
         futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
     var scanInterval =
-        futureCallConfigJson[ServerpodEnv.futureCallQueueDelay.configKey];
+        futureCallConfigJson[ServerpodEnv.futureCallScanInterval.configKey];
 
     return FutureCallConfig(
       concurrencyLimit: concurrencyLimit ?? defaultFutureCallConcurrencyLimit,
@@ -604,7 +604,7 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
 
   return _buildConfigMap(futureCallConfig, environment, [
     (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
-    (ServerpodEnv.futureCallQueueDelay, int.parse),
+    (ServerpodEnv.futureCallScanInterval, int.parse),
   ]);
 }
 

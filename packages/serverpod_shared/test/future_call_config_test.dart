@@ -87,7 +87,7 @@ futureCall:
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
-          'SERVERPOD_FUTURE_CALL_QUEUE_DELAY': '3000',
+          'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': '3000',
         },
       );
 
