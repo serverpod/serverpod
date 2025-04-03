@@ -11,6 +11,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/example_endpoint.dart' as _i2;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'package:serverpod_auth2_server/serverpod_auth2_server.dart' as _i4;
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+    as _i5;
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+    as _i6;
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
+    as _i7;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i8;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -47,5 +57,15 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
+    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth2'] = _i4.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_email'] = _i5.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_email_account'] = _i6.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_migration'] = _i7.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_session'] = _i8.Endpoints()
+      ..initializeEndpoints(server);
   }
 }
