@@ -38,15 +38,6 @@ class ServerpodProjectNotFoundException implements Exception {
   String toString() => message;
 }
 
-class ServerpodModulesNotFoundException implements Exception {
-  final String message;
-
-  const ServerpodModulesNotFoundException(this.message);
-
-  @override
-  String toString() => message;
-}
-
 abstract interface class ModelLoadConfig {
   /// Path parts to the lib/src/protocol directory of the server package.
   List<String> get protocolSourcePathParts;
