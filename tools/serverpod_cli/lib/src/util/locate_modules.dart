@@ -10,7 +10,7 @@ const _serverSuffix = '_server';
 
 List<ModuleConfig> locateModules({
   required PackageConfig packageConfig,
-  Map<String, String?> manualModules = const {},
+  Map<String, String?> nickNameOverrides = const {},
 }) {
   var modules = <ModuleConfig>[];
 
@@ -51,7 +51,7 @@ List<ModuleConfig> locateModules({
 
       var moduleInfo = loadConfigFile(generatorConfigFile);
 
-      var manualNickname = manualModules[moduleName];
+      var manualNickname = nickNameOverrides[moduleName];
       var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
 
       modules.add(
