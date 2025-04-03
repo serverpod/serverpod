@@ -283,7 +283,7 @@ void main() {
   });
 
   group(
-      'Given a serverpod server with a missing database and a diagnostic event handler, '
+      'Given a serverpod server with a diagnostic event handler and a missing database, '
       'when starting serverpod', () {
     var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
