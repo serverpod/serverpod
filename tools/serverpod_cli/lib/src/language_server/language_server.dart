@@ -26,13 +26,18 @@ Future<void> runLanguageServer() async {
   var connection = Connection(stdin, stdout);
 
   ServerProject? serverProject;
+  Exception? exception;
 
   connection.onInitialize((params) async {
     var rootUri = params.rootUri;
     if (rootUri != null) {
       try {
         serverProject = await _loadServerProject(rootUri, connection);
-      } catch (_) {}
+      } catch (error) {
+        if (error is Exception) {
+          exception = error;
+        }
+      }
     }
 
     return InitializeResult(
@@ -43,7 +48,10 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onInitialized((_) async {
-    if (serverProject == null) {
+    if (serverProject == null &&
+        exception is ServerpodModulesNotFoundException) {
+      _sendModulesNotFoundNotification(connection);
+    } else if (serverProject == null) {
       return;
     }
 
@@ -112,6 +120,17 @@ Future<void> runLanguageServer() async {
   });
 
   await connection.listen();
+}
+
+void _sendModulesNotFoundNotification(Connection connection) {
+  connection.sendNotification(
+    'window/showMessage',
+    ShowMessageParams(
+      message:
+          'Serverpod model validation disabled. Unable to locate necessary modules, have you run "dart pub get"?',
+      type: MessageType.Warning,
+    ).toJson(),
+  );
 }
 
 Future<ServerProject?> _loadServerProject(
