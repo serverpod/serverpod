@@ -1,0 +1,11 @@
+class: Session
+table: serverpod_auth_session
+fields:
+  # TODO: Switch to UUID once possible
+  # id: UuidValue
+
+  # TODO: Change to UUID type
+  userId: int, relation(parent=auth_user)
+
+  ### The time when this sesion was created.
+  created: DateTime
