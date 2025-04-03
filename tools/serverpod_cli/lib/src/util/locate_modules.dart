@@ -8,7 +8,7 @@ import 'package:yaml/yaml.dart';
 
 const _serverSuffix = '_server';
 
-List<ModuleConfig> locateModules({
+List<ModuleConfig> loadModuleConfigs({
   required PackageConfig packageConfig,
   Map<String, String?> nickNameOverrides = const {},
 }) {

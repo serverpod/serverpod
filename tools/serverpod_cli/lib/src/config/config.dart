@@ -326,7 +326,7 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var modules = locateModules(
+    var modules = loadModuleConfigs(
       packageConfig: packageConfig,
       nickNameOverrides: manualModules,
     );
