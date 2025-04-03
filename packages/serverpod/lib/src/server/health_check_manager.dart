@@ -33,9 +33,12 @@ class HealthCheckManager {
     _running = true;
     try {
       await SystemResources.init();
-    } catch (e) {
-      stderr.writeln(
-        'CPU and memory usage metrics are not supported on this platform.',
+    } catch (e, stackTrace) {
+      _reportException(
+        e,
+        stackTrace,
+        message:
+            'CPU and memory usage metrics are not supported on this platform.',
       );
     }
     _scheduleNextCheck();
@@ -56,14 +59,10 @@ class HealthCheckManager {
       await _innerPerformHealthCheck();
       completer.complete();
     } catch (e, stackTrace) {
-      _pod.internalSubmitEvent(
-        ExceptionEvent(e, stackTrace, message: 'Error in health check'),
-        space: OriginSpace.framework,
-        context: DiagnosticEventContext(
-          serverId: _pod.serverId,
-          serverRunMode: _pod.commandLineArgs.role.name,
-          serverName: '',
-        ),
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error in health check',
       );
       completer.completeError(e, stackTrace);
     }
@@ -139,8 +138,11 @@ class HealthCheckManager {
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
       await session.db.unsafeQuery(closeQuery);
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to cleanup closed sessions: $e');
-      stderr.write('$stackTrace');
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Failed to cleanup closed sessions',
+      );
     }
   }
 
@@ -179,8 +181,11 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      _pod.logVerbose(e.toString());
-      _pod.logVerbose(stackTrace.toString());
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Failed to optimize health check data',
+      );
     }
   }
 
@@ -363,6 +368,29 @@ class HealthCheckManager {
     );
 
     return true;
+  }
+
+  void _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+  }) {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
+
+    _pod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: DiagnosticEventContext(
+        serverId: _pod.serverId,
+        serverRunMode: _pod.commandLineArgs.role.name,
+        serverName: '',
+      ),
+    );
   }
 }
 
