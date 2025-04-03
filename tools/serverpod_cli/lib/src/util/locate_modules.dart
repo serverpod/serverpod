@@ -21,7 +21,6 @@ List<ModuleConfig> loadModuleConfigs({
       if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
         continue;
       }
-      var moduleName = moduleNameFromServerPackageName(packageName);
 
       var packageSrcRoot = packageInfo.packageUriRoot;
       var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
@@ -46,11 +45,11 @@ List<ModuleConfig> loadModuleConfigs({
 
       var migrationVersions = findAllMigrationVersionsSync(
         directory: Directory.fromUri(moduleProjectUri),
-        moduleName: moduleName,
       );
 
       var moduleInfo = loadConfigFile(generatorConfigFile);
 
+      var moduleName = moduleNameFromServerPackageName(packageName);
       var manualNickname = nickNameOverrides[moduleName];
       var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
 
@@ -78,7 +77,6 @@ Map<dynamic, dynamic> loadConfigFile(File file) {
 
 List<String> findAllMigrationVersionsSync({
   required Directory directory,
-  required String moduleName,
 }) {
   try {
     var migrationRoot = MigrationConstants.migrationsBaseDirectory(directory);
