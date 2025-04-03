@@ -11,7 +11,6 @@ const _serverSuffix = '_server';
 
 Future<List<ModuleConfig>?> locateModules({
   required Directory directory,
-  List<String> excludePackages = const [],
   Map<String, String?> manualModules = const {},
 }) async {
   var modules = <ModuleConfig>[];
@@ -21,9 +20,6 @@ Future<List<ModuleConfig>?> locateModules({
     for (var packageInfo in packageConfig.packages) {
       try {
         var packageName = packageInfo.name;
-        if (excludePackages.contains(packageName)) {
-          continue;
-        }
 
         if (!packageName.endsWith(_serverSuffix) &&
             packageName != 'serverpod') {
