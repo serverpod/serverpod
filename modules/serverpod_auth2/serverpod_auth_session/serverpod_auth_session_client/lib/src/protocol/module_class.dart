@@ -11,40 +11,51 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ModuleClass implements _i1.SerializableModel {
-  ModuleClass._({
-    required this.name,
-    required this.data,
+abstract class Session implements _i1.SerializableModel {
+  Session._({
+    this.id,
+    required this.userId,
+    required this.created,
   });
 
-  factory ModuleClass({
-    required String name,
-    required int data,
-  }) = _ModuleClassImpl;
+  factory Session({
+    int? id,
+    required int userId,
+    required DateTime created,
+  }) = _SessionImpl;
 
-  factory ModuleClass.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ModuleClass(
-      name: jsonSerialization['name'] as String,
-      data: jsonSerialization['data'] as int,
+  factory Session.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Session(
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
     );
   }
 
-  String name;
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
 
-  int data;
+  int userId;
 
-  /// Returns a shallow copy of this [ModuleClass]
+  /// The time when this sesion was created.
+  DateTime created;
+
+  /// Returns a shallow copy of this [Session]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ModuleClass copyWith({
-    String? name,
-    int? data,
+  Session copyWith({
+    int? id,
+    int? userId,
+    DateTime? created,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'data': data,
+      if (id != null) 'id': id,
+      'userId': userId,
+      'created': created.toJson(),
     };
   }
 
@@ -54,26 +65,32 @@ abstract class ModuleClass implements _i1.SerializableModel {
   }
 }
 
-class _ModuleClassImpl extends ModuleClass {
-  _ModuleClassImpl({
-    required String name,
-    required int data,
+class _Undefined {}
+
+class _SessionImpl extends Session {
+  _SessionImpl({
+    int? id,
+    required int userId,
+    required DateTime created,
   }) : super._(
-          name: name,
-          data: data,
+          id: id,
+          userId: userId,
+          created: created,
         );
 
-  /// Returns a shallow copy of this [ModuleClass]
+  /// Returns a shallow copy of this [Session]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ModuleClass copyWith({
-    String? name,
-    int? data,
+  Session copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    DateTime? created,
   }) {
-    return ModuleClass(
-      name: name ?? this.name,
-      data: data ?? this.data,
+    return Session(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      created: created ?? this.created,
     );
   }
 }
