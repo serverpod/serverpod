@@ -326,7 +326,7 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var modules = await locateModules(
+    var modules = locateModules(
       packageConfig: packageConfig,
       manualModules: manualModules,
     );

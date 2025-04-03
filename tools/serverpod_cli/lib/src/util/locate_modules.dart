@@ -8,10 +8,10 @@ import 'package:yaml/yaml.dart';
 
 const _serverSuffix = '_server';
 
-Future<List<ModuleConfig>> locateModules({
+List<ModuleConfig> locateModules({
   required PackageConfig packageConfig,
   Map<String, String?> manualModules = const {},
-}) async {
+}) {
   var modules = <ModuleConfig>[];
 
   for (var packageInfo in packageConfig.packages) {
@@ -36,7 +36,7 @@ Future<List<ModuleConfig>> locateModules({
       );
 
       var generatorConfigFile = File.fromUri(generatorConfigUri);
-      if (!await generatorConfigFile.exists()) {
+      if (!generatorConfigFile.existsSync()) {
         continue;
       }
 
