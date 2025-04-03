@@ -12,78 +12,70 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 
-abstract class EmailAccount
+abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
-  EmailAccount._({
+  AuthUser._({
     _i1.UuidValue? id,
-    required this.userId,
     required this.created,
-    required this.email,
-    required this.passwordHash,
+    required this.scopeNames,
+    required this.blocked,
   }) : id = id ?? _i2.Uuid().v4obj();
 
-  factory EmailAccount({
+  factory AuthUser({
     _i1.UuidValue? id,
-    required _i1.UuidValue userId,
     required DateTime created,
-    required String email,
-    required String passwordHash,
-  }) = _EmailAccountImpl;
+    required Set<String> scopeNames,
+    required bool blocked,
+  }) = _AuthUserImpl;
 
-  factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
-    return EmailAccount(
+  factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
+    return AuthUser(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      email: jsonSerialization['email'] as String,
-      passwordHash: jsonSerialization['passwordHash'] as String,
+      scopeNames: _i1.SetJsonExtension.fromJson(
+          (jsonSerialization['scopeNames'] as List),
+          itemFromJson: (e) => e as String)!,
+      blocked: jsonSerialization['blocked'] as bool,
     );
   }
 
-  static final t = EmailAccountTable();
+  static final t = AuthUserTable();
 
-  static const db = EmailAccountRepository._();
+  static const db = AuthUserRepository._();
 
   @override
   _i1.UuidValue? id;
 
-  /// The id of the [AuthUser] this login belongs to.
-  _i1.UuidValue userId;
-
-  /// The time when this authentication was created.
+  /// The time when this user was created.
   DateTime created;
 
-  /// The email of the user.
-  ///
-  /// Stored in lower-case by convention.
-  String email;
+  /// Set of scopes that this user can access.
+  Set<String> scopeNames;
 
-  /// The hashed password of the user.
-  String passwordHash;
+  /// True if the user is blocked from signing in.
+  bool blocked;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
-  /// Returns a shallow copy of this [EmailAccount]
+  /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAccount copyWith({
+  AuthUser copyWith({
     _i1.UuidValue? id,
-    _i1.UuidValue? userId,
     DateTime? created,
-    String? email,
-    String? passwordHash,
+    Set<String>? scopeNames,
+    bool? blocked,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'userId': userId.toJson(),
       'created': created.toJson(),
-      'email': email,
-      'passwordHash': passwordHash,
+      'scopeNames': scopeNames.toJson(),
+      'blocked': blocked,
     };
   }
 
@@ -91,33 +83,32 @@ abstract class EmailAccount
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'userId': userId.toJson(),
       'created': created.toJson(),
-      'email': email,
-      'passwordHash': passwordHash,
+      'scopeNames': scopeNames.toJson(),
+      'blocked': blocked,
     };
   }
 
-  static EmailAccountInclude include() {
-    return EmailAccountInclude._();
+  static AuthUserInclude include() {
+    return AuthUserInclude._();
   }
 
-  static EmailAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+  static AuthUserIncludeList includeList({
+    _i1.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
+    _i1.OrderByBuilder<AuthUserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    EmailAccountInclude? include,
+    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
+    AuthUserInclude? include,
   }) {
-    return EmailAccountIncludeList._(
+    return AuthUserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(EmailAccount.t),
+      orderBy: orderBy?.call(AuthUser.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(EmailAccount.t),
+      orderByList: orderByList?.call(AuthUser.t),
       include: include,
     );
   }
@@ -130,100 +121,85 @@ abstract class EmailAccount
 
 class _Undefined {}
 
-class _EmailAccountImpl extends EmailAccount {
-  _EmailAccountImpl({
+class _AuthUserImpl extends AuthUser {
+  _AuthUserImpl({
     _i1.UuidValue? id,
-    required _i1.UuidValue userId,
     required DateTime created,
-    required String email,
-    required String passwordHash,
+    required Set<String> scopeNames,
+    required bool blocked,
   }) : super._(
           id: id,
-          userId: userId,
           created: created,
-          email: email,
-          passwordHash: passwordHash,
+          scopeNames: scopeNames,
+          blocked: blocked,
         );
 
-  /// Returns a shallow copy of this [EmailAccount]
+  /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailAccount copyWith({
+  AuthUser copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? userId,
     DateTime? created,
-    String? email,
-    String? passwordHash,
+    Set<String>? scopeNames,
+    bool? blocked,
   }) {
-    return EmailAccount(
+    return AuthUser(
       id: id is _i1.UuidValue? ? id : this.id,
-      userId: userId ?? this.userId,
       created: created ?? this.created,
-      email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
+      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
+      blocked: blocked ?? this.blocked,
     );
   }
 }
 
-class EmailAccountTable extends _i1.Table<_i1.UuidValue> {
-  EmailAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_email_account') {
-    userId = _i1.ColumnUuid(
-      'userId',
-      this,
-    );
+class AuthUserTable extends _i1.Table<_i1.UuidValue> {
+  AuthUserTable({super.tableRelation}) : super(tableName: 'auth_user') {
     created = _i1.ColumnDateTime(
       'created',
       this,
     );
-    email = _i1.ColumnString(
-      'email',
+    scopeNames = _i1.ColumnSerializable(
+      'scopeNames',
       this,
     );
-    passwordHash = _i1.ColumnString(
-      'passwordHash',
+    blocked = _i1.ColumnBool(
+      'blocked',
       this,
     );
   }
 
-  /// The id of the [AuthUser] this login belongs to.
-  late final _i1.ColumnUuid userId;
-
-  /// The time when this authentication was created.
+  /// The time when this user was created.
   late final _i1.ColumnDateTime created;
 
-  /// The email of the user.
-  ///
-  /// Stored in lower-case by convention.
-  late final _i1.ColumnString email;
+  /// Set of scopes that this user can access.
+  late final _i1.ColumnSerializable scopeNames;
 
-  /// The hashed password of the user.
-  late final _i1.ColumnString passwordHash;
+  /// True if the user is blocked from signing in.
+  late final _i1.ColumnBool blocked;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        userId,
         created,
-        email,
-        passwordHash,
+        scopeNames,
+        blocked,
       ];
 }
 
-class EmailAccountInclude extends _i1.IncludeObject {
-  EmailAccountInclude._();
+class AuthUserInclude extends _i1.IncludeObject {
+  AuthUserInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => EmailAccount.t;
+  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
 }
 
-class EmailAccountIncludeList extends _i1.IncludeList {
-  EmailAccountIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+class AuthUserIncludeList extends _i1.IncludeList {
+  AuthUserIncludeList._({
+    _i1.WhereExpressionBuilder<AuthUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -231,20 +207,20 @@ class EmailAccountIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(EmailAccount.t);
+    super.where = where?.call(AuthUser.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => EmailAccount.t;
+  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
 }
 
-class EmailAccountRepository {
-  const EmailAccountRepository._();
+class AuthUserRepository {
+  const AuthUserRepository._();
 
-  /// Returns a list of [EmailAccount]s matching the given query parameters.
+  /// Returns a list of [AuthUser]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -266,20 +242,20 @@ class EmailAccountRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<EmailAccount>> find(
+  Future<List<AuthUser>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _i1.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
+    _i1.OrderByBuilder<AuthUserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailAccount>(
-      where: where?.call(EmailAccount.t),
-      orderBy: orderBy?.call(EmailAccount.t),
-      orderByList: orderByList?.call(EmailAccount.t),
+    return session.db.find<AuthUser>(
+      where: where?.call(AuthUser.t),
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -287,7 +263,7 @@ class EmailAccountRepository {
     );
   }
 
-  /// Returns the first matching [EmailAccount] matching the given query parameters.
+  /// Returns the first matching [AuthUser] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -304,136 +280,136 @@ class EmailAccountRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<EmailAccount?> findFirstRow(
+  Future<AuthUser?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _i1.WhereExpressionBuilder<AuthUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
+    _i1.OrderByBuilder<AuthUserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailAccount>(
-      where: where?.call(EmailAccount.t),
-      orderBy: orderBy?.call(EmailAccount.t),
-      orderByList: orderByList?.call(EmailAccount.t),
+    return session.db.findFirstRow<AuthUser>(
+      where: where?.call(AuthUser.t),
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [EmailAccount] by its [id] or null if no such row exists.
-  Future<EmailAccount?> findById(
+  /// Finds a single [AuthUser] by its [id] or null if no such row exists.
+  Future<AuthUser?> findById(
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAccount>(
+    return session.db.findById<AuthUser>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [EmailAccount]s in the list and returns the inserted rows.
+  /// Inserts all [AuthUser]s in the list and returns the inserted rows.
   ///
-  /// The returned [EmailAccount]s will have their `id` fields set.
+  /// The returned [AuthUser]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<EmailAccount>> insert(
+  Future<List<AuthUser>> insert(
     _i1.Session session,
-    List<EmailAccount> rows, {
+    List<AuthUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAccount>(
+    return session.db.insert<AuthUser>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [EmailAccount] and returns the inserted row.
+  /// Inserts a single [AuthUser] and returns the inserted row.
   ///
-  /// The returned [EmailAccount] will have its `id` field set.
-  Future<EmailAccount> insertRow(
+  /// The returned [AuthUser] will have its `id` field set.
+  Future<AuthUser> insertRow(
     _i1.Session session,
-    EmailAccount row, {
+    AuthUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAccount>(
+    return session.db.insertRow<AuthUser>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccount]s in the list and returns the updated rows. If
+  /// Updates all [AuthUser]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<EmailAccount>> update(
+  Future<List<AuthUser>> update(
     _i1.Session session,
-    List<EmailAccount> rows, {
-    _i1.ColumnSelections<EmailAccountTable>? columns,
+    List<AuthUser> rows, {
+    _i1.ColumnSelections<AuthUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailAccount>(
+    return session.db.update<AuthUser>(
       rows,
-      columns: columns?.call(EmailAccount.t),
+      columns: columns?.call(AuthUser.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [EmailAccount]. The row needs to have its id set.
+  /// Updates a single [AuthUser]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<EmailAccount> updateRow(
+  Future<AuthUser> updateRow(
     _i1.Session session,
-    EmailAccount row, {
-    _i1.ColumnSelections<EmailAccountTable>? columns,
+    AuthUser row, {
+    _i1.ColumnSelections<AuthUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailAccount>(
+    return session.db.updateRow<AuthUser>(
       row,
-      columns: columns?.call(EmailAccount.t),
+      columns: columns?.call(AuthUser.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [EmailAccount]s in the list and returns the deleted rows.
+  /// Deletes all [AuthUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<EmailAccount>> delete(
+  Future<List<AuthUser>> delete(
     _i1.Session session,
-    List<EmailAccount> rows, {
+    List<AuthUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAccount>(
+    return session.db.delete<AuthUser>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [EmailAccount].
-  Future<EmailAccount> deleteRow(
+  /// Deletes a single [AuthUser].
+  Future<AuthUser> deleteRow(
     _i1.Session session,
-    EmailAccount row, {
+    AuthUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAccount>(
+    return session.db.deleteRow<AuthUser>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<EmailAccount>> deleteWhere(
+  Future<List<AuthUser>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailAccountTable> where,
+    required _i1.WhereExpressionBuilder<AuthUserTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailAccount>(
-      where: where(EmailAccount.t),
+    return session.db.deleteWhere<AuthUser>(
+      where: where(AuthUser.t),
       transaction: transaction,
     );
   }
@@ -442,12 +418,12 @@ class EmailAccountRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _i1.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailAccount>(
-      where: where?.call(EmailAccount.t),
+    return session.db.count<AuthUser>(
+      where: where?.call(AuthUser.t),
       limit: limit,
       transaction: transaction,
     );

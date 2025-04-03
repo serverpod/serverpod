@@ -10,8 +10,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'module_class.dart' as _i2;
-export 'module_class.dart';
+import 'migrated_user.dart' as _i2;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
+import 'package:serverpod_auth2_client/serverpod_auth2_client.dart' as _i4;
+export 'migrated_user.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -27,12 +29,18 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i2.ModuleClass) {
-      return _i2.ModuleClass.fromJson(data) as T;
+    if (t == _i2.MigratedUser) {
+      return _i2.MigratedUser.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.ModuleClass?>()) {
-      return (data != null ? _i2.ModuleClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i2.MigratedUser?>()) {
+      return (data != null ? _i2.MigratedUser.fromJson(data) : null) as T;
     }
+    try {
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i4.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -40,8 +48,16 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.ModuleClass) {
-      return 'ModuleClass';
+    if (data is _i2.MigratedUser) {
+      return 'MigratedUser';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth2.$className';
     }
     return null;
   }
@@ -52,8 +68,16 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'ModuleClass') {
-      return deserialize<_i2.ModuleClass>(data['data']);
+    if (dataClassName == 'MigratedUser') {
+      return deserialize<_i2.MigratedUser>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth2.')) {
+      data['className'] = dataClassName.substring(16);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
