@@ -1,0 +1,9 @@
+# Add your generated serializable classes in the `protocol` directory. Produce
+# the generated serve and client code by running `serverpod generate` in the
+# root directory of the modules server package. You should include the generated
+# code in any published packages.
+
+class: ModuleClass
+fields:
+  name: String
+  data: int
