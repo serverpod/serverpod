@@ -680,4 +680,24 @@ void main() {
       throwsA(isA<TypeError>()),
     );
   });
+
+  test(
+      'Given a class with a non-nullable Set when deserializing with null value provided in JSON, then a TypeError is thrown',
+      () {
+    expect(
+      () => TypesSetRequired.fromJson({'anInt': null}),
+      throwsA(isA<TypeError>()),
+    );
+  });
+
+  test(
+      'Given a class with a non-nullable Set when deserializing with correct values provided in JSON, then the result matches the input',
+      () {
+    expect(
+      TypesSetRequired.fromJson({
+        'anInt': [3, 2, 1]
+      }),
+      isA<TypesSetRequired>().having((t) => t.anInt, 'anInt', {3, 2, 1}),
+    );
+  });
 }
