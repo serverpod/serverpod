@@ -3,87 +3,71 @@ import 'dart:io';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
 
 const _serverSuffix = '_server';
 
-Future<List<ModuleConfig>?> locateModules({
-  required Directory directory,
-  List<String> excludePackages = const [],
-  Map<String, String?> manualModules = const {},
-}) async {
+List<ModuleConfig> loadModuleConfigs({
+  required PackageConfig packageConfig,
+  Map<String, String?> nickNameOverrides = const {},
+}) {
   var modules = <ModuleConfig>[];
 
-  var packageConfig = await findPackageConfig(directory);
-  if (packageConfig != null) {
-    for (var packageInfo in packageConfig.packages) {
-      try {
-        var packageName = packageInfo.name;
-        if (excludePackages.contains(packageName)) {
-          continue;
-        }
+  for (var packageInfo in packageConfig.packages) {
+    try {
+      var packageName = packageInfo.name;
 
-        if (!packageName.endsWith(_serverSuffix) &&
-            packageName != 'serverpod') {
-          continue;
-        }
-        var moduleName = moduleNameFromServerPackageName(packageName);
-
-        var packageSrcRoot = packageInfo.packageUriRoot;
-        var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
-          ..removeLast()
-          ..removeLast();
-        var generatorConfigSegments = path
-            .joinAll([...moduleProjectRoot, 'config', 'generator.yaml']).split(
-                path.separator);
-
-        var generatorConfigUri = packageSrcRoot.replace(
-          pathSegments: generatorConfigSegments,
-        );
-
-        var generatorConfigFile = File.fromUri(generatorConfigUri);
-        if (!await generatorConfigFile.exists()) {
-          continue;
-        }
-
-        var moduleProjectUri = packageSrcRoot.replace(
-          pathSegments: moduleProjectRoot,
-        );
-
-        var migrationVersions = findAllMigrationVersionsSync(
-          directory: Directory.fromUri(moduleProjectUri),
-          moduleName: moduleName,
-        );
-
-        var moduleInfo = loadConfigFile(generatorConfigFile);
-
-        var manualNickname = manualModules[moduleName];
-        var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
-
-        modules.add(
-          ModuleConfig(
-            type: GeneratorConfig.getPackageType(moduleInfo),
-            name: moduleName,
-            nickname: nickname,
-            migrationVersions: migrationVersions,
-            serverPackageDirectoryPathParts: moduleProjectRoot,
-          ),
-        );
-      } catch (e) {
+      if (!packageName.endsWith(_serverSuffix) && packageName != 'serverpod') {
         continue;
       }
-    }
 
-    return modules;
-  } else {
-    log.error(
-      'Failed to read your server\'s package configuration. Have you run '
-      '`dart pub get` in your server directory?',
-    );
-    return null;
+      var packageSrcRoot = packageInfo.packageUriRoot;
+      var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
+        ..removeLast()
+        ..removeLast();
+      var generatorConfigSegments = path
+          .joinAll([...moduleProjectRoot, 'config', 'generator.yaml']).split(
+              path.separator);
+
+      var generatorConfigUri = packageSrcRoot.replace(
+        pathSegments: generatorConfigSegments,
+      );
+
+      var generatorConfigFile = File.fromUri(generatorConfigUri);
+      if (!generatorConfigFile.existsSync()) {
+        continue;
+      }
+
+      var moduleProjectUri = packageSrcRoot.replace(
+        pathSegments: moduleProjectRoot,
+      );
+
+      var migrationVersions = findAllMigrationVersionsSync(
+        directory: Directory.fromUri(moduleProjectUri),
+      );
+
+      var moduleInfo = loadConfigFile(generatorConfigFile);
+
+      var moduleName = moduleNameFromServerPackageName(packageName);
+      var manualNickname = nickNameOverrides[moduleName];
+      var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
+
+      modules.add(
+        ModuleConfig(
+          type: GeneratorConfig.getPackageType(moduleInfo),
+          name: moduleName,
+          nickname: nickname,
+          migrationVersions: migrationVersions,
+          serverPackageDirectoryPathParts: moduleProjectRoot,
+        ),
+      );
+    } catch (e) {
+      continue;
+    }
   }
+
+  return modules;
 }
 
 Map<dynamic, dynamic> loadConfigFile(File file) {
@@ -93,7 +77,6 @@ Map<dynamic, dynamic> loadConfigFile(File file) {
 
 List<String> findAllMigrationVersionsSync({
   required Directory directory,
-  required String moduleName,
 }) {
   try {
     var migrationRoot = MigrationConstants.migrationsBaseDirectory(directory);

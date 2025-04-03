@@ -48,11 +48,8 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onInitialized((_) async {
-    if (serverProject == null &&
-        exception is ServerpodModulesNotFoundException) {
+    if (exception is ServerpodModulesNotFoundException) {
       _sendModulesNotFoundNotification(connection);
-    } else if (serverProject == null) {
-      return;
     }
 
     serverProject?.analyzer.validateAll();
