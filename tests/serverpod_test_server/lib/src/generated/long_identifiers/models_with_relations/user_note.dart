@@ -16,7 +16,7 @@ abstract class UserNote
   UserNote._({
     this.id,
     required this.name,
-  });
+  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = null;
 
   factory UserNote({
     int? id,
@@ -24,9 +24,13 @@ abstract class UserNote
   }) = _UserNoteImpl;
 
   factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          jsonSerialization[
+                  '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
+              as int?,
     );
   }
 
@@ -39,7 +43,7 @@ abstract class UserNote
 
   String name;
 
-  int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
   _i1.Table<int> get table => t;
@@ -120,9 +124,11 @@ class _UserNoteImpl extends UserNote {
     Object? id = _Undefined,
     String? name,
   }) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          this._userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
     );
   }
 }
@@ -131,8 +137,10 @@ class UserNoteImplicit extends _UserNoteImpl {
   UserNoteImplicit._({
     int? id,
     required String name,
-    this.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-  }) : super(
+    int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  })  : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
+            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        super(
           id: id,
           name: name,
         );
@@ -149,17 +157,8 @@ class UserNoteImplicit extends _UserNoteImpl {
     );
   }
 
-  int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
-    });
-    return jsonMap;
-  }
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 }
 
 class UserNoteTable extends _i1.Table<int> {

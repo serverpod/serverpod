@@ -59,6 +59,8 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
     bool? isNullable,
     bool? isFinal,
     bool? isLate,
+    bool? isOverride,
+    String? type,
   }) {
     return _FieldMatcherImpl._(
       ChainableMatcher.createMatcher(
@@ -71,6 +73,8 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
       isNullable: isNullable,
       isFinal: isFinal,
       isLate: isLate,
+      isOverride: isOverride,
+      type: type,
     );
   }
 

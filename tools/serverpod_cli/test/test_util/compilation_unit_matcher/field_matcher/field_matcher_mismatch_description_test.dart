@@ -27,7 +27,7 @@ void main() {
   });
 
   group(
-      'Given compilation unit with class and non-nullable non-late final field',
+      'Given compilation unit with class and non-nullable non-late non-override final String field',
       () {
     late final compilationUnit = parseCode(
       '''
@@ -47,7 +47,7 @@ void main() {
 
       expect(
         description.toString(),
-        contains(
+        equals(
             'does not contain field "nonExistentField". Found fields: [name]'),
       );
     });
@@ -62,7 +62,7 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is non-nullable'),
+        equals('contains field "name" but the field is non-nullable'),
       );
     });
 
@@ -76,7 +76,7 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is final'),
+        equals('contains field "name" but the field is final'),
       );
     });
 
@@ -89,22 +89,56 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is non-late'),
+        equals('contains field "name" but the field is non-late'),
       );
     });
 
     test(
-        'when matching with nullable late non-final field then mismatch description is correct',
+        'when matching with override field then mismatch description is correct',
         () {
-      final matcher = containsClass('User').withField('name',
-          isFinal: false, isNullable: true, isLate: true) as Matcher;
+      final matcher =
+          containsClass('User').withField('name', isOverride: true) as Matcher;
       final description = StringDescription();
       matcher.describeMismatch(compilationUnit, description, {}, false);
 
       expect(
         description.toString(),
-        contains(
-            'contains field "name" but the field is non-nullable and non-late and final'),
+        equals('contains field "name" but the field is non-override'),
+      );
+    });
+
+    test('when matching with int field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', type: 'int') as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        equals(
+            'contains field "name" but the field is of type "String" instead of "int"'),
+      );
+    });
+
+    test(
+        'when matching with nullable late non-final override int field then mismatch description is correct',
+        () {
+      final matcher = containsClass('User').withField(
+        'name',
+        isFinal: false,
+        isNullable: true,
+        isLate: true,
+        isOverride: true,
+        type: 'int',
+      ) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        equals(
+            'contains field "name" but the field is non-nullable and non-late and final and non-override and of type "String" instead of "int"'),
       );
     });
   });
@@ -128,7 +162,7 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is nullable'),
+        equals('contains field "name" but the field is nullable'),
       );
     });
   });
@@ -151,7 +185,7 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is non-final'),
+        equals('contains field "name" but the field is non-final'),
       );
     });
   });
@@ -175,7 +209,32 @@ void main() {
 
       expect(
         description.toString(),
-        contains('contains field "name" but the field is late'),
+        equals('contains field "name" but the field is late'),
+      );
+    });
+  });
+
+  group('Given compilation unit with class and override field', () {
+    late final compilationUnit = parseCode(
+      '''
+      class User {
+        @override
+        String name;
+      }
+    ''',
+    );
+
+    test(
+        'when matching with non-override field then mismatch description is correct',
+        () {
+      final matcher =
+          containsClass('User').withField('name', isOverride: false) as Matcher;
+      final description = StringDescription();
+      matcher.describeMismatch(compilationUnit, description, {}, false);
+
+      expect(
+        description.toString(),
+        equals('contains field "name" but the field is override'),
       );
     });
   });

@@ -235,7 +235,9 @@ class Serverpod {
       if (settings != null) {
         _updateLogSettings(settings);
       }
-    } catch (_) {
+    } catch (e, stackTrace) {
+      const message = 'Failed to reload runtime settings.';
+      _reportException(e, stackTrace, message: message);
       return;
     }
   }
@@ -252,9 +254,12 @@ class Serverpod {
         settings.id = oldRuntimeSettings.id;
         await internal.RuntimeSettings.db.updateRow(internalSession, settings);
       }
-    } catch (error, stackTrace) {
-      logVerbose(error.toString());
-      logVerbose(stackTrace.toString());
+    } catch (e, stackTrace) {
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Failed to store runtime settings',
+      );
     }
   }
 
@@ -613,8 +618,10 @@ class Serverpod {
         session: internalSession,
         maxAttempts: maxAttempts,
       );
-    } catch (e) {
-      throw ExitException(1, 'Failed to connect to the database: $e');
+    } catch (e, stackTrace) {
+      const message = 'Failed to connect to the database.';
+      _reportException(e, stackTrace, message: message);
+      throw ExitException(1, '$message: $e');
     }
 
     try {
@@ -655,22 +662,20 @@ class Serverpod {
 
       logVerbose('Verifying database integrity.');
       await migrationManager.verifyDatabaseIntegrity(internalSession);
-    } catch (e) {
+    } catch (e, stackTrace) {
       _exitCode = 1;
-      stderr.writeln(
-        'Failed to apply database migrations. $e',
-      );
+      const message = 'Failed to apply database migrations.';
+      _reportException(e, stackTrace, message: message);
     }
 
     logVerbose('Loading runtime settings.');
     try {
       _runtimeSettings =
           await internal.RuntimeSettings.db.findFirstRow(internalSession);
-    } catch (e) {
+    } catch (e, stackTrace) {
       _exitCode = 1;
-      stderr.writeln(
-        'Failed to load runtime settings. $e',
-      );
+      const message = 'Failed to load runtime settings.';
+      _reportException(e, stackTrace, message: message);
     }
 
     if (_runtimeSettings == null) {
@@ -678,11 +683,10 @@ class Serverpod {
       try {
         _runtimeSettings = await RuntimeSettings.db
             .insertRow(internalSession, _defaultRuntimeSettings);
-      } catch (e) {
+      } catch (e, stackTrace) {
         _exitCode = 1;
-        stderr.writeln(
-          'Failed to store runtime settings. $e',
-        );
+        const message = 'Failed to store runtime settings.';
+        _reportException(e, stackTrace, message: message);
       }
     } else {
       logVerbose('Runtime settings loaded.');
@@ -943,11 +947,11 @@ class Serverpod {
     StackTrace stackTrace, {
     String? message,
   }) {
+    var now = DateTime.now().toUtc();
     if (message != null) {
-      message = '${DateTime.now().toUtc()} $message';
-      stderr.writeln(message);
+      stderr.writeln('$now ERROR: $message');
     }
-    stderr.writeln('$e');
+    stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
     internalSubmitEvent(
@@ -974,11 +978,11 @@ class Serverpod {
       try {
         await session.db.testConnection();
         return session;
-      } catch (e) {
-        // Write connection error to stderr.
-        stderr.writeln(
-          'Failed to connect to the database. Retrying in 10 seconds. $e',
-        );
+      } catch (e, stackTrace) {
+        const message = 'Failed to connect to the database.';
+        _reportException(e, stackTrace, message: message);
+
+        stderr.writeln('Retrying to connect to the database in 10 seconds.');
         if (!printedDatabaseConnectionError) {
           stderr.writeln('Database configuration:');
           stderr.writeln(config.database.toString());
