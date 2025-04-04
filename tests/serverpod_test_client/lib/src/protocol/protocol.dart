@@ -147,16 +147,17 @@ import 'types_list.dart' as _i127;
 import 'types_map.dart' as _i128;
 import 'types_record.dart' as _i129;
 import 'types_set.dart' as _i130;
-import 'unique_data.dart' as _i131;
-import 'my_feature/models/my_feature_model.dart' as _i132;
+import 'types_set_required.dart' as _i131;
+import 'unique_data.dart' as _i132;
+import 'my_feature/models/my_feature_model.dart' as _i133;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i133;
-import 'dart:typed_data' as _i134;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i135;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i136;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i137;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i138;
-import 'package:serverpod_test_client/src/protocol/types.dart' as _i139;
+    as _i134;
+import 'dart:typed_data' as _i135;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i136;
+import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i137;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i138;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i139;
+import 'package:serverpod_test_client/src/protocol/types.dart' as _i140;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'defaults/bigint/bigint_default.dart';
@@ -287,6 +288,7 @@ export 'types_list.dart';
 export 'types_map.dart';
 export 'types_record.dart';
 export 'types_set.dart';
+export 'types_set_required.dart';
 export 'unique_data.dart';
 export 'my_feature/models/my_feature_model.dart';
 export 'client.dart';
@@ -697,11 +699,14 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i130.TypesSet) {
       return _i130.TypesSet.fromJson(data) as T;
     }
-    if (t == _i131.UniqueData) {
-      return _i131.UniqueData.fromJson(data) as T;
+    if (t == _i131.TypesSetRequired) {
+      return _i131.TypesSetRequired.fromJson(data) as T;
     }
-    if (t == _i132.MyFeatureModel) {
-      return _i132.MyFeatureModel.fromJson(data) as T;
+    if (t == _i132.UniqueData) {
+      return _i132.UniqueData.fromJson(data) as T;
+    }
+    if (t == _i133.MyFeatureModel) {
+      return _i133.MyFeatureModel.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.ByIndexEnumWithNameValue?>()) {
       return (data != null ? _i2.ByIndexEnumWithNameValue.fromJson(data) : null)
@@ -1144,11 +1149,14 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i130.TypesSet?>()) {
       return (data != null ? _i130.TypesSet.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i131.UniqueData?>()) {
-      return (data != null ? _i131.UniqueData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i131.TypesSetRequired?>()) {
+      return (data != null ? _i131.TypesSetRequired.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i132.MyFeatureModel?>()) {
-      return (data != null ? _i132.MyFeatureModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i132.UniqueData?>()) {
+      return (data != null ? _i132.UniqueData.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i133.MyFeatureModel?>()) {
+      return (data != null ? _i133.MyFeatureModel.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<List<_i49.EmptyModelRelationItem>?>()) {
       return (data != null
@@ -1269,19 +1277,19 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i93.Cat>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i133.ModuleClass>) {
+    if (t == List<_i134.ModuleClass>) {
       return (data as List)
-          .map((e) => deserialize<_i133.ModuleClass>(e))
+          .map((e) => deserialize<_i134.ModuleClass>(e))
           .toList() as T;
     }
-    if (t == Map<String, _i133.ModuleClass>) {
+    if (t == Map<String, _i134.ModuleClass>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i133.ModuleClass>(v))) as T;
+          deserialize<String>(k), deserialize<_i134.ModuleClass>(v))) as T;
     }
-    if (t == _i1.getType<(_i133.ModuleClass,)?>()) {
+    if (t == _i1.getType<(_i134.ModuleClass,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i133.ModuleClass>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i134.ModuleClass>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == List<int>) {
@@ -1338,22 +1346,22 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<DateTime?>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i134.ByteData>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData>(e)).toList()
+    if (t == List<_i135.ByteData>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData>(e)).toList()
           as T;
     }
-    if (t == _i1.getType<List<_i134.ByteData>?>()) {
+    if (t == _i1.getType<List<_i135.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i134.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i135.ByteData>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i134.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData?>(e)).toList()
+    if (t == List<_i135.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData?>(e)).toList()
           as T;
     }
-    if (t == _i1.getType<List<_i134.ByteData?>?>()) {
+    if (t == _i1.getType<List<_i135.ByteData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i134.ByteData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i135.ByteData?>(e)).toList()
           : null) as T;
     }
     if (t == List<Duration>) {
@@ -1411,14 +1419,14 @@ class Protocol extends _i1.SerializationManager {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as T;
     }
-    if (t == _i135.CustomClassWithoutProtocolSerialization) {
-      return _i135.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
+    if (t == _i136.CustomClassWithoutProtocolSerialization) {
+      return _i136.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
     }
-    if (t == _i135.CustomClassWithProtocolSerialization) {
-      return _i135.CustomClassWithProtocolSerialization.fromJson(data) as T;
+    if (t == _i136.CustomClassWithProtocolSerialization) {
+      return _i136.CustomClassWithProtocolSerialization.fromJson(data) as T;
     }
-    if (t == _i135.CustomClassWithProtocolSerializationMethod) {
-      return _i135.CustomClassWithProtocolSerializationMethod.fromJson(data)
+    if (t == _i136.CustomClassWithProtocolSerializationMethod) {
+      return _i136.CustomClassWithProtocolSerializationMethod.fromJson(data)
           as T;
     }
     if (t == List<_i124.TestEnum>) {
@@ -1446,9 +1454,9 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime>(v))) as T;
     }
-    if (t == Map<String, _i134.ByteData>) {
+    if (t == Map<String, _i135.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i134.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i135.ByteData>(v)))
           as T;
     }
     if (t == Map<String, Duration>) {
@@ -1471,9 +1479,9 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
-    if (t == Map<String, _i134.ByteData?>) {
+    if (t == Map<String, _i135.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i134.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i135.ByteData?>(v)))
           as T;
     }
     if (t == Map<String, Duration?>) {
@@ -1594,9 +1602,9 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i134.ByteData>?>()) {
+    if (t == _i1.getType<List<_i135.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i134.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i135.ByteData>(e)).toList()
           : null) as T;
     }
     if (t == _i1.getType<List<Duration>?>()) {
@@ -1706,10 +1714,10 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<_i134.ByteData, String>?>()) {
+    if (t == _i1.getType<Map<_i135.ByteData, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i134.ByteData>(e['k']),
+              deserialize<_i135.ByteData>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
@@ -1814,10 +1822,10 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i134.ByteData>?>()) {
+    if (t == _i1.getType<Map<String, _i135.ByteData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i134.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i135.ByteData>(v)))
           : null) as T;
     }
     if (t == _i1.getType<Map<String, Duration>?>()) {
@@ -1930,10 +1938,10 @@ class Protocol extends _i1.SerializationManager {
           ? null as T
           : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i134.ByteData,)?>()) {
+    if (t == _i1.getType<(_i135.ByteData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i134.ByteData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i135.ByteData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(Duration,)?>()) {
@@ -2065,9 +2073,9 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<String>(e)).toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<_i134.ByteData>?>()) {
+    if (t == _i1.getType<Set<_i135.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i134.ByteData>(e)).toSet()
+          ? (data as List).map((e) => deserialize<_i135.ByteData>(e)).toSet()
           : null) as T;
     }
     if (t == _i1.getType<Set<Duration>?>()) {
@@ -2132,6 +2140,9 @@ class Protocol extends _i1.SerializationManager {
           ? null as T
           : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
+    if (t == Set<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
+    }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<String>(e)).toList()
@@ -2140,9 +2151,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i136.SimpleData>) {
+    if (t == List<_i137.SimpleData>) {
       return (data as List)
-          .map((e) => deserialize<_i136.SimpleData>(e))
+          .map((e) => deserialize<_i137.SimpleData>(e))
           .toList() as T;
     }
     if (t == List<int>) {
@@ -2199,28 +2210,28 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<DateTime?>) {
       return (data as List).map((e) => deserialize<DateTime?>(e)).toList() as T;
     }
-    if (t == List<_i134.ByteData>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData>(e)).toList()
+    if (t == List<_i135.ByteData>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData>(e)).toList()
           as T;
     }
-    if (t == List<_i134.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData?>(e)).toList()
+    if (t == List<_i135.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData?>(e)).toList()
           as T;
     }
-    if (t == List<_i136.SimpleData?>) {
+    if (t == List<_i137.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i136.SimpleData?>(e))
+          .map((e) => deserialize<_i137.SimpleData?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<_i136.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i137.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i136.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i137.SimpleData>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i136.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i137.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i136.SimpleData?>(e))
+              .map((e) => deserialize<_i137.SimpleData?>(e))
               .toList()
           : null) as T;
     }
@@ -2259,13 +2270,13 @@ class Protocol extends _i1.SerializationManager {
       return Map.fromEntries((data as List).map((e) =>
           MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v'])))) as T;
     }
-    if (t == Map<_i137.TestEnum, int>) {
+    if (t == Map<_i138.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-          deserialize<_i137.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
+          deserialize<_i138.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
     }
-    if (t == Map<String, _i137.TestEnum>) {
+    if (t == Map<String, _i138.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i137.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i138.TestEnum>(v)))
           as T;
     }
     if (t == Map<String, double>) {
@@ -2302,34 +2313,34 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
-    if (t == Map<String, _i134.ByteData>) {
+    if (t == Map<String, _i135.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i134.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i135.ByteData>(v)))
           as T;
     }
-    if (t == Map<String, _i134.ByteData?>) {
+    if (t == Map<String, _i135.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i134.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i135.ByteData?>(v)))
           as T;
     }
-    if (t == Map<String, _i136.SimpleData>) {
+    if (t == Map<String, _i137.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i136.SimpleData>(v))) as T;
+          deserialize<String>(k), deserialize<_i137.SimpleData>(v))) as T;
     }
-    if (t == Map<String, _i136.SimpleData?>) {
+    if (t == Map<String, _i137.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i136.SimpleData?>(v))) as T;
+          deserialize<String>(k), deserialize<_i137.SimpleData?>(v))) as T;
     }
-    if (t == _i1.getType<Map<String, _i136.SimpleData>?>()) {
+    if (t == _i1.getType<Map<String, _i137.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i136.SimpleData>(v)))
+              deserialize<String>(k), deserialize<_i137.SimpleData>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i136.SimpleData?>?>()) {
+    if (t == _i1.getType<Map<String, _i137.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i136.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i137.SimpleData?>(v)))
           : null) as T;
     }
     if (t == Map<String, Duration>) {
@@ -2340,20 +2351,20 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
-    if (t == List<_i138.UserInfo>) {
-      return (data as List).map((e) => deserialize<_i138.UserInfo>(e)).toList()
+    if (t == List<_i139.UserInfo>) {
+      return (data as List).map((e) => deserialize<_i139.UserInfo>(e)).toList()
           as T;
     }
     if (t == Set<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
     }
-    if (t == Set<_i136.SimpleData>) {
-      return (data as List).map((e) => deserialize<_i136.SimpleData>(e)).toSet()
+    if (t == Set<_i137.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i137.SimpleData>(e)).toSet()
           as T;
     }
-    if (t == List<Set<_i136.SimpleData>>) {
+    if (t == List<Set<_i137.SimpleData>>) {
       return (data as List)
-          .map((e) => deserialize<Set<_i136.SimpleData>>(e))
+          .map((e) => deserialize<Set<_i137.SimpleData>>(e))
           .toList() as T;
     }
     if (t == _i1.getType<(int,)>()) {
@@ -2394,18 +2405,18 @@ class Protocol extends _i1.SerializationManager {
               deserialize<String>(data['p'][1]),
             ) as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i136.SimpleData>(data['p'][1]),
+              deserialize<_i137.SimpleData>(data['p'][1]),
             ) as T;
     }
     if (t == _i1.getType<({int number, String text})>()) {
@@ -2422,135 +2433,135 @@ class Protocol extends _i1.SerializationManager {
               text: deserialize<String>(data['n']['text']),
             ) as T;
     }
-    if (t == _i1.getType<({_i136.SimpleData data, int number})>()) {
+    if (t == _i1.getType<({_i137.SimpleData data, int number})>()) {
       return (
         data:
-            deserialize<_i136.SimpleData>(((data as Map)['n'] as Map)['data']),
+            deserialize<_i137.SimpleData>(((data as Map)['n'] as Map)['data']),
         number: deserialize<int>(data['n']['number']),
       ) as T;
     }
-    if (t == _i1.getType<({_i136.SimpleData data, int number})?>()) {
+    if (t == _i1.getType<({_i137.SimpleData data, int number})?>()) {
       return (data == null)
           ? null as T
           : (
-              data: deserialize<_i136.SimpleData>(
+              data: deserialize<_i137.SimpleData>(
                   ((data as Map)['n'] as Map)['data']),
               number: deserialize<int>(data['n']['number']),
             ) as T;
     }
-    if (t == _i1.getType<({_i136.SimpleData? data, int? number})>()) {
+    if (t == _i1.getType<({_i137.SimpleData? data, int? number})>()) {
       return (
         data: ((data as Map)['n'] as Map)['data'] == null
             ? null
-            : deserialize<_i136.SimpleData>(data['n']['data']),
+            : deserialize<_i137.SimpleData>(data['n']['data']),
         number: ((data)['n'] as Map)['number'] == null
             ? null
             : deserialize<int>(data['n']['number']),
       ) as T;
     }
-    if (t == _i1.getType<(int, {_i136.SimpleData data})>()) {
+    if (t == _i1.getType<(int, {_i137.SimpleData data})>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        data: deserialize<_i136.SimpleData>(data['n']['data']),
+        data: deserialize<_i137.SimpleData>(data['n']['data']),
       ) as T;
     }
-    if (t == _i1.getType<(int, {_i136.SimpleData data})?>()) {
+    if (t == _i1.getType<(int, {_i137.SimpleData data})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              data: deserialize<_i136.SimpleData>(data['n']['data']),
+              data: deserialize<_i137.SimpleData>(data['n']['data']),
             ) as T;
     }
-    if (t == List<(int, _i136.SimpleData)>) {
+    if (t == List<(int, _i137.SimpleData)>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i136.SimpleData)>(e))
+          .map((e) => deserialize<(int, _i137.SimpleData)>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == List<(int, _i136.SimpleData)?>) {
+    if (t == List<(int, _i137.SimpleData)?>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i136.SimpleData)?>(e))
+          .map((e) => deserialize<(int, _i137.SimpleData)?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i136.SimpleData>(data['p'][1]),
+              deserialize<_i137.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == Set<(int, _i136.SimpleData)>) {
+    if (t == Set<(int, _i137.SimpleData)>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i136.SimpleData)>(e))
+          .map((e) => deserialize<(int, _i137.SimpleData)>(e))
           .toSet() as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Set<(int, _i136.SimpleData)?>) {
+    if (t == Set<(int, _i137.SimpleData)?>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i136.SimpleData)?>(e))
+          .map((e) => deserialize<(int, _i137.SimpleData)?>(e))
           .toSet() as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i136.SimpleData>(data['p'][1]),
+              deserialize<_i137.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == _i1.getType<Set<(int, _i136.SimpleData)>?>()) {
+    if (t == _i1.getType<Set<(int, _i137.SimpleData)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(int, _i136.SimpleData)>(e))
+              .map((e) => deserialize<(int, _i137.SimpleData)>(e))
               .toSet()
           : null) as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Map<String, (int, _i136.SimpleData)>) {
+    if (t == Map<String, (int, _i137.SimpleData)>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<(int, _i136.SimpleData)>(v)))
+              deserialize<String>(k), deserialize<(int, _i137.SimpleData)>(v)))
           as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Map<String, (int, _i136.SimpleData)?>) {
+    if (t == Map<String, (int, _i137.SimpleData)?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<(int, _i136.SimpleData)?>(v)))
+              deserialize<String>(k), deserialize<(int, _i137.SimpleData)?>(v)))
           as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i136.SimpleData>(data['p'][1]),
+              deserialize<_i137.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == Map<(String, int), (int, _i136.SimpleData)>) {
+    if (t == Map<(String, int), (int, _i137.SimpleData)>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
           deserialize<(String, int)>(e['k']),
-          deserialize<(int, _i136.SimpleData)>(e['v'])))) as T;
+          deserialize<(int, _i137.SimpleData)>(e['v'])))) as T;
     }
     if (t == _i1.getType<(String, int)>()) {
       return (
@@ -2558,10 +2569,10 @@ class Protocol extends _i1.SerializationManager {
         deserialize<int>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<(int, _i136.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i137.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i136.SimpleData>(data['p'][1]),
+        deserialize<_i137.SimpleData>(data['p'][1]),
       ) as T;
     }
     if (t == _i1.getType<(String, int)>()) {
@@ -2613,56 +2624,56 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<({(_i136.SimpleData, double) namedSubRecord})>()) {
+    if (t == _i1.getType<({(_i137.SimpleData, double) namedSubRecord})>()) {
       return (
-        namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i137.SimpleData, double)>(
             ((data as Map)['n'] as Map)['namedSubRecord']),
       ) as T;
     }
-    if (t == _i1.getType<(_i136.SimpleData, double)>()) {
+    if (t == _i1.getType<(_i137.SimpleData, double)>()) {
       return (
-        deserialize<_i136.SimpleData>(((data as Map)['p'] as List)[0]),
+        deserialize<_i137.SimpleData>(((data as Map)['p'] as List)[0]),
         deserialize<double>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<({(_i136.SimpleData, double)? namedSubRecord})>()) {
+    if (t == _i1.getType<({(_i137.SimpleData, double)? namedSubRecord})>()) {
       return (
         namedSubRecord: ((data as Map)['n'] as Map)['namedSubRecord'] == null
             ? null
-            : deserialize<(_i136.SimpleData, double)>(
+            : deserialize<(_i137.SimpleData, double)>(
                 data['n']['namedSubRecord']),
       ) as T;
     }
-    if (t == _i1.getType<(_i136.SimpleData, double)?>()) {
+    if (t == _i1.getType<(_i137.SimpleData, double)?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i136.SimpleData>(((data as Map)['p'] as List)[0]),
+              deserialize<_i137.SimpleData>(((data as Map)['p'] as List)[0]),
               deserialize<double>(data['p'][1]),
             ) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i136.SimpleData, double) namedSubRecord})>()) {
+            ((int, String), {(_i137.SimpleData, double) namedSubRecord})>()) {
       return (
         deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-        namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i137.SimpleData, double)>(
             data['n']['namedSubRecord']),
       ) as T;
     }
     if (t ==
-        List<((int, String), {(_i136.SimpleData, double) namedSubRecord})>) {
+        List<((int, String), {(_i137.SimpleData, double) namedSubRecord})>) {
       return (data as List)
           .map((e) => deserialize<
-              ((int, String), {(_i136.SimpleData, double) namedSubRecord})>(e))
+              ((int, String), {(_i137.SimpleData, double) namedSubRecord})>(e))
           .toList() as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i136.SimpleData, double) namedSubRecord})>()) {
+            ((int, String), {(_i137.SimpleData, double) namedSubRecord})>()) {
       return (
         deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-        namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i137.SimpleData, double)>(
             data['n']['namedSubRecord']),
       ) as T;
     }
@@ -2671,37 +2682,37 @@ class Protocol extends _i1.SerializationManager {
             List<
                 (
                   (int, String), {
-                  (_i136.SimpleData, double) namedSubRecord
+                  (_i137.SimpleData, double) namedSubRecord
                 })?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<
                   (
                     (int, String), {
-                    (_i136.SimpleData, double) namedSubRecord
+                    (_i137.SimpleData, double) namedSubRecord
                   })?>(e))
               .toList()
           : null) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i136.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i137.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i137.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i136.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i137.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i137.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
@@ -2761,17 +2772,17 @@ class Protocol extends _i1.SerializationManager {
     if (t == Set<DateTime?>) {
       return (data as List).map((e) => deserialize<DateTime?>(e)).toSet() as T;
     }
-    if (t == Set<_i134.ByteData>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData>(e)).toSet()
+    if (t == Set<_i135.ByteData>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData>(e)).toSet()
           as T;
     }
-    if (t == Set<_i134.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i134.ByteData?>(e)).toSet()
+    if (t == Set<_i135.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i135.ByteData?>(e)).toSet()
           as T;
     }
-    if (t == Set<_i136.SimpleData?>) {
+    if (t == Set<_i137.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i136.SimpleData?>(e))
+          .map((e) => deserialize<_i137.SimpleData?>(e))
           .toSet() as T;
     }
     if (t == Set<Duration>) {
@@ -2780,8 +2791,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == Set<Duration?>) {
       return (data as List).map((e) => deserialize<Duration?>(e)).toSet() as T;
     }
-    if (t == List<_i139.Types>) {
-      return (data as List).map((e) => deserialize<_i139.Types>(e)).toList()
+    if (t == List<_i140.Types>) {
+      return (data as List).map((e) => deserialize<_i140.Types>(e)).toList()
           as T;
     }
     if (t == _i1.getType<(String, (int, bool))>()) {
@@ -2811,7 +2822,7 @@ class Protocol extends _i1.SerializationManager {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
             )>()) {
       return (
         deserialize<String>(((data as Map)['p'] as List)[0]),
@@ -2819,17 +2830,17 @@ class Protocol extends _i1.SerializationManager {
             (
               Map<String, int>, {
               bool flag,
-              _i136.SimpleData simpleData
+              _i137.SimpleData simpleData
             })>(data['p'][1]),
       ) as T;
     }
     if (t ==
         _i1.getType<
-            (Map<String, int>, {bool flag, _i136.SimpleData simpleData})>()) {
+            (Map<String, int>, {bool flag, _i137.SimpleData simpleData})>()) {
       return (
         deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),
         flag: deserialize<bool>(data['n']['flag']),
-        simpleData: deserialize<_i136.SimpleData>(data['n']['simpleData']),
+        simpleData: deserialize<_i137.SimpleData>(data['n']['simpleData']),
       ) as T;
     }
     if (t == List<(String, int)>) {
@@ -2846,7 +2857,7 @@ class Protocol extends _i1.SerializationManager {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
             )?>()) {
       return (data == null)
           ? null as T
@@ -2856,7 +2867,7 @@ class Protocol extends _i1.SerializationManager {
                   (
                     Map<String, int>, {
                     bool flag,
-                    _i136.SimpleData simpleData
+                    _i137.SimpleData simpleData
                   })>(data['p'][1]),
             ) as T;
     }
@@ -2871,10 +2882,10 @@ class Protocol extends _i1.SerializationManager {
         deserialize<int>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<(_i133.ModuleClass,)?>()) {
+    if (t == _i1.getType<(_i134.ModuleClass,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i133.ModuleClass>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i134.ModuleClass>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(bool,)?>()) {
@@ -2968,10 +2979,10 @@ class Protocol extends _i1.SerializationManager {
           ? null as T
           : (deserialize<DateTime>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i134.ByteData,)?>()) {
+    if (t == _i1.getType<(_i135.ByteData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i134.ByteData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i135.ByteData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(Duration,)?>()) {
@@ -3126,57 +3137,57 @@ class Protocol extends _i1.SerializationManager {
           ? null as T
           : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i135.CustomClass) {
-      return _i135.CustomClass.fromJson(data) as T;
+    if (t == _i136.CustomClass) {
+      return _i136.CustomClass.fromJson(data) as T;
     }
-    if (t == _i135.CustomClass2) {
-      return _i135.CustomClass2.fromJson(data) as T;
+    if (t == _i136.CustomClass2) {
+      return _i136.CustomClass2.fromJson(data) as T;
     }
-    if (t == _i135.ProtocolCustomClass) {
-      return _i135.ProtocolCustomClass.fromJson(data) as T;
+    if (t == _i136.ProtocolCustomClass) {
+      return _i136.ProtocolCustomClass.fromJson(data) as T;
     }
-    if (t == _i135.ExternalCustomClass) {
-      return _i135.ExternalCustomClass.fromJson(data) as T;
+    if (t == _i136.ExternalCustomClass) {
+      return _i136.ExternalCustomClass.fromJson(data) as T;
     }
-    if (t == _i135.FreezedCustomClass) {
-      return _i135.FreezedCustomClass.fromJson(data) as T;
+    if (t == _i136.FreezedCustomClass) {
+      return _i136.FreezedCustomClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i135.CustomClass?>()) {
-      return (data != null ? _i135.CustomClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i136.CustomClass?>()) {
+      return (data != null ? _i136.CustomClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i135.CustomClass2?>()) {
-      return (data != null ? _i135.CustomClass2.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i136.CustomClass2?>()) {
+      return (data != null ? _i136.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i135.CustomClassWithoutProtocolSerialization?>()) {
+    if (t == _i1.getType<_i136.CustomClassWithoutProtocolSerialization?>()) {
       return (data != null
-          ? _i135.CustomClassWithoutProtocolSerialization.fromJson(data)
+          ? _i136.CustomClassWithoutProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i135.CustomClassWithProtocolSerialization?>()) {
+    if (t == _i1.getType<_i136.CustomClassWithProtocolSerialization?>()) {
       return (data != null
-          ? _i135.CustomClassWithProtocolSerialization.fromJson(data)
+          ? _i136.CustomClassWithProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i135.CustomClassWithProtocolSerializationMethod?>()) {
+    if (t == _i1.getType<_i136.CustomClassWithProtocolSerializationMethod?>()) {
       return (data != null
-          ? _i135.CustomClassWithProtocolSerializationMethod.fromJson(data)
+          ? _i136.CustomClassWithProtocolSerializationMethod.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i135.ProtocolCustomClass?>()) {
-      return (data != null ? _i135.ProtocolCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i136.ProtocolCustomClass?>()) {
+      return (data != null ? _i136.ProtocolCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i135.ExternalCustomClass?>()) {
-      return (data != null ? _i135.ExternalCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i136.ExternalCustomClass?>()) {
+      return (data != null ? _i136.ExternalCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i135.FreezedCustomClass?>()) {
-      return (data != null ? _i135.FreezedCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i136.FreezedCustomClass?>()) {
+      return (data != null ? _i136.FreezedCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<List<_i136.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i137.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i136.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i137.SimpleData>(e)).toList()
           : null) as T;
     }
     if (t == _i1.getType<(int?,)?>()) {
@@ -3193,26 +3204,26 @@ class Protocol extends _i1.SerializationManager {
             List<
                 (
                   (int, String), {
-                  (_i136.SimpleData, double) namedSubRecord
+                  (_i137.SimpleData, double) namedSubRecord
                 })?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<
                   (
                     (int, String), {
-                    (_i136.SimpleData, double) namedSubRecord
+                    (_i137.SimpleData, double) namedSubRecord
                   })?>(e))
               .toList()
           : null) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i136.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i137.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i136.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i137.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
@@ -3220,7 +3231,7 @@ class Protocol extends _i1.SerializationManager {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
             )>()) {
       return (
         deserialize<String>(((data as Map)['p'] as List)[0]),
@@ -3228,7 +3239,7 @@ class Protocol extends _i1.SerializationManager {
             (
               Map<String, int>, {
               bool flag,
-              _i136.SimpleData simpleData
+              _i137.SimpleData simpleData
             })>(data['p'][1]),
       ) as T;
     }
@@ -3242,7 +3253,7 @@ class Protocol extends _i1.SerializationManager {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
             )?>()) {
       return (data == null)
           ? null as T
@@ -3252,7 +3263,7 @@ class Protocol extends _i1.SerializationManager {
                   (
                     Map<String, int>, {
                     bool flag,
-                    _i136.SimpleData simpleData
+                    _i137.SimpleData simpleData
                   })>(data['p'][1]),
             ) as T;
     }
@@ -3268,10 +3279,10 @@ class Protocol extends _i1.SerializationManager {
       ) as T;
     }
     try {
-      return _i138.Protocol().deserialize<T>(data, t);
+      return _i139.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i133.Protocol().deserialize<T>(data, t);
+      return _i134.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -3280,28 +3291,28 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i135.CustomClass) {
+    if (data is _i136.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i135.CustomClass2) {
+    if (data is _i136.CustomClass2) {
       return 'CustomClass2';
     }
-    if (data is _i135.CustomClassWithoutProtocolSerialization) {
+    if (data is _i136.CustomClassWithoutProtocolSerialization) {
       return 'CustomClassWithoutProtocolSerialization';
     }
-    if (data is _i135.CustomClassWithProtocolSerialization) {
+    if (data is _i136.CustomClassWithProtocolSerialization) {
       return 'CustomClassWithProtocolSerialization';
     }
-    if (data is _i135.CustomClassWithProtocolSerializationMethod) {
+    if (data is _i136.CustomClassWithProtocolSerializationMethod) {
       return 'CustomClassWithProtocolSerializationMethod';
     }
-    if (data is _i135.ProtocolCustomClass) {
+    if (data is _i136.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
     }
-    if (data is _i135.ExternalCustomClass) {
+    if (data is _i136.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i135.FreezedCustomClass) {
+    if (data is _i136.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i2.ByIndexEnumWithNameValue) {
@@ -3697,54 +3708,57 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i130.TypesSet) {
       return 'TypesSet';
     }
-    if (data is _i131.UniqueData) {
+    if (data is _i131.TypesSetRequired) {
+      return 'TypesSetRequired';
+    }
+    if (data is _i132.UniqueData) {
       return 'UniqueData';
     }
-    if (data is _i132.MyFeatureModel) {
+    if (data is _i133.MyFeatureModel) {
       return 'MyFeatureModel';
     }
-    className = _i138.Protocol().getClassNameForObject(data);
+    className = _i139.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    className = _i133.Protocol().getClassNameForObject(data);
+    className = _i134.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
     if (data is List<int>) {
       return 'List<int>';
     }
-    if (data is List<_i136.SimpleData>) {
+    if (data is List<_i137.SimpleData>) {
       return 'List<SimpleData>';
     }
-    if (data is List<_i138.UserInfo>) {
+    if (data is List<_i139.UserInfo>) {
       return 'List<serverpod_auth.UserInfo>';
     }
-    if (data is List<_i136.SimpleData>?) {
+    if (data is List<_i137.SimpleData>?) {
       return 'List<SimpleData>?';
     }
-    if (data is List<_i136.SimpleData?>) {
+    if (data is List<_i137.SimpleData?>) {
       return 'List<SimpleData?>';
     }
     if (data is Set<int>) {
       return 'Set<int>';
     }
-    if (data is Set<_i136.SimpleData>) {
+    if (data is Set<_i137.SimpleData>) {
       return 'Set<SimpleData>';
     }
-    if (data is List<Set<_i136.SimpleData>>) {
+    if (data is List<Set<_i137.SimpleData>>) {
       return 'List<Set<SimpleData>>';
     }
     if (data is (int?,)?) {
       return '(int?,)?';
     }
     if (data is List<
-        ((int, String), {(_i136.SimpleData, double) namedSubRecord})?>?) {
+        ((int, String), {(_i137.SimpleData, double) namedSubRecord})?>?) {
       return 'List<((int,String),{(SimpleData,double) namedSubRecord})?>?';
     }
     if (data is (
       String,
-      (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+      (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
     )) {
       return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))';
     }
@@ -3753,7 +3767,7 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data is (
       String,
-      (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+      (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
     )?) {
       return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?';
     }
@@ -3770,31 +3784,31 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'CustomClass') {
-      return deserialize<_i135.CustomClass>(data['data']);
+      return deserialize<_i136.CustomClass>(data['data']);
     }
     if (dataClassName == 'CustomClass2') {
-      return deserialize<_i135.CustomClass2>(data['data']);
+      return deserialize<_i136.CustomClass2>(data['data']);
     }
     if (dataClassName == 'CustomClassWithoutProtocolSerialization') {
-      return deserialize<_i135.CustomClassWithoutProtocolSerialization>(
+      return deserialize<_i136.CustomClassWithoutProtocolSerialization>(
           data['data']);
     }
     if (dataClassName == 'CustomClassWithProtocolSerialization') {
-      return deserialize<_i135.CustomClassWithProtocolSerialization>(
+      return deserialize<_i136.CustomClassWithProtocolSerialization>(
           data['data']);
     }
     if (dataClassName == 'CustomClassWithProtocolSerializationMethod') {
-      return deserialize<_i135.CustomClassWithProtocolSerializationMethod>(
+      return deserialize<_i136.CustomClassWithProtocolSerializationMethod>(
           data['data']);
     }
     if (dataClassName == 'ProtocolCustomClass') {
-      return deserialize<_i135.ProtocolCustomClass>(data['data']);
+      return deserialize<_i136.ProtocolCustomClass>(data['data']);
     }
     if (dataClassName == 'ExternalCustomClass') {
-      return deserialize<_i135.ExternalCustomClass>(data['data']);
+      return deserialize<_i136.ExternalCustomClass>(data['data']);
     }
     if (dataClassName == 'FreezedCustomClass') {
-      return deserialize<_i135.FreezedCustomClass>(data['data']);
+      return deserialize<_i136.FreezedCustomClass>(data['data']);
     }
     if (dataClassName == 'ByIndexEnumWithNameValue') {
       return deserialize<_i2.ByIndexEnumWithNameValue>(data['data']);
@@ -4189,43 +4203,46 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'TypesSet') {
       return deserialize<_i130.TypesSet>(data['data']);
     }
+    if (dataClassName == 'TypesSetRequired') {
+      return deserialize<_i131.TypesSetRequired>(data['data']);
+    }
     if (dataClassName == 'UniqueData') {
-      return deserialize<_i131.UniqueData>(data['data']);
+      return deserialize<_i132.UniqueData>(data['data']);
     }
     if (dataClassName == 'MyFeatureModel') {
-      return deserialize<_i132.MyFeatureModel>(data['data']);
+      return deserialize<_i133.MyFeatureModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i138.Protocol().deserializeByClassName(data);
+      return _i139.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_test_module.')) {
       data['className'] = dataClassName.substring(22);
-      return _i133.Protocol().deserializeByClassName(data);
+      return _i134.Protocol().deserializeByClassName(data);
     }
     if (dataClassName == 'List<int>') {
       return deserialize<List<int>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i136.SimpleData>>(data['data']);
+      return deserialize<List<_i137.SimpleData>>(data['data']);
     }
     if (dataClassName == 'List<serverpod_auth.UserInfo>') {
-      return deserialize<List<_i138.UserInfo>>(data['data']);
+      return deserialize<List<_i139.UserInfo>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData>?') {
-      return deserialize<List<_i136.SimpleData>?>(data['data']);
+      return deserialize<List<_i137.SimpleData>?>(data['data']);
     }
     if (dataClassName == 'List<SimpleData?>') {
-      return deserialize<List<_i136.SimpleData?>>(data['data']);
+      return deserialize<List<_i137.SimpleData?>>(data['data']);
     }
     if (dataClassName == 'Set<int>') {
       return deserialize<Set<int>>(data['data']);
     }
     if (dataClassName == 'Set<SimpleData>') {
-      return deserialize<Set<_i136.SimpleData>>(data['data']);
+      return deserialize<Set<_i137.SimpleData>>(data['data']);
     }
     if (dataClassName == 'List<Set<SimpleData>>') {
-      return deserialize<List<Set<_i136.SimpleData>>>(data['data']);
+      return deserialize<List<Set<_i137.SimpleData>>>(data['data']);
     }
     if (dataClassName == '(int?,)?') {
       return deserialize<(int?,)?>(data['data']);
@@ -4236,7 +4253,7 @@ class Protocol extends _i1.SerializationManager {
           List<
               (
                 (int, String), {
-                (_i136.SimpleData, double) namedSubRecord
+                (_i137.SimpleData, double) namedSubRecord
               })?>?>(data['data']);
     }
     if (dataClassName ==
@@ -4244,7 +4261,7 @@ class Protocol extends _i1.SerializationManager {
       return deserialize<
           (
             String,
-            (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+            (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
           )>(data['data']);
     }
     if (dataClassName == 'List<(String,int)>') {
@@ -4255,7 +4272,7 @@ class Protocol extends _i1.SerializationManager {
       return deserialize<
           (
             String,
-            (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+            (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
           )?>(data['data']);
     }
     if (dataClassName == 'List<(String,int)>?') {
@@ -4318,7 +4335,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (int, _i136.SimpleData)) {
+  if (record is (int, _i137.SimpleData)) {
     return {
       "p": [
         record.$1,
@@ -4334,7 +4351,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is ({_i136.SimpleData data, int number})) {
+  if (record is ({_i137.SimpleData data, int number})) {
     return {
       "n": {
         "data": record.data,
@@ -4342,7 +4359,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is ({_i136.SimpleData? data, int? number})) {
+  if (record is ({_i137.SimpleData? data, int? number})) {
     return {
       "n": {
         "data": record.data,
@@ -4350,7 +4367,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is (int, {_i136.SimpleData data})) {
+  if (record is (int, {_i137.SimpleData data})) {
     return {
       "p": [
         record.$1,
@@ -4368,14 +4385,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is ({(_i136.SimpleData, double) namedSubRecord})) {
+  if (record is ({(_i137.SimpleData, double) namedSubRecord})) {
     return {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
     };
   }
-  if (record is (_i136.SimpleData, double)) {
+  if (record is (_i137.SimpleData, double)) {
     return {
       "p": [
         record.$1,
@@ -4383,14 +4400,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is ({(_i136.SimpleData, double)? namedSubRecord})) {
+  if (record is ({(_i137.SimpleData, double)? namedSubRecord})) {
     return {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
     };
   }
-  if (record is ((int, String), {(_i136.SimpleData, double) namedSubRecord})) {
+  if (record is ((int, String), {(_i137.SimpleData, double) namedSubRecord})) {
     return {
       "p": [
         mapRecordToJson(record.$1),
@@ -4418,7 +4435,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   }
   if (record is (
     String,
-    (Map<String, int>, {bool flag, _i136.SimpleData simpleData})
+    (Map<String, int>, {bool flag, _i137.SimpleData simpleData})
   )) {
     return {
       "p": [
@@ -4427,7 +4444,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (Map<String, int>, {bool flag, _i136.SimpleData simpleData})) {
+  if (record is (Map<String, int>, {bool flag, _i137.SimpleData simpleData})) {
     return {
       "p": [
         record.$1,
@@ -4438,7 +4455,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is (_i133.ModuleClass,)) {
+  if (record is (_i134.ModuleClass,)) {
     return {
       "p": [
         record.$1,
@@ -4483,7 +4500,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (_i134.ByteData,)) {
+  if (record is (_i135.ByteData,)) {
     return {
       "p": [
         record.$1,

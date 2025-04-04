@@ -302,6 +302,7 @@ Expression _buildListOrSetTypeFromJson(
         subDirParts: subDirParts,
       ).code,
       const Code(')'),
+      if (type.isSetType && !type.nullable) const Code('!'),
     ]));
   }
 
