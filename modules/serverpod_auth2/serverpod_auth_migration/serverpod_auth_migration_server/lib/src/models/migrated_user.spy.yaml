@@ -1,0 +1,6 @@
+class: MigratedUser
+table: serverpod_auth_migration_user
+fields:
+  oldUserId: int
+  # TODO: UUId
+  newUserId: int
