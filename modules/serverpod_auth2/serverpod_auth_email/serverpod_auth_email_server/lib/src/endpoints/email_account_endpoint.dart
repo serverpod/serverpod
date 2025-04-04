@@ -36,7 +36,7 @@ class EmailAccountEndpoint extends Endpoint {
         email: email, password: password);
   }
 
-  /// Returns sessions
+  /// Returns session key
   Future<String> finishRegistration(
     Session session, {
     required String verificationCode,
@@ -57,11 +57,25 @@ class EmailAccountEndpoint extends Endpoint {
     return await Sessions.create(session, userId: userId);
   }
 
-// this showcase always creates a new user after verification
-  // bundled:
-  // verifyAccountRequest
-  // createAccount
+  Future<void> requestPasswordReset(
+    Session session, {
+    required String email,
+  }) async {
+    await EmailAuthentication.requestPasswordReset(session, email: email);
+  }
 
-  // requestPasswordReset
-  // completePasswordReset
+  /// Returns session key
+  Future<String> completePasswordReset(
+    Session session, {
+    required String resetCode,
+    required String newPassword,
+  }) async {
+    final userId = await EmailAuthentication.completePasswordReset(
+      session,
+      resetCode: resetCode,
+      newPassword: newPassword,
+    );
+
+    return await Sessions.create(session, userId: userId);
+  }
 }
