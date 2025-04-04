@@ -16,14 +16,14 @@ abstract class AuthUser
   AuthUser._({
     this.id,
     required this.created,
-    this.scopeNames,
+    required this.scopeNames,
     required this.blocked,
   });
 
   factory AuthUser({
     int? id,
     required DateTime created,
-    Set<String>? scopeNames,
+    required Set<String> scopeNames,
     required bool blocked,
   }) = _AuthUserImpl;
 
@@ -31,11 +31,9 @@ abstract class AuthUser
     return AuthUser(
       id: jsonSerialization['id'] as int?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      scopeNames: jsonSerialization['scopeNames'] == null
-          ? null
-          : _i1.SetJsonExtension.fromJson(
-              (jsonSerialization['scopeNames'] as List),
-              itemFromJson: (e) => e as String),
+      scopeNames: _i1.SetJsonExtension.fromJson(
+          (jsonSerialization['scopeNames'] as List),
+          itemFromJson: (e) => e as String)!,
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -51,7 +49,7 @@ abstract class AuthUser
   DateTime created;
 
   /// Set of scopes that this user can access.
-  Set<String>? scopeNames;
+  Set<String> scopeNames;
 
   /// True if the user is blocked from signing in.
   bool blocked;
@@ -73,7 +71,7 @@ abstract class AuthUser
     return {
       if (id != null) 'id': id,
       'created': created.toJson(),
-      if (scopeNames != null) 'scopeNames': scopeNames?.toJson(),
+      'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
   }
@@ -83,7 +81,7 @@ abstract class AuthUser
     return {
       if (id != null) 'id': id,
       'created': created.toJson(),
-      if (scopeNames != null) 'scopeNames': scopeNames?.toJson(),
+      'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
   }
@@ -124,7 +122,7 @@ class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
     int? id,
     required DateTime created,
-    Set<String>? scopeNames,
+    required Set<String> scopeNames,
     required bool blocked,
   }) : super._(
           id: id,
@@ -140,15 +138,13 @@ class _AuthUserImpl extends AuthUser {
   AuthUser copyWith({
     Object? id = _Undefined,
     DateTime? created,
-    Object? scopeNames = _Undefined,
+    Set<String>? scopeNames,
     bool? blocked,
   }) {
     return AuthUser(
       id: id is int? ? id : this.id,
       created: created ?? this.created,
-      scopeNames: scopeNames is Set<String>?
-          ? scopeNames
-          : this.scopeNames?.map((e0) => e0).toSet(),
+      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,
     );
   }

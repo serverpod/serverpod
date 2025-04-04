@@ -44,8 +44,8 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'scopeNames',
           columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'Set<String>?',
+          isNullable: false,
+          dartType: 'Set<String>',
         ),
         _i2.ColumnDefinition(
           name: 'blocked',
@@ -86,10 +86,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i3.AuthUser?>()) {
       return (data != null ? _i3.AuthUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<Set<String>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toSet()
-          : null) as T;
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);
