@@ -11,49 +11,57 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class Session implements _i1.TableRow<int>, _i1.ProtocolSerialization {
-  Session._({
+abstract class ActiveSession
+    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+  ActiveSession._({
     this.id,
     required this.userId,
     required this.created,
+    required this.sessionKey,
   });
 
-  factory Session({
+  factory ActiveSession({
     int? id,
     required int userId,
     required DateTime created,
-  }) = _SessionImpl;
+    required String sessionKey,
+  }) = _ActiveSessionImpl;
 
-  factory Session.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Session(
+  factory ActiveSession.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ActiveSession(
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      sessionKey: jsonSerialization['sessionKey'] as String,
     );
   }
 
-  static final t = SessionTable();
+  static final t = ActiveSessionTable();
 
-  static const db = SessionRepository._();
+  static const db = ActiveSessionRepository._();
 
   @override
   int? id;
 
+  /// The id of the [AuthUser] this session belongs to
   int userId;
 
   /// The time when this sesion was created.
   DateTime created;
 
+  String sessionKey;
+
   @override
   _i1.Table<int> get table => t;
 
-  /// Returns a shallow copy of this [Session]
+  /// Returns a shallow copy of this [ActiveSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Session copyWith({
+  ActiveSession copyWith({
     int? id,
     int? userId,
     DateTime? created,
+    String? sessionKey,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -61,6 +69,7 @@ abstract class Session implements _i1.TableRow<int>, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'userId': userId,
       'created': created.toJson(),
+      'sessionKey': sessionKey,
     };
   }
 
@@ -70,29 +79,30 @@ abstract class Session implements _i1.TableRow<int>, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'userId': userId,
       'created': created.toJson(),
+      'sessionKey': sessionKey,
     };
   }
 
-  static SessionInclude include() {
-    return SessionInclude._();
+  static ActiveSessionInclude include() {
+    return ActiveSessionInclude._();
   }
 
-  static SessionIncludeList includeList({
-    _i1.WhereExpressionBuilder<SessionTable>? where,
+  static ActiveSessionIncludeList includeList({
+    _i1.WhereExpressionBuilder<ActiveSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionTable>? orderBy,
+    _i1.OrderByBuilder<ActiveSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<SessionTable>? orderByList,
-    SessionInclude? include,
+    _i1.OrderByListBuilder<ActiveSessionTable>? orderByList,
+    ActiveSessionInclude? include,
   }) {
-    return SessionIncludeList._(
+    return ActiveSessionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(Session.t),
+      orderBy: orderBy?.call(ActiveSession.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(Session.t),
+      orderByList: orderByList?.call(ActiveSession.t),
       include: include,
     );
   }
@@ -105,36 +115,40 @@ abstract class Session implements _i1.TableRow<int>, _i1.ProtocolSerialization {
 
 class _Undefined {}
 
-class _SessionImpl extends Session {
-  _SessionImpl({
+class _ActiveSessionImpl extends ActiveSession {
+  _ActiveSessionImpl({
     int? id,
     required int userId,
     required DateTime created,
+    required String sessionKey,
   }) : super._(
           id: id,
           userId: userId,
           created: created,
+          sessionKey: sessionKey,
         );
 
-  /// Returns a shallow copy of this [Session]
+  /// Returns a shallow copy of this [ActiveSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Session copyWith({
+  ActiveSession copyWith({
     Object? id = _Undefined,
     int? userId,
     DateTime? created,
+    String? sessionKey,
   }) {
-    return Session(
+    return ActiveSession(
       id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       created: created ?? this.created,
+      sessionKey: sessionKey ?? this.sessionKey,
     );
   }
 }
 
-class SessionTable extends _i1.Table<int> {
-  SessionTable({super.tableRelation})
+class ActiveSessionTable extends _i1.Table<int> {
+  ActiveSessionTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_session') {
     userId = _i1.ColumnInt(
       'userId',
@@ -144,34 +158,42 @@ class SessionTable extends _i1.Table<int> {
       'created',
       this,
     );
+    sessionKey = _i1.ColumnString(
+      'sessionKey',
+      this,
+    );
   }
 
+  /// The id of the [AuthUser] this session belongs to
   late final _i1.ColumnInt userId;
 
   /// The time when this sesion was created.
   late final _i1.ColumnDateTime created;
+
+  late final _i1.ColumnString sessionKey;
 
   @override
   List<_i1.Column> get columns => [
         id,
         userId,
         created,
+        sessionKey,
       ];
 }
 
-class SessionInclude extends _i1.IncludeObject {
-  SessionInclude._();
+class ActiveSessionInclude extends _i1.IncludeObject {
+  ActiveSessionInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => Session.t;
+  _i1.Table<int> get table => ActiveSession.t;
 }
 
-class SessionIncludeList extends _i1.IncludeList {
-  SessionIncludeList._({
-    _i1.WhereExpressionBuilder<SessionTable>? where,
+class ActiveSessionIncludeList extends _i1.IncludeList {
+  ActiveSessionIncludeList._({
+    _i1.WhereExpressionBuilder<ActiveSessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -179,20 +201,20 @@ class SessionIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(Session.t);
+    super.where = where?.call(ActiveSession.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => Session.t;
+  _i1.Table<int> get table => ActiveSession.t;
 }
 
-class SessionRepository {
-  const SessionRepository._();
+class ActiveSessionRepository {
+  const ActiveSessionRepository._();
 
-  /// Returns a list of [Session]s matching the given query parameters.
+  /// Returns a list of [ActiveSession]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -214,20 +236,20 @@ class SessionRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<Session>> find(
+  Future<List<ActiveSession>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionTable>? where,
+    _i1.WhereExpressionBuilder<ActiveSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionTable>? orderBy,
+    _i1.OrderByBuilder<ActiveSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<SessionTable>? orderByList,
+    _i1.OrderByListBuilder<ActiveSessionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Session>(
-      where: where?.call(Session.t),
-      orderBy: orderBy?.call(Session.t),
-      orderByList: orderByList?.call(Session.t),
+    return session.db.find<ActiveSession>(
+      where: where?.call(ActiveSession.t),
+      orderBy: orderBy?.call(ActiveSession.t),
+      orderByList: orderByList?.call(ActiveSession.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -235,7 +257,7 @@ class SessionRepository {
     );
   }
 
-  /// Returns the first matching [Session] matching the given query parameters.
+  /// Returns the first matching [ActiveSession] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -252,136 +274,136 @@ class SessionRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<Session?> findFirstRow(
+  Future<ActiveSession?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionTable>? where,
+    _i1.WhereExpressionBuilder<ActiveSessionTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SessionTable>? orderBy,
+    _i1.OrderByBuilder<ActiveSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<SessionTable>? orderByList,
+    _i1.OrderByListBuilder<ActiveSessionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<Session>(
-      where: where?.call(Session.t),
-      orderBy: orderBy?.call(Session.t),
-      orderByList: orderByList?.call(Session.t),
+    return session.db.findFirstRow<ActiveSession>(
+      where: where?.call(ActiveSession.t),
+      orderBy: orderBy?.call(ActiveSession.t),
+      orderByList: orderByList?.call(ActiveSession.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [Session] by its [id] or null if no such row exists.
-  Future<Session?> findById(
+  /// Finds a single [ActiveSession] by its [id] or null if no such row exists.
+  Future<ActiveSession?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Session>(
+    return session.db.findById<ActiveSession>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [Session]s in the list and returns the inserted rows.
+  /// Inserts all [ActiveSession]s in the list and returns the inserted rows.
   ///
-  /// The returned [Session]s will have their `id` fields set.
+  /// The returned [ActiveSession]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<Session>> insert(
+  Future<List<ActiveSession>> insert(
     _i1.Session session,
-    List<Session> rows, {
+    List<ActiveSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Session>(
+    return session.db.insert<ActiveSession>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [Session] and returns the inserted row.
+  /// Inserts a single [ActiveSession] and returns the inserted row.
   ///
-  /// The returned [Session] will have its `id` field set.
-  Future<Session> insertRow(
+  /// The returned [ActiveSession] will have its `id` field set.
+  Future<ActiveSession> insertRow(
     _i1.Session session,
-    Session row, {
+    ActiveSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Session>(
+    return session.db.insertRow<ActiveSession>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [Session]s in the list and returns the updated rows. If
+  /// Updates all [ActiveSession]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<Session>> update(
+  Future<List<ActiveSession>> update(
     _i1.Session session,
-    List<Session> rows, {
-    _i1.ColumnSelections<SessionTable>? columns,
+    List<ActiveSession> rows, {
+    _i1.ColumnSelections<ActiveSessionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Session>(
+    return session.db.update<ActiveSession>(
       rows,
-      columns: columns?.call(Session.t),
+      columns: columns?.call(ActiveSession.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [Session]. The row needs to have its id set.
+  /// Updates a single [ActiveSession]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<Session> updateRow(
+  Future<ActiveSession> updateRow(
     _i1.Session session,
-    Session row, {
-    _i1.ColumnSelections<SessionTable>? columns,
+    ActiveSession row, {
+    _i1.ColumnSelections<ActiveSessionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Session>(
+    return session.db.updateRow<ActiveSession>(
       row,
-      columns: columns?.call(Session.t),
+      columns: columns?.call(ActiveSession.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [Session]s in the list and returns the deleted rows.
+  /// Deletes all [ActiveSession]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<Session>> delete(
+  Future<List<ActiveSession>> delete(
     _i1.Session session,
-    List<Session> rows, {
+    List<ActiveSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Session>(
+    return session.db.delete<ActiveSession>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [Session].
-  Future<Session> deleteRow(
+  /// Deletes a single [ActiveSession].
+  Future<ActiveSession> deleteRow(
     _i1.Session session,
-    Session row, {
+    ActiveSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Session>(
+    return session.db.deleteRow<ActiveSession>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<Session>> deleteWhere(
+  Future<List<ActiveSession>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<SessionTable> where,
+    required _i1.WhereExpressionBuilder<ActiveSessionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Session>(
-      where: where(Session.t),
+    return session.db.deleteWhere<ActiveSession>(
+      where: where(ActiveSession.t),
       transaction: transaction,
     );
   }
@@ -390,12 +412,12 @@ class SessionRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionTable>? where,
+    _i1.WhereExpressionBuilder<ActiveSessionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Session>(
-      where: where?.call(Session.t),
+    return session.db.count<ActiveSession>(
+      where: where?.call(ActiveSession.t),
       limit: limit,
       transaction: transaction,
     );
