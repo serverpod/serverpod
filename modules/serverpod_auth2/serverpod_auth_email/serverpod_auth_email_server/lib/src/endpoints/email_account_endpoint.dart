@@ -1,12 +1,7 @@
-// Add your modules' endpoints to the `endpoints` directory. Run
-// `serverpod generate` to produce the modules server and client code. Refer to
-// the documentation on how to add endpoints to your server.
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth2_server/serverpod_auth2_server.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-// import '../generated/protocol.dart';
 
 class EmailAccountEndpoint extends Endpoint {
   /// Returns the session key
@@ -32,8 +27,11 @@ class EmailAccountEndpoint extends Endpoint {
     required String email,
     required String password,
   }) async {
-    await EmailAuthentication.requestAccount(session,
-        email: email, password: password);
+    await EmailAuthentication.requestAccount(
+      session,
+      email: email,
+      password: password,
+    );
   }
 
   /// Returns session key
