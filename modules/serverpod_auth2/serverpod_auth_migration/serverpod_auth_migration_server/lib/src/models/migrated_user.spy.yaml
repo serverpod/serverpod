@@ -1,0 +1,6 @@
+class: MigratedUser
+table: serverpod_auth_migration_user
+fields:
+  oldUserId: int
+  newUserId: UuidValue, relation(parent=auth_user)
+# TODO: unique index on old and new user ID

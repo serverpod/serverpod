@@ -6,6 +6,8 @@ environment:
 
 dependencies:
   serverpod: 2.4.0
+  serverpod_auth_server: 2.4.0
+  serverpod_auth2_server: 2.4.0
 
 dev_dependencies:
   lints: ">=3.0.0 <6.0.0"
@@ -23,3 +25,10 @@ dependency_overrides:
     path: ../../../../packages/serverpod_test
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
+  # This only has a dependency on the old auth module on purpose
+  # The import from the new modules is based just on the shared function definitions / records,
+  # so that a project that wants to migrate does not have to import all new endpoint packages.
+  serverpod_auth_server:
+    path: ../../../serverpod_auth/serverpod_auth_server
+  serverpod_auth2_server:
+    path: ../../serverpod_auth2/serverpod_auth2_server
