@@ -11,29 +11,30 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class AuthUser implements _i1.SerializableModel {
-  AuthUser._({
+abstract class EmailAccount implements _i1.SerializableModel {
+  EmailAccount._({
     this.id,
+    required this.userId,
     required this.created,
-    required this.scopeNames,
-    required this.blocked,
+    required this.email,
+    required this.passwordHash,
   });
 
-  factory AuthUser({
+  factory EmailAccount({
     int? id,
+    required int userId,
     required DateTime created,
-    required Set<String> scopeNames,
-    required bool blocked,
-  }) = _AuthUserImpl;
+    required String email,
+    required String passwordHash,
+  }) = _EmailAccountImpl;
 
-  factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return AuthUser(
+  factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
+    return EmailAccount(
       id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
-      blocked: jsonSerialization['blocked'] as bool,
+      email: jsonSerialization['email'] as String,
+      passwordHash: jsonSerialization['passwordHash'] as String,
     );
   }
 
@@ -42,31 +43,38 @@ abstract class AuthUser implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  /// The time when this user was created.
+  /// The id of the [AuthUser] this login belongs to.
+  int userId;
+
+  /// The time when this authentication was created.
   DateTime created;
 
-  /// Set of scopes that this user can access.
-  Set<String> scopeNames;
+  /// The email of the user.
+  ///
+  /// Stored in lower-case by convention.
+  String email;
 
-  /// True if the user is blocked from signing in.
-  bool blocked;
+  /// The hashed password of the user.
+  String passwordHash;
 
-  /// Returns a shallow copy of this [AuthUser]
+  /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  AuthUser copyWith({
+  EmailAccount copyWith({
     int? id,
+    int? userId,
     DateTime? created,
-    Set<String>? scopeNames,
-    bool? blocked,
+    String? email,
+    String? passwordHash,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
+      'userId': userId,
       'created': created.toJson(),
-      'scopeNames': scopeNames.toJson(),
-      'blocked': blocked,
+      'email': email,
+      'passwordHash': passwordHash,
     };
   }
 
@@ -78,34 +86,38 @@ abstract class AuthUser implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _AuthUserImpl extends AuthUser {
-  _AuthUserImpl({
+class _EmailAccountImpl extends EmailAccount {
+  _EmailAccountImpl({
     int? id,
+    required int userId,
     required DateTime created,
-    required Set<String> scopeNames,
-    required bool blocked,
+    required String email,
+    required String passwordHash,
   }) : super._(
           id: id,
+          userId: userId,
           created: created,
-          scopeNames: scopeNames,
-          blocked: blocked,
+          email: email,
+          passwordHash: passwordHash,
         );
 
-  /// Returns a shallow copy of this [AuthUser]
+  /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  AuthUser copyWith({
+  EmailAccount copyWith({
     Object? id = _Undefined,
+    int? userId,
     DateTime? created,
-    Set<String>? scopeNames,
-    bool? blocked,
+    String? email,
+    String? passwordHash,
   }) {
-    return AuthUser(
+    return EmailAccount(
       id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
       created: created ?? this.created,
-      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      blocked: blocked ?? this.blocked,
+      email: email ?? this.email,
+      passwordHash: passwordHash ?? this.passwordHash,
     );
   }
 }

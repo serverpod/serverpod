@@ -33,10 +33,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i2.AuthUser?>()) {
       return (data != null ? _i2.AuthUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<Set<String>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toSet()
-          : null) as T;
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
     return super.deserialize<T>(data, t);
   }

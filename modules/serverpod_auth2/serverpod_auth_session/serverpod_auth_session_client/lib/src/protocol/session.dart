@@ -11,29 +11,27 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class AuthUser implements _i1.SerializableModel {
-  AuthUser._({
+abstract class ActiveSession implements _i1.SerializableModel {
+  ActiveSession._({
     this.id,
+    required this.userId,
     required this.created,
-    required this.scopeNames,
-    required this.blocked,
+    required this.sessionKey,
   });
 
-  factory AuthUser({
+  factory ActiveSession({
     int? id,
+    required int userId,
     required DateTime created,
-    required Set<String> scopeNames,
-    required bool blocked,
-  }) = _AuthUserImpl;
+    required String sessionKey,
+  }) = _ActiveSessionImpl;
 
-  factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return AuthUser(
+  factory ActiveSession.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ActiveSession(
       id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
-      blocked: jsonSerialization['blocked'] as bool,
+      sessionKey: jsonSerialization['sessionKey'] as String,
     );
   }
 
@@ -42,31 +40,30 @@ abstract class AuthUser implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  /// The time when this user was created.
+  /// The id of the [AuthUser] this session belongs to
+  int userId;
+
+  /// The time when this sesion was created.
   DateTime created;
 
-  /// Set of scopes that this user can access.
-  Set<String> scopeNames;
+  String sessionKey;
 
-  /// True if the user is blocked from signing in.
-  bool blocked;
-
-  /// Returns a shallow copy of this [AuthUser]
+  /// Returns a shallow copy of this [ActiveSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  AuthUser copyWith({
+  ActiveSession copyWith({
     int? id,
+    int? userId,
     DateTime? created,
-    Set<String>? scopeNames,
-    bool? blocked,
+    String? sessionKey,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
+      'userId': userId,
       'created': created.toJson(),
-      'scopeNames': scopeNames.toJson(),
-      'blocked': blocked,
+      'sessionKey': sessionKey,
     };
   }
 
@@ -78,34 +75,34 @@ abstract class AuthUser implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _AuthUserImpl extends AuthUser {
-  _AuthUserImpl({
+class _ActiveSessionImpl extends ActiveSession {
+  _ActiveSessionImpl({
     int? id,
+    required int userId,
     required DateTime created,
-    required Set<String> scopeNames,
-    required bool blocked,
+    required String sessionKey,
   }) : super._(
           id: id,
+          userId: userId,
           created: created,
-          scopeNames: scopeNames,
-          blocked: blocked,
+          sessionKey: sessionKey,
         );
 
-  /// Returns a shallow copy of this [AuthUser]
+  /// Returns a shallow copy of this [ActiveSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  AuthUser copyWith({
+  ActiveSession copyWith({
     Object? id = _Undefined,
+    int? userId,
     DateTime? created,
-    Set<String>? scopeNames,
-    bool? blocked,
+    String? sessionKey,
   }) {
-    return AuthUser(
+    return ActiveSession(
       id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
       created: created ?? this.created,
-      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      blocked: blocked ?? this.blocked,
+      sessionKey: sessionKey ?? this.sessionKey,
     );
   }
 }

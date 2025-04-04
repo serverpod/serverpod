@@ -10,9 +10,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'module_class.dart' as _i2;
+import 'session.dart' as _i2;
 import 'package:serverpod_auth2_client/serverpod_auth2_client.dart' as _i3;
-export 'module_class.dart';
+export 'session.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -28,11 +28,11 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i2.Session) {
-      return _i2.Session.fromJson(data) as T;
+    if (t == _i2.ActiveSession) {
+      return _i2.ActiveSession.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Session?>()) {
-      return (data != null ? _i2.Session.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i2.ActiveSession?>()) {
+      return (data != null ? _i2.ActiveSession.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -44,8 +44,8 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.Session) {
-      return 'Session';
+    if (data is _i2.ActiveSession) {
+      return 'ActiveSession';
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -60,8 +60,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'Session') {
-      return deserialize<_i2.Session>(data['data']);
+    if (dataClassName == 'ActiveSession') {
+      return deserialize<_i2.ActiveSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth2.')) {
       data['className'] = dataClassName.substring(16);

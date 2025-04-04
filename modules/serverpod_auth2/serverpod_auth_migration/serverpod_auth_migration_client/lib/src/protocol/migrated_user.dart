@@ -11,24 +11,24 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Session implements _i1.SerializableModel {
-  Session._({
+abstract class MigratedUser implements _i1.SerializableModel {
+  MigratedUser._({
     this.id,
-    required this.userId,
-    required this.created,
+    required this.oldUserId,
+    required this.newUserId,
   });
 
-  factory Session({
+  factory MigratedUser({
     int? id,
-    required int userId,
-    required DateTime created,
-  }) = _SessionImpl;
+    required int oldUserId,
+    required int newUserId,
+  }) = _MigratedUserImpl;
 
-  factory Session.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Session(
+  factory MigratedUser.fromJson(Map<String, dynamic> jsonSerialization) {
+    return MigratedUser(
       id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      oldUserId: jsonSerialization['oldUserId'] as int,
+      newUserId: jsonSerialization['newUserId'] as int,
     );
   }
 
@@ -37,25 +37,24 @@ abstract class Session implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int userId;
+  int oldUserId;
 
-  /// The time when this sesion was created.
-  DateTime created;
+  int newUserId;
 
-  /// Returns a shallow copy of this [Session]
+  /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Session copyWith({
+  MigratedUser copyWith({
     int? id,
-    int? userId,
-    DateTime? created,
+    int? oldUserId,
+    int? newUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'userId': userId,
-      'created': created.toJson(),
+      'oldUserId': oldUserId,
+      'newUserId': newUserId,
     };
   }
 
@@ -67,30 +66,30 @@ abstract class Session implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _SessionImpl extends Session {
-  _SessionImpl({
+class _MigratedUserImpl extends MigratedUser {
+  _MigratedUserImpl({
     int? id,
-    required int userId,
-    required DateTime created,
+    required int oldUserId,
+    required int newUserId,
   }) : super._(
           id: id,
-          userId: userId,
-          created: created,
+          oldUserId: oldUserId,
+          newUserId: newUserId,
         );
 
-  /// Returns a shallow copy of this [Session]
+  /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Session copyWith({
+  MigratedUser copyWith({
     Object? id = _Undefined,
-    int? userId,
-    DateTime? created,
+    int? oldUserId,
+    int? newUserId,
   }) {
-    return Session(
+    return MigratedUser(
       id: id is int? ? id : this.id,
-      userId: userId ?? this.userId,
-      created: created ?? this.created,
+      oldUserId: oldUserId ?? this.oldUserId,
+      newUserId: newUserId ?? this.newUserId,
     );
   }
 }
