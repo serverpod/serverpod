@@ -9,12 +9,38 @@ final class EmailAuthentication {
     required String email,
     required String password,
   }) async {
-// TODO: Obviosly check password, detailed errors, etc.
+    // TODO: Obviosly check password, detailed errors, etc.
 
-    final account = await EmailAccount.db.findFirstRow(session,
-        where: (t) => t.email.equals(email.toLowerCase()));
+    final account = await EmailAccount.db.findFirstRow(
+      session,
+      where: (t) => t.email.equals(email.toLowerCase()),
+    );
 
-    return account!.userId;
+    if (account != null) {
+      return account.id!;
+    }
+
+    final importFunc = EmailAccountConfig.current.existingUserImportFunction;
+    if (importFunc != null) {
+      final userId = await importFunc(
+        session,
+        email: email,
+        password: password,
+      );
+      if (userId != null) {
+        await EmailAccount.db.insertRow(
+          session,
+          EmailAccount(
+            userId: userId,
+            created: DateTime.now(), // migrate creation date?
+            email: email,
+            passwordHash: password,
+          ),
+        );
+      }
+    }
+
+    throw 'No user found';
   }
 
   /// Returns the registration process ID.
@@ -34,28 +60,31 @@ final class EmailAuthentication {
         email: email.toLowerCase(),
         passwordHash: password,
         created: DateTime.now(),
-        expiration: DateTime.now().add(Duration(days: 1)),
+        expiration: DateTime.now().add(
+          EmailAccountConfig.current.registrationVerificationCodeLifetime,
+        ),
         verificationCode: verificationCode,
       ),
     );
 
-    // TODO: Send out `verificationCode`, via email-specific auth config
+    EmailAccountConfig.current.sendRegistrationVerificationMail
+        ?.call(email: email, verificationToken: verificationCode);
 
     return request.id!;
   }
 
-  /// Returns whether the verification code is correct.
+  /// Returns the account request creation ID if the request is valid.
   ///
   /// If `true`, this means `createAccount` will succeed.
-  static Future<bool> verifyAccountRequest(
+  static Future<int> verifyAccountRequest(
     Session session, {
     required String verificationCode,
   }) async {
     return (await EmailAccountRequest.db.find(session,
             where: (t) => t.verificationCode.equals(verificationCode)))
         // TODO: Is this nor supported on the query?
-        .where((r) => r.expiration.isBefore(DateTime.now()))
-        .isNotEmpty;
+        .firstWhere((r) => r.expiration.isBefore(DateTime.now()))
+        .id!;
   }
 
   static Future<void> createAccount(
@@ -88,26 +117,33 @@ final class EmailAuthentication {
     Session session, {
     required String email,
   }) async {
-    final verificationCode = 'random${DateTime.now()}';
+    final resetToken = 'random${DateTime.now()}';
 
     final account = await EmailAccountRequest.db.findFirstRow(
       session,
       where: (t) => t.email.equals(email.toLowerCase()),
     );
 
-    // TODO: Send `verificationCode`
+    // TODO: warn if `null`
+    EmailAccountConfig.current.sendPasswordResetMail?.call(
+      email: email,
+      resetToken: resetToken,
+    );
 
     await EmailAccountPasswordResetRequest.db.insertRow(
-        session,
-        EmailAccountPasswordResetRequest(
-          authenticationId: account!.id!,
-          created: DateTime.now(),
-          expiration: DateTime.now().add(Duration(days: 1)),
-          verificationCode: verificationCode,
-        ));
+      session,
+      EmailAccountPasswordResetRequest(
+        authenticationId: account!.id!,
+        created: DateTime.now(),
+        expiration: DateTime.now()
+            .add(EmailAccountConfig.current.passwordResetCodeLifetime),
+        verificationCode: resetToken,
+      ),
+    );
   }
 
-  static Future<void> completePasswordReset(
+  /// Returns the user ID for the successfully changed password
+  static Future<int> completePasswordReset(
     Session session, {
     required String resetCode,
     required String newPassword,
@@ -121,7 +157,11 @@ final class EmailAuthentication {
     final account = (await EmailAccount.db
         .findById(session, resetRequest.authenticationId))!;
 
-    EmailAccount.db
-        .updateRow(session, account.copyWith(passwordHash: newPassword));
+    EmailAccount.db.updateRow(
+      session,
+      account.copyWith(passwordHash: newPassword),
+    );
+
+    return account.userId;
   }
 }
