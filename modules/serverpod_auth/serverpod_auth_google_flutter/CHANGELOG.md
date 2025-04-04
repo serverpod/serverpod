@@ -1,3 +1,22 @@
+## 2.5.0
+- feat: Enable translations for SignInWithEmailDialog.
+- feat: Adds support for `Record` type in Streaming methods.
+- feat: Adds support for `Record` type in models.
+- feat: Adds support for defining a default value for `Enum` models.
+- feat(EXPERIMENTAL): Adds support for attaching custom data to diagnostic events.
+- fix: Always drain request body to prevent unexpected closed connections in the client.
+- fix: Prevents generated model file naming conflicts with framework-generated files.
+- fix: Fixes crash when validating Serverpod package version in CLI.
+- fix: Preserves stack trace in database query exceptions.
+- fix: Fixes crash in update queries for models without fields or when id column is specified.
+- fix: Fixes import issue causing Wasm incompatibility in client.
+- fix: Re-enables support for models named "Record".
+- fix: Fixes issue where implicit relations could be dropped during update database operations.
+- fix: Fixes issue where implicit relations were not preserved during serialization roundtrips.
+- fix: Adds support for non-nullable `Set` in models.
+- fix(EXPERIMENTAL): Includes URI path in diagnostic events.
+- fix(EXPERIMENTAL): Reports diagnostic event on exception during database start and health checks.
+
 ## 2.4.0
 
 - feat: Adds support for configuring certificates for Serverpod API, Web, and Insights servers.
