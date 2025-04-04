@@ -6,6 +6,7 @@ environment:
 
 dependencies:
   serverpod: 2.4.0
+  serverpod_auth2_server: 2.4.0
 
 dev_dependencies:
   lints: ">=3.0.0 <6.0.0"
@@ -23,3 +24,5 @@ dependency_overrides:
     path: ../../../../packages/serverpod_test
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
+  serverpod_auth2_server:
+    path: ../../serverpod_auth2/serverpod_auth2_server
