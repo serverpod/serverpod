@@ -167,39 +167,117 @@ void main() {
         }, skip: errors.isNotEmpty);
       });
 
-      for (var forbiddenKey in [
-        Keyword.defaultModelKey,
-        Keyword.defaultPersistKey,
-        Keyword.persist,
-        Keyword.scope,
-      ]) {
-        test(
-          'and the forbidden $forbiddenKey key, then an error is collected.',
-          () {
-            var models = [
-              ModelSourceBuilder().withYaml(
-                '''
-                class: Example
-                table: example
-                fields:
-                  id: $idClassName, default=$defaultValue, $forbiddenKey
-                ''',
-              ).build()
-            ];
+      var defaultModelKey = Keyword.defaultModelKey;
+      test(
+        'and the forbidden $defaultModelKey key, then an error is collected.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
+              class: Example
+              table: example
+              fields:
+                id: $idClassName, $defaultModelKey=$defaultValue
+              ''',
+            ).build()
+          ];
 
-            var collector = CodeGenerationCollector();
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
 
-            expect(
-              collector.errors.first.message,
-              contains(
-                'The "$forbiddenKey" key is not allowed on the "id" field.',
-              ),
-            );
-          },
-        );
-      }
+          expect(
+            collector.errors.first.message,
+            contains(
+              'The "$defaultModelKey" key is not allowed on the "id" field.',
+            ),
+          );
+        },
+      );
+
+      var defaultPersistKey = Keyword.defaultPersistKey;
+      test(
+        'and the forbidden $defaultPersistKey key, then an error is collected.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
+              class: Example
+              table: example
+              fields:
+                id: $idClassName, $defaultPersistKey=$defaultValue
+              ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors.first.message,
+            contains(
+              'The "$defaultPersistKey" key is not allowed on the "id" field.',
+            ),
+          );
+        },
+      );
+
+      var persistKey = Keyword.persist;
+      test(
+        'and the forbidden $persistKey key, then an error is collected.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
+              class: Example
+              table: example
+              fields:
+                id: $idClassName, default=$defaultValue, !$persistKey
+              ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors.first.message,
+            contains(
+              'The "$persistKey" key is not allowed on the "id" field.',
+            ),
+          );
+        },
+      );
+
+      var scopeKey = Keyword.scope;
+      test(
+        'and the forbidden $scopeKey key, then an error is collected.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
+              class: Example
+              table: example
+              fields:
+                id: $idClassName, default=$defaultValue, $scopeKey
+              ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors.first.message,
+            contains(
+              'The "$scopeKey" key is not allowed on the "id" field.',
+            ),
+          );
+        },
+      );
     });
   }
 
@@ -246,6 +324,7 @@ void main() {
       StatefulAnalyzer(config, models, onErrorsCollector(collector))
           .validateAll();
 
+      // TODO: Complete the message.
       expect(
         collector.errors.first.message,
         contains(
@@ -274,6 +353,7 @@ void main() {
     StatefulAnalyzer(config, models, onErrorsCollector(collector))
         .validateAll();
 
+    // TODO: Complete the message.
     expect(
       collector.errors.first.message,
       contains(
