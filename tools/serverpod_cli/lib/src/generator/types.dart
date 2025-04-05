@@ -705,13 +705,14 @@ class SupportedIdType {
   /// of the supported defaults for the type.
   final String defaultValue;
 
-  /// If no id type is specified, the default id type is [int].
+  /// Id type that generates sequential integer values.
   static SupportedIdType get int => SupportedIdType(
         type: TypeDefinition.int,
         aliases: ['int'],
         defaultValue: defaultIntSerial,
       );
 
+  /// Id type that generates UUID v4 values.
   static SupportedIdType get uuidV4 => SupportedIdType(
         type: TypeDefinition.uuid,
         aliases: ['uuidV4'],
