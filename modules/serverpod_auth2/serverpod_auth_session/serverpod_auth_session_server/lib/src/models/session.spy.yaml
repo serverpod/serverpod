@@ -11,4 +11,5 @@ fields:
   ### The time when this sesion was created.
   created: DateTime
 
+  # TODO: Index
   sessionKey: String
