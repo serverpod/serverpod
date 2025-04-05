@@ -1,5 +1,4 @@
-import 'scope.dart';
-import '../server/session.dart';
+import 'package:serverpod/serverpod.dart';
 
 /// Returns authentication information for a given [Session] and [token] or null
 /// if the key is invalid.
@@ -12,7 +11,9 @@ typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(
 /// Allowed scopes are defined for each [Endpoint].
 class AuthenticationInfo {
   /// Id for an authenticated user.
-  final int userId;
+  ///
+  /// Can only be `int` or `UuidValue`.
+  final dynamic userId;
 
   /// The scopes that the user can access.
   final Set<Scope> scopes;
@@ -21,5 +22,9 @@ class AuthenticationInfo {
   final String? authId;
 
   /// Creates a new [AuthenticationInfo].
-  AuthenticationInfo(this.userId, this.scopes, {this.authId});
+  AuthenticationInfo(this.userId, this.scopes, {this.authId}) {
+    if (userId is! int && userId is! UuidValue) {
+      throw Exception('Invalid `userId` data type "${userId.runtimeType}"');
+    }
+  }
 }
