@@ -10,6 +10,7 @@ dependencies:
   serverpod: 2.4.0
   serverpod_auth_server: 2.4.0
   serverpod_auth2_server: 2.4.0
+  serverpod_auth_session_server: 2.4.0
   serverpod_auth_email_server: 2.4.0
   serverpod_auth_migration_server: 2.4.0
 
