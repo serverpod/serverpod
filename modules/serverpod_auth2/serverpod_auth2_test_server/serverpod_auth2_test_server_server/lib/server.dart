@@ -1,8 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth2_test_server_server/src/web/routes/root.dart';
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+    as email_account;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as auth_migration;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as auth_session;
 
@@ -21,6 +23,11 @@ void run(List<String> args) async {
     Endpoints(),
     authenticationHandler: auth_session.authenticationHandlerWithMigration(
       auth_migration.sessionMigrationFunction,
+    ),
+  );
+  email_account.EmailAccountConfig.set(
+    email_account.EmailAccountConfig(
+      existingUserImportFunction: auth_migration.emailAccountImportFunction,
     ),
   );
 
@@ -42,7 +49,7 @@ void run(List<String> args) async {
     // at least while staying on the legacy auth package.
     // When migration to the new users, some code that would still compile would need modification
     // (as otherwise it might pass a UUID where and int is expected).
-    await UserInfo.db.findById(await pod.createSession(), x.userId);
+    await auth.UserInfo.db.findById(await pod.createSession(), x.userId);
   }
 
   // Start the server.
