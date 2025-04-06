@@ -249,27 +249,34 @@ class ModelParser {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is YamlMap) {
       var fieldsNodeEntries = fieldsNode.nodes.entries;
-    fields.addAll(fieldsNodeEntries.expand((fieldNode) {
-      return _parseModelFieldDefinition(
-        fieldNode,
-        docsExtractor,
-        extraClasses,
-        serverOnlyClass,
-      );
-    }).toList());
+      fields.addAll(fieldsNodeEntries.expand((fieldNode) {
+        return _parseModelFieldDefinition(
+          fieldNode,
+          docsExtractor,
+          extraClasses,
+          serverOnlyClass,
+        );
+      }).toList());
     }
 
     if (hasTable) {
       final defaultIdType = SupportedIdType.int;
-      var maybeIdColumn =
+
+      var maybeIdField =
           fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
-      var defaultValue = (maybeIdColumn != null)
-          ? maybeIdColumn.defaultPersistValue
+      var defaultPersistValue = (maybeIdField != null)
+          ? maybeIdField.defaultPersistValue
+          : defaultIdType.defaultValue;
+      var defaultModelValue = (maybeIdField != null)
+          ? maybeIdField.defaultModelValue
           : defaultIdType.defaultValue;
 
       // The 'int' id type can be specified without a default value.
-      if (maybeIdColumn?.type.className == 'int') {
-        defaultValue ??= SupportedIdType.int.defaultValue;
+      if (maybeIdField?.type.className == 'int') {
+        defaultPersistValue ??= SupportedIdType.int.defaultValue;
+      }
+      if (defaultModelValue == defaultIntSerial) {
+        defaultModelValue = null;
       }
 
       var defaultIdFieldDoc = [
@@ -283,12 +290,12 @@ class ModelParser {
         0,
         SerializableModelFieldDefinition(
           name: defaultPrimaryKeyName,
-          type: (maybeIdColumn?.type ?? defaultIdType.type).asNullable,
+          type: (maybeIdField?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
-          defaultModelValue: defaultValue,
-          defaultPersistValue: defaultValue,
+          defaultModelValue: defaultModelValue,
+          defaultPersistValue: defaultPersistValue,
           shouldPersist: true,
-          documentation: maybeIdColumn?.documentation ?? defaultIdFieldDoc,
+          documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
         ),
       );
     }

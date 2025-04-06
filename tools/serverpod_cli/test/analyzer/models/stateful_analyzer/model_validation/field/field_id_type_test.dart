@@ -45,6 +45,10 @@ void main() {
       expect(definition.fields.first.type.nullable, true);
     });
 
+    test('then the default model value is null.', () {
+      expect(definition.fields.first.defaultModelValue, isNull);
+    });
+
     test('then the default persist is "serial".', () {
       expect(definition.fields.first.defaultPersistValue, defaultIntSerial);
     });
@@ -158,9 +162,15 @@ void main() {
         }, skip: errors.isNotEmpty);
 
         var expectedDefaultValue = idType.defaultValue;
-        test("then the default model value is '$expectedDefaultValue'", () {
-          expect(definition.idField.defaultModelValue, expectedDefaultValue);
-        }, skip: errors.isNotEmpty);
+
+        // Temporarily separate this test after making the default model value
+        // not available for int. This condition will be removed once the tests
+        // are split into separate files per id type.
+        if (idClassName != 'int') {
+          test("then the default model value is '$expectedDefaultValue'", () {
+            expect(definition.idField.defaultModelValue, expectedDefaultValue);
+          }, skip: errors.isNotEmpty);
+        }
 
         test("then the default persist value is '$expectedDefaultValue'", () {
           expect(definition.idField.defaultPersistValue, expectedDefaultValue);
