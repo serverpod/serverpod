@@ -81,10 +81,11 @@ class DefaultValueRestriction extends ValueRestriction {
         .map((e) => e.defaultValue);
 
     if (!supportedDefaults.contains(value)) {
+      var options = supportedDefaults.map((e) => '"$e"').join(', ');
       errors.add(
         SourceSpanSeverityException(
           'The default value "$value" is not supported for the id type '
-          '"$typeClassName". Valid options are: ${supportedDefaults.join(', ')}.',
+          '"$typeClassName". Valid options are: $options.',
           span,
         ),
       );

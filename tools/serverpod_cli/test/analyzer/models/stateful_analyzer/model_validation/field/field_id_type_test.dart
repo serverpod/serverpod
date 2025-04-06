@@ -77,10 +77,8 @@ void main() {
 
     expect(
       collector.errors.first.message,
-      contains(
-        'The "changeIdType" experimental feature is not enabled. Enable '
-        'it first to change the id type of a table class.',
-      ),
+      'The "changeIdType" experimental feature is not enabled. Enable '
+      'it first to change the id type of a table class.',
     );
   });
 
@@ -127,7 +125,7 @@ void main() {
 
           expect(
             collector.errors.first.message,
-            contains('The type "$idClassName" must have a default value.'),
+            'The type "$idClassName" must have a default value.',
           );
         });
       }
@@ -198,9 +196,8 @@ void main() {
 
           expect(
             collector.errors.first.message,
-            contains(
-              'The "$defaultModelKey" key is not allowed on the "id" field.',
-            ),
+            'The "$defaultModelKey" key is not allowed on the "id" field. '
+            'Use the "default" key instead.',
           );
         },
       );
@@ -226,9 +223,8 @@ void main() {
 
           expect(
             collector.errors.first.message,
-            contains(
-              'The "$defaultPersistKey" key is not allowed on the "id" field.',
-            ),
+            'The "$defaultPersistKey" key is not allowed on the "id" field. '
+            'Use the "default" key instead.',
           );
         },
       );
@@ -254,9 +250,7 @@ void main() {
 
           expect(
             collector.errors.first.message,
-            contains(
-              'The "$persistKey" key is not allowed on the "id" field.',
-            ),
+            'The "$persistKey" key is not allowed on the "id" field.',
           );
         },
       );
@@ -282,9 +276,7 @@ void main() {
 
           expect(
             collector.errors.first.message,
-            contains(
-              'The "$scopeKey" key is not allowed on the "id" field.',
-            ),
+            'The "$scopeKey" key is not allowed on the "id" field.',
           );
         },
       );
@@ -337,9 +329,8 @@ void main() {
       // TODO: Complete the message.
       expect(
         collector.errors.first.message,
-        contains(
-          'The default value "1" is not supported for the id type "int".',
-        ),
+        'The default value "1" is not supported for the id type "int". '
+        'Valid options are: "serial".',
       );
     },
   );
@@ -366,9 +357,8 @@ void main() {
     // TODO: Complete the message.
     expect(
       collector.errors.first.message,
-      contains(
-        'The default value "$invalidDefaultValue" is not supported for the id type "UuidValue". Valid options are:',
-      ),
+      'The default value "$invalidDefaultValue" is not supported for the id '
+      'type "UuidValue". Valid options are: "random".',
     );
   });
 }
