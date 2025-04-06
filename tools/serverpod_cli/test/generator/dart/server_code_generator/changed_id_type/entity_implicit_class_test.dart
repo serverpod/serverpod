@@ -14,69 +14,109 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  var testClassName = 'Example';
-  var testClassFileName = 'example';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join('lib', 'src', 'generated', 'example.dart');
 
-  for (var idType in SupportedIdType.all) {
-    var idClassName = idType.type.className;
-    var idTypeAlias = idType.aliases.first;
+  group(
+      'Given a table class with id type "int" with a field that should persist but is scoped too none',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withTableName('example')
+          .withIdFieldType(SupportedIdType.int)
+          .withSimpleField('extra', 'bool')
+          .withField(FieldDefinitionBuilder()
+              .withName('_name')
+              .withType(TypeDefinition(className: 'String', nullable: true))
+              .withShouldPersist(true)
+              .withScope(ModelFieldScopeDefinition.none)
+              .build())
+          .build()
+    ];
 
-    group('Given the id type is $idTypeAlias', () {
-      group(
-          'Given a class with a field that should persist but is scoped too none',
-          () {
-        var models = [
-          ModelClassDefinitionBuilder()
-              .withClassName(testClassName)
-              .withFileName(testClassFileName)
-              .withTableName('example')
-              .withIdFieldType(idType)
-              .withSimpleField('extra', 'bool')
-              .withField(FieldDefinitionBuilder()
-                  .withName('_name')
-                  .withType(TypeDefinition(className: 'String', nullable: true))
-                  .withShouldPersist(true)
-                  .withScope(ModelFieldScopeDefinition.none)
-                  .build())
-              .build()
-        ];
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
 
-        var codeMap = generator.generateSerializableModelsCode(
-          models: models,
-          config: config,
-        );
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+    var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'ExampleImplicit',
+    );
 
-        var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          compilationUnit,
-          name: '${testClassName}Implicit',
-        );
-
-        test(
-            'then an implicit class named ${testClassName}Implicit is correctly generated',
-            () {
-          expect(implicitClass, isNotNull);
-        });
-
-        test(
-            'then the private constructor have the id parameter with type $idClassName',
-            () {
-          var constructor =
-              CompilationUnitHelpers.tryFindConstructorDeclaration(
-            implicitClass!,
-            name: '_',
-          );
-
-          expect(
-            constructor?.parameters.toSource(),
-            contains('$idClassName? id, required bool extra, this.\$_name})'),
-          );
-        });
-      });
+    test(
+        'then an implicit class named "ExampleImplicit" is correctly generated',
+        () {
+      expect(implicitClass, isNotNull);
     });
-  }
+
+    test(
+        'then the private constructor have the id parameter with type "int"',
+        () {
+      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        implicitClass!,
+        name: '_',
+      );
+
+      expect(
+        constructor?.parameters.toSource(),
+        contains('int? id, required bool extra, this.\$_name})'),
+      );
+    });
+  });
+
+  group(
+      'Given a table class with id type "UUIDv4" with a field that should persist but is scoped too none',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withTableName('example')
+          .withIdFieldType(SupportedIdType.uuidV4)
+          .withSimpleField('extra', 'bool')
+          .withField(FieldDefinitionBuilder()
+              .withName('_name')
+              .withType(TypeDefinition(className: 'String', nullable: true))
+              .withShouldPersist(true)
+              .withScope(ModelFieldScopeDefinition.none)
+              .build())
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'ExampleImplicit',
+    );
+
+    test(
+        'then an implicit class named "ExampleImplicit" is correctly generated',
+        () {
+      expect(implicitClass, isNotNull);
+    });
+
+    test(
+        'then the private constructor have the id parameter with type "UuidValue"',
+        () {
+      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        implicitClass!,
+        name: '_',
+      );
+
+      expect(
+        constructor?.parameters.toSource(),
+        contains('UuidValue? id, required bool extra, this.\$_name})'),
+      );
+    });
+  });
 }

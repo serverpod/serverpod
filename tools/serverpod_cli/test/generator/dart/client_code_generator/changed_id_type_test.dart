@@ -25,62 +25,97 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  for (var idType in SupportedIdType.all) {
-    var idClassName = idType.type.className;
-    var idTypeAlias = idType.aliases.first;
+  group('Given a table class with id type "int" when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.int)
+          .build()
+    ];
 
-    group('Given the id type is $idTypeAlias', () {
-      group('Given a class with table name when generating code', () {
-        var models = [
-          ModelClassDefinitionBuilder()
-              .withFileName(testClassFileName)
-              .withTableName('example_table')
-              .withIdFieldType(idType)
-              .build()
-        ];
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
 
-        var codeMap = generator.generateSerializableModelsCode(
-          models: models,
-          config: config,
-        );
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: testClassName,
+    );
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-        var maybeClassNamedExample =
-            CompilationUnitHelpers.tryFindClassDeclaration(
-          compilationUnit,
-          name: testClassName,
-        );
+    test('then the class has id in constructor with type "int".', () {
+      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        maybeClassNamedExample!,
+        name: null,
+      );
 
-        group('then the class named $testClassName', () {
-          test('has id in constructor with type $idClassName.', () {
-            var constructor =
-                CompilationUnitHelpers.tryFindConstructorDeclaration(
-              maybeClassNamedExample!,
-              name: null,
-            );
-
-            expect(
-              constructor?.parameters.parameters.first.toSource(),
-              contains('$idClassName? id'),
-              reason: 'Missing declaration for $testClassName constructor.',
-            );
-          });
-
-          test('has type of the id field $idClassName.', () {
-            var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
-              maybeClassNamedExample!,
-              name: 'id',
-            );
-
-            expect(
-              (maybeIdField?.fields.type as NamedType).name2.toString(),
-              idClassName,
-              reason: 'Wrong type for the id field.',
-            );
-          });
-        });
-      });
+      expect(
+        constructor?.parameters.parameters.first.toSource(),
+        contains('int? id'),
+        reason: 'Missing declaration for $testClassName constructor.',
+      );
     });
-  }
+
+    test('then the class id field has type "int".', () {
+      var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+        maybeClassNamedExample!,
+        name: 'id',
+      );
+
+      expect(
+        (maybeIdField?.fields.type as NamedType).name2.toString(),
+        'int',
+        reason: 'Wrong type for the id field.',
+      );
+    });
+  });
+
+  group('Given a table class with id type "UUIDv4" when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.uuidV4)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: testClassName,
+    );
+
+    test('then the class has id in constructor with type "UuidValue".', () {
+      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        maybeClassNamedExample!,
+        name: null,
+      );
+
+      expect(
+        constructor?.parameters.parameters.first.toSource(),
+        contains('UuidValue? id'),
+        reason: 'Missing declaration for $testClassName constructor.',
+      );
+    });
+
+    test('then the class id field has type "UuidValue".', () {
+      var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+        maybeClassNamedExample!,
+        name: 'id',
+      );
+
+      expect(
+        (maybeIdField?.fields.type as NamedType).name2.toString(),
+        'UuidValue',
+        reason: 'Wrong type for the id field.',
+      );
+    });
+  });
 }

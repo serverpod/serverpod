@@ -13,62 +13,94 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  var testClassName = 'Example';
-  var repositoryClassName = '${testClassName}Repository';
-  var testClassFileName = 'example';
   var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      path.join('lib', 'src', 'generated', 'example.dart');
 
-  for (var idType in SupportedIdType.all) {
-    var idClassName = idType.type.className;
-    var idTypeAlias = idType.aliases.first;
+  group('Given a table class with id type "int" when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName('example')
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.int)
+          .build()
+    ];
 
-    group('Given the id type is $idTypeAlias', () {
-      group('Given a class with table name when generating code', () {
-        var tableName = 'example_table';
-        var models = [
-          ModelClassDefinitionBuilder()
-              .withFileName(testClassFileName)
-              .withTableName(tableName)
-              .withIdFieldType(idType)
-              .build()
-        ];
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
 
-        var codeMap = generator.generateSerializableModelsCode(
-          models: models,
-          config: config,
-        );
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-        var compilationUnit =
-            parseString(content: codeMap[expectedFilePath]!).unit;
+    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'ExampleRepository',
+    );
 
-        var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          compilationUnit,
-          name: repositoryClassName,
-        );
-
-        test('then the class name $repositoryClassName is generated', () {
-          expect(
-            repositoryClass,
-            isNotNull,
-            reason: 'Missing class named $repositoryClassName.',
-          );
-        });
-
-        group('then the $repositoryClassName class has a findById method', () {
-          var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryClass!,
-            name: 'findById',
-          );
-
-          test('that takes an $idClassName as a required param', () {
-            expect(
-              findByIdMethod?.parameters?.toSource(),
-              contains('$idClassName id, '),
-            );
-          });
-        });
-      });
+    test('then the class name "ExampleRepository" is generated', () {
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named ExampleRepository.',
+      );
     });
-  }
+
+    test(
+        'then the "ExampleRepository" class has a findById method that takes an "int" as a required param',
+        () {
+      var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryClass!,
+        name: 'findById',
+      );
+
+      expect(
+        findByIdMethod?.parameters?.toSource(),
+        contains('int id, '),
+      );
+    });
+  });
+
+  group('Given a table class with id type "UUIDv4" when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName('example')
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.uuidV4)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'ExampleRepository',
+    );
+
+    test('then the class name "ExampleRepository" is generated', () {
+      expect(
+        repositoryClass,
+        isNotNull,
+        reason: 'Missing class named ExampleRepository.',
+      );
+    });
+
+    test(
+        'then the "ExampleRepository" class has a findById method that takes an "UuidValue" as a required param',
+        () {
+      var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryClass!,
+        name: 'findById',
+      );
+
+      expect(
+        findByIdMethod?.parameters?.toSource(),
+        contains('UuidValue id, '),
+      );
+    });
+  });
 }
