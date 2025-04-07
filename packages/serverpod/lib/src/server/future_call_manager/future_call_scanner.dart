@@ -24,6 +24,8 @@ class FutureCallScanner {
   final ShouldSkipScan _shouldSkipScan;
   final DispatchEntries _dispatchEntries;
 
+  bool _isStopping = false;
+
   /// Creates a new [FutureCallScanner].
   FutureCallScanner({
     required Server server,
@@ -44,9 +46,15 @@ class FutureCallScanner {
     );
   }
 
+  /// Stops the task scanner.
+  void stop() {
+    _isStopping = true;
+    _timer?.cancel();
+  }
+
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCalls() async {
-    if (_shouldSkipScan()) {
+    if (_isStopping || _shouldSkipScan()) {
       return;
     }
 
@@ -80,10 +88,5 @@ class FutureCallScanner {
       stderr.writeln('Local stacktrace:');
       stderr.writeln('${StackTrace.current}');
     }
-  }
-
-  /// Stops the task scanner.
-  void stop() {
-    _timer?.cancel();
   }
 }

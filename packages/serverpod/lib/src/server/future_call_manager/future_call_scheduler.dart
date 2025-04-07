@@ -64,10 +64,6 @@ class FutureCallScheduler {
   /// Returns `true` if the concurrent limit for FutureCalls is reached.
   /// Returns `false` otherwise.
   bool isConcurrentLimitReached() {
-    if (_isStopping) {
-      return true;
-    }
-
     final concurrencyLimit = _concurrencyLimit;
 
     if (concurrencyLimit == null) {
