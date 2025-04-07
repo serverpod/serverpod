@@ -478,13 +478,13 @@ class FutureCallConfig {
             : int.parse(concurrencyLimitJson);
       } catch (_) {
         throw Exception(
-          'The `concurrencyLimit` setting was set to $concurrencyLimitJson, but must be an integer.',
+          'The `concurrencyLimit` setting was set to "$concurrencyLimitJson", but must be an integer.',
         );
       }
 
       if (concurrencyLimit < 1) {
         throw Exception(
-          'The `concurrencyLimit` setting was set to $concurrencyLimit, but must be at least 1.\n'
+          'The `concurrencyLimit` setting was set to "$concurrencyLimit", but must be at least 1.\n'
           'If you want to disable the concurrency limit, set it to null.',
         );
       }
