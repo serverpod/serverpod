@@ -41,6 +41,7 @@ dependencies:
 dev_dependencies:
   test: ^1.24.2
   serverpod_lints: 2.4.0
+  mocktail: ^1.0.4
 
 dependency_overrides:
   serverpod_shared:

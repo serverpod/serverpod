@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
@@ -47,6 +48,20 @@ class FutureCallManager {
       isConcurrentLimitReached: _scheduler.shouldSkipScan,
       queueFutureCallEntries: _scheduler.addFutureCallEntries,
     );
+  }
+
+  /// Creates a [FutureCallManager] with custom scheduler and scanner for testing.
+  @visibleForTesting
+  FutureCallManager.forTesting(
+    this._server,
+    this._config,
+    this._serializationManager,
+    this.onCompleted, {
+    required FutureCallScheduler scheduler,
+    required FutureCallScanner scanner,
+  }) {
+    _scheduler = scheduler;
+    _scanner = scanner;
   }
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
@@ -102,7 +117,7 @@ class FutureCallManager {
         unawaited(_runFutureCallsForMaintenance());
         break;
       case ServerpodRole.monolith:
-        unawaited(_runFutureCallsForMonolith());
+        _runFutureCallsForMonolith();
         break;
       case ServerpodRole.serverless:
         // Serverless does not support future calls.
@@ -126,7 +141,7 @@ class FutureCallManager {
     onCompleted();
   }
 
-  Future<void> _runFutureCallsForMonolith() async {
+  void _runFutureCallsForMonolith() {
     _scanner.start();
   }
 }
