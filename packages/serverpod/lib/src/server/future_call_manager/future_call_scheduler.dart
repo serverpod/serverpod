@@ -8,13 +8,8 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:synchronized/synchronized.dart';
 
-enum _FutureCallInvocationResult {
-  success,
-  postponed;
-}
-
 /// A class responsible for scheduling and executing future call entries.
-class FutureCallQueue {
+class FutureCallScheduler {
   final Server _server;
 
   final SerializationManager _serializationManager;
@@ -29,8 +24,10 @@ class FutureCallQueue {
   var _runningFutureCalls = 0;
   final _runningFutureCallFutures = <Future>[];
 
-  /// Creates a new [FutureCallQueue].
-  FutureCallQueue({
+  var _isStopping = false;
+
+  /// Creates a new [FutureCallScheduler].
+  FutureCallScheduler({
     required Server server,
     required SerializationManager serializationManager,
     required int? concurrencyLimit,
@@ -48,28 +45,27 @@ class FutureCallQueue {
     _futureCalls[name] = futureCall;
   }
 
-  /// Stops the [FutureCallQueue].
-  ///
-  /// This method will wait for all running future calls to complete.
-  /// This will discard any queued future calls.
-  Future<void> stop() async {
-    await Future.wait(_runningFutureCallFutures);
-  }
-
   /// Makes sure any running future calls and queued future calls are processed.
-  Future<void> drainQueueAndStop() async {
-    await Future.wait(_runningFutureCallFutures);
+  /// Once called, [shouldSkipScan] will always return `true`.
+  Future<void> stop() async {
+    _isStopping = true;
+
+    await Future.any(_runningFutureCallFutures.toList());
 
     while (_queue.isNotEmpty) {
       await _handleQueue();
 
-      await Future.wait(_runningFutureCallFutures);
+      await Future.any(_runningFutureCallFutures.toList());
     }
   }
 
   /// Returns `true` if the concurrent limit for FutureCalls is reached.
   /// Returns `false` otherwise.
-  bool isConcurrentLimitReached() {
+  bool shouldSkipScan() {
+    if (_isStopping) {
+      return true;
+    }
+
     final concurrencyLimit = _concurrencyLimit;
 
     if (concurrencyLimit == null) {
@@ -106,11 +102,11 @@ class FutureCallQueue {
   Future<void> _handleQueue() async {
     // Run this in a synchronized block to avoid race conditions. This method
     // can be called asynchronously from any completing FutureCall or when
-    // queueFutureCallEntries is called. This code must not be running more than
+    // addFutureCallEntries is called. This code must not be running more than
     // once at a time.
     await _queueLock.synchronized(() async {
       while (_queue.isNotEmpty) {
-        final isConcurrentLimitReached = this.isConcurrentLimitReached();
+        final isConcurrentLimitReached = shouldSkipScan();
 
         if (isConcurrentLimitReached) {
           break;
@@ -125,75 +121,37 @@ class FutureCallQueue {
           continue;
         }
 
-        final result = await _tryRunFutureCallEntry(
-          session: _server.serverpod.internalSession,
-          futureCallEntry: futureCallEntry,
-          futureCall: futureCall,
+        _runningFutureCalls++;
+
+        final completer = Completer<void>();
+
+        _runningFutureCallFutures.add(completer.future);
+        unawaited(
+          completer.future
+              .then((_) => _runningFutureCallFutures.remove(completer.future)),
         );
 
-        // Concurrency limit reached, stop processing the queue.
-        if (result == _FutureCallInvocationResult.postponed) {
-          // Add the future call entry to the front of the queue to be processed
-          // again once a future call has completed.
-          _queue.addFirst(futureCallEntry);
+        unawaited(
+          _runFutureCall(
+            session: _server.serverpod.internalSession,
+            futureCallEntry: futureCallEntry,
+            futureCall: futureCall,
+          ).whenComplete(
+            () {
+              _runningFutureCalls--;
 
-          break;
-        }
+              completer.complete();
+
+              if (_isStopping) {
+                return;
+              }
+
+              _handleQueue();
+            },
+          ),
+        );
       }
     });
-  }
-
-  /// Tries to start a [FutureCall] as configured by the [FutureCallEntry].
-  /// If the concurrency limit allows it, the [FutureCall] is invoked, the
-  /// [FutureCallEntry] is deleted from the database and
-  /// `_FutureCallInvocationResult.success` is returned.
-  /// If the concurrency limit is reached, the future call is not invoked and
-  /// `_FutureCallInvocationResult.postponed` is returned.
-  /// If the [FutureCallEntry] can not be deleted from the database,
-  /// `_FutureCallInvocationResult.deleted` is returned.
-  Future<_FutureCallInvocationResult> _tryRunFutureCallEntry({
-    required Session session,
-    required FutureCallEntry futureCallEntry,
-    required FutureCall<SerializableModel> futureCall,
-  }) async {
-    final isConcurrentLimitReached = this.isConcurrentLimitReached();
-
-    if (isConcurrentLimitReached) {
-      return _FutureCallInvocationResult.postponed;
-    }
-
-    _runningFutureCalls++;
-
-    final futureCallCompleter = Completer<void>();
-
-    _runningFutureCallFutures.add(futureCallCompleter.future);
-
-    unawaited(
-      _runFutureCall(
-        session: session,
-        futureCallEntry: futureCallEntry,
-        futureCall: futureCall,
-      ).whenComplete(
-        () async {
-          _runningFutureCalls--;
-
-          futureCallCompleter.complete();
-        },
-      ),
-    );
-
-    unawaited(
-      futureCallCompleter.future.then(
-        (_) {
-          _runningFutureCallFutures.remove(futureCallCompleter.future);
-          // Once a future call is completed, we check if there are more
-          // future calls that can be run.
-          _handleQueue();
-        },
-      ),
-    );
-
-    return _FutureCallInvocationResult.success;
   }
 
   /// Runs a [FutureCallEntry] and completes when the future call is completed.

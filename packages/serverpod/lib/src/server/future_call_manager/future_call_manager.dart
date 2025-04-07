@@ -6,8 +6,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
-import 'future_call_queue.dart';
 import 'future_call_scanner.dart';
+import 'future_call_scheduler.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -20,7 +20,7 @@ class FutureCallManager {
 
   final SerializationManager _serializationManager;
 
-  late final FutureCallQueue _queue;
+  late final FutureCallScheduler _scheduler;
   late final FutureCallScanner _scanner;
 
   /// Called when pending future calls have been completed, if the server is
@@ -35,7 +35,7 @@ class FutureCallManager {
     this._serializationManager,
     this.onCompleted,
   ) {
-    _queue = FutureCallQueue(
+    _scheduler = FutureCallScheduler(
       server: _server,
       serializationManager: _serializationManager,
       concurrencyLimit: _config.concurrencyLimit,
@@ -44,8 +44,8 @@ class FutureCallManager {
     _scanner = FutureCallScanner(
       server: _server,
       scanInterval: _config.scanInterval,
-      isConcurrentLimitReached: _queue.isConcurrentLimitReached,
-      queueFutureCallEntries: _queue.addFutureCallEntries,
+      isConcurrentLimitReached: _scheduler.shouldSkipScan,
+      queueFutureCallEntries: _scheduler.addFutureCallEntries,
     );
   }
 
@@ -90,7 +90,7 @@ class FutureCallManager {
 
   /// Registers a [FutureCall] with the manager.
   void registerFutureCall(FutureCall call, String name) {
-    _queue.registerFutureCall(call, name);
+    _scheduler.registerFutureCall(call, name);
   }
 
   /// Starts the manager.
@@ -113,7 +113,7 @@ class FutureCallManager {
   /// Stops the manager.
   Future<void> stop() async {
     _scanner.stop();
-    await _queue.drainQueueAndStop();
+    await _scheduler.stop();
   }
 
   Future<void> _runFutureCallsForMaintenance() async {
@@ -121,7 +121,7 @@ class FutureCallManager {
 
     await _scanner.scanFutureCalls();
 
-    await _queue.drainQueueAndStop();
+    await _scheduler.stop();
 
     onCompleted();
   }
