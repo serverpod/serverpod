@@ -122,7 +122,7 @@ futureCall:
             (e) => e.toString(),
             'message',
             contains(
-                'The `concurrencyLimit` setting was set to invalid, but must be an integer'),
+                'The `concurrencyLimit` setting was set to "invalid", but must be an integer'),
           ),
         ),
       );
@@ -219,7 +219,7 @@ futureCall:
   );
 
   test(
-    'Given a negative concurrencyLimit when loading from Map then throws Exception',
+    'Given a negative concurrencyLimit when loading from Map then sets concurrencyLimit to null (unlimited concurrency)',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -231,22 +231,14 @@ futureCall:
   concurrencyLimit: -1
 ''';
 
-      expect(
-        () => ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml(serverpodConfig),
-        ),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains(
-                'The `concurrencyLimit` setting was set to -1, but must be at least 1'),
-          ),
-        ),
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
       );
+
+      expect(config.futureCall.concurrencyLimit, isNull);
     },
   );
 
