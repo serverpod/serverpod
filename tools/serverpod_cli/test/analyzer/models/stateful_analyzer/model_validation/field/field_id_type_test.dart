@@ -115,8 +115,8 @@ void main() {
 
     var collector = CodeGenerationCollector();
     var definitions =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector))
-              .validateAll();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
     var definition = definitions.first as ModelClassDefinition;
 
     test('then the id of the table is "int".', () {

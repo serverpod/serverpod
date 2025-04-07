@@ -50,14 +50,11 @@ Future<void> _createTestDatabase(Session session) async {
 }
 
 Future<int> deleteAll(Session session) async {
-  var addressDeletions =
-      await AddressUuid.db
+  var addressDeletions = await AddressUuid.db
       .deleteWhere(session, where: (_) => Constant.bool(true));
-  var citizenDeletions =
-      await CitizenInt.db
+  var citizenDeletions = await CitizenInt.db
       .deleteWhere(session, where: (_) => Constant.bool(true));
-  var companyDeletions =
-      await CompanyUuid.db
+  var companyDeletions = await CompanyUuid.db
       .deleteWhere(session, where: (_) => Constant.bool(true));
   var townDeletions =
       await TownInt.db.deleteWhere(session, where: (_) => Constant.bool(true));

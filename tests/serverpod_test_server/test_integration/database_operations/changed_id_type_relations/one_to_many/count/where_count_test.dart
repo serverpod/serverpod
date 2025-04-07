@@ -8,7 +8,8 @@ void main() async {
 
   group('Given models with one to many relation ', () {
     tearDown(() async {
-      await OrderUuid.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await OrderUuid.db
+          .deleteWhere(session, where: (_) => db.Constant.bool(true));
       await CustomerInt.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
@@ -54,13 +55,16 @@ void main() async {
       ]);
       await OrderUuid.db.insert(session, [
         // Alex orders
-        OrderUuid(description: 'Prem: OrderUuid 1', customerId: customers[0].id!),
-        OrderUuid(description: 'Prem: OrderUuid 2', customerId: customers[0].id!),
+        OrderUuid(
+            description: 'Prem: OrderUuid 1', customerId: customers[0].id!),
+        OrderUuid(
+            description: 'Prem: OrderUuid 2', customerId: customers[0].id!),
         OrderUuid(description: 'OrderUuid 3', customerId: customers[0].id!),
         // Viktor orders
         OrderUuid(description: 'OrderUuid 4', customerId: customers[2].id!),
         // Lisa orders
-        OrderUuid(description: 'Prem: OrderUuid 5', customerId: customers[3].id!),
+        OrderUuid(
+            description: 'Prem: OrderUuid 5', customerId: customers[3].id!),
         OrderUuid(description: 'OrderUuid 6', customerId: customers[3].id!),
       ]);
 
@@ -108,7 +112,8 @@ void main() async {
     tearDown(() async {
       await CommentInt.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
-      await OrderUuid.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await OrderUuid.db
+          .deleteWhere(session, where: (_) => db.Constant.bool(true));
       await CustomerInt.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
     });

@@ -13,8 +13,7 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', 'example.dart');
+  var expectedFilePath = path.join('lib', 'src', 'generated', 'example.dart');
 
   group('Given a table class with id type "int" when generating code', () {
     var models = [

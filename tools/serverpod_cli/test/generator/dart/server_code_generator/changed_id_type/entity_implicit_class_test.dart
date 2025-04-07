@@ -53,8 +53,7 @@ void main() {
       expect(implicitClass, isNotNull);
     });
 
-    test(
-        'then the private constructor have the id parameter with type "int"',
+    test('then the private constructor have the id parameter with type "int"',
         () {
       var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
         implicitClass!,
