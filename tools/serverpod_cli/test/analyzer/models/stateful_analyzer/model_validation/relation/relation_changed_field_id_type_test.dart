@@ -44,13 +44,13 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected', () {
       expect(collector.errors, isEmpty);
     });
 
-    var exampleClass = definitions.first as ModelClassDefinition;
+    late final exampleClass = definitions.first as ModelClassDefinition;
 
     test('then the field type is same as the relation id type.', () {
       var field = exampleClass.findField('myParentId');
@@ -99,14 +99,14 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected', () {
       expect(collector.errors, isEmpty);
     });
 
-    var exampleClass = definitions.first as ModelClassDefinition;
-    var exampleParentClass = definitions.last as ModelClassDefinition;
+    late final exampleClass = definitions.first as ModelClassDefinition;
+    late final exampleParentClass = definitions.last as ModelClassDefinition;
 
     test('then parentId is nullable', () {
       var field = exampleClass.findField('parentId');
@@ -157,14 +157,14 @@ void main() {
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var employeeClass = definitions.first as ModelClassDefinition;
-    var companyClass = definitions.last as ModelClassDefinition;
+    late final employeeClass = definitions.first as ModelClassDefinition;
+    late final companyClass = definitions.last as ModelClassDefinition;
 
     test(
         'then the list relation has the foreign key owner id type on the company side of int.',
@@ -219,14 +219,14 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var employeeClass = definitions.first as ModelClassDefinition;
-    var companyClass = definitions.last as ModelClassDefinition;
+    late final employeeClass = definitions.first as ModelClassDefinition;
+    late final companyClass = definitions.last as ModelClassDefinition;
 
     test(
         'then the list relation has the foreign key owner id type on the company side of UuidValue.',
@@ -288,14 +288,14 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var employeeClass = definitions.first as ModelClassDefinition;
-    var companyClass = definitions.last as ModelClassDefinition;
+    late final employeeClass = definitions.first as ModelClassDefinition;
+    late final companyClass = definitions.last as ModelClassDefinition;
 
     test(
         'then the list relation has the foreign key owner id type on the company side of UuidValue.',
@@ -341,13 +341,13 @@ void main() {
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var companyClass = definitions.last as ModelClassDefinition;
+    late final companyClass = definitions.last as ModelClassDefinition;
 
     test(
         'then the list relation has the foreign key owner id type on the company side of int.',

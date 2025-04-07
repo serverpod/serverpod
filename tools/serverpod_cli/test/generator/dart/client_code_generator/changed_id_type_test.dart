@@ -34,13 +34,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
+
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -81,13 +84,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
+
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );

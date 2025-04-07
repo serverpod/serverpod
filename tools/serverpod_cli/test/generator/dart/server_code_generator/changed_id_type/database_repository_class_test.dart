@@ -24,14 +24,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: 'ExampleRepository',
     );
@@ -68,14 +69,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: 'ExampleRepository',
     );

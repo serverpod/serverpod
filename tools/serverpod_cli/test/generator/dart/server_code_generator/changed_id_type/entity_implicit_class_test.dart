@@ -35,12 +35,13 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
     var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
@@ -86,12 +87,13 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
     var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,

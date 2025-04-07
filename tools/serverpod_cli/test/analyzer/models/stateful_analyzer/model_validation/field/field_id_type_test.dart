@@ -27,9 +27,9 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer =
         StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+    late final definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ClassDefinition;
+    late final definition = definitions.first as ClassDefinition;
 
     test('then an id field is added to the generated model.', () {
       expect(definition.fields.first.name, 'id');
@@ -114,10 +114,10 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var definitions =
+    late final definitions =
         StatefulAnalyzer(config, models, onErrorsCollector(collector))
             .validateAll();
-    var definition = definitions.first as ModelClassDefinition;
+    late final definition = definitions.first as ModelClassDefinition;
 
     test('then the id of the table is "int".', () {
       expect(definition.idField.type.className, 'int');
@@ -165,10 +165,10 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var definitions =
+    late final definitions =
         StatefulAnalyzer(config, models, onErrorsCollector(collector))
             .validateAll();
-    var definition = definitions.first as ModelClassDefinition;
+    late final definition = definitions.first as ModelClassDefinition;
 
     test('then the id of the table is "UuidValue".', () {
       expect(definition.idField.type.className, 'UuidValue');
