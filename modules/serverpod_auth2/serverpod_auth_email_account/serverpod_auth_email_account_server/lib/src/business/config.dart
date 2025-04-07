@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 /// Throws in case the email/password combination is not valid or the user is blocked.
 ///
 /// Assumes that the email has been validated in the old system.
-typedef ExistingUserImportFunction = Future<int?> Function(
+typedef ExistingEmailUserImportFunction = Future<int?> Function(
   Session session, {
   required String email,
   required String password,
@@ -39,7 +39,7 @@ class EmailAccountConfig {
     required String resetToken,
   })? sendPasswordResetMail;
 
-  final ExistingUserImportFunction? existingUserImportFunction;
+  final ExistingEmailUserImportFunction? existingUserImportFunction;
 
   EmailAccountConfig({
     this.registrationVerificationCodeLifetime = const Duration(hours: 1),
