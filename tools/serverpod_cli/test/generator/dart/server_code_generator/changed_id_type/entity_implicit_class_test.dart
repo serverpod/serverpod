@@ -63,7 +63,7 @@ void main() {
 
       expect(
         constructor?.parameters.toSource(),
-        contains('int? id, required bool extra, this.\$_name})'),
+        contains('int? id,'),
       );
     });
   });
@@ -115,7 +115,7 @@ void main() {
 
       expect(
         constructor?.parameters.toSource(),
-        contains('UuidValue? id, required bool extra, this.\$_name})'),
+        contains('UuidValue? id,'),
       );
     });
   });

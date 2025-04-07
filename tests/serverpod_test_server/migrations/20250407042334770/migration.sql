@@ -259,9 +259,9 @@ ALTER TABLE ONLY "town_int"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250313015420884', now())
+    VALUES ('serverpod_test', '20250407042334770', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250313015420884', "timestamp" = now();
+    DO UPDATE SET "version" = '20250407042334770', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

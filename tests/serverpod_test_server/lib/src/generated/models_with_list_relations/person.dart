@@ -18,7 +18,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityCitizensCityId = null;
 
   factory Person({
     int? id,
@@ -28,7 +28,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   }) = _PersonImpl;
 
   factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Person(
+    return PersonImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -36,6 +36,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
           ? null
           : _i2.Organization.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
     );
   }
 
@@ -52,7 +53,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
 
   _i2.Organization? organization;
 
-  int? _cityCitizensCityId;
+  final int? _cityCitizensCityId;
 
   @override
   _i1.Table<int> get table => t;
@@ -144,7 +145,7 @@ class _PersonImpl extends Person {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return Person(
+    return PersonImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -152,6 +153,7 @@ class _PersonImpl extends Person {
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
+      $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }
 }
@@ -162,8 +164,9 @@ class PersonImplicit extends _PersonImpl {
     required String name,
     int? organizationId,
     _i2.Organization? organization,
-    this.$_cityCitizensCityId,
-  }) : super(
+    int? $_cityCitizensCityId,
+  })  : _cityCitizensCityId = $_cityCitizensCityId,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -183,14 +186,8 @@ class PersonImplicit extends _PersonImpl {
     );
   }
 
-  int? $_cityCitizensCityId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
-    return jsonMap;
-  }
+  final int? _cityCitizensCityId;
 }
 
 class PersonTable extends _i1.Table<int> {
@@ -236,6 +233,13 @@ class PersonTable extends _i1.Table<int> {
         name,
         organizationId,
         $_cityCitizensCityId,
+      ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+        organizationId,
       ];
 
   @override

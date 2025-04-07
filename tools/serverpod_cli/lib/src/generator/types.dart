@@ -72,7 +72,7 @@ class TypeDefinition {
           .toList();
 
       return TypeDefinition(
-        className: RecordKeyword.className,
+        className: recordTypeClassName,
         nullable: nullable,
         dartType: type,
         generics: [...positionalField, ...namedFields],
@@ -113,6 +113,8 @@ class TypeDefinition {
     this.recordFieldName,
   });
 
+  static const recordTypeClassName = '_Record';
+
   bool get isSerializedValue => autoSerializedTypes.contains(className);
 
   bool get isSerializedByExtension =>
@@ -124,7 +126,7 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
-  bool get isRecordType => className == RecordKeyword.className;
+  bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>
       SupportedIdType.all.any((e) => e.type.className == className);
@@ -205,6 +207,19 @@ class TypeDefinition {
         className: className,
         url: url,
         nullable: false,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics,
+        enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
+        recordFieldName: recordFieldName,
+      );
+
+  /// Returns this [TypeDefinition] as a named record field
+  TypeDefinition asNamedRecordField(String recordFieldName) => TypeDefinition(
+        className: className,
+        url: url,
+        nullable: nullable,
         customClass: customClass,
         dartType: dartType,
         generics: generics,
@@ -618,6 +633,7 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
+    if (className == '_Record') return ValueType.record;
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
   }
@@ -745,6 +761,14 @@ TypeDefinition parseType(
 }) {
   var trimmedInput = input.trim();
 
+  var maybeRecord = _RecordTypeDefinitionParsing.tryParseRecord(
+    trimmedInput,
+    extraClasses: extraClasses,
+  );
+  if (maybeRecord != null) {
+    return maybeRecord;
+  }
+
   var start = trimmedInput.indexOf('<');
   var end = trimmedInput.lastIndexOf('>');
 
@@ -752,7 +776,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndBracesAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))
@@ -811,6 +835,7 @@ enum ValueType {
   list,
   set,
   map,
+  record,
   isEnum,
   classType,
   uri;
@@ -827,4 +852,171 @@ enum DefaultValueAllowedType {
   duration,
   uri,
   isEnum,
+}
+
+extension _RecordTypeDefinitionParsing on TypeDefinition {
+  /// Attempts to parse a record type from a field type definition
+  ///
+  /// Returns `null` in case the type does not describe a valid record
+  static TypeDefinition? tryParseRecord(
+    String trimmedRecordInput, {
+    List<TypeDefinition>? extraClasses,
+  }) {
+    var recordDescription = _tryReadRecord(trimmedRecordInput);
+    if (recordDescription == null) {
+      return null;
+    }
+
+    if (recordDescription.positionalFieldTypes.isEmpty &&
+        recordDescription.namedFields.isEmpty) {
+      return null;
+    }
+
+    var recordFields = [
+      for (var positionalFieldType in recordDescription.positionalFieldTypes)
+        parseType(positionalFieldType, extraClasses: extraClasses),
+      for (var MapEntry(key: name, value: type)
+          in recordDescription.namedFields.entries)
+        parseType(type, extraClasses: extraClasses).asNamedRecordField(name),
+    ];
+
+    return TypeDefinition(
+      className: TypeDefinition.recordTypeClassName,
+      generics: recordFields,
+      nullable: recordDescription.nullable,
+    );
+  }
+
+  static ({
+    List<String> positionalFieldTypes,
+    Map<String, String> namedFields,
+    bool nullable,
+  })? _tryReadRecord(
+    String trimmedRecordInput,
+  ) {
+    if (!trimmedRecordInput.startsWith('(')) {
+      return null;
+    }
+
+    if (!trimmedRecordInput.endsWith(')') &&
+        !trimmedRecordInput.replaceAll(' ', '').endsWith(')?')) {
+      return null;
+    }
+
+    var start = trimmedRecordInput.indexOf('(');
+    var end = trimmedRecordInput.lastIndexOf(')');
+
+    var nullable = trimmedRecordInput.endsWith('?');
+    var recordBody = trimmedRecordInput.substring(start + 1, end);
+
+    var recordParts = _parseRecordBody(recordBody);
+    if (recordParts == null) {
+      return null;
+    }
+
+    var namedFields = _tryParseNamedFieldsString(recordParts.namedFieldsString);
+    if (namedFields == null) {
+      return null;
+    }
+
+    var positionalFieldTypes = _getTypesFromPositionalFields(
+      recordParts.positionalFieldStrings,
+    );
+
+    return (
+      positionalFieldTypes: positionalFieldTypes,
+      namedFields: namedFields,
+      nullable: nullable,
+    );
+  }
+
+  static ({
+    List<String> positionalFieldStrings,
+    String? namedFieldsString,
+  })? _parseRecordBody(String recordBody) {
+    var recordParts = splitIgnoringBracketsAndBracesAndQuotes(
+      recordBody,
+    );
+
+    var positionalFieldStrings = <String>[];
+    String? namedFieldsString;
+    for (var part in recordParts) {
+      if (namedFieldsString != null) {
+        // no more entries are allowed after the named part
+        return null;
+      }
+
+      if (part.startsWith('{')) {
+        namedFieldsString = part;
+      } else {
+        positionalFieldStrings.add(part);
+      }
+    }
+
+    if (positionalFieldStrings.length == 1 &&
+        namedFieldsString == null &&
+        !recordBody.contains(',')) {
+      return null;
+    }
+
+    return (
+      positionalFieldStrings: positionalFieldStrings,
+      namedFieldsString: namedFieldsString
+    );
+  }
+
+  static List<String> _getTypesFromPositionalFields(
+    List<String> positionalFieldStrings,
+  ) {
+    return positionalFieldStrings.map((positionalFieldStrings) {
+      // could be either just a positional type, or a named positional type (like `int` or `int someNumber`, or even `Set<String> someSet`)
+      var parts = splitIgnoringBracketsAndBracesAndQuotes(
+        positionalFieldStrings,
+        separator: ' ',
+      );
+
+      if (parts.length > 1 && !parts.last.startsWith('<')) {
+        // if the last part is a name (and not a generic parameter), then we need to drop that
+        positionalFieldStrings = parts.take(parts.length - 1).join();
+      }
+
+      return positionalFieldStrings;
+    }).toList();
+  }
+
+  static Map<String, String>? _tryParseNamedFieldsString(
+    String? namedFieldsString,
+  ) {
+    if (namedFieldsString == null) {
+      return {};
+    }
+
+    var namedFields = <String, String>{};
+    var start = namedFieldsString.indexOf('{');
+    var end = namedFieldsString.lastIndexOf('}');
+
+    if (start < 0 || end < 0 || end <= start) {
+      return null;
+    }
+
+    var namedFieldWithTypes = splitIgnoringBracketsAndBracesAndQuotes(
+      namedFieldsString.substring(start + 1, end),
+    );
+
+    for (var namedFieldWithType in namedFieldWithTypes) {
+      namedFieldWithType = namedFieldWithType.trim();
+      var lastWhitespaceIndex = namedFieldWithType.lastIndexOf(' ');
+      if (lastWhitespaceIndex < 0) {
+        return null;
+      }
+
+      var typeDescription =
+          namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+      var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
+
+      namedFields[name] = typeDescription;
+    }
+
+    return namedFields;
+  }
 }

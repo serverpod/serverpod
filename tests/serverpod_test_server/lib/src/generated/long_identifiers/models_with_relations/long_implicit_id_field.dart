@@ -16,7 +16,7 @@ abstract class LongImplicitIdField
   LongImplicitIdField._({
     this.id,
     required this.name,
-  });
+  }) : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id = null;
 
   factory LongImplicitIdField({
     int? id,
@@ -24,9 +24,13 @@ abstract class LongImplicitIdField
   }) = _LongImplicitIdFieldImpl;
 
   factory LongImplicitIdField.fromJson(Map<String, dynamic> jsonSerialization) {
-    return LongImplicitIdField(
+    return LongImplicitIdFieldImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+          jsonSerialization[
+                  '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id']
+              as int?,
     );
   }
 
@@ -39,7 +43,7 @@ abstract class LongImplicitIdField
 
   String name;
 
-  int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
+  final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
   _i1.Table<int> get table => t;
@@ -120,9 +124,11 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
     Object? id = _Undefined,
     String? name,
   }) {
-    return LongImplicitIdField(
+    return LongImplicitIdFieldImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+          this._longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
     );
   }
 }
@@ -131,8 +137,10 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   LongImplicitIdFieldImplicit._({
     int? id,
     required String name,
-    this.$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-  }) : super(
+    int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+  })  : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id =
+            $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+        super(
           id: id,
           name: name,
         );
@@ -149,17 +157,8 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
     );
   }
 
-  int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
-          $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
-    });
-    return jsonMap;
-  }
+  final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 }
 
 class LongImplicitIdFieldTable extends _i1.Table<int> {
@@ -186,6 +185,12 @@ class LongImplicitIdFieldTable extends _i1.Table<int> {
         id,
         name,
         $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+      ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
       ];
 }
 

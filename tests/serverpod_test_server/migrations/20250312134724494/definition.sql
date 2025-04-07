@@ -13,30 +13,10 @@ CREATE TABLE "address" (
 CREATE UNIQUE INDEX "inhabitant_index_idx" ON "address" USING btree ("inhabitantId");
 
 --
--- Class AddressUuid as table address_uuid
---
-CREATE TABLE "address_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "street" text NOT NULL,
-    "inhabitantId" bigint
-);
-
--- Indexes
-CREATE UNIQUE INDEX "inhabitant_uuid_index_idx" ON "address_uuid" USING btree ("inhabitantId");
-
---
 -- Class Arena as table arena
 --
 CREATE TABLE "arena" (
     "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL
-);
-
---
--- Class ArenaUuid as table arena_uuid
---
-CREATE TABLE "arena_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" text NOT NULL
 );
 
@@ -137,19 +117,6 @@ CREATE TABLE "cat" (
 );
 
 --
--- Class ChangedIdTypeSelf as table changed_id_type_self
---
-CREATE TABLE "changed_id_type_self" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "name" text NOT NULL,
-    "nextId" uuid,
-    "parentId" uuid
-);
-
--- Indexes
-CREATE UNIQUE INDEX "changed_id_type_self_next_unique_idx" ON "changed_id_type_self" USING btree ("nextId");
-
---
 -- Class Citizen as table citizen
 --
 CREATE TABLE "citizen" (
@@ -157,16 +124,6 @@ CREATE TABLE "citizen" (
     "name" text NOT NULL,
     "companyId" bigint NOT NULL,
     "oldCompanyId" bigint
-);
-
---
--- Class CitizenInt as table citizen_int
---
-CREATE TABLE "citizen_int" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "companyId" uuid NOT NULL,
-    "oldCompanyId" uuid
 );
 
 --
@@ -195,28 +152,10 @@ CREATE TABLE "comment" (
 );
 
 --
--- Class CommentInt as table comment_int
---
-CREATE TABLE "comment_int" (
-    "id" bigserial PRIMARY KEY,
-    "description" text NOT NULL,
-    "orderId" uuid NOT NULL
-);
-
---
 -- Class Company as table company
 --
 CREATE TABLE "company" (
     "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "townId" bigint NOT NULL
-);
-
---
--- Class CompanyUuid as table company_uuid
---
-CREATE TABLE "company_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" text NOT NULL,
     "townId" bigint NOT NULL
 );
@@ -230,25 +169,9 @@ CREATE TABLE "course" (
 );
 
 --
--- Class CourseUuid as table course_uuid
---
-CREATE TABLE "course_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "name" text NOT NULL
-);
-
---
 -- Class Customer as table customer
 --
 CREATE TABLE "customer" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL
-);
-
---
--- Class CustomerInt as table customer_int
---
-CREATE TABLE "customer_int" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL
 );
@@ -391,18 +314,6 @@ CREATE TABLE "enrollment" (
 
 -- Indexes
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
-
---
--- Class EnrollmentInt as table enrollment_int
---
-CREATE TABLE "enrollment_int" (
-    "id" bigserial PRIMARY KEY,
-    "studentId" uuid NOT NULL,
-    "courseId" uuid NOT NULL
-);
-
--- Indexes
-CREATE UNIQUE INDEX "enrollment_int_index_idx" ON "enrollment_int" USING btree ("studentId", "courseId");
 
 --
 -- Class EnumDefault as table enum_default
@@ -641,15 +552,6 @@ CREATE TABLE "order" (
 );
 
 --
--- Class OrderUuid as table order_uuid
---
-CREATE TABLE "order_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "description" text NOT NULL,
-    "customerId" bigint NOT NULL
-);
-
---
 -- Class Organization as table organization
 --
 CREATE TABLE "organization" (
@@ -710,15 +612,6 @@ CREATE TABLE "person_with_long_table_name_that_is_still_valid" (
 --
 CREATE TABLE "player" (
     "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "teamId" bigint
-);
-
---
--- Class PlayerUuid as table player_uuid
---
-CREATE TABLE "player_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" text NOT NULL,
     "teamId" bigint
 );
@@ -836,14 +729,6 @@ CREATE TABLE "student" (
 );
 
 --
--- Class StudentUuid as table student_uuid
---
-CREATE TABLE "student_uuid" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "name" text NOT NULL
-);
-
---
 -- Class Team as table team
 --
 CREATE TABLE "team" (
@@ -856,30 +741,9 @@ CREATE TABLE "team" (
 CREATE UNIQUE INDEX "arena_index_idx" ON "team" USING btree ("arenaId");
 
 --
--- Class TeamInt as table team_int
---
-CREATE TABLE "team_int" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "arenaId" uuid
-);
-
--- Indexes
-CREATE UNIQUE INDEX "arena_uuid_index_idx" ON "team_int" USING btree ("arenaId");
-
---
 -- Class Town as table town
 --
 CREATE TABLE "town" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "mayorId" bigint
-);
-
---
--- Class TownInt as table town_int
---
-CREATE TABLE "town_int" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
     "mayorId" bigint
@@ -904,7 +768,8 @@ CREATE TABLE "types" (
     "aStringifiedEnum" text,
     "aList" json,
     "aMap" json,
-    "aSet" json
+    "aSet" json,
+    "aRecord" json
 );
 
 --
@@ -1359,16 +1224,6 @@ ALTER TABLE ONLY "address"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "address_uuid" table
---
-ALTER TABLE ONLY "address_uuid"
-    ADD CONSTRAINT "address_uuid_fk_0"
-    FOREIGN KEY("inhabitantId")
-    REFERENCES "citizen_int"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "blocking" table
 --
 ALTER TABLE ONLY "blocking"
@@ -1395,22 +1250,6 @@ ALTER TABLE ONLY "cat"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "changed_id_type_self" table
---
-ALTER TABLE ONLY "changed_id_type_self"
-    ADD CONSTRAINT "changed_id_type_self_fk_0"
-    FOREIGN KEY("nextId")
-    REFERENCES "changed_id_type_self"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "changed_id_type_self"
-    ADD CONSTRAINT "changed_id_type_self_fk_1"
-    FOREIGN KEY("parentId")
-    REFERENCES "changed_id_type_self"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "citizen" table
 --
 ALTER TABLE ONLY "citizen"
@@ -1427,22 +1266,6 @@ ALTER TABLE ONLY "citizen"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "citizen_int" table
---
-ALTER TABLE ONLY "citizen_int"
-    ADD CONSTRAINT "citizen_int_fk_0"
-    FOREIGN KEY("companyId")
-    REFERENCES "company_uuid"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "citizen_int"
-    ADD CONSTRAINT "citizen_int_fk_1"
-    FOREIGN KEY("oldCompanyId")
-    REFERENCES "company_uuid"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "comment" table
 --
 ALTER TABLE ONLY "comment"
@@ -1453,32 +1276,12 @@ ALTER TABLE ONLY "comment"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "comment_int" table
---
-ALTER TABLE ONLY "comment_int"
-    ADD CONSTRAINT "comment_int_fk_0"
-    FOREIGN KEY("orderId")
-    REFERENCES "order_uuid"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "company" table
 --
 ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "company_uuid" table
---
-ALTER TABLE ONLY "company_uuid"
-    ADD CONSTRAINT "company_uuid_fk_0"
-    FOREIGN KEY("townId")
-    REFERENCES "town_int"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -1505,22 +1308,6 @@ ALTER TABLE ONLY "enrollment"
     ADD CONSTRAINT "enrollment_fk_1"
     FOREIGN KEY("courseId")
     REFERENCES "course"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "enrollment_int" table
---
-ALTER TABLE ONLY "enrollment_int"
-    ADD CONSTRAINT "enrollment_int_fk_0"
-    FOREIGN KEY("studentId")
-    REFERENCES "student_uuid"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "enrollment_int"
-    ADD CONSTRAINT "enrollment_int_fk_1"
-    FOREIGN KEY("courseId")
-    REFERENCES "course_uuid"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -1581,16 +1368,6 @@ ALTER TABLE ONLY "order"
     ADD CONSTRAINT "order_fk_0"
     FOREIGN KEY("customerId")
     REFERENCES "customer"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "order_uuid" table
---
-ALTER TABLE ONLY "order_uuid"
-    ADD CONSTRAINT "order_uuid_fk_0"
-    FOREIGN KEY("customerId")
-    REFERENCES "customer_int"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -1667,16 +1444,6 @@ ALTER TABLE ONLY "player"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "player_uuid" table
---
-ALTER TABLE ONLY "player_uuid"
-    ADD CONSTRAINT "player_uuid_fk_0"
-    FOREIGN KEY("teamId")
-    REFERENCES "team_int"("id")
-    ON DELETE SET NULL
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "post" table
 --
 ALTER TABLE ONLY "post"
@@ -1707,32 +1474,12 @@ ALTER TABLE ONLY "team"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "team_int" table
---
-ALTER TABLE ONLY "team_int"
-    ADD CONSTRAINT "team_int_fk_0"
-    FOREIGN KEY("arenaId")
-    REFERENCES "arena_uuid"("id")
-    ON DELETE SET NULL
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "town" table
 --
 ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
     FOREIGN KEY("mayorId")
     REFERENCES "citizen"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "town_int" table
---
-ALTER TABLE ONLY "town_int"
-    ADD CONSTRAINT "town_int_fk_0"
-    FOREIGN KEY("mayorId")
-    REFERENCES "citizen_int"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -1791,9 +1538,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250313015420884', now())
+    VALUES ('serverpod_test', '20250312134724494', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250313015420884', "timestamp" = now();
+    DO UPDATE SET "version" = '20250312134724494', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

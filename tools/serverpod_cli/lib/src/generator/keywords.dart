@@ -19,7 +19,3 @@ class Keyword {
   static const cloneExtensionName = 'clone';
   static const copyWithMethodName = 'copyWith';
 }
-
-class RecordKeyword {
-  static const className = 'Record';
-}

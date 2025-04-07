@@ -348,6 +348,28 @@ void main() async {
   });
 
   test(
+      'Given an object with a Record field, when it\'s stored in the database, then it can be read out again',
+      () async {
+    var object = Types(
+      aRecord: ('hello', optionalUri: Uri.parse('https://serverpod.dev')),
+    );
+    var inserted = await Types.db.insertRow(
+      session,
+      object,
+    );
+
+    var retrieved = await Types.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(
+      retrieved?.aRecord,
+      ('hello', optionalUri: Uri.parse('https://serverpod.dev')),
+    );
+  });
+
+  test(
       'Given an object with an `enum` field, when it\'s stored in the database, then it can be read out again',
       () async {
     var object = Types(

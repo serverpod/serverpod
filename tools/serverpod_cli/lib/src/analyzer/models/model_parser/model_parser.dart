@@ -181,6 +181,8 @@ class ModelParser {
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
     );
+    var defaultEnumDefinitionValue =
+        _parseEnumDefaultValue(documentContents, values);
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -189,6 +191,7 @@ class ModelParser {
       values: values,
       serialized: serializeAs,
       documentation: enumDocumentation,
+      defaultValue: defaultEnumDefinitionValue,
       subDirParts: protocolSource.subDirPathParts,
       serverOnly: serverOnly,
       type: enumType,
@@ -630,6 +633,15 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static ProtocolEnumValueDefinition? _parseEnumDefaultValue(
+    YamlMap documentContents,
+    List<ProtocolEnumValueDefinition> values,
+  ) {
+    final defaultValue =
+        _parseDefaultValue(documentContents, Keyword.defaultKey);
+    return values.where((value) => value.name == defaultValue).firstOrNull;
   }
 
   static List<ProtocolEnumValueDefinition> _parseEnumValues(

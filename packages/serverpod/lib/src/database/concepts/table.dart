@@ -25,6 +25,10 @@ class Table<T_ID> {
   /// List of [Column] used by the table.
   List<Column> get columns => [id];
 
+  /// List of [Column] that are managed by this table.
+  /// This is mostly used to exclude columns created by implicit relations.
+  List<Column> get managedColumns => columns;
+
   /// Query prefix for [Column]s of the table.
   String get queryPrefix {
     return tableRelation?.relationQueryAlias ?? tableName;

@@ -183,11 +183,11 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    var selectedColumns = columns ?? table.columns;
+    var selectedColumns = (columns ?? table.managedColumns).toSet();
 
     if (columns != null) {
-      _validateColumnsExists(columns, table);
-      selectedColumns = [table.id, ...columns];
+      _validateColumnsExists(selectedColumns, table.columns.toSet());
+      selectedColumns.add(table.id);
     }
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);
@@ -198,7 +198,6 @@ class DatabaseConnection {
     var values = _createQueryValueList(rows, selectedColumns);
 
     var setColumns = selectedColumnNames
-        .where((columnName) => columnName != 'id')
         .map((columnName) => '"$columnName" = data."$columnName"')
         .join(', ');
 
@@ -416,7 +415,7 @@ class DatabaseConnection {
         exception: serverpodException,
         trace: trace,
       );
-      throw serverpodException;
+      Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
       var serverpodException = _PgDatabaseQueryException(exception.message);
       _logQuery(
@@ -426,7 +425,7 @@ class DatabaseConnection {
         exception: serverpodException,
         trace: trace,
       );
-      throw serverpodException;
+      Error.throwWithStackTrace(serverpodException, trace);
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
@@ -672,15 +671,15 @@ class DatabaseConnection {
     return resolvedListRelations;
   }
 
-  void _validateColumnsExists(List<Column> columns, Table table) {
-    for (var column in columns) {
-      if (!table.columns.any((c) => c.columnName == column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
+  void _validateColumnsExists(Set<Column> columns, Set<Column> tableColumns) {
+    var additionalColumns = columns.difference(tableColumns);
+
+    if (additionalColumns.isNotEmpty) {
+      throw ArgumentError.value(
+        additionalColumns.toList().toString(),
+        'columns',
+        'Columns do not exist in table',
+      );
     }
   }
 

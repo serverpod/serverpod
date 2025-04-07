@@ -20,7 +20,7 @@ abstract class PersonWithLongTableName
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id = null;
 
   factory PersonWithLongTableName({
     int? id,
@@ -31,7 +31,7 @@ abstract class PersonWithLongTableName
 
   factory PersonWithLongTableName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -39,6 +39,10 @@ abstract class PersonWithLongTableName
           ? null
           : _i2.OrganizationWithLongTableName.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          jsonSerialization[
+                  '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
+              as int?,
     );
   }
 
@@ -55,7 +59,7 @@ abstract class PersonWithLongTableName
 
   _i2.OrganizationWithLongTableName? organization;
 
-  int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
   _i1.Table<int> get table => t;
@@ -150,7 +154,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -158,6 +162,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organization: organization is _i2.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );
   }
 }
@@ -168,8 +174,10 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     required String name,
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
-    this.$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-  }) : super(
+    int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+  })  : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
+            $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -190,17 +198,8 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     );
   }
 
-  int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
-          $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
-    });
-    return jsonMap;
-  }
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 }
 
 class PersonWithLongTableNameTable extends _i1.Table<int> {
@@ -250,6 +249,13 @@ class PersonWithLongTableNameTable extends _i1.Table<int> {
         name,
         organizationId,
         $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+      ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+        organizationId,
       ];
 
   @override

@@ -293,6 +293,12 @@ recordParameters:
   - returnNestedPositionalAndNamedRecord:
   - returnListOfNestedPositionalAndNamedRecord:
   - streamNullableListOfNullableNestedPositionalAndNamedRecord:
+  - echoModelClassWithRecordField:
+  - echoNullableModelClassWithRecordField:
+  - echoNullableModelClassWithRecordFieldFromExternalModule:
+  - streamOfModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordFieldFromExternalModule:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
@@ -365,12 +371,19 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoTypes:
+  - echoTypesList:
+  - echoModuleDatatype:
+  - streamModuleDatatype:
+  - echoModuleClass:
+  - streamModuleClass:
   - echoRecord:
   - echoRecords:
   - recordEchoStream:
   - listOfRecordEchoStream:
   - nullableRecordEchoStream:
   - nullableListOfRecordEchoStream:
+  - modelWithRecordsEchoStream:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:

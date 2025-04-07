@@ -34,13 +34,14 @@ import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i19;
+import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i20;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
-    as _i20;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i21;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i22;
-import 'protocol.dart' as _i23;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i23;
+import 'protocol.dart' as _i24;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2465,6 +2466,68 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'initialValue': initialValue},
         {'values': values},
       );
+
+  _i2.Future<_i20.TypesRecord> echoModelClassWithRecordField(
+          _i20.TypesRecord value) =>
+      caller.callServerEndpoint<_i20.TypesRecord>(
+        'recordParameters',
+        'echoModelClassWithRecordField',
+        {'value': value},
+      );
+
+  _i2.Future<_i20.TypesRecord?> echoNullableModelClassWithRecordField(
+          _i20.TypesRecord? value) =>
+      caller.callServerEndpoint<_i20.TypesRecord?>(
+        'recordParameters',
+        'echoNullableModelClassWithRecordField',
+        {'value': value},
+      );
+
+  _i2.Future<_i17.ModuleClass?>
+      echoNullableModelClassWithRecordFieldFromExternalModule(
+              _i17.ModuleClass? value) =>
+          caller.callServerEndpoint<_i17.ModuleClass?>(
+            'recordParameters',
+            'echoNullableModelClassWithRecordFieldFromExternalModule',
+            {'value': value},
+          );
+
+  _i2.Stream<_i20.TypesRecord> streamOfModelClassWithRecordField(
+    _i20.TypesRecord initialValue,
+    _i2.Stream<_i20.TypesRecord> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i20.TypesRecord>,
+          _i20.TypesRecord>(
+        'recordParameters',
+        'streamOfModelClassWithRecordField',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
+  _i2.Stream<_i20.TypesRecord?> streamOfNullableModelClassWithRecordField(
+    _i20.TypesRecord? initialValue,
+    _i2.Stream<_i20.TypesRecord?> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i20.TypesRecord?>,
+          _i20.TypesRecord?>(
+        'recordParameters',
+        'streamOfNullableModelClassWithRecordField',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
+  _i2.Stream<_i17.ModuleClass?>
+      streamOfNullableModelClassWithRecordFieldFromExternalModule(
+    _i17.ModuleClass? initialValue,
+    _i2.Stream<_i17.ModuleClass?> values,
+  ) =>
+          caller.callStreamingServerEndpoint<_i2.Stream<_i17.ModuleClass?>,
+              _i17.ModuleClass?>(
+            'recordParameters',
+            'streamOfNullableModelClassWithRecordFieldFromExternalModule',
+            {'initialValue': initialValue},
+            {'values': values},
+          );
 }
 
 /// {@category Endpoint}
@@ -2554,8 +2617,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i20.ScopeServerOnlyField>(
+  _i2.Future<_i21.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i21.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -2570,8 +2633,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i21.ScopeServerOnlyFieldChild>(
+  _i2.Future<_i22.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i22.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -3023,6 +3086,63 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'simpleDatas': simpleDatas},
       );
 
+  _i2.Future<_i12.Types> echoTypes(_i12.Types typesModel) =>
+      caller.callServerEndpoint<_i12.Types>(
+        'testTools',
+        'echoTypes',
+        {'typesModel': typesModel},
+      );
+
+  _i2.Future<List<_i12.Types>> echoTypesList(List<_i12.Types> typesList) =>
+      caller.callServerEndpoint<List<_i12.Types>>(
+        'testTools',
+        'echoTypesList',
+        {'typesList': typesList},
+      );
+
+  /// Returns a model class which fields reference `ModuleClass` defined in another module
+  _i2.Future<_i18.ModuleDatatype> echoModuleDatatype(
+          _i18.ModuleDatatype moduleDatatype) =>
+      caller.callServerEndpoint<_i18.ModuleDatatype>(
+        'testTools',
+        'echoModuleDatatype',
+        {'moduleDatatype': moduleDatatype},
+      );
+
+  _i2.Stream<_i18.ModuleDatatype?> streamModuleDatatype(
+    _i18.ModuleDatatype? initialValue,
+    _i2.Stream<_i18.ModuleDatatype?> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i18.ModuleDatatype?>,
+          _i18.ModuleDatatype?>(
+        'testTools',
+        'streamModuleDatatype',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
+  /// Returns the given `ModuleClass` instance
+  ///
+  /// `ModuleClass` is defined in another module
+  _i2.Future<_i17.ModuleClass> echoModuleClass(_i17.ModuleClass moduleClass) =>
+      caller.callServerEndpoint<_i17.ModuleClass>(
+        'testTools',
+        'echoModuleClass',
+        {'moduleClass': moduleClass},
+      );
+
+  _i2.Stream<_i17.ModuleClass?> streamModuleClass(
+    _i17.ModuleClass? initialValue,
+    _i2.Stream<_i17.ModuleClass?> values,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i17.ModuleClass?>,
+          _i17.ModuleClass?>(
+        'testTools',
+        'streamModuleClass',
+        {'initialValue': initialValue},
+        {'values': values},
+      );
+
   _i2.Future<(String, (int, bool))> echoRecord((String, (int, bool)) record) =>
       caller.callServerEndpoint<(String, (int, bool))>(
         'testTools',
@@ -3124,6 +3244,18 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'stream': stream},
       );
 
+  _i2.Stream<_i20.TypesRecord?> modelWithRecordsEchoStream(
+    _i20.TypesRecord? initialValue,
+    _i2.Stream<_i20.TypesRecord?> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i20.TypesRecord?>,
+          _i20.TypesRecord?>(
+        'testTools',
+        'modelWithRecordsEchoStream',
+        {'initialValue': initialValue},
+        {'stream': stream},
+      );
+
   _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
         'testTools',
         'logMessageWithSession',
@@ -3219,8 +3351,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i22.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i22.MyFeatureModel>(
+  _i2.Future<_i23.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i23.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -3254,7 +3386,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i23.Protocol(),
+          _i24.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

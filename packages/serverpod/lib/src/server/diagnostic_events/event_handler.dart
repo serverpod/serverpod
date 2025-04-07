@@ -10,7 +10,13 @@ enum OriginSpace {
 }
 
 /// Base interface for all diagnostic events.
-abstract interface class DiagnosticEvent {}
+abstract interface class DiagnosticEvent {
+  /// Custom key/value data added to the event.
+  ///
+  /// It is up to application code submitting events
+  /// and event handler implementations how to use this data.
+  Map<String, Object> get custom;
+}
 
 /// An event that represents an exception that occurred in the server.
 class ExceptionEvent implements DiagnosticEvent {
@@ -23,11 +29,15 @@ class ExceptionEvent implements DiagnosticEvent {
   /// An optional message associated with the exception.
   final String? message;
 
+  @override
+  final Map<String, Object> custom;
+
   /// Creates a new [ExceptionEvent].
   const ExceptionEvent(
     this.exception,
     this.stackTrace, {
     this.message,
+    this.custom = const {},
   });
 
   /// Returns a string representation of this context.

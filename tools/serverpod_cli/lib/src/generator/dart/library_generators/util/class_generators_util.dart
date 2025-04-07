@@ -5,6 +5,13 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+Expression createClassExpression(bool hasImplicitClass, String className) {
+  return switch (hasImplicitClass) {
+    true => refer('${className}Implicit').property('_'),
+    false => refer(className),
+  };
+}
+
 String createFieldName(
   bool serverCode,
   SerializableModelFieldDefinition field,
@@ -179,6 +186,14 @@ Expression _buildFromJson(
         config,
         subDirParts,
       );
+    case ValueType.record:
+      return _buildRecordTypeFromJson(
+        type,
+        valueExpression,
+        serverCode,
+        config,
+        subDirParts,
+      );
   }
 }
 
@@ -287,6 +302,7 @@ Expression _buildListOrSetTypeFromJson(
         subDirParts: subDirParts,
       ).code,
       const Code(')'),
+      if (type.isSetType && !type.nullable) const Code('!'),
     ]));
   }
 
@@ -418,6 +434,37 @@ Expression _buildClassTypeFromJson(
         .checkIfNull(type, valueExpression: valueExpression)
         .code,
   );
+}
+
+Expression _buildRecordTypeFromJson(
+  TypeDefinition type,
+  Expression valueExpression,
+  bool serverCode,
+  GeneratorConfig config,
+  List<String> subDirParts,
+) {
+  var protocolRef = refer(
+    'Protocol',
+    serverCode
+        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+  );
+
+  return CodeExpression(Block.of([
+    if (type.nullable) ...[
+      valueExpression.code,
+      const Code('== null ? null : '),
+    ],
+    protocolRef
+        .newInstance([])
+        .property('deserialize')
+        .call(
+          [valueExpression.asA(refer('Map<String, dynamic>'))],
+          {},
+          [type.reference(serverCode, config: config)],
+        )
+        .code,
+  ]));
 }
 
 extension ExpressionExtension on Expression {

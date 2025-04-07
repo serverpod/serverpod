@@ -16,7 +16,7 @@ abstract class UserNoteWithALongName
   UserNoteWithALongName._({
     this.id,
     required this.name,
-  });
+  }) : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId = null;
 
   factory UserNoteWithALongName({
     int? id,
@@ -25,9 +25,13 @@ abstract class UserNoteWithALongName
 
   factory UserNoteWithALongName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return UserNoteWithALongName(
+    return UserNoteWithALongNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
+          jsonSerialization[
+                  '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId']
+              as int?,
     );
   }
 
@@ -40,7 +44,7 @@ abstract class UserNoteWithALongName
 
   String name;
 
-  int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
+  final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
   _i1.Table<int> get table => t;
@@ -121,9 +125,11 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
     Object? id = _Undefined,
     String? name,
   }) {
-    return UserNoteWithALongName(
+    return UserNoteWithALongNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
+          this._userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
     );
   }
 }
@@ -132,8 +138,10 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
   UserNoteWithALongNameImplicit._({
     int? id,
     required String name,
-    this.$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-  }) : super(
+    int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+  })  : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId =
+            $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+        super(
           id: id,
           name: name,
         );
@@ -150,17 +158,8 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
     );
   }
 
-  int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId':
-          $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
-    });
-    return jsonMap;
-  }
+  final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 }
 
 class UserNoteWithALongNameTable extends _i1.Table<int> {
@@ -187,6 +186,12 @@ class UserNoteWithALongNameTable extends _i1.Table<int> {
         id,
         name,
         $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+      ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
       ];
 }
 
