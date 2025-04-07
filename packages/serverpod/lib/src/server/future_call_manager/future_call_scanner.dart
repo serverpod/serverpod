@@ -7,11 +7,11 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 /// A function that queues future call entries for execution.
-typedef QueueFutureCallEntries = void Function(List<FutureCallEntry> entries);
+typedef DispatchEntries = void Function(List<FutureCallEntry> entries);
 
 /// A function that checks if the concurrent limit has been reached. Returns
 /// `true` if the limit has been reached, `false` otherwise.
-typedef IsConcurrentLimitReached = bool Function();
+typedef ShouldSkipScan = bool Function();
 
 /// Scans the database for overdue future calls and queues them for execution.
 class FutureCallScanner {
@@ -21,19 +21,19 @@ class FutureCallScanner {
 
   final Duration _scanInterval;
 
-  final IsConcurrentLimitReached _isConcurrentLimitReached;
-  final QueueFutureCallEntries _queueFutureCallEntries;
+  final ShouldSkipScan _shouldSkipScan;
+  final DispatchEntries _dispatchEntries;
 
   /// Creates a new [FutureCallScanner].
   FutureCallScanner({
     required Server server,
     required Duration scanInterval,
-    required IsConcurrentLimitReached isConcurrentLimitReached,
-    required QueueFutureCallEntries queueFutureCallEntries,
+    required ShouldSkipScan shouldSkipScan,
+    required DispatchEntries dispatchEntries,
   })  : _server = server,
         _scanInterval = scanInterval,
-        _isConcurrentLimitReached = isConcurrentLimitReached,
-        _queueFutureCallEntries = queueFutureCallEntries;
+        _shouldSkipScan = shouldSkipScan,
+        _dispatchEntries = dispatchEntries;
 
   /// Starts the task scanner, which will scan the database for overdue future
   /// calls at the given interval.
@@ -46,7 +46,7 @@ class FutureCallScanner {
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCalls() async {
-    if (_isConcurrentLimitReached()) {
+    if (_shouldSkipScan()) {
       return;
     }
 
@@ -62,7 +62,7 @@ class FutureCallScanner {
 
       entries.sort((a, b) => a.time.compareTo(b.time));
 
-      _queueFutureCallEntries(entries);
+      _dispatchEntries(entries);
     } catch (error, stackTrace) {
       // Most likely we lost connection to the database
       var message =

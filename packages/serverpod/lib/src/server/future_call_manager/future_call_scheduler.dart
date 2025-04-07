@@ -46,7 +46,7 @@ class FutureCallScheduler {
   }
 
   /// Makes sure any running future calls and queued future calls are processed.
-  /// Once called, [shouldSkipScan] will always return `true`.
+  /// Once called, [isConcurrentLimitReached] will always return `true`.
   Future<void> stop() async {
     _isStopping = true;
 
@@ -61,7 +61,7 @@ class FutureCallScheduler {
 
   /// Returns `true` if the concurrent limit for FutureCalls is reached.
   /// Returns `false` otherwise.
-  bool shouldSkipScan() {
+  bool isConcurrentLimitReached() {
     if (_isStopping) {
       return true;
     }
@@ -106,7 +106,7 @@ class FutureCallScheduler {
     // once at a time.
     await _queueLock.synchronized(() async {
       while (_queue.isNotEmpty) {
-        final isConcurrentLimitReached = shouldSkipScan();
+        final isConcurrentLimitReached = this.isConcurrentLimitReached();
 
         if (isConcurrentLimitReached) {
           break;

@@ -45,8 +45,8 @@ class FutureCallManager {
     _scanner = FutureCallScanner(
       server: _server,
       scanInterval: _config.scanInterval,
-      isConcurrentLimitReached: _scheduler.shouldSkipScan,
-      queueFutureCallEntries: _scheduler.addFutureCallEntries,
+      shouldSkipScan: _scheduler.isConcurrentLimitReached,
+      dispatchEntries: _scheduler.addFutureCallEntries,
     );
   }
 
