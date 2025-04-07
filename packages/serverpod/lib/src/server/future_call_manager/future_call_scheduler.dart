@@ -57,6 +57,8 @@ class FutureCallScheduler {
 
       await Future.any(_runningFutureCallFutures.toList());
     }
+
+    await Future.wait(_runningFutureCallFutures);
   }
 
   /// Returns `true` if the concurrent limit for FutureCalls is reached.
