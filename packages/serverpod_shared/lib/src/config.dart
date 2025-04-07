@@ -482,11 +482,10 @@ class FutureCallConfig {
         );
       }
 
+      // If the user sets the concurrency limit to 0 or a negative number, this
+      // means to want to enable unlimited concurrency
       if (concurrencyLimit < 1) {
-        throw Exception(
-          'The `concurrencyLimit` setting was set to "$concurrencyLimit", but must be at least 1.\n'
-          'If you want to disable the concurrency limit, set it to null.',
-        );
+        concurrencyLimit = null;
       }
     }
 
