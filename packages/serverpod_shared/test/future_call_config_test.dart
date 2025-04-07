@@ -122,7 +122,7 @@ futureCall:
             (e) => e.toString(),
             'message',
             contains(
-                'The `concurrencyLimit` setting was set to "invalid", but must be an integer'),
+                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT.'),
           ),
         ),
       );

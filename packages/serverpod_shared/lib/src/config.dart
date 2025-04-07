@@ -459,34 +459,22 @@ class FutureCallConfig {
   static const int defaultFutureCallScanIntervalMs = 5000;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
-    // Since the value can be configured as null, parsing has to be done here
-    var concurrencyLimitJson =
-        futureCallConfigJson[ServerpodEnv.futureCallConcurrencyLimit.configKey];
-    var scanInterval =
+    final scanInterval =
         futureCallConfigJson[ServerpodEnv.futureCallScanInterval.configKey];
 
     final hasConcurrencyLimitKey = futureCallConfigJson.containsKey(
       ServerpodEnv.futureCallConcurrencyLimit.configKey,
     );
 
-    int? concurrencyLimit;
+    int? concurrencyLimit = hasConcurrencyLimitKey
+        ? futureCallConfigJson[
+            ServerpodEnv.futureCallConcurrencyLimit.configKey]
+        : null;
 
-    if (hasConcurrencyLimitKey && concurrencyLimitJson != null) {
-      try {
-        concurrencyLimit = concurrencyLimitJson is int
-            ? concurrencyLimitJson
-            : int.parse(concurrencyLimitJson);
-      } catch (_) {
-        throw Exception(
-          'The `concurrencyLimit` setting was set to "$concurrencyLimitJson", but must be an integer.',
-        );
-      }
-
-      // If the user sets the concurrency limit to 0 or a negative number, this
-      // means to want to enable unlimited concurrency
-      if (concurrencyLimit < 1) {
-        concurrencyLimit = null;
-      }
+    // If the user sets the concurrency limit to 0 or a negative number, this
+    // means to want to enable unlimited concurrency
+    if (concurrencyLimit != null && concurrencyLimit < 1) {
+      concurrencyLimit = null;
     }
 
     return FutureCallConfig(
@@ -634,9 +622,7 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   var futureCallConfig = configMap[ServerpodConfigMap.futureCall] ?? {};
 
   return _buildConfigMap(futureCallConfig, environment, [
-    // passing null to the convert function will not convert the value, since
-    // the config value itself can be null
-    (ServerpodEnv.futureCallConcurrencyLimit, null),
+    (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
     (ServerpodEnv.futureCallScanInterval, int.parse),
   ]);
 }
