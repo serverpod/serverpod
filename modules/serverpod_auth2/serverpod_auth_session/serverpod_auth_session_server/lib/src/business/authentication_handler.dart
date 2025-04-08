@@ -4,7 +4,8 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
 Future<AuthenticationInfo?> authenticationHandler(
   Session session,
   String key, [
-  Future<int?> Function(Session session, String key)? sessionMigrationCallback,
+  Future<UuidValue?> Function(Session session, String key)?
+      sessionMigrationCallback,
 ]) async {
   final userSession = await ActiveSession.db.findFirstRow(
     session,
@@ -49,7 +50,8 @@ Future<AuthenticationInfo?> authenticationHandler(
 }
 
 AuthenticationHandler authenticationHandlerWithMigration(
-  Future<int?> Function(Session session, String key)? sessionMigrationCallback,
+  Future<UuidValue?> Function(Session session, String key)?
+      sessionMigrationCallback,
 ) {
   return (session, key) {
     return authenticationHandler(session, key, sessionMigrationCallback);
