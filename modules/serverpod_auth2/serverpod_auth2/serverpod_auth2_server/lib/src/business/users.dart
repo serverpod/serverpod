@@ -3,7 +3,7 @@ import 'package:serverpod_auth2_server/serverpod_auth2_server.dart';
 
 final class Users {
   /// Returns the new [AuthUser] id
-  static Future<int> create(
+  static Future<UuidValue> create(
     Session session, {
     Set<String> scopes = const {},
   }) async {

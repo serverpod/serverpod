@@ -1,8 +1,7 @@
 class: AuthUser
 table: auth_user
 fields:
-  # TODO: Switch to UUID once possible
-  # id: UuidValue
+  id: UuidValue, default=random
 
   ### The time when this user was created.
   created: DateTime
