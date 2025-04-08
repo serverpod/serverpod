@@ -4,8 +4,7 @@
 class: EmailAccountRequest
 table: serverpod_auth_email_account_request
 fields:
-  # TODO: Switch to UUID once possible
-  # id: UuidValue
+  id: UuidValue, default=random
 
   ### The time when this authentication was created.
   created: DateTime

@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 /// Throws in case the email/password combination is not valid or the user is blocked.
 ///
 /// Assumes that the email has been validated in the old system.
-typedef ExistingEmailUserImportFunction = Future<int?> Function(
+typedef ExistingEmailUserImportFunction = Future<UuidValue?> Function(
   Session session, {
   required String email,
   required String password,

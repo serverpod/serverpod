@@ -4,7 +4,7 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 final class EmailAuthentication {
   /// Returns the user ID upon successful login.
   // TODO: Rather return a union with success and detailed error cases?
-  static Future<int> login(
+  static Future<UuidValue> login(
     Session session, {
     required String email,
     required String password,
@@ -47,7 +47,7 @@ final class EmailAuthentication {
   ///
   /// The caller may store additional information attached to this ID,
   /// which will be returned from [verify] later on.
-  static Future<int> requestAccount(
+  static Future<UuidValue> requestAccount(
     Session session, {
     required String email,
     required String password,
@@ -76,7 +76,7 @@ final class EmailAuthentication {
   /// Returns the account request creation ID if the request is valid.
   ///
   /// If `true`, this means `createAccount` will succeed.
-  static Future<int> verifyAccountRequest(
+  static Future<UuidValue> verifyAccountRequest(
     Session session, {
     required String verificationCode,
   }) async {
@@ -92,7 +92,7 @@ final class EmailAuthentication {
     required String verificationCode,
 
     /// Authentication user ID this account should be linked up with
-    required int userId,
+    required UuidValue userId,
   }) async {
     final request = (await EmailAccountRequest.db.find(session,
             where: (t) => t.verificationCode.equals(verificationCode)))
@@ -143,7 +143,7 @@ final class EmailAuthentication {
   }
 
   /// Returns the user ID for the successfully changed password
-  static Future<int> completePasswordReset(
+  static Future<UuidValue> completePasswordReset(
     Session session, {
     required String resetCode,
     required String newPassword,

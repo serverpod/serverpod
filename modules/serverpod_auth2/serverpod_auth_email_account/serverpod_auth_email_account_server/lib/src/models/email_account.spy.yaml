@@ -1,12 +1,11 @@
 class: EmailAccount
 table: serverpod_auth_email_account
 fields:
-  # TODO: Switch to UUID once possible
-  # id: UuidValue
+  id: UuidValue, default=random
 
   # TODO: UUID
   ### The id of the [AuthUser] this login belongs to.
-  userId: int, relation(parent=auth_user)
+  userId: UuidValue, relation(parent=auth_user)
 
   ### The time when this authentication was created.
   created: DateTime
