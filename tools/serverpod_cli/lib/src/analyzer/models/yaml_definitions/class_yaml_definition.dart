@@ -133,6 +133,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.scope,
+                keyRestriction: restrictions.validateScopeKey,
                 valueRestriction: EnumValueRestriction(
                   enums: ModelFieldScopeDefinition.values,
                   additionalRestriction: ScopeValueRestriction(

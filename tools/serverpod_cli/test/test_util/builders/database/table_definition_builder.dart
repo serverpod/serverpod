@@ -1,3 +1,5 @@
+import 'package:serverpod_cli/src/database/extensions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'column_definition_builder.dart';
@@ -19,7 +21,7 @@ class TableDefinitionBuilder {
         _schema = 'public',
         _module = 'test_project',
         _columns = [
-          ColumnDefinitionBuilder().withIdColumn().build(),
+          ColumnDefinitionBuilder().withIdColumn('example').build(),
           ColumnDefinitionBuilder().withNameColumn().build(),
         ],
         _foreignKeys = [],
@@ -53,6 +55,15 @@ class TableDefinitionBuilder {
 
   TableDefinitionBuilder withModule(String? module) {
     _module = module;
+    return this;
+  }
+
+  TableDefinitionBuilder withIdType(SupportedIdType idType) {
+    _columns.removeWhere((column) => column.isIdColumn);
+    _columns.insert(
+      0,
+      ColumnDefinitionBuilder().withIdColumn(_name, type: idType).build(),
+    );
     return this;
   }
 

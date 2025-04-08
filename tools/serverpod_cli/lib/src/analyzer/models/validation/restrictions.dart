@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -473,17 +474,6 @@ class Restrictions {
     var def = documentDefinition;
     if (def is ModelClassDefinition &&
         def.tableName != null &&
-        fieldName == 'id') {
-      return [
-        SourceSpanSeverityException(
-          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
-          span,
-        )
-      ];
-    }
-
-    if (def is ModelClassDefinition &&
-        def.tableName != null &&
         _databaseModelReservedFieldNames.contains(fieldName)) {
       return [
         SourceSpanSeverityException(
@@ -749,8 +739,7 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return const [];
 
-    var type = field.type;
-    if (type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
+    if (field.type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
       return [
         SourceSpanSeverityException(
           'The "parent" property must be defined on id fields.',
@@ -847,6 +836,41 @@ class Restrictions {
     if (field == null) return errors;
 
     errors.addAll(_validateFieldDataType(field.type, span));
+
+    if ((classDefinition is ModelClassDefinition) &&
+        (classDefinition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      var typeClassName = field.type.className;
+      var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
+
+      const experimentalFeature = ExperimentalFeature.changeIdType;
+      if (!config.isExperimentalFeatureEnabled(experimentalFeature)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The "${experimentalFeature.name}" experimental feature is not '
+            'enabled. Enable it first to change the id type of a table class.',
+            span,
+          ),
+        );
+      }
+
+      if (!supportedTypes.contains(typeClassName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" is not a valid id type. Valid options '
+            'are: ${supportedTypes.toSet().join(', ')}.',
+            span,
+          ),
+        );
+      } else if (!field.hasDefaults) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" must have a default value.',
+            span,
+          ),
+        );
+      }
+    }
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -1123,6 +1147,28 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateScopeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(SourceSpanSeverityException(
+        'The "${Keyword.scope}" key is not allowed on the "id" field.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validatePersistKey(
     String parentNodeName,
     String relation,
@@ -1138,6 +1184,13 @@ class Restrictions {
         'The "persist" property requires a table to be set on the class.',
         span,
       ));
+    } else if (parentNodeName == defaultPrimaryKeyName) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.persist}" key is not allowed on the "id" field.',
+          span,
+        ),
+      ];
     }
 
     var field = definition.findField(parentNodeName);
@@ -1358,6 +1411,18 @@ class Restrictions {
       );
     }
 
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultModelKey}" key is not allowed on the "id" '
+          'field. Use the "${Keyword.defaultKey}" key instead.',
+          span,
+        ),
+      );
+    }
+
     return errors;
   }
 
@@ -1371,6 +1436,18 @@ class Restrictions {
 
     var field = definition.findField(parentNodeName);
     if (field == null) return [];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultPersistKey}" key is not allowed on the "id" '
+          'field. Use the "${Keyword.defaultKey}" key instead.',
+          span,
+        ),
+      ];
+    }
 
     var errors = <SourceSpanSeverityException>[];
 

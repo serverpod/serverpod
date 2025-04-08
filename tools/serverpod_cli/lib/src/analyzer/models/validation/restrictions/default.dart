@@ -32,6 +32,17 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      return _idTypeDefaultValidation(
+        definition.tableName!,
+        field.type,
+        value,
+        span,
+      );
+    }
+
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
         return _dateDateValidation(value, span);
@@ -54,6 +65,33 @@ class DefaultValueRestriction extends ValueRestriction {
       case DefaultValueAllowedType.uri:
         return _uriValueValidation(value, span);
     }
+  }
+
+  List<SourceSpanSeverityException> _idTypeDefaultValidation(
+    String tableName,
+    TypeDefinition idType,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    var typeClassName = idType.className;
+    var errors = <SourceSpanSeverityException>[];
+
+    var supportedDefaults = SupportedIdType.all
+        .where((e) => e.type.className == typeClassName)
+        .map((e) => e.defaultValue);
+
+    if (!supportedDefaults.contains(value)) {
+      var options = supportedDefaults.map((e) => '"$e"').join(', ');
+      errors.add(
+        SourceSpanSeverityException(
+          'The default value "$value" is not supported for the id type '
+          '"$typeClassName". Valid options are: $options.',
+          span,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> _dateDateValidation(

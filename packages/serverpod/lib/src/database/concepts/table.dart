@@ -54,6 +54,12 @@ class Table<T_ID> {
         this,
         hasDefault: true,
       ) as ColumnComparable<T_ID>;
+    } else if (T_ID == UuidValue) {
+      id = ColumnUuid(
+        'id',
+        this,
+        hasDefault: true,
+      ) as ColumnComparable<T_ID>;
     } else {
       throw Exception('Unsupported id type: $T_ID');
     }
