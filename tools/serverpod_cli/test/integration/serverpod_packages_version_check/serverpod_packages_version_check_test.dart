@@ -16,7 +16,8 @@ void main() {
       late final explicitVersion = PubspecPlus.parse('''
 name: x
 dependencies:
-  serverpod_shared: 1.1.0
+  serverpod_cloud_lints: 0.9.0 # ignored as this dependency is not relevant for codegen
+  serverpod_client: 1.1.0
 ''');
 
       test(
@@ -89,7 +90,8 @@ dependencies:
       late final approximateVersion = PubspecPlus.parse('''
 name: x
 dependencies:
-  serverpod_shared: ^1.1.0
+  serverpod_cloud_lints: 0.9.0 # ignored as this dependency is not relevant for codegen
+  serverpod_client: ^1.1.0
 ''');
 
       group('when calling validateServerpodPackagesVersion matching version',
