@@ -253,6 +253,27 @@ methodStreaming:
 authenticatedMethodStreaming:
   - simpleStream:
   - intEchoStream:
+moduleEndpointSubclass:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointAdaptation:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointReduction:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointExtension:
+  - greet:
+  - ignoredMethod:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
