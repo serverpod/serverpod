@@ -40,11 +40,19 @@ class DatabasePoolManager {
   /// when starting the [Server].
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
-    this.config,
-  ) : _poolSettings = pg.PoolSettings(
+    this.config, {
+    List<String>? onOpenQueries,
+  }) : _poolSettings = pg.PoolSettings(
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+          onOpen: onOpenQueries != null
+              ? (connection) async {
+                  for (var query in onOpenQueries) {
+                    await connection.execute(query);
+                  }
+                }
+              : null,
         ) {
     _serializationManager = serializationManager;
   }

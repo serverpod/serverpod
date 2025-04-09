@@ -297,6 +297,8 @@ class Serverpod {
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
 
+  final List<String>? _onOpenDatabaseQueries;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -314,7 +316,9 @@ class Serverpod {
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
+    List<String>? onOpenDatabaseQueries,
   })  : _securityContextConfig = securityContextConfig,
+        _onOpenDatabaseQueries = onOpenDatabaseQueries,
         _experimental = ExperimentalApi._(
           config: config,
           experimentalFeatures: experimentalFeatures,
@@ -381,6 +385,7 @@ class Serverpod {
       _databasePoolManager = DatabasePoolManager(
         serializationManager,
         databaseConfiguration,
+        onOpenQueries: _onOpenDatabaseQueries,
       );
 
       // TODO: Remove this when we have a better way to handle this.
