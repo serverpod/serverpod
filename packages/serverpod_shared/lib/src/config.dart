@@ -302,6 +302,9 @@ class DatabaseConfig {
   /// True if the database is running on a unix socket.
   final bool isUnixSocket;
 
+  /// Default schema for the database.
+  final String? defaultSchema;
+
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
     required this.host,
@@ -311,6 +314,7 @@ class DatabaseConfig {
     required this.name,
     this.requireSsl = false,
     this.isUnixSocket = false,
+    this.defaultSchema,
   });
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
@@ -320,6 +324,7 @@ class DatabaseConfig {
         ServerpodEnv.databasePort.configKey: int,
         ServerpodEnv.databaseName.configKey: String,
         ServerpodEnv.databaseUser.configKey: String,
+        ServerpodEnv.databaseDefaultSchema.configKey: String,
       },
       dbSetup,
       name,
@@ -339,6 +344,7 @@ class DatabaseConfig {
       isUnixSocket:
           dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
+      defaultSchema: dbSetup[ServerpodEnv.databaseDefaultSchema.configKey],
     );
   }
 
@@ -352,6 +358,9 @@ class DatabaseConfig {
     str += 'database require SSL: $requireSsl\n';
     str += 'database unix socket: $isUnixSocket\n';
     str += 'database pass: ********\n';
+    if (defaultSchema != null) {
+      str += 'database default schema: $defaultSchema\n';
+    }
     return str;
   }
 }
@@ -521,6 +530,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseUser, null),
     (ServerpodEnv.databaseRequireSsl, bool.parse),
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
+    (ServerpodEnv.databaseDefaultSchema, null),
   ]);
 }
 
