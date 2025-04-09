@@ -34,6 +34,12 @@ class IntegrationTestServer extends TestServerpod {
           authenticationHandler ?? auth.authenticationHandler,
       securityContextConfig: securityContextConfig,
       experimentalFeatures: experimentalFeatures,
+      onOpenDatabaseQueries: [
+        // Creates the schema if it doesn't exist
+        'CREATE SCHEMA IF NOT EXISTS alex_schema;',
+        // Sets the search path to the schema for all opened connections
+        'SET search_path TO alex_schema;',
+      ],
     );
   }
 }

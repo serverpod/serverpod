@@ -15,6 +15,12 @@ void run(List<String> args) async {
     Protocol(),
     Endpoints(),
     authenticationHandler: auth.authenticationHandler,
+    onOpenDatabaseQueries: [
+      // Creates the schema if it doesn't exist
+      'CREATE SCHEMA IF NOT EXISTS alex_schema;',
+      // Sets the search path to the schema for all opened connections
+      'SET search_path TO alex_schema;',
+    ],
   );
 
   // Add future calls
