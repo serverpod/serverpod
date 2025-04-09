@@ -100,29 +100,18 @@ List<ModuleConfig> _loadModuleConfigs({
     try {
       var packageName = packageInfo.name;
 
-      var packageSrcRoot = packageInfo.packageUriRoot;
-      var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
-        ..removeLast()
-        ..removeLast();
-      var generatorConfigSegments = path
-          .joinAll([...moduleProjectRoot, 'config', 'generator.yaml']).split(
-              path.separator);
+      var packageSrcRoot = packageInfo.root;
 
-      var generatorConfigUri = packageSrcRoot.replace(
-        pathSegments: generatorConfigSegments,
-      );
+      var generatorConfigUri =
+          packageInfo.root.resolve(path.joinAll(['config', 'generator.yaml']));
 
       var generatorConfigFile = File.fromUri(generatorConfigUri);
       if (!generatorConfigFile.existsSync()) {
         continue;
       }
 
-      var moduleProjectUri = packageSrcRoot.replace(
-        pathSegments: moduleProjectRoot,
-      );
-
       var migrationVersions = findAllMigrationVersionsSync(
-        directory: Directory.fromUri(moduleProjectUri),
+        directory: Directory.fromUri(packageSrcRoot),
       );
 
       var moduleInfo = loadConfigFile(generatorConfigFile);
@@ -137,7 +126,7 @@ List<ModuleConfig> _loadModuleConfigs({
           name: moduleName,
           nickname: nickname,
           migrationVersions: migrationVersions,
-          serverPackageDirectoryPathParts: moduleProjectRoot,
+          serverPackageDirectoryPathParts: packageSrcRoot.pathSegments,
         ),
       );
     } catch (e) {
