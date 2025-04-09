@@ -10,23 +10,24 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 /// There is no user ID stored with the request.
 /// If an existing user should be assigned to this specific request,
 /// store that with the request's `id` and link them up during registration.
 abstract class EmailAccountRequest
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   EmailAccountRequest._({
-    this.id,
+    _i1.UuidValue? id,
     required this.created,
     required this.expiration,
     required this.email,
     required this.passwordHash,
     required this.verificationCode,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory EmailAccountRequest({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required DateTime expiration,
     required String email,
@@ -36,7 +37,9 @@ abstract class EmailAccountRequest
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccountRequest(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       expiration:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
@@ -51,7 +54,7 @@ abstract class EmailAccountRequest
   static const db = EmailAccountRequestRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   /// The time when this authentication was created.
   DateTime created;
@@ -71,13 +74,13 @@ abstract class EmailAccountRequest
   String verificationCode;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [EmailAccountRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountRequest copyWith({
-    int? id,
+    _i1.UuidValue? id,
     DateTime? created,
     DateTime? expiration,
     String? email,
@@ -87,7 +90,7 @@ abstract class EmailAccountRequest
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'expiration': expiration.toJson(),
       'email': email,
@@ -99,7 +102,7 @@ abstract class EmailAccountRequest
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'expiration': expiration.toJson(),
       'email': email,
@@ -142,7 +145,7 @@ class _Undefined {}
 
 class _EmailAccountRequestImpl extends EmailAccountRequest {
   _EmailAccountRequestImpl({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required DateTime expiration,
     required String email,
@@ -170,7 +173,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     String? verificationCode,
   }) {
     return EmailAccountRequest(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       created: created ?? this.created,
       expiration: expiration ?? this.expiration,
       email: email ?? this.email,
@@ -180,7 +183,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   }
 }
 
-class EmailAccountRequestTable extends _i1.Table<int> {
+class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue> {
   EmailAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_email_account_request') {
     created = _i1.ColumnDateTime(
@@ -240,7 +243,7 @@ class EmailAccountRequestInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => EmailAccountRequest.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccountRequest.t;
 }
 
 class EmailAccountRequestIncludeList extends _i1.IncludeList {
@@ -260,7 +263,7 @@ class EmailAccountRequestIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EmailAccountRequest.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccountRequest.t;
 }
 
 class EmailAccountRequestRepository {
@@ -348,7 +351,7 @@ class EmailAccountRequestRepository {
   /// Finds a single [EmailAccountRequest] by its [id] or null if no such row exists.
   Future<EmailAccountRequest?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.findById<EmailAccountRequest>(

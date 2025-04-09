@@ -10,18 +10,19 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class AuthUser
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   AuthUser._({
-    this.id,
+    _i1.UuidValue? id,
     required this.created,
     required this.scopeNames,
     required this.blocked,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory AuthUser({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required Set<String> scopeNames,
     required bool blocked,
@@ -29,7 +30,9 @@ abstract class AuthUser
 
   factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUser(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
@@ -43,7 +46,7 @@ abstract class AuthUser
   static const db = AuthUserRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   /// The time when this user was created.
   DateTime created;
@@ -55,13 +58,13 @@ abstract class AuthUser
   bool blocked;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   AuthUser copyWith({
-    int? id,
+    _i1.UuidValue? id,
     DateTime? created,
     Set<String>? scopeNames,
     bool? blocked,
@@ -69,7 +72,7 @@ abstract class AuthUser
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
@@ -79,7 +82,7 @@ abstract class AuthUser
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
@@ -120,7 +123,7 @@ class _Undefined {}
 
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required Set<String> scopeNames,
     required bool blocked,
@@ -142,7 +145,7 @@ class _AuthUserImpl extends AuthUser {
     bool? blocked,
   }) {
     return AuthUser(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       created: created ?? this.created,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,
@@ -150,7 +153,7 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
-class AuthUserTable extends _i1.Table<int> {
+class AuthUserTable extends _i1.Table<_i1.UuidValue> {
   AuthUserTable({super.tableRelation}) : super(tableName: 'auth_user') {
     created = _i1.ColumnDateTime(
       'created',
@@ -191,7 +194,7 @@ class AuthUserInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => AuthUser.t;
+  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
 }
 
 class AuthUserIncludeList extends _i1.IncludeList {
@@ -211,7 +214,7 @@ class AuthUserIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => AuthUser.t;
+  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
 }
 
 class AuthUserRepository {
@@ -299,7 +302,7 @@ class AuthUserRepository {
   /// Finds a single [AuthUser] by its [id] or null if no such row exists.
   Future<AuthUser?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.findById<AuthUser>(

@@ -10,20 +10,21 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class EmailAccount
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   EmailAccount._({
-    this.id,
+    _i1.UuidValue? id,
     required this.userId,
     required this.created,
     required this.email,
     required this.passwordHash,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory EmailAccount({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String email,
     required String passwordHash,
@@ -31,8 +32,10 @@ abstract class EmailAccount
 
   factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccount(
-      id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       passwordHash: jsonSerialization['passwordHash'] as String,
@@ -44,10 +47,10 @@ abstract class EmailAccount
   static const db = EmailAccountRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   /// The id of the [AuthUser] this login belongs to.
-  int userId;
+  _i1.UuidValue userId;
 
   /// The time when this authentication was created.
   DateTime created;
@@ -61,14 +64,14 @@ abstract class EmailAccount
   String passwordHash;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccount copyWith({
-    int? id,
-    int? userId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? email,
     String? passwordHash,
@@ -76,8 +79,8 @@ abstract class EmailAccount
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'userId': userId,
+      if (id != null) 'id': id?.toJson(),
+      'userId': userId.toJson(),
       'created': created.toJson(),
       'email': email,
       'passwordHash': passwordHash,
@@ -87,8 +90,8 @@ abstract class EmailAccount
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
-      'userId': userId,
+      if (id != null) 'id': id?.toJson(),
+      'userId': userId.toJson(),
       'created': created.toJson(),
       'email': email,
       'passwordHash': passwordHash,
@@ -129,8 +132,8 @@ class _Undefined {}
 
 class _EmailAccountImpl extends EmailAccount {
   _EmailAccountImpl({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String email,
     required String passwordHash,
@@ -148,13 +151,13 @@ class _EmailAccountImpl extends EmailAccount {
   @override
   EmailAccount copyWith({
     Object? id = _Undefined,
-    int? userId,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? email,
     String? passwordHash,
   }) {
     return EmailAccount(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       userId: userId ?? this.userId,
       created: created ?? this.created,
       email: email ?? this.email,
@@ -163,10 +166,10 @@ class _EmailAccountImpl extends EmailAccount {
   }
 }
 
-class EmailAccountTable extends _i1.Table<int> {
+class EmailAccountTable extends _i1.Table<_i1.UuidValue> {
   EmailAccountTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_email_account') {
-    userId = _i1.ColumnInt(
+    userId = _i1.ColumnUuid(
       'userId',
       this,
     );
@@ -185,7 +188,7 @@ class EmailAccountTable extends _i1.Table<int> {
   }
 
   /// The id of the [AuthUser] this login belongs to.
-  late final _i1.ColumnInt userId;
+  late final _i1.ColumnUuid userId;
 
   /// The time when this authentication was created.
   late final _i1.ColumnDateTime created;
@@ -215,7 +218,7 @@ class EmailAccountInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => EmailAccount.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccount.t;
 }
 
 class EmailAccountIncludeList extends _i1.IncludeList {
@@ -235,7 +238,7 @@ class EmailAccountIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EmailAccount.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccount.t;
 }
 
 class EmailAccountRepository {
@@ -323,7 +326,7 @@ class EmailAccountRepository {
   /// Finds a single [EmailAccount] by its [id] or null if no such row exists.
   Future<EmailAccount?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.findById<EmailAccount>(

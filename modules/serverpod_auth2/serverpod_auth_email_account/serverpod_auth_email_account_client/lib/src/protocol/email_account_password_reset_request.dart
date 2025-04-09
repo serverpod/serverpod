@@ -10,20 +10,21 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class EmailAccountPasswordResetRequest
     implements _i1.SerializableModel {
   EmailAccountPasswordResetRequest._({
-    this.id,
+    _i1.UuidValue? id,
     required this.authenticationId,
     required this.created,
     required this.expiration,
     required this.verificationCode,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory EmailAccountPasswordResetRequest({
-    int? id,
-    required int authenticationId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue authenticationId,
     required DateTime created,
     required DateTime expiration,
     required String verificationCode,
@@ -32,8 +33,11 @@ abstract class EmailAccountPasswordResetRequest
   factory EmailAccountPasswordResetRequest.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountPasswordResetRequest(
-      id: jsonSerialization['id'] as int?,
-      authenticationId: jsonSerialization['authenticationId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authenticationId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['authenticationId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       expiration:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
@@ -44,10 +48,10 @@ abstract class EmailAccountPasswordResetRequest
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _i1.UuidValue? id;
 
   /// The id of the [EmailAuthentication] this request belongs to.
-  int authenticationId;
+  _i1.UuidValue authenticationId;
 
   /// The time when this request was created.
   DateTime created;
@@ -62,8 +66,8 @@ abstract class EmailAccountPasswordResetRequest
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountPasswordResetRequest copyWith({
-    int? id,
-    int? authenticationId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? authenticationId,
     DateTime? created,
     DateTime? expiration,
     String? verificationCode,
@@ -71,8 +75,8 @@ abstract class EmailAccountPasswordResetRequest
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'authenticationId': authenticationId,
+      if (id != null) 'id': id?.toJson(),
+      'authenticationId': authenticationId.toJson(),
       'created': created.toJson(),
       'expiration': expiration.toJson(),
       'verificationCode': verificationCode,
@@ -90,8 +94,8 @@ class _Undefined {}
 class _EmailAccountPasswordResetRequestImpl
     extends EmailAccountPasswordResetRequest {
   _EmailAccountPasswordResetRequestImpl({
-    int? id,
-    required int authenticationId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue authenticationId,
     required DateTime created,
     required DateTime expiration,
     required String verificationCode,
@@ -109,13 +113,13 @@ class _EmailAccountPasswordResetRequestImpl
   @override
   EmailAccountPasswordResetRequest copyWith({
     Object? id = _Undefined,
-    int? authenticationId,
+    _i1.UuidValue? authenticationId,
     DateTime? created,
     DateTime? expiration,
     String? verificationCode,
   }) {
     return EmailAccountPasswordResetRequest(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       authenticationId: authenticationId ?? this.authenticationId,
       created: created ?? this.created,
       expiration: expiration ?? this.expiration,

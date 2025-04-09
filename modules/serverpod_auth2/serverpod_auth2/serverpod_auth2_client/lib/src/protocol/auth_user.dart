@@ -10,17 +10,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class AuthUser implements _i1.SerializableModel {
   AuthUser._({
-    this.id,
+    _i1.UuidValue? id,
     required this.created,
     required this.scopeNames,
     required this.blocked,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory AuthUser({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required Set<String> scopeNames,
     required bool blocked,
@@ -28,7 +29,9 @@ abstract class AuthUser implements _i1.SerializableModel {
 
   factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUser(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
@@ -40,7 +43,7 @@ abstract class AuthUser implements _i1.SerializableModel {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _i1.UuidValue? id;
 
   /// The time when this user was created.
   DateTime created;
@@ -55,7 +58,7 @@ abstract class AuthUser implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   AuthUser copyWith({
-    int? id,
+    _i1.UuidValue? id,
     DateTime? created,
     Set<String>? scopeNames,
     bool? blocked,
@@ -63,7 +66,7 @@ abstract class AuthUser implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
@@ -80,7 +83,7 @@ class _Undefined {}
 
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
-    int? id,
+    _i1.UuidValue? id,
     required DateTime created,
     required Set<String> scopeNames,
     required bool blocked,
@@ -102,7 +105,7 @@ class _AuthUserImpl extends AuthUser {
     bool? blocked,
   }) {
     return AuthUser(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       created: created ?? this.created,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,

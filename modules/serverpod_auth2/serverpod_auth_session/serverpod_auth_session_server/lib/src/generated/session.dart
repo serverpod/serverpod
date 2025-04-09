@@ -10,27 +10,30 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class ActiveSession
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   ActiveSession._({
-    this.id,
+    _i1.UuidValue? id,
     required this.userId,
     required this.created,
     required this.sessionKey,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory ActiveSession({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String sessionKey,
   }) = _ActiveSessionImpl;
 
   factory ActiveSession.fromJson(Map<String, dynamic> jsonSerialization) {
     return ActiveSession(
-      id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       sessionKey: jsonSerialization['sessionKey'] as String,
     );
@@ -41,10 +44,10 @@ abstract class ActiveSession
   static const db = ActiveSessionRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   /// The id of the [AuthUser] this session belongs to
-  int userId;
+  _i1.UuidValue userId;
 
   /// The time when this sesion was created.
   DateTime created;
@@ -52,22 +55,22 @@ abstract class ActiveSession
   String sessionKey;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [ActiveSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ActiveSession copyWith({
-    int? id,
-    int? userId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? sessionKey,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'userId': userId,
+      if (id != null) 'id': id?.toJson(),
+      'userId': userId.toJson(),
       'created': created.toJson(),
       'sessionKey': sessionKey,
     };
@@ -76,8 +79,8 @@ abstract class ActiveSession
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
-      'userId': userId,
+      if (id != null) 'id': id?.toJson(),
+      'userId': userId.toJson(),
       'created': created.toJson(),
       'sessionKey': sessionKey,
     };
@@ -117,8 +120,8 @@ class _Undefined {}
 
 class _ActiveSessionImpl extends ActiveSession {
   _ActiveSessionImpl({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String sessionKey,
   }) : super._(
@@ -134,12 +137,12 @@ class _ActiveSessionImpl extends ActiveSession {
   @override
   ActiveSession copyWith({
     Object? id = _Undefined,
-    int? userId,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? sessionKey,
   }) {
     return ActiveSession(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       userId: userId ?? this.userId,
       created: created ?? this.created,
       sessionKey: sessionKey ?? this.sessionKey,
@@ -147,10 +150,10 @@ class _ActiveSessionImpl extends ActiveSession {
   }
 }
 
-class ActiveSessionTable extends _i1.Table<int> {
+class ActiveSessionTable extends _i1.Table<_i1.UuidValue> {
   ActiveSessionTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_session') {
-    userId = _i1.ColumnInt(
+    userId = _i1.ColumnUuid(
       'userId',
       this,
     );
@@ -165,7 +168,7 @@ class ActiveSessionTable extends _i1.Table<int> {
   }
 
   /// The id of the [AuthUser] this session belongs to
-  late final _i1.ColumnInt userId;
+  late final _i1.ColumnUuid userId;
 
   /// The time when this sesion was created.
   late final _i1.ColumnDateTime created;
@@ -188,7 +191,7 @@ class ActiveSessionInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ActiveSession.t;
+  _i1.Table<_i1.UuidValue> get table => ActiveSession.t;
 }
 
 class ActiveSessionIncludeList extends _i1.IncludeList {
@@ -208,7 +211,7 @@ class ActiveSessionIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ActiveSession.t;
+  _i1.Table<_i1.UuidValue> get table => ActiveSession.t;
 }
 
 class ActiveSessionRepository {
@@ -296,7 +299,7 @@ class ActiveSessionRepository {
   /// Finds a single [ActiveSession] by its [id] or null if no such row exists.
   Future<ActiveSession?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.findById<ActiveSession>(

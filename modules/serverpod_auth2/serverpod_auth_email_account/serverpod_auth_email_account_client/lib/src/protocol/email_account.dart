@@ -10,19 +10,20 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class EmailAccount implements _i1.SerializableModel {
   EmailAccount._({
-    this.id,
+    _i1.UuidValue? id,
     required this.userId,
     required this.created,
     required this.email,
     required this.passwordHash,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory EmailAccount({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String email,
     required String passwordHash,
@@ -30,8 +31,10 @@ abstract class EmailAccount implements _i1.SerializableModel {
 
   factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccount(
-      id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       passwordHash: jsonSerialization['passwordHash'] as String,
@@ -41,10 +44,10 @@ abstract class EmailAccount implements _i1.SerializableModel {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _i1.UuidValue? id;
 
   /// The id of the [AuthUser] this login belongs to.
-  int userId;
+  _i1.UuidValue userId;
 
   /// The time when this authentication was created.
   DateTime created;
@@ -61,8 +64,8 @@ abstract class EmailAccount implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccount copyWith({
-    int? id,
-    int? userId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? email,
     String? passwordHash,
@@ -70,8 +73,8 @@ abstract class EmailAccount implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'userId': userId,
+      if (id != null) 'id': id?.toJson(),
+      'userId': userId.toJson(),
       'created': created.toJson(),
       'email': email,
       'passwordHash': passwordHash,
@@ -88,8 +91,8 @@ class _Undefined {}
 
 class _EmailAccountImpl extends EmailAccount {
   _EmailAccountImpl({
-    int? id,
-    required int userId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
     required DateTime created,
     required String email,
     required String passwordHash,
@@ -107,13 +110,13 @@ class _EmailAccountImpl extends EmailAccount {
   @override
   EmailAccount copyWith({
     Object? id = _Undefined,
-    int? userId,
+    _i1.UuidValue? userId,
     DateTime? created,
     String? email,
     String? passwordHash,
   }) {
     return EmailAccount(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       userId: userId ?? this.userId,
       created: created ?? this.created,
       email: email ?? this.email,

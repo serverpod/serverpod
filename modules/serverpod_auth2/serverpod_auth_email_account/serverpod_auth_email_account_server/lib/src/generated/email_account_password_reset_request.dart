@@ -10,20 +10,21 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:uuid/uuid.dart' as _i2;
 
 abstract class EmailAccountPasswordResetRequest
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetRequest._({
-    this.id,
+    _i1.UuidValue? id,
     required this.authenticationId,
     required this.created,
     required this.expiration,
     required this.verificationCode,
-  });
+  }) : id = id ?? _i2.Uuid().v4obj();
 
   factory EmailAccountPasswordResetRequest({
-    int? id,
-    required int authenticationId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue authenticationId,
     required DateTime created,
     required DateTime expiration,
     required String verificationCode,
@@ -32,8 +33,11 @@ abstract class EmailAccountPasswordResetRequest
   factory EmailAccountPasswordResetRequest.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountPasswordResetRequest(
-      id: jsonSerialization['id'] as int?,
-      authenticationId: jsonSerialization['authenticationId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authenticationId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['authenticationId']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       expiration:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
@@ -46,10 +50,10 @@ abstract class EmailAccountPasswordResetRequest
   static const db = EmailAccountPasswordResetRequestRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue? id;
 
   /// The id of the [EmailAuthentication] this request belongs to.
-  int authenticationId;
+  _i1.UuidValue authenticationId;
 
   /// The time when this request was created.
   DateTime created;
@@ -61,14 +65,14 @@ abstract class EmailAccountPasswordResetRequest
   String verificationCode;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountPasswordResetRequest copyWith({
-    int? id,
-    int? authenticationId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? authenticationId,
     DateTime? created,
     DateTime? expiration,
     String? verificationCode,
@@ -76,8 +80,8 @@ abstract class EmailAccountPasswordResetRequest
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'authenticationId': authenticationId,
+      if (id != null) 'id': id?.toJson(),
+      'authenticationId': authenticationId.toJson(),
       'created': created.toJson(),
       'expiration': expiration.toJson(),
       'verificationCode': verificationCode,
@@ -87,8 +91,8 @@ abstract class EmailAccountPasswordResetRequest
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id,
-      'authenticationId': authenticationId,
+      if (id != null) 'id': id?.toJson(),
+      'authenticationId': authenticationId.toJson(),
       'created': created.toJson(),
       'expiration': expiration.toJson(),
       'verificationCode': verificationCode,
@@ -130,8 +134,8 @@ class _Undefined {}
 class _EmailAccountPasswordResetRequestImpl
     extends EmailAccountPasswordResetRequest {
   _EmailAccountPasswordResetRequestImpl({
-    int? id,
-    required int authenticationId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue authenticationId,
     required DateTime created,
     required DateTime expiration,
     required String verificationCode,
@@ -149,13 +153,13 @@ class _EmailAccountPasswordResetRequestImpl
   @override
   EmailAccountPasswordResetRequest copyWith({
     Object? id = _Undefined,
-    int? authenticationId,
+    _i1.UuidValue? authenticationId,
     DateTime? created,
     DateTime? expiration,
     String? verificationCode,
   }) {
     return EmailAccountPasswordResetRequest(
-      id: id is int? ? id : this.id,
+      id: id is _i1.UuidValue? ? id : this.id,
       authenticationId: authenticationId ?? this.authenticationId,
       created: created ?? this.created,
       expiration: expiration ?? this.expiration,
@@ -164,11 +168,11 @@ class _EmailAccountPasswordResetRequestImpl
   }
 }
 
-class EmailAccountPasswordResetRequestTable extends _i1.Table<int> {
+class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue> {
   EmailAccountPasswordResetRequestTable({super.tableRelation})
       : super(
             tableName: 'serverpod_auth_email_account_password_reset_request') {
-    authenticationId = _i1.ColumnInt(
+    authenticationId = _i1.ColumnUuid(
       'authenticationId',
       this,
     );
@@ -187,7 +191,7 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<int> {
   }
 
   /// The id of the [EmailAuthentication] this request belongs to.
-  late final _i1.ColumnInt authenticationId;
+  late final _i1.ColumnUuid authenticationId;
 
   /// The time when this request was created.
   late final _i1.ColumnDateTime created;
@@ -215,7 +219,7 @@ class EmailAccountPasswordResetRequestInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => EmailAccountPasswordResetRequest.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccountPasswordResetRequest.t;
 }
 
 class EmailAccountPasswordResetRequestIncludeList extends _i1.IncludeList {
@@ -235,7 +239,7 @@ class EmailAccountPasswordResetRequestIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EmailAccountPasswordResetRequest.t;
+  _i1.Table<_i1.UuidValue> get table => EmailAccountPasswordResetRequest.t;
 }
 
 class EmailAccountPasswordResetRequestRepository {
@@ -323,7 +327,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// Finds a single [EmailAccountPasswordResetRequest] by its [id] or null if no such row exists.
   Future<EmailAccountPasswordResetRequest?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.findById<EmailAccountPasswordResetRequest>(
