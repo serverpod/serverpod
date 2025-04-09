@@ -79,15 +79,15 @@ extension TableComparisons on TableDefinition {
       );
     }
 
-    if (other.schema != schema) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'schema',
-          expected: schema,
-          found: other.schema,
-        ),
-      );
-    }
+    // if (other.schema != schema) {
+    //   mismatches.add(
+    //     TableComparisonWarning(
+    //       name: 'schema',
+    //       expected: schema,
+    //       found: other.schema,
+    //     ),
+    //   );
+    // }
 
     if (managed != null && other.managed != null && managed != other.managed) {
       mismatches.add(
@@ -383,15 +383,15 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
       );
     }
 
-    if (referenceTableSchema != other.referenceTableSchema) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference schema',
-          expected: referenceTableSchema,
-          found: other.referenceTableSchema,
-        ),
-      );
-    }
+    // if (referenceTableSchema != other.referenceTableSchema) {
+    //   mismatches.add(
+    //     ForeignKeyComparisonWarning(
+    //       name: 'reference schema',
+    //       expected: referenceTableSchema,
+    //       found: other.referenceTableSchema,
+    //     ),
+    //   );
+    // }
 
     if (!const ListEquality()
         .equals(referenceColumns, other.referenceColumns)) {
