@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:test/test.dart';
 
@@ -19,6 +20,7 @@ void main() {
         .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
@@ -46,6 +48,7 @@ void main() {
             .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
@@ -81,6 +84,7 @@ void main() {
         .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
@@ -116,6 +120,7 @@ void main() {
             .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
@@ -131,10 +136,56 @@ void main() {
         await ProjectDependencyStructureFactory().construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
     expect(moduleConfigs, isEmpty);
+  });
+
+  test(
+      'Given serverpod module dependency that does not exist in package config when loading modules then exception is thrown',
+      () async {
+    const module = 'module_server';
+
+    var ProjectDependencyContext(:packageConfig, :projectPubspec) =
+        await ProjectDependencyStructureFactory()
+            .addProjectDependency(module)
+            .addModuleProject(ModuleProjectBuilder().withName(module).build())
+            .construct();
+
+    expect(
+        () => loadModuleConfigs(
+              projectPubspec: projectPubspec,
+              packageConfig: packageConfig,
+            ),
+        throwsA(isA<ServerpodModulesNotFoundException>()));
+  });
+
+  test(
+      'Given serverpod module dependency with transitive module dependency that does not exist in package config when loading modules then exception is thrown',
+      () async {
+    const moduleName = 'module_server';
+    const transitiveModuleName = 'transitive_module_server';
+
+    var ProjectDependencyContext(:packageConfig, :projectPubspec) =
+        await ProjectDependencyStructureFactory()
+            .addProjectDependency(moduleName)
+            .withModuleProjects([
+              ModuleProjectBuilder()
+                  .withName(moduleName)
+                  .withPubspecDependencies([transitiveModuleName]).build(),
+              ModuleProjectBuilder().withName(transitiveModuleName).build(),
+            ])
+            .addPackageToPackageConfig(moduleName)
+            .construct();
+
+    expect(
+        () => loadModuleConfigs(
+              projectPubspec: projectPubspec,
+              packageConfig: packageConfig,
+            ),
+        throwsA(isA<ServerpodModulesNotFoundException>()));
   });
 
   test(
@@ -155,6 +206,7 @@ void main() {
             .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
@@ -175,6 +227,7 @@ void main() {
         .construct();
 
     var moduleConfigs = loadModuleConfigs(
+      projectPubspec: projectPubspec,
       packageConfig: packageConfig,
     );
 
