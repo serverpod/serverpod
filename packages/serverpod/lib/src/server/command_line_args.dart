@@ -59,6 +59,9 @@ class CommandLineArgs {
   /// If true, the server will apply database repair migration on startup.
   late final bool applyRepairMigration;
 
+  /// The default database schema.
+  late final String? databaseDefaultSchema;
+
   /// Parses the command line arguments passed to Serverpod and creates a
   /// [CommandLineArgs] object.
   CommandLineArgs(List<String> args) {
@@ -101,6 +104,12 @@ class CommandLineArgs {
           'apply-repair-migration',
           abbr: 'A',
           defaultsTo: false,
+        )
+        ..addOption(
+          'database-default-schema',
+          abbr: 's',
+          help: 'Specifies the default database schema.',
+          defaultsTo: 'public',
         );
       var results = argParser.parse(args);
 
@@ -130,6 +139,7 @@ class CommandLineArgs {
 
       applyMigrations = results['apply-migrations'] ?? false;
       applyRepairMigration = results['apply-repair-migration'] ?? false;
+      databaseDefaultSchema = results['database-default-schema'] ?? 'public';
     } catch (e) {
       stdout.writeln(
         'Failed to parse command line arguments. Using default values. $e',
@@ -140,6 +150,7 @@ class CommandLineArgs {
       role = ServerpodRole.monolith;
       applyMigrations = false;
       applyRepairMigration = false;
+      databaseDefaultSchema = 'public';
     }
   }
 
@@ -168,6 +179,8 @@ class CommandLineArgs {
         break;
     }
 
-    return 'mode: $runMode, role: $formattedRole, logging: $formattedLoggingMode, serverId: $serverId';
+    return 'mode: $runMode, role: $formattedRole, logging: $formattedLoggingMode, '
+        'serverId: $serverId, databaseDefaultSchema: $databaseDefaultSchema, '
+        'applyMigrations: $applyMigrations, applyRepairMigration: $applyRepairMigration';
   }
 }
