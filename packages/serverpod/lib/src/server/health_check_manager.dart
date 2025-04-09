@@ -34,12 +34,17 @@ class HealthCheckManager {
     try {
       await SystemResources.init();
     } catch (e, stackTrace) {
-      _reportException(
-        e,
-        stackTrace,
-        message:
-            'CPU and memory usage metrics are not supported on this platform.',
-      );
+      if (!Platform.isWindows) {
+        _reportException(
+          e,
+          stackTrace,
+          message:
+              'CPU and memory usage metrics are not supported on this platform.',
+        );
+      } else {
+        stderr.writeln(
+            'WARNING: CPU and memory usage metrics are not supported on this platform.');
+      }
     }
     _scheduleNextCheck();
   }
