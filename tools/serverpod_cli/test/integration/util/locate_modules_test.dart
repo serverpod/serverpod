@@ -160,4 +160,24 @@ void main() {
 
     expect(moduleConfigs, isEmpty);
   });
+
+  test(
+      'Given no serverpod module dependencies but one exists in package config when loading modules then no module configuration is loaded',
+      () async {
+    const moduleName = 'module_server';
+
+    var ProjectDependencyContext(
+      :packageConfig,
+      :projectPubspec
+    ) = await ProjectDependencyStructureFactory()
+        .addModuleProject(ModuleProjectBuilder().withName(moduleName).build())
+        .addPackageToPackageConfig(moduleName)
+        .construct();
+
+    var moduleConfigs = loadModuleConfigs(
+      packageConfig: packageConfig,
+    );
+
+    expect(moduleConfigs, isEmpty);
+  });
 }
