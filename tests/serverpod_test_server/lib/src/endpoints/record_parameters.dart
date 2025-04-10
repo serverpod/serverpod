@@ -315,5 +315,13 @@ class RecordParametersEndpoint extends Endpoint {
       yield value;
     }
   }
+
 // #endregion
+// #region Record parameter with custom name
+  Future<void> recordParameterWithCustomName(
+    Session session,
+    (int,) myRecord,
+  ) async {
+    return;
+  }
 }

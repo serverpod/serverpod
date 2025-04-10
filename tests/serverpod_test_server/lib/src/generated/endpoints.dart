@@ -5546,6 +5546,25 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
+        'recordParameterWithCustomName': _i1.MethodConnector(
+          name: 'recordParameterWithCustomName',
+          params: {
+            'myRecord': _i1.ParameterDescription(
+              name: 'myRecord',
+              type: _i1.getType<(int,)>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+                  .recordParameterWithCustomName(
+            session,
+            params['myRecord'],
+          ),
+        ),
         'streamNullableRecordOfNullableInt': _i1.MethodStreamConnector(
           name: 'streamNullableRecordOfNullableInt',
           params: {},
