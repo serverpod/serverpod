@@ -1,3 +1,8 @@
+## 2.5.1
+- feat: Adds support for configuring database search path across all database connections.
+- fix: Limits version compatibility check to `serverpod` and `serverpod_client` packages.
+- fix: Fixes an issue where record parameters could only be named `record`.
+
 ## 2.5.0
 - feat: Enables translations for SignInWithEmailDialog.
 - feat: Adds support for `Record` type in Streaming methods.
