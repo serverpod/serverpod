@@ -45,13 +45,13 @@ class DatabasePoolManager {
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
-          onOpen: config.defaultSchema != null
+          onOpen: config.searchPaths != null
               ? (connection) async {
                   await connection.execute(
                       //TODO(SandPod): I included your code just here...
                       // This should be created by the migrations system, right?
                       // 'CREATE SCHEMA IF NOT EXISTS ${config.defaultSchema};'
-                      'SET search_path TO ${config.defaultSchema};');
+                      'SET search_path TO ${config.searchPaths};');
                 }
               : null,
         ) {

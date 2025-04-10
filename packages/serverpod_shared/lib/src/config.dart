@@ -302,8 +302,8 @@ class DatabaseConfig {
   /// True if the database is running on a unix socket.
   final bool isUnixSocket;
 
-  /// Default schema for the database.
-  final String? defaultSchema;
+  /// Override the search path all connections to the database.
+  final String? searchPaths;
 
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
@@ -314,7 +314,7 @@ class DatabaseConfig {
     required this.name,
     this.requireSsl = false,
     this.isUnixSocket = false,
-    this.defaultSchema,
+    this.searchPaths,
   });
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
@@ -324,7 +324,7 @@ class DatabaseConfig {
         ServerpodEnv.databasePort.configKey: int,
         ServerpodEnv.databaseName.configKey: String,
         ServerpodEnv.databaseUser.configKey: String,
-        ServerpodEnv.databaseDefaultSchema.configKey: String,
+        ServerpodEnv.databaseSearchPaths.configKey: String,
       },
       dbSetup,
       name,
@@ -344,7 +344,7 @@ class DatabaseConfig {
       isUnixSocket:
           dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
-      defaultSchema: dbSetup[ServerpodEnv.databaseDefaultSchema.configKey],
+      searchPaths: dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
     );
   }
 
@@ -358,8 +358,8 @@ class DatabaseConfig {
     str += 'database require SSL: $requireSsl\n';
     str += 'database unix socket: $isUnixSocket\n';
     str += 'database pass: ********\n';
-    if (defaultSchema != null) {
-      str += 'database default schema: $defaultSchema\n';
+    if (searchPaths != null) {
+      str += 'database search path overrides: $searchPaths\n';
     }
     return str;
   }
@@ -530,7 +530,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseUser, null),
     (ServerpodEnv.databaseRequireSsl, bool.parse),
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
-    (ServerpodEnv.databaseDefaultSchema, null),
+    (ServerpodEnv.databaseSearchPaths, null),
   ]);
 }
 
