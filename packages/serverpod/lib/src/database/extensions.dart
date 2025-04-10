@@ -79,16 +79,6 @@ extension TableComparisons on TableDefinition {
       );
     }
 
-    if (other.schema != schema) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'schema',
-          expected: schema,
-          found: other.schema,
-        ),
-      );
-    }
-
     if (managed != null && other.managed != null && managed != other.managed) {
       mismatches.add(
         TableComparisonWarning(
@@ -379,16 +369,6 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
           name: 'reference table',
           expected: referenceTable,
           found: other.referenceTable,
-        ),
-      );
-    }
-
-    if (referenceTableSchema != other.referenceTableSchema) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference schema',
-          expected: referenceTableSchema,
-          found: other.referenceTableSchema,
         ),
       );
     }

@@ -71,40 +71,6 @@ void main() {
     );
 
     test(
-      'when tables have different schemas then mismatches include schema mismatch',
-      () {
-        var tableA = TableDefinition(
-          name: 'test_table',
-          schema: 'schema_a',
-          columns: [],
-          foreignKeys: [],
-          indexes: [],
-          managed: true,
-        );
-
-        var tableB = TableDefinition(
-          name: 'test_table',
-          schema: 'schema_b',
-          columns: [],
-          foreignKeys: [],
-          indexes: [],
-          managed: true,
-        );
-
-        var mismatches = tableA.like(tableB);
-
-        expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isEmpty);
-        expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.expected, equals('schema_a'));
-        expect(mismatches.first.found, equals('schema_b'));
-        expect(mismatches.first.isMismatch, isTrue);
-        expect(mismatches.first.isMissing, isFalse);
-        expect(mismatches.first.isAdded, isFalse);
-      },
-    );
-
-    test(
       'when tables have different tablespaces then mismatches include tablespace mismatch',
       () {
         var tableA = TableDefinition(
