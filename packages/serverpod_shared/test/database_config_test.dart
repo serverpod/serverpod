@@ -124,6 +124,7 @@ database:
     expect(config.database?.password, 'password');
     expect(config.database?.requireSsl, isFalse);
     expect(config.database?.isUnixSocket, isFalse);
+    expect(config.database?.searchPaths, isNull);
   });
 
   test(
@@ -273,5 +274,89 @@ database:
     );
 
     expect(config.database?.isUnixSocket, true);
+  });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable searchPaths then the database config takes the value from the env.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_DATABASE_HOST': 'localhost',
+        'SERVERPOD_DATABASE_PORT': '5432',
+        'SERVERPOD_DATABASE_NAME': 'serverpod',
+        'SERVERPOD_DATABASE_USER': 'admin',
+        'SERVERPOD_DATABASE_SEARCH_PATHS': 'custom_path',
+      },
+    );
+
+    expect(config.database?.searchPaths, 'custom_path');
+  });
+
+  test(
+      'Given a Serverpod config with database configuration including searchPaths when loading from Map then the database config is set correctly.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  searchPaths: custom_path
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.database?.searchPaths, 'custom_path');
+  });
+
+  test(
+      'Given a Serverpod config with both config file and environment variables for searchPaths when loading from Map then the environment variable overrides the config file.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  searchPaths: config_file_path
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_DATABASE_SEARCH_PATHS': 'env_path',
+      },
+    );
+
+    expect(config.database?.searchPaths, 'env_path');
   });
 }

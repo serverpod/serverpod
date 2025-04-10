@@ -324,7 +324,6 @@ class DatabaseConfig {
         ServerpodEnv.databasePort.configKey: int,
         ServerpodEnv.databaseName.configKey: String,
         ServerpodEnv.databaseUser.configKey: String,
-        ServerpodEnv.databaseSearchPaths.configKey: String,
       },
       dbSetup,
       name,
