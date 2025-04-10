@@ -302,6 +302,9 @@ class DatabaseConfig {
   /// True if the database is running on a unix socket.
   final bool isUnixSocket;
 
+  /// Override the search path all connections to the database.
+  final List<String>? searchPaths;
+
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
     required this.host,
@@ -311,6 +314,7 @@ class DatabaseConfig {
     required this.name,
     this.requireSsl = false,
     this.isUnixSocket = false,
+    this.searchPaths,
   });
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
@@ -339,6 +343,8 @@ class DatabaseConfig {
       isUnixSocket:
           dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
+      searchPaths:
+          _parseList(dbSetup[ServerpodEnv.databaseSearchPaths.configKey]),
     );
   }
 
@@ -352,6 +358,9 @@ class DatabaseConfig {
     str += 'database require SSL: $requireSsl\n';
     str += 'database unix socket: $isUnixSocket\n';
     str += 'database pass: ********\n';
+    if (searchPaths != null) {
+      str += 'database search path overrides: $searchPaths\n';
+    }
     return str;
   }
 }
@@ -521,6 +530,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseUser, null),
     (ServerpodEnv.databaseRequireSsl, bool.parse),
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
+    (ServerpodEnv.databaseSearchPaths, null),
   ]);
 }
 
@@ -631,6 +641,12 @@ void _validateJsonConfig(
       );
     }
   }
+}
+
+/// Parses a comma-separated string into a list of strings.
+List<String>? _parseList(String? value) {
+  if (value == null) return null;
+  return value.split(',').map((e) => e.trim()).toList();
 }
 
 /// The configuration keys for the serverpod configuration file.
