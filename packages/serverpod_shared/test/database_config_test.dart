@@ -300,7 +300,8 @@ database:
       },
     );
 
-    expect(config.database?.searchPaths, 'custom_path');
+    expect(config.database?.searchPaths, isA<List<String>?>());
+    expect(config.database?.searchPaths, equals(['custom_path']));
   });
 
   test(
@@ -327,7 +328,7 @@ database:
       loadYaml(serverpodConfig),
     );
 
-    expect(config.database?.searchPaths, 'custom_path');
+    expect(config.database?.searchPaths, equals(['custom_path']));
   });
 
   test(
@@ -357,6 +358,6 @@ database:
       },
     );
 
-    expect(config.database?.searchPaths, 'env_path');
+    expect(config.database?.searchPaths, equals(['env_path']));
   });
 }

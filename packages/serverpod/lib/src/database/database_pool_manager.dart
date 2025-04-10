@@ -47,11 +47,12 @@ class DatabasePoolManager {
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
           onOpen: config.searchPaths != null
               ? (connection) async {
+                  var encodedSearchPaths = config.searchPaths
+                      ?.map((s) => encoder.convert(s))
+                      .join(',');
                   await connection.execute(
-                      //TODO(SandPod): I included your code just here...
-                      // This should be created by the migrations system, right?
-                      // 'CREATE SCHEMA IF NOT EXISTS ${config.defaultSchema};'
-                      'SET search_path TO ${config.searchPaths};');
+                    'SET search_path TO $encodedSearchPaths;',
+                  );
                 }
               : null,
         ) {
