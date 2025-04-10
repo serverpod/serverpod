@@ -2528,6 +2528,13 @@ class EndpointRecordParameters extends _i1.EndpointRef {
             {'initialValue': initialValue},
             {'values': values},
           );
+
+  _i2.Future<void> recordParameterWithCustomName((int,) myRecord) =>
+      caller.callServerEndpoint<void>(
+        'recordParameters',
+        'recordParameterWithCustomName',
+        {'myRecord': _i19.mapRecordToJson(myRecord)},
+      );
 }
 
 /// {@category Endpoint}

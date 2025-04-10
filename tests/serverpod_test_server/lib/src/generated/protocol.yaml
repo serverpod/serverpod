@@ -299,6 +299,7 @@ recordParameters:
   - streamOfModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordFieldFromExternalModule:
+  - recordParameterWithCustomName:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
