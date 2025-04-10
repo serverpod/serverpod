@@ -360,4 +360,67 @@ database:
 
     expect(config.database?.searchPaths, equals(['env_path']));
   });
+
+  test(
+      'Given a Serverpod config with a list of searchPaths when loading from Map then all search paths are parsed.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  searchPaths: first_search_path, second_search_path, third_search_path
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
+      loadYaml(serverpodConfig),
+    );
+
+    expect(
+      config.database?.searchPaths,
+      equals(['first_search_path', 'second_search_path', 'third_search_path']),
+    );
+  });
+
+  test(
+      'Given a SERVERPOD_DATABASE_SEARCH_PATHS with a list of searchPaths when loading from Map then all search paths are parsed.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_DATABASE_SEARCH_PATHS':
+            'first_search_path, second_search_path, third_search_path',
+      },
+    );
+
+    expect(
+      config.database?.searchPaths,
+      equals(['first_search_path', 'second_search_path', 'third_search_path']),
+    );
+  });
 }
