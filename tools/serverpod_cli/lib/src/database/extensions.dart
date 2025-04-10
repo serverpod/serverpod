@@ -70,10 +70,7 @@ extension TableComparisons on TableDefinition {
 
   bool like(TableDefinition other) {
     var diff = generateTableMigration(this, other, []);
-    return diff != null &&
-        diff.isEmpty &&
-        other.name == name &&
-        other.schema == schema;
+    return diff != null && diff.isEmpty && other.name == name;
   }
 }
 
@@ -163,14 +160,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     var cOnDelete = other.onDelete == onDelete;
     var cOnUpdate = (other.onUpdate ?? dKA) == (onUpdate ?? dKA);
     var cReferenceTable = other.referenceTable == referenceTable;
-    var cReferenceSchema = other.referenceTableSchema == referenceTableSchema;
 
-    return cName &&
-        cMatchType &&
-        cOnDelete &&
-        cOnUpdate &&
-        cReferenceTable &&
-        cReferenceSchema;
+    return cName && cMatchType && cOnDelete && cOnUpdate && cReferenceTable;
   }
 }
 

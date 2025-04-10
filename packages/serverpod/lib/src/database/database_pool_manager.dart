@@ -45,6 +45,16 @@ class DatabasePoolManager {
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+          onOpen: config.searchPaths != null
+              ? (connection) async {
+                  var encodedSearchPaths = config.searchPaths
+                      ?.map((s) => encoder.convert(s))
+                      .join(',');
+                  await connection.execute(
+                    'SET search_path TO $encodedSearchPaths;',
+                  );
+                }
+              : null,
         ) {
     _serializationManager = serializationManager;
   }
