@@ -107,16 +107,7 @@ class PubspecBuilder {
     output.writeln();
     output.writeln('environment:');
 
-    /// This interface used to be nullable but is now non-nullable.
-    /// Change was introduced in this commit: https://github.com/dart-lang/tools/commit/a7ddf356ad32bd36742108d300e12484772e3fb3
-    ///
-    /// When we run downgrade we get the nullable version of the interface that
-    /// requires the null check.
-    ///
-    /// Therefore we ignore the invalid null check at this point.
-    /// ignore: invalid_null_aware_operator
-    for (var entry in pubspec.environment?.entries ??
-        <MapEntry<String, VersionConstraint>>[]) {
+    for (var entry in pubspec.environment.entries) {
       output.writeln('  ${entry.key}: ${entry.value}');
     }
     output.writeln();
