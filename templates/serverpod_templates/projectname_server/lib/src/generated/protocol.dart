@@ -89,5 +89,5 @@ class Protocol extends _i1.SerializationManagerServer {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'mini_example';
+  String getModuleName() => 'projectname';
 }
