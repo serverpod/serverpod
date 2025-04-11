@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -35,6 +36,17 @@ class DefaultValueRestriction extends ValueRestriction {
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
+      if ((value == defaultIntSerial) && (key == Keyword.defaultModelKey)) {
+        return [
+          SourceSpanSeverityException(
+            'The default value "$defaultIntSerial" can not be set for the '
+            '"int" $defaultPrimaryKeyName field using the "$key" keyword. '
+            'Use the "${Keyword.defaultPersistKey}" keyword instead.',
+            span,
+          ),
+        ];
+      }
+
       return _idTypeDefaultValidation(
         definition.tableName!,
         field.type,

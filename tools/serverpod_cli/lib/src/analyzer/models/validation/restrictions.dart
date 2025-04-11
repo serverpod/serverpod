@@ -865,7 +865,9 @@ class Restrictions {
       } else if (!field.hasDefaults) {
         errors.add(
           SourceSpanSeverityException(
-            'The type "$typeClassName" must have a default value.',
+            'The type "$typeClassName" must have a default value. Use '
+            'either the "${Keyword.defaultModelKey}" key or the '
+            '"${Keyword.defaultPersistKey}" key to set it.',
             span,
           ),
         );
@@ -1386,6 +1388,19 @@ class Restrictions {
       );
     }
 
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultKey}" key is not allowed on the "id" field. '
+          'Use either the "${Keyword.defaultModelKey}" key or the '
+          '"${Keyword.defaultPersistKey}" key instead.',
+          span,
+        ),
+      );
+    }
+
     return errors;
   }
 
@@ -1411,18 +1426,6 @@ class Restrictions {
       );
     }
 
-    if ((definition is ModelClassDefinition) &&
-        (definition.tableName != null) &&
-        (parentNodeName == defaultPrimaryKeyName)) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "${Keyword.defaultModelKey}" key is not allowed on the "id" '
-          'field. Use the "${Keyword.defaultKey}" key instead.',
-          span,
-        ),
-      );
-    }
-
     return errors;
   }
 
@@ -1436,18 +1439,6 @@ class Restrictions {
 
     var field = definition.findField(parentNodeName);
     if (field == null) return [];
-
-    if ((definition is ModelClassDefinition) &&
-        (definition.tableName != null) &&
-        (parentNodeName == defaultPrimaryKeyName)) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.defaultPersistKey}" key is not allowed on the "id" '
-          'field. Use the "${Keyword.defaultKey}" key instead.',
-          span,
-        ),
-      ];
-    }
 
     var errors = <SourceSpanSeverityException>[];
 

@@ -267,33 +267,124 @@ void main() {
     );
   });
 
-  test(
-    'Given a class with a declared id field of type UUID with a "defaultPersist" keyword, then an error is collected',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          table: example
-          fields:
-            id: UuidValue, defaultPersist=random
-          ''',
-        ).build()
-      ];
+  group(
+      'Given a class with a declared id field with a "defaultPersist" keyword',
+      () {
+    var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+      [ExperimentalFeature.changeIdType],
+    ).build();
 
-      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-        [ExperimentalFeature.changeIdType],
-      ).build();
+    test(
+      'when the field is of type UUID and the defaultPersist is set to "random", then the field\'s default persist value is "random".',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue, defaultPersist=random
+            ''',
+          ).build()
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
 
-      expect(
-        collector.errors.first.message,
-        'The "defaultPersist" key is not allowed on the "id" field. '
-        'Use the "default" key instead.',
-      );
-    },
-  );
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue, 'random');
+      },
+    );
+
+    test(
+      'when the field is of type UUID and the defaultPersist is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue, defaultPersist=
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The default value "" is not supported for the id type "UuidValue". '
+          'Valid options are: "random".',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UUID and the defaultPersist is set to a constant value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue, defaultPersist='550e8400-e29b-41d4-a716-446655440000'
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The default value "\'550e8400-e29b-41d4-a716-446655440000\'" is not '
+          'supported for the id type "UuidValue". Valid options are: "random".',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UUID and the defaultPersist is set to an invalid value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue, defaultPersist=test
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The default value "test" is not supported for the id type '
+          '"UuidValue". Valid options are: "random".',
+        );
+      },
+    );
+  });
 }

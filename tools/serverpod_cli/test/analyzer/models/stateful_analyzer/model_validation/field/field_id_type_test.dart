@@ -148,7 +148,8 @@ void main() {
 
     expect(
       collector.errors.first.message,
-      'The type "UuidValue" must have a default value.',
+      'The type "UuidValue" must have a default value. Use either the '
+      '"defaultModel" key or the "defaultPersist" key to set it.',
     );
   });
 
@@ -159,7 +160,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: UuidValue, default=random
+          id: UuidValue, defaultModel=random
         ''',
       ).build()
     ];
