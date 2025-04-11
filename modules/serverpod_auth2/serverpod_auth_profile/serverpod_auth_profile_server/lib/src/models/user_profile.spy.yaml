@@ -1,0 +1,35 @@
+# Add your generated serializable classes in the `protocol` directory. Produce
+# the generated serve and client code by running `serverpod generate` in the
+# root directory of the modules server package. You should include the generated
+# code in any published packages.
+
+class: UserProfile
+table: serverpod_auth_profile
+fields:
+  id: UuidValue, default=random
+
+  ### The [AuthenticationUser]'s id.
+  # TODO: Should we add support for the relation on the primary key, and/or at least use the same ID for the `id` as well?
+  userId: UuidValue, relation(parent=auth_user)
+
+  ### The first name of the user or the user's nickname.
+  userName: String?
+
+  ### The full name of the user.
+  fullName: String?
+
+  ### The email of the user.
+  email: String?
+
+  ### The time when this user was created.
+  created: DateTime
+
+  ### A URL to the user's avatar.
+  imageUrl: String?
+
+indexes:
+  serverpod_auth_profile_email:
+    fields: email
+  serverpod_auth_profile_user_id:
+    fields: userId
+    unique: true
