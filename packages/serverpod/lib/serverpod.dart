@@ -4,6 +4,9 @@
 // See: https://github.com/serverpod/serverpod/pull/2900
 library serverpod;
 
+// Annotations
+export 'package:serverpod_shared/src/annotations.dart';
+
 // Config
 export 'package:serverpod_shared/src/config.dart';
 

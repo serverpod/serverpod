@@ -8305,6 +8305,12 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<Set<_i155.SimpleData>>(e))
           .toList() as T;
     }
+    if (t == _i1.getType<(int, BigInt)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<BigInt>(data['p'][1]),
+      ) as T;
+    }
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
@@ -10609,6 +10615,14 @@ class Protocol extends _i1.SerializationManagerServer {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
+  }
+  if (record is (int, BigInt)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
+      ],
+    };
   }
   if (record is (int,)) {
     return {
