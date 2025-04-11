@@ -316,4 +316,14 @@ class RecordParametersEndpoint extends Endpoint {
     }
   }
 // #endregion
+
+// #region Record parameter with custom name
+  Future<void> recordParametersWithCustomNames(
+    Session session,
+    (int,) positionalRecord, {
+    required (int,) namedRecord,
+  }) async {
+    return;
+  }
+// #endregion
 }
