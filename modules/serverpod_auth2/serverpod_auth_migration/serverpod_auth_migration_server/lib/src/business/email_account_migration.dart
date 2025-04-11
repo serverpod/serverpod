@@ -4,7 +4,7 @@ import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 // shared with type in `EmailAccountConfig` (could even use symlinks or similar for the import functions)
-typedef ExistingUserImportFunction = Future<int?> Function(
+typedef ExistingUserImportFunction = Future<UuidValue?> Function(
   Session session, {
   required String email,
   required String password,

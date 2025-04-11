@@ -3,8 +3,8 @@ import 'package:serverpod_auth2_server/serverpod_auth2_server.dart' as auth2;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
-/// Returns the (new) [AuthUser] ID (UUID in the future)
-final Future<int?> Function(Session session, String key)
+/// Returns the (new) [AuthUser] ID
+final Future<UuidValue?> Function(Session session, String key)
 // ignore: prefer_function_declarations_over_variables
     sessionMigrationFunction = (session, key) async {
   final authInfo = await auth.authenticationHandler(session, key);
