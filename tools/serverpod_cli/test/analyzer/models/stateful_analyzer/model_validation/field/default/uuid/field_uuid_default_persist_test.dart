@@ -274,8 +274,8 @@ void main() {
       [ExperimentalFeature.changeIdType],
     ).build();
 
-    test(
-      'when the field is of type UUID and the defaultPersist is set to "random", then the field\'s default persist value is "random".',
+    group(
+      'when the field is of type UUID and the defaultPersist is set to "random"',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -289,14 +289,22 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
+        late final definitions =
             StatefulAnalyzer(config, models, onErrorsCollector(collector))
                 .validateAll();
 
-        expect(collector.errors, isEmpty);
+        test('then no errors are collected.', () {
+          expect(collector.errors, isEmpty);
+        });
 
-        var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultPersistValue, 'random');
+        late final definition = definitions.first as ClassDefinition;
+        test('then the field\'s default persist value is "random".', () {
+          expect(definition.fields.last.defaultPersistValue, 'random');
+        });
+
+        test('then the field\'s default model value is null.', () {
+          expect(definition.fields.last.defaultModelValue, isNull);
+        });
       },
     );
 

@@ -296,7 +296,7 @@ class ModelParser {
           type: (maybeIdField?.type ?? defaultIdType.type).asNullable,
           scope: ModelFieldScopeDefinition.all,
           defaultModelValue: defaultModelValue,
-          defaultPersistValue: defaultPersistValue,
+          defaultPersistValue: defaultPersistValue ?? defaultModelValue,
           shouldPersist: true,
           documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
         ),
