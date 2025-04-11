@@ -21,14 +21,15 @@ abstract class MigratedUser implements _i1.SerializableModel {
   factory MigratedUser({
     int? id,
     required int oldUserId,
-    required int newUserId,
+    required _i1.UuidValue newUserId,
   }) = _MigratedUserImpl;
 
   factory MigratedUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return MigratedUser(
       id: jsonSerialization['id'] as int?,
       oldUserId: jsonSerialization['oldUserId'] as int,
-      newUserId: jsonSerialization['newUserId'] as int,
+      newUserId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['newUserId']),
     );
   }
 
@@ -39,7 +40,7 @@ abstract class MigratedUser implements _i1.SerializableModel {
 
   int oldUserId;
 
-  int newUserId;
+  _i1.UuidValue newUserId;
 
   /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
@@ -47,14 +48,14 @@ abstract class MigratedUser implements _i1.SerializableModel {
   MigratedUser copyWith({
     int? id,
     int? oldUserId,
-    int? newUserId,
+    _i1.UuidValue? newUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'oldUserId': oldUserId,
-      'newUserId': newUserId,
+      'newUserId': newUserId.toJson(),
     };
   }
 
@@ -70,7 +71,7 @@ class _MigratedUserImpl extends MigratedUser {
   _MigratedUserImpl({
     int? id,
     required int oldUserId,
-    required int newUserId,
+    required _i1.UuidValue newUserId,
   }) : super._(
           id: id,
           oldUserId: oldUserId,
@@ -84,7 +85,7 @@ class _MigratedUserImpl extends MigratedUser {
   MigratedUser copyWith({
     Object? id = _Undefined,
     int? oldUserId,
-    int? newUserId,
+    _i1.UuidValue? newUserId,
   }) {
     return MigratedUser(
       id: id is int? ? id : this.id,
