@@ -6,9 +6,10 @@ environment:
 
 dependencies:
   serverpod: 2.4.0
-  serverpod_auth_email_account_server: 2.4.0
-  serverpod_auth_session_server: 2.4.0
   serverpod_auth2_server: 2.4.0
+  serverpod_auth_session_server: 2.4.0
+  serverpod_auth_profile_server: 2.4.0
+  serverpod_auth_email_account_server: 2.4.0
 
 dev_dependencies:
   lints: ">=3.0.0 <6.0.0"
@@ -32,3 +33,5 @@ dependency_overrides:
     path: ../../serverpod_auth2/serverpod_auth2_server
   serverpod_auth_session_server:
     path: ../../serverpod_auth_session/serverpod_auth_session_server
+  serverpod_auth_profile_server:
+    path: ../../serverpod_auth_profile/serverpod_auth_profile_server
