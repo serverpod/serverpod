@@ -267,19 +267,21 @@ class ModelParser {
 
       var maybeIdField =
           fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
+
+      var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
+
       var defaultPersistValue = (maybeIdField != null)
           ? maybeIdField.defaultPersistValue
-          : defaultIdType.defaultValue;
-      var defaultModelValue = (maybeIdField != null)
-          ? maybeIdField.defaultModelValue
           : defaultIdType.defaultValue;
 
       // The 'int' id type can be specified without a default value.
       if (maybeIdField?.type.className == 'int') {
         defaultPersistValue ??= SupportedIdType.int.defaultValue;
       }
-      if (defaultModelValue == defaultIntSerial) {
-        defaultModelValue = null;
+
+      var defaultModelValue = maybeIdField?.defaultModelValue;
+      if (maybeIdField == null && defaultIdType.type.className != 'int') {
+        defaultModelValue ??= defaultIdType.defaultValue;
       }
 
       var defaultIdFieldDoc = [
@@ -293,7 +295,7 @@ class ModelParser {
         0,
         SerializableModelFieldDefinition(
           name: defaultPrimaryKeyName,
-          type: (maybeIdField?.type ?? defaultIdType.type).asNullable,
+          type: idFieldType,
           scope: ModelFieldScopeDefinition.all,
           defaultModelValue: defaultModelValue,
           defaultPersistValue: defaultPersistValue ?? defaultModelValue,

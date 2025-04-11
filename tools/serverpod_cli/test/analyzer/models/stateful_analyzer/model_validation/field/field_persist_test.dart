@@ -354,7 +354,7 @@ void main() {
           class: Example
           table: example
           fields:
-            id: int, !persist
+            id: int?, !persist
           ''',
         ).build()
       ];

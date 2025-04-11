@@ -81,7 +81,7 @@ void main() {
   });
 
   test(
-      'Given a class with the int id type and no default value, then no error is collected.',
+      'Given a class with the int id type set as non-nullable then an error is collected',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
@@ -98,17 +98,23 @@ void main() {
     StatefulAnalyzer(config, models, onErrorsCollector(collector))
         .validateAll();
 
-    expect(collector.errors, isEmpty);
+    expect(
+      collector.errors.first.message,
+      'The type "int" must be nullable for the field "id". Use the "?" '
+      'operator to make it nullable (e.g. id: int?).',
+    );
   });
 
-  group('Given a class with the int id type correctly set', () {
+  group(
+      'Given a class with the int id type set as nullable with no default value',
+      () {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
         fields:
-          id: int
+          id: int?
         ''',
       ).build()
     ];
@@ -160,7 +166,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
         ''',
       ).build()
     ];

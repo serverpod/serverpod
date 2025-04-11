@@ -626,7 +626,7 @@ void main() {
           class: Example
           table: example
           fields:
-            id: int, scope=none
+            id: int?, scope=none
           ''',
         ).build()
       ];

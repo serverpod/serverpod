@@ -283,7 +283,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultPersist=random
+              id: UuidValue?, defaultPersist=random
             ''',
           ).build()
         ];
@@ -317,7 +317,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultPersist=
+              id: UuidValue?, defaultPersist=
             ''',
           ).build()
         ];
@@ -346,7 +346,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultPersist='550e8400-e29b-41d4-a716-446655440000'
+              id: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-446655440000'
             ''',
           ).build()
         ];
@@ -375,7 +375,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultPersist=test
+              id: UuidValue?, defaultPersist=test
             ''',
           ).build()
         ];
@@ -391,6 +391,34 @@ void main() {
           firstError.message,
           'The default value "test" is not supported for the id type '
           '"UuidValue". Valid options are: "random".',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UUID with a non-nullable type, then an error is generated.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            uuidType: UuidValue, defaultPersist=random
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'When setting only the "defaultPersist" key, its type should be nullable',
         );
       },
     );

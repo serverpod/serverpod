@@ -21,7 +21,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           myParentId: UuidValue
           parent: ExampleParent?, relation(field=myParentId)
         indexes:
@@ -75,7 +75,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           parentId: UuidValue?
           parent: ExampleParent?, relation(name=example_parent, field=parentId)
         indexes:
@@ -139,7 +139,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           company: Company?, relation(name=company_employees)
         ''',
       ).build(),
@@ -201,7 +201,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           company: Company?, relation
         ''',
       ).build(),
@@ -270,7 +270,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           name: String
         ''',
       ).build(),
@@ -323,7 +323,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, defaultPersist=serial
+          id: int?, defaultPersist=serial
           companyId: UuidValue, relation(name=company_employees, parent=company)
         ''',
       ).build(),

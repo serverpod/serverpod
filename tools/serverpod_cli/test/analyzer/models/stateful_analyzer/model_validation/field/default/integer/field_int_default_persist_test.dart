@@ -253,7 +253,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: int, defaultPersist=serial
+              id: int?, defaultPersist=serial
             ''',
           ).build()
         ];
@@ -280,7 +280,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: int, defaultPersist=
+              id: int?, defaultPersist=
             ''',
           ).build()
         ];
@@ -309,7 +309,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: int, defaultPersist=10
+              id: int?, defaultPersist=10
             ''',
           ).build()
         ];
@@ -338,7 +338,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: int, defaultPersist=test
+              id: int?, defaultPersist=test
             ''',
           ).build()
         ];
@@ -354,6 +354,35 @@ void main() {
           firstError.message,
           'The default value "test" is not supported for the id type "int". '
           'Valid options are: "serial".',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type int non-nullable type, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            id: int, defaultPersist=serial
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The type "int" must be nullable for the field "id". Use the "?" '
+          'operator to make it nullable (e.g. id: int?).',
         );
       },
     );
