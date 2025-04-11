@@ -17,7 +17,10 @@ class ServerpodPackagesVersionCheckWarnings {
 
 extension on PubspecPlus {
   Iterable<HostedDep> get serverpodDeps =>
-      deps.whereType<HostedDep>().where((d) => d.name.startsWith('serverpod'));
+      deps.whereType<HostedDep>().where((d) => const [
+            'serverpod',
+            'serverpod_client',
+          ].contains(d.name));
 }
 
 List<SourceSpanSeverityException> validateServerpodPackagesVersion(

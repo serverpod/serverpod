@@ -790,7 +790,7 @@ class LibraryGenerator {
           // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
           // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
           literalString(parameterDef.name): parameterDef.type.isRecordType
-              ? mapRecordToJsonRef.call([refer('record')]).code
+              ? mapRecordToJsonRef.call([refer(parameterDef.name)]).code
               : (parameterDef.type.returnsRecordInContainer
                   ? Block.of([
                       if (parameterDef.type.nullable)
