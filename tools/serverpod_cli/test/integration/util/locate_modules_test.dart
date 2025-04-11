@@ -159,7 +159,12 @@ void main() {
               projectPubspec: projectPubspec,
               packageConfig: packageConfig,
             ),
-        throwsA(isA<ServerpodModulesNotFoundException>()));
+        throwsA(isA<ServerpodModulesNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            equals(
+                'Failed to locate module dependency path in package config for '
+                'dependency: module_server'))));
   });
 
   test(
@@ -185,7 +190,13 @@ void main() {
               projectPubspec: projectPubspec,
               packageConfig: packageConfig,
             ),
-        throwsA(isA<ServerpodModulesNotFoundException>()));
+        throwsA(isA<ServerpodModulesNotFoundException>().having(
+          (e) => e.message,
+          'message',
+          equals(
+              'Failed to locate module dependency path in package config for '
+              'dependency: transitive_module_server'),
+        )));
   });
 
   test(
