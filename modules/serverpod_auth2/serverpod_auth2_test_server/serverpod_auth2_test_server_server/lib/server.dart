@@ -4,6 +4,8 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
     as email_account;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as auth_migration;
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+    as auth_profile;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as auth_session;
@@ -25,9 +27,29 @@ void run(List<String> args) async {
       auth_migration.sessionMigrationFunction,
     ),
   );
+
+  // create helpers for the migration, like `withFoo`? Then those could be chained, and the final value `set`
   email_account.EmailAccountConfig.set(
     email_account.EmailAccountConfig(
       existingUserImportFunction: auth_migration.emailAccountImportFunction,
+    ),
+  );
+  // TODO: Check migration with email account, where this endpoint should always create a profile, but only when it has not been migrated 🙈
+  auth_migration.AuthMigrationConfig.set(
+    auth_migration.AuthMigrationConfig(
+      afterAuthUserMigration: (session, authUser, userInfo) async {
+        await auth_profile.UserProfile.db.insertRow(
+          session,
+          auth_profile.UserProfile(
+            userId: authUser.id!,
+            created: userInfo.created,
+            userName: userInfo.userName,
+            fullName: userInfo.fullName,
+            email: userInfo.email,
+            imageUrl: userInfo.imageUrl,
+          ),
+        );
+      },
     ),
   );
 
