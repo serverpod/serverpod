@@ -8905,7 +8905,7 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Future<void> recordParametersWithCustomNames(
+  _i3.Future<int> recordParametersWithCustomNames(
     _i1.TestSessionBuilder sessionBuilder,
     (int,) positionalRecord, {
     required (int,) namedRecord,
@@ -8930,7 +8930,7 @@ class _RecordParametersEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

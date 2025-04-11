@@ -2529,11 +2529,11 @@ class EndpointRecordParameters extends _i1.EndpointRef {
             {'values': values},
           );
 
-  _i2.Future<void> recordParametersWithCustomNames(
+  _i2.Future<int> recordParametersWithCustomNames(
     (int,) positionalRecord, {
     required (int,) namedRecord,
   }) =>
-      caller.callServerEndpoint<void>(
+      caller.callServerEndpoint<int>(
         'recordParameters',
         'recordParametersWithCustomNames',
         {
