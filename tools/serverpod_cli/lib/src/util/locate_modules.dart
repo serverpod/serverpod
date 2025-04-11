@@ -103,7 +103,7 @@ List<ModuleConfig> _loadModuleConfigs({
       var packageSrcRoot = packageInfo.root;
 
       var generatorConfigUri =
-          packageInfo.root.resolve(path.joinAll(['config', 'generator.yaml']));
+          packageSrcRoot.resolve(path.joinAll(['config', 'generator.yaml']));
 
       var generatorConfigFile = File.fromUri(generatorConfigUri);
       if (!generatorConfigFile.existsSync()) {
