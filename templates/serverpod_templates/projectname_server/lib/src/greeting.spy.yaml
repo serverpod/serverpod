@@ -6,18 +6,21 @@
 # Please consult the documentation for more information on what you can add to
 # your yaml-files.
 
-
 # Name of the class to generate.
-class: Example
+class: Greeting
 
 # Add the table key, if this class represents a row in the database.
-#table: example
+#table: greeting
 
-# The fields (and columns if connected to the database) of the class. Supported types are 
-# `bool`, `int`, `double`, `String`, `UuidValue`, `Duration`, `DateTime`, `ByteData`, 
-# and other serializable classes, exceptions and enums. 
-# You can also add lists of objects and types have support for null safety. 
+# The fields (and columns if connected to the database) of the class. Supported types are
+# `bool`, `int`, `double`, `String`, `UuidValue`, `Duration`, `DateTime`, `ByteData`,
+# and other serializable classes, exceptions and enums.
+# You can also add lists of objects and types have support for null safety.
 # Eg. `List<int>?` or `List<MyOtherClass?>`.
 fields:
-  name: String
-  data: int
+  ### The greeting message
+  message: String
+  ### The author of the answer
+  author: String
+  ### The time when the request was made
+  timestamp: DateTime
