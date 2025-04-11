@@ -87,7 +87,7 @@ final class EmailAuthentication {
         .id!;
   }
 
-  static Future<void> createAccount(
+  static Future<(UuidValue, String)> createAccount(
     Session session, {
     required String verificationCode,
 
@@ -102,7 +102,7 @@ final class EmailAuthentication {
 
     await EmailAccountRequest.db.deleteRow(session, request);
 
-    await EmailAccount.db.insertRow(
+    final account = await EmailAccount.db.insertRow(
       session,
       EmailAccount(
         userId: userId,
@@ -111,6 +111,8 @@ final class EmailAuthentication {
         passwordHash: request.passwordHash,
       ),
     );
+
+    return (account.id!, request.email);
   }
 
   static Future<void> requestPasswordReset(
