@@ -105,6 +105,8 @@ class FutureCallManager {
 
   /// Registers a [FutureCall] with the manager.
   void registerFutureCall(FutureCall call, String name) {
+    // TODO(ALEX): This register should be kept in the FutureCallManager.
+    // The Scheduler should not manage the registry.
     _scheduler.registerFutureCall(call, name);
   }
 
@@ -127,6 +129,8 @@ class FutureCallManager {
 
   /// Stops the manager.
   Future<void> stop() async {
+    // TODO(ALEX): Await stopping the scanner before awaiting the stop of the scheduler.
+    // This removes the data race and we can introduce a throw if new calls are scheduled.
     _scanner.stop();
     await _scheduler.stop();
   }

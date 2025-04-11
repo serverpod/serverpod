@@ -50,6 +50,13 @@ class FutureCallScheduler {
   Future<void> stop() async {
     _isStopping = true;
 
+    /// TODO(ALEX): Convert this to listening to a simple Completer
+    /// and waiting for it to complete.
+    ///
+    /// The Completer should be completed when _queue is empty and _runningFutureCalls
+    /// is 0.
+    ///
+    /// The Completer should check its condition at the end of every call to _handleQueue
     await Future.any(_runningFutureCallFutures.toList());
 
     while (_queue.isNotEmpty) {
@@ -84,6 +91,11 @@ class FutureCallScheduler {
   Future<void> addFutureCallEntries(
     List<FutureCallEntry> futureCallEntries,
   ) async {
+    // TODO(ALEX): Since we know that we wait for the scanner to finish before calling stop.
+    // We can now throw if a future call is added after stop is called.
+
+    // This would be state error in the Serverpod where the FutureCallManager is not
+    // configured correctly.
     // Add only future call entries that are not already in the queue.
     _queue.addAll(
       futureCallEntries.where(
@@ -102,7 +114,10 @@ class FutureCallScheduler {
     // can be called asynchronously from any completing FutureCall or when
     // addFutureCallEntries is called. This code must not be running more than
     // once at a time.
-    await _queueLock.synchronized(() async {
+
+    // TODO(ALEX): Nothing inside this section is async. I still can't see why this lock is needed.
+    // If there is a reason for it. Please create a test case that proves why it is needed.
+    await _queueLock.synchronized(() {
       while (_queue.isNotEmpty) {
         final isConcurrentLimitReached = this.isConcurrentLimitReached();
 

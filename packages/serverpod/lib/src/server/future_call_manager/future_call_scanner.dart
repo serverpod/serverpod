@@ -48,6 +48,11 @@ class FutureCallScanner {
 
   /// Stops the task scanner.
   void stop() {
+    // TODO(ALEX): Make this method async and wait for any current running task to stop.
+    // The _isStopping should syncronously prevent any new timers from being started.
+
+    // TODO(ALEX): We need to ensure that a single scan is running at a time for the Server.
+    // This can be done using the same `scan completed` Completer.
     _isStopping = true;
     _timer?.cancel();
   }
