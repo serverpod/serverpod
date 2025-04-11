@@ -78,11 +78,3 @@ class GeneratorConfigFileBuilder {
     return buffer.toString();
   }
 }
-
-void main() {
-  var config = GeneratorConfigFileBuilder();
-  // ..addModule(ModuleConfigEntry('serverpod_auth', 'auth'))
-  // ..addModule(ModuleConfigEntry('serverpod_chat', 'chat'));
-
-  print(config.build());
-}
