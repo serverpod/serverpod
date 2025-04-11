@@ -2537,8 +2537,8 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         'recordParameters',
         'recordParametersWithCustomNames',
         {
-          'positionalRecord': _i19.mapRecordToJson(record),
-          'namedRecord': _i19.mapRecordToJson(record),
+          'positionalRecord': _i19.mapRecordToJson(positionalRecord),
+          'namedRecord': _i19.mapRecordToJson(namedRecord),
         },
       );
 }
