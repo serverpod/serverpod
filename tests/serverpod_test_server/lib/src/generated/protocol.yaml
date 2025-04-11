@@ -103,6 +103,12 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+loggedIn:
+myLoggedIn:
+  - echo:
+admin:
+myAdmin:
+  - echo:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:

@@ -892,6 +892,50 @@ class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointLoggedIn extends _i1.EndpointRef {
+  EndpointLoggedIn(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'loggedIn';
+}
+
+/// {@category Endpoint}
+class EndpointMyLoggedIn extends _i1.EndpointRef {
+  EndpointMyLoggedIn(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myLoggedIn';
+
+  _i2.Future<String> echo(String value) => caller.callServerEndpoint<String>(
+        'myLoggedIn',
+        'echo',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAdmin extends _i1.EndpointRef {
+  EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'admin';
+}
+
+/// {@category Endpoint}
+class EndpointMyAdmin extends _i1.EndpointRef {
+  EndpointMyAdmin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myAdmin';
+
+  _i2.Future<String> echo(String value) => caller.callServerEndpoint<String>(
+        'myAdmin',
+        'echo',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointExceptionTest extends _i1.EndpointRef {
   EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
 
@@ -3570,6 +3614,10 @@ class Client extends _i1.ServerpodClientShared {
     diagnosticEventTest = EndpointDiagnosticEventTest(this);
     echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
+    loggedIn = EndpointLoggedIn(this);
+    myLoggedIn = EndpointMyLoggedIn(this);
+    admin = EndpointAdmin(this);
+    myAdmin = EndpointMyAdmin(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
@@ -3637,6 +3685,14 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointEchoRequest echoRequest;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
+
+  late final EndpointLoggedIn loggedIn;
+
+  late final EndpointMyLoggedIn myLoggedIn;
+
+  late final EndpointAdmin admin;
+
+  late final EndpointMyAdmin myAdmin;
 
   late final EndpointExceptionTest exceptionTest;
 
@@ -3729,6 +3785,10 @@ class Client extends _i1.ServerpodClientShared {
         'diagnosticEventTest': diagnosticEventTest,
         'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
+        'loggedIn': loggedIn,
+        'myLoggedIn': myLoggedIn,
+        'admin': admin,
+        'myAdmin': myAdmin,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,

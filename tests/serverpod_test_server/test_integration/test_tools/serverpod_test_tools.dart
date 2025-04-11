@@ -157,6 +157,14 @@ class TestEndpoints {
 
   late final _EmailAuthTestMethods emailAuthTestMethods;
 
+  late final _LoggedInEndpoint loggedIn;
+
+  late final _MyLoggedInEndpoint myLoggedIn;
+
+  late final _AdminEndpoint admin;
+
+  late final _MyAdminEndpoint myAdmin;
+
   late final _ExceptionTestEndpoint exceptionTest;
 
   late final _FailedCallsEndpoint failedCalls;
@@ -291,6 +299,22 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     emailAuthTestMethods = _EmailAuthTestMethods(
+      endpoints,
+      serializationManager,
+    );
+    loggedIn = _LoggedInEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    myLoggedIn = _MyLoggedInEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    admin = _AdminEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    myAdmin = _MyAdminEndpoint(
       endpoints,
       serializationManager,
     );
@@ -3273,6 +3297,100 @@ class _EmailAuthTestMethods {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _LoggedInEndpoint {
+  _LoggedInEndpoint(
+    _endpointDispatch,
+    _serializationManager,
+  );
+}
+
+class _MyLoggedInEndpoint {
+  _MyLoggedInEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> echo(
+    _i1.TestSessionBuilder sessionBuilder,
+    String value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'myLoggedIn',
+        method: 'echo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myLoggedIn',
+          methodName: 'echo',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _AdminEndpoint {
+  _AdminEndpoint(
+    _endpointDispatch,
+    _serializationManager,
+  );
+}
+
+class _MyAdminEndpoint {
+  _MyAdminEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> echo(
+    _i1.TestSessionBuilder sessionBuilder,
+    String value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'myAdmin',
+        method: 'echo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myAdmin',
+          methodName: 'echo',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
