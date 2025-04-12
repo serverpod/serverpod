@@ -94,4 +94,52 @@ void main() {
       expect(query, 'INSERT INTO "only_id" DEFAULT VALUES RETURNING *');
     });
   });
+
+  test(
+      'Given model with multiple columns and id column having value when building insert query then its id is used in the query.',
+      () {
+    var query = InsertQueryBuilder(
+      table: PersonTable(),
+      rows: [PersonClass(id: 33, name: 'Alex', age: 33)],
+    ).build();
+
+    expect(query,
+        'INSERT INTO "person" ("id", "name", "age") VALUES (33, \'Alex\', 33) RETURNING *');
+  });
+
+  test(
+      'Given model with only id column and id column having value when building insert query then its id is used in the query.',
+      () {
+    var query = InsertQueryBuilder(
+      table: Table<int>(tableName: 'only_id'),
+      rows: [OnlyIdClass(id: 33)],
+    ).build();
+
+    expect(query, 'INSERT INTO "only_id" ("id") VALUES (33) RETURNING *');
+  });
+
+  test(
+      'Given models a list of models with and without id column having value when building insert query then two separate insert queries are generated.',
+      () {
+    var query = InsertQueryBuilder(
+      table: PersonTable(),
+      rows: [
+        PersonClass(id: 33, name: 'Alex', age: 33),
+        PersonClass(name: 'Isak', age: 33),
+      ],
+    ).build();
+
+    expect(
+      query,
+      '''
+WITH
+  insertWithIdNull AS (INSERT INTO "person" ("name", "age") VALUES ('Isak', 33) RETURNING *),
+  insertWithIdNotNull AS (INSERT INTO "person" ("id", "name", "age") VALUES (33, 'Alex', 33) RETURNING *)
+
+SELECT * FROM insertWithIdNull
+UNION ALL
+SELECT * FROM insertWithIdNotNull
+''',
+    );
+  });
 }

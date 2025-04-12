@@ -56,17 +56,36 @@ void main() async {
       expect(second, isNull);
     });
 
-    test('when batch inserting with an id defined then the id is ignored.',
+    test('when batch inserting with an id defined then the id is not ignored.',
         () async {
-      const int max = 1 >>> 1;
+      const int id = 999;
 
       var data = <UniqueData>[
-        UniqueData(id: max, number: 1, email: 'info@serverpod.dev'),
+        UniqueData(id: id, number: 1, email: 'info@serverpod.dev'),
       ];
 
       var inserted = await UniqueData.db.insert(session, data);
 
-      expect(inserted.first.id, isNot(max));
+      expect(inserted.first.id, id);
+    });
+
+    test(
+        'when batch inserting with an id defined and other undefined then both are created in the database.',
+        () async {
+      const int id = 1999;
+
+      var data = <UniqueData>[
+        UniqueData(id: id, number: 10, email: 'info@serverpod.dev'),
+        UniqueData(number: 20, email: 'dev@serverpod.dev'),
+      ];
+
+      var inserted = await UniqueData.db.insert(session, data);
+
+      expect(inserted, hasLength(2));
+      expect(inserted.first.id, isNot(id));
+      expect(inserted.last.id, id);
+      expect(inserted.first.number, 20);
+      expect(inserted.last.number, 10);
     });
   });
 
