@@ -6068,7 +6068,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recordParameters'] as _i29.RecordParametersEndpoint)
+              (endpoints['recordParameters'] as _i31.RecordParametersEndpoint)
                   .recordParametersWithCustomNames(
             session,
             params['positionalRecord'],

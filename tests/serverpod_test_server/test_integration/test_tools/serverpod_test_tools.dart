@@ -9663,8 +9663,8 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'recordParametersWithCustomNames',
           parameters: _i1.testObjectToJson({
-            'positionalRecord': _i20.mapRecordToJson(positionalRecord),
-            'namedRecord': _i20.mapRecordToJson(namedRecord),
+            'positionalRecord': _i18.mapRecordToJson(positionalRecord),
+            'namedRecord': _i18.mapRecordToJson(namedRecord),
           }),
           serializationManager: _serializationManager,
         );
