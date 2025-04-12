@@ -187,6 +187,12 @@ class Endpoints extends _i1.EndpointDispatch {
           'myAdmin',
           null,
         ),
+      'myConcreteAdmin': _i16.MyConcreteAdminEndpoint()
+        ..initialize(
+          server,
+          'myConcreteAdmin',
+          null,
+        ),
       'exceptionTest': _i17.ExceptionTestEndpoint()
         ..initialize(
           server,
@@ -2247,6 +2253,31 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['myAdmin'] as _i16.MyAdminEndpoint).echo(
+            session,
+            params['value'],
+          ),
+        )
+      },
+    );
+    connectors['myConcreteAdmin'] = _i1.EndpointConnector(
+      name: 'myConcreteAdmin',
+      endpoint: endpoints['myConcreteAdmin']!,
+      methodConnectors: {
+        'echo': _i1.MethodConnector(
+          name: 'echo',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['myConcreteAdmin'] as _i16.MyConcreteAdminEndpoint)
+                  .echo(
             session,
             params['value'],
           ),

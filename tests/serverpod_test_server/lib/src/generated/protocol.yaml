@@ -109,6 +109,8 @@ myLoggedIn:
 admin:
 myAdmin:
   - echo:
+myConcreteAdmin:
+  - echo:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:

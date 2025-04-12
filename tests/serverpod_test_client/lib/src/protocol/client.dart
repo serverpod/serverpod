@@ -936,6 +936,20 @@ class EndpointMyAdmin extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointMyConcreteAdmin extends _i1.EndpointRef {
+  EndpointMyConcreteAdmin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myConcreteAdmin';
+
+  _i2.Future<String> echo(String value) => caller.callServerEndpoint<String>(
+        'myConcreteAdmin',
+        'echo',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointExceptionTest extends _i1.EndpointRef {
   EndpointExceptionTest(_i1.EndpointCaller caller) : super(caller);
 
@@ -3618,6 +3632,7 @@ class Client extends _i1.ServerpodClientShared {
     myLoggedIn = EndpointMyLoggedIn(this);
     admin = EndpointAdmin(this);
     myAdmin = EndpointMyAdmin(this);
+    myConcreteAdmin = EndpointMyConcreteAdmin(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
@@ -3693,6 +3708,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointAdmin admin;
 
   late final EndpointMyAdmin myAdmin;
+
+  late final EndpointMyConcreteAdmin myConcreteAdmin;
 
   late final EndpointExceptionTest exceptionTest;
 
@@ -3789,6 +3806,7 @@ class Client extends _i1.ServerpodClientShared {
         'myLoggedIn': myLoggedIn,
         'admin': admin,
         'myAdmin': myAdmin,
+        'myConcreteAdmin': myConcreteAdmin,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,

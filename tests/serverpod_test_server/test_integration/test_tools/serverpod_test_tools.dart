@@ -165,6 +165,8 @@ class TestEndpoints {
 
   late final _MyAdminEndpoint myAdmin;
 
+  late final _MyConcreteAdminEndpoint myConcreteAdmin;
+
   late final _ExceptionTestEndpoint exceptionTest;
 
   late final _FailedCallsEndpoint failedCalls;
@@ -315,6 +317,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     myAdmin = _MyAdminEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    myConcreteAdmin = _MyConcreteAdminEndpoint(
       endpoints,
       serializationManager,
     );
@@ -3383,6 +3389,46 @@ class _MyAdminEndpoint {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'myAdmin',
+          methodName: 'echo',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _MyConcreteAdminEndpoint {
+  _MyConcreteAdminEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> echo(
+    _i1.TestSessionBuilder sessionBuilder,
+    String value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'myConcreteAdmin',
+        method: 'echo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myConcreteAdmin',
           methodName: 'echo',
           parameters: _i1.testObjectToJson({'value': value}),
           serializationManager: _serializationManager,
