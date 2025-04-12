@@ -35,7 +35,9 @@ abstract class EndpointClassAnalyzer {
   static bool isEndpointClass(
     ClassElement element, {
     bool respectIgnoreClassAnnotation = true,
+    bool ignoreAbstractClasses = true,
   }) {
+    if (element.isAbstract && ignoreAbstractClasses) return false;
     if (element.allSupertypes.any((s) => s.element.name == 'Endpoint') !=
         true) {
       return false;

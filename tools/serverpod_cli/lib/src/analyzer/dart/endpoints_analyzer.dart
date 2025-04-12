@@ -318,6 +318,7 @@ extension on ClassElement {
           (e) => EndpointClassAnalyzer.isEndpointClass(
             e,
             respectIgnoreClassAnnotation: false,
+            ignoreAbstractClasses: false,
           ),
         )
         .expand((s) => s.methods);
