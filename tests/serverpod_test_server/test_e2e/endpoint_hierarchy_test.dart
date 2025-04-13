@@ -1,8 +1,9 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
+
+const adminScope = 'serverpod.admin';
 
 void main() {
   var client = Client(
@@ -100,7 +101,7 @@ void main() {
       var loginResponse = await client.authentication.authenticate(
         'test@foo.bar',
         'password',
-        [Scope.admin.name!],
+        [adminScope],
       );
       await client.authenticationKeyManager!
           .put('${loginResponse.keyId}:${loginResponse.key}');
@@ -153,7 +154,7 @@ void main() {
       var loginResponse = await client.authentication.authenticate(
         'test@foo.bar',
         'password',
-        [Scope.admin.name!],
+        [adminScope],
       );
       await client.authenticationKeyManager!
           .put('${loginResponse.keyId}:${loginResponse.key}');
