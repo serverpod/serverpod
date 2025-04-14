@@ -1,6 +1,6 @@
 class: StudentUuid
 table: student_uuid
 fields:
-  id: UuidValue, default=random
+  id: UuidValue?, defaultPersist=random
   name: String
   enrollments: List<EnrollmentInt>?, relation(name=student_enrollments)

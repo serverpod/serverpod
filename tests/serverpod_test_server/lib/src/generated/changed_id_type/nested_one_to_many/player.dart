@@ -10,23 +10,22 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../../changed_id_type/nested_one_to_many/team.dart' as _i3;
+import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class PlayerUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   PlayerUuid._({
-    _i1.UuidValue? id,
+    this.id,
     required this.name,
     this.teamId,
     this.team,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  });
 
   factory PlayerUuid({
     _i1.UuidValue? id,
     required String name,
     int? teamId,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) = _PlayerUuidImpl;
 
   factory PlayerUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +37,7 @@ abstract class PlayerUuid
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.TeamInt.fromJson(
+          : _i2.TeamInt.fromJson(
               (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
@@ -54,7 +53,7 @@ abstract class PlayerUuid
 
   int? teamId;
 
-  _i3.TeamInt? team;
+  _i2.TeamInt? team;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -66,7 +65,7 @@ abstract class PlayerUuid
     _i1.UuidValue? id,
     String? name,
     int? teamId,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +87,7 @@ abstract class PlayerUuid
     };
   }
 
-  static PlayerUuidInclude include({_i3.TeamIntInclude? team}) {
+  static PlayerUuidInclude include({_i2.TeamIntInclude? team}) {
     return PlayerUuidInclude._(team: team);
   }
 
@@ -125,7 +124,7 @@ class _PlayerUuidImpl extends PlayerUuid {
     _i1.UuidValue? id,
     required String name,
     int? teamId,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) : super._(
           id: id,
           name: name,
@@ -147,7 +146,7 @@ class _PlayerUuidImpl extends PlayerUuid {
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i3.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _i2.TeamInt? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -168,17 +167,17 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnInt teamId;
 
-  _i3.TeamIntTable? _team;
+  _i2.TeamIntTable? _team;
 
-  _i3.TeamIntTable get team {
+  _i2.TeamIntTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: PlayerUuid.t.teamId,
-      foreignField: _i3.TeamInt.t.id,
+      foreignField: _i2.TeamInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.TeamIntTable(tableRelation: foreignTableRelation),
+          _i2.TeamIntTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -200,11 +199,11 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class PlayerUuidInclude extends _i1.IncludeObject {
-  PlayerUuidInclude._({_i3.TeamIntInclude? team}) {
+  PlayerUuidInclude._({_i2.TeamIntInclude? team}) {
     _team = team;
   }
 
-  _i3.TeamIntInclude? _team;
+  _i2.TeamIntInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -464,7 +463,7 @@ class PlayerUuidAttachRowRepository {
   Future<void> team(
     _i1.Session session,
     PlayerUuid playerUuid,
-    _i3.TeamInt team, {
+    _i2.TeamInt team, {
     _i1.Transaction? transaction,
   }) async {
     if (playerUuid.id == null) {
