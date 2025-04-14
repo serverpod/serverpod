@@ -220,7 +220,6 @@ void main() {
     );
   });
 
-
   test(
     'Given a class with a declared id field of type UUID with a "default" keyword, then an error is collected.',
     () {
