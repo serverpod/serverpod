@@ -35,7 +35,7 @@ void main() {
         class: ExampleParent
         table: example_parent
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           name: String
         ''',
       ).build()
@@ -89,7 +89,7 @@ void main() {
         class: ExampleParent
         table: example_parent
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           name: String
           example: Example?, relation(name=example_parent)
         ''',
@@ -148,7 +148,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation(name=company_employees)
         ''',
       ).build()
@@ -210,7 +210,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation
         ''',
       ).build(),
@@ -279,7 +279,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation
         ''',
       ).build(),
@@ -332,7 +332,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, defaultModel=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation(name=company_employees)
         ''',
       ).build()

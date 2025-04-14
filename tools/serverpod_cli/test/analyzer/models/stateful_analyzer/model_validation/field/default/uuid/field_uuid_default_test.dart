@@ -230,7 +230,7 @@ void main() {
           class: Example
           table: example
           fields:
-            id: UuidValue, default=random
+            id: UuidValue?, default=random
           ''',
         ).build()
       ];

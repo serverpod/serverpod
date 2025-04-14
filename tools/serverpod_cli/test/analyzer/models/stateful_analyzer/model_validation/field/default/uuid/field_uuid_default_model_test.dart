@@ -254,7 +254,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultModel=random
+              id: UuidValue?, defaultModel=random
             ''',
           ).build()
         ];
@@ -288,7 +288,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultModel=
+              id: UuidValue?, defaultModel=
             ''',
           ).build()
         ];
@@ -317,7 +317,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
+              id: UuidValue?, defaultModel='550e8400-e29b-41d4-a716-446655440000'
             ''',
           ).build()
         ];
@@ -346,7 +346,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultModel=test
+              id: UuidValue?, defaultModel=test
             ''',
           ).build()
         ];
@@ -362,6 +362,35 @@ void main() {
           firstError.message,
           'The default value "test" is not supported for the id type '
           '"UuidValue". Valid options are: "random".',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UUID and the type is not-nullable',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue, defaultModel=
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The type "UuidValue" must be nullable for the field "id". Use the '
+          '"?" operator to make it nullable (e.g. id: UuidValue?).',
         );
       },
     );

@@ -187,7 +187,7 @@ void main() {
           class: Example
           table: example
           fields:
-            id: int, defaultModel=serial
+            id: int?, defaultModel=serial
           ''',
         ).build()
       ];

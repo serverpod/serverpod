@@ -871,14 +871,12 @@ class Restrictions {
             span,
           ),
         );
-      } else if (typeClassName == 'int' &&
-          field.defaultModelValue == null &&
-          !field.type.nullable) {
+      } else if (!field.type.nullable) {
         errors.add(
           SourceSpanSeverityException(
             'The type "$typeClassName" must be nullable for the field '
             '"$parentNodeName". Use the "?" operator to make it nullable '
-            '(e.g. $parentNodeName: int?).',
+            '(e.g. $parentNodeName: $typeClassName?).',
             span,
           ),
         );
