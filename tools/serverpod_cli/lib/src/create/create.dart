@@ -145,12 +145,12 @@ Future<bool> performCreate(
     });
   }
 
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+  });
+
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.module) {
-    success &= await log.progress('Running serverpod generator', () async {
-      return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
-    });
-
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
