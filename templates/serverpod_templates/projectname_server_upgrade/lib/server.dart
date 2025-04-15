@@ -1,3 +1,4 @@
+import 'package:projectname_server/src/birthday_reminder.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:projectname_server/src/web/routes/root.dart';
@@ -17,9 +18,6 @@ void run(List<String> args) async {
     Endpoints(),
   );
 
-  // If you are using any future calls, they need to be registered here.
-  // pod.registerFutureCall(ExampleFutureCall(), 'exampleFutureCall');
-
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
@@ -31,4 +29,38 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // After starting the server, you can register future calls. Future calls are
+  // tasks that need to happen in the future, or independently of the request/response
+  // cycle. For example, you can use future calls to send emails, or to schedule
+  // tasks to be executed at a later time. Future calls are executed in the
+  // background. Their schedule is persisted to the database, so you will not
+  // lose them if the server is restarted.
+
+  // If you are using any future calls, they need to be registered first.
+  pod.registerFutureCall(
+    BirthdayReminder(),
+    FutureCallNames.birthdayReminder.name,
+  );
+
+  // You can register future calls to be executed at startup. But you can also
+  // register them in any endpoint or webroute through the session object.
+  // there is also [futureCallAtTime] if you want to schedule a future call at a
+  // specific time.
+  await pod.futureCallWithDelay(
+    FutureCallNames.birthdayReminder.name,
+    Greeting(
+      message: 'Hello!',
+      author: 'Serverpod Server',
+      timestamp: DateTime.now(),
+    ),
+    Duration.zero,
+  );
+}
+
+/// Names of all future calls in the server.
+/// This is better than using a string literal, as it will reduce the risk of
+/// typos and make it easier to refactor the code.
+enum FutureCallNames {
+  birthdayReminder,
 }
