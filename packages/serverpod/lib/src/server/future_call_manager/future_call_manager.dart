@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 import 'future_call_scanner.dart';
-import 'future_call_scheduler.dart';
+import 'serverpod_task_scheduler.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -21,7 +21,9 @@ class FutureCallManager {
 
   final SerializationManager _serializationManager;
 
-  late final FutureCallScheduler _scheduler;
+  final _futureCalls = <String, FutureCall>{};
+
+  late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
 
   /// Called when pending future calls have been completed, if the server is
@@ -36,9 +38,7 @@ class FutureCallManager {
     this._serializationManager,
     this.onCompleted,
   ) {
-    _scheduler = FutureCallScheduler(
-      server: _server,
-      serializationManager: _serializationManager,
+    _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
 
@@ -46,22 +46,8 @@ class FutureCallManager {
       server: _server,
       scanInterval: _config.scanInterval,
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
-      dispatchEntries: _scheduler.addFutureCallEntries,
+      dispatchEntries: (entries) => _dispatchEntries(entries),
     );
-  }
-
-  /// Creates a [FutureCallManager] with custom scheduler and scanner for testing.
-  @visibleForTesting
-  FutureCallManager.forTesting(
-    this._server,
-    this._config,
-    this._serializationManager,
-    this.onCompleted, {
-    required FutureCallScheduler scheduler,
-    required FutureCallScanner scanner,
-  }) {
-    _scheduler = scheduler;
-    _scanner = scanner;
   }
 
   /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
@@ -104,10 +90,14 @@ class FutureCallManager {
   }
 
   /// Registers a [FutureCall] with the manager.
-  void registerFutureCall(FutureCall call, String name) {
-    // TODO(ALEX): This register should be kept in the FutureCallManager.
-    // The Scheduler should not manage the registry.
-    _scheduler.registerFutureCall(call, name);
+  void registerFutureCall(FutureCall futureCall, String name) {
+    if (_futureCalls.containsKey(name)) {
+      throw Exception('Added future call with duplicate name ($name)');
+    }
+
+    futureCall.initialize(_server, name);
+
+    _futureCalls[name] = futureCall;
   }
 
   /// Starts the manager.
@@ -129,16 +119,14 @@ class FutureCallManager {
 
   /// Stops the manager.
   Future<void> stop() async {
-    // TODO(ALEX): Await stopping the scanner before awaiting the stop of the scheduler.
-    // This removes the data race and we can introduce a throw if new calls are scheduled.
-    _scanner.stop();
+    await _scanner.stop();
     await _scheduler.stop();
   }
 
   Future<void> _runFutureCallsForMaintenance() async {
     stdout.writeln('Processing future calls.');
 
-    await _scanner.scanFutureCalls();
+    await _scanner.scanFutureCallEntries();
 
     await _scheduler.stop();
 
@@ -147,5 +135,59 @@ class FutureCallManager {
 
   void _runFutureCallsForMonolith() {
     _scanner.start();
+  }
+
+  void _dispatchEntries(List<FutureCallEntry> entries) {
+    final callbacks = entries.map<TaskCallback?>((entry) {
+      final futureCall = _futureCalls[entry.name];
+
+      if (futureCall == null) {
+        // TODO(inf0rmatix): this should be logged or caught otherwise.
+        return null;
+      }
+
+      return () => _runFutureCall(
+            session: _server.serverpod.internalSession,
+            futureCallEntry: entry,
+            futureCall: futureCall,
+          );
+    });
+
+    _scheduler.addTaskCallbacks(callbacks.nonNulls.toList());
+  }
+
+  /// Runs a [FutureCallEntry] and completes when the future call is completed.
+  Future<void> _runFutureCall({
+    required Session session,
+    required FutureCallEntry futureCallEntry,
+    required FutureCall<SerializableModel> futureCall,
+  }) async {
+    final futureCallName = futureCallEntry.name;
+
+    final futureCallSession = FutureCallSession(
+      server: _server,
+      futureCallName: futureCallName,
+    );
+
+    try {
+      dynamic object;
+      if (futureCallEntry.serializedObject != null) {
+        object = _serializationManager.decode(
+          futureCallEntry.serializedObject!,
+          futureCall.dataType,
+        );
+      }
+
+      await futureCall.invoke(futureCallSession, object);
+      await futureCallSession.close();
+    } catch (error, stackTrace) {
+      _server.serverpod.internalSubmitEvent(
+        ExceptionEvent(error, stackTrace),
+        space: OriginSpace.application,
+        context: contextFromSession(futureCallSession),
+      );
+
+      await futureCallSession.close(error: error, stackTrace: stackTrace);
+    }
   }
 }

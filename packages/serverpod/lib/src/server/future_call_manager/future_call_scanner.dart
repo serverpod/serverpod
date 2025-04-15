@@ -26,6 +26,8 @@ class FutureCallScanner {
 
   bool _isStopping = false;
 
+  var _scanCompleter = Completer<void>()..complete();
+
   /// Creates a new [FutureCallScanner].
   FutureCallScanner({
     required Server server,
@@ -40,28 +42,36 @@ class FutureCallScanner {
   /// Starts the task scanner, which will scan the database for overdue future
   /// calls at the given interval.
   void start() {
+    if (_timer != null) {
+      throw StateError('Future call scanner already started.');
+    }
+
     _timer = Timer.periodic(
       _scanInterval,
-      (_) => scanFutureCalls(),
+      (_) => scanFutureCallEntries(),
     );
   }
 
   /// Stops the task scanner.
-  void stop() {
-    // TODO(ALEX): Make this method async and wait for any current running task to stop.
-    // The _isStopping should syncronously prevent any new timers from being started.
-
-    // TODO(ALEX): We need to ensure that a single scan is running at a time for the Server.
-    // This can be done using the same `scan completed` Completer.
+  Future<void> stop() async {
     _isStopping = true;
+
     _timer?.cancel();
+
+    await _scanCompleter.future;
   }
 
   /// Scans the database for overdue future calls and queues them for execution.
-  Future<void> scanFutureCalls() async {
+  Future<void> scanFutureCallEntries() async {
     if (_isStopping || _shouldSkipScan()) {
       return;
     }
+
+    // Wait for any previous scan to complete. This is to ensure that a single
+    // scan is running at a time.
+    await _scanCompleter.future;
+
+    _scanCompleter = Completer<void>();
 
     try {
       final now = DateTime.now().toUtc();
@@ -93,5 +103,7 @@ class FutureCallScanner {
       stderr.writeln('Local stacktrace:');
       stderr.writeln('${StackTrace.current}');
     }
+
+    _scanCompleter.complete();
   }
 }
