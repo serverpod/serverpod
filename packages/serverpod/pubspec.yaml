@@ -17,13 +17,13 @@ topics:
   - database
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   args: ^2.4.0
   collection: ^1.17.1
   crypto: ^3.0.2
-  http: '>=1.0.0 <2.0.0'
+  http: ">=1.0.0 <2.0.0"
   meta: ^1.8.0
   mustache_template: ^2.0.0
   path: ^1.8.2
@@ -41,7 +41,6 @@ dependencies:
 dev_dependencies:
   test: ^1.24.2
   serverpod_lints: 2.4.0
-  mocktail: ^1.0.4
 
 dependency_overrides:
   serverpod_shared:
