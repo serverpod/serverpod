@@ -217,4 +217,85 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, isEmpty);
     });
   });
+
+  group('Given endpoint class marked as `abstract when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+
+abstract class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no endpoint definition is created.', () {
+      expect(endpointDefinitions, isEmpty);
+    });
+  });
+
+  group(
+      'Given two endpoints in the same file where one is marked `abstract` and the other one subclasses it when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/annotations.dart';
+
+abstract class BaseExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+
+class ChildExampleEndpoint extends BaseExampleEndpoint {}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test(
+        'then endpoint definition is created for the non-marked endpoint sub-class.',
+        () {
+      expect(endpointDefinitions, hasLength(1));
+      expect(endpointDefinitions.single.className, 'ChildExampleEndpoint');
+    });
+
+    test(
+        'then endpoint definition of the created endpoint contains the inherited method',
+        () {
+      expect(endpointDefinitions.single.methods, hasLength(1));
+      expect(endpointDefinitions.single.methods.single.name, 'hello');
+    });
+  });
 }
