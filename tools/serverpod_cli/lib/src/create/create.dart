@@ -3,13 +3,18 @@ import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -146,6 +151,31 @@ Future<bool> performCreate(
 
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.module) {
+    success &= await log.progress('Running serverpod generator', () async {
+      GeneratorConfig config;
+      try {
+        config = await GeneratorConfig.load(serverpodDirs.serverDir.path);
+      } catch (e) {
+        log.error('An error occurred while parsing the server config file: $e');
+        return false;
+      }
+
+      var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
+      var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+
+      var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      var modelAnalyzer =
+          StatefulAnalyzer(config, yamlModels, (uri, collector) {
+        collector.printErrors();
+      });
+
+      return await performGenerate(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+        modelAnalyzer: modelAnalyzer,
+      );
+    });
+
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
