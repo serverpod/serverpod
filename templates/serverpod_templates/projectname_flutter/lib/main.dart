@@ -131,11 +131,13 @@ class ResultDisplay extends StatelessWidget {
       text = 'No server response yet.';
     }
 
-    return Container(
-      height: 50,
-      color: backgroundColor,
-      child: Center(
-        child: Text(text),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 50),
+      child: Container(
+        color: backgroundColor,
+        child: Center(
+          child: Text(text),
+        ),
       ),
     );
   }
