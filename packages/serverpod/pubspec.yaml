@@ -17,13 +17,13 @@ topics:
   - database
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
   args: ^2.4.0
   collection: ^1.17.1
   crypto: ^3.0.2
-  http: ">=1.0.0 <2.0.0"
+  http: '>=1.0.0 <2.0.0'
   meta: ^1.8.0
   mustache_template: ^2.0.0
   path: ^1.8.2
@@ -32,7 +32,7 @@ dependencies:
   retry: ^3.1.1
   synchronized: ^3.1.0
   system_resources: ^1.6.0
-  vm_service: ">=13.0.0 <16.0.0"
+  vm_service: '>=13.0.0 <16.0.0'
   yaml: ^3.1.1
   serverpod_shared: 2.4.0
   serverpod_serialization: 2.4.0
