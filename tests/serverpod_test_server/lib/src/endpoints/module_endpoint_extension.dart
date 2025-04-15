@@ -7,7 +7,7 @@ class ModuleEndpointSubclass extends IgnoredModuleEndpoint {}
 class ModuleEndpointAdaptation extends IgnoredModuleEndpoint {
   @override
   Future<String> echoString(Session sesion, String value) {
-    return super.echoString(sesion, value);
+    return super.echoString(sesion, 're-exposed: $value');
   }
 
   /// Extended `echoRecord` which takes an optional argument for a multiplier

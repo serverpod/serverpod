@@ -62,9 +62,11 @@ void main() {
     test(
         'when calling `echoString`, then the input value is returned verbatim (re-using the `super` implementation).',
         () async {
-      var response = await client.moduleEndpointAdaptation.echoString('hello');
+      var response = await client.moduleEndpointAdaptation.echoString(
+        'hello',
+      );
 
-      expect(response, 'hello');
+      expect(response, 're-exposed: hello');
     });
 
     test(
