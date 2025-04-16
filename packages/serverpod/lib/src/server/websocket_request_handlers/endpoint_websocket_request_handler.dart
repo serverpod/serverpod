@@ -74,8 +74,8 @@ abstract class EndpointWebsocketRequestHandler {
           try {
             endpointConnector = await server.endpoints.getEndpointConnector(
                 session: session, endpointPath: endpointName);
-          } on NotAuthorizedException catch (e, s) {
-            _reportException(server, e, s, session: session);
+          } on NotAuthorizedException catch (_) {
+            // User is not authorized to communicate with this endpoint.
             continue;
           } on EndpointNotFoundException {
             throw Exception('Endpoint not found: $endpointName');
@@ -156,8 +156,8 @@ abstract class EndpointWebsocketRequestHandler {
         endpointPath: endpointName,
       );
       await connector.endpoint.streamOpened(session);
-    } on NotAuthorizedException catch (e, s) {
-      _reportException(session.server, e, s, session: session);
+    } on NotAuthorizedException catch (_) {
+      // User is not authorized to communicate with this endpoint.
       return;
     } catch (e, s) {
       _reportException(session.server, e, s, session: session);
@@ -177,8 +177,8 @@ abstract class EndpointWebsocketRequestHandler {
         endpointPath: endpointName,
       );
       await connector.endpoint.streamClosed(session);
-    } on NotAuthorizedException catch (e, s) {
-      _reportException(session.server, e, s, session: session);
+    } on NotAuthorizedException catch (_) {
+      // User is not authorized to communicate with this endpoint.
       return;
     } catch (e, s) {
       _reportException(session.server, e, s, session: session);
