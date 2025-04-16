@@ -37,7 +37,6 @@ void run(List<String> args) async {
   // background. Their schedule is persisted to the database, so you will not
   // lose them if the server is restarted.
 
-  // If you are using any future calls, they need to be registered first.
   pod.registerFutureCall(
     BirthdayReminder(),
     FutureCallNames.birthdayReminder.name,
@@ -54,11 +53,12 @@ void run(List<String> args) async {
       author: 'Serverpod Server',
       timestamp: DateTime.now(),
     ),
-    Duration.zero,
+    Duration(seconds: 5),
   );
 }
 
 /// Names of all future calls in the server.
+///
 /// This is better than using a string literal, as it will reduce the risk of
 /// typos and make it easier to refactor the code.
 enum FutureCallNames {
