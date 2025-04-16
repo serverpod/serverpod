@@ -366,8 +366,8 @@ void main() {
       },
     );
 
-    test(
-      'when the field is of type UUID and the type is not-nullable, then an error is generated',
+    group(
+      'when the field is of type UUID and the type is not-nullable',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -381,17 +381,18 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        late final definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
 
-        expect(collector.errors, isNotEmpty);
+        test('then no errors are collected.', () {
+          expect(collector.errors, isEmpty);
+        });
 
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The type "UuidValue" must be nullable for the field "id". Use the '
-          '"?" operator to make it nullable (e.g. id: UuidValue?).',
-        );
+        late final definition = definitions.first as ModelClassDefinition;
+        test('then the field\'s id type is not-nullable.', () {
+          expect(definition.idField.type.nullable, isFalse);
+        });
       },
     );
   });
