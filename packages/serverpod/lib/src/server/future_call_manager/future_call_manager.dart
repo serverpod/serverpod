@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
@@ -26,17 +25,12 @@ class FutureCallManager {
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
 
-  /// Called when pending future calls have been completed, if the server is
-  /// running in [ServerpodRole.maintenance] mode.
-  final void Function() onCompleted;
-
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
   /// the [Serverpod].
   FutureCallManager(
     this._server,
     this._config,
     this._serializationManager,
-    this.onCompleted,
   ) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
@@ -100,41 +94,26 @@ class FutureCallManager {
     _futureCalls[name] = futureCall;
   }
 
-  /// Starts the manager.
-  void start() {
-    final serverpodRole = _server.serverpod.commandLineArgs.role;
-
-    switch (serverpodRole) {
-      case ServerpodRole.maintenance:
-        unawaited(_runFutureCallsForMaintenance());
-        break;
-      case ServerpodRole.monolith:
-        _runFutureCallsForMonolith();
-        break;
-      case ServerpodRole.serverless:
-        // Serverless does not support future calls.
-        break;
-    }
-  }
-
-  /// Stops the manager.
-  Future<void> stop() async {
-    await _scanner.stop();
-    await _scheduler.stop();
-  }
-
-  Future<void> _runFutureCallsForMaintenance() async {
+  /// Runs all scheduled future calls that are past their due date.
+  Future<void> runScheduledFutureCalls() async {
     stdout.writeln('Processing future calls.');
 
     await _scanner.scanFutureCallEntries();
 
     await _scheduler.stop();
-
-    onCompleted();
   }
 
-  void _runFutureCallsForMonolith() {
+  /// Starts the future call manager to monitor the database for overdue future
+  /// calls and execute them.
+  void start() {
     _scanner.start();
+  }
+
+  /// Stops the future call manager from monitoring overdue future calls for
+  /// execution.
+  Future<void> stop() async {
+    await _scanner.stop();
+    await _scheduler.stop();
   }
 
   void _dispatchEntries(List<FutureCallEntry> entries) {

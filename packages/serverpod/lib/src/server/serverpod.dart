@@ -443,7 +443,6 @@ class Serverpod {
         server,
         server.serverpod.config.futureCall,
         serializationManager,
-        _onCompletedFutureCalls,
       );
     }
 
@@ -593,7 +592,15 @@ class Serverpod {
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
-      _futureCallManager?.start();
+      if (commandLineArgs.role == ServerpodRole.maintenance) {
+        unawaited(
+          _futureCallManager
+              ?.runScheduledFutureCalls()
+              .whenComplete(_onCompletedFutureCalls),
+        );
+      } else {
+        _futureCallManager?.start();
+      }
 
       // Start health check manager
       _completedHealthChecks = _healthCheckManager == null;
