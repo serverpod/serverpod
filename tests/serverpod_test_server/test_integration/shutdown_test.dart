@@ -174,7 +174,9 @@ void main() {
         terminationTimeout,
       );
       expect(exitCode, 1);
-    });
+    },
+        skip:
+            'Flaky test tracked by this issue: https://github.com/serverpod/serverpod/issues/3431');
 
     test(
         'with an ongoing http request '
