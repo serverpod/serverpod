@@ -1400,11 +1400,13 @@ class Restrictions {
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
+      var besidePersistKey = (field.type.className == 'int')
+          ? 'Either omit the default key or use the'
+          : 'Use either the "${Keyword.defaultModelKey}" key or the';
       errors.add(
         SourceSpanSeverityException(
           'The "${Keyword.defaultKey}" key is not allowed on the "id" field. '
-          'Use either the "${Keyword.defaultModelKey}" key or the '
-          '"${Keyword.defaultPersistKey}" key instead.',
+          '$besidePersistKey "${Keyword.defaultPersistKey}" key instead.',
           span,
         ),
       );

@@ -204,8 +204,8 @@ void main() {
 
       expect(
         collector.errors.first.message,
-        'The "default" key is not allowed on the "id" field. Use either '
-        'the "defaultModel" key or the "defaultPersist" key instead.',
+        'The "default" key is not allowed on the "id" field. Either omit the '
+        'default key or use the "defaultPersist" key instead.',
       );
     },
   );
