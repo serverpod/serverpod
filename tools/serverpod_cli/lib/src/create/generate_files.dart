@@ -21,9 +21,18 @@ class GenerateFiles {
     var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
 
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-    var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-      collector.printErrors();
-    });
+    late StatefulAnalyzer modelAnalyzer;
+    try {
+      modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
+        collector.printErrors();
+        throw Exception(
+          'An error occurred while analyzing the models. Please check the '
+          'error messages above.',
+        );
+      });
+    } catch (_) {
+      return false;
+    }
 
     return await performGenerate(
       config: config,
