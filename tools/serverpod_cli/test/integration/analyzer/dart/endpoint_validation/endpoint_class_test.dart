@@ -218,7 +218,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given endpoint class marked as `abstract when analyzed', () {
+  group('Given endpoint class marked as `abstract` when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
