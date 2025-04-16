@@ -159,12 +159,10 @@ class EndpointsAnalyzer {
 
     var endpointDefs = <EndpointDefinition>[];
     for (var classElement in endpointClasses) {
-      var endpointMethods = classElement.methods
-          .where(EndpointMethodAnalyzer.isEndpointMethod)
-          .where((methodElement) => !validationErrors.containsKey(
-                EndpointMethodAnalyzer.elementNamespace(
-                    classElement, methodElement, filePath),
-              ));
+      var endpointMethods = classElement.collectionEndpointMethods(
+        validationErrors: validationErrors,
+        filePath: filePath,
+      );
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
@@ -288,5 +286,49 @@ class EndpointsAnalyzer {
     failingErrors.removeWhere((key, exceptions) => exceptions.isEmpty);
 
     return failingErrors;
+  }
+}
+
+extension on ClassElement {
+  /// Returns all endpoints methods from the class.
+  ///
+  /// Those defined directly on the class, as well as those inherited from the base classes.
+  List<MethodElement> collectionEndpointMethods({
+    required Map<String, List<SourceSpanSeverityException>> validationErrors,
+    required String filePath,
+  }) {
+    var endPointMethods = <MethodElement>[];
+    var handledMethods = <String>{};
+
+    for (final method in methods) {
+      if (EndpointMethodAnalyzer.isEndpointMethod(method) &&
+          !validationErrors.containsKey(
+            EndpointMethodAnalyzer.elementNamespace(this, method, filePath),
+          )) {
+        endPointMethods.add(method);
+      }
+
+      handledMethods.add(method.name);
+    }
+
+    var inheritedMethods = allSupertypes
+        .map((s) => s.element)
+        .whereType<ClassElement>()
+        .where(EndpointClassAnalyzer.isEndpointInterface)
+        .expand((s) => s.methods);
+
+    for (var method in inheritedMethods) {
+      if (handledMethods.contains(method.name)) {
+        continue;
+      }
+
+      if (EndpointMethodAnalyzer.isEndpointMethod(method)) {
+        endPointMethods.add(method);
+      }
+
+      handledMethods.add(method.name);
+    }
+
+    return endPointMethods;
   }
 }

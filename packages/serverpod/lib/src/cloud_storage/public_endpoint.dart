@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
-import 'package:serverpod_shared/annotations.dart';
 
 const _endpointName = 'serverpod_cloud_storage';
 
