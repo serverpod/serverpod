@@ -367,7 +367,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the type is not-nullable',
+      'when the field is of type UUID and the type is not-nullable, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -375,7 +375,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue, defaultModel=
+              id: UuidValue, defaultModel=random
             ''',
           ).build()
         ];
