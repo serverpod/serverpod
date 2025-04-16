@@ -36,17 +36,6 @@ class DefaultValueRestriction extends ValueRestriction {
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
-      if ((value == defaultIntSerial) && (key == Keyword.defaultModelKey)) {
-        return [
-          SourceSpanSeverityException(
-            'The default value "$defaultIntSerial" can not be set for the '
-            '"int" $defaultPrimaryKeyName field using the "$key" keyword. '
-            'Use the "${Keyword.defaultPersistKey}" keyword instead.',
-            span,
-          ),
-        ];
-      }
-
       return _idTypeDefaultValidation(
         definition.tableName!,
         field.type,
@@ -87,6 +76,17 @@ class DefaultValueRestriction extends ValueRestriction {
   ) {
     var typeClassName = idType.className;
     var errors = <SourceSpanSeverityException>[];
+
+    if ((value == defaultIntSerial) && (key == Keyword.defaultModelKey)) {
+      return [
+        SourceSpanSeverityException(
+          'The default value "$defaultIntSerial" can not be set for the '
+          '"int" $defaultPrimaryKeyName field using the "$key" keyword. '
+          'Use the "${Keyword.defaultPersistKey}" keyword instead.',
+          span,
+        ),
+      ];
+    }
 
     var supportedDefaults = SupportedIdType.all
         .where((e) => e.type.className == typeClassName)
