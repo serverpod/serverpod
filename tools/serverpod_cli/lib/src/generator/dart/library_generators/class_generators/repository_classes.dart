@@ -457,7 +457,7 @@ class BuildRepositoryClass {
           ..type = refer('Session', 'package:serverpod/serverpod.dart')
           ..name = 'session'),
         Parameter((p) => p
-          ..type = idTypeReference
+          ..type = idTypeReference.rebuild((u) => u.isNullable = false)
           ..name = 'id'),
       ])
       ..optionalParameters.addAll([

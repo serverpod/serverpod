@@ -148,7 +148,6 @@ class SerializableModelLibraryGenerator {
         if (serverCode && tableName != null) {
           var idTypeReference = classDefinition.idField.type.reference(
             serverCode,
-            nullable: false,
             subDirParts: classDefinition.subDirParts,
             config: config,
           ) as TypeReference;
@@ -319,7 +318,6 @@ class SerializableModelLibraryGenerator {
       if (serverCode && tableName != null) {
         var idTypeReference = classDefinition.idField.type.reference(
           serverCode,
-          nullable: false,
           subDirParts: classDefinition.subDirParts,
           config: config,
         ) as TypeReference;
@@ -340,12 +338,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(Field(
           (f) => f
             ..name = 'id'
-            ..type = classDefinition.idField.type.reference(
-              serverCode,
-              nullable: true,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-            )
+            ..type = idTypeReference
             ..annotations.add(
               refer('override'),
             ),

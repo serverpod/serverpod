@@ -6,9 +6,11 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// typically generated. Instances of [TableRow] can also be serialized and
 /// either passed to clients or cached.
 abstract interface class TableRow<T_ID> implements SerializableModel {
+  TableRow(this.id);
+
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
-  T_ID? id;
+  T_ID id;
 
   /// The table that this row belongs to.
   Table<T_ID> get table;
@@ -48,13 +50,13 @@ class Table<T_ID> {
         'Table<int>(...) or Table<UuidValue>(...) to specify the id type.',
       );
     }
-    if (T_ID == int) {
+    if (equalsType<T_ID, int>()) {
       id = ColumnInt(
         'id',
         this,
         hasDefault: true,
       ) as ColumnComparable<T_ID>;
-    } else if (T_ID == UuidValue) {
+    } else if (equalsType<T_ID, UuidValue>()) {
       id = ColumnUuid(
         'id',
         this,
@@ -114,3 +116,7 @@ T createRelationTable<T>({
     tableRelation.copyAndAppend(relationDefinition),
   );
 }
+
+/// Checks if the type [T] is equal to type [Y] (nullable or non-nullable).
+bool equalsType<T_ID, Y>() => _equalsType<T_ID, Y>() || _equalsType<T_ID, Y?>();
+bool _equalsType<T, Y>() => T == Y;
