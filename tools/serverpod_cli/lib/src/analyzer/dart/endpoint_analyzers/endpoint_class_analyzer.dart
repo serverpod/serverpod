@@ -30,22 +30,24 @@ abstract class EndpointClassAnalyzer {
     return '{$filePath}_${element.name}';
   }
 
-  /// Returns true if the [ClassElement] is an endpoint class that should
+  /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
-  static bool isEndpointClass(
-    ClassElement element, {
-    bool respectIgnoreClassAnnotation = true,
-    bool ignoreAbstractClasses = true,
-  }) {
-    if (element.isAbstract && ignoreAbstractClasses) return false;
-    if (element.allSupertypes.any((s) => s.element.name == 'Endpoint') !=
-        true) {
-      return false;
-    }
+  static bool isEndpointClass(ClassElement element) {
+    if (element.isAbstract) return false;
+    if (element.markedAsIgnored) return false;
 
-    if (element.markedAsIgnored && respectIgnoreClassAnnotation) return false;
+    return isEndpointInterface(element);
+  }
 
-    return true;
+  /// Returns `true` if the class extends the Serverpod `Endpoint` base class.
+  ///
+  /// The class itself might still need to be ignored as an endpoint, because
+  /// it could be marked `abstract` or `@ignoreEndpoint`.
+  ///
+  /// To check whether and endpoint class should actually be implemented
+  /// by the server use [isEndpointClass].
+  static bool isEndpointInterface(ClassElement element) {
+    return element.allSupertypes.any((s) => s.element.name == 'Endpoint');
   }
 
   /// Validates the [ClassElement] and returns a list of errors.

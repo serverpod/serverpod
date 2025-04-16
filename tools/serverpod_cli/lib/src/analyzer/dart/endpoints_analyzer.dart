@@ -314,13 +314,7 @@ extension on ClassElement {
     var inheritedMethods = allSupertypes
         .map((s) => s.element)
         .whereType<ClassElement>()
-        .where(
-          (e) => EndpointClassAnalyzer.isEndpointClass(
-            e,
-            respectIgnoreClassAnnotation: false,
-            ignoreAbstractClasses: false,
-          ),
-        )
+        .where(EndpointClassAnalyzer.isEndpointInterface)
         .expand((s) => s.methods);
 
     for (var method in inheritedMethods) {
