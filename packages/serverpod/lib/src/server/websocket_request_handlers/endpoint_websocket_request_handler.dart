@@ -74,8 +74,8 @@ abstract class EndpointWebsocketRequestHandler {
           try {
             endpointConnector = await server.endpoints.getEndpointConnector(
                 session: session, endpointPath: endpointName);
-          } on NotAuthorizedException catch (e, s) {
-            _reportException(server, e, s, session: session);
+          } on NotAuthorizedException catch (_) {
+            // User is not authorized to communicate with this endpoint.
             continue;
           } on EndpointNotFoundException {
             throw Exception('Endpoint not found: $endpointName');
