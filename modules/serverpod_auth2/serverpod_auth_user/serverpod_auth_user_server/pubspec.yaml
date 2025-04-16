@@ -1,6 +1,6 @@
 name: serverpod_auth_user_server
 version: 2.5.0
-description: Starting point for a Serverpod module.
+description: Serverpod authentication user server module.
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

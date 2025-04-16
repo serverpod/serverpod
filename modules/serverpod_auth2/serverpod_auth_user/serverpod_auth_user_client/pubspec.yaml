@@ -1,5 +1,5 @@
 name: serverpod_auth_user_client
-description: Starting point for a Serverpod module client.
+description: Serverpod authentication user client module.
 version: 2.5.0
 
 environment:

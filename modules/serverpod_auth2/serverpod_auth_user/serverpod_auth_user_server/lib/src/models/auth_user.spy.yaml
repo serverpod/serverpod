@@ -1,0 +1,13 @@
+class: AuthUser
+table: serverpod_auth_user
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The time when this user was created.
+  created: DateTime
+
+  ### Set of scopes that this user can access.
+  scopeNames: Set<String>
+
+  ### If `true` the user will be blocked from signing in.
+  blocked: bool
