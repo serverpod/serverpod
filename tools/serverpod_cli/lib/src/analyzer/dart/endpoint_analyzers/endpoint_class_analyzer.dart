@@ -33,7 +33,8 @@ abstract class EndpointClassAnalyzer {
   /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
-    if (element.isAbstract) return false;
+    if (!element.isConstructable) return false;
+
     if (element.markedAsIgnored) return false;
 
     return isEndpointInterface(element);
