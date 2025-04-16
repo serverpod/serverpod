@@ -50,7 +50,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   final _textEditingController = TextEditingController();
 
-  /// Calls the `hello` method of the `example` endpoint. Will set either the
+  /// Calls the `hello` method of the `greeting` endpoint. Will set either the
   /// `_resultMessage` or `_errorMessage` field, depending on if the call
   /// is successful.
   void _callHello() async {
@@ -104,8 +104,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// _ResultDisplays shows the result of the call. Either the returned result from
-/// the `example.hello` endpoint method or an error message.
+/// ResultDisplays shows the result of the call. Either the returned result from
+/// the `example.greeting` endpoint method or an error message.
 class ResultDisplay extends StatelessWidget {
   final String? resultMessage;
   final String? errorMessage;

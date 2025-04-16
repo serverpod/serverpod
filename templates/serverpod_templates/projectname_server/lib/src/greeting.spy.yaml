@@ -12,11 +12,9 @@ class: Greeting
 # Add the table key, if this class represents a row in the database.
 #table: greeting
 
-# The fields (and columns if connected to the database) of the class. Supported types are
-# `bool`, `int`, `double`, `String`, `UuidValue`, `Duration`, `DateTime`, `ByteData`,
-# `Uri`, `BigInt` and other serializable classes, exceptions and enums.
-# You can also add lists of objects and types have support for null safety.
-# Eg. `List<int>?` or `List<MyOtherClass?>`.
+# The fields (and columns if connected to the database) of the class.
+# For a list of supported types, please see the documentation.
+# https://docs.serverpod.dev/concepts/working-with-endpoints
 fields:
   ### The greeting message
   message: String
