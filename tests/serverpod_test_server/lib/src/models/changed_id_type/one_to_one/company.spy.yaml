@@ -1,6 +1,6 @@
 class: CompanyUuid
 table: company_uuid
 fields:
-  id: UuidValue, default=random
+  id: UuidValue?, defaultPersist=random
   name: String
   town: TownInt?, relation

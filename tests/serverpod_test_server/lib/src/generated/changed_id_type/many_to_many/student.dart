@@ -10,21 +10,20 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../../changed_id_type/many_to_many/enrollment.dart' as _i3;
+import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class StudentUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   StudentUuid._({
-    _i1.UuidValue? id,
+    this.id,
     required this.name,
     this.enrollments,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  });
 
   factory StudentUuid({
     _i1.UuidValue? id,
     required String name,
-    List<_i3.EnrollmentInt>? enrollments,
+    List<_i2.EnrollmentInt>? enrollments,
   }) = _StudentUuidImpl;
 
   factory StudentUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +33,7 @@ abstract class StudentUuid
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i3.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -48,7 +47,7 @@ abstract class StudentUuid
 
   String name;
 
-  List<_i3.EnrollmentInt>? enrollments;
+  List<_i2.EnrollmentInt>? enrollments;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -59,7 +58,7 @@ abstract class StudentUuid
   StudentUuid copyWith({
     _i1.UuidValue? id,
     String? name,
-    List<_i3.EnrollmentInt>? enrollments,
+    List<_i2.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +82,7 @@ abstract class StudentUuid
   }
 
   static StudentUuidInclude include(
-      {_i3.EnrollmentIntIncludeList? enrollments}) {
+      {_i2.EnrollmentIntIncludeList? enrollments}) {
     return StudentUuidInclude._(enrollments: enrollments);
   }
 
@@ -119,7 +118,7 @@ class _StudentUuidImpl extends StudentUuid {
   _StudentUuidImpl({
     _i1.UuidValue? id,
     required String name,
-    List<_i3.EnrollmentInt>? enrollments,
+    List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
           id: id,
           name: name,
@@ -138,7 +137,7 @@ class _StudentUuidImpl extends StudentUuid {
     return StudentUuid(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i3.EnrollmentInt>?
+      enrollments: enrollments is List<_i2.EnrollmentInt>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
@@ -155,36 +154,36 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnString name;
 
-  _i3.EnrollmentIntTable? ___enrollments;
+  _i2.EnrollmentIntTable? ___enrollments;
 
-  _i1.ManyRelation<_i3.EnrollmentIntTable>? _enrollments;
+  _i1.ManyRelation<_i2.EnrollmentIntTable>? _enrollments;
 
-  _i3.EnrollmentIntTable get __enrollments {
+  _i2.EnrollmentIntTable get __enrollments {
     if (___enrollments != null) return ___enrollments!;
     ___enrollments = _i1.createRelationTable(
       relationFieldName: '__enrollments',
       field: StudentUuid.t.id,
-      foreignField: _i3.EnrollmentInt.t.studentId,
+      foreignField: _i2.EnrollmentInt.t.studentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.EnrollmentIntTable(tableRelation: foreignTableRelation),
+          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
 
-  _i1.ManyRelation<_i3.EnrollmentIntTable> get enrollments {
+  _i1.ManyRelation<_i2.EnrollmentIntTable> get enrollments {
     if (_enrollments != null) return _enrollments!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'enrollments',
       field: StudentUuid.t.id,
-      foreignField: _i3.EnrollmentInt.t.studentId,
+      foreignField: _i2.EnrollmentInt.t.studentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.EnrollmentIntTable(tableRelation: foreignTableRelation),
+          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
-    _enrollments = _i1.ManyRelation<_i3.EnrollmentIntTable>(
+    _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
       tableWithRelations: relationTable,
-      table: _i3.EnrollmentIntTable(
+      table: _i2.EnrollmentIntTable(
           tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _enrollments!;
@@ -206,11 +205,11 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class StudentUuidInclude extends _i1.IncludeObject {
-  StudentUuidInclude._({_i3.EnrollmentIntIncludeList? enrollments}) {
+  StudentUuidInclude._({_i2.EnrollmentIntIncludeList? enrollments}) {
     _enrollments = enrollments;
   }
 
-  _i3.EnrollmentIntIncludeList? _enrollments;
+  _i2.EnrollmentIntIncludeList? _enrollments;
 
   @override
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
@@ -470,7 +469,7 @@ class StudentUuidAttachRepository {
   Future<void> enrollments(
     _i1.Session session,
     StudentUuid studentUuid,
-    List<_i3.EnrollmentInt> enrollmentInt, {
+    List<_i2.EnrollmentInt> enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollmentInt.any((e) => e.id == null)) {
@@ -483,9 +482,9 @@ class StudentUuidAttachRepository {
     var $enrollmentInt = enrollmentInt
         .map((e) => e.copyWith(studentId: studentUuid.id))
         .toList();
-    await session.db.update<_i3.EnrollmentInt>(
+    await session.db.update<_i2.EnrollmentInt>(
       $enrollmentInt,
-      columns: [_i3.EnrollmentInt.t.studentId],
+      columns: [_i2.EnrollmentInt.t.studentId],
       transaction: transaction,
     );
   }
@@ -499,7 +498,7 @@ class StudentUuidAttachRowRepository {
   Future<void> enrollments(
     _i1.Session session,
     StudentUuid studentUuid,
-    _i3.EnrollmentInt enrollmentInt, {
+    _i2.EnrollmentInt enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {
     if (enrollmentInt.id == null) {
@@ -510,9 +509,9 @@ class StudentUuidAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(studentId: studentUuid.id);
-    await session.db.updateRow<_i3.EnrollmentInt>(
+    await session.db.updateRow<_i2.EnrollmentInt>(
       $enrollmentInt,
-      columns: [_i3.EnrollmentInt.t.studentId],
+      columns: [_i2.EnrollmentInt.t.studentId],
       transaction: transaction,
     );
   }

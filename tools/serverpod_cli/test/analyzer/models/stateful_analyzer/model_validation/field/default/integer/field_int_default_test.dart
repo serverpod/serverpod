@@ -180,123 +180,33 @@ void main() {
     );
   });
 
-  group('Given a class with a declared id field with a "default" keyword', () {
-    var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-      [ExperimentalFeature.changeIdType],
-    ).build();
+  test(
+    'Given a class with a declared id field of type int with a "default" keyword, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: int?, default=serial
+          ''',
+        ).build()
+      ];
 
-    test(
-      'when the field is of type int and the default is set to "serial", then the field should have a "default persist" value and not have a "default model" value',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              id: int, default=serial
-            ''',
-          ).build()
-        ];
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+        [ExperimentalFeature.changeIdType],
+      ).build();
 
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, isNull);
-        expect(definition.fields.last.defaultPersistValue, 'serial');
-      },
-    );
-
-    test(
-      'when the field is of type int and the default is empty, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              id: int, default=
-            ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The default value "" is not supported for the id type "int". '
-          'Valid options are: "serial".',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type int and the default is set to a constant value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              id: int, default=10
-            ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The default value "10" is not supported for the id type "int". '
-          'Valid options are: "serial".',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type int and the default is set to an invalid value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              id: int, default=test
-            ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The default value "test" is not supported for the id type "int". '
-          'Valid options are: "serial".',
-        );
-      },
-    );
-  });
+      expect(
+        collector.errors.first.message,
+        'The "default" key is not allowed on the "id" field. Either omit the '
+        'default key or use the "defaultPersist" key instead.',
+      );
+    },
+  );
 }

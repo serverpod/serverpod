@@ -21,7 +21,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           myParentId: UuidValue
           parent: ExampleParent?, relation(field=myParentId)
         indexes:
@@ -35,7 +35,7 @@ void main() {
         class: ExampleParent
         table: example_parent
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           name: String
         ''',
       ).build()
@@ -75,7 +75,7 @@ void main() {
         class: Example
         table: example
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           parentId: UuidValue?
           parent: ExampleParent?, relation(name=example_parent, field=parentId)
         indexes:
@@ -89,7 +89,7 @@ void main() {
         class: ExampleParent
         table: example_parent
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           name: String
           example: Example?, relation(name=example_parent)
         ''',
@@ -139,7 +139,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           company: Company?, relation(name=company_employees)
         ''',
       ).build(),
@@ -148,7 +148,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation(name=company_employees)
         ''',
       ).build()
@@ -201,7 +201,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           company: Company?, relation
         ''',
       ).build(),
@@ -210,7 +210,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation
         ''',
       ).build(),
@@ -270,7 +270,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           name: String
         ''',
       ).build(),
@@ -279,7 +279,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation
         ''',
       ).build(),
@@ -323,7 +323,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          id: int, default=serial
+          id: int?, defaultPersist=serial
           companyId: UuidValue, relation(name=company_employees, parent=company)
         ''',
       ).build(),
@@ -332,7 +332,7 @@ void main() {
         class: Company
         table: company
         fields:
-          id: UuidValue, default=random
+          id: UuidValue?, defaultModel=random
           employees: List<Employee>?, relation(name=company_employees)
         ''',
       ).build()

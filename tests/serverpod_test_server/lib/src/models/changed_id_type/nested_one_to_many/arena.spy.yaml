@@ -1,6 +1,6 @@
 class: ArenaUuid
 table: arena_uuid
 fields:
-  id: UuidValue, default=random
+  id: UuidValue?, defaultModel=random
   name: String
   team: TeamInt?, relation(name=arena_team)

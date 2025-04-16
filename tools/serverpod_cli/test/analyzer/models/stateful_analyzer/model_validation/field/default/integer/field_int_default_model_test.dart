@@ -187,7 +187,7 @@ void main() {
           class: Example
           table: example
           fields:
-            id: int, defaultModel=serial
+            id: int?, defaultModel=serial
           ''',
         ).build()
       ];
@@ -202,8 +202,8 @@ void main() {
 
       expect(
         collector.errors.first.message,
-        'The "defaultModel" key is not allowed on the "id" field. '
-        'Use the "default" key instead.',
+        'The default value "serial" can not be set for the "int" id field using '
+        'the "defaultModel" keyword. Use the "defaultPersist" keyword instead.',
       );
     },
   );
