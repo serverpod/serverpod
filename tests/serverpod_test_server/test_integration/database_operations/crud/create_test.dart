@@ -81,11 +81,14 @@ void main() async {
 
       var inserted = await UniqueData.db.insert(session, data);
 
+      var first = inserted.where((e) => e.id == id).single;
+      var second = inserted.where((e) => e.id != id).single;
+
       expect(inserted, hasLength(2));
-      expect(inserted.first.id, isNot(id));
-      expect(inserted.last.id, id);
-      expect(inserted.first.number, 20);
-      expect(inserted.last.number, 10);
+      expect(first.id, id);
+      expect(second.id, isNot(id));
+      expect(first.number, 10);
+      expect(second.number, 20);
     });
   });
 
