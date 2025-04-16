@@ -11,6 +11,7 @@ import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
@@ -443,6 +444,7 @@ class Serverpod {
         server,
         server.serverpod.config.futureCall,
         serializationManager,
+        diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
       );
     }
 

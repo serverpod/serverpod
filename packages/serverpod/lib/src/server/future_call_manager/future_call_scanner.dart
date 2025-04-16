@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 /// A function that queues future call entries for execution.
@@ -16,6 +16,7 @@ typedef ShouldSkipScan = bool Function();
 /// Scans the database for overdue future calls and queues them for execution.
 class FutureCallScanner {
   final Server _server;
+  final FutureCallDiagnosticsService _diagnosticReporting;
 
   Timer? _timer;
 
@@ -34,10 +35,12 @@ class FutureCallScanner {
     required Duration scanInterval,
     required ShouldSkipScan shouldSkipScan,
     required DispatchEntries dispatchEntries,
+    required FutureCallDiagnosticsService diagnosticsService,
   })  : _server = server,
         _scanInterval = scanInterval,
         _shouldSkipScan = shouldSkipScan,
-        _dispatchEntries = dispatchEntries;
+        _dispatchEntries = dispatchEntries,
+        _diagnosticReporting = diagnosticsService;
 
   /// Starts the task scanner, which will scan the database for overdue future
   /// calls at the given interval.
@@ -91,10 +94,10 @@ class FutureCallScanner {
       var message =
           'Internal server error. Failed to connect to database in future call manager.';
 
-      _server.serverpod.internalSubmitEvent(
-        ExceptionEvent(error, stackTrace, message: message),
-        space: OriginSpace.framework,
-        context: contextFromServer(_server),
+      _diagnosticReporting.submitFrameworkException(
+        error,
+        stackTrace,
+        message: message,
       );
 
       stderr.writeln('${DateTime.now().toUtc()} $message');

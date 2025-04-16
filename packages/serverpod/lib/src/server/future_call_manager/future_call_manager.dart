@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 import 'future_call_scanner.dart';
@@ -21,6 +21,7 @@ class FutureCallManager {
   final SerializationManager _serializationManager;
 
   final _futureCalls = <String, FutureCall>{};
+  final FutureCallDiagnosticsService _diagnosticsService;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
@@ -30,8 +31,9 @@ class FutureCallManager {
   FutureCallManager(
     this._server,
     this._config,
-    this._serializationManager,
-  ) {
+    this._serializationManager, {
+    required FutureCallDiagnosticsService diagnosticsService,
+  }) : _diagnosticsService = diagnosticsService {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -41,6 +43,7 @@ class FutureCallManager {
       scanInterval: _config.scanInterval,
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: (entries) => _dispatchEntries(entries),
+      diagnosticsService: _diagnosticsService,
     );
   }
 
@@ -160,10 +163,10 @@ class FutureCallManager {
       await futureCall.invoke(futureCallSession, object);
       await futureCallSession.close();
     } catch (error, stackTrace) {
-      _server.serverpod.internalSubmitEvent(
-        ExceptionEvent(error, stackTrace),
-        space: OriginSpace.application,
-        context: contextFromSession(futureCallSession),
+      _diagnosticsService.submitCallException(
+        error,
+        stackTrace,
+        session: session,
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
