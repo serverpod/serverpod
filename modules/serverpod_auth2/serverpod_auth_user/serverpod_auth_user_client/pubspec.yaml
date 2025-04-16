@@ -1,0 +1,8 @@
+name: serverpod_auth_user_client
+description: Starting point for a Serverpod module client.
+version: 2.5.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+dependencies:
+  serverpod_client: 2.5.0
