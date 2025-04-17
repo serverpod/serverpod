@@ -19,7 +19,7 @@ void main() {
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
   const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
   final serverUrl =
-      serverUrlFromEnv.isEmpty ? '$localhost:8080/' : serverUrlFromEnv;
+      serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor();
