@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 
+import 'future_call_diagnostics_service.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
