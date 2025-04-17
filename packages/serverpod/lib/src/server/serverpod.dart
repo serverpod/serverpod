@@ -445,6 +445,11 @@ class Serverpod {
         server.serverpod.config.futureCall,
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
+        internalSession: internalSession,
+        sessionProvider: (String futureCallName) => FutureCallSession(
+          server: server,
+          futureCallName: futureCallName,
+        ),
       );
     }
 

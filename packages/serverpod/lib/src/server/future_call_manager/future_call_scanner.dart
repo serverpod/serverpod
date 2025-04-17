@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 
 /// A function that queues future call entries for execution.
 typedef DispatchEntries = void Function(List<FutureCallEntry> entries);
@@ -15,7 +14,7 @@ typedef ShouldSkipScan = bool Function();
 
 /// Scans the database for overdue future calls and queues them for execution.
 class FutureCallScanner {
-  final Server _server;
+  final Session _internalSession;
   final FutureCallDiagnosticsService _diagnosticReporting;
 
   Timer? _timer;
@@ -31,12 +30,12 @@ class FutureCallScanner {
 
   /// Creates a new [FutureCallScanner].
   FutureCallScanner({
-    required Server server,
+    required Session internalSession,
     required Duration scanInterval,
     required ShouldSkipScan shouldSkipScan,
     required DispatchEntries dispatchEntries,
     required FutureCallDiagnosticsService diagnosticsService,
-  })  : _server = server,
+  })  : _internalSession = internalSession,
         _scanInterval = scanInterval,
         _shouldSkipScan = shouldSkipScan,
         _dispatchEntries = dispatchEntries,
@@ -79,10 +78,8 @@ class FutureCallScanner {
     try {
       final now = DateTime.now().toUtc();
 
-      final internalSession = _server.serverpod.internalSession;
-
       final entries = await FutureCallEntry.db.deleteWhere(
-        internalSession,
+        _internalSession,
         where: (row) => row.time <= now,
       );
 

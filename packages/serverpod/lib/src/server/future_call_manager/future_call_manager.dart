@@ -9,12 +9,16 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
+typedef SessionProvider = Session Function(String futureCallName);
+
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
 /// arguments are stored in the database, so it is persistent even if the
 /// [Serverpod] is restarted.
 class FutureCallManager {
   final Server _server;
+  final Session _internalSession;
+  final SessionProvider _sessionProvider;
 
   final FutureCallConfig _config;
 
@@ -33,13 +37,17 @@ class FutureCallManager {
     this._config,
     this._serializationManager, {
     required FutureCallDiagnosticsService diagnosticsService,
-  }) : _diagnosticsService = diagnosticsService {
+    required Session internalSession,
+    required SessionProvider sessionProvider,
+  })  : _diagnosticsService = diagnosticsService,
+        _internalSession = internalSession,
+        _sessionProvider = sessionProvider {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
 
     _scanner = FutureCallScanner(
-      server: _server,
+      internalSession: _internalSession,
       scanInterval: _config.scanInterval,
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: (entries) => _dispatchEntries(entries),
@@ -71,14 +79,14 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = _server.serverpod.internalSession;
+    var session = _internalSession;
     await FutureCallEntry.db.insertRow(session, entry);
   }
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = _server.serverpod.internalSession;
+    var session = _internalSession;
 
     await FutureCallEntry.db.deleteWhere(
       session,
@@ -129,7 +137,7 @@ class FutureCallManager {
       }
 
       return () => _runFutureCall(
-            session: _server.serverpod.internalSession,
+            session: _internalSession,
             futureCallEntry: entry,
             futureCall: futureCall,
           );
@@ -144,12 +152,7 @@ class FutureCallManager {
     required FutureCallEntry futureCallEntry,
     required FutureCall<SerializableModel> futureCall,
   }) async {
-    final futureCallName = futureCallEntry.name;
-
-    final futureCallSession = FutureCallSession(
-      server: _server,
-      futureCallName: futureCallName,
-    );
+    final futureCallSession = _sessionProvider(futureCallEntry.name);
 
     try {
       dynamic object;
