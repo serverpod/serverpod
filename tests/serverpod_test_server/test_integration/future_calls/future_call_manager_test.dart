@@ -1,49 +1,74 @@
-import 'package:serverpod/protocol.dart';
+import 'dart:async';
+
+import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/src/futureCalls/test_call.dart';
-import 'package:serverpod_test_server/test_util/logging_utils.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
+import '../test_tools/serverpod_test_tools.dart';
+import '../utils/future_call_manager_builder.dart';
+
+class CompleterTestCall extends FutureCall<SimpleData> {
+  final Completer<void> completer = Completer<void>();
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    if (object != null) {
+      var data = object;
+      session.log('${data.num}');
+    } else {
+      session.log('null');
+    }
+
+    completer.complete();
+  }
+}
+
 void main() async {
-  late Serverpod server;
-  late Session session;
+  withServerpod(
+      'Given FutureCallManager with scheduled future call that is due',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CompleterTestCall testCall;
 
-  late TestCall testCall;
-
-  group('FutureCallManager -', () {
     setUp(() async {
-      server = IntegrationTestServer.create();
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
 
-      testCall = TestCall();
-      server.registerFutureCall(testCall, 'testCall');
+      testCall = CompleterTestCall();
 
-      await server.start();
+      futureCallManager.registerFutureCall(testCall, 'testCall');
 
-      session = await server.createSession(enableLogging: false);
-      await LoggingUtil.clearAllLogs(session);
+      futureCallManager.scheduleFutureCall(
+        'testCall',
+        SimpleData(num: 4),
+        DateTime.now().subtract(const Duration(seconds: 1)),
+        '1',
+        'alex',
+      );
     });
 
     tearDown(() async {
-      await session.close();
-      await server.shutdown(exitProcess: false);
+      await futureCallManager.stop();
     });
 
-    test(
-        'when scheduling a future call in the past and starting the manager, then the call is executed and removed from database',
-        () async {
-      await server.futureCallAtTime(
-        'testCall',
-        SimpleData(num: 42),
-        DateTime.now().subtract(const Duration(seconds: 1)),
-      );
+    group('when running scheduled future calls', () {
+      setUp(() async {
+        await futureCallManager.runScheduledFutureCalls();
+      });
 
-      await testCall.completer.future;
+      test('then call is executed', () async {
+        expect(testCall.completer.future, completes);
+      });
 
-      final futureCallEntries = await FutureCallEntry.db.find(session);
+      test('then call is removed from database', () async {
+        final futureCallEntries = await FutureCallEntry.db.find(
+          sessionBuilder.build(),
+        );
 
-      expect(futureCallEntries, hasLength(0));
+        expect(futureCallEntries, hasLength(0));
+      });
     });
   });
 }
