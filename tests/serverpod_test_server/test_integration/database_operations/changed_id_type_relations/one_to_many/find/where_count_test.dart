@@ -242,24 +242,24 @@ void main() async {
       ]);
       await CommentInt.db.insert(session, [
         // Alex - OrderUuid 1 comments
-        CommentInt(description: 'CommentInt 1', orderId: orders[0].id!),
-        CommentInt(description: 'CommentInt 2', orderId: orders[0].id!),
+        CommentInt(description: 'CommentInt 1', orderId: orders[0].id),
+        CommentInt(description: 'CommentInt 2', orderId: orders[0].id),
         // Alex - OrderUuid 2 comments
-        CommentInt(description: 'CommentInt 3', orderId: orders[1].id!),
-        CommentInt(description: 'CommentInt 4', orderId: orders[1].id!),
-        CommentInt(description: 'CommentInt 5', orderId: orders[1].id!),
+        CommentInt(description: 'CommentInt 3', orderId: orders[1].id),
+        CommentInt(description: 'CommentInt 4', orderId: orders[1].id),
+        CommentInt(description: 'CommentInt 5', orderId: orders[1].id),
         // Isak - OrderUuid 3 comments
-        CommentInt(description: 'CommentInt 6', orderId: orders[2].id!),
-        CommentInt(description: 'CommentInt 7', orderId: orders[2].id!),
-        CommentInt(description: 'CommentInt 8', orderId: orders[2].id!),
+        CommentInt(description: 'CommentInt 6', orderId: orders[2].id),
+        CommentInt(description: 'CommentInt 7', orderId: orders[2].id),
+        CommentInt(description: 'CommentInt 8', orderId: orders[2].id),
         // Isak - OrderUuid 4 comments
-        CommentInt(description: 'CommentInt 9', orderId: orders[3].id!),
-        CommentInt(description: 'CommentInt 10', orderId: orders[3].id!),
-        CommentInt(description: 'CommentInt 11', orderId: orders[3].id!),
+        CommentInt(description: 'CommentInt 9', orderId: orders[3].id),
+        CommentInt(description: 'CommentInt 10', orderId: orders[3].id),
+        CommentInt(description: 'CommentInt 11', orderId: orders[3].id),
         // Viktor - OrderUuid 5 comments
-        CommentInt(description: 'CommentInt 12', orderId: orders[4].id!),
-        CommentInt(description: 'CommentInt 13', orderId: orders[4].id!),
-        CommentInt(description: 'CommentInt 14', orderId: orders[4].id!),
+        CommentInt(description: 'CommentInt 12', orderId: orders[4].id),
+        CommentInt(description: 'CommentInt 13', orderId: orders[4].id),
+        CommentInt(description: 'CommentInt 14', orderId: orders[4].id),
       ]);
 
       var fetchedCustomers = await CustomerInt.db.find(
@@ -293,24 +293,24 @@ void main() async {
       ]);
       await CommentInt.db.insert(session, [
         // Alex - OrderUuid 1 comments
-        CommentInt(description: 'Del: CommentInt 1', orderId: orders[0].id!),
-        CommentInt(description: 'Del: CommentInt 2', orderId: orders[0].id!),
+        CommentInt(description: 'Del: CommentInt 1', orderId: orders[0].id),
+        CommentInt(description: 'Del: CommentInt 2', orderId: orders[0].id),
         // Alex - OrderUuid 2 comments
-        CommentInt(description: 'Del: CommentInt 3', orderId: orders[1].id!),
-        CommentInt(description: 'CommentInt 4', orderId: orders[1].id!),
-        CommentInt(description: 'CommentInt 5', orderId: orders[1].id!),
+        CommentInt(description: 'Del: CommentInt 3', orderId: orders[1].id),
+        CommentInt(description: 'CommentInt 4', orderId: orders[1].id),
+        CommentInt(description: 'CommentInt 5', orderId: orders[1].id),
         // Isak - OrderUuid 3 comments
-        CommentInt(description: 'Del: CommentInt 6', orderId: orders[2].id!),
-        CommentInt(description: 'Del: CommentInt 7', orderId: orders[2].id!),
-        CommentInt(description: 'CommentInt 8', orderId: orders[2].id!),
+        CommentInt(description: 'Del: CommentInt 6', orderId: orders[2].id),
+        CommentInt(description: 'Del: CommentInt 7', orderId: orders[2].id),
+        CommentInt(description: 'CommentInt 8', orderId: orders[2].id),
         // Isak - OrderUuid 4 comments
-        CommentInt(description: 'Del: CommentInt 9', orderId: orders[3].id!),
-        CommentInt(description: 'Del: CommentInt 10', orderId: orders[3].id!),
-        CommentInt(description: 'CommentInt 11', orderId: orders[3].id!),
+        CommentInt(description: 'Del: CommentInt 9', orderId: orders[3].id),
+        CommentInt(description: 'Del: CommentInt 10', orderId: orders[3].id),
+        CommentInt(description: 'CommentInt 11', orderId: orders[3].id),
         // Viktor - OrderUuid 5 comments
-        CommentInt(description: 'Del: CommentInt 12', orderId: orders[4].id!),
-        CommentInt(description: 'Del: CommentInt 13', orderId: orders[4].id!),
-        CommentInt(description: 'CommentInt 14', orderId: orders[4].id!),
+        CommentInt(description: 'Del: CommentInt 12', orderId: orders[4].id),
+        CommentInt(description: 'Del: CommentInt 13', orderId: orders[4].id),
+        CommentInt(description: 'CommentInt 14', orderId: orders[4].id),
       ]);
 
       var fetchedCustomers = await CustomerInt.db.find(

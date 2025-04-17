@@ -63,7 +63,7 @@ void main() async {
 
       await AddressUuid.db.attachRow.inhabitant(session, address, alice);
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, alice.id);
     });
@@ -76,7 +76,7 @@ void main() async {
 
       await AddressUuid.db.detachRow.inhabitant(session, address);
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, null);
     });
@@ -92,7 +92,7 @@ void main() async {
 
       AddressUuid.db.attachRow.inhabitant(session, copy, alice);
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.street, 'Street');
     });
@@ -162,7 +162,7 @@ void main() async {
 
       await CitizenInt.db.attachRow.address(session, alice, address);
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, alice.id);
     });
@@ -185,7 +185,7 @@ void main() async {
 
       await CitizenInt.db.detachRow.address(session, bobCopy);
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, null);
     });
@@ -201,7 +201,7 @@ void main() async {
         await CitizenInt.db.attachRow
             .address(session, alice, address, transaction: transaction);
       });
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, alice.id);
     });
@@ -227,7 +227,7 @@ void main() async {
             .address(session, bobCopy, transaction: transaction);
       });
 
-      var updatedAddress = await AddressUuid.db.findById(session, address.id!);
+      var updatedAddress = await AddressUuid.db.findById(session, address.id);
 
       expect(updatedAddress?.inhabitantId, null);
     });
