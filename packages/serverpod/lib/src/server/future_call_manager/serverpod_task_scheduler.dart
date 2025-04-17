@@ -65,7 +65,7 @@ class ServerpodTaskScheduler {
   /// If the concurrency limit is reached, the queue is not processed further.
   void _handleQueue() {
     // Run as many task callbacks as possible.
-    while (_queue.isNotEmpty && isConcurrentLimitReached()) {
+    while (_queue.isNotEmpty && !isConcurrentLimitReached()) {
       final taskCallback = _queue.removeFirst();
 
       _runningTaskCallbacks++;
