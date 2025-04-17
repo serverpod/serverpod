@@ -9,14 +9,14 @@ void main() {
   // Note that after adding or modifying an endpoint, you will need to run
   // `serverpod generate` to update the test tools code.
   // Refer to the docs for more information on how to use the test helper.
-  withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
+  withServerpod('Given Greeting endpoint', (sessionBuilder, endpoints) {
     test('when calling `hello` with name then returned greeting includes name',
         () async {
       // Call the endpoint method by using the `endpoints` parameter and
       // pass `sessionBuilder` as a first argument. Refer to the docs on
       // how to use the `sessionBuilder` to set up different test scenarios.
-      final greeting = await endpoints.example.hello(sessionBuilder, 'Bob');
-      expect(greeting, 'Hello Bob');
+      final greeting = await endpoints.greeting.hello(sessionBuilder, 'Bob');
+      expect(greeting.message, 'Hello Bob');
     });
   });
 }

@@ -33,9 +33,18 @@ database:
   port: 8090
   name: projectname
   user: postgres
+  #requireSsl: true # defaults to false
+  #isUnixSocket: true # defaults to false
 
 # This is the setup for Redis.
 redis:
   enabled: false
   host: localhost
   port: 8091
+  #user: # defaults to empty
+
+maxRequestSize: 524288 # The maximum size of requests allowed in bytes
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true

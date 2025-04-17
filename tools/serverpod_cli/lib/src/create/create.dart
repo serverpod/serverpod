@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
+import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
@@ -143,6 +144,10 @@ Future<bool> performCreate(
           serverpodDirs.flutterDir);
     });
   }
+
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+  });
 
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.module) {
