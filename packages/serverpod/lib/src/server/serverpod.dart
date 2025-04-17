@@ -441,7 +441,6 @@ class Serverpod {
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
-        server,
         server.serverpod.config.futureCall,
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
@@ -450,6 +449,12 @@ class Serverpod {
           server: server,
           futureCallName: futureCallName,
         ),
+        initializeFutureCall: (FutureCall futureCall, String name) {
+          futureCall.initialize(
+            server,
+            name,
+          );
+        },
       );
     }
 

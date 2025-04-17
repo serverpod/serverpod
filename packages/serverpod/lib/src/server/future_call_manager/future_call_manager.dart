@@ -4,21 +4,24 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod/src/server/serverpod.dart';
 
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
 typedef SessionProvider = Session Function(String futureCallName);
+typedef InitializeFutureCall = void Function(
+  FutureCall futureCall,
+  String name,
+);
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
 /// arguments are stored in the database, so it is persistent even if the
 /// [Serverpod] is restarted.
 class FutureCallManager {
-  final Server _server;
   final Session _internalSession;
   final SessionProvider _sessionProvider;
+  final InitializeFutureCall _initializeFutureCall;
 
   final FutureCallConfig _config;
 
@@ -33,15 +36,16 @@ class FutureCallManager {
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
   /// the [Serverpod].
   FutureCallManager(
-    this._server,
     this._config,
     this._serializationManager, {
     required FutureCallDiagnosticsService diagnosticsService,
     required Session internalSession,
     required SessionProvider sessionProvider,
+    required InitializeFutureCall initializeFutureCall,
   })  : _diagnosticsService = diagnosticsService,
         _internalSession = internalSession,
-        _sessionProvider = sessionProvider {
+        _sessionProvider = sessionProvider,
+        _initializeFutureCall = initializeFutureCall {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -100,7 +104,7 @@ class FutureCallManager {
       throw Exception('Added future call with duplicate name ($name)');
     }
 
-    futureCall.initialize(_server, name);
+    _initializeFutureCall(futureCall, name);
 
     _futureCalls[name] = futureCall;
   }
