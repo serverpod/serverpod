@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DurationDefault
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DurationDefault._({
     this.id,
     Duration? durationDefault,
@@ -64,7 +64,7 @@ abstract class DurationDefault
   Duration? durationDefaultNull;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DurationDefault]
   /// with some or all fields replaced by the given arguments.
@@ -156,7 +156,7 @@ class _DurationDefaultImpl extends DurationDefault {
   }
 }
 
-class DurationDefaultTable extends _i1.Table<int> {
+class DurationDefaultTable extends _i1.Table<int?> {
   DurationDefaultTable({super.tableRelation})
       : super(tableName: 'duration_default') {
     durationDefault = _i1.ColumnDuration(
@@ -190,7 +190,7 @@ class DurationDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => DurationDefault.t;
+  _i1.Table<int?> get table => DurationDefault.t;
 }
 
 class DurationDefaultIncludeList extends _i1.IncludeList {
@@ -210,7 +210,7 @@ class DurationDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => DurationDefault.t;
+  _i1.Table<int?> get table => DurationDefault.t;
 }
 
 class DurationDefaultRepository {

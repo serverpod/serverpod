@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefaultPersist
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   IntDefaultPersist._({
     this.id,
     this.intDefaultPersist,
@@ -40,7 +40,7 @@ abstract class IntDefaultPersist
   int? intDefaultPersist;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -123,7 +123,7 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
   }
 }
 
-class IntDefaultPersistTable extends _i1.Table<int> {
+class IntDefaultPersistTable extends _i1.Table<int?> {
   IntDefaultPersistTable({super.tableRelation})
       : super(tableName: 'int_default_persist') {
     intDefaultPersist = _i1.ColumnInt(
@@ -149,7 +149,7 @@ class IntDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => IntDefaultPersist.t;
+  _i1.Table<int?> get table => IntDefaultPersist.t;
 }
 
 class IntDefaultPersistIncludeList extends _i1.IncludeList {
@@ -169,7 +169,7 @@ class IntDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => IntDefaultPersist.t;
+  _i1.Table<int?> get table => IntDefaultPersist.t;
 }
 
 class IntDefaultPersistRepository {

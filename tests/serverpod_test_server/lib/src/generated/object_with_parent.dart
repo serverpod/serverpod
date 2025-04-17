@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithParent
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithParent._({
     this.id,
     required this.other,
@@ -40,7 +40,7 @@ abstract class ObjectWithParent
   int other;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
@@ -121,7 +121,7 @@ class _ObjectWithParentImpl extends ObjectWithParent {
   }
 }
 
-class ObjectWithParentTable extends _i1.Table<int> {
+class ObjectWithParentTable extends _i1.Table<int?> {
   ObjectWithParentTable({super.tableRelation})
       : super(tableName: 'object_with_parent') {
     other = _i1.ColumnInt(
@@ -146,7 +146,7 @@ class ObjectWithParentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ObjectWithParent.t;
+  _i1.Table<int?> get table => ObjectWithParent.t;
 }
 
 class ObjectWithParentIncludeList extends _i1.IncludeList {
@@ -166,7 +166,7 @@ class ObjectWithParentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ObjectWithParent.t;
+  _i1.Table<int?> get table => ObjectWithParent.t;
 }
 
 class ObjectWithParentRepository {

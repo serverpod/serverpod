@@ -8,12 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/arena.dart' as _i2;
 import '../../changed_id_type/nested_one_to_many/player.dart' as _i3;
 
-abstract class TeamInt implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+abstract class TeamInt
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   TeamInt._({
     this.id,
     required this.name,
@@ -63,7 +66,7 @@ abstract class TeamInt implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   List<_i3.PlayerUuid>? players;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
@@ -175,7 +178,7 @@ class _TeamIntImpl extends TeamInt {
   }
 }
 
-class TeamIntTable extends _i1.Table<int> {
+class TeamIntTable extends _i1.Table<int?> {
   TeamIntTable({super.tableRelation}) : super(tableName: 'team_int') {
     name = _i1.ColumnString(
       'name',
@@ -280,7 +283,7 @@ class TeamIntInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<int> get table => TeamInt.t;
+  _i1.Table<int?> get table => TeamInt.t;
 }
 
 class TeamIntIncludeList extends _i1.IncludeList {
@@ -300,7 +303,7 @@ class TeamIntIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => TeamInt.t;
+  _i1.Table<int?> get table => TeamInt.t;
 }
 
 class TeamIntRepository {

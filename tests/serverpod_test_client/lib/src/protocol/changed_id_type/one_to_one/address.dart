@@ -30,9 +30,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
 
   factory AddressUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return AddressUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
@@ -45,7 +43,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _i1.UuidValue id;
 
   String street;
 
@@ -65,7 +63,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
       if (inhabitant != null) 'inhabitant': inhabitant?.toJson(),
@@ -98,13 +96,13 @@ class _AddressUuidImpl extends AddressUuid {
   @_i1.useResult
   @override
   AddressUuid copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? street,
     Object? inhabitantId = _Undefined,
     Object? inhabitant = _Undefined,
   }) {
     return AddressUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
       inhabitant: inhabitant is _i3.CitizenInt?

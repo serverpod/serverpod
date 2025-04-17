@@ -47,7 +47,7 @@ class Table<T_ID> {
     if (T_ID == dynamic) {
       throw Exception(
         'Can not create a table without passing an id type. Use the format '
-        'Table<int>(...) or Table<UuidValue>(...) to specify the id type.',
+        'Table<int?>(...) or Table<UuidValue>(...) to specify the id type.',
       );
     }
     if (equalsType<T_ID, int>()) {

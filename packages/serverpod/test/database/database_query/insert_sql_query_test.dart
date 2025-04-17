@@ -15,7 +15,7 @@ class PersonTable extends Table<int?> {
   List<Column> get columns => [id, name, age];
 }
 
-class PersonClass implements TableRow<int> {
+class PersonClass implements TableRow<int?> {
   final String name;
   final int age;
 
@@ -37,7 +37,7 @@ class PersonClass implements TableRow<int> {
   }
 }
 
-class OnlyIdClass implements TableRow<int> {
+class OnlyIdClass implements TableRow<int?> {
   OnlyIdClass({this.id});
 
   @override

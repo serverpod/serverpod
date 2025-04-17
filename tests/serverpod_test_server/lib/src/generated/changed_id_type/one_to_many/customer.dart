@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 
 abstract class CustomerInt
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CustomerInt._({
     this.id,
     required this.name,
@@ -48,7 +50,7 @@ abstract class CustomerInt
   List<_i2.OrderUuid>? orders;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
@@ -140,7 +142,7 @@ class _CustomerIntImpl extends CustomerInt {
   }
 }
 
-class CustomerIntTable extends _i1.Table<int> {
+class CustomerIntTable extends _i1.Table<int?> {
   CustomerIntTable({super.tableRelation}) : super(tableName: 'customer_int') {
     name = _i1.ColumnString(
       'name',
@@ -211,7 +213,7 @@ class CustomerIntInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'orders': _orders};
 
   @override
-  _i1.Table<int> get table => CustomerInt.t;
+  _i1.Table<int?> get table => CustomerInt.t;
 }
 
 class CustomerIntIncludeList extends _i1.IncludeList {
@@ -231,7 +233,7 @@ class CustomerIntIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => CustomerInt.t;
+  _i1.Table<int?> get table => CustomerInt.t;
 }
 
 class CustomerIntRepository {

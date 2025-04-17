@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class StringDefault
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   StringDefault._({
     this.id,
     String? stringDefault,
@@ -46,7 +46,7 @@ abstract class StringDefault
   String? stringDefaultNull;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [StringDefault]
   /// with some or all fields replaced by the given arguments.
@@ -136,7 +136,7 @@ class _StringDefaultImpl extends StringDefault {
   }
 }
 
-class StringDefaultTable extends _i1.Table<int> {
+class StringDefaultTable extends _i1.Table<int?> {
   StringDefaultTable({super.tableRelation})
       : super(tableName: 'string_default') {
     stringDefault = _i1.ColumnString(
@@ -170,7 +170,7 @@ class StringDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => StringDefault.t;
+  _i1.Table<int?> get table => StringDefault.t;
 }
 
 class StringDefaultIncludeList extends _i1.IncludeList {
@@ -190,7 +190,7 @@ class StringDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => StringDefault.t;
+  _i1.Table<int?> get table => StringDefault.t;
 }
 
 class StringDefaultRepository {
