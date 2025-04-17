@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:test/test.dart';
 
-class PersonTable extends Table<int> {
+class PersonTable extends Table<int?> {
   late final ColumnString name;
   late final ColumnInt age;
 
@@ -15,7 +15,7 @@ class PersonTable extends Table<int> {
   List<Column> get columns => [id, name, age];
 }
 
-class PersonClass implements TableRow<int> {
+class PersonClass implements TableRow<int?> {
   final String name;
   final int age;
 
@@ -25,7 +25,7 @@ class PersonClass implements TableRow<int> {
   PersonClass({this.id, required this.name, required this.age});
 
   @override
-  Table<int> get table => PersonTable();
+  Table<int?> get table => PersonTable();
 
   @override
   Map<String, Object?> toJson() {
@@ -37,14 +37,14 @@ class PersonClass implements TableRow<int> {
   }
 }
 
-class OnlyIdClass implements TableRow<int> {
+class OnlyIdClass implements TableRow<int?> {
   OnlyIdClass({this.id});
 
   @override
   int? id;
 
   @override
-  Table<int> get table => Table<int>(tableName: 'only_id');
+  Table<int?> get table => Table<int?>(tableName: 'only_id');
 
   @override
   Map<String, Object?> toJson() {
@@ -87,7 +87,7 @@ void main() {
         'when building insert query with a row then output is a valid SQL query that lists the columns.',
         () {
       var query = InsertQueryBuilder(
-        table: Table<int>(tableName: 'only_id'),
+        table: Table<int?>(tableName: 'only_id'),
         rows: [OnlyIdClass()],
       ).build();
 
@@ -111,7 +111,7 @@ void main() {
       'Given model with only id column and id column having value when building insert query then its id is used in the query.',
       () {
     var query = InsertQueryBuilder(
-      table: Table<int>(tableName: 'only_id'),
+      table: Table<int?>(tableName: 'only_id'),
       rows: [OnlyIdClass(id: 33)],
     ).build();
 

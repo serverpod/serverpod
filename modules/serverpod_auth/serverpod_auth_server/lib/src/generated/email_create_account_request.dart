@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
 abstract class EmailCreateAccountRequest
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -62,7 +62,7 @@ abstract class EmailCreateAccountRequest
   String verificationCode;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailCreateAccountRequest]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +164,7 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
   }
 }
 
-class EmailCreateAccountRequestTable extends _i1.Table<int> {
+class EmailCreateAccountRequestTable extends _i1.Table<int?> {
   EmailCreateAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_email_create_request') {
     userName = _i1.ColumnString(
@@ -214,7 +214,7 @@ class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => EmailCreateAccountRequest.t;
+  _i1.Table<int?> get table => EmailCreateAccountRequest.t;
 }
 
 class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
@@ -234,7 +234,7 @@ class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EmailCreateAccountRequest.t;
+  _i1.Table<int?> get table => EmailCreateAccountRequest.t;
 }
 
 class EmailCreateAccountRequestRepository {

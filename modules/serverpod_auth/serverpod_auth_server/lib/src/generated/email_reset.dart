@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for an email reset.
 abstract class EmailReset
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EmailReset._({
     this.id,
     required this.userId,
@@ -55,7 +55,7 @@ abstract class EmailReset
   DateTime expiration;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +150,7 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
-class EmailResetTable extends _i1.Table<int> {
+class EmailResetTable extends _i1.Table<int?> {
   EmailResetTable({super.tableRelation})
       : super(tableName: 'serverpod_email_reset') {
     userId = _i1.ColumnInt(
@@ -192,7 +192,7 @@ class EmailResetInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => EmailReset.t;
+  _i1.Table<int?> get table => EmailReset.t;
 }
 
 class EmailResetIncludeList extends _i1.IncludeList {
@@ -212,7 +212,7 @@ class EmailResetIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EmailReset.t;
+  _i1.Table<int?> get table => EmailReset.t;
 }
 
 class EmailResetRepository {

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BoolDefaultModel
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   BoolDefaultModel._({
     this.id,
     bool? boolDefaultModelTrue,
@@ -53,7 +53,7 @@ abstract class BoolDefaultModel
   bool boolDefaultModelNullFalse;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +150,7 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
   }
 }
 
-class BoolDefaultModelTable extends _i1.Table<int> {
+class BoolDefaultModelTable extends _i1.Table<int?> {
   BoolDefaultModelTable({super.tableRelation})
       : super(tableName: 'bool_default_model') {
     boolDefaultModelTrue = _i1.ColumnBool(
@@ -189,7 +189,7 @@ class BoolDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => BoolDefaultModel.t;
+  _i1.Table<int?> get table => BoolDefaultModel.t;
 }
 
 class BoolDefaultModelIncludeList extends _i1.IncludeList {
@@ -209,7 +209,7 @@ class BoolDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => BoolDefaultModel.t;
+  _i1.Table<int?> get table => BoolDefaultModel.t;
 }
 
 class BoolDefaultModelRepository {

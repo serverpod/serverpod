@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
@@ -131,6 +132,22 @@ void main() {
             isTrue,
             reason: 'Missing declaration for table method.');
       });
+
+      test('has table method generic to nullable int type.', () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          exampleIncludeClass,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.toString(),
+          'int?',
+          reason: 'Wrong generic type for table method.',
+        );
+      });
     },
         skip: maybeClassNamedExampleInclude == null
             ? 'Could not run test because ${testClassName}Include class was not found.'
@@ -192,6 +209,22 @@ void main() {
             ),
             isTrue,
             reason: 'Missing declaration for table method.');
+      });
+
+      test('has table method generic to nullable int type.', () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          exampleIncludeListClass,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.toString(),
+          'int?',
+          reason: 'Wrong generic type for table method.',
+        );
       });
     },
         skip: includeListClass == null

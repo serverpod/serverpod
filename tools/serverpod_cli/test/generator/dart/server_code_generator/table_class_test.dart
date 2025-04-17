@@ -64,7 +64,7 @@ void main() {
             maybeClassNamedExampleTable!
                 .extendsClause?.superclass.typeArguments?.arguments.first
                 .toString(),
-            'int',
+            'int?',
             reason: 'Missing generic to default id type int.');
       });
 

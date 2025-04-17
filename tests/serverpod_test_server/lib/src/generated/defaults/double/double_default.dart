@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefault
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DoubleDefault._({
     this.id,
     double? doubleDefault,
@@ -47,7 +47,7 @@ abstract class DoubleDefault
   double? doubleDefaultNull;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefault]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +137,7 @@ class _DoubleDefaultImpl extends DoubleDefault {
   }
 }
 
-class DoubleDefaultTable extends _i1.Table<int> {
+class DoubleDefaultTable extends _i1.Table<int?> {
   DoubleDefaultTable({super.tableRelation})
       : super(tableName: 'double_default') {
     doubleDefault = _i1.ColumnDouble(
@@ -171,7 +171,7 @@ class DoubleDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => DoubleDefault.t;
+  _i1.Table<int?> get table => DoubleDefault.t;
 }
 
 class DoubleDefaultIncludeList extends _i1.IncludeList {
@@ -191,7 +191,7 @@ class DoubleDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => DoubleDefault.t;
+  _i1.Table<int?> get table => DoubleDefault.t;
 }
 
 class DoubleDefaultRepository {

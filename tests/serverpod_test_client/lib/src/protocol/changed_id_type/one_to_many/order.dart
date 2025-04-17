@@ -33,9 +33,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
@@ -51,7 +49,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _i1.UuidValue id;
 
   String description;
 
@@ -74,7 +72,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'description': description,
       'customerId': customerId,
       if (customer != null) 'customer': customer?.toJson(),
@@ -111,14 +109,14 @@ class _OrderUuidImpl extends OrderUuid {
   @_i1.useResult
   @override
   OrderUuid copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? description,
     int? customerId,
     Object? customer = _Undefined,
     Object? comments = _Undefined,
   }) {
     return OrderUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
       customer:

@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/student.dart' as _i2;
 import '../../changed_id_type/many_to_many/course.dart' as _i3;
 
 abstract class EnrollmentInt
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EnrollmentInt._({
     this.id,
     required this.studentId,
@@ -65,7 +67,7 @@ abstract class EnrollmentInt
   _i3.CourseUuid? course;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.
@@ -173,7 +175,7 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   }
 }
 
-class EnrollmentIntTable extends _i1.Table<int> {
+class EnrollmentIntTable extends _i1.Table<int?> {
   EnrollmentIntTable({super.tableRelation})
       : super(tableName: 'enrollment_int') {
     studentId = _i1.ColumnUuid(
@@ -259,7 +261,7 @@ class EnrollmentIntInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<int> get table => EnrollmentInt.t;
+  _i1.Table<int?> get table => EnrollmentInt.t;
 }
 
 class EnrollmentIntIncludeList extends _i1.IncludeList {
@@ -279,7 +281,7 @@ class EnrollmentIntIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => EnrollmentInt.t;
+  _i1.Table<int?> get table => EnrollmentInt.t;
 }
 
 class EnrollmentIntRepository {

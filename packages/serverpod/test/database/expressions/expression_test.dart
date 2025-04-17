@@ -4,7 +4,7 @@ import 'package:serverpod/src/database/concepts/table.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var testTable = Table<int>(tableName: 'test');
+  var testTable = Table<int?>(tableName: 'test');
   group('Given one expression', () {
     var expressionString = 'true = true';
     var expression = Expression(expressionString);

@@ -52,14 +52,14 @@ void main() {
           .typeArguments?.arguments.first as NamedType?;
 
       expect(
-        typeName?.name2.toString(),
-        'int',
+        typeName?.toString(),
+        'int?',
         reason: 'Wrong generic type for TableRow.',
       );
     });
 
     test(
-        'then the class has Table generic to "int" as table getter return type.',
+        'then the class has Table generic to "int?" as table getter return type.',
         () {
       var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
         maybeClassNamedExample!,
@@ -70,8 +70,8 @@ void main() {
       var genericType = typeArguments?.typeArguments?.arguments.first;
 
       expect(
-        (genericType as NamedType?)?.name2.toString(),
-        'int',
+        (genericType as NamedType?)?.toString(),
+        'int?',
         reason: 'Wrong generic type for Table getter.',
       );
     });
@@ -83,19 +83,21 @@ void main() {
       );
 
       expect(
-        (maybeIdField?.fields.type as NamedType).name2.toString(),
-        'int',
+        (maybeIdField?.fields.type as NamedType).toString(),
+        'int?',
         reason: 'Wrong type for the id field.',
       );
     });
   });
 
-  group('Given a table class with id type "UUIDv4" when generating code', () {
+  group(
+      'Given a table class with non-nullable id type "UUIDv4" when generating code',
+      () {
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName('example')
           .withTableName('example_table')
-          .withIdFieldType(SupportedIdType.uuidV4)
+          .withIdFieldType(SupportedIdType.uuidV4, nullable: false)
           .build()
     ];
 
@@ -126,8 +128,8 @@ void main() {
           .typeArguments?.arguments.first as NamedType?;
 
       expect(
-        typeName?.name2.toString(),
-        'UuidValue',
+        typeName?.toString(),
+        '_i1.UuidValue',
         reason: 'Wrong generic type for TableRow.',
       );
     });
@@ -144,8 +146,8 @@ void main() {
       var genericType = typeArguments?.typeArguments?.arguments.first;
 
       expect(
-        (genericType as NamedType?)?.name2.toString(),
-        'UuidValue',
+        (genericType as NamedType?)?.toString(),
+        '_i1.UuidValue',
         reason: 'Wrong generic type for Table getter.',
       );
     });
@@ -157,8 +159,84 @@ void main() {
       );
 
       expect(
-        (maybeIdField?.fields.type as NamedType).name2.toString(),
-        'UuidValue',
+        (maybeIdField?.fields.type as NamedType).toString(),
+        '_i1.UuidValue',
+        reason: 'Wrong type for the id field.',
+      );
+    });
+  });
+
+  group(
+      'Given a table class with nullable id type "UUIDv4" when generating code',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName('example')
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.uuidV4, nullable: true)
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'Example',
+    );
+
+    test('then a class named "Example" is correctly generated.', () {
+      expect(
+        maybeClassNamedExample,
+        isNotNull,
+        reason: 'Missing definition for class named "Example".',
+      );
+    });
+
+    test('then the class has TableRow implements generic to "UuidValue".', () {
+      var typeName = maybeClassNamedExample!.implementsClause?.interfaces.first
+          .typeArguments?.arguments.first as NamedType?;
+
+      expect(
+        typeName?.toString(),
+        '_i1.UuidValue?',
+        reason: 'Wrong generic type for TableRow.',
+      );
+    });
+
+    test(
+        'then the class has Table generic to "UuidValue" as table getter return type.',
+        () {
+      var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+        maybeClassNamedExample!,
+        name: 'table',
+      );
+
+      var typeArguments = maybeTableGetter?.returnType as NamedType?;
+      var genericType = typeArguments?.typeArguments?.arguments.first;
+
+      expect(
+        (genericType as NamedType?)?.toString(),
+        '_i1.UuidValue?',
+        reason: 'Wrong generic type for Table getter.',
+      );
+    });
+
+    test('then the class has type of the id field "UuidValue".', () {
+      var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+        maybeClassNamedExample!,
+        name: 'id',
+      );
+
+      expect(
+        (maybeIdField?.fields.type as NamedType).toString(),
+        '_i1.UuidValue?',
         reason: 'Wrong type for the id field.',
       );
     });

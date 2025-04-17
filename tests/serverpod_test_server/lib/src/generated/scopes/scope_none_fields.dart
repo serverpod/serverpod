@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../simple_data.dart' as _i2;
 
 abstract class ScopeNoneFields
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ScopeNoneFields._({this.id})
       : _name = null,
         _object = null;
@@ -43,7 +43,7 @@ abstract class ScopeNoneFields
   final _i2.SimpleData? _object;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
@@ -139,7 +139,7 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   final _i2.SimpleData? _object;
 }
 
-class ScopeNoneFieldsTable extends _i1.Table<int> {
+class ScopeNoneFieldsTable extends _i1.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
       : super(tableName: 'scope_none_fields') {
     $name = _i1.ColumnString(
@@ -174,7 +174,7 @@ class ScopeNoneFieldsInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ScopeNoneFields.t;
+  _i1.Table<int?> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
@@ -194,7 +194,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ScopeNoneFields.t;
+  _i1.Table<int?> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsRepository {

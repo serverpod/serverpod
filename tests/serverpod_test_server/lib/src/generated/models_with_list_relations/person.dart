@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
 
-abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Person._({
     this.id,
     required this.name,
@@ -56,7 +58,7 @@ abstract class Person implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   final int? _cityCitizensCityId;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -190,7 +192,7 @@ class PersonImplicit extends _PersonImpl {
   final int? _cityCitizensCityId;
 }
 
-class PersonTable extends _i1.Table<int> {
+class PersonTable extends _i1.Table<int?> {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
     name = _i1.ColumnString(
       'name',
@@ -262,7 +264,7 @@ class PersonInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table<int> get table => Person.t;
+  _i1.Table<int?> get table => Person.t;
 }
 
 class PersonIncludeList extends _i1.IncludeList {
@@ -282,7 +284,7 @@ class PersonIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => Person.t;
+  _i1.Table<int?> get table => Person.t;
 }
 
 class PersonRepository {

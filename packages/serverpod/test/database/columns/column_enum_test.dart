@@ -12,7 +12,7 @@ void main() {
     var columnName = 'color';
     var column = ColumnEnum<TestEnum>(
       columnName,
-      Table<int>(tableName: 'test'),
+      Table<int?>(tableName: 'test'),
       EnumSerialization.byIndex,
     );
 
@@ -110,7 +110,7 @@ void main() {
     var columnName = 'color';
     var column = ColumnEnum<TestEnum>(
       columnName,
-      Table<int>(tableName: 'test'),
+      Table<int?>(tableName: 'test'),
       EnumSerialization.byName,
     );
 

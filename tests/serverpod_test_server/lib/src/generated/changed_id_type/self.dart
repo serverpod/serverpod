@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 import '../changed_id_type/self.dart' as _i3;
 
 abstract class ChangedIdTypeSelf
-    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   ChangedIdTypeSelf._({
     _i1.UuidValue? id,
     required this.name,
@@ -90,7 +92,7 @@ abstract class ChangedIdTypeSelf
   List<_i3.ChangedIdTypeSelf>? children;
 
   @override
-  _i1.Table<_i1.UuidValue> get table => t;
+  _i1.Table<_i1.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
@@ -230,7 +232,7 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   }
 }
 
-class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue> {
+class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
   ChangedIdTypeSelfTable({super.tableRelation})
       : super(tableName: 'changed_id_type_self') {
     name = _i1.ColumnString(
@@ -389,7 +391,7 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<_i1.UuidValue> get table => ChangedIdTypeSelf.t;
+  _i1.Table<_i1.UuidValue?> get table => ChangedIdTypeSelf.t;
 }
 
 class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
@@ -409,7 +411,7 @@ class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => ChangedIdTypeSelf.t;
+  _i1.Table<_i1.UuidValue?> get table => ChangedIdTypeSelf.t;
 }
 
 class ChangedIdTypeSelfRepository {

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
@@ -29,9 +31,7 @@ abstract class ArenaUuid
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ArenaUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
@@ -45,7 +45,7 @@ abstract class ArenaUuid
   static const db = ArenaUuidRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _i1.UuidValue id;
 
   String name;
 
@@ -65,7 +65,7 @@ abstract class ArenaUuid
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'name': name,
       if (team != null) 'team': team?.toJson(),
     };
@@ -74,7 +74,7 @@ abstract class ArenaUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'name': name,
       if (team != null) 'team': team?.toJsonForProtocol(),
     };
@@ -128,12 +128,12 @@ class _ArenaUuidImpl extends ArenaUuid {
   @_i1.useResult
   @override
   ArenaUuid copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? name,
     Object? team = _Undefined,
   }) {
     return ArenaUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id ?? this.id,
       name: name ?? this.name,
       team: team is _i3.TeamInt? ? team : this.team?.copyWith(),
     );

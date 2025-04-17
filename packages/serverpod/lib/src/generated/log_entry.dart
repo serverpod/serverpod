@@ -14,7 +14,7 @@ import 'log_level.dart' as _i2;
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -97,7 +97,7 @@ abstract class LogEntry
   int order;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -241,7 +241,7 @@ class _LogEntryImpl extends LogEntry {
   }
 }
 
-class LogEntryTable extends _i1.Table<int> {
+class LogEntryTable extends _i1.Table<int?> {
   LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
@@ -339,7 +339,7 @@ class LogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => LogEntry.t;
+  _i1.Table<int?> get table => LogEntry.t;
 }
 
 class LogEntryIncludeList extends _i1.IncludeList {
@@ -359,7 +359,7 @@ class LogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => LogEntry.t;
+  _i1.Table<int?> get table => LogEntry.t;
 }
 
 class LogEntryRepository {

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultMix
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UriDefaultMix._({
     this.id,
     Uri? uriDefaultAndDefaultModel,
@@ -58,7 +58,7 @@ abstract class UriDefaultMix
   Uri uriDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -158,7 +158,7 @@ class _UriDefaultMixImpl extends UriDefaultMix {
   }
 }
 
-class UriDefaultMixTable extends _i1.Table<int> {
+class UriDefaultMixTable extends _i1.Table<int?> {
   UriDefaultMixTable({super.tableRelation})
       : super(tableName: 'uri_default_mix') {
     uriDefaultAndDefaultModel = _i1.ColumnUri(
@@ -200,7 +200,7 @@ class UriDefaultMixInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UriDefaultMix.t;
+  _i1.Table<int?> get table => UriDefaultMix.t;
 }
 
 class UriDefaultMixIncludeList extends _i1.IncludeList {
@@ -220,7 +220,7 @@ class UriDefaultMixIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UriDefaultMix.t;
+  _i1.Table<int?> get table => UriDefaultMix.t;
 }
 
 class UriDefaultMixRepository {

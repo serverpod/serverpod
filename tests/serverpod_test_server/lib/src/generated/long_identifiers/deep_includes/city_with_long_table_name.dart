@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
@@ -16,7 +18,7 @@ import '../../long_identifiers/deep_includes/organization_with_long_table_name.d
     as _i3;
 
 abstract class CityWithLongTableName
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CityWithLongTableName._({
     this.id,
     required this.name,
@@ -61,7 +63,7 @@ abstract class CityWithLongTableName
   List<_i3.OrganizationWithLongTableName>? organizations;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -171,7 +173,7 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
   }
 }
 
-class CityWithLongTableNameTable extends _i1.Table<int> {
+class CityWithLongTableNameTable extends _i1.Table<int?> {
   CityWithLongTableNameTable({super.tableRelation})
       : super(tableName: 'city_with_long_table_name_that_is_still_valid') {
     name = _i1.ColumnString(
@@ -294,7 +296,7 @@ class CityWithLongTableNameInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<int> get table => CityWithLongTableName.t;
+  _i1.Table<int?> get table => CityWithLongTableName.t;
 }
 
 class CityWithLongTableNameIncludeList extends _i1.IncludeList {
@@ -314,7 +316,7 @@ class CityWithLongTableNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => CityWithLongTableName.t;
+  _i1.Table<int?> get table => CityWithLongTableName.t;
 }
 
 class CityWithLongTableNameRepository {

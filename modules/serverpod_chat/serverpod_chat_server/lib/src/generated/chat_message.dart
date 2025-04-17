@@ -15,7 +15,7 @@ import 'chat_message_attachment.dart' as _i3;
 
 /// A chat message.
 abstract class ChatMessage
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ChatMessage._({
     this.id,
     required this.channel,
@@ -98,7 +98,7 @@ abstract class ChatMessage
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ChatMessage]
   /// with some or all fields replaced by the given arguments.
@@ -243,7 +243,7 @@ class _ChatMessageImpl extends ChatMessage {
   }
 }
 
-class ChatMessageTable extends _i1.Table<int> {
+class ChatMessageTable extends _i1.Table<int?> {
   ChatMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_message') {
     channel = _i1.ColumnString(
@@ -309,7 +309,7 @@ class ChatMessageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ChatMessage.t;
+  _i1.Table<int?> get table => ChatMessage.t;
 }
 
 class ChatMessageIncludeList extends _i1.IncludeList {
@@ -329,7 +329,7 @@ class ChatMessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ChatMessage.t;
+  _i1.Table<int?> get table => ChatMessage.t;
 }
 
 class ChatMessageRepository {

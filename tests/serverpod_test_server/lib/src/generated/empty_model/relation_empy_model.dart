@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
 
 abstract class RelationEmptyModel
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   RelationEmptyModel._({
     this.id,
     this.items,
@@ -44,7 +46,7 @@ abstract class RelationEmptyModel
   List<_i2.EmptyModelRelationItem>? items;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.
@@ -129,7 +131,7 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   }
 }
 
-class RelationEmptyModelTable extends _i1.Table<int> {
+class RelationEmptyModelTable extends _i1.Table<int?> {
   RelationEmptyModelTable({super.tableRelation})
       : super(tableName: 'relation_empty_model') {}
 
@@ -193,7 +195,7 @@ class RelationEmptyModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'items': _items};
 
   @override
-  _i1.Table<int> get table => RelationEmptyModel.t;
+  _i1.Table<int?> get table => RelationEmptyModel.t;
 }
 
 class RelationEmptyModelIncludeList extends _i1.IncludeList {
@@ -213,7 +215,7 @@ class RelationEmptyModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => RelationEmptyModel.t;
+  _i1.Table<int?> get table => RelationEmptyModel.t;
 }
 
 class RelationEmptyModelRepository {

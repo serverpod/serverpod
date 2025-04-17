@@ -15,7 +15,7 @@ import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i5;
 
-abstract class Types implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -143,7 +143,7 @@ abstract class Types implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   (String, {Uri? optionalUri})? aRecord;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -350,7 +350,7 @@ class _TypesImpl extends Types {
   }
 }
 
-class TypesTable extends _i1.Table<int> {
+class TypesTable extends _i1.Table<int?> {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
@@ -481,7 +481,7 @@ class TypesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => Types.t;
+  _i1.Table<int?> get table => Types.t;
 }
 
 class TypesIncludeList extends _i1.IncludeList {
@@ -501,7 +501,7 @@ class TypesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => Types.t;
+  _i1.Table<int?> get table => Types.t;
 }
 
 class TypesRepository {

@@ -148,7 +148,6 @@ class SerializableModelLibraryGenerator {
         if (serverCode && tableName != null) {
           var idTypeReference = classDefinition.idField.type.reference(
             serverCode,
-            nullable: false,
             subDirParts: classDefinition.subDirParts,
             config: config,
           ) as TypeReference;
@@ -204,6 +203,13 @@ class SerializableModelLibraryGenerator {
                 classDefinition,
               ),
           ]);
+
+          if (buildRepository.hasAttachOperations(fields) ||
+              buildRepository.hasAttachRowOperations(fields) ||
+              buildRepository.hasDetachOperations(fields) ||
+              buildRepository.hasDetachRowOperations(fields)) {
+            libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
+          }
         }
       },
     );
@@ -319,7 +325,6 @@ class SerializableModelLibraryGenerator {
       if (serverCode && tableName != null) {
         var idTypeReference = classDefinition.idField.type.reference(
           serverCode,
-          nullable: false,
           subDirParts: classDefinition.subDirParts,
           config: config,
         ) as TypeReference;
@@ -340,12 +345,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(Field(
           (f) => f
             ..name = 'id'
-            ..type = classDefinition.idField.type.reference(
-              serverCode,
-              nullable: true,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-            )
+            ..type = idTypeReference
             ..annotations.add(
               refer('override'),
             ),

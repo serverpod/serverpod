@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -62,7 +62,7 @@ abstract class CloudStorageDirectUploadEntry
   String authKey;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +164,7 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
   }
 }
 
-class CloudStorageDirectUploadEntryTable extends _i1.Table<int> {
+class CloudStorageDirectUploadEntryTable extends _i1.Table<int?> {
   CloudStorageDirectUploadEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage_direct_upload') {
     storageId = _i1.ColumnString(
@@ -214,7 +214,7 @@ class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => CloudStorageDirectUploadEntry.t;
+  _i1.Table<int?> get table => CloudStorageDirectUploadEntry.t;
 }
 
 class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
@@ -234,7 +234,7 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => CloudStorageDirectUploadEntry.t;
+  _i1.Table<int?> get table => CloudStorageDirectUploadEntry.t;
 }
 
 class CloudStorageDirectUploadEntryRepository {

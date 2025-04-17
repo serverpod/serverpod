@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/town.dart' as _i2;
 
 abstract class CompanyUuid
-    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   CompanyUuid._({
     this.id,
     required this.name,
@@ -56,7 +58,7 @@ abstract class CompanyUuid
   _i2.TownInt? town;
 
   @override
-  _i1.Table<_i1.UuidValue> get table => t;
+  _i1.Table<_i1.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
@@ -151,7 +153,7 @@ class _CompanyUuidImpl extends CompanyUuid {
   }
 }
 
-class CompanyUuidTable extends _i1.Table<_i1.UuidValue> {
+class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
   CompanyUuidTable({super.tableRelation}) : super(tableName: 'company_uuid') {
     name = _i1.ColumnString(
       'name',
@@ -209,7 +211,7 @@ class CompanyUuidInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'town': _town};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => CompanyUuid.t;
+  _i1.Table<_i1.UuidValue?> get table => CompanyUuid.t;
 }
 
 class CompanyUuidIncludeList extends _i1.IncludeList {
@@ -229,7 +231,7 @@ class CompanyUuidIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => CompanyUuid.t;
+  _i1.Table<_i1.UuidValue?> get table => CompanyUuid.t;
 }
 
 class CompanyUuidRepository {

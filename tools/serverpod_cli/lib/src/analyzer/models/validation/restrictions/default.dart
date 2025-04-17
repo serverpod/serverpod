@@ -88,6 +88,19 @@ class DefaultValueRestriction extends ValueRestriction {
       ];
     }
 
+    if ((key == Keyword.defaultModelKey) && idType.nullable) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$defaultPrimaryKeyName" field is nullable, but the keyword '
+          '"${Keyword.defaultModelKey}" ensures that it will always have a '
+          'value, unless explicitly removed. Consider making it non-nullable '
+          'to avoid unnecessary null checks.',
+          span,
+          severity: SourceSpanSeverity.hint,
+        ),
+      );
+    }
+
     var supportedDefaults = SupportedIdType.all
         .where((e) => e.type.className == typeClassName)
         .map((e) => e.defaultValue);
