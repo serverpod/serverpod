@@ -1,6 +1,8 @@
 // ignore_for_file: dead_code
 
 @Timeout(Duration(minutes: 1))
+@Skip(
+    'These tests are disabled because they are flaky, tracked by this issue: https://github.com/serverpod/serverpod/issues/3431')
 
 import 'dart:async';
 import 'dart:convert';
@@ -174,9 +176,7 @@ void main() {
         terminationTimeout,
       );
       expect(exitCode, 1);
-    },
-        skip:
-            'Flaky test tracked by this issue: https://github.com/serverpod/serverpod/issues/3431');
+    });
 
     test(
         'with an ongoing http request '
