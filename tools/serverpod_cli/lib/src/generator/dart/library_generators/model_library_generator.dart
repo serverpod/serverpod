@@ -203,6 +203,13 @@ class SerializableModelLibraryGenerator {
                 classDefinition,
               ),
           ]);
+
+          if (buildRepository.hasAttachOperations(fields) ||
+              buildRepository.hasAttachRowOperations(fields) ||
+              buildRepository.hasDetachOperations(fields) ||
+              buildRepository.hasDetachRowOperations(fields)) {
+            libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
+          }
         }
       },
     );
