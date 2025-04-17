@@ -254,7 +254,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=random
+              id: UuidValue, defaultModel=random
             ''',
           ).build()
         ];
@@ -288,7 +288,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=
+              id: UuidValue, defaultModel=
             ''',
           ).build()
         ];
@@ -317,7 +317,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel='550e8400-e29b-41d4-a716-446655440000'
+              id: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
             ''',
           ).build()
         ];
@@ -346,7 +346,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=test
+              id: UuidValue, defaultModel=test
             ''',
           ).build()
         ];
@@ -393,6 +393,36 @@ void main() {
         test('then the field\'s id type is not-nullable.', () {
           expect(definition.idField.type.nullable, isFalse);
         });
+      },
+    );
+
+    test(
+      'when the field is of nullable type UUID and the defaultModel is set to "random", then a hint message is reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue?, defaultModel=random
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "id" field is nullable, but the keyword "defaultModel" ensures '
+          'that it will always have a value, unless explicitly removed. '
+          'Consider making it non-nullable to avoid unnecessary null checks.',
+        );
       },
     );
   });
