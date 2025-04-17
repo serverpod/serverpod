@@ -17,8 +17,9 @@ void main() {
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
+  const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
   final serverUrl =
-      String.fromEnvironment('SERVER_URL', defaultValue: '$localhost:8080/');
+      serverUrlFromEnv.isEmpty ? '$localhost:8080/' : serverUrlFromEnv;
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor();
