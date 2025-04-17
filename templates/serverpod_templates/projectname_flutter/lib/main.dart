@@ -9,10 +9,20 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 /// production servers.
 /// You might want to use the dependency injection of your choice instead of
 /// using a global client object. This is just a simple example.
-final client = Client('http://$localhost:8080/')
-  ..connectivityMonitor = FlutterConnectivityMonitor();
+late final Client client;
+
+late String serverUrl;
 
 void main() {
+  // When you are running the app on a physical device, you need to set the
+  // server URL to the IP address of your computer. You can find the IP
+  // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
+  final serverUrl =
+      String.fromEnvironment('SERVER_URL', defaultValue: '$localhost:8080/');
+
+  client = Client(serverUrl)
+    ..connectivityMonitor = FlutterConnectivityMonitor();
+
   runApp(const MyApp());
 }
 
