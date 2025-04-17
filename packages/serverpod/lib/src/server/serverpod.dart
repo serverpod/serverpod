@@ -604,7 +604,10 @@ class Serverpod {
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
-      if (commandLineArgs.role == ServerpodRole.maintenance) {
+      if (!config.futureCallExecutionEnabled) {
+        logVerbose('Future call execution is disabled.');
+        _completedFutureCalls = true;
+      } else if (commandLineArgs.role == ServerpodRole.maintenance) {
         unawaited(
           _futureCallManager
               ?.runScheduledFutureCalls()

@@ -48,6 +48,9 @@ class ServerpodConfig {
   /// Configuration for future call handling.
   final FutureCallConfig futureCall;
 
+  /// True if future call execution should be disabled.
+  final bool futureCallExecutionEnabled;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -62,6 +65,7 @@ class ServerpodConfig {
     SessionLogConfig? sessionLogs,
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
+    this.futureCallExecutionEnabled = true,
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,
@@ -170,6 +174,9 @@ class ServerpodConfig {
                 FutureCallConfig.defaultFutureCallConcurrencyLimit,
           );
 
+    var futureCallExecutionEnabled =
+        _readIsFutureCallExecutionEnabled(configMap, environment);
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -182,6 +189,7 @@ class ServerpodConfig {
       serviceSecret: serviceSecret,
       sessionLogs: sessionLogsConfig,
       futureCall: futureCallConfig,
+      futureCallExecutionEnabled: futureCallExecutionEnabled,
     );
   }
 
@@ -690,6 +698,24 @@ String _readServerId(
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
+}
+
+bool _readIsFutureCallExecutionEnabled(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var futureCallsExecutionEnabled =
+      configMap[ServerpodEnv.futureCallExecutionEnabled.configKey];
+  futureCallsExecutionEnabled =
+      environment[ServerpodEnv.futureCallExecutionEnabled.envVariable] ??
+          futureCallsExecutionEnabled;
+
+  if (futureCallsExecutionEnabled is String) {
+    futureCallsExecutionEnabled = bool.tryParse(futureCallsExecutionEnabled);
+  }
+
+  futureCallsExecutionEnabled ??= true;
+  return futureCallsExecutionEnabled;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that
