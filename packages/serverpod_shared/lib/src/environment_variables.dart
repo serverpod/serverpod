@@ -17,6 +17,9 @@ class ServerpodConfigMap {
 
   /// The logs configuration.
   static const String sessionLogs = 'sessionLogs';
+
+  /// The future call configuration.
+  static const String futureCall = 'futureCall';
 }
 
 /// The configuration sections for the serverpod server configuration file.
@@ -32,6 +35,15 @@ class ServerpodServerConfigMap {
 
   /// The public scheme for the server.
   static const String publicScheme = 'publicScheme';
+}
+
+/// The configuration sections for the future call configuration.
+class ServerpodFutureCallConfigMap {
+  /// The maximum number of concurrent running future calls.
+  static const String concurrencyLimit = 'concurrencyLimit';
+
+  /// The delay for the future call queue.
+  static const String scanInterval = 'scanInterval';
 }
 
 /// The default environment variables used by the server.
@@ -108,6 +120,15 @@ enum ServerpodEnv {
   /// The maximum request size for the server.
   maxRequestSize,
 
+  /// The maximum number of concurrent running future calls.
+  futureCallConcurrencyLimit,
+
+  /// How long to wait before checking the queue again in milliseconds.
+  futureCallScanInterval,
+
+  /// Toggle to disable future call execution.
+  futureCallExecutionEnabled,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
@@ -145,6 +166,11 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => ServerpodServerConfigMap.publicPort,
       (ServerpodEnv.webPublicScheme) => ServerpodServerConfigMap.publicScheme,
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
+      (ServerpodEnv.futureCallConcurrencyLimit) =>
+        ServerpodFutureCallConfigMap.concurrencyLimit,
+      (ServerpodEnv.futureCallScanInterval) =>
+        ServerpodFutureCallConfigMap.scanInterval,
+      (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.serverId) => 'serverId',
@@ -182,6 +208,12 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_SERVER_PUBLIC_PORT',
       (ServerpodEnv.webPublicScheme) => 'SERVERPOD_WEB_SERVER_PUBLIC_SCHEME',
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
+      (ServerpodEnv.futureCallConcurrencyLimit) =>
+        'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT',
+      (ServerpodEnv.futureCallScanInterval) =>
+        'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
+      (ServerpodEnv.futureCallExecutionEnabled) =>
+        'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>

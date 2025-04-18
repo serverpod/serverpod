@@ -11,7 +11,8 @@ import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod/src/server/future_call_manager.dart';
+import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
+import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
@@ -440,9 +441,20 @@ class Serverpod {
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
-        server,
+        server.serverpod.config.futureCall,
         serializationManager,
-        _onCompletedFutureCalls,
+        diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
+        internalSession: internalSession,
+        sessionProvider: (String futureCallName) => FutureCallSession(
+          server: server,
+          futureCallName: futureCallName,
+        ),
+        initializeFutureCall: (FutureCall futureCall, String name) {
+          futureCall.initialize(
+            server,
+            name,
+          );
+        },
       );
     }
 
@@ -592,7 +604,18 @@ class Serverpod {
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
-      _futureCallManager?.start();
+      if (!config.futureCallExecutionEnabled) {
+        logVerbose('Future call execution is disabled.');
+        _completedFutureCalls = true;
+      } else if (commandLineArgs.role == ServerpodRole.maintenance) {
+        unawaited(
+          _futureCallManager
+              ?.runScheduledFutureCalls()
+              .whenComplete(_onCompletedFutureCalls),
+        );
+      } else {
+        _futureCallManager?.start();
+      }
 
       // Start health check manager
       _completedHealthChecks = _healthCheckManager == null;

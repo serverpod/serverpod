@@ -32,3 +32,5 @@ redis:
 sessionLogs:
   persistentEnabled: true
   consoleEnabled: true
+
+futureCallExecutionEnabled: false
