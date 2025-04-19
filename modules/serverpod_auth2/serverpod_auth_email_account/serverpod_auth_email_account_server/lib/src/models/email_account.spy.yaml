@@ -1,0 +1,24 @@
+class: EmailAccount
+table: serverpod_auth_email_account
+fields:
+  id: UuidValue, default=random
+
+  # TODO: UUID
+  ### The id of the [AuthUser] this login belongs to.
+  userId: UuidValue, relation(parent=auth_user)
+
+  ### The time when this authentication was created.
+  created: DateTime
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case by convention.
+  email: String
+
+  ### The hashed password of the user.
+  passwordHash: String
+
+indexes:
+  serverpod_auth_email_account_email_idx:
+    fields: email
+    unique: true

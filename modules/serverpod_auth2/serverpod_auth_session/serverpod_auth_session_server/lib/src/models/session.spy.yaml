@@ -1,0 +1,14 @@
+class: ActiveSession
+table: serverpod_auth_session
+fields:
+  id: UuidValue, default=random
+
+  # TODO: Change to UUID type
+  ### The id of the [AuthUser] this session belongs to
+  userId: UuidValue, relation(parent=auth_user)
+
+  ### The time when this sesion was created.
+  created: DateTime
+
+  # TODO: Index
+  sessionKey: String

@@ -1,0 +1,14 @@
+class: AuthUser
+table: auth_user
+fields:
+  id: UuidValue, default=random
+
+  ### The time when this user was created.
+  created: DateTime
+
+  ### Set of scopes that this user can access.
+  # TODO: This should be non-nullable, but the code generator currently does not support it…
+  scopeNames: Set<String>
+
+  ### True if the user is blocked from signing in.
+  blocked: bool
