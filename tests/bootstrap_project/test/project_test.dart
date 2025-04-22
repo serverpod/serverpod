@@ -542,7 +542,7 @@ void main() async {
           'lib',
           'src',
           'generated',
-          'example.dart',
+          'greeting.dart',
         )).existsSync(),
         isTrue,
         reason: 'Server generated example file does not exist.',
