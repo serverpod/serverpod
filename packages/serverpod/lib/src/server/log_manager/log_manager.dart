@@ -330,10 +330,10 @@ class SessionLogManager {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
+        // TODO: Support non-`int` user IDs https://github.com/serverpod/serverpod/issues/3448
         authenticatedUserId: authenticatedUserId == null
             ? null
             : int.tryParse(authenticatedUserId),
-        // TODO: What to do here? We can not break the table… Can we deprecate the old user ID? Manual migration?
       );
 
       try {
