@@ -42,8 +42,8 @@ void run(List<String> args) async {
     FutureCallNames.birthdayReminder.name,
   );
 
-  // You can register future calls to be executed at startup. But you can also
-  // register them in any endpoint or webroute through the session object.
+  // You can schedule future calls for a later time during startup. But you can also
+  // schedule them in any endpoint or webroute through the session object.
   // there is also [futureCallAtTime] if you want to schedule a future call at a
   // specific time.
   await pod.futureCallWithDelay(
