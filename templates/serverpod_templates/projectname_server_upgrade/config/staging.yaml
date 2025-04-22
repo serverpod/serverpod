@@ -51,10 +51,8 @@ redis:
   port: 6379
   #user: # defaults to empty
 
-
 maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 
 sessionLogs:
 # persistentEnabled: true
 # consoleEnabled: true
-# Serverpod configs, not under a namespace:

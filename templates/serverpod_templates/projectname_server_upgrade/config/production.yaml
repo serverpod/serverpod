@@ -52,4 +52,3 @@ maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 sessionLogs:
   consoleEnabled: false
 # persistentEnabled: true
-# Serverpod configs, not under a namespace:
