@@ -218,6 +218,10 @@ Future<bool> _performUpgrade(ServerpodTemplateType template) async {
     },
   );
 
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDir.serverDir);
+  });
+
   success &= await log.progress('Creating default database migration.', () {
     return DatabaseSetup.createDefaultMigration(
       serverpodDir.serverDir,
