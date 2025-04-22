@@ -21,7 +21,7 @@ class UserEndpoint extends Endpoint {
       return false;
     }
 
-    var userId = (await session.authenticated)?.userId;
+    var userId = await session.userId;
     return await UserImages.setDefaultUserImage(session, userId!);
   }
 
@@ -31,7 +31,7 @@ class UserEndpoint extends Endpoint {
       return false;
     }
 
-    var userId = (await session.authenticated)?.userId;
+    var userId = await session.userId;
     return await UserImages.setUserImageFromBytes(
         session, userId!, image.buffer.asUint8List());
   }
@@ -45,7 +45,7 @@ class UserEndpoint extends Endpoint {
     userName = userName.trim();
     if (userName == '') return false;
 
-    var userId = (await session.authenticated)?.userId;
+    var userId = await session.userId;
     if (userId == null) return false;
 
     return (await Users.changeUserName(session, userId, userName)) != null;
@@ -60,7 +60,7 @@ class UserEndpoint extends Endpoint {
     fullName = fullName.trim();
     if (fullName == '') return false;
 
-    var userId = (await session.authenticated)?.userId;
+    var userId = await session.userId;
     if (userId == null) return false;
 
     return (await Users.changeFullName(session, userId, fullName)) != null;

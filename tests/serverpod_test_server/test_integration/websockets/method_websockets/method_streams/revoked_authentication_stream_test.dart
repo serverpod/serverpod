@@ -23,9 +23,10 @@ void main() {
     var tokenCounter = 0;
     server = IntegrationTestServer.create(
       authenticationHandler: (session, token) async => AuthenticationInfo(
-        authenticatedUserId,
+        null,
         {Scope.admin},
         authId: 'token-${tokenCounter++}',
+        user: '$authenticatedUserId',
       ),
     );
     await server.start();

@@ -41,10 +41,12 @@ Future<AuthenticationInfo?> authenticationHandler(
     for (var scopeName in authKey.scopeNames) {
       scopes.add(Scope(scopeName));
     }
+
     return AuthenticationInfo(
-      authKey.userId,
+      null,
       scopes,
       authId: keyIdStr,
+      user: authKey.userId.toString(),
     );
   } catch (exception, stackTrace) {
     stderr.writeln('Failed authentication: $exception');

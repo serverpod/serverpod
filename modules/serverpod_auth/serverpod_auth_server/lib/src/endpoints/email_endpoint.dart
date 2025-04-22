@@ -22,7 +22,7 @@ class EmailEndpoint extends Endpoint {
   /// Changes a users password.
   Future<bool> changePassword(
       Session session, String oldPassword, String newPassword) async {
-    var userId = (await session.authenticated)?.userId;
+    var userId = await session.userId;
     if (userId == null) return false;
 
     return Emails.changePassword(session, userId, oldPassword, newPassword);

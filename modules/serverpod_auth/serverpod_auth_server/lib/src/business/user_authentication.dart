@@ -1,6 +1,6 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/business/authentication_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -42,9 +42,10 @@ class UserAuthentication {
     if (updateSession) {
       session.updateAuthenticated(
         AuthenticationInfo(
-          userId,
+          null,
           scopes,
           authId: '${result.id}',
+          user: userId.toString(),
         ),
       );
     }
@@ -62,7 +63,7 @@ class UserAuthentication {
     Session session, {
     int? userId,
   }) async {
-    userId ??= (await session.authenticated)?.userId;
+    userId ??= await session.userId;
     if (userId == null) return;
 
     // Delete all authentication keys for the user
@@ -81,8 +82,8 @@ class UserAuthentication {
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
-    var authInfo = await session.authenticated;
-    if (userId == authInfo?.userId) {
+    var currentUserId = await session.userId;
+    if (userId == currentUserId) {
       session.updateAuthenticated(null);
     }
   }
@@ -119,8 +120,8 @@ class UserAuthentication {
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
-    var authInfo = await session.authenticated;
-    if (auth.userId == authInfo?.userId) {
+    var userId = await session.userId;
+    if (auth.userId == userId) {
       session.updateAuthenticated(null);
     }
   }
