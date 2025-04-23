@@ -978,8 +978,26 @@ class Serverpod {
         await session.db.testConnection();
         return session;
       } catch (e, stackTrace) {
+        // https://www.postgresql.org/docs/current/errcodes-appendix.html
+        const postgresInvalidPasswordErrorCode = '28P01';
+        final hasPasswordAuthFailed = e.toString().contains(
+              postgresInvalidPasswordErrorCode,
+            );
         const message = 'Failed to connect to the database.';
-        _reportException(e, stackTrace, message: message);
+        const passwordAuthFailedMessage =
+            '$message Password authentication failed. Make sure that the password'
+            ' in your passwords.yaml and the password for used in the setup of the'
+            ' database match (check the docker-compose.yaml). If you are currently'
+            ' starting a new project and previously had a project with the same name,'
+            ' the passwords will not match (each project has a randomly generated password),'
+            ' so you need to delete the storage of the the old project.'
+            ' If you are using the included docker compose file, you'
+            ' can run `docker compose down -v` to remove any volumes and start over.'
+            ' This will remove all data in the database. So be careful if you are using this.';
+
+        _reportException(e, stackTrace,
+            message:
+                hasPasswordAuthFailed ? passwordAuthFailedMessage : message);
 
         stderr.writeln('Retrying to connect to the database in 10 seconds.');
         if (!printedDatabaseConnectionError) {
