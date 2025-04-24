@@ -58,11 +58,17 @@ class TableDefinitionBuilder {
     return this;
   }
 
-  TableDefinitionBuilder withIdType(SupportedIdType idType) {
+  TableDefinitionBuilder withIdType(
+    SupportedIdType idType, {
+    bool nullableModelField = false,
+  }) {
     _columns.removeWhere((column) => column.isIdColumn);
     _columns.insert(
       0,
-      ColumnDefinitionBuilder().withIdColumn(_name, type: idType).build(),
+      ColumnDefinitionBuilder()
+          .withIdColumn(_name,
+              type: idType, nullableModelField: nullableModelField)
+          .build(),
     );
     return this;
   }

@@ -29,6 +29,7 @@ class ColumnDefinitionBuilder {
   ColumnDefinitionBuilder withIdColumn(
     String tableName, {
     SupportedIdType? type,
+    bool nullableModelField = false,
   }) {
     var idType = type ?? SupportedIdType.int;
 
@@ -40,7 +41,8 @@ class ColumnDefinitionBuilder {
       idType.defaultValue,
       tableName,
     );
-    _dartType = idType.type.className;
+    _dartType =
+        (nullableModelField ? idType.type.asNullable : idType.type).toString();
     return this;
   }
 

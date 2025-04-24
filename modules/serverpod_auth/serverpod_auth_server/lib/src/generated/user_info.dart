@@ -17,7 +17,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
 abstract class UserInfo
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UserInfo._({
     this.id,
     required this.userIdentifier,
@@ -91,7 +91,7 @@ abstract class UserInfo
   bool blocked;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
@@ -221,7 +221,7 @@ class _UserInfoImpl extends UserInfo {
   }
 }
 
-class UserInfoTable extends _i1.Table<int> {
+class UserInfoTable extends _i1.Table<int?> {
   UserInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_user_info') {
     userIdentifier = _i1.ColumnString(
@@ -304,7 +304,7 @@ class UserInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UserInfo.t;
+  _i1.Table<int?> get table => UserInfo.t;
 }
 
 class UserInfoIncludeList extends _i1.IncludeList {
@@ -324,7 +324,7 @@ class UserInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UserInfo.t;
+  _i1.Table<int?> get table => UserInfo.t;
 }
 
 class UserInfoRepository {

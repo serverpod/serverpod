@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
 abstract class SimpleDateTime
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -43,7 +43,7 @@ abstract class SimpleDateTime
   DateTime dateTime;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
@@ -124,7 +124,7 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
   }
 }
 
-class SimpleDateTimeTable extends _i1.Table<int> {
+class SimpleDateTimeTable extends _i1.Table<int?> {
   SimpleDateTimeTable({super.tableRelation})
       : super(tableName: 'simple_date_time') {
     dateTime = _i1.ColumnDateTime(
@@ -150,7 +150,7 @@ class SimpleDateTimeInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => SimpleDateTime.t;
+  _i1.Table<int?> get table => SimpleDateTime.t;
 }
 
 class SimpleDateTimeIncludeList extends _i1.IncludeList {
@@ -170,7 +170,7 @@ class SimpleDateTimeIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => SimpleDateTime.t;
+  _i1.Table<int?> get table => SimpleDateTime.t;
 }
 
 class SimpleDateTimeRepository {

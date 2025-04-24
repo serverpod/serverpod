@@ -412,7 +412,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'id',
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'UuidValue?',
+          dartType: 'UuidValue',
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
@@ -518,7 +518,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'id',
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'UuidValue?',
+          dartType: 'UuidValue',
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
@@ -3920,7 +3920,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'id',
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
-          dartType: 'UuidValue?',
+          dartType: 'UuidValue',
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
@@ -16,7 +18,7 @@ import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
     as _i3;
 
 abstract class OrganizationWithLongTableName
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   OrganizationWithLongTableName._({
     this.id,
     required this.name,
@@ -66,7 +68,7 @@ abstract class OrganizationWithLongTableName
   _i3.CityWithLongTableName? city;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [OrganizationWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -178,7 +180,7 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
   }
 }
 
-class OrganizationWithLongTableNameTable extends _i1.Table<int> {
+class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
   OrganizationWithLongTableNameTable({super.tableRelation})
       : super(
             tableName:
@@ -286,7 +288,7 @@ class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<int> get table => OrganizationWithLongTableName.t;
+  _i1.Table<int?> get table => OrganizationWithLongTableName.t;
 }
 
 class OrganizationWithLongTableNameIncludeList extends _i1.IncludeList {
@@ -306,7 +308,7 @@ class OrganizationWithLongTableNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => OrganizationWithLongTableName.t;
+  _i1.Table<int?> get table => OrganizationWithLongTableName.t;
 }
 
 class OrganizationWithLongTableNameRepository {

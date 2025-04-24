@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
@@ -34,9 +36,7 @@ abstract class OrderUuid
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
@@ -54,7 +54,7 @@ abstract class OrderUuid
   static const db = OrderUuidRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _i1.UuidValue id;
 
   String description;
 
@@ -80,7 +80,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'description': description,
       'customerId': customerId,
       if (customer != null) 'customer': customer?.toJson(),
@@ -92,7 +92,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (id != null) 'id': id?.toJson(),
+      'id': id.toJson(),
       'description': description,
       'customerId': customerId,
       if (customer != null) 'customer': customer?.toJsonForProtocol(),
@@ -159,14 +159,14 @@ class _OrderUuidImpl extends OrderUuid {
   @_i1.useResult
   @override
   OrderUuid copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? description,
     int? customerId,
     Object? customer = _Undefined,
     Object? comments = _Undefined,
   }) {
     return OrderUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
       customer:

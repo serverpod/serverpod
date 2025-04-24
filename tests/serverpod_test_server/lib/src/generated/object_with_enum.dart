@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum.dart' as _i2;
 
 abstract class ObjectWithEnum
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithEnum._({
     this.id,
     required this.testEnum,
@@ -71,7 +71,7 @@ abstract class ObjectWithEnum
   List<List<_i2.TestEnum>> enumListList;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
@@ -187,7 +187,7 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
   }
 }
 
-class ObjectWithEnumTable extends _i1.Table<int> {
+class ObjectWithEnumTable extends _i1.Table<int?> {
   ObjectWithEnumTable({super.tableRelation})
       : super(tableName: 'object_with_enum') {
     testEnum = _i1.ColumnEnum(
@@ -242,7 +242,7 @@ class ObjectWithEnumInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ObjectWithEnum.t;
+  _i1.Table<int?> get table => ObjectWithEnum.t;
 }
 
 class ObjectWithEnumIncludeList extends _i1.IncludeList {
@@ -262,7 +262,7 @@ class ObjectWithEnumIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ObjectWithEnum.t;
+  _i1.Table<int?> get table => ObjectWithEnum.t;
 }
 
 class ObjectWithEnumRepository {

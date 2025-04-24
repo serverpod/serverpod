@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -188,6 +189,16 @@ TableMigration? generateTableMigration(
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
         var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
         var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+
+        // Id column can have its model type changed between non-nullable and
+        // nullable, but the database type will remain the same. In this case,
+        // we don't want to generate a migration.
+        if (srcColumn.name == defaultPrimaryKeyName &&
+            !addNullable &&
+            !removeNullable &&
+            !changeDefault) {
+          continue;
+        }
 
         modifyColumns.add(
           ColumnMigration(
