@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
