@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class AuthUser
-    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   AuthUser._({
     this.id,
     required this.created,
@@ -57,7 +57,7 @@ abstract class AuthUser
   bool blocked;
 
   @override
-  _i1.Table<_i1.UuidValue> get table => t;
+  _i1.Table<_i1.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
@@ -152,7 +152,7 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
-class AuthUserTable extends _i1.Table<_i1.UuidValue> {
+class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_user') {
     created = _i1.ColumnDateTime(
@@ -194,7 +194,7 @@ class AuthUserInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
+  _i1.Table<_i1.UuidValue?> get table => AuthUser.t;
 }
 
 class AuthUserIncludeList extends _i1.IncludeList {
@@ -214,7 +214,7 @@ class AuthUserIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => AuthUser.t;
+  _i1.Table<_i1.UuidValue?> get table => AuthUser.t;
 }
 
 class AuthUserRepository {
