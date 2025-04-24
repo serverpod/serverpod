@@ -1,3 +1,17 @@
+## 2.6.0
+- feat: Adds support for endpoint inheritance.
+- feat: Adds support for `@ignoreEndpoint` annotation for endpoint methods.
+- feat: Updates the starter template for new Serverpod projects.
+- fix: Removes unnecessary stack trace from platforms that do not support health checks.
+- fix: Fixes an issue where the `serverpod generate` command would fail in workspace setups.
+- fix: Silences error reporting for authentication rejections in legacy streaming endpoints.
+- feat(EXPERIMENTAL): Adds support for using `UuidValue` as the type for model `id` fields.
+
+## 2.5.1
+ - feat: Adds support for configuring database search path across all database connections.
+ - fix: Limits version compatibility check to `serverpod` and `serverpod_client` packages.
+ - fix: Fixes an issue where record parameters could only be named `record`.
+
 ## 2.5.0
 - feat: Enables translations for SignInWithEmailDialog.
 - feat: Adds support for `Record` type in Streaming methods.
@@ -18,7 +32,6 @@
 - fix(EXPERIMENTAL): Reports diagnostic event on exception during database start and health checks.
 
 ## 2.4.0
-
 - feat: Adds support for configuring certificates for Serverpod API, Web, and Insights servers.
 - feat: Adds support for `Uri`, `BigInt`, and `Set` type in endpoints and models.
 - feat: Adds support for `Record` type in endpoint `Future` return and parameters.
