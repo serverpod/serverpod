@@ -61,15 +61,13 @@ echo "\nmodulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
 dart $CLI generate --no-analytics
 
-# We now generate files instead of checking them in so this
-# test is not needed anymore.
-#echo "\nprojectname_server"
-#cd $BASE/templates/serverpod_templates/projectname_server
-#dart $CLI generate --no-analytics
+echo "\nprojectname_server"
+cd $BASE/templates/serverpod_templates/projectname_server
+dart $CLI generate --no-analytics
 
-#echo "\nprojectname_server_upgrade"
-#cd $BASE/templates/serverpod_templates/projectname_server_upgrade
-#generateServerUpgradeFiles
+echo "\nprojectname_server_upgrade"
+cd $BASE/templates/serverpod_templates/projectname_server_upgrade
+generateServerUpgradeFiles
 
 # Auth module
 
