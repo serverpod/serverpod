@@ -18,7 +18,7 @@ class: Greeting
 fields:
   ### The greeting message.
   message: String
-  ### The author of the answer
+  ### The author of the greeting message.
   author: String
   ### The time when the request was made
   timestamp: DateTime
