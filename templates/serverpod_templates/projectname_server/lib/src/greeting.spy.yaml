@@ -6,7 +6,7 @@
 # Please consult the documentation for more information on what you can add to
 # your yaml-files.
 
-### A greeting message which can be sent to the client
+### A greeting message which can be sent to or from the server.
 class: Greeting
 
 # Add the table key, if this class represents a row in the database.
