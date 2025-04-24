@@ -16,7 +16,7 @@ class GreetingEndpoint extends Endpoint {
   //
   // The `Session` parameter contains the context of the client request.
   // It provides access to the database and other server-side resources like
-  // secrets from your password file, the cache, storage, and server-event messaging
+  // secrets from your password file, the cache, storage, and server-event messaging.
   //
   // You can use any serializable type as a parameter or return type.
   // Read more in the [docs](https://docs.serverpod.dev/concepts/working-with-endpoints).
