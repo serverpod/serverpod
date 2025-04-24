@@ -20,5 +20,5 @@ fields:
   message: String
   ### The author of the greeting message.
   author: String
-  ### The time when the request was made
+  ### The time when the message was created.
   timestamp: DateTime
