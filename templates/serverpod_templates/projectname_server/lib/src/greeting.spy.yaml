@@ -16,7 +16,7 @@ class: Greeting
 # For a list of supported types, please see the documentation.
 # https://docs.serverpod.dev/concepts/working-with-endpoints
 fields:
-  ### The greeting message
+  ### The greeting message.
   message: String
   ### The author of the answer
   author: String
