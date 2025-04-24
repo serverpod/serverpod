@@ -11,16 +11,8 @@ typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(
 /// Holds the id for an authenticated user and which [scopes] it can access.
 /// Allowed scopes are defined for each [Endpoint].
 class AuthenticationInfo {
-  /// Integer Id for an authenticated user.
-  ///
-  /// Will throw in case the ID of the authenticated user is not an integer.
-  @Deprecated(
-    'Use the authentication packages typed getter on `Session` instead (`await session.userId` from `serverpod_auth`)',
-  )
-  int get userId => int.parse(user, radix: 10);
-
   /// Identifier of the user, as set by the session handler.
-  final String user;
+  final String userIdentifier;
 
   /// The scopes that the user can access.
   final Set<Scope> scopes;
@@ -30,9 +22,8 @@ class AuthenticationInfo {
 
   /// Creates a new [AuthenticationInfo].
   AuthenticationInfo(
-    @Deprecated('User parameter `user` instead') int? userId,
+    Object userIdentifier,
     this.scopes, {
     this.authId,
-    String? user,
-  }) : user = user ?? userId!.toString();
+  }) : userIdentifier = userIdentifier.toString();
 }

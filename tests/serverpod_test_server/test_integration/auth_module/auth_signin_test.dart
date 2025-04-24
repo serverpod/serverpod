@@ -35,12 +35,11 @@ void main() async {
               'Expected session to be updated with user authentication info.',
         );
         expect(
-          auth?.user,
+          auth?.userIdentifier,
           equals('$userId'),
           reason: 'User ID in session should match the signed-in user ID.',
         );
         expect(
-          // ignore: deprecated_member_use
           auth?.userId,
           equals(userId),
           reason: 'User ID in session should match the signed-in user ID.',
@@ -87,12 +86,11 @@ void main() async {
               'Expected session to be updated with user authentication info by default.',
         );
         expect(
-          auth?.user,
+          auth?.userIdentifier,
           equals('$userId'),
           reason: 'User ID in session should match the signed-in user ID.',
         );
         expect(
-          // ignore: deprecated_member_use
           auth?.userId,
           equals(userId),
           reason: 'User ID in session should match the signed-in user ID.',

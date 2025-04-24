@@ -108,17 +108,9 @@ class _AuthenticationInfoOverride extends AuthenticationOverride {
   final AuthenticationInfo _authenticationInfo;
 
   /// Creates a new AuthenticationInfoOverride with the provided authentication info.
-  _AuthenticationInfoOverride(
-    @Deprecated('Use `user` instead') int? userId,
-    Set<Scope> scopes, {
-    String? authId,
-    String? user,
-  }) : _authenticationInfo = AuthenticationInfo(
-          userId,
-          scopes,
-          authId: authId,
-          user: user,
-        );
+  _AuthenticationInfoOverride(int userId, Set<Scope> scopes, {String? authId})
+      : _authenticationInfo =
+            AuthenticationInfo(userId, scopes, authId: authId);
 
   /// The authentication info to use for the session.
   AuthenticationInfo get authenticationInfo => _authenticationInfo;

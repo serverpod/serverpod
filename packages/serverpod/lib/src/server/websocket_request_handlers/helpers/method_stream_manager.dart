@@ -27,7 +27,7 @@ class _RevokedAuthenticationHandler {
         localAuthenticationInfo != null) {
       session.messages.removeListener(
         MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.user,
+          localAuthenticationInfo.userIdentifier,
         ),
         localRevokedAuthenticationCallback,
       );
@@ -76,7 +76,7 @@ class _RevokedAuthenticationHandler {
 
     session.messages.addListener(
       MessageCentralServerpodChannels.revokedAuthentication(
-        authenticationInfo.user,
+        authenticationInfo.userIdentifier,
       ),
       localRevokedAuthenticationCallback,
     );

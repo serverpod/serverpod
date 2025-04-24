@@ -248,7 +248,7 @@ abstract class Session implements DatabaseAccessor {
         this,
         exception: error?.toString(),
         stackTrace: stackTrace,
-        authenticatedUserId: _authenticated?.user,
+        authenticatedUserId: _authenticated?.userIdentifier,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -626,7 +626,7 @@ class MessageCentralAccess {
   /// Broadcasts revoked authentication events to the Serverpod framework.
   /// This message ensures authenticated connections to the user are closed.
   ///
-  /// The [userId] should be the [AuthenticationInfo.user] for the concerned
+  /// The [userId] should be the [AuthenticationInfo.userIdentifier] for the concerned
   /// user.
   ///
   /// The [message] must be of type [RevokedAuthenticationUser],
@@ -641,7 +641,7 @@ class MessageCentralAccess {
   /// [RevokedAuthenticationScope] is used to communicate that a specific
   /// scope or scopes have been revoked for the user.
   Future<bool> authenticationRevoked(
-    // Uses `Object` to avoid breaking change, but should switch to `String` and `AuthenticationInfo.user` in the future
+    // Uses `Object` to avoid breaking change, but should switch to `String` (mirroring `AuthenticationInfo.userIdentifier`) in the future
     Object userId,
     SerializableModel message,
   ) async {
