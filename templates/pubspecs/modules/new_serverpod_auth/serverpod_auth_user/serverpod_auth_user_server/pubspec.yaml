@@ -1,20 +1,19 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_auth_user_server
 description: Serverpod authentication user server module.
-version: 2.5.0
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod: 2.5.0
+  serverpod: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ">=3.0.0 <6.0.0"
-  serverpod_test: 2.5.0
+  serverpod_test: SERVERPOD_VERSION
   test: "^1.24.2"
 
 dependency_overrides:
