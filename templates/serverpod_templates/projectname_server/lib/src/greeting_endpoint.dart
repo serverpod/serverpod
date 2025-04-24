@@ -14,7 +14,7 @@ class GreetingEndpoint extends Endpoint {
   // This method is called when the client calls the `hello` method on the
   // `greeting` endpoint.
   //
-  // The `Session` parameter is a context object for the client request.
+  // The `Session` parameter contains the context of the client request.
   // It provides access to the database and other server-side resources like
   // secrets from your password file, the cache, storage, and server-event messaging
   //
