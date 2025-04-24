@@ -626,7 +626,7 @@ class MessageCentralAccess {
   /// Broadcasts revoked authentication events to the Serverpod framework.
   /// This message ensures authenticated connections to the user are closed.
   ///
-  /// The [userId] should be the [AuthenticationInfo.userIdentifier] for the concerned
+  /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
   /// user.
   ///
   /// The [message] must be of type [RevokedAuthenticationUser],
@@ -642,7 +642,7 @@ class MessageCentralAccess {
   /// scope or scopes have been revoked for the user.
   Future<bool> authenticationRevoked(
     // Uses `Object` to avoid breaking change, but should switch to `String` (mirroring `AuthenticationInfo.userIdentifier`) in the future
-    Object userId,
+    Object userIdentifier,
     SerializableModel message,
   ) async {
     if (message is! RevokedAuthenticationUser &&
@@ -657,7 +657,7 @@ class MessageCentralAccess {
     try {
       return await _session.server.messageCentral.postMessage(
         MessageCentralServerpodChannels.revokedAuthentication(
-            userId.toString()),
+            userIdentifier.toString()),
         message,
         global: true,
       );
@@ -667,7 +667,8 @@ class MessageCentralAccess {
 
     // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
-      MessageCentralServerpodChannels.revokedAuthentication(userId.toString()),
+      MessageCentralServerpodChannels.revokedAuthentication(
+          userIdentifier.toString()),
       message,
       global: false,
     );
