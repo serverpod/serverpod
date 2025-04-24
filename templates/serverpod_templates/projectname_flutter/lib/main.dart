@@ -7,7 +7,7 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 /// and is set up to connect to a Serverpod running on a local server on
 /// the default port. You will need to modify this to connect to staging or
 /// production servers.
-/// You might want to use the dependency injection of your choice instead of
+/// In a larger app, you may want to use the dependency injection of your choice instead of
 /// using a global client object. This is just a simple example.
 late final Client client;
 
