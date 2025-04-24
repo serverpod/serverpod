@@ -2,7 +2,7 @@ import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:test/test.dart';
 
-class TableWithMaxFieldName extends Table<int> {
+class TableWithMaxFieldName extends Table<int?> {
   late final ColumnString
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
   TableWithMaxFieldName(String tableName) : super(tableName: tableName) {

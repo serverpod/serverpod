@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
@@ -209,6 +208,68 @@ void main() {
               columnDefault: '\'This is a default value\'',
               dartType: 'String',
             ))
+            .build())
+        .build();
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test('then no migration action is created', () {
+      expect(migration.actions, isEmpty);
+    });
+  });
+
+  group(
+      'Given a source and target definition with a table changing the id field on the model to not-nullable',
+      () {
+    var tableName = 'example_table';
+
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV4, nullableModelField: true)
+            .build())
+        .build();
+
+    var targetDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV4, nullableModelField: false)
+            .build())
+        .build();
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test('then no migration action is created', () {
+      expect(migration.actions, isEmpty);
+    });
+  });
+
+  group(
+      'Given a source and target definition with a table changing the id field on the model to nullable',
+      () {
+    var tableName = 'example_table';
+
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV4, nullableModelField: false)
+            .build())
+        .build();
+
+    var targetDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV4, nullableModelField: true)
             .build())
         .build();
 

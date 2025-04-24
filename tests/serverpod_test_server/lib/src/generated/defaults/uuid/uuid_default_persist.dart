@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UuidDefaultPersist
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UuidDefaultPersist._({
     this.id,
     this.uuidDefaultPersistRandom,
@@ -52,7 +52,7 @@ abstract class UuidDefaultPersist
   _i1.UuidValue? uuidDefaultPersistStr;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +148,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }
 }
 
-class UuidDefaultPersistTable extends _i1.Table<int> {
+class UuidDefaultPersistTable extends _i1.Table<int?> {
   UuidDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uuid_default_persist') {
     uuidDefaultPersistRandom = _i1.ColumnUuid(
@@ -182,7 +182,7 @@ class UuidDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UuidDefaultPersist.t;
+  _i1.Table<int?> get table => UuidDefaultPersist.t;
 }
 
 class UuidDefaultPersistIncludeList extends _i1.IncludeList {
@@ -202,7 +202,7 @@ class UuidDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UuidDefaultPersist.t;
+  _i1.Table<int?> get table => UuidDefaultPersist.t;
 }
 
 class UuidDefaultPersistRepository {

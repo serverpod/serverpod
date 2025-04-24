@@ -16,6 +16,7 @@ class ModelClassDefinitionBuilder {
   bool _serverOnly;
   String? _tableName;
   SupportedIdType? _idType;
+  bool _idTypeNullable;
   bool _managedMigration;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
@@ -29,6 +30,7 @@ class ModelClassDefinitionBuilder {
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         _idType = SupportedIdType.int,
+        _idTypeNullable = true,
         _fields = [],
         _subDirParts = [],
         _managedMigration = true,
@@ -42,7 +44,7 @@ class ModelClassDefinitionBuilder {
       _fields.insert(
         0,
         () => FieldDefinitionBuilder()
-            .withPrimaryKey(type: _idType, isNullable: true)
+            .withPrimaryKey(type: _idType, isNullable: _idTypeNullable)
             .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
@@ -307,8 +309,12 @@ class ModelClassDefinitionBuilder {
     return this;
   }
 
-  ModelClassDefinitionBuilder withIdFieldType(SupportedIdType type) {
+  ModelClassDefinitionBuilder withIdFieldType(
+    SupportedIdType type, {
+    bool nullable = true,
+  }) {
     _idType = type;
+    _idTypeNullable = nullable;
     return this;
   }
 

@@ -871,7 +871,7 @@ class Restrictions {
             span,
           ),
         );
-      } else if (!field.type.nullable) {
+      } else if (field.type.className == 'int' && !field.type.nullable) {
         errors.add(
           SourceSpanSeverityException(
             'The type "$typeClassName" must be nullable for the field '

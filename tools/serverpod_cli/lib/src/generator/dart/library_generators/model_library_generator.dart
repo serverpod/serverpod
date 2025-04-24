@@ -148,7 +148,6 @@ class SerializableModelLibraryGenerator {
         if (serverCode && tableName != null) {
           var idTypeReference = classDefinition.idField.type.reference(
             serverCode,
-            nullable: false,
             subDirParts: classDefinition.subDirParts,
             config: config,
           ) as TypeReference;
@@ -204,6 +203,12 @@ class SerializableModelLibraryGenerator {
                 classDefinition,
               ),
           ]);
+
+          // TODO: Remove this workaround when closing issue
+          // https://github.com/serverpod/serverpod/issues/3462
+          if (buildRepository.hasRelationWithNonNullableIds(fields)) {
+            libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
+          }
         }
       },
     );
@@ -319,7 +324,6 @@ class SerializableModelLibraryGenerator {
       if (serverCode && tableName != null) {
         var idTypeReference = classDefinition.idField.type.reference(
           serverCode,
-          nullable: false,
           subDirParts: classDefinition.subDirParts,
           config: config,
         ) as TypeReference;
@@ -340,12 +344,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(Field(
           (f) => f
             ..name = 'id'
-            ..type = classDefinition.idField.type.reference(
-              serverCode,
-              nullable: true,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-            )
+            ..type = idTypeReference
             ..annotations.add(
               refer('override'),
             ),
@@ -2559,3 +2558,13 @@ class SerializableModelLibraryGenerator {
 }
 
 class SimpleData {}
+
+extension on BuildRepositoryClass {
+  bool hasRelationWithNonNullableIds(
+      List<SerializableModelFieldDefinition> fields) {
+    return hasAttachOperations(fields) ||
+        hasAttachRowOperations(fields) ||
+        hasDetachOperations(fields) ||
+        hasDetachRowOperations(fields);
+  }
+}

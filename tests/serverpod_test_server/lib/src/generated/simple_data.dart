@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
 abstract class SimpleData
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   SimpleData._({
     this.id,
     required this.num,
@@ -44,7 +44,7 @@ abstract class SimpleData
   int num;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
@@ -125,7 +125,7 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
-class SimpleDataTable extends _i1.Table<int> {
+class SimpleDataTable extends _i1.Table<int?> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     num = _i1.ColumnInt(
       'num',
@@ -152,7 +152,7 @@ class SimpleDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => SimpleData.t;
+  _i1.Table<int?> get table => SimpleData.t;
 }
 
 class SimpleDataIncludeList extends _i1.IncludeList {
@@ -172,7 +172,7 @@ class SimpleDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => SimpleData.t;
+  _i1.Table<int?> get table => SimpleData.t;
 }
 
 class SimpleDataRepository {

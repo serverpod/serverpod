@@ -254,7 +254,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=random
+              id: UuidValue, defaultModel=random
             ''',
           ).build()
         ];
@@ -288,7 +288,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=
+              id: UuidValue, defaultModel=
             ''',
           ).build()
         ];
@@ -317,7 +317,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel='550e8400-e29b-41d4-a716-446655440000'
+              id: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
             ''',
           ).build()
         ];
@@ -346,7 +346,7 @@ void main() {
             class: Example
             table: example
             fields:
-              id: UuidValue?, defaultModel=test
+              id: UuidValue, defaultModel=test
             ''',
           ).build()
         ];
@@ -366,8 +366,8 @@ void main() {
       },
     );
 
-    test(
-      'when the field is of type UUID and the type is not-nullable, then an error is generated',
+    group(
+      'when the field is of type UUID and the type is not-nullable',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -381,6 +381,36 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
+        late final definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        test('then no errors are collected.', () {
+          expect(collector.errors, isEmpty);
+        });
+
+        late final definition = definitions.first as ModelClassDefinition;
+        test('then the field\'s id type is not-nullable.', () {
+          expect(definition.idField.type.nullable, isFalse);
+        });
+      },
+    );
+
+    test(
+      'when the field is of nullable type UUID and the defaultModel is set to "random", then a hint message is reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              id: UuidValue?, defaultModel=random
+            ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(config, models, onErrorsCollector(collector))
             .validateAll();
 
@@ -389,8 +419,9 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The type "UuidValue" must be nullable for the field "id". Use the '
-          '"?" operator to make it nullable (e.g. id: UuidValue?).',
+          'The "id" field is nullable, but the keyword "defaultModel" ensures '
+          'that it will always have a value, unless explicitly removed. '
+          'Consider making it non-nullable to avoid unnecessary null checks.',
         );
       },
     );

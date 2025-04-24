@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 
 abstract class CommentInt
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CommentInt._({
     this.id,
     required this.description,
@@ -55,7 +57,7 @@ abstract class CommentInt
   _i2.OrderUuid? order;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CommentInt]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +152,7 @@ class _CommentIntImpl extends CommentInt {
   }
 }
 
-class CommentIntTable extends _i1.Table<int> {
+class CommentIntTable extends _i1.Table<int?> {
   CommentIntTable({super.tableRelation}) : super(tableName: 'comment_int') {
     description = _i1.ColumnString(
       'description',
@@ -208,7 +210,7 @@ class CommentIntInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'order': _order};
 
   @override
-  _i1.Table<int> get table => CommentInt.t;
+  _i1.Table<int?> get table => CommentInt.t;
 }
 
 class CommentIntIncludeList extends _i1.IncludeList {
@@ -228,7 +230,7 @@ class CommentIntIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => CommentInt.t;
+  _i1.Table<int?> get table => CommentInt.t;
 }
 
 class CommentIntRepository {

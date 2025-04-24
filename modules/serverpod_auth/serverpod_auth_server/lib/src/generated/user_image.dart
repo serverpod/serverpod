@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
 abstract class UserImage
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UserImage._({
     this.id,
     required this.userId,
@@ -54,7 +54,7 @@ abstract class UserImage
   String url;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserImage]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,7 @@ class _UserImageImpl extends UserImage {
   }
 }
 
-class UserImageTable extends _i1.Table<int> {
+class UserImageTable extends _i1.Table<int?> {
   UserImageTable({super.tableRelation})
       : super(tableName: 'serverpod_user_image') {
     userId = _i1.ColumnInt(
@@ -191,7 +191,7 @@ class UserImageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UserImage.t;
+  _i1.Table<int?> get table => UserImage.t;
 }
 
 class UserImageIncludeList extends _i1.IncludeList {
@@ -211,7 +211,7 @@ class UserImageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UserImage.t;
+  _i1.Table<int?> get table => UserImage.t;
 }
 
 class UserImageRepository {

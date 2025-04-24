@@ -8,11 +8,13 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Player implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+abstract class Player implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Player._({
     this.id,
     required this.name,
@@ -53,7 +55,7 @@ abstract class Player implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   _i2.Team? team;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +150,7 @@ class _PlayerImpl extends Player {
   }
 }
 
-class PlayerTable extends _i1.Table<int> {
+class PlayerTable extends _i1.Table<int?> {
   PlayerTable({super.tableRelation}) : super(tableName: 'player') {
     name = _i1.ColumnString(
       'name',
@@ -206,7 +208,7 @@ class PlayerInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table<int> get table => Player.t;
+  _i1.Table<int?> get table => Player.t;
 }
 
 class PlayerIncludeList extends _i1.IncludeList {
@@ -226,7 +228,7 @@ class PlayerIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => Player.t;
+  _i1.Table<int?> get table => Player.t;
 }
 
 class PlayerRepository {

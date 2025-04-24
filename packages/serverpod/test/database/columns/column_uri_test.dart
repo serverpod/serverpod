@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnUri', () {
     var columnName = 'uri';
-    var column = ColumnUri(columnName, Table<int>(tableName: 'test'));
+    var column = ColumnUri(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
