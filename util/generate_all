@@ -8,11 +8,11 @@ fi
 
 generateServerUpgradeFiles() {
     # The upgrade folder doesn't have all the files needed
-    # run `serverpod generate`. Therefore some project files have 
+    # run `serverpod generate`. Therefore some project files have
     # to temporarily be copied over from the base projectname_server template.
 
     # Save current files
-    find . -type f | sort > before.txt 
+    find . -type f | sort > before.txt
 
     # Copy over project files temporarily from base projectname_server template
     cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
@@ -28,7 +28,7 @@ generateServerUpgradeFiles() {
     # The generated endpoint files are already tracked in projectname_server,
     # and should not be tracked again in the upgrade template.
     test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
-    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm 
+    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
     rm before.txt
 }
 

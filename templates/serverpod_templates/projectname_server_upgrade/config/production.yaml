@@ -35,6 +35,7 @@ database:
   name: serverpod
   user: postgres
   requireSsl: true
+  #isUnixSocket: true # defaults to false
 
 # This is the setup for Redis. The default for the Google Cloud Engine Terraform
 # configuration is to connect on a private IP address.
@@ -44,3 +45,10 @@ redis:
   enabled: false
   host: redis.private-production.examplepod.com
   port: 6379
+  #user: # defaults to empty
+
+maxRequestSize: 524288 # The maximum size of requests allowed in bytes
+
+sessionLogs:
+  consoleEnabled: false
+# persistentEnabled: true

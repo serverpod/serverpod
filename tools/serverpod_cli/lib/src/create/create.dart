@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
+import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
@@ -144,6 +145,10 @@ Future<bool> performCreate(
     });
   }
 
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+  });
+
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.module) {
     success &= await log.progress('Creating default database migration.', () {
@@ -212,6 +217,10 @@ Future<bool> _performUpgrade(ServerpodTemplateType template) async {
       return true;
     },
   );
+
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDir.serverDir);
+  });
 
   success &= await log.progress('Creating default database migration.', () {
     return DatabaseSetup.createDefaultMigration(
