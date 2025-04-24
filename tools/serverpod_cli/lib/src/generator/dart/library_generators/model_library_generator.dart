@@ -204,10 +204,9 @@ class SerializableModelLibraryGenerator {
               ),
           ]);
 
-          if (buildRepository.hasAttachOperations(fields) ||
-              buildRepository.hasAttachRowOperations(fields) ||
-              buildRepository.hasDetachOperations(fields) ||
-              buildRepository.hasDetachRowOperations(fields)) {
+          // TODO: Remove this workaround when closing issue
+          // https://github.com/serverpod/serverpod/issues/3462
+          if (buildRepository.hasRelationWithNonNullableIds(fields)) {
             libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
           }
         }
@@ -2559,3 +2558,13 @@ class SerializableModelLibraryGenerator {
 }
 
 class SimpleData {}
+
+extension on BuildRepositoryClass {
+  bool hasRelationWithNonNullableIds(
+      List<SerializableModelFieldDefinition> fields) {
+    return hasAttachOperations(fields) ||
+        hasAttachRowOperations(fields) ||
+        hasDetachOperations(fields) ||
+        hasDetachRowOperations(fields);
+  }
+}
