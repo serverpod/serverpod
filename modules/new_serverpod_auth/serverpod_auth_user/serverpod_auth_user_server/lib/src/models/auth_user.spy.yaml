@@ -1,4 +1,5 @@
 class: AuthUser
+serverOnly: true
 table: serverpod_auth_user
 fields:
   id: UuidValue?, defaultPersist=random
