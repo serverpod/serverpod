@@ -100,7 +100,8 @@ extension ColumnComparisons on ColumnDefinition {
   }
 
   bool get canBeCreatedInTableMigration {
-    return isNullable || columnDefault != null;
+    return (isNullable || columnDefault != null) &&
+        name != defaultPrimaryKeyName;
   }
 }
 
