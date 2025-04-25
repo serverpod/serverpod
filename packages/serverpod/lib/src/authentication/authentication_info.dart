@@ -11,6 +11,13 @@ typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(
 /// Holds the id for an authenticated user and which [scopes] it can access.
 /// Allowed scopes are defined for each [Endpoint].
 class AuthenticationInfo {
+  /// Returns the `int` user ID of the authenticated user.
+  ///
+  /// Assumes that the system uses `int` user IDs, otherwise throws.
+  int get userId {
+    return int.parse(userIdentifier, radix: 10);
+  }
+
   /// Identifier of the user, as set by the session handler.
   final String userIdentifier;
 
