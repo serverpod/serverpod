@@ -261,11 +261,10 @@ void main() async {
               serverDir,
               'lib',
               'src',
-              'endpoints',
-              'example_endpoint.dart',
+              'greeting_endpoint.dart',
             )).existsSync(),
             isTrue,
-            reason: 'Server example_endpoint file does not exist.',
+            reason: 'Server greeting_endpoint file does not exist.',
           );
         });
 
@@ -295,7 +294,8 @@ void main() async {
               'serverpod_test_tools.dart',
             )).existsSync(),
             isTrue,
-            reason: 'Server generated example file does not exist.',
+            reason:
+                'Server generated integration test tools file does not exist.',
           );
         });
 
@@ -307,10 +307,10 @@ void main() async {
               'lib',
               'src',
               'generated',
-              'example.dart',
+              'greeting.dart',
             )).existsSync(),
             isTrue,
-            reason: 'Server generated example file does not exist.',
+            reason: 'Server generated greeting endpoint file does not exist.',
           );
         });
 
@@ -542,7 +542,7 @@ void main() async {
           'lib',
           'src',
           'generated',
-          'example.dart',
+          'greeting.dart',
         )).existsSync(),
         isTrue,
         reason: 'Server generated example file does not exist.',

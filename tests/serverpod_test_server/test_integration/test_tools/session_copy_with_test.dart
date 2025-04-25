@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -19,7 +20,11 @@ void main() {
             () async {
           await expectLater(
             modifiedSessionBuilder.build().authenticated,
-            completion((a) => a.userId == 123),
+            completion(isA<AuthenticationInfo>().having(
+              (a) => a.userId,
+              'userId',
+              123,
+            )),
           );
         });
         test(
@@ -27,7 +32,11 @@ void main() {
             () async {
           await expectLater(
             modifiedSessionBuilder.build().authenticated,
-            completion((a) => a.userId == 123),
+            completion(isA<AuthenticationInfo>().having(
+              (a) => a.userId,
+              'userId',
+              123,
+            )),
           );
         });
       });
@@ -49,7 +58,11 @@ void main() {
 
           await expectLater(
             modifiedSessionBuilder.build().authenticated,
-            completion((a) => a.userId == 123),
+            completion(isA<AuthenticationInfo>().having(
+              (a) => a.userId,
+              'userId',
+              123,
+            )),
           );
         });
 
@@ -58,7 +71,11 @@ void main() {
             () async {
           await expectLater(
             modifiedSessionBuilder.build().authenticated,
-            completion((a) => a.userId == 123),
+            completion(isA<AuthenticationInfo>().having(
+              (a) => a.userId,
+              'userId',
+              123,
+            )),
           );
         });
       });

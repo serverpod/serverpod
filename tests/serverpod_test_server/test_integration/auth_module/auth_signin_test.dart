@@ -35,6 +35,11 @@ void main() async {
               'Expected session to be updated with user authentication info.',
         );
         expect(
+          auth?.userIdentifier,
+          equals('$userId'),
+          reason: 'User ID in session should match the signed-in user ID.',
+        );
+        expect(
           auth?.userId,
           equals(userId),
           reason: 'User ID in session should match the signed-in user ID.',
@@ -79,6 +84,11 @@ void main() async {
           isNotNull,
           reason:
               'Expected session to be updated with user authentication info by default.',
+        );
+        expect(
+          auth?.userIdentifier,
+          equals('$userId'),
+          reason: 'User ID in session should match the signed-in user ID.',
         );
         expect(
           auth?.userId,
