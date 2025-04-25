@@ -176,6 +176,26 @@ jobs:
           --compiler=${{ matrix.compiler }}
         working-directory: packages/serverpod_client
 
+  flutter_unit_tests:
+    name: Flutter unit tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.19.0', '3.29.0']
+        os: [windows-latest, ubuntu-latest]
+        path:
+          [
+            'packages/serverpod_flutter',
+          ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run unit tests
+        run: flutter test
+        working-directory: ${{ matrix.path }}
+
   e2e_io_tests:
     name: Serverpod E2E IO tests
     runs-on: ubuntu-latest

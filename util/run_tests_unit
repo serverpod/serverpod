@@ -18,6 +18,7 @@ declare -a projectPaths=(
     "tests/serverpod_test_server"
     "tests/serverpod_test_flutter"
     "modules/serverpod_auth/serverpod_auth_server"
+    "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server"
 )
 
 exit_code=0

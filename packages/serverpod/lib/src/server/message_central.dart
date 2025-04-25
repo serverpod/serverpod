@@ -7,10 +7,10 @@ abstract class MessageCentralServerpodChannels {
   /// Used to revoke authentication tokens.
   /// The message should be of type [RevokedAuthenticationUser],
   /// [RevokedAuthenticationAuthId] or [RevokedAuthenticationScope].
-  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
+  /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
   /// user.
-  static String revokedAuthentication(int userId) =>
-      '_serverpod_revoked_authentication_$userId';
+  static String revokedAuthentication(Object userIdentifier) =>
+      '_serverpod_revoked_authentication_$userIdentifier';
 }
 
 // TODO: Support for server clusters.
