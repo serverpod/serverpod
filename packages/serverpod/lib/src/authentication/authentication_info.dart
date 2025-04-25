@@ -18,7 +18,7 @@ class AuthenticationInfo {
     return int.parse(userIdentifier, radix: 10);
   }
 
-  /// Identifier of the user, as set by the session handler.
+  /// Identifier of the user, as set by the [AuthenticationHandler].
   final String userIdentifier;
 
   /// The scopes that the user can access.
