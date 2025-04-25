@@ -80,12 +80,7 @@ abstract class AuthUser
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id?.toJson(),
-      'created': created.toJson(),
-      'scopeNames': scopeNames.toJson(),
-      'blocked': blocked,
-    };
+    return {if (id != null) 'id': id?.toJson()};
   }
 
   static AuthUserInclude include() {
