@@ -21,7 +21,6 @@ class ServerpodTaskScheduler {
   }) : _concurrencyLimit = concurrencyLimit;
 
   /// Makes sure any running task callbacks and queued task callbacks are processed.
-  /// Once called, [isConcurrentLimitReached] will always return `true`.
   Future<void> stop() async {
     final stoppingCompleter = Completer<void>();
 
