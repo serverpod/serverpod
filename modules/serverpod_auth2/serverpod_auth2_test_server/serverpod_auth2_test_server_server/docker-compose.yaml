@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: postgres:16.3
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serverpod_auth2_test_server
+      POSTGRES_PASSWORD: "8vCtOTp2Vryo0leiDgxtUxnycyGW2K6p"
+    volumes:
+      - serverpod_auth2_test_server_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "3gcfak2cXrZkHPtfcfNlRix5iO1wGL5d"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: postgres:16.3
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serverpod_auth2_test_server_test
+      POSTGRES_PASSWORD: "g84vKc1yDI-qB3MWsGozqVgzUJhk4uA6"
+    volumes:
+      - serverpod_auth2_test_server_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "ULVPwL1yPc0T89DCHiaffhnuGe9pfvGE"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  serverpod_auth2_test_server_data:
+  serverpod_auth2_test_server_test_data:
