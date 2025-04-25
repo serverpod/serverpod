@@ -519,7 +519,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -1639,7 +1639,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -1732,7 +1732,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -3921,7 +3921,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'description',
@@ -5892,6 +5892,13 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
+          name: 'uuidDefaultRandomV7',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
           name: 'uuidDefaultRandomNull',
           columnType: _i2.ColumnType.uuid,
           isNullable: true,
@@ -6004,6 +6011,12 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'UuidValue',
         ),
         _i2.ColumnDefinition(
+          name: 'uuidDefaultModelRandomV7',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
           name: 'uuidDefaultModelRandomNull',
           columnType: _i2.ColumnType.uuid,
           isNullable: true,
@@ -6059,6 +6072,13 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'UuidValue?',
           columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'uuidDefaultPersistRandomV7',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'uuidDefaultPersistStr',

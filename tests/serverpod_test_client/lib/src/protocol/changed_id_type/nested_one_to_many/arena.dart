@@ -18,7 +18,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     required this.name,
     this.team,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
