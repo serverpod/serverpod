@@ -3,10 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/src/business/user_authentication.dart';
-
-import '../business/config.dart';
-import '../generated/protocol.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 /// Endpoint for getting status for a signed in user and module configuration.
 class StatusEndpoint extends Endpoint {

@@ -11,6 +11,7 @@ import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+
 import '../cache/caches.dart';
 
 /// A listener that will be called when the session is about to close.
@@ -247,7 +248,7 @@ abstract class Session implements DatabaseAccessor {
         this,
         exception: error?.toString(),
         stackTrace: stackTrace,
-        authenticatedUserId: _authenticated?.userId,
+        authenticatedUserId: _authenticated?.userIdentifier,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -625,7 +626,7 @@ class MessageCentralAccess {
   /// Broadcasts revoked authentication events to the Serverpod framework.
   /// This message ensures authenticated connections to the user are closed.
   ///
-  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
+  /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
   /// user.
   ///
   /// The [message] must be of type [RevokedAuthenticationUser],
@@ -640,7 +641,8 @@ class MessageCentralAccess {
   /// [RevokedAuthenticationScope] is used to communicate that a specific
   /// scope or scopes have been revoked for the user.
   Future<bool> authenticationRevoked(
-    int userId,
+    // Uses `Object` to avoid breaking change, but should switch to `String` (mirroring `AuthenticationInfo.userIdentifier`) in the future
+    Object userIdentifier,
     SerializableModel message,
   ) async {
     if (message is! RevokedAuthenticationUser &&
@@ -654,7 +656,8 @@ class MessageCentralAccess {
 
     try {
       return await _session.server.messageCentral.postMessage(
-        MessageCentralServerpodChannels.revokedAuthentication(userId),
+        MessageCentralServerpodChannels.revokedAuthentication(
+            userIdentifier.toString()),
         message,
         global: true,
       );
@@ -664,7 +667,8 @@ class MessageCentralAccess {
 
     // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
-      MessageCentralServerpodChannels.revokedAuthentication(userId),
+      MessageCentralServerpodChannels.revokedAuthentication(
+          userIdentifier.toString()),
       message,
       global: false,
     );
