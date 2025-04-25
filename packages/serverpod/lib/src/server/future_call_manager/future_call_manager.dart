@@ -54,7 +54,7 @@ class FutureCallManager {
       internalSession: _internalSession,
       scanInterval: _config.scanInterval,
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
-      dispatchEntries: (entries) => _dispatchEntries(entries),
+      dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
     );
   }
