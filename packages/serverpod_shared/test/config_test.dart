@@ -1116,7 +1116,7 @@ apiServer:
   });
 
   test(
-      'Given a Serverpod config with futureCallExecutionEnabled set to true when loading from Map then the futureCallExecutionEnabled is set to false.',
+      'Given a Serverpod config with futureCallExecutionEnabled set to false when loading from Map then the futureCallExecutionEnabled is set to false.',
       () {
     var serverpodConfig = '''
 apiServer:
