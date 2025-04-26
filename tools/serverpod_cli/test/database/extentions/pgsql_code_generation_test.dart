@@ -1,5 +1,6 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:test/test.dart';
 
@@ -121,9 +122,65 @@ ALTER TABLE ONLY "town"
   });
 
   test(
-      'Given any database definition, the code for generating random UUIDv7 is added.',
+      'Given a database definition with no UUIDv7 default in any of the tables, then code for generating random UUIDv7 is not added.',
       () {
     var databaseDefinition = DatabaseDefinitionBuilder().build();
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(
+      pgsql,
+      isNot(contains('create or replace function gen_random_uuid_v7()')),
+    );
+  });
+
+  test(
+      'Given a database definition with UUIDv7 default value in one of the tables, then the code for generating random UUIDv7 is added.',
+      () {
+    var citizen = 'citizen';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(citizen.sentenceCase)
+          .withFileName(citizen)
+          .withTableName(citizen)
+          .withSimpleField(
+            'uuid',
+            'UuidValue',
+            defaultPersistValue: defaultUuidValueRandomV7,
+          )
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(
+      pgsql,
+      contains('create or replace function gen_random_uuid_v7()\nreturns uuid'),
+    );
+  });
+
+  test(
+      'Given a database definition with UUIDv7 as id type in one of the tables, then the code for generating random UUIDv7 is added.',
+      () {
+    var citizen = 'citizen';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(citizen.sentenceCase)
+          .withFileName(citizen)
+          .withTableName(citizen)
+          .withIdFieldType(SupportedIdType.uuidV7, nullable: false)
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
     var pgsql = databaseDefinition.toPgSql(installedModules: []);
 
     expect(

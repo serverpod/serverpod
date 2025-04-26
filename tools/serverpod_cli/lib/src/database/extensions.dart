@@ -215,8 +215,12 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     out += '\n';
 
     // Must be declared at the beginning for the function to be available.
-    out += _sqlUuidGenerateV7FunctionDeclaration();
-    out += '\n';
+    if (tables.any(
+      (t) => t.columns.any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7),
+    )) {
+      out += _sqlUuidGenerateV7FunctionDeclaration();
+      out += '\n';
+    }
 
     // Create tables
     out += tableCreation;
@@ -631,6 +635,8 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   return out;
 }
 
+const pgsqlFunctionRandomUuidV7 = 'gen_random_uuid_v7()';
+
 /// Add a function to generate v7 UUIDs in the database. The function name was
 /// chosen close to the current `gen_random_uuid()` function in Postgres. The
 /// function is implemented according to the RFC 9562 and uses only Postgres
@@ -668,11 +674,11 @@ String _sqlUuidGenerateV7FunctionDeclaration() {
    * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    */
   return '--'
-      '\n-- Function: gen_random_uuid_v7()'
+      '\n-- Function: $pgsqlFunctionRandomUuidV7'
       '\n-- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74'
       '\n-- License: MIT (copyright notice included on the generator source code).'
       '\n--'
-      '\ncreate or replace function gen_random_uuid_v7()'
+      '\ncreate or replace function $pgsqlFunctionRandomUuidV7'
       '\nreturns uuid'
       '\nas \$\$'
       '\nbegin'
