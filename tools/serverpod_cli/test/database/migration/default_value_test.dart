@@ -359,4 +359,44 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given a source and target definition with a table changing the id field from UUIDv4 to UUIDv7',
+      () {
+    var tableName = 'example_table';
+
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV4)
+            .build())
+        .build();
+
+    var targetDefinition = DatabaseDefinitionBuilder()
+        .withDefaultModules()
+        .withTable(TableDefinitionBuilder()
+            .withName(tableName)
+            .withIdType(SupportedIdType.uuidV7)
+            .build())
+        .build();
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test(
+        'then the database migration will alter the table to change the default value.',
+        () {
+      var action = migration.actions.first;
+      expect(migration.actions, hasLength(1));
+      expect(action.type, DatabaseMigrationActionType.alterTable);
+      expect(action.alterTable!.addColumns, hasLength(0));
+      expect(action.alterTable!.modifyColumns, hasLength(1));
+      expect(action.alterTable!.modifyColumns.first.columnName, 'id');
+      expect(action.alterTable!.modifyColumns.first.newDefault,
+          'gen_random_uuid_v7()');
+    });
+  });
 }

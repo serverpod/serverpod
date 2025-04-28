@@ -24,7 +24,7 @@ abstract class OrderUuid
     required this.customerId,
     this.customer,
     this.comments,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory OrderUuid({
     _i1.UuidValue? id,

@@ -18,7 +18,7 @@ abstract class CourseUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     required this.name,
     this.enrollments,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  }) : id = id ?? _i2.Uuid().v7obj();
 
   factory CourseUuid({
     _i1.UuidValue? id,

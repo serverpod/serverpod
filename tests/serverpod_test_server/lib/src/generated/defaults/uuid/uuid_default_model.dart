@@ -17,10 +17,13 @@ abstract class UuidDefaultModel
   UuidDefaultModel._({
     this.id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
   })  : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i2.Uuid().v4obj(),
+        uuidDefaultModelRandomV7 =
+            uuidDefaultModelRandomV7 ?? _i2.Uuid().v7obj(),
         uuidDefaultModelRandomNull =
             uuidDefaultModelRandomNull ?? _i2.Uuid().v4obj(),
         uuidDefaultModelStr = uuidDefaultModelStr ??
@@ -31,6 +34,7 @@ abstract class UuidDefaultModel
   factory UuidDefaultModel({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
@@ -41,6 +45,8 @@ abstract class UuidDefaultModel
       id: jsonSerialization['id'] as int?,
       uuidDefaultModelRandom: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['uuidDefaultModelRandom']),
+      uuidDefaultModelRandomV7: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['uuidDefaultModelRandomV7']),
       uuidDefaultModelRandomNull:
           jsonSerialization['uuidDefaultModelRandomNull'] == null
               ? null
@@ -65,6 +71,8 @@ abstract class UuidDefaultModel
 
   _i1.UuidValue uuidDefaultModelRandom;
 
+  _i1.UuidValue uuidDefaultModelRandomV7;
+
   _i1.UuidValue? uuidDefaultModelRandomNull;
 
   _i1.UuidValue uuidDefaultModelStr;
@@ -80,6 +88,7 @@ abstract class UuidDefaultModel
   UuidDefaultModel copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
@@ -89,6 +98,7 @@ abstract class UuidDefaultModel
     return {
       if (id != null) 'id': id,
       'uuidDefaultModelRandom': uuidDefaultModelRandom.toJson(),
+      'uuidDefaultModelRandomV7': uuidDefaultModelRandomV7.toJson(),
       if (uuidDefaultModelRandomNull != null)
         'uuidDefaultModelRandomNull': uuidDefaultModelRandomNull?.toJson(),
       'uuidDefaultModelStr': uuidDefaultModelStr.toJson(),
@@ -102,6 +112,7 @@ abstract class UuidDefaultModel
     return {
       if (id != null) 'id': id,
       'uuidDefaultModelRandom': uuidDefaultModelRandom.toJson(),
+      'uuidDefaultModelRandomV7': uuidDefaultModelRandomV7.toJson(),
       if (uuidDefaultModelRandomNull != null)
         'uuidDefaultModelRandomNull': uuidDefaultModelRandomNull?.toJson(),
       'uuidDefaultModelStr': uuidDefaultModelStr.toJson(),
@@ -146,12 +157,14 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   _UuidDefaultModelImpl({
     int? id,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
   }) : super._(
           id: id,
           uuidDefaultModelRandom: uuidDefaultModelRandom,
+          uuidDefaultModelRandomV7: uuidDefaultModelRandomV7,
           uuidDefaultModelRandomNull: uuidDefaultModelRandomNull,
           uuidDefaultModelStr: uuidDefaultModelStr,
           uuidDefaultModelStrNull: uuidDefaultModelStrNull,
@@ -164,6 +177,7 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
   UuidDefaultModel copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? uuidDefaultModelRandom,
+    _i1.UuidValue? uuidDefaultModelRandomV7,
     Object? uuidDefaultModelRandomNull = _Undefined,
     _i1.UuidValue? uuidDefaultModelStr,
     Object? uuidDefaultModelStrNull = _Undefined,
@@ -172,6 +186,8 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
       id: id is int? ? id : this.id,
       uuidDefaultModelRandom:
           uuidDefaultModelRandom ?? this.uuidDefaultModelRandom,
+      uuidDefaultModelRandomV7:
+          uuidDefaultModelRandomV7 ?? this.uuidDefaultModelRandomV7,
       uuidDefaultModelRandomNull: uuidDefaultModelRandomNull is _i1.UuidValue?
           ? uuidDefaultModelRandomNull
           : this.uuidDefaultModelRandomNull,
@@ -190,6 +206,10 @@ class UuidDefaultModelTable extends _i1.Table<int?> {
       'uuidDefaultModelRandom',
       this,
     );
+    uuidDefaultModelRandomV7 = _i1.ColumnUuid(
+      'uuidDefaultModelRandomV7',
+      this,
+    );
     uuidDefaultModelRandomNull = _i1.ColumnUuid(
       'uuidDefaultModelRandomNull',
       this,
@@ -206,6 +226,8 @@ class UuidDefaultModelTable extends _i1.Table<int?> {
 
   late final _i1.ColumnUuid uuidDefaultModelRandom;
 
+  late final _i1.ColumnUuid uuidDefaultModelRandomV7;
+
   late final _i1.ColumnUuid uuidDefaultModelRandomNull;
 
   late final _i1.ColumnUuid uuidDefaultModelStr;
@@ -216,6 +238,7 @@ class UuidDefaultModelTable extends _i1.Table<int?> {
   List<_i1.Column> get columns => [
         id,
         uuidDefaultModelRandom,
+        uuidDefaultModelRandomV7,
         uuidDefaultModelRandomNull,
         uuidDefaultModelStr,
         uuidDefaultModelStrNull,
