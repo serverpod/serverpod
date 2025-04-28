@@ -1,10 +1,10 @@
 name: serverpod_auth_session_client
 description: Serverpod authentication user session client module.
-version: 2.6.0
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: 2.6.0
+  serverpod_client: SERVERPOD_VERSION

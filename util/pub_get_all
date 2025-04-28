@@ -51,6 +51,8 @@ declare -a dart_paths=(
   "modules/serverpod_auth/serverpod_auth_client"
   "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client"
   "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server"
+  "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client"
+  "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server"
   "modules/serverpod_chat/serverpod_chat_server"
   "modules/serverpod_chat/serverpod_chat_client"
   "integrations/serverpod_cloud_storage_s3"
