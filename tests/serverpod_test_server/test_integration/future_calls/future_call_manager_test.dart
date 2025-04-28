@@ -208,4 +208,154 @@ void main() async {
       });
     });
   });
+
+  withServerpod('Given FutureCallManager with no due future calls',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CompleterTestCall testCall;
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      testCall = CompleterTestCall();
+      futureCallManager.registerFutureCall(testCall, 'no-due-call');
+
+      // Schedule a call far in the future (not due)
+      await futureCallManager.scheduleFutureCall(
+        'no-due-call',
+        SimpleData(num: 1),
+        DateTime.now().add(Duration(days: 1)),
+        '1',
+        'not-due-id',
+      );
+    });
+
+    tearDown(() async {
+      await futureCallManager.stop();
+    });
+
+    group('when start is called', () {
+      setUp(() async {
+        futureCallManager.start();
+        // Wait briefly to allow processing to occur (or not occur)
+        await Future.delayed(Duration(milliseconds: 100));
+      });
+
+      test('then no calls are processed', () async {
+        expect(testCall.completer.isCompleted, isFalse);
+      });
+    });
+  });
+
+  withServerpod('Given FutureCallManager in continuous mode',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CompleterTestCall testCall;
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      testCall = CompleterTestCall();
+      futureCallManager.registerFutureCall(testCall, 'continuous-mode-call');
+
+      futureCallManager.start();
+    });
+
+    tearDown(() async {
+      await futureCallManager.stop();
+    });
+
+    group('when a new future call becomes due', () {
+      setUp(() async {
+        await futureCallManager.scheduleFutureCall(
+          'continuous-mode-call',
+          SimpleData(num: 2),
+          DateTime.now().subtract(Duration(seconds: 1)), // Already due
+          '1',
+          'due-now-id',
+        );
+      });
+
+      test('then the call is processed automatically', () async {
+        await expectLater(testCall.completer.future, completes);
+      });
+    });
+  });
+
+  withServerpod('Given FutureCallManager running in continuous mode',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CompleterTestCall testCall;
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      testCall = CompleterTestCall();
+      futureCallManager.registerFutureCall(
+          testCall, 'continuous-mode-stop-call');
+
+      futureCallManager.start();
+
+      await futureCallManager.stop();
+
+      await futureCallManager.scheduleFutureCall(
+        'continuous-mode-stop-call',
+        SimpleData(num: 3),
+        DateTime.now(),
+        '1',
+        'stop-test-id',
+      );
+    });
+
+    group('when stop is called', () {
+      test('then future calls are no longer processed', () async {
+        await Future.delayed(Duration(milliseconds: 100));
+
+        expect(testCall.completer.isCompleted, isFalse);
+      });
+    });
+  });
+
+  withServerpod('Given FutureCallManager running in continuous mode',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CompleterTestCall testCall;
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      testCall = CompleterTestCall();
+      futureCallManager.registerFutureCall(
+          testCall, 'continuous-mode-new-call-after-stop');
+
+      futureCallManager.start();
+      await futureCallManager.stop();
+    });
+
+    group('when a new future call is scheduled after stop', () {
+      setUp(() async {
+        futureCallManager.scheduleFutureCall(
+          'continuous-mode-new-call-after-stop',
+          SimpleData(num: 5),
+          DateTime.now().subtract(Duration(seconds: 1)),
+          '1',
+          'new-call-after-stop-id',
+        );
+      });
+
+      test('then the call is not processed', () async {
+        await Future.delayed(Duration(milliseconds: 100));
+
+        expect(testCall.completer.isCompleted, isFalse);
+      });
+    });
+  });
 }
