@@ -7,7 +7,7 @@ extension ElementIgnoreEndpointExtensions on Element {
       var constant = annotation.computeConstantValue();
       var type = constant?.type;
       var typeName = type?.element?.name;
-      return typeName == ServerpodAnnotationClassNames.ignoreEndpoint;
+      return typeName == ServerpodAnnotationClassNames.doNotGenerate;
     });
   }
 }

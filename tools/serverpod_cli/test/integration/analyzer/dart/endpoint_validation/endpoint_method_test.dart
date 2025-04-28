@@ -1277,7 +1277,49 @@ Error on line 6, column 31 of .+: The type "String Function\(\)" is not a suppor
   });
 
   group(
-      'Given valid endpoint with a single method marked as `@ignoreEndpoint` when analyzed',
+      'Given valid endpoint with a single method marked as `@doNotGenerate` when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @doNotGenerate
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no methods are collected.', () {
+      expect(
+        endpointDefinitions.firstOrNull?.methods,
+        isEmpty,
+      );
+    });
+  });
+
+  group(
+      'Given valid endpoint with a single method marked with legacy `@ignoreEndpoint` annotation when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =

@@ -8,7 +8,7 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 const _endpointName = 'serverpod_cloud_storage';
 
 /// Endpoint for the default public [DatabaseCloudStorage].
-@ignoreEndpoint
+@doNotGenerate
 class CloudStoragePublicEndpoint extends Endpoint {
   @override
   bool get sendByteDataAsRaw => true;

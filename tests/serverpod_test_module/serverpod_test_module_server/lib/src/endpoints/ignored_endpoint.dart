@@ -3,7 +3,7 @@ import 'package:serverpod_test_module_server/src/generated/protocol.dart';
 
 /// A sample endpoint which is not built into the modules server or client
 /// Rather consuming app should subclass this one, and thus also gain the ability to override methods at will.
-@ignoreEndpoint
+@doNotGenerate
 class IgnoredModuleEndpoint extends Endpoint {
   Future<void> voidMethod() async {}
 
@@ -23,7 +23,7 @@ class IgnoredModuleEndpoint extends Endpoint {
     return value;
   }
 
-  @ignoreEndpoint
+  @doNotGenerate
   Future<void> ignoredMethod(Session session) async {
     throw UnimplementedError();
   }

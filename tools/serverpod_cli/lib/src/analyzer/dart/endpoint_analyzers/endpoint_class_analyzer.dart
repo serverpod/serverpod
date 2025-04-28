@@ -43,7 +43,7 @@ abstract class EndpointClassAnalyzer {
   /// Returns `true` if the class extends the Serverpod `Endpoint` base class.
   ///
   /// The class itself might still need to be ignored as an endpoint, because
-  /// it could be marked `abstract` or `@ignoreEndpoint`.
+  /// it could be marked `abstract` or `@doNotGenerate`.
   ///
   /// To check whether and endpoint class should actually be implemented
   /// by the server use [isEndpointClass].
