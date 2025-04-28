@@ -8,7 +8,10 @@ import 'future_call_diagnostics_service.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
 
-typedef SessionProvider = Session Function(String futureCallName);
+/// A function that builds a [Session] for a [FutureCall].
+typedef FutureCallSessionBuilder = Session Function(String futureCallName);
+
+/// A function that initializes a [FutureCall].
 typedef InitializeFutureCall = void Function(
   FutureCall futureCall,
   String name,
@@ -20,7 +23,7 @@ typedef InitializeFutureCall = void Function(
 /// [Serverpod] is restarted.
 class FutureCallManager {
   final Session _internalSession;
-  final SessionProvider _sessionProvider;
+  final FutureCallSessionBuilder _sessionProvider;
   final InitializeFutureCall _initializeFutureCall;
 
   final FutureCallConfig _config;
@@ -40,7 +43,7 @@ class FutureCallManager {
     this._serializationManager, {
     required FutureCallDiagnosticsService diagnosticsService,
     required Session internalSession,
-    required SessionProvider sessionProvider,
+    required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
   })  : _diagnosticsService = diagnosticsService,
         _internalSession = internalSession,
@@ -136,12 +139,12 @@ class FutureCallManager {
       final futureCall = _futureCalls[entry.name];
 
       if (futureCall == null) {
-        // TODO(inf0rmatix): this should be logged or caught otherwise.
+        // TODO: this should be logged or caught otherwise.
+        // https://github.com/serverpod/serverpod/issues/3485
         return null;
       }
 
       return () => _runFutureCall(
-            session: _internalSession,
             futureCallEntry: entry,
             futureCall: futureCall,
           );
@@ -152,7 +155,6 @@ class FutureCallManager {
 
   /// Runs a [FutureCallEntry] and completes when the future call is completed.
   Future<void> _runFutureCall({
-    required Session session,
     required FutureCallEntry futureCallEntry,
     required FutureCall<SerializableModel> futureCall,
   }) async {
@@ -173,7 +175,7 @@ class FutureCallManager {
       _diagnosticsService.submitCallException(
         error,
         stackTrace,
-        session: session,
+        session: futureCallSession,
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);

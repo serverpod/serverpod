@@ -13,7 +13,7 @@ typedef DispatchEntries = void Function(List<FutureCallEntry> entries);
 /// `true` if the limit has been reached, `false` otherwise.
 typedef ShouldSkipScan = bool Function();
 
-/// Scans the database for overdue future calls and queues them for execution.
+/// Scans the database for overdue future calls and dispatches them.
 class FutureCallScanner {
   final Session _internalSession;
   final FutureCallDiagnosticsService _diagnosticReporting;
@@ -46,7 +46,7 @@ class FutureCallScanner {
   /// calls at the given interval.
   void start() {
     if (_timer != null) {
-      throw StateError('Future call scanner already started.');
+      return;
     }
 
     _timer = Timer.periodic(
@@ -69,9 +69,6 @@ class FutureCallScanner {
     if (_isStopping || _shouldSkipScan() || !_scanCompleter.isCompleted) {
       return;
     }
-
-    // Wait for any previous scan to complete. This is to ensure that a single
-    // scan is running at a time.
 
     _scanCompleter = Completer<void>();
 
