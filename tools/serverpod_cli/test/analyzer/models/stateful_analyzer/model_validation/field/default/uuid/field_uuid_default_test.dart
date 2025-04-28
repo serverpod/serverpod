@@ -40,7 +40,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the default is set to "random_v7", then the field\'s default model and persist values are "random".',
+      'when the field is of type UUID and the default is set to "random_v7", then the field\'s default model and persist values are "random_v7".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

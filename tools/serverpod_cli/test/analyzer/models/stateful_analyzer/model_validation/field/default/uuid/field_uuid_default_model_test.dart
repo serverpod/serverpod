@@ -39,7 +39,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to "random_v7", then the field\'s default model value is "random".',
+      'when the field is of type UUID and the defaultModel is set to "random_v7", then the field\'s default model value is "random_v7".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
