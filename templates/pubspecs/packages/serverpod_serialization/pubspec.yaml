@@ -11,6 +11,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  pgvector: ^0.2.0
   yaml: ^3.1.2
   uuid: ^4.1.0
 
