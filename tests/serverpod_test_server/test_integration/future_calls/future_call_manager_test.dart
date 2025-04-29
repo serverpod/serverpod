@@ -27,8 +27,11 @@ class CompleterTestCall extends FutureCall<SimpleData> {
 void main() async {
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
@@ -39,6 +42,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when scheduling a FutureCall', () {
@@ -54,7 +58,7 @@ void main() async {
 
       test('then a FutureCallEntry is added to the database', () async {
         final futureCallEntries = await FutureCallEntry.db.find(
-          sessionBuilder.build(),
+          session,
           where: (entry) => entry.name.equals('test-db-entry-call'),
         );
 
@@ -66,13 +70,16 @@ void main() async {
   withServerpod('Given FutureCallManager with a scheduled FutureCall',
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
 
-      futureCallManager.scheduleFutureCall(
+      await futureCallManager.scheduleFutureCall(
         'test-cancel-future-call',
         SimpleData(num: 4),
         DateTime.now().add(Duration(days: 42)),
@@ -83,6 +90,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when cancelling the scheduled FutureCall', () {
@@ -92,7 +100,7 @@ void main() async {
 
       test('then the FutureCallEntry is removed from the database', () async {
         final futureCallEntries = await FutureCallEntry.db.find(
-          sessionBuilder.build(),
+          session,
           where: (entry) => entry.name.equals('test-cancel-future-call'),
         );
 
@@ -104,13 +112,16 @@ void main() async {
   withServerpod('Given FutureCallManager with a scheduled FutureCall',
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
 
-      futureCallManager.scheduleFutureCall(
+      await futureCallManager.scheduleFutureCall(
         'test-cancel-future-call-existing',
         SimpleData(num: 4),
         DateTime.now().add(Duration(days: 42)),
@@ -121,6 +132,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when cancelling a non-scheduled FutureCall', () {
@@ -130,13 +142,10 @@ void main() async {
 
       test('then no error is thrown and the database is not affected',
           () async {
-        await expectLater(
-          () => futureCallManager.cancelFutureCall('non-existing-identifier'),
-          returnsNormally,
-        );
+        await futureCallManager.cancelFutureCall('non-existing-identifier');
 
         final futureCallEntries = await FutureCallEntry.db.find(
-          sessionBuilder.build(),
+          session,
           where: (entry) =>
               entry.name.equals('test-cancel-future-call-existing'),
         );
@@ -150,13 +159,16 @@ void main() async {
       'Given FutureCallManager with a scheduled not-registered FutureCall',
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
 
-      futureCallManager.scheduleFutureCall(
+      await futureCallManager.scheduleFutureCall(
         'non-registered-future-call',
         SimpleData(num: 4),
         DateTime.now().subtract(Duration(days: 42)),
@@ -167,6 +179,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when executing a scheduled but unregistered FutureCall', () {
@@ -175,7 +188,7 @@ void main() async {
         await futureCallManager.runScheduledFutureCalls();
 
         final futureCallEntries = await FutureCallEntry.db.find(
-          sessionBuilder.build(),
+          session,
           where: (entry) => entry.name.equals('non-registered-future-call'),
         );
 
@@ -188,8 +201,11 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
@@ -198,7 +214,7 @@ void main() async {
 
       futureCallManager.registerFutureCall(testCall, 'testCall');
 
-      futureCallManager.scheduleFutureCall(
+      await futureCallManager.scheduleFutureCall(
         'testCall',
         SimpleData(num: 4),
         DateTime.now().subtract(const Duration(seconds: 1)),
@@ -209,6 +225,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when running scheduled FutureCalls', () {
@@ -222,7 +239,7 @@ void main() async {
 
       test('then the FutureCallEntry gets deleted from database', () async {
         final futureCallEntries = await FutureCallEntry.db.find(
-          sessionBuilder.build(),
+          session,
         );
 
         expect(futureCallEntries, hasLength(0));
@@ -234,8 +251,11 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
+    late Session session;
 
     setUp(() async {
+      session = sessionBuilder.build();
+
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
@@ -243,7 +263,6 @@ void main() async {
       testCall = CompleterTestCall();
       futureCallManager.registerFutureCall(testCall, 'no-due-call');
 
-      // Schedule a call far in the future (not due)
       await futureCallManager.scheduleFutureCall(
         'no-due-call',
         SimpleData(num: 1),
@@ -255,6 +274,7 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
+      await session.close();
     });
 
     group('when start is called', () {
@@ -363,7 +383,7 @@ void main() async {
 
     group('when a new future call is scheduled after stop', () {
       setUp(() async {
-        futureCallManager.scheduleFutureCall(
+        await futureCallManager.scheduleFutureCall(
           'continuous-mode-new-call-after-stop',
           SimpleData(num: 5),
           DateTime.now().subtract(Duration(seconds: 1)),
