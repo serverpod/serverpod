@@ -72,9 +72,6 @@ void main() async {
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
 
-      futureCallManager.registerFutureCall(
-          CompleterTestCall(), 'test-cancel-future-call');
-
       futureCallManager.scheduleFutureCall(
         'test-cancel-future-call',
         SimpleData(num: 4),
@@ -102,6 +99,29 @@ void main() async {
         expect(futureCallEntries, hasLength(0));
       });
     });
+  });
+
+  withServerpod('Given FutureCallManager with a scheduled FutureCall',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      futureCallManager.scheduleFutureCall(
+        'test-cancel-future-call-existing',
+        SimpleData(num: 4),
+        DateTime.now().add(Duration(days: 42)),
+        '1',
+        'unique-identifier-1337',
+      );
+    });
+
+    tearDown(() async {
+      await futureCallManager.stop();
+    });
 
     group('when cancelling a non-scheduled FutureCall', () {
       setUp(() async {
@@ -117,7 +137,8 @@ void main() async {
 
         final futureCallEntries = await FutureCallEntry.db.find(
           sessionBuilder.build(),
-          where: (entry) => entry.name.equals('test-cancel-future-call'),
+          where: (entry) =>
+              entry.name.equals('test-cancel-future-call-existing'),
         );
 
         expect(futureCallEntries, hasLength(1));
@@ -138,7 +159,7 @@ void main() async {
       futureCallManager.scheduleFutureCall(
         'non-registered-future-call',
         SimpleData(num: 4),
-        DateTime.now().add(Duration(days: 42)),
+        DateTime.now().subtract(Duration(days: 42)),
         '1',
         'very-unique-identifier',
       );
