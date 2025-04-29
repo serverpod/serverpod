@@ -8,12 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/address.dart' as _i2;
 import '../../models_with_relations/one_to_one/company.dart' as _i3;
 
-abstract class Citizen implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+abstract class Citizen
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Citizen._({
     this.id,
     required this.name,
@@ -75,7 +78,7 @@ abstract class Citizen implements _i1.TableRow<int>, _i1.ProtocolSerialization {
   _i3.Company? oldCompany;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -200,7 +203,7 @@ class _CitizenImpl extends Citizen {
   }
 }
 
-class CitizenTable extends _i1.Table<int> {
+class CitizenTable extends _i1.Table<int?> {
   CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
     name = _i1.ColumnString(
       'name',
@@ -315,7 +318,7 @@ class CitizenInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table<int> get table => Citizen.t;
+  _i1.Table<int?> get table => Citizen.t;
 }
 
 class CitizenIncludeList extends _i1.IncludeList {
@@ -335,7 +338,7 @@ class CitizenIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => Citizen.t;
+  _i1.Table<int?> get table => Citizen.t;
 }
 
 class CitizenRepository {

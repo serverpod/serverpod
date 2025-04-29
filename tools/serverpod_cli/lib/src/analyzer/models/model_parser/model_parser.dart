@@ -248,33 +248,62 @@ class ModelParser {
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
+
+    var fieldsNode = documentContents.nodes[Keyword.fields];
+    if (fieldsNode is YamlMap) {
+      var fieldsNodeEntries = fieldsNode.nodes.entries;
+      fields.addAll(fieldsNodeEntries.expand((fieldNode) {
+        return _parseModelFieldDefinition(
+          fieldNode,
+          docsExtractor,
+          extraClasses,
+          serverOnlyClass,
+        );
+      }).toList());
+    }
+
     if (hasTable) {
-      fields.add(
+      final defaultIdType = SupportedIdType.int;
+
+      var maybeIdField =
+          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
+
+      var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
+
+      var defaultPersistValue = (maybeIdField != null)
+          ? maybeIdField.defaultPersistValue
+          : defaultIdType.defaultValue;
+
+      // The 'int' id type can be specified without a default value.
+      if (maybeIdField?.type.className == 'int') {
+        defaultPersistValue ??= SupportedIdType.int.defaultValue;
+      }
+
+      var defaultModelValue = maybeIdField?.defaultModelValue;
+      if (maybeIdField == null && defaultIdType.type.className != 'int') {
+        defaultModelValue ??= defaultIdType.defaultValue;
+      }
+
+      var defaultIdFieldDoc = [
+        '/// The database id, set if the object has been inserted into the',
+        '/// database or if it has been fetched from the database. Otherwise,',
+        '/// the id will be null.',
+      ];
+
+      fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
+      fields.insert(
+        0,
         SerializableModelFieldDefinition(
-          name: 'id',
-          type: TypeDefinition.int.asNullable,
+          name: defaultPrimaryKeyName,
+          type: idFieldType,
           scope: ModelFieldScopeDefinition.all,
+          defaultModelValue: defaultModelValue,
+          defaultPersistValue: defaultPersistValue ?? defaultModelValue,
           shouldPersist: true,
-          documentation: [
-            '/// The database id, set if the object has been inserted into the',
-            '/// database or if it has been fetched from the database. Otherwise,',
-            '/// the id will be null.',
-          ],
+          documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
         ),
       );
     }
-
-    var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap) return fields;
-
-    fields.addAll(fieldsNode.nodes.entries.expand((fieldNode) {
-      return _parseModelFieldDefinition(
-        fieldNode,
-        docsExtractor,
-        extraClasses,
-        serverOnlyClass,
-      );
-    }).toList());
 
     return fields;
   }

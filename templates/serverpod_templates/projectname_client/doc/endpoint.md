@@ -5,8 +5,8 @@ Each class contains callable methods that will call a method on the server side.
 Example usage:
 
 ```dart
-// How to use ExampleEndpoint.
-client.example.hello("world!");
+// How to use GreetingEndpoint.
+client.greeting.hello("world!");
 
 // Generic format.
 client.<endpoint>.<method>(...);

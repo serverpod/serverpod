@@ -807,4 +807,15 @@ void main() {
       ),
     );
   });
+
+  test(
+      'Given the test server, when calling the `recordParametersWithCustomNames`, then the sum of both input values is returned',
+      () async {
+    var result = await client.recordParameters.recordParametersWithCustomNames(
+      (1,),
+      namedRecord: (2,),
+    );
+
+    expect(result, 3);
+  });
 }

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -69,10 +70,7 @@ extension TableComparisons on TableDefinition {
 
   bool like(TableDefinition other) {
     var diff = generateTableMigration(this, other, []);
-    return diff != null &&
-        diff.isEmpty &&
-        other.name == name &&
-        other.schema == schema;
+    return diff != null && diff.isEmpty && other.name == name;
   }
 }
 
@@ -102,7 +100,8 @@ extension ColumnComparisons on ColumnDefinition {
   }
 
   bool get canBeCreatedInTableMigration {
-    return isNullable || columnDefault != null;
+    return (isNullable || columnDefault != null) &&
+        name != defaultPrimaryKeyName;
   }
 }
 
@@ -162,14 +161,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     var cOnDelete = other.onDelete == onDelete;
     var cOnUpdate = (other.onUpdate ?? dKA) == (onUpdate ?? dKA);
     var cReferenceTable = other.referenceTable == referenceTable;
-    var cReferenceSchema = other.referenceTableSchema == referenceTableSchema;
 
-    return cName &&
-        cMatchType &&
-        cOnDelete &&
-        cOnUpdate &&
-        cReferenceTable &&
-        cReferenceSchema;
+    return cName && cMatchType && cOnDelete && cOnUpdate && cReferenceTable;
   }
 }
 
@@ -220,6 +213,14 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    // Must be declared at the beginning for the function to be available.
+    if (tables.any(
+      (t) => t.columns.any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7),
+    )) {
+      out += _sqlUuidGenerateV7FunctionDeclaration();
+      out += '\n';
+    }
 
     // Create tables
     out += tableCreation;
@@ -304,23 +305,16 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
+  /// Whether the column is the default primary key column.
+  bool get isIdColumn => name == defaultPrimaryKeyName;
+
+  /// Whether the column is a primary key of type int serial.
+  bool get isIntSerialIdColumn =>
+      isIdColumn &&
+      (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
+      (columnDefault?.startsWith('nextval') ?? false);
+
   String toPgSqlFragment() {
-    String out = '';
-    // The id column is special.
-    if (name == 'id') {
-      if (isNullable != false) {
-        throw (const FormatException('The id column must be non-nullable'));
-      }
-
-      if (columnType != ColumnType.integer && columnType != ColumnType.bigint) {
-        throw (const FormatException(
-          'The id column must be of type integer or bigint',
-        ));
-      }
-
-      return '"id" bigserial PRIMARY KEY';
-    }
-
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -357,8 +351,22 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
     var nullable = isNullable ? '' : ' NOT NULL';
     var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
 
-    out += '"$name" $type$nullable$defaultValue';
-    return out;
+    // The id column is special.
+    if (isIdColumn) {
+      if (isNullable) {
+        throw const FormatException('The id column must be non-nullable');
+      }
+
+      if (isIntSerialIdColumn) {
+        type = 'bigserial';
+        defaultValue = '';
+      }
+
+      type = '$type PRIMARY KEY';
+      nullable = '';
+    }
+
+    return '"$name" $type$nullable$defaultValue';
   }
 }
 
@@ -438,6 +446,10 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
 
     // Start transaction
     out += 'BEGIN;\n';
+    out += '\n';
+
+    // Must be declared at the beginning for the function to be available.
+    out += _sqlUuidGenerateV7FunctionDeclaration();
     out += '\n';
 
     var foreignKeyActions = '';
@@ -621,6 +633,75 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   out += '\n';
 
   return out;
+}
+
+const pgsqlFunctionRandomUuidV7 = 'gen_random_uuid_v7()';
+
+/// Add a function to generate v7 UUIDs in the database. The function name was
+/// chosen close to the current `gen_random_uuid()` function in Postgres. The
+/// function is implemented according to the RFC 9562 and uses only Postgres
+/// native functions (no need for extensions).
+///
+String _sqlUuidGenerateV7FunctionDeclaration() {
+  /*
+   * This function is licensed under the MIT License.
+   * Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74
+   *
+   * The scope of the below license ("Software") is limited to the function
+   * `gen_random_uuid_v7` implementation, which is a derivative work of the
+   * original `uuid_generate_v7` function. The license does not apply to any
+   * other part of the codebase.
+   *
+   * Copyright 2023 Kyle Hubert <kjmph@users.noreply.github.com>
+   *
+   * Permission is hereby granted, free of charge, to any person
+   * obtaining a copy of this software and associated documentation files
+   * (the "Software"), to deal in the Software without restriction,
+   * including without limitation the rights to use, copy, modify, merge,
+   * publish, distribute, sublicense, and/or sell copies of the Software,
+   * and to permit persons to whom the Software is furnished to do so,
+   * subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be
+   * included in all copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+   * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+   * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+   * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+   * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+   */
+  return '--'
+      '\n-- Function: $pgsqlFunctionRandomUuidV7'
+      '\n-- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74'
+      '\n-- License: MIT (copyright notice included on the generator source code).'
+      '\n--'
+      '\ncreate or replace function $pgsqlFunctionRandomUuidV7'
+      '\nreturns uuid'
+      '\nas \$\$'
+      '\nbegin'
+      '\n  -- use random v4 uuid as starting point (which has the same variant we need)'
+      '\n  -- then overlay timestamp'
+      '\n  -- then set version 7 by flipping the 2 and 1 bit in the version 4 string'
+      '\n  return encode('
+      '\n    set_bit('
+      '\n      set_bit('
+      '\n        overlay(uuid_send(gen_random_uuid())'
+      '\n                placing substring(int8send(floor(extract(epoch from clock_timestamp()) * 1000)::bigint) from 3)'
+      '\n                from 1 for 6'
+      '\n        ),'
+      '\n        52, 1'
+      '\n      ),'
+      '\n      53, 1'
+      '\n    ),'
+      "\n    'hex')::uuid;"
+      '\nend'
+      '\n\$\$'
+      '\nlanguage plpgsql'
+      '\nvolatile;'
+      '\n';
 }
 
 extension ColumnTypeComparison on ColumnType {

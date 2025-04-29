@@ -241,14 +241,14 @@ void main() {
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
-          .withSimpleField('parentDefault', 'int', defaultValue: '0')
+          .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
           .withChildClasses(
         [
           ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
-              .withSimpleField('childDefault', 'int', defaultValue: '-1')
+              .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
               .build(),
         ],
       ).build(),
@@ -256,13 +256,13 @@ void main() {
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
-          .withSimpleField('childDefault', 'int', defaultValue: '-1')
+          .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
           .withExtendsClass(
             ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
-                .withSimpleField('parentDefault', 'int', defaultValue: '0')
+                .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
                 .build(),
           )
           .build(),

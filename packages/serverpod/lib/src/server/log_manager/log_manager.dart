@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
@@ -286,7 +287,7 @@ class SessionLogManager {
   @internal
   Future<int?> finalizeLog(
     Session session, {
-    int? authenticatedUserId,
+    String? authenticatedUserId,
     String? exception,
     StackTrace? stackTrace,
   }) async {
@@ -329,7 +330,10 @@ class SessionLogManager {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
-        authenticatedUserId: authenticatedUserId,
+        // TODO: Support non-`int` user IDs https://github.com/serverpod/serverpod/issues/3448
+        authenticatedUserId: authenticatedUserId == null
+            ? null
+            : int.tryParse(authenticatedUserId),
       );
 
       try {

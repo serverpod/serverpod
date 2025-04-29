@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultModel
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UriDefaultModel._({
     this.id,
     Uri? uriDefaultModel,
@@ -52,7 +52,7 @@ abstract class UriDefaultModel
   Uri? uriDefaultModelNull;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UriDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +144,7 @@ class _UriDefaultModelImpl extends UriDefaultModel {
   }
 }
 
-class UriDefaultModelTable extends _i1.Table<int> {
+class UriDefaultModelTable extends _i1.Table<int?> {
   UriDefaultModelTable({super.tableRelation})
       : super(tableName: 'uri_default_model') {
     uriDefaultModel = _i1.ColumnUri(
@@ -176,7 +176,7 @@ class UriDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UriDefaultModel.t;
+  _i1.Table<int?> get table => UriDefaultModel.t;
 }
 
 class UriDefaultModelIncludeList extends _i1.IncludeList {
@@ -196,7 +196,7 @@ class UriDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UriDefaultModel.t;
+  _i1.Table<int?> get table => UriDefaultModel.t;
 }
 
 class UriDefaultModelRepository {

@@ -335,16 +335,11 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var modules = await locateModules(
-      directory: Directory(serverRootDir),
-      manualModules: manualModules,
+    var modules = loadModuleConfigs(
+      packageConfig: packageConfig,
+      projectPubspec: pubspec,
+      nickNameOverrides: manualModules,
     );
-
-    if (modules == null) {
-      throw const ServerpodModulesNotFoundException(
-        'Failed to locate modules',
-      );
-    }
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];

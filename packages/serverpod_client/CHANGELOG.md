@@ -1,5 +1,37 @@
-## 2.4.0
+## 2.6.0
+- feat: Adds support for endpoint inheritance.
+- feat: Adds support for `@ignoreEndpoint` annotation for endpoint methods.
+- feat: Updates the starter template for new Serverpod projects.
+- fix: Removes unnecessary stack trace from platforms that do not support health checks.
+- fix: Fixes an issue where the `serverpod generate` command would fail in workspace setups.
+- fix: Silences error reporting for authentication rejections in legacy streaming endpoints.
+- feat(EXPERIMENTAL): Adds support for using `UuidValue` as the type for model `id` fields.
 
+## 2.5.1
+ - feat: Adds support for configuring database search path across all database connections.
+ - fix: Limits version compatibility check to `serverpod` and `serverpod_client` packages.
+ - fix: Fixes an issue where record parameters could only be named `record`.
+
+## 2.5.0
+- feat: Enables translations for SignInWithEmailDialog.
+- feat: Adds support for `Record` type in Streaming methods.
+- feat: Adds support for `Record` type in models.
+- feat: Adds support for defining a default value for `Enum` models.
+- feat(EXPERIMENTAL): Adds support for attaching custom data to diagnostic events.
+- fix: Always drains request bodies to prevent unexpected closed connections in the client.
+- fix: Prevents generated model file naming conflicts with framework-generated files.
+- fix: Fixes crash when validating Serverpod package version in CLI.
+- fix: Preserves stack trace in database query exceptions.
+- fix: Fixes crash in update queries for models without fields or when id column is specified.
+- fix: Fixes import issue causing WASM incompatibility in client.
+- fix: Re-enables support for models named "Record".
+- fix: Fixes issue where implicit relations could be dropped during update database operations.
+- fix: Fixes issue where implicit relations were not preserved during serialization roundtrips.
+- fix: Adds support for non-nullable `Set` in models.
+- fix(EXPERIMENTAL): Includes Uri path in diagnostic events.
+- fix(EXPERIMENTAL): Reports diagnostic event on exception during database start and health checks.
+
+## 2.4.0
 - feat: Adds support for configuring certificates for Serverpod API, Web, and Insights servers.
 - feat: Adds support for `Uri`, `BigInt`, and `Set` type in endpoints and models.
 - feat: Adds support for `Record` type in endpoint `Future` return and parameters.

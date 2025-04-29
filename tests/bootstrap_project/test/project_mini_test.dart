@@ -393,6 +393,20 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
+      var startProjectProcess = await startProcess(
+        'dart',
+        ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
+        workingDirectory: commandRoot,
+      );
+
+      var startProjectExitCode = await startProjectProcess.exitCode;
+
+      expect(
+        startProjectExitCode,
+        0,
+        reason: 'Failed to start the serverpod project.',
+      );
+
       var testProcess = await runProcess(
         'dart',
         ['test'],

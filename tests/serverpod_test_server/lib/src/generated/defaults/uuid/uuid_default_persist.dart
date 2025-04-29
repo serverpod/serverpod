@@ -12,16 +12,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UuidDefaultPersist
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UuidDefaultPersist._({
     this.id,
     this.uuidDefaultPersistRandom,
+    this.uuidDefaultPersistRandomV7,
     this.uuidDefaultPersistStr,
   });
 
   factory UuidDefaultPersist({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) = _UuidDefaultPersistImpl;
 
@@ -33,6 +35,11 @@ abstract class UuidDefaultPersist
               ? null
               : _i1.UuidValueJsonExtension.fromJson(
                   jsonSerialization['uuidDefaultPersistRandom']),
+      uuidDefaultPersistRandomV7:
+          jsonSerialization['uuidDefaultPersistRandomV7'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                  jsonSerialization['uuidDefaultPersistRandomV7']),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
@@ -49,10 +56,12 @@ abstract class UuidDefaultPersist
 
   _i1.UuidValue? uuidDefaultPersistRandom;
 
+  _i1.UuidValue? uuidDefaultPersistRandomV7;
+
   _i1.UuidValue? uuidDefaultPersistStr;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -60,6 +69,7 @@ abstract class UuidDefaultPersist
   UuidDefaultPersist copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   });
   @override
@@ -68,6 +78,8 @@ abstract class UuidDefaultPersist
       if (id != null) 'id': id,
       if (uuidDefaultPersistRandom != null)
         'uuidDefaultPersistRandom': uuidDefaultPersistRandom?.toJson(),
+      if (uuidDefaultPersistRandomV7 != null)
+        'uuidDefaultPersistRandomV7': uuidDefaultPersistRandomV7?.toJson(),
       if (uuidDefaultPersistStr != null)
         'uuidDefaultPersistStr': uuidDefaultPersistStr?.toJson(),
     };
@@ -79,6 +91,8 @@ abstract class UuidDefaultPersist
       if (id != null) 'id': id,
       if (uuidDefaultPersistRandom != null)
         'uuidDefaultPersistRandom': uuidDefaultPersistRandom?.toJson(),
+      if (uuidDefaultPersistRandomV7 != null)
+        'uuidDefaultPersistRandomV7': uuidDefaultPersistRandomV7?.toJson(),
       if (uuidDefaultPersistStr != null)
         'uuidDefaultPersistStr': uuidDefaultPersistStr?.toJson(),
     };
@@ -120,10 +134,12 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   _UuidDefaultPersistImpl({
     int? id,
     _i1.UuidValue? uuidDefaultPersistRandom,
+    _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) : super._(
           id: id,
           uuidDefaultPersistRandom: uuidDefaultPersistRandom,
+          uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
           uuidDefaultPersistStr: uuidDefaultPersistStr,
         );
 
@@ -134,6 +150,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
     Object? uuidDefaultPersistRandom = _Undefined,
+    Object? uuidDefaultPersistRandomV7 = _Undefined,
     Object? uuidDefaultPersistStr = _Undefined,
   }) {
     return UuidDefaultPersist(
@@ -141,6 +158,9 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
       uuidDefaultPersistRandom: uuidDefaultPersistRandom is _i1.UuidValue?
           ? uuidDefaultPersistRandom
           : this.uuidDefaultPersistRandom,
+      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _i1.UuidValue?
+          ? uuidDefaultPersistRandomV7
+          : this.uuidDefaultPersistRandomV7,
       uuidDefaultPersistStr: uuidDefaultPersistStr is _i1.UuidValue?
           ? uuidDefaultPersistStr
           : this.uuidDefaultPersistStr,
@@ -148,11 +168,16 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }
 }
 
-class UuidDefaultPersistTable extends _i1.Table<int> {
+class UuidDefaultPersistTable extends _i1.Table<int?> {
   UuidDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uuid_default_persist') {
     uuidDefaultPersistRandom = _i1.ColumnUuid(
       'uuidDefaultPersistRandom',
+      this,
+      hasDefault: true,
+    );
+    uuidDefaultPersistRandomV7 = _i1.ColumnUuid(
+      'uuidDefaultPersistRandomV7',
       this,
       hasDefault: true,
     );
@@ -165,12 +190,15 @@ class UuidDefaultPersistTable extends _i1.Table<int> {
 
   late final _i1.ColumnUuid uuidDefaultPersistRandom;
 
+  late final _i1.ColumnUuid uuidDefaultPersistRandomV7;
+
   late final _i1.ColumnUuid uuidDefaultPersistStr;
 
   @override
   List<_i1.Column> get columns => [
         id,
         uuidDefaultPersistRandom,
+        uuidDefaultPersistRandomV7,
         uuidDefaultPersistStr,
       ];
 }
@@ -182,7 +210,7 @@ class UuidDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => UuidDefaultPersist.t;
+  _i1.Table<int?> get table => UuidDefaultPersist.t;
 }
 
 class UuidDefaultPersistIncludeList extends _i1.IncludeList {
@@ -202,7 +230,7 @@ class UuidDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => UuidDefaultPersist.t;
+  _i1.Table<int?> get table => UuidDefaultPersist.t;
 }
 
 class UuidDefaultPersistRepository {

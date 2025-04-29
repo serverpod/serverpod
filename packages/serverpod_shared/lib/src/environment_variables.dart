@@ -60,6 +60,9 @@ enum ServerpodEnv {
   /// The user for the database.
   databaseUser,
 
+  /// The default schema for the database.
+  databaseSearchPaths,
+
   /// Toggle to require SSL for the database.
   databaseRequireSsl,
 
@@ -142,6 +145,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databasePort) => 'port',
       (ServerpodEnv.databaseName) => 'name',
       (ServerpodEnv.databaseUser) => 'user',
+      (ServerpodEnv.databaseSearchPaths) => 'searchPaths',
       (ServerpodEnv.databaseRequireSsl) => 'requireSsl',
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
       (ServerpodEnv.redisHost) => 'host',
@@ -180,6 +184,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databasePort) => 'SERVERPOD_DATABASE_PORT',
       (ServerpodEnv.databaseName) => 'SERVERPOD_DATABASE_NAME',
       (ServerpodEnv.databaseUser) => 'SERVERPOD_DATABASE_USER',
+      (ServerpodEnv.databaseSearchPaths) => 'SERVERPOD_DATABASE_SEARCH_PATHS',
       (ServerpodEnv.databaseRequireSsl) => 'SERVERPOD_DATABASE_REQUIRE_SSL',
       (ServerpodEnv.databaseIsUnixSocket) =>
         'SERVERPOD_DATABASE_IS_UNIX_SOCKET',

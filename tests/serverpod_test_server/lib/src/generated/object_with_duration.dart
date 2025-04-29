@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithDuration
-    implements _i1.TableRow<int>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithDuration._({
     this.id,
     required this.duration,
@@ -41,7 +41,7 @@ abstract class ObjectWithDuration
   Duration duration;
 
   @override
-  _i1.Table<int> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
@@ -122,7 +122,7 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
   }
 }
 
-class ObjectWithDurationTable extends _i1.Table<int> {
+class ObjectWithDurationTable extends _i1.Table<int?> {
   ObjectWithDurationTable({super.tableRelation})
       : super(tableName: 'object_with_duration') {
     duration = _i1.ColumnDuration(
@@ -147,7 +147,7 @@ class ObjectWithDurationInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int> get table => ObjectWithDuration.t;
+  _i1.Table<int?> get table => ObjectWithDuration.t;
 }
 
 class ObjectWithDurationIncludeList extends _i1.IncludeList {
@@ -167,7 +167,7 @@ class ObjectWithDurationIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int> get table => ObjectWithDuration.t;
+  _i1.Table<int?> get table => ObjectWithDuration.t;
 }
 
 class ObjectWithDurationRepository {

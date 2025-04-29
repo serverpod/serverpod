@@ -13,7 +13,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 
 class ParentClass extends _i1.GrandparentClass
-    implements _i2.TableRow<int>, _i2.ProtocolSerialization {
+    implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
   ParentClass({
     this.id,
     required super.grandParentField,
@@ -38,7 +38,7 @@ class ParentClass extends _i1.GrandparentClass
   String parentField;
 
   @override
-  _i2.Table<int> get table => t;
+  _i2.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ParentClass]
   /// with some or all fields replaced by the given arguments.
@@ -105,7 +105,7 @@ class ParentClass extends _i1.GrandparentClass
 
 class _Undefined {}
 
-class ParentClassTable extends _i2.Table<int> {
+class ParentClassTable extends _i2.Table<int?> {
   ParentClassTable({super.tableRelation})
       : super(tableName: 'parent_class_table') {
     grandParentField = _i2.ColumnString(
@@ -137,7 +137,7 @@ class ParentClassInclude extends _i2.IncludeObject {
   Map<String, _i2.Include?> get includes => {};
 
   @override
-  _i2.Table<int> get table => ParentClass.t;
+  _i2.Table<int?> get table => ParentClass.t;
 }
 
 class ParentClassIncludeList extends _i2.IncludeList {
@@ -157,7 +157,7 @@ class ParentClassIncludeList extends _i2.IncludeList {
   Map<String, _i2.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i2.Table<int> get table => ParentClass.t;
+  _i2.Table<int?> get table => ParentClass.t;
 }
 
 class ParentClassRepository {

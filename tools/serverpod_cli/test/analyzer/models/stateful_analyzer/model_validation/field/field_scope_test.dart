@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -615,4 +616,33 @@ void main() {
     var definition = definitions.firstOrNull as ClassDefinition?;
     expect(definition, isNotNull);
   });
+
+  test(
+    'Given a class with a declared id field with the "scope" key set, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: int?, scope=none
+          ''',
+        ).build()
+      ];
+
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+        [ExperimentalFeature.changeIdType],
+      ).build();
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors.first.message,
+        'The "scope" key is not allowed on the "id" field.',
+      );
+    },
+  );
 }
