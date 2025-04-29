@@ -1,0 +1,9 @@
+name: serverpod_auth_email_account_client
+description: Starting point for a Serverpod module client.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+dependencies:
+  serverpod_client: 2.5.1
