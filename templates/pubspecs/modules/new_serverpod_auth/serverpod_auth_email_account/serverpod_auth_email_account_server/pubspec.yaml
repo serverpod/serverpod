@@ -1,24 +1,23 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_auth_email_account_server
 description: Serverpod email authentication core server module.
-version: 2.6.0
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   pointycastle: ^3.7.4
-  serverpod: 2.6.0
-  serverpod_auth_user_server: 2.6.0
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_user_server: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: '>=3.0.0 <6.0.0'
-  serverpod_test: 2.6.0
+  serverpod_test: SERVERPOD_VERSION
   test: '^1.24.2'
 
 dependency_overrides:
