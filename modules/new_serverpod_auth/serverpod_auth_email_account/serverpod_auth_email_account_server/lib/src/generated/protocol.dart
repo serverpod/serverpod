@@ -11,8 +11,22 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'module_class.dart' as _i3;
-export 'module_class.dart';
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i3;
+import 'email_account.dart' as _i4;
+import 'email_account_failed_login_attempt.dart' as _i5;
+import 'email_account_login_exception.dart' as _i6;
+import 'email_account_login_failure_reason.dart' as _i7;
+import 'email_account_password_reset_attempt.dart' as _i8;
+import 'email_account_password_reset_request.dart' as _i9;
+import 'email_account_request.dart' as _i10;
+export 'email_account.dart';
+export 'email_account_failed_login_attempt.dart';
+export 'email_account_login_exception.dart';
+export 'email_account_login_failure_reason.dart';
+export 'email_account_password_reset_attempt.dart';
+export 'email_account_password_reset_request.dart';
+export 'email_account_request.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -21,7 +35,405 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [];
+  static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'serverpod_auth_email_account',
+      dartName: 'EmailAccount',
+      schema: 'public',
+      module: 'serverpod_auth_email_account',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'passwordHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_email_account_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_email_account_failed_login_attempt',
+      dartName: 'EmailAccountFailedLoginAttempt',
+      schema: 'public',
+      module: 'serverpod_auth_email_account',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_auth_email_account_failed_login_attempt_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attemptedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_failed_login_attempt_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_failed_login_attempt_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName:
+              'serverpod_auth_email_account_failed_login_attempt_attempted_at',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'attemptedAt',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_email_account_password_reset_attempt',
+      dartName: 'EmailAccountPasswordResetAttempt',
+      schema: 'public',
+      module: 'serverpod_auth_email_account',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_auth_email_account_password_reset_attempt_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attemptedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_password_reset_attempt_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName:
+              'serverpod_auth_email_account_password_reset_attempt_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName:
+              'serverpod_auth_email_account_password_reset_attempt_ip_address',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'ipAddress',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_password_reset_attempt_at',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'attemptedAt',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_email_account_password_reset_request',
+      dartName: 'EmailAccountPasswordResetRequest',
+      schema: 'public',
+      module: 'serverpod_auth_email_account',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authenticationId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName:
+              'serverpod_auth_email_account_password_reset_request_fk_0',
+          columns: ['authenticationId'],
+          referenceTable: 'serverpod_auth_email_account',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_password_reset_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_password_reset_request_code',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'verificationCode',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_email_account_request',
+      dartName: 'EmailAccountRequest',
+      schema: 'public',
+      module: 'serverpod_auth_email_account',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'passwordHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_email_account_request_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    ..._i3.Protocol.targetTableDefinitions,
+  ];
 
   @override
   T deserialize<T>(
@@ -29,12 +441,62 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.ModuleClass) {
-      return _i3.ModuleClass.fromJson(data) as T;
+    if (t == _i4.EmailAccount) {
+      return _i4.EmailAccount.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.ModuleClass?>()) {
-      return (data != null ? _i3.ModuleClass.fromJson(data) : null) as T;
+    if (t == _i5.EmailAccountFailedLoginAttempt) {
+      return _i5.EmailAccountFailedLoginAttempt.fromJson(data) as T;
     }
+    if (t == _i6.EmailAccountLoginException) {
+      return _i6.EmailAccountLoginException.fromJson(data) as T;
+    }
+    if (t == _i7.EmailAccountLoginFailureReason) {
+      return _i7.EmailAccountLoginFailureReason.fromJson(data) as T;
+    }
+    if (t == _i8.EmailAccountPasswordResetAttempt) {
+      return _i8.EmailAccountPasswordResetAttempt.fromJson(data) as T;
+    }
+    if (t == _i9.EmailAccountPasswordResetRequest) {
+      return _i9.EmailAccountPasswordResetRequest.fromJson(data) as T;
+    }
+    if (t == _i10.EmailAccountRequest) {
+      return _i10.EmailAccountRequest.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i4.EmailAccount?>()) {
+      return (data != null ? _i4.EmailAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.EmailAccountFailedLoginAttempt?>()) {
+      return (data != null
+          ? _i5.EmailAccountFailedLoginAttempt.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i6.EmailAccountLoginException?>()) {
+      return (data != null
+          ? _i6.EmailAccountLoginException.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i7.EmailAccountLoginFailureReason?>()) {
+      return (data != null
+          ? _i7.EmailAccountLoginFailureReason.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i8.EmailAccountPasswordResetAttempt?>()) {
+      return (data != null
+          ? _i8.EmailAccountPasswordResetAttempt.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i9.EmailAccountPasswordResetRequest?>()) {
+      return (data != null
+          ? _i9.EmailAccountPasswordResetRequest.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i10.EmailAccountRequest?>()) {
+      return (data != null ? _i10.EmailAccountRequest.fromJson(data) : null)
+          as T;
+    }
+    try {
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -45,12 +507,34 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.ModuleClass) {
-      return 'ModuleClass';
+    if (data is _i4.EmailAccount) {
+      return 'EmailAccount';
+    }
+    if (data is _i5.EmailAccountFailedLoginAttempt) {
+      return 'EmailAccountFailedLoginAttempt';
+    }
+    if (data is _i6.EmailAccountLoginException) {
+      return 'EmailAccountLoginException';
+    }
+    if (data is _i7.EmailAccountLoginFailureReason) {
+      return 'EmailAccountLoginFailureReason';
+    }
+    if (data is _i8.EmailAccountPasswordResetAttempt) {
+      return 'EmailAccountPasswordResetAttempt';
+    }
+    if (data is _i9.EmailAccountPasswordResetRequest) {
+      return 'EmailAccountPasswordResetRequest';
+    }
+    if (data is _i10.EmailAccountRequest) {
+      return 'EmailAccountRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_user.$className';
     }
     return null;
   }
@@ -61,12 +545,34 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'ModuleClass') {
-      return deserialize<_i3.ModuleClass>(data['data']);
+    if (dataClassName == 'EmailAccount') {
+      return deserialize<_i4.EmailAccount>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountFailedLoginAttempt') {
+      return deserialize<_i5.EmailAccountFailedLoginAttempt>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountLoginException') {
+      return deserialize<_i6.EmailAccountLoginException>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountLoginFailureReason') {
+      return deserialize<_i7.EmailAccountLoginFailureReason>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountPasswordResetAttempt') {
+      return deserialize<_i8.EmailAccountPasswordResetAttempt>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountPasswordResetRequest') {
+      return deserialize<_i9.EmailAccountPasswordResetRequest>(data['data']);
+    }
+    if (dataClassName == 'EmailAccountRequest') {
+      return deserialize<_i10.EmailAccountRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_user.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i3.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -74,10 +580,28 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   _i1.Table? getTableForType(Type t) {
     {
+      var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i4.EmailAccount:
+        return _i4.EmailAccount.t;
+      case _i5.EmailAccountFailedLoginAttempt:
+        return _i5.EmailAccountFailedLoginAttempt.t;
+      case _i8.EmailAccountPasswordResetAttempt:
+        return _i8.EmailAccountPasswordResetAttempt.t;
+      case _i9.EmailAccountPasswordResetRequest:
+        return _i9.EmailAccountPasswordResetRequest.t;
+      case _i10.EmailAccountRequest:
+        return _i10.EmailAccountRequest.t;
     }
     return null;
   }
