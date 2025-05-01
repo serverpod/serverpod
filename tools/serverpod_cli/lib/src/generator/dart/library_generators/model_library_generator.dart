@@ -245,7 +245,7 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           definition.fields,
           null,
-          isPrivateConstructor: false,
+          privateConstructor: false,
           subDirParts: definition.subDirParts,
           inheritedFields: [],
         ),
@@ -289,7 +289,7 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           fields,
           null,
-          isPrivateConstructor: true,
+          privateConstructor: true,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: [],
         ),
@@ -416,7 +416,7 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           fields,
           tableName,
-          isPrivateConstructor: !classDefinition.isParentClass,
+          privateConstructor: !classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
         ),
@@ -1455,12 +1455,12 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
-    required bool isPrivateConstructor,
+    required bool privateConstructor,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
     return Constructor((c) {
-      if (isPrivateConstructor) {
+      if (privateConstructor) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
