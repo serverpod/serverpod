@@ -410,26 +410,20 @@ class Restrictions {
       validInterfaces.add(interfaceClass);
     }
 
-    if (documentDefinition is InterfaceClassDefinition &&
-        validInterfaces.isNotEmpty) {
-      var definition = documentDefinition;
-      if (definition is! InterfaceClassDefinition) {
-        return errors;
-      }
-
+    var definition = documentDefinition;
+    if (definition is InterfaceClassDefinition && validInterfaces.isNotEmpty) {
+      final interfaceDefinition = definition;
       var circularPath = _detectCircularInterfaceDependency(
-        definition,
+        interfaceDefinition,
         [],
         {},
       );
 
       if (circularPath.isNotEmpty) {
-        return [
-          SourceSpanSeverityException(
-            'Circular interface dependency detected: ${circularPath.join(' → ')}',
-            span,
-          )
-        ];
+        errors.add(SourceSpanSeverityException(
+          'Circular interface dependency detected: ${circularPath.join(' → ')}',
+          span,
+        ));
       }
     }
 
@@ -729,8 +723,9 @@ class Restrictions {
             duplicateClassField.relation == duplicateInterfaceField.relation) {
           return [
             SourceSpanSeverityException(
-              'Field "$fieldName" from interface "${interfaceClass.className}" must modify at least one property (defaults, scope, or relations) when redefined. Otherwise, remove the field from the implementing class.',
+              'Field "$fieldName" is already defined by interface "${interfaceClass.className}" and does not modify any properties (defaults, scope, or relations). This definition is redundant and can be removed.',
               span,
+              severity: SourceSpanSeverity.hint,
             )
           ];
         }

@@ -313,7 +313,7 @@ void main() {
 
       var error = collector.errors.first;
       expect(error.message,
-          'Field "status" from interface "Interface1" must modify at least one property (defaults, scope, or relations) when redefined. Otherwise, remove the field from the implementing class.');
+          'Field "status" is already defined by interface "Interface1" and does not modify any properties (defaults, scope, or relations). This definition is redundant and can be removed.');
     });
 
     test(
