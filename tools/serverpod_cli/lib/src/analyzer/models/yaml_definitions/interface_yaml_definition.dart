@@ -107,18 +107,6 @@ class InterfaceYamlDefinition {
                 },
               ),
               ValidateNode(
-                Keyword.database,
-                isDeprecated: true,
-                isRemoved: true,
-                alternativeUsageMessage: 'Use "scope=serverOnly" instead.',
-              ),
-              ValidateNode(
-                Keyword.api,
-                isDeprecated: true,
-                isRemoved: true,
-                alternativeUsageMessage: 'Use "!persist" instead.',
-              ),
-              ValidateNode(
                 Keyword.defaultKey,
                 keyRestriction: restrictions.validateDefaultKey,
                 valueRestriction: DefaultValueRestriction(
