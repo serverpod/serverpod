@@ -38,6 +38,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                     column.defaultPersistValue,
                     classDefinition.tableName!,
                   ),
+                  vectorDimension: column.type.vectorDimension,
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),

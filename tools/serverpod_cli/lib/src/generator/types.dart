@@ -1,3 +1,6 @@
+import 'dart:core';
+import 'dart:core' as d;
+
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart' as code_builder;
@@ -49,6 +52,10 @@ class TypeDefinition {
 
   /// True if this type references a custom class.
   final bool customClass;
+
+  /// Stores the dimension of Vector type (e.g., 1536 for Vector(1536)).
+  /// Only populated for Vector types.
+  final d.int? vectorDimension;
 
   EnumDefinition? enumDefinition;
 
@@ -111,6 +118,7 @@ class TypeDefinition {
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
+    this.vectorDimension,
   });
 
   static const recordTypeClassName = '_Record';
@@ -164,6 +172,7 @@ class TypeDefinition {
     List<TypeDefinition> generics = const [],
     required bool nullable,
     bool customClass = false,
+    d.int? vectorDimension,
   }) {
     var parts = mixed.split(':');
     var classname = parts.last;
@@ -177,6 +186,7 @@ class TypeDefinition {
       generics: generics,
       url: url.isNotEmpty ? url : null,
       customClass: customClass,
+      vectorDimension: vectorDimension,
     );
   }
 
@@ -200,6 +210,7 @@ class TypeDefinition {
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
+        vectorDimension: vectorDimension,
       );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -213,6 +224,7 @@ class TypeDefinition {
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
+        vectorDimension: vectorDimension,
       );
 
   /// Returns this [TypeDefinition] as a named record field
@@ -226,6 +238,7 @@ class TypeDefinition {
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
+        vectorDimension: vectorDimension,
       );
 
   static String getRef(SerializableModelDefinition model) {
@@ -615,6 +628,7 @@ class TypeDefinition {
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,
+      vectorDimension: vectorDimension,
     );
   }
 

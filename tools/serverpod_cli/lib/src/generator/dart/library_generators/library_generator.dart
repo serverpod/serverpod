@@ -1543,6 +1543,8 @@ extension on DatabaseDefinition {
                   'dartType': literalString(column.dartType!),
                 if (column.columnDefault != null)
                   'columnDefault': literalString(column.columnDefault!),
+                if (column.vectorDimension != null)
+                  'vectorDimension': literalNum(column.vectorDimension!),
               }),
           ]),
           'foreignKeys': literalList([

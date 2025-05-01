@@ -205,6 +205,16 @@ extension ColumnComparisons on ColumnDefinition {
       );
     }
 
+    if (vectorDimension != other.vectorDimension) {
+      mismatches.add(
+        ColumnComparisonWarning(
+          name: 'vector dimension',
+          expected: '$vectorDimension',
+          found: '${other.vectorDimension}',
+        ),
+      );
+    }
+
     return mismatches;
   }
 }
