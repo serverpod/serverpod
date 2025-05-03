@@ -1,4 +1,5 @@
 export 'package:uuid/uuid.dart';
+export 'package:pgvector/pgvector.dart';
 
 export 'src/auth_encoding.dart';
 export 'src/bytedata_base64_ext.dart';
