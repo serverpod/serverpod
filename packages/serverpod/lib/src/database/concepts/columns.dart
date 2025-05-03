@@ -318,6 +318,36 @@ class ColumnCount extends _ValueOperatorColumn<int>
   Expression _encodeValueForQuery(int value) => Expression(value);
 }
 
+/// A [Column] holding a [Vector] from pgvector.
+class ColumnVector extends _ValueOperatorColumn<Vector>
+    with _ColumnDefaultOperations<Vector>, _VectorColumnDefaultOperations {
+  /// The dimension of the vector (number of elements).
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVector(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Vector value) => EscapedExpression(value);
+}
+
+/// A [Column] holding the result of a [Vector] distance operation.
+class ColumnVectorDistance extends ColumnDouble {
+  final VectorDistanceExpression _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVectorDistance(this._expression)
+      : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -472,6 +502,45 @@ mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
         this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+  }
+}
+
+/// Mixin providing vector-specific operations for [ColumnVector].
+mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
+  /// Computes the L2 (Euclidean) distance between this vector column and another vector.
+  ColumnVectorDistance distanceL2(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceOperator.l2,
+    ));
+  }
+
+  /// Computes the inner product distance between this vector column and another vector.
+  ColumnVectorDistance distanceInnerProduct(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceOperator.innerProduct,
+    ));
+  }
+
+  /// Computes the cosine distance between this vector column and another vector.
+  ColumnVectorDistance distanceCosine(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceOperator.cosine,
+    ));
+  }
+
+  /// Computes the L1 (Manhattan) distance between this vector column and another vector.
+  ColumnVectorDistance distanceL1(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceOperator.l1,
+    ));
   }
 }
 
@@ -751,6 +820,54 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String get operator => 'NOT IN';
+}
+
+/// Vector distance operator type used with pgvector.
+enum VectorDistanceOperator {
+  /// L2 (Euclidean) distance
+  l2,
+
+  /// Inner product distance
+  innerProduct,
+
+  /// Cosine distance
+  cosine,
+
+  /// L1 (Manhattan) distance
+  l1,
+
+  /// Hamming distance (binary vectors)
+  hamming,
+
+  /// Jaccard distance (binary vectors)
+  jaccard,
+}
+
+/// Vector distance expression for use with pgvector.
+class VectorDistanceExpression extends _TwoPartColumnExpression<Vector> {
+  /// The vector distance operator to calculate.
+  final VectorDistanceOperator distanceOperator;
+
+  /// Creates a new [VectorDistanceExpression].
+  VectorDistanceExpression(super.column, super.other, this.distanceOperator);
+
+  @override
+  String get operator {
+    switch (distanceOperator) {
+      case VectorDistanceOperator.l2:
+        return '<->';
+      case VectorDistanceOperator.innerProduct:
+        return '<#>';
+      case VectorDistanceOperator.cosine:
+        return '<=>';
+      case VectorDistanceOperator.l1:
+        return '<+>';
+      case VectorDistanceOperator.hamming:
+        return '<~>';
+      case VectorDistanceOperator.jaccard:
+        return '<%>';
+    }
+  }
 }
 
 /// An extension on iterable for Id columns.

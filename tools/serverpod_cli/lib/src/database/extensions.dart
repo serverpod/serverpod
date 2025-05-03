@@ -344,6 +344,9 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.uuid:
         type = 'uuid';
         break;
+      case ColumnType.vector:
+        type = 'vector(${vectorDimension!})';
+        break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
     }
