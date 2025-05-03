@@ -614,4 +614,46 @@ void main() {
       },
     );
   });
+
+  group('Given a model with vector fields when generating protocol files', () {
+    var testModelName = 'ModelWithVector';
+    var testModelFileName = 'model_with_vector';
+
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .withTableName('model_with_vector')
+          .withVectorField('embedding', dimension: 384)
+          .withVectorField('nullableEmbedding', dimension: 512, nullable: true)
+          .build()
+    ];
+
+    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then the protocol.dart file is created.', () {
+      expect(codeMap[expectedFileName], isNotNull);
+    });
+
+    late var content = codeMap[expectedFileName]!;
+
+    test(
+        'then the protocol contains non-nullable vector field with correct type and dimension.',
+        () {
+      expect(content, contains('dartType: \'Vector(384)\''));
+      expect(content, contains('vectorDimension: 384'));
+    });
+
+    test(
+        'then the protocol contains nullable vector field with correct type and dimension parameter.',
+        () {
+      expect(content, contains('dartType: \'Vector(512)?\''));
+      expect(content, contains('vectorDimension: 512'));
+    });
+  });
 }

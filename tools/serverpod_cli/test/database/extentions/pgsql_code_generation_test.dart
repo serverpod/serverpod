@@ -188,4 +188,48 @@ ALTER TABLE ONLY "town"
       contains('create or replace function gen_random_uuid_v7()\nreturns uuid'),
     );
   });
+
+  const createVectorExtension = '''
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';
+  ELSE
+    RAISE NOTICE 'Extension "vector" not available on this instance';
+  END IF;
+END
+\$\$;
+''';
+
+  test(
+      'Given a database definition with no Vector field in any of the tables, then code for creating vector extension is not generated.',
+      () {
+    var databaseDefinition = DatabaseDefinitionBuilder().build();
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(pgsql, isNot(contains(createVectorExtension)));
+  });
+
+  test(
+      'Given a database definition with Vector field in one of the tables, then code for creating vector extension is not generated.',
+      () {
+    var citizen = 'citizen';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(citizen.sentenceCase)
+          .withFileName(citizen)
+          .withTableName(citizen)
+          .withVectorField('vector')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(pgsql, contains(createVectorExtension));
+  });
 }

@@ -45,6 +45,7 @@ class DatabasePoolManager {
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+          typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
           onOpen: config.searchPaths != null
               ? (connection) async {
                   var encodedSearchPaths = config.searchPaths

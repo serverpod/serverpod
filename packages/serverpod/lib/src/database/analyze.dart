@@ -71,9 +71,15 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
     var queryResult = await database.unsafeQuery(
 // Get the columns of this table and sort them based on their position.
         '''
-SELECT column_name, column_default, is_nullable, data_type
+SELECT column_name, column_default, is_nullable,
+       CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
+       CASE WHEN (udt_name = 'vector') THEN a.atttypmod ELSE NULL END as vector_size
 FROM information_schema.columns
+  LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
+  LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
+  AND n.nspname = '$schemaName' AND c.relname = '$tableName'
 ORDER BY ordinal_position;
 ''');
 
@@ -83,7 +89,8 @@ ORDER BY ordinal_position;
             columnDefault: e[1],
             columnType: ExtendedColumnType.fromSqlType(e[3]),
             // SQL outputs YES or NO. So we have to convert it to a bool manually.
-            isNullable: e[2] == 'YES'))
+            isNullable: e[2] == 'YES',
+            vectorDimension: e[4]))
         .toList();
   }
 

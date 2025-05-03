@@ -42,6 +42,112 @@ void main() {
         () {
       expect(psql, contains('CREATE TABLE IF NOT EXISTS "example_table"'));
     });
+
+    const createVectorExtension = '''
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';
+  ELSE
+    RAISE NOTICE 'Extension "vector" not available on this instance';
+  END IF;
+END
+\$\$;
+''';
+
+    test(
+        'Given a migration with no vector field changes, then the code for creating vector extension is not generated.',
+        () {
+      var migration = DatabaseMigration(
+        actions: [],
+        warnings: [],
+        migrationApiVersion: 1,
+      );
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+
+    test(
+        'Given a migration that adds a table with a vector field, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder().build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that adds a vector column to existing table, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+              TableDefinitionBuilder().withName('existing_table').build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that removes a table with a vector field, then the code for creating vector extension is not generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder().build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
   });
 
   /// Issue: https://github.com/serverpod/serverpod/issues/3503

@@ -1,5 +1,6 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 import 'foreign_relation_definition_builder.dart';
@@ -118,6 +119,26 @@ class ModelClassDefinitionBuilder {
           .withDefaults(
             defaultModelValue: defaultModelValue,
             defaultPersistValue: defaultPersistValue,
+          )
+          .build(),
+    );
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withVectorField(
+    String fieldName, {
+    int dimension = 3,
+    bool nullable = false,
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withType(
+            TypeDefinitionBuilder()
+                .withClassName(VectorKeyword.className)
+                .withNullable(nullable)
+                .withVectorDimension(dimension)
+                .build(),
           )
           .build(),
     );
