@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:super_string/super_string.dart';
 
 import '../config/config.dart';
 
@@ -133,6 +134,8 @@ class TypeDefinition {
   bool get isSetType => className == SetKeyword.className;
 
   bool get isMapType => className == MapKeyword.className;
+
+  bool get isVectorType => className == VectorKeyword.className;
 
   bool get isRecordType => className == recordTypeClassName;
 
@@ -304,7 +307,7 @@ class TypeDefinition {
               serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
-            (url == null && ['UuidValue'].contains(className))) {
+            (url == null && ['UuidValue', 'Vector'].contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -383,6 +386,7 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'uuid';
     if (className == 'Uri') return 'text';
     if (className == 'BigInt') return 'text';
+    if (className == 'Vector') return 'vector';
 
     return 'json';
   }
@@ -406,6 +410,7 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'ColumnUuid';
     if (className == 'Uri') return 'ColumnUri';
     if (className == 'BigInt') return 'ColumnBigInt';
+    if (className == 'Vector') return 'ColumnVector';
 
     return 'ColumnSerializable';
   }
@@ -644,6 +649,7 @@ class TypeDefinition {
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'BigInt') return ValueType.bigInt;
+    if (className == 'Vector') return ValueType.vector;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -705,7 +711,8 @@ class TypeDefinition {
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
     var nullableString = nullable ? '?' : '';
     var urlString = url != null ? '$url:' : '';
-    return '$urlString$className$genericsString$nullableString';
+    var classRepr = isVectorType ? '$className($vectorDimension)' : className;
+    return '$urlString$classRepr$genericsString$nullableString';
   }
 }
 
@@ -809,6 +816,12 @@ TypeDefinition parseType(
 
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
+  var vectorDimension = (className == VectorKeyword.className &&
+          (trimmedInput.count('(') == 1 && trimmedInput.count(')') == 1))
+      ? int.tryParse(
+          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
+      : null;
+
   var extraClass = extraClasses
       ?.cast<TypeDefinition?>()
       .firstWhere((c) => c?.className == className, orElse: () => null);
@@ -822,11 +835,14 @@ TypeDefinition parseType(
     nullable: isNullable,
     generics: generics,
     customClass: extraClasses == null,
+    vectorDimension: vectorDimension,
   );
 }
 
 int _findLastClassToken(int start, String input, bool isNullable) {
   if (start != -1) return start;
+  if (input.first != '(' && input.contains('(')) return input.indexOf('(');
+  if (input.first != '(' && input.contains(')')) return input.indexOf(')');
   if (isNullable) return input.length - 1;
 
   return input.length;
@@ -859,6 +875,7 @@ enum ValueType {
   record,
   isEnum,
   classType,
+  vector,
   uri;
 }
 

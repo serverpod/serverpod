@@ -166,6 +166,7 @@ class Restrictions {
       'Client',
       'Endpoints',
       'Protocol',
+      'Vector',
       '_Record',
     };
     if (reservedClassNames.contains(className)) {
@@ -958,6 +959,22 @@ class Restrictions {
       ));
     }
 
+    if (fieldType.isVectorType) {
+      if (fieldType.vectorDimension == null) {
+        errors.add(SourceSpanSeverityException(
+          'The vector type must have an integer dimension defined between '
+          'parentheses after the type name (e.g. Vector(512)).',
+          span,
+        ));
+      } else if (fieldType.vectorDimension! < 1) {
+        errors.add(SourceSpanSeverityException(
+          'Invalid vector dimension "${fieldType.vectorDimension}". Vector '
+          'dimension must be an integer number greater than 0.',
+          span,
+        ));
+      }
+    }
+
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
         errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
@@ -1506,6 +1523,7 @@ class Restrictions {
     'Uri',
     'BigInt',
     'ByteData',
+    'Vector',
     'List',
     'Map',
     'Set',
