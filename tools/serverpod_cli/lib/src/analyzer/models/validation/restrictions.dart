@@ -729,6 +729,31 @@ class Restrictions {
     return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
 
+  List<SourceSpanSeverityException> validateIndexUniqueKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var indexType = definition.indexes
+        .firstWhere((index) => index.name == parentNodeName)
+        .type;
+
+    if (['ivfflat', 'hnsw'].contains(indexType)) {
+      return [
+        SourceSpanSeverityException(
+          'The "unique" property cannot be used with vector indexes of '
+          'type "$indexType".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateRelationInterdependencies(
     String parentNodeName,
     dynamic content,
@@ -1112,7 +1137,25 @@ class Restrictions {
               span,
             ));
 
-    return [...missingFieldErrors, ...duplicateFieldErrors];
+    var hasVectorField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isVectorType)
+        .toSet();
+
+    var vectorErrors = [
+      if (hasVectorField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing vector and non-vector fields in the same index is not allowed.',
+          span,
+        ),
+      if (hasVectorField.any((e) => e) && indexFields.length > 1)
+        SourceSpanSeverityException(
+          'Only one vector field is allowed in an index.',
+          span,
+        ),
+    ];
+
+    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
   }
 
   List<SourceSpanSeverityException> validateIndexType(
@@ -1121,6 +1164,16 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var validIndexTypes = {'btree', 'hash', 'gin', 'gist', 'spgist', 'brin'};
+
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition) {
+      var indexFields = definition.fieldsIncludingInherited.where(
+        (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
+      );
+      if (indexFields.any((e) => e.type.isVectorType)) {
+        validIndexTypes = {'hnsw', 'ivfflat'};
+      }
+    }
 
     if (content is! String || !validIndexTypes.contains(content)) {
       return [

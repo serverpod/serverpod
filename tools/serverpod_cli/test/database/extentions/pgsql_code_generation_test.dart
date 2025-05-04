@@ -2,9 +2,11 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/database/database_definition_builder.dart';
+import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/model_class_definition_builder.dart';
 
@@ -231,5 +233,89 @@ END
     var pgsql = databaseDefinition.toPgSql(installedModules: []);
 
     expect(pgsql, contains(createVectorExtension));
+  });
+
+  test(
+      'Given a table definition with an HNSW index on a vector field, then the SQL should include the correct HNSW parameters.',
+      () {
+    var modelName = 'vectorModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withVectorField('embedding', dimension: 1536)
+          .build(),
+    ];
+
+    var tableDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    ).tables.first;
+
+    var indexName = '${modelName}_embedding_hnsw_idx';
+    var index = IndexDefinitionBuilder()
+        .withIndexName(indexName)
+        .withElements([
+          IndexElementDefinition(
+            type: IndexElementDefinitionType.column,
+            definition: 'embedding',
+          )
+        ])
+        .withType('hnsw')
+        .withIsUnique(false)
+        .withIsPrimary(false)
+        .build();
+
+    var sql = index.toPgSql(tableName: tableDefinition.name);
+
+    expect(
+      sql,
+      'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+      'USING hnsw ("embedding" vector_l2_ops) WITH (m=16, ef_construction=64);\n',
+    );
+  });
+
+  test(
+      'Given a table definition with an IVFFlat index on a vector field, then the SQL should include the correct IVFFlat parameters.',
+      () {
+    var modelName = 'vectorModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withVectorField('embedding', dimension: 1536)
+          .build(),
+    ];
+
+    var tableDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    ).tables.first;
+
+    var indexName = '${modelName}_embedding_ivfflat_idx';
+    var index = IndexDefinitionBuilder()
+        .withIndexName(indexName)
+        .withElements([
+          IndexElementDefinition(
+            type: IndexElementDefinitionType.column,
+            definition: 'embedding',
+          )
+        ])
+        .withType('ivfflat')
+        .withIsUnique(false)
+        .withIsPrimary(false)
+        .build();
+
+    var sql = index.toPgSql(tableName: tableDefinition.name);
+
+    expect(
+      sql,
+      'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+      'USING ivfflat ("embedding" vector_l2_ops) WITH (lists=100);\n',
+    );
   });
 }

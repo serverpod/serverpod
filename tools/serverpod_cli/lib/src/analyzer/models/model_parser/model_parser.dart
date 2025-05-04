@@ -588,7 +588,12 @@ class ModelParser {
       if (indexName is! String) return null;
 
       var indexFields = _parseIndexFields(nodeDocument, fields);
-      var type = _parseIndexType(nodeDocument);
+      var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
+      var type = _parseIndexType(
+        nodeDocument,
+        onlyVectorFields: indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isVectorType),
+      );
       var unique = _parseUniqueKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
@@ -620,12 +625,15 @@ class ModelParser {
     return indexFields;
   }
 
-  static String _parseIndexType(YamlMap documentContents) {
+  static String _parseIndexType(
+    YamlMap documentContents, {
+    required bool onlyVectorFields,
+  }) {
     var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
 
     if (type == null || type is! String) {
-      return 'btree';
+      return onlyVectorFields ? 'hnsw' : 'btree';
     }
 
     return type;

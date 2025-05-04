@@ -216,6 +216,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
+                keyRestriction: restrictions.validateIndexUniqueKey,
                 valueRestriction: BooleanValueRestriction().validate,
               ),
             },

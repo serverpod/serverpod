@@ -393,9 +393,23 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
+    // TODO: Support passing the distance as index configuration.
+    var distanceStr = '';
+    if (type == 'hnsw' || type == 'ivfflat') {
+      distanceStr = ' vector_l2_ops';
+    }
+
+    // TODO: Support passing parameters as index configuration.
+    var pgvectorParams = '';
+    if (type == 'hnsw') {
+      pgvectorParams = ' WITH (m=16, ef_construction=64)';
+    } else if (type == 'ivfflat') {
+      pgvectorParams = ' WITH (lists=100)';
+    }
+
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')});\n';
+        ' (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
 
     return out;
   }
