@@ -17,7 +17,8 @@ class AccountPage extends StatelessWidget {
             userInfo: sessionManager.signedInUser,
             size: 42,
           ),
-          title: Text(sessionManager.signedInUser!.userName ?? ''),
+          title: Text(sessionManager.signedInUser!.userName ??
+              sessionManager.signedInUser!.userIdentifier),
           subtitle: Text(sessionManager.signedInUser!.email ?? ''),
         ),
         Padding(

@@ -1,5 +1,6 @@
 import 'package:auth_example_flutter/src/serverpod_client.dart';
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_anonymous_flutter/serverpod_auth_anonymous_flutter.dart';
 import 'package:serverpod_auth_apple_flutter/serverpod_auth_apple_flutter.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
@@ -12,7 +13,12 @@ const _googleServerClientId = '<Your Web app Client ID from the Cloud console>';
 
 /// Sign in dialog with the option of signing in with email or Google.
 class SignInPage extends StatelessWidget {
-  const SignInPage({super.key});
+  const SignInPage(
+    this.sessionManager, {
+    super.key,
+  });
+
+  final SessionManager sessionManager;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,10 @@ class SignInPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SignInAnonymouslyButton(
+                caller: client.modules.auth,
+                sessionManager: sessionManager,
+              ),
               SignInWithEmailButton(
                 caller: client.modules.auth,
               ),
