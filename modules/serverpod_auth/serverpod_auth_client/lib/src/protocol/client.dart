@@ -52,6 +52,40 @@ class EndpointAdmin extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for creating anonymous accounts which may or may not be upgraded to
+/// use a real identity provider at a later time.
+/// {@category Endpoint}
+class EndpointAnonymous extends _i1.EndpointRef {
+  EndpointAnonymous(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth.anonymous';
+
+  /// Creates a new account.
+  _i2.Future<_i3.UserInfo?> createAccount({required String password}) =>
+      caller.callServerEndpoint<_i3.UserInfo?>(
+        'serverpod_auth.anonymous',
+        'createAccount',
+        {'password': password},
+      );
+
+  /// Authenticates an anonymous user with their userId and password (which was
+  /// generated on behalf of the user by the client). Returns an
+  /// [AuthenticationResponse] with the user's information.
+  _i2.Future<_i4.AuthenticationResponse> authenticate({
+    required int userId,
+    required String password,
+  }) =>
+      caller.callServerEndpoint<_i4.AuthenticationResponse>(
+        'serverpod_auth.anonymous',
+        'authenticate',
+        {
+          'userId': userId,
+          'password': password,
+        },
+      );
+}
+
 /// Endpoint for handling Sign in with Apple.
 /// {@category Endpoint}
 class EndpointApple extends _i1.EndpointRef {
@@ -313,6 +347,7 @@ class EndpointUser extends _i1.EndpointRef {
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     admin = EndpointAdmin(this);
+    anonymous = EndpointAnonymous(this);
     apple = EndpointApple(this);
     email = EndpointEmail(this);
     firebase = EndpointFirebase(this);
@@ -322,6 +357,8 @@ class Caller extends _i1.ModuleEndpointCaller {
   }
 
   late final EndpointAdmin admin;
+
+  late final EndpointAnonymous anonymous;
 
   late final EndpointApple apple;
 
@@ -338,6 +375,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'serverpod_auth.admin': admin,
+        'serverpod_auth.anonymous': anonymous,
         'serverpod_auth.apple': apple,
         'serverpod_auth.email': email,
         'serverpod_auth.firebase': firebase,
