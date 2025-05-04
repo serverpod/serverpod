@@ -1,0 +1,36 @@
+name: serverpod_auth_anonymous_flutter
+description: Sign in anonymously for the Serverpod auth module.
+version: 2.6.0
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.19.0'
+
+# Add regular dependencies here.
+dependencies:
+  flutter:
+    sdk: flutter
+  serverpod_auth_client: 2.6.0
+  serverpod_auth_shared_flutter: 2.6.0
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: 2.6.0
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../serverpod_auth_shared_flutter
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
