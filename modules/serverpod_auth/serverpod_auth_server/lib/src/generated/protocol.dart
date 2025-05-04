@@ -11,20 +11,24 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'apple_auth_info.dart' as _i3;
-import 'auth_key.dart' as _i4;
-import 'authentication_fail_reason.dart' as _i5;
-import 'authentication_response.dart' as _i6;
-import 'email_auth.dart' as _i7;
-import 'email_create_account_request.dart' as _i8;
-import 'email_failed_sign_in.dart' as _i9;
-import 'email_password_reset.dart' as _i10;
-import 'email_reset.dart' as _i11;
-import 'google_refresh_token.dart' as _i12;
-import 'user_image.dart' as _i13;
-import 'user_info.dart' as _i14;
-import 'user_info_public.dart' as _i15;
-import 'user_settings_config.dart' as _i16;
+import 'anonymous_auth.dart' as _i3;
+import 'anonymous_failed_sign_in.dart' as _i4;
+import 'apple_auth_info.dart' as _i5;
+import 'auth_key.dart' as _i6;
+import 'authentication_fail_reason.dart' as _i7;
+import 'authentication_response.dart' as _i8;
+import 'email_auth.dart' as _i9;
+import 'email_create_account_request.dart' as _i10;
+import 'email_failed_sign_in.dart' as _i11;
+import 'email_password_reset.dart' as _i12;
+import 'email_reset.dart' as _i13;
+import 'google_refresh_token.dart' as _i14;
+import 'user_image.dart' as _i15;
+import 'user_info.dart' as _i16;
+import 'user_info_public.dart' as _i17;
+import 'user_settings_config.dart' as _i18;
+export 'anonymous_auth.dart';
+export 'anonymous_failed_sign_in.dart';
 export 'apple_auth_info.dart';
 export 'auth_key.dart';
 export 'authentication_fail_reason.dart';
@@ -48,6 +52,141 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'serverpod_anonymous_auth',
+      dartName: 'AnonymousAuth',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_anonymous_auth_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_anonymous_auth_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_anonymous_auth_userid',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_anonymous_failed_sign_in',
+      dartName: 'AnonymousFailedSignIn',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_anonymous_failed_sign_in_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_anonymous_failed_sign_in_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_anonymous_failed_sign_in_userid_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_anonymous_failed_sign_in_time_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'time',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     _i2.TableDefinition(
       name: 'serverpod_auth_key',
       dartName: 'AuthKey',
@@ -629,95 +768,108 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.AppleAuthInfo) {
-      return _i3.AppleAuthInfo.fromJson(data) as T;
+    if (t == _i3.AnonymousAuth) {
+      return _i3.AnonymousAuth.fromJson(data) as T;
     }
-    if (t == _i4.AuthKey) {
-      return _i4.AuthKey.fromJson(data) as T;
+    if (t == _i4.AnonymousFailedSignIn) {
+      return _i4.AnonymousFailedSignIn.fromJson(data) as T;
     }
-    if (t == _i5.AuthenticationFailReason) {
-      return _i5.AuthenticationFailReason.fromJson(data) as T;
+    if (t == _i5.AppleAuthInfo) {
+      return _i5.AppleAuthInfo.fromJson(data) as T;
     }
-    if (t == _i6.AuthenticationResponse) {
-      return _i6.AuthenticationResponse.fromJson(data) as T;
+    if (t == _i6.AuthKey) {
+      return _i6.AuthKey.fromJson(data) as T;
     }
-    if (t == _i7.EmailAuth) {
-      return _i7.EmailAuth.fromJson(data) as T;
+    if (t == _i7.AuthenticationFailReason) {
+      return _i7.AuthenticationFailReason.fromJson(data) as T;
     }
-    if (t == _i8.EmailCreateAccountRequest) {
-      return _i8.EmailCreateAccountRequest.fromJson(data) as T;
+    if (t == _i8.AuthenticationResponse) {
+      return _i8.AuthenticationResponse.fromJson(data) as T;
     }
-    if (t == _i9.EmailFailedSignIn) {
-      return _i9.EmailFailedSignIn.fromJson(data) as T;
+    if (t == _i9.EmailAuth) {
+      return _i9.EmailAuth.fromJson(data) as T;
     }
-    if (t == _i10.EmailPasswordReset) {
-      return _i10.EmailPasswordReset.fromJson(data) as T;
+    if (t == _i10.EmailCreateAccountRequest) {
+      return _i10.EmailCreateAccountRequest.fromJson(data) as T;
     }
-    if (t == _i11.EmailReset) {
-      return _i11.EmailReset.fromJson(data) as T;
+    if (t == _i11.EmailFailedSignIn) {
+      return _i11.EmailFailedSignIn.fromJson(data) as T;
     }
-    if (t == _i12.GoogleRefreshToken) {
-      return _i12.GoogleRefreshToken.fromJson(data) as T;
+    if (t == _i12.EmailPasswordReset) {
+      return _i12.EmailPasswordReset.fromJson(data) as T;
     }
-    if (t == _i13.UserImage) {
-      return _i13.UserImage.fromJson(data) as T;
+    if (t == _i13.EmailReset) {
+      return _i13.EmailReset.fromJson(data) as T;
     }
-    if (t == _i14.UserInfo) {
-      return _i14.UserInfo.fromJson(data) as T;
+    if (t == _i14.GoogleRefreshToken) {
+      return _i14.GoogleRefreshToken.fromJson(data) as T;
     }
-    if (t == _i15.UserInfoPublic) {
-      return _i15.UserInfoPublic.fromJson(data) as T;
+    if (t == _i15.UserImage) {
+      return _i15.UserImage.fromJson(data) as T;
     }
-    if (t == _i16.UserSettingsConfig) {
-      return _i16.UserSettingsConfig.fromJson(data) as T;
+    if (t == _i16.UserInfo) {
+      return _i16.UserInfo.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.AppleAuthInfo?>()) {
-      return (data != null ? _i3.AppleAuthInfo.fromJson(data) : null) as T;
+    if (t == _i17.UserInfoPublic) {
+      return _i17.UserInfoPublic.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.AuthKey?>()) {
-      return (data != null ? _i4.AuthKey.fromJson(data) : null) as T;
+    if (t == _i18.UserSettingsConfig) {
+      return _i18.UserSettingsConfig.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.AuthenticationFailReason?>()) {
-      return (data != null ? _i5.AuthenticationFailReason.fromJson(data) : null)
+    if (t == _i1.getType<_i3.AnonymousAuth?>()) {
+      return (data != null ? _i3.AnonymousAuth.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.AnonymousFailedSignIn?>()) {
+      return (data != null ? _i4.AnonymousFailedSignIn.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i6.AuthenticationResponse?>()) {
-      return (data != null ? _i6.AuthenticationResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i5.AppleAuthInfo?>()) {
+      return (data != null ? _i5.AppleAuthInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.AuthKey?>()) {
+      return (data != null ? _i6.AuthKey.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.AuthenticationFailReason?>()) {
+      return (data != null ? _i7.AuthenticationFailReason.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.EmailAuth?>()) {
-      return (data != null ? _i7.EmailAuth.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.AuthenticationResponse?>()) {
+      return (data != null ? _i8.AuthenticationResponse.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i8.EmailCreateAccountRequest?>()) {
+    if (t == _i1.getType<_i9.EmailAuth?>()) {
+      return (data != null ? _i9.EmailAuth.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.EmailCreateAccountRequest?>()) {
       return (data != null
-          ? _i8.EmailCreateAccountRequest.fromJson(data)
+          ? _i10.EmailCreateAccountRequest.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i9.EmailFailedSignIn?>()) {
-      return (data != null ? _i9.EmailFailedSignIn.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.EmailFailedSignIn?>()) {
+      return (data != null ? _i11.EmailFailedSignIn.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.EmailPasswordReset?>()) {
-      return (data != null ? _i10.EmailPasswordReset.fromJson(data) : null)
+    if (t == _i1.getType<_i12.EmailPasswordReset?>()) {
+      return (data != null ? _i12.EmailPasswordReset.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.EmailReset?>()) {
-      return (data != null ? _i11.EmailReset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.EmailReset?>()) {
+      return (data != null ? _i13.EmailReset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.GoogleRefreshToken?>()) {
-      return (data != null ? _i12.GoogleRefreshToken.fromJson(data) : null)
+    if (t == _i1.getType<_i14.GoogleRefreshToken?>()) {
+      return (data != null ? _i14.GoogleRefreshToken.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i13.UserImage?>()) {
-      return (data != null ? _i13.UserImage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.UserImage?>()) {
+      return (data != null ? _i15.UserImage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.UserInfo?>()) {
-      return (data != null ? _i14.UserInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.UserInfo?>()) {
+      return (data != null ? _i16.UserInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.UserInfoPublic?>()) {
-      return (data != null ? _i15.UserInfoPublic.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.UserInfoPublic?>()) {
+      return (data != null ? _i17.UserInfoPublic.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.UserSettingsConfig?>()) {
-      return (data != null ? _i16.UserSettingsConfig.fromJson(data) : null)
+    if (t == _i1.getType<_i18.UserSettingsConfig?>()) {
+      return (data != null ? _i18.UserSettingsConfig.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -733,46 +885,52 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.AppleAuthInfo) {
+    if (data is _i3.AnonymousAuth) {
+      return 'AnonymousAuth';
+    }
+    if (data is _i4.AnonymousFailedSignIn) {
+      return 'AnonymousFailedSignIn';
+    }
+    if (data is _i5.AppleAuthInfo) {
       return 'AppleAuthInfo';
     }
-    if (data is _i4.AuthKey) {
+    if (data is _i6.AuthKey) {
       return 'AuthKey';
     }
-    if (data is _i5.AuthenticationFailReason) {
+    if (data is _i7.AuthenticationFailReason) {
       return 'AuthenticationFailReason';
     }
-    if (data is _i6.AuthenticationResponse) {
+    if (data is _i8.AuthenticationResponse) {
       return 'AuthenticationResponse';
     }
-    if (data is _i7.EmailAuth) {
+    if (data is _i9.EmailAuth) {
       return 'EmailAuth';
     }
-    if (data is _i8.EmailCreateAccountRequest) {
+    if (data is _i10.EmailCreateAccountRequest) {
       return 'EmailCreateAccountRequest';
     }
-    if (data is _i9.EmailFailedSignIn) {
+    if (data is _i11.EmailFailedSignIn) {
       return 'EmailFailedSignIn';
     }
-    if (data is _i10.EmailPasswordReset) {
+    if (data is _i12.EmailPasswordReset) {
       return 'EmailPasswordReset';
     }
-    if (data is _i11.EmailReset) {
+    if (data is _i13.EmailReset) {
       return 'EmailReset';
     }
-    if (data is _i12.GoogleRefreshToken) {
+    if (data is _i14.GoogleRefreshToken) {
       return 'GoogleRefreshToken';
     }
-    if (data is _i13.UserImage) {
+    if (data is _i15.UserImage) {
       return 'UserImage';
     }
-    if (data is _i14.UserInfo) {
+    if (data is _i16.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i15.UserInfoPublic) {
+    if (data is _i17.UserInfoPublic) {
       return 'UserInfoPublic';
     }
-    if (data is _i16.UserSettingsConfig) {
+    if (data is _i18.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -788,47 +946,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AnonymousAuth') {
+      return deserialize<_i3.AnonymousAuth>(data['data']);
+    }
+    if (dataClassName == 'AnonymousFailedSignIn') {
+      return deserialize<_i4.AnonymousFailedSignIn>(data['data']);
+    }
     if (dataClassName == 'AppleAuthInfo') {
-      return deserialize<_i3.AppleAuthInfo>(data['data']);
+      return deserialize<_i5.AppleAuthInfo>(data['data']);
     }
     if (dataClassName == 'AuthKey') {
-      return deserialize<_i4.AuthKey>(data['data']);
+      return deserialize<_i6.AuthKey>(data['data']);
     }
     if (dataClassName == 'AuthenticationFailReason') {
-      return deserialize<_i5.AuthenticationFailReason>(data['data']);
+      return deserialize<_i7.AuthenticationFailReason>(data['data']);
     }
     if (dataClassName == 'AuthenticationResponse') {
-      return deserialize<_i6.AuthenticationResponse>(data['data']);
+      return deserialize<_i8.AuthenticationResponse>(data['data']);
     }
     if (dataClassName == 'EmailAuth') {
-      return deserialize<_i7.EmailAuth>(data['data']);
+      return deserialize<_i9.EmailAuth>(data['data']);
     }
     if (dataClassName == 'EmailCreateAccountRequest') {
-      return deserialize<_i8.EmailCreateAccountRequest>(data['data']);
+      return deserialize<_i10.EmailCreateAccountRequest>(data['data']);
     }
     if (dataClassName == 'EmailFailedSignIn') {
-      return deserialize<_i9.EmailFailedSignIn>(data['data']);
+      return deserialize<_i11.EmailFailedSignIn>(data['data']);
     }
     if (dataClassName == 'EmailPasswordReset') {
-      return deserialize<_i10.EmailPasswordReset>(data['data']);
+      return deserialize<_i12.EmailPasswordReset>(data['data']);
     }
     if (dataClassName == 'EmailReset') {
-      return deserialize<_i11.EmailReset>(data['data']);
+      return deserialize<_i13.EmailReset>(data['data']);
     }
     if (dataClassName == 'GoogleRefreshToken') {
-      return deserialize<_i12.GoogleRefreshToken>(data['data']);
+      return deserialize<_i14.GoogleRefreshToken>(data['data']);
     }
     if (dataClassName == 'UserImage') {
-      return deserialize<_i13.UserImage>(data['data']);
+      return deserialize<_i15.UserImage>(data['data']);
     }
     if (dataClassName == 'UserInfo') {
-      return deserialize<_i14.UserInfo>(data['data']);
+      return deserialize<_i16.UserInfo>(data['data']);
     }
     if (dataClassName == 'UserInfoPublic') {
-      return deserialize<_i15.UserInfoPublic>(data['data']);
+      return deserialize<_i17.UserInfoPublic>(data['data']);
     }
     if (dataClassName == 'UserSettingsConfig') {
-      return deserialize<_i16.UserSettingsConfig>(data['data']);
+      return deserialize<_i18.UserSettingsConfig>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -846,22 +1010,26 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i4.AuthKey:
-        return _i4.AuthKey.t;
-      case _i7.EmailAuth:
-        return _i7.EmailAuth.t;
-      case _i8.EmailCreateAccountRequest:
-        return _i8.EmailCreateAccountRequest.t;
-      case _i9.EmailFailedSignIn:
-        return _i9.EmailFailedSignIn.t;
-      case _i11.EmailReset:
-        return _i11.EmailReset.t;
-      case _i12.GoogleRefreshToken:
-        return _i12.GoogleRefreshToken.t;
-      case _i13.UserImage:
-        return _i13.UserImage.t;
-      case _i14.UserInfo:
-        return _i14.UserInfo.t;
+      case _i3.AnonymousAuth:
+        return _i3.AnonymousAuth.t;
+      case _i4.AnonymousFailedSignIn:
+        return _i4.AnonymousFailedSignIn.t;
+      case _i6.AuthKey:
+        return _i6.AuthKey.t;
+      case _i9.EmailAuth:
+        return _i9.EmailAuth.t;
+      case _i10.EmailCreateAccountRequest:
+        return _i10.EmailCreateAccountRequest.t;
+      case _i11.EmailFailedSignIn:
+        return _i11.EmailFailedSignIn.t;
+      case _i13.EmailReset:
+        return _i13.EmailReset.t;
+      case _i14.GoogleRefreshToken:
+        return _i14.GoogleRefreshToken.t;
+      case _i15.UserImage:
+        return _i15.UserImage.t;
+      case _i16.UserInfo:
+        return _i16.UserInfo.t;
     }
     return null;
   }
