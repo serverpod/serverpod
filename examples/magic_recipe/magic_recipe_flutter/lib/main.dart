@@ -13,8 +13,8 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 /// and is set up to connect to a Serverpod running on a local server on
 /// the default port. You will need to modify this to connect to staging or
 /// production servers.
-/// In a larger app, you may want to use the dependency injection of your choice instead of
-/// using a global client object. This is just a simple example.
+/// In a larger app, you may want to use the dependency injection of your choice
+/// instead of using a global client object. This is just a simple example.
 late final Client client;
 
 late final String serverUrl;
@@ -106,8 +106,8 @@ class MyHomePageState extends State<MyHomePage> {
 
   List<Recipe> _recipeHistory = [];
 
-  /// Holds the last error message that we've received from the server or null if no
-  /// error exists yet.
+  /// Holds the last error message that we've received from the server or null
+  // if no error exists yet.
   String? _errorMessage;
 
   String? _imagePath;
@@ -207,7 +207,11 @@ class MyHomePageState extends State<MyHomePage> {
                   final recipe = _recipeHistory[index];
                   return ListTile(
                     title: Text(
-                        recipe.text.substring(0, recipe.text.indexOf('\n'))),
+                      recipe.text.substring(
+                        0,
+                        recipe.text.indexOf('\n'),
+                      ),
+                    ),
                     subtitle: Text('${recipe.author} - ${recipe.date}'),
                     onTap: () {
                       setState(() {
@@ -278,7 +282,8 @@ class MyHomePageState extends State<MyHomePage> {
                           // Change the ResultDisplay to use the Recipe object
                           ResultDisplay(
                         resultMessage: _recipe != null
-                            ? '${_recipe?.author} on ${_recipe?.date}:\n${_recipe?.text}'
+                            ? '${_recipe?.author} on ${_recipe?.date}:'
+                                '\n${_recipe?.text}'
                             : null,
                         errorMessage: _errorMessage,
                       ),

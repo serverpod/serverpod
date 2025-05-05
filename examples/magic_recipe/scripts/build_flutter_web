@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Makes sure we break the script on any error.
+set -e
+
+# Build the web app.
+cd magic_recipe_flutter
+flutter build web --release
+cd ..
+
+# Copy the build files into the web/app diretory.
+rm -rf magic_recipe_server/web/app
+cp -r magic_recipe_flutter/build/web magic_recipe_server/web/app
+
+# Move the index.html file into the templates directory.
+mkdir -p magic_recipe_server/web/templates
+mv magic_recipe_server/web/app/index.html magic_recipe_server/web/templates/index.html
