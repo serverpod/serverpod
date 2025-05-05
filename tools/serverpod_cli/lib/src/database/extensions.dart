@@ -712,10 +712,10 @@ String _sqlCreateVectorExtensionIfAvailable() {
       '\n--'
       '\nDO \$\$'
       '\nBEGIN'
-      '\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = \'vector\') THEN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN"
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
       '\n  ELSE'
-      '\n    RAISE NOTICE \'Extension "vector" not available on this instance\';'
+      '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'
