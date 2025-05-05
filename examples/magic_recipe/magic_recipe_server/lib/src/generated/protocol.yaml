@@ -1,0 +1,5 @@
+greeting:
+  - hello:
+recipe:
+  - generateRecipe:
+  - getRecipes:
