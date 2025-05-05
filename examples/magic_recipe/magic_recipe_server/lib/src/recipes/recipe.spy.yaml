@@ -15,4 +15,6 @@ fields:
   deletedAt: DateTime?, scope=serverOnly
   ### The user id of the user who created the recipe
   userId: int?, scope=serverOnly
+  ### Image Url of the user upload
+  imageUrl: String?
 # @@@SNIPEND
