@@ -85,6 +85,24 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['recipe'] as _i3.RecipeEndpoint).getRecipes(session),
         ),
+        'deleteRecipe': _i1.MethodConnector(
+          name: 'deleteRecipe',
+          params: {
+            'recipeId': _i1.ParameterDescription(
+              name: 'recipeId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recipe'] as _i3.RecipeEndpoint).deleteRecipe(
+            session,
+            params['recipeId'],
+          ),
+        ),
       },
     );
   }

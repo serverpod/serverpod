@@ -19,6 +19,7 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required this.text,
     required this.date,
     required this.ingredients,
+    this.deletedAt,
   });
 
   factory Recipe({
@@ -27,6 +28,7 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required String text,
     required DateTime date,
     required String ingredients,
+    DateTime? deletedAt,
   }) = _RecipeImpl;
 
   factory Recipe.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,6 +38,9 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       text: jsonSerialization['text'] as String,
       date: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['date']),
       ingredients: jsonSerialization['ingredients'] as String,
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -58,6 +63,9 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   /// The ingredients the user has passed in
   String ingredients;
 
+  /// If the recipe was deleted, we store the date it was deleted
+  DateTime? deletedAt;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -70,6 +78,7 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? text,
     DateTime? date,
     String? ingredients,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -79,6 +88,7 @@ abstract class Recipe implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'text': text,
       'date': date.toJson(),
       'ingredients': ingredients,
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -132,12 +142,14 @@ class _RecipeImpl extends Recipe {
     required String text,
     required DateTime date,
     required String ingredients,
+    DateTime? deletedAt,
   }) : super._(
           id: id,
           author: author,
           text: text,
           date: date,
           ingredients: ingredients,
+          deletedAt: deletedAt,
         );
 
   /// Returns a shallow copy of this [Recipe]
@@ -150,6 +162,7 @@ class _RecipeImpl extends Recipe {
     String? text,
     DateTime? date,
     String? ingredients,
+    Object? deletedAt = _Undefined,
   }) {
     return Recipe(
       id: id is int? ? id : this.id,
@@ -157,6 +170,7 @@ class _RecipeImpl extends Recipe {
       text: text ?? this.text,
       date: date ?? this.date,
       ingredients: ingredients ?? this.ingredients,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -179,6 +193,10 @@ class RecipeTable extends _i1.Table<int?> {
       'ingredients',
       this,
     );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   /// The author of the recipe
@@ -193,6 +211,9 @@ class RecipeTable extends _i1.Table<int?> {
   /// The ingredients the user has passed in
   late final _i1.ColumnString ingredients;
 
+  /// If the recipe was deleted, we store the date it was deleted
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -200,6 +221,7 @@ class RecipeTable extends _i1.Table<int?> {
         text,
         date,
         ingredients,
+        deletedAt,
       ];
 }
 

@@ -1,4 +1,4 @@
-# @@@SNIPSTART 03-table-model
+# @@@SNIPSTART magic-recipe-model
 ### Our AI generated Recipe
 class: Recipe
 table: recipes
@@ -11,4 +11,6 @@ fields:
   date: DateTime
   ### The ingredients the user has passed in
   ingredients: String
+  ### If the recipe was deleted, we store the date it was deleted
+  deletedAt: DateTime?, scope=serverOnly
 # @@@SNIPEND
