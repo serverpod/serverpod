@@ -29,9 +29,23 @@ class RecipeEndpoint extends Endpoint {
   Future<Recipe> generateRecipe(Session session, String ingredients) async {
     // Serverpod automatically loads your passwords.yaml file and makes the passwords available
     // in the session.passwords map.
+    final userId = (await session.authenticated)?.userId;
     final geminiApiKey = session.passwords['gemini'];
+
     if (geminiApiKey == null) {
       throw Exception('Gemini API key not found');
+    }
+
+    final cacheKey = 'recipe-$ingredients';
+
+    // Check if the recipe is already in the cache
+    final cachedRecipe = await session.caches.local.get<Recipe>(cacheKey);
+
+    if (cachedRecipe != null) {
+      session.log('Recipe found in cache for ingredients: $ingredients');
+      cachedRecipe.userId = userId;
+      await Recipe.db.insertRow(session, cachedRecipe);
+      return cachedRecipe;
     }
 
     // A prompt to generate a recipe, the user will provide a free text input with the ingredients
@@ -47,18 +61,19 @@ class RecipeEndpoint extends Endpoint {
       throw Exception('No response from Gemini API');
     }
 
-    final userId = (await session.authenticated)?.userId;
-
     final recipe = Recipe(
       author: 'Gemini',
       text: responseText,
       date: DateTime.now(),
       ingredients: ingredients,
-      userId: userId,
     );
 
+    await session.caches.local
+        .put(cacheKey, recipe, lifetime: const Duration(days: 1));
+
     // Save the recipe to the database, the returned recipe has the id set
-    final recipeWithId = await Recipe.db.insertRow(session, recipe);
+    final recipeWithId =
+        await Recipe.db.insertRow(session, recipe.copyWith(userId: userId));
 
     return recipeWithId;
   }

@@ -163,5 +163,36 @@ void main() {
           () => endpoints.recipe.getRecipes(unAuthSessionBuilder),
           isA<ServerpodUnauthenticatedException>());
     });
+
+    test('returns cached recipe if it exists', () async {
+      final sessionBuilder = unAuthSessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(1, {}));
+      final session = sessionBuilder.build();
+
+      String capturedPrompt = '';
+
+      generateContent = (_, prompt) {
+        capturedPrompt = prompt;
+        return Future.value('Mock Recipe');
+      };
+
+      final recipe = await endpoints.recipe
+          .generateRecipe(sessionBuilder, 'chicken, rice, broccoli');
+      expect(recipe.text, 'Mock Recipe');
+      expect(capturedPrompt, contains('chicken, rice, broccoli'));
+      final cache = await session.caches.local
+          .get<Recipe>('recipe-chicken, rice, broccoli');
+      expect(cache, isNotNull);
+      expect(cache?.text, 'Mock Recipe');
+
+      // reset
+      capturedPrompt = '';
+
+      // Call the endpoint again with the same ingredients
+      final recipe2 = await endpoints.recipe
+          .generateRecipe(sessionBuilder, 'chicken, rice, broccoli');
+      expect(recipe2.text, 'Mock Recipe');
+      expect(capturedPrompt, equals(''));
+    });
   });
 }
