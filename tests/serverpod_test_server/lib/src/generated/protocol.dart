@@ -3884,6 +3884,34 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'Vector(512)?',
           vectorDimension: 512,
         ),
+        _i2.ColumnDefinition(
+          name: 'vectorIndexedHnsw',
+          columnType: _i2.ColumnType.vector,
+          isNullable: false,
+          dartType: 'Vector(512)',
+          vectorDimension: 512,
+        ),
+        _i2.ColumnDefinition(
+          name: 'vectorIndexedHnswWithParams',
+          columnType: _i2.ColumnType.vector,
+          isNullable: false,
+          dartType: 'Vector(512)',
+          vectorDimension: 512,
+        ),
+        _i2.ColumnDefinition(
+          name: 'vectorIndexedIvfflat',
+          columnType: _i2.ColumnType.vector,
+          isNullable: false,
+          dartType: 'Vector(512)',
+          vectorDimension: 512,
+        ),
+        _i2.ColumnDefinition(
+          name: 'vectorIndexedIvfflatWithParams',
+          columnType: _i2.ColumnType.vector,
+          isNullable: false,
+          dartType: 'Vector(512)',
+          vectorDimension: 512,
+        ),
       ],
       foreignKeys: [],
       indexes: [
@@ -3899,7 +3927,82 @@ class Protocol extends _i1.SerializationManagerServer {
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
+        _i2.IndexDefinition(
+          indexName: 'vector_index_default',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'vector',
+            )
+          ],
+          type: 'hnsw',
+          isUnique: false,
+          isPrimary: false,
+          vectorDistanceFunction: _i2.VectorDistanceFunction.l2,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'vector_index_hnsw',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'vectorIndexedHnsw',
+            )
+          ],
+          type: 'hnsw',
+          isUnique: false,
+          isPrimary: false,
+          vectorDistanceFunction: _i2.VectorDistanceFunction.l2,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'vector_index_hnsw_with_params',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'vectorIndexedHnswWithParams',
+            )
+          ],
+          type: 'hnsw',
+          isUnique: false,
+          isPrimary: false,
+          vectorDistanceFunction: _i2.VectorDistanceFunction.cosine,
+          parameters: {
+            'm': '64',
+            'ef_construction': '200',
+          },
+        ),
+        _i2.IndexDefinition(
+          indexName: 'vector_index_ivfflat',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'vectorIndexedIvfflat',
+            )
+          ],
+          type: 'ivfflat',
+          isUnique: false,
+          isPrimary: false,
+          vectorDistanceFunction: _i2.VectorDistanceFunction.l2,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'vector_index_ivfflat_with_params',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'vectorIndexedIvfflatWithParams',
+            )
+          ],
+          type: 'ivfflat',
+          isUnique: false,
+          isPrimary: false,
+          vectorDistanceFunction: _i2.VectorDistanceFunction.innerProduct,
+          parameters: {'lists': '300'},
+        ),
       ],
       managed: true,
     ),

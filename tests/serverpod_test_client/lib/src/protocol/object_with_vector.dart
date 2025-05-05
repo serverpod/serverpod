@@ -16,12 +16,20 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
     this.id,
     required this.vector,
     this.vectorNullable,
+    required this.vectorIndexedHnsw,
+    required this.vectorIndexedHnswWithParams,
+    required this.vectorIndexedIvfflat,
+    required this.vectorIndexedIvfflatWithParams,
   });
 
   factory ObjectWithVector({
     int? id,
     required _i1.Vector vector,
     _i1.Vector? vectorNullable,
+    required _i1.Vector vectorIndexedHnsw,
+    required _i1.Vector vectorIndexedHnswWithParams,
+    required _i1.Vector vectorIndexedIvfflat,
+    required _i1.Vector vectorIndexedIvfflatWithParams,
   }) = _ObjectWithVectorImpl;
 
   factory ObjectWithVector.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,6 +40,14 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
           ? null
           : _i1.VectorJsonExtension.fromJson(
               jsonSerialization['vectorNullable']),
+      vectorIndexedHnsw: _i1.VectorJsonExtension.fromJson(
+          jsonSerialization['vectorIndexedHnsw']),
+      vectorIndexedHnswWithParams: _i1.VectorJsonExtension.fromJson(
+          jsonSerialization['vectorIndexedHnswWithParams']),
+      vectorIndexedIvfflat: _i1.VectorJsonExtension.fromJson(
+          jsonSerialization['vectorIndexedIvfflat']),
+      vectorIndexedIvfflatWithParams: _i1.VectorJsonExtension.fromJson(
+          jsonSerialization['vectorIndexedIvfflatWithParams']),
     );
   }
 
@@ -44,6 +60,14 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
 
   _i1.Vector? vectorNullable;
 
+  _i1.Vector vectorIndexedHnsw;
+
+  _i1.Vector vectorIndexedHnswWithParams;
+
+  _i1.Vector vectorIndexedIvfflat;
+
+  _i1.Vector vectorIndexedIvfflatWithParams;
+
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -51,6 +75,10 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
     int? id,
     _i1.Vector? vector,
     _i1.Vector? vectorNullable,
+    _i1.Vector? vectorIndexedHnsw,
+    _i1.Vector? vectorIndexedHnswWithParams,
+    _i1.Vector? vectorIndexedIvfflat,
+    _i1.Vector? vectorIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -58,6 +86,10 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'vector': vector.toJson(),
       if (vectorNullable != null) 'vectorNullable': vectorNullable?.toJson(),
+      'vectorIndexedHnsw': vectorIndexedHnsw.toJson(),
+      'vectorIndexedHnswWithParams': vectorIndexedHnswWithParams.toJson(),
+      'vectorIndexedIvfflat': vectorIndexedIvfflat.toJson(),
+      'vectorIndexedIvfflatWithParams': vectorIndexedIvfflatWithParams.toJson(),
     };
   }
 
@@ -74,10 +106,18 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     int? id,
     required _i1.Vector vector,
     _i1.Vector? vectorNullable,
+    required _i1.Vector vectorIndexedHnsw,
+    required _i1.Vector vectorIndexedHnswWithParams,
+    required _i1.Vector vectorIndexedIvfflat,
+    required _i1.Vector vectorIndexedIvfflatWithParams,
   }) : super._(
           id: id,
           vector: vector,
           vectorNullable: vectorNullable,
+          vectorIndexedHnsw: vectorIndexedHnsw,
+          vectorIndexedHnswWithParams: vectorIndexedHnswWithParams,
+          vectorIndexedIvfflat: vectorIndexedIvfflat,
+          vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams,
         );
 
   /// Returns a shallow copy of this [ObjectWithVector]
@@ -88,6 +128,10 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     Object? id = _Undefined,
     _i1.Vector? vector,
     Object? vectorNullable = _Undefined,
+    _i1.Vector? vectorIndexedHnsw,
+    _i1.Vector? vectorIndexedHnswWithParams,
+    _i1.Vector? vectorIndexedIvfflat,
+    _i1.Vector? vectorIndexedIvfflatWithParams,
   }) {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
@@ -95,6 +139,13 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
       vectorNullable: vectorNullable is _i1.Vector?
           ? vectorNullable
           : this.vectorNullable?.clone(),
+      vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
+      vectorIndexedHnswWithParams: vectorIndexedHnswWithParams ??
+          this.vectorIndexedHnswWithParams.clone(),
+      vectorIndexedIvfflat:
+          vectorIndexedIvfflat ?? this.vectorIndexedIvfflat.clone(),
+      vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams ??
+          this.vectorIndexedIvfflatWithParams.clone(),
     );
   }
 }
