@@ -3,6 +3,7 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:magic_recipe_server/src/web/routes/root.dart';
 
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
 
@@ -16,8 +17,24 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
+    authenticationHandler: auth.authenticationHandler,
   );
-
+  auth.AuthConfig.set(auth.AuthConfig(
+    sendValidationEmail: (session, email, validationCode) async {
+      //TODO: This is where you would send the validation email to the user.
+      // We are using print here instead of logging to avoid keeping this in
+      // production
+      print('Validation code: $validationCode');
+      return true;
+    },
+    sendPasswordResetEmail: (session, userInfo, validationCode) async {
+      //TODO: This is where you would send the password reset email to the user.
+      // We are using print here instead of logging to avoid keeping this in
+      // production
+      print('Validation code: $validationCode');
+      return true;
+    },
+  ));
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');

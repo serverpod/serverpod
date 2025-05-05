@@ -13,4 +13,6 @@ fields:
   ingredients: String
   ### If the recipe was deleted, we store the date it was deleted
   deletedAt: DateTime?, scope=serverOnly
+  ### The user id of the user who created the recipe
+  userId: int?, scope=serverOnly
 # @@@SNIPEND

@@ -5,13 +5,25 @@ import 'package:test/test.dart';
 // Import the generated test helper file, it contains everything you need.
 import 'test_tools/serverpod_test_tools.dart';
 
+Future expectException(
+    Future<void> Function() function, Matcher matcher) async {
+  late var actualException;
+  try {
+    await function();
+  } catch (e) {
+    actualException = e;
+  }
+  expect(actualException, matcher);
+}
+
+// TODO(dkbast): We should have a testing style guide for serverpod users
 void main() {
   // This is an example test that uses the `withServerpod` test helper.
   // `withServerpod` enables you to call your endpoints directly from the test like regular functions.
   // Note that after adding or modifying an endpoint, you will need to run
   // `serverpod generate` to update the test tools code.
   // Refer to the docs for more information on how to use the test helper.
-  withServerpod('Given Recipe endpoint', (sessionBuilder, endpoints) {
+  withServerpod('Given Recipe endpoint', (unAuthSessionBuilder, endpoints) {
     test(
         'when generateRecipe with ingredients then the api is called with a prompt'
         ' which includes the ingredients', () async {
@@ -19,6 +31,8 @@ void main() {
       // pass `sessionBuilder` as a first argument. Refer to the docs on
       // how to use the `sessionBuilder` to set up different test scenarios.
 
+      final sessionBuilder = unAuthSessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(1, {}));
       String capturedPrompt = '';
 
       generateContent = (_, prompt) {
@@ -35,27 +49,33 @@ void main() {
     test(
         'when calling getRecipes, all recipes that are not deleted are returned',
         () async {
+      final sessionBuilder = unAuthSessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(1, {}));
       final session = sessionBuilder.build();
 
       // drop all recipes
       await Recipe.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
 
-      // create a recipe
-      final firstRecipe = Recipe(
-          author: 'Gemini',
-          text: 'Mock Recipe 1',
-          date: DateTime.now(),
-          ingredients: 'chicken, rice, broccoli');
-
-      await Recipe.db.insertRow(session, firstRecipe);
-
-      // create a second recipe
-      final secondRecipe = Recipe(
-          author: 'Gemini',
-          text: 'Mock Recipe 2',
-          date: DateTime.now(),
-          ingredients: 'chicken, rice, broccoli');
-      await Recipe.db.insertRow(session, secondRecipe);
+      await Recipe.db.insert(session, [
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 1',
+            date: DateTime.now(),
+            userId: 1,
+            ingredients: 'chicken, rice, broccoli'),
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 2',
+            date: DateTime.now(),
+            userId: 1,
+            ingredients: 'chicken, rice, broccoli'),
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 3',
+            date: DateTime.now(),
+            userId: 2,
+            ingredients: 'chicken, rice, broccoli'),
+      ]);
 
       // get all recipes
       final recipes = await endpoints.recipe.getRecipes(sessionBuilder);
@@ -77,6 +97,81 @@ void main() {
       // check that the recipes are returned
       expect(recipes2.length, 1);
       expect(recipes2[0].text, 'Mock Recipe 2');
+    });
+
+    //TODO(dkbast): Add more tests for the other scenarios
+    test('when deleting a recipe users can only delete their own recipes',
+        () async {
+      final sessionBuilder = unAuthSessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(1, {}));
+      final session = sessionBuilder.build();
+
+      await Recipe.db.insert(session, [
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 1',
+            date: DateTime.now(),
+            userId: 1,
+            ingredients: 'chicken, rice, broccoli'),
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 2',
+            date: DateTime.now(),
+            userId: 1,
+            ingredients: 'chicken, rice, broccoli'),
+        Recipe(
+            author: 'Gemini',
+            text: 'Mock Recipe 3',
+            date: DateTime.now(),
+            userId: 2,
+            ingredients: 'chicken, rice, broccoli'),
+      ]);
+
+      // get the first recipe to get its id
+      final recipeToDelete = await Recipe.db.findFirstRow(
+        session,
+        where: (t) => t.text.equals('Mock Recipe 1'),
+      );
+
+      // delete the first recipe
+      await endpoints.recipe.deleteRecipe(sessionBuilder, recipeToDelete!.id!);
+
+      // try to delete a recipe that is not yours
+
+      final recipeYouShouldntDelete = await Recipe.db.findFirstRow(
+        session,
+        where: (t) => t.text.equals('Mock Recipe 3'),
+      );
+
+      await expectException(
+          () => endpoints.recipe
+              .deleteRecipe(sessionBuilder, recipeYouShouldntDelete!.id!),
+          isA<Exception>());
+    });
+
+    // verify unauthenticated users cannot interact with the API
+    test('when delete recipe with unauthenticated user, an exception is thrown',
+        () async {
+      await expectException(
+          () => endpoints.recipe.deleteRecipe(unAuthSessionBuilder, 1),
+          isA<ServerpodUnauthenticatedException>());
+    });
+
+    test(
+        'when trying to generate a recipe as an unauthenticated user an exception is thrown',
+        () async {
+      await expectException(
+          () => endpoints.recipe
+              .generateRecipe(unAuthSessionBuilder, 'chicken, rice, broccoli'),
+          isA<ServerpodUnauthenticatedException>());
+    });
+
+    test(
+        'when trying to get recipes as an unauthenticated user an exception is thrown',
+        () async {
+      await expectException(
+          () => endpoints.recipe.getRecipes(unAuthSessionBuilder),
+          isA<ServerpodUnauthenticatedException>());
     });
   });
 }

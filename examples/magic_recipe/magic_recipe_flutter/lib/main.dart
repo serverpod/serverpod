@@ -3,6 +3,9 @@ import 'package:magic_recipe_client/magic_recipe_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+
 /// Sets up a global client object that can be used to talk to the server from
 /// anywhere in our app. The client is generated from your server code
 /// and is set up to connect to a Serverpod running on a local server on
@@ -12,9 +15,13 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 /// using a global client object. This is just a simple example.
 late final Client client;
 
-late String serverUrl;
+late final String serverUrl;
 
-void main() {
+late final SessionManager sessionManager;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
@@ -24,8 +31,16 @@ void main() {
   final serverUrl =
       serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
-  client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor();
+  client = Client(
+    serverUrl,
+    authenticationKeyManager: FlutterAuthenticationKeyManager(),
+  )..connectivityMonitor = FlutterConnectivityMonitor();
+
+  sessionManager = SessionManager(
+    caller: client.modules.auth,
+  );
+
+  await sessionManager.initialize();
 
   runApp(const MyApp());
 }
@@ -40,7 +55,36 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      home: sessionManager.isSignedIn
+          ? const MyHomePage(title: 'Serverpod Example')
+          : const LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Center(
+        child: SignInWithEmailButton(
+          caller: client.modules.auth,
+          onSignedIn: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const MyHomePage(title: 'Serverpod Example'),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -108,6 +152,22 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await sessionManager.signOutDevice();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Row(
         children: [
