@@ -1,0 +1,5 @@
+class: ObjectWithVector
+table: object_with_vector
+fields:
+  vector: Vector(512)
+  vectorNullable: Vector(512)?
