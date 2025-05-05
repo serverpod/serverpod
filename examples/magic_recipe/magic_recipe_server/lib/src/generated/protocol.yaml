@@ -6,6 +6,7 @@ admin:
 greeting:
   - hello:
 recipe:
+  - generateRecipeAsStream:
   - generateRecipe:
   - getRecipes:
   - deleteRecipe:

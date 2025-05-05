@@ -77,6 +77,21 @@ class EndpointRecipe extends _i1.EndpointRef {
   String get name => 'recipe';
 
   /// Pass in a string containing the ingredients and get a recipe back.
+  _i2.Stream<_i5.Recipe> generateRecipeAsStream(
+    String ingredients, [
+    String? imagePath,
+  ]) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i5.Recipe>, _i5.Recipe>(
+        'recipe',
+        'generateRecipeAsStream',
+        {
+          'ingredients': ingredients,
+          'imagePath': imagePath,
+        },
+        {},
+      );
+
+  /// Pass in a string containing the ingredients and get a recipe back.
   _i2.Future<_i5.Recipe> generateRecipe(
     String ingredients, [
     String? imagePath,

@@ -17,6 +17,20 @@ var generateContent =
           prompt,
         ))
             .text;
+@visibleForTesting
+var generateContentStreamFromText =
+    (String apiKey, List<Content> prompt) async* {
+  await for (final message in GenerativeModel(
+    model: 'gemini-1.5-flash-latest',
+    apiKey: apiKey,
+  ).generateContentStream(
+    prompt,
+  )) {
+    if (message.text != null) {
+      yield message.text!;
+    }
+  }
+};
 
 /// This is the endpoint that will be used to generate a recipe using the
 /// Google Gemini API. It extends the Endpoint class and implements the
@@ -24,6 +38,100 @@ var generateContent =
 class RecipeEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
+
+  /// Pass in a string containing the ingredients and get a recipe back.
+  Stream<Recipe> generateRecipeAsStream(Session session, String ingredients,
+      [String? imagePath]) async* {
+    session.log(
+        'Ingredients Length: ${ingredients.length}, Image Path: $imagePath');
+
+    // Serverpod automatically loads your passwords.yaml file and makes the
+    // passwords available in the session.passwords map.
+    final userId = (await session.authenticated)?.userId;
+    final geminiApiKey = session.passwords['gemini'];
+
+    if (geminiApiKey == null) {
+      throw Exception('Gemini API key not found');
+    }
+
+    final cacheKey = 'recipe-$ingredients-$imagePath';
+
+    // Check if the recipe is already in the cache
+    final cachedRecipe = await session.caches.local.get<Recipe>(cacheKey);
+
+    if (cachedRecipe != null) {
+      session.log('Recipe found in cache for ingredients: $ingredients');
+      cachedRecipe.userId = userId;
+      await Recipe.db.insertRow(session, cachedRecipe);
+      yield cachedRecipe;
+      return;
+    }
+
+    final List<Content> prompt = [];
+
+    if (imagePath != null) {
+      final imageData = await session.storage
+          .retrieveFile(storageId: 'public', path: imagePath);
+      if (imageData == null) {
+        throw Exception('Image not found');
+      }
+
+      prompt.add(
+        Content.data(
+          'image/jpeg',
+          imageData.buffer.asUint8List(),
+        ),
+      );
+      prompt.add(Content.text('''
+Generate a recipe using the detected ingeredients. Always put the title
+of the recipe in the first line, and then the instructions. The recipe
+should be easy to follow and include all necessary steps. Please provide
+a detailed recipe. Only put the title in the first line, no markup.'''));
+    }
+
+    // A prompt to generate a recipe, from a text input with the ingredients
+    final textPrompt = '''
+Generate a recipe using the following ingredients: $ingredients, always put the
+title of the recipe in the first line, and then the instructions. The recipe
+should be easy to follow and include all necessary steps. Please provide a
+detailed recipe.
+''';
+
+    if (prompt.isEmpty) {
+      prompt.add(Content.text(textPrompt));
+    }
+
+    final responseStream = generateContentStreamFromText(geminiApiKey, prompt);
+
+    Recipe recipe = Recipe(
+      author: 'Gemini',
+      text: '',
+      date: DateTime.now(),
+      ingredients: ingredients,
+      imageUrl: imagePath,
+    );
+    session.log('Generating recipe with prompt: $textPrompt');
+    await for (final responseText in responseStream) {
+      // this creates much more traffic than needed, in a real app you should probably
+      // just send the incremental updates and then the final result
+      recipe = recipe.copyWith(text: recipe.text + responseText);
+      session.log('Still streaming: $responseText');
+      yield recipe;
+    }
+
+    session.log('Final recipe: $recipe');
+
+    await session.caches.local
+        .put(cacheKey, recipe, lifetime: const Duration(days: 1));
+
+    // Save the recipe to the database, the returned recipe has the id set
+    final recipeWithId = await Recipe.db.insertRow(
+      session,
+      recipe.copyWith(userId: userId),
+    );
+
+    yield recipeWithId;
+  }
 
   /// Pass in a string containing the ingredients and get a recipe back.
   Future<Recipe> generateRecipe(Session session, String ingredients,

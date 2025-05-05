@@ -243,6 +243,34 @@ class Endpoints extends _i1.EndpointDispatch {
             params['path'],
           ),
         ),
+        'generateRecipeAsStream': _i1.MethodStreamConnector(
+          name: 'generateRecipeAsStream',
+          params: {
+            'ingredients': _i1.ParameterDescription(
+              name: 'ingredients',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'imagePath': _i1.ParameterDescription(
+              name: 'imagePath',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['recipe'] as _i4.RecipeEndpoint)
+                  .generateRecipeAsStream(
+            session,
+            params['ingredients'],
+            params['imagePath'],
+          ),
+        ),
       },
     );
     modules['serverpod_auth'] = _i6.Endpoints()..initializeEndpoints(server);
