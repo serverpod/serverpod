@@ -3,18 +3,8 @@ import 'package:magic_recipe_server/src/recipes/recipe_endpoint.dart';
 import 'package:test/test.dart';
 
 // Import the generated test helper file, it contains everything you need.
+import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
-
-Future expectException(
-    Future<void> Function() function, Matcher matcher) async {
-  late var actualException;
-  try {
-    await function();
-  } catch (e) {
-    actualException = e;
-  }
-  expect(actualException, matcher);
-}
 
 // TODO(dkbast): We should have a testing style guide for serverpod users
 void main() {
