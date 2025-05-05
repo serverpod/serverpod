@@ -28,7 +28,43 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given endpoint with IgnoreEndpoint annotation when analyzed', () {
+  group('Given endpoint with @doNotGenerate annotation when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/annotations.dart';
+
+@doNotGenerate
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no endpoint definition is created.', () {
+      expect(endpointDefinitions, isEmpty);
+    });
+  });
+
+  group('Given endpoint with legacy @ignoreEndpoint annotation when analyzed',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -101,7 +137,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given two endpoints in the same file where one has IgnoreEndpoint annotation when analyzed',
+      'Given two endpoints in the same file where one has `@doNotGenerate` annotation when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -117,7 +153,7 @@ class ExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
 
-@ignoreEndpoint
+@doNotGenerate
 class FirstExampleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello \$name';
@@ -145,7 +181,7 @@ class SecondExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given two endpoints in the same file where one has IgnoreEndpoint and the other one subclasses it without that annotation when analyzed',
+      'Given two endpoints in the same file where one has `@doNotGenerate` annotation and the other one subclasses it without that annotation when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -161,7 +197,7 @@ class SecondExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
 
-@ignoreEndpoint
+@doNotGenerate
 class BaseExampleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello \$name';

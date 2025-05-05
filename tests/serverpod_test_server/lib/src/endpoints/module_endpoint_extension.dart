@@ -42,7 +42,7 @@ class ModuleEndpointReduction extends IgnoredModuleEndpoint {
   ///
   /// Since this requires an implementation on the Dart-level, we throw `UnimplementedError` by convention,
   /// even though this would never be called via the protocol.
-  @ignoreEndpoint
+  @doNotGenerate
   Future<String> echoString(Session sesion, String value) {
     throw UnimplementedError();
   }
