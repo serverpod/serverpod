@@ -26,6 +26,15 @@ class CounterTestCall extends FutureCall<SimpleData> {
   }
 }
 
+class ListTestCall extends FutureCall<SimpleData> {
+  List<SimpleData?> list = [];
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    list.add(object);
+  }
+}
+
 void main() async {
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
@@ -424,8 +433,8 @@ void main() async {
         await futureCallManager.runScheduledFutureCalls();
       });
 
-      test('then the FutureCall is executed multiple times', () async {
-        await expectLater(testCall.counter, equals(2));
+      test('then the FutureCall is executed multiple times', () {
+        expect(testCall.counter, equals(2));
       });
 
       test('then the FutureCallEntries are deleted from the database',
@@ -435,6 +444,66 @@ void main() async {
         );
 
         expect(futureCallEntries, isEmpty);
+      });
+    });
+  });
+
+  withServerpod(
+      'Given FutureCallManager with due FutureCall scheduled multiple times with different passed due dates',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late ListTestCall testCall;
+    var oldestSimpleData = SimpleData(num: 1);
+    var newestSimpleData = SimpleData(num: 2);
+    var testCallName = 'testCall';
+    var identifier = 'alex';
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .withConfig(FutureCallConfig(
+                // Set a short scan interval for testing
+                scanInterval: Duration(milliseconds: 1),
+                concurrencyLimit: 1,
+              ))
+              .build();
+
+      testCall = ListTestCall();
+
+      futureCallManager.registerFutureCall(testCall, testCallName);
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        oldestSimpleData,
+        DateTime.now().subtract(const Duration(seconds: 5)),
+        '1',
+        identifier,
+      );
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        newestSimpleData,
+        DateTime.now().subtract(const Duration(seconds: 1)),
+        '1',
+        identifier,
+      );
+    });
+
+    group('when running all scheduled FutureCalls', () {
+      setUp(() async {
+        await futureCallManager.runScheduledFutureCalls();
+      });
+
+      test('then oldest FutureCall is executed first', () async {
+        () {
+          expect(testCall.list.first?.num, oldestSimpleData.num);
+        };
+      });
+
+      test('then newest FutureCall is executed last', () async {
+        () {
+          expect(testCall.list.last?.num, newestSimpleData.num);
+        };
       });
     });
   });
