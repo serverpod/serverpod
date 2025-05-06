@@ -28,6 +28,7 @@ void main() async {
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
+    var testCallName = 'test-db-entry-call';
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -37,13 +38,15 @@ void main() async {
               .build();
 
       futureCallManager.registerFutureCall(
-          CompleterTestCall(), 'test-db-entry-call');
+        CompleterTestCall(),
+        testCallName,
+      );
     });
 
     group('when scheduling a FutureCall', () {
       setUp(() async {
         await futureCallManager.scheduleFutureCall(
-          'test-db-entry-call',
+          testCallName,
           SimpleData(num: 4),
           DateTime.now(),
           '1',
@@ -54,7 +57,7 @@ void main() async {
       test('then a FutureCallEntry is added to the database', () async {
         final futureCallEntries = await FutureCallEntry.db.find(
           session,
-          where: (entry) => entry.name.equals('test-db-entry-call'),
+          where: (entry) => entry.name.equals(testCallName),
         );
 
         expect(futureCallEntries, hasLength(1));
@@ -66,6 +69,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
+    var testCallName = 'test-cancel-future-call';
+    var identifier = 'unique-identifier-1337';
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -75,23 +80,23 @@ void main() async {
               .build();
 
       await futureCallManager.scheduleFutureCall(
-        'test-cancel-future-call',
+        testCallName,
         SimpleData(num: 4),
         DateTime.now().add(Duration(days: 42)),
         '1',
-        'unique-identifier-1337',
+        identifier,
       );
     });
 
     group('when cancelling the scheduled FutureCall', () {
       setUp(() async {
-        await futureCallManager.cancelFutureCall('unique-identifier-1337');
+        await futureCallManager.cancelFutureCall(identifier);
       });
 
       test('then the FutureCallEntry is removed from the database', () async {
         final futureCallEntries = await FutureCallEntry.db.find(
           session,
-          where: (entry) => entry.name.equals('test-cancel-future-call'),
+          where: (entry) => entry.name.equals(testCallName),
         );
 
         expect(futureCallEntries, hasLength(0));
@@ -103,6 +108,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
+    var testCallName = 'test-cancel-future-call-existing';
+    var identifier = 'unique-identifier-1337';
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -112,11 +119,11 @@ void main() async {
               .build();
 
       await futureCallManager.scheduleFutureCall(
-        'test-cancel-future-call-existing',
+        testCallName,
         SimpleData(num: 4),
         DateTime.now().add(Duration(days: 42)),
         '1',
-        'unique-identifier-1337',
+        identifier,
       );
     });
 
@@ -131,8 +138,7 @@ void main() async {
 
         final futureCallEntries = await FutureCallEntry.db.find(
           session,
-          where: (entry) =>
-              entry.name.equals('test-cancel-future-call-existing'),
+          where: (entry) => entry.name.equals(testCallName),
         );
 
         expect(futureCallEntries, hasLength(1));
@@ -145,6 +151,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
+    var testCallName = 'non-registered-future-call';
+    var identifier = 'very-unique-identifier';
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -154,11 +162,11 @@ void main() async {
               .build();
 
       await futureCallManager.scheduleFutureCall(
-        'non-registered-future-call',
+        testCallName,
         SimpleData(num: 4),
         DateTime.now().subtract(Duration(days: 42)),
         '1',
-        'very-unique-identifier',
+        identifier,
       );
     });
 
@@ -169,7 +177,7 @@ void main() async {
 
         final futureCallEntries = await FutureCallEntry.db.find(
           session,
-          where: (entry) => entry.name.equals('non-registered-future-call'),
+          where: (entry) => entry.name.equals(testCallName),
         );
 
         expect(futureCallEntries, hasLength(0));
@@ -182,6 +190,8 @@ void main() async {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
     late Session session;
+    var testCallName = 'testCall';
+    var identifier = 'alex';
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -192,14 +202,14 @@ void main() async {
 
       testCall = CompleterTestCall();
 
-      futureCallManager.registerFutureCall(testCall, 'testCall');
+      futureCallManager.registerFutureCall(testCall, testCallName);
 
       await futureCallManager.scheduleFutureCall(
-        'testCall',
+        testCallName,
         SimpleData(num: 4),
         DateTime.now().subtract(const Duration(seconds: 1)),
         '1',
-        'alex',
+        identifier,
       );
     });
 
@@ -226,6 +236,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
+    var testCallName = 'no-due-call';
+    var identifier = 'not-due-id';
 
     setUp(() async {
       futureCallManager =
@@ -233,14 +245,14 @@ void main() async {
               .build();
 
       testCall = CompleterTestCall();
-      futureCallManager.registerFutureCall(testCall, 'no-due-call');
+      futureCallManager.registerFutureCall(testCall, testCallName);
 
       await futureCallManager.scheduleFutureCall(
-        'no-due-call',
+        testCallName,
         SimpleData(num: 1),
         DateTime.now().add(Duration(days: 1)),
         '1',
-        'not-due-id',
+        identifier,
       );
     });
 
@@ -265,6 +277,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
+    var testCallName = 'continuous-mode-call';
+    var identifier = 'due-now-id';
 
     setUp(() async {
       futureCallManager =
@@ -272,7 +286,7 @@ void main() async {
               .build();
 
       testCall = CompleterTestCall();
-      futureCallManager.registerFutureCall(testCall, 'continuous-mode-call');
+      futureCallManager.registerFutureCall(testCall, testCallName);
 
       futureCallManager.start();
     });
@@ -284,11 +298,11 @@ void main() async {
     group('when a new future call becomes due', () {
       setUp(() async {
         await futureCallManager.scheduleFutureCall(
-          'continuous-mode-call',
+          testCallName,
           SimpleData(num: 2),
           DateTime.now().subtract(Duration(seconds: 1)), // Already due
           '1',
-          'due-now-id',
+          identifier,
         );
       });
 
@@ -304,6 +318,8 @@ void main() async {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
     var testCallName = 'after-stop-call';
+    var canaryCallName = 'canary-call';
+    var identifier = 'stop-test-id';
 
     setUp(() async {
       futureCallManager =
@@ -314,7 +330,6 @@ void main() async {
               ))
               .build();
 
-      var canaryCallName = 'canary-call';
       var canaryCall = CompleterTestCall();
       futureCallManager.registerFutureCall(
         canaryCall,
@@ -332,7 +347,7 @@ void main() async {
         SimpleData(num: 1),
         DateTime.now(),
         '1',
-        'stop-test-id',
+        identifier,
       );
 
       futureCallManager.start();
@@ -350,7 +365,7 @@ void main() async {
         SimpleData(num: 3),
         DateTime.now(),
         '1',
-        'stop-test-id',
+        identifier,
       );
 
       // Since scan interval is set to 1, we need to wait a bit to ensure
