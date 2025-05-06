@@ -1,0 +1,15 @@
+admin:
+  - listUsers:
+  - blockUser:
+  - unblockUser:
+  - deleteUser:
+  - triggerDeletedRecipeCleanup:
+  - scheduleDeletedRecipeCleanup:
+recipe:
+  - generateRecipeAsStream:
+  - generateRecipe:
+  - getRecipes:
+  - deleteRecipe:
+  - getUploadDescription:
+  - verifyUpload:
+  - getPublicUrlForPath:
