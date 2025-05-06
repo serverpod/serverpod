@@ -243,6 +243,8 @@ class ServerpodConfig {
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
     if (sessionLogs != null) str += sessionLogs.toString();
+    str += futureCall.toString();
+    str += 'future call execution enabled: $futureCallExecutionEnabled\n';
 
     return str;
   }
@@ -503,6 +505,15 @@ class FutureCallConfig {
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
     );
+  }
+
+  @override
+  String toString() {
+    var output = StringBuffer();
+    output.writeln('future call concurrency limit: $concurrencyLimit');
+    output
+        .writeln('future call scan interval: ${scanInterval.inMilliseconds}ms');
+    return output.toString();
   }
 }
 
