@@ -9,18 +9,11 @@ import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
 class CompleterTestCall extends FutureCall<SimpleData> {
-  final Completer<void> completer = Completer<void>();
+  final Completer<SimpleData?> completer = Completer<SimpleData?>();
 
   @override
   Future<void> invoke(Session session, SimpleData? object) async {
-    if (object != null) {
-      var data = object;
-      session.log('${data.num}');
-    } else {
-      session.log('null');
-    }
-
-    completer.complete();
+    completer.complete(object);
   }
 }
 
