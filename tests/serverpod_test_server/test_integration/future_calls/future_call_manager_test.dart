@@ -35,6 +35,16 @@ class ListTestCall extends FutureCall<SimpleData> {
   }
 }
 
+class DelayedListTestCall extends FutureCall<SimpleData> {
+  List<SimpleData?> completed = [];
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    await Future.delayed(Duration(milliseconds: object?.num ?? 0));
+    completed.add(object);
+  }
+}
+
 void main() async {
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
@@ -503,6 +513,66 @@ void main() async {
       test('then newest FutureCall is executed last', () async {
         () {
           expect(testCall.list.last?.num, newestSimpleData.num);
+        };
+      });
+    });
+  });
+
+  withServerpod(
+      'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late ListTestCall testCall;
+    var firstButSlowest = SimpleData(num: 1000);
+    var lastButFastest = SimpleData(num: 20);
+    var testCallName = 'testCall';
+    var identifier = 'alex';
+
+    setUp(() async {
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .withConfig(FutureCallConfig(
+                // Set a short scan interval for testing
+                scanInterval: Duration(milliseconds: 1),
+                concurrencyLimit: 2,
+              ))
+              .build();
+
+      testCall = ListTestCall();
+
+      futureCallManager.registerFutureCall(testCall, testCallName);
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        firstButSlowest,
+        DateTime.now().subtract(const Duration(seconds: 5)),
+        '1',
+        identifier,
+      );
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        lastButFastest,
+        DateTime.now().subtract(const Duration(seconds: 1)),
+        '1',
+        identifier,
+      );
+    });
+
+    group('when running all scheduled FutureCalls', () {
+      setUp(() async {
+        await futureCallManager.runScheduledFutureCalls();
+      });
+
+      test('then future calls are processed concurrently', () async {
+        () {
+          // The call that is scheduled last is faster to process. When the calls
+          // are processed concurrently, the last call is added to the
+          // completed list first.
+          expect(testCall.list.first?.num, lastButFastest.num);
+          // The call that is scheduled first is slower to process, so it is
+          // added to the completed list last.
+          expect(testCall.list.last?.num, firstButSlowest.num);
         };
       });
     });
