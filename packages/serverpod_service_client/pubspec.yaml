@@ -14,7 +14,7 @@ environment:
 dependencies:
   serverpod_client: 2.6.0
   serverpod_shared: 2.6.0
-  meta: ^1.8.0
+  meta: ^1.11.0
 
 dev_dependencies:
   serverpod_lints: 2.6.0
