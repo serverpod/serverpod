@@ -30,6 +30,16 @@ This example accompanies the ["Serverpod Ground Training Course"](TODO) and high
 
 ## Running the app
 
+First you need to add your gemini API key to the `magic_recipe_server/config/passwords.yaml` file.
+
+You can request a free key [here](https://aistudio.google.com/app/apikey).
+
+```yaml 
+shared:
+  mySharedPassword: "my password"
+  gemini: "--- Your Gemini Api Key ---"
+```
+
 ```bash
 # compile the flutter app and copy it in the server
 ./scripts/build_flutter_web
