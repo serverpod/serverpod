@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:args/command_runner.dart' show UsageException;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
@@ -55,7 +56,12 @@ Future<void> _main(List<String> args) async {
   // formatted usage messages.
   initializeLogger();
   var runner = buildCommandRunner();
-  await runner.run(args);
+  try {
+    await runner.run(args);
+  } on UsageException catch (e) {
+    log.error(e.toString());
+    throw ExitException.error();
+  }
 }
 
 ServerpodCommandRunner buildCommandRunner() {
