@@ -35,7 +35,7 @@ class ServerpodTaskScheduler {
   /// A completer that is used to signal when the scheduler has stopped
   /// processing tasks.
   ///
-  /// This is set when the [stop] method is called and completed when all
+  /// This is set when the [drain] method is called and completed when all
   /// tasks in the queue have finished processing.
   Completer<void>? _stoppingCompleter;
 
@@ -52,7 +52,7 @@ class ServerpodTaskScheduler {
   /// The tasks will be executed in the order they are added, subject to the
   /// concurrency limit.
   ///
-  /// If this method is called when the [stop] method has been called, this
+  /// If this method is called when the [drain] method has been called, this
   /// method will throw a [StateError].
   Future<void> addTaskCallbacks(
     List<TaskCallback> taskCallbacks,
@@ -81,7 +81,7 @@ class ServerpodTaskScheduler {
     return isLimitReached;
   }
 
-  /// Stops the scheduler and ensures all queued and running tasks are
+  /// Drains the scheduler and ensures all queued and running tasks are
   /// completed before returning.
   ///
   /// The method returns a [Future] that completes when all tasks in the queue
@@ -89,7 +89,7 @@ class ServerpodTaskScheduler {
   ///
   /// Once this method is called, no new tasks can be added to the scheduler
   /// until the returned [Future] completes.
-  Future<void> stop() async {
+  Future<void> drain() async {
     final stoppingCompleter = Completer<void>();
 
     _stoppingCompleter = stoppingCompleter;

@@ -118,7 +118,7 @@ class FutureCallManager {
 
     await _scanner.scanFutureCallEntries();
 
-    await _scheduler.stop();
+    await _scheduler.drain();
   }
 
   /// Starts the future call manager to monitor the database for overdue future
@@ -131,7 +131,7 @@ class FutureCallManager {
   /// execution.
   Future<void> stop() async {
     await _scanner.stop();
-    await _scheduler.stop();
+    await _scheduler.drain();
   }
 
   void _dispatchEntries(List<FutureCallEntry> entries) {
