@@ -21,7 +21,7 @@ class FutureCallManagerBuilder {
 
   FutureCallConfig _config = FutureCallConfig(
     concurrencyLimit: 1,
-    scanInterval: const Duration(seconds: 1),
+    scanInterval: const Duration(milliseconds: 10),
   );
 
   Protocol _protocol = Protocol();
