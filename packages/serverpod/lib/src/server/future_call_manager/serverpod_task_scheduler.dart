@@ -47,38 +47,6 @@ class ServerpodTaskScheduler {
     required int? concurrencyLimit,
   }) : _concurrencyLimit = concurrencyLimit;
 
-  /// Stops the scheduler and ensures all queued and running tasks are
-  /// completed before returning.
-  ///
-  /// The method returns a [Future] that completes when all tasks in the queue
-  /// have finished processing.
-  ///
-  /// Once this method is called, no new tasks can be added to the scheduler
-  /// until the returned [Future] completes.
-  Future<void> stop() async {
-    final stoppingCompleter = Completer<void>();
-
-    _stoppingCompleter = stoppingCompleter;
-
-    _handleQueue();
-
-    return stoppingCompleter.future;
-  }
-
-  /// This method checks whether the number of currently running tasks has
-  /// reached the specified concurrency limit.
-  bool isConcurrentLimitReached() {
-    final concurrencyLimit = _concurrencyLimit;
-
-    if (concurrencyLimit == null) {
-      return false;
-    }
-
-    final isLimitReached = _runningTaskCallbacks >= concurrencyLimit;
-
-    return isLimitReached;
-  }
-
   /// Adds a list of [TaskCallback] to the queue.
   ///
   /// The tasks will be executed in the order they are added, subject to the
@@ -97,6 +65,38 @@ class ServerpodTaskScheduler {
     _queue.addAll(taskCallbacks);
 
     _handleQueue();
+  }
+
+  /// This method checks whether the number of currently running tasks has
+  /// reached the specified concurrency limit.
+  bool isConcurrentLimitReached() {
+    final concurrencyLimit = _concurrencyLimit;
+
+    if (concurrencyLimit == null) {
+      return false;
+    }
+
+    final isLimitReached = _runningTaskCallbacks >= concurrencyLimit;
+
+    return isLimitReached;
+  }
+
+  /// Stops the scheduler and ensures all queued and running tasks are
+  /// completed before returning.
+  ///
+  /// The method returns a [Future] that completes when all tasks in the queue
+  /// have finished processing.
+  ///
+  /// Once this method is called, no new tasks can be added to the scheduler
+  /// until the returned [Future] completes.
+  Future<void> stop() async {
+    final stoppingCompleter = Completer<void>();
+
+    _stoppingCompleter = stoppingCompleter;
+
+    _handleQueue();
+
+    return stoppingCompleter.future;
   }
 
   /// Handles the queue of task callbacks.
