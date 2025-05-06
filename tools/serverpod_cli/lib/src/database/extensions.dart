@@ -522,14 +522,17 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
   String foreignRelationToSql() {
     var out = '';
 
-    if (createTable == null) return out;
+    var noForeignKeys = (createTable?.foreignKeys.isEmpty ?? true) &&
+        (alterTable?.addForeignKeys.isEmpty ?? true);
 
-    if (createTable!.foreignKeys.isEmpty) return out;
+    if (noForeignKeys) return out;
 
     out += '--\n';
     out += '-- ACTION CREATE FOREIGN KEY\n';
     out += '--\n';
-    out += createTable!.foreignRelationToPgsql();
+
+    out += createTable?.foreignRelationToPgsql() ?? '';
+    out += alterTable?.foreignRelationToSql() ?? '';
 
     return out;
   }
@@ -569,10 +572,18 @@ extension TableMigrationPgSqlGenerator on TableMigration {
       out += addIndex.toPgSql(tableName: name);
     }
 
-    // Add foreign keys
+    return out;
+  }
+
+  String foreignRelationToSql() {
+    var out = '';
+
+    if (addForeignKeys.isEmpty) return out;
+
     for (var addKey in addForeignKeys) {
       out += addKey.toPgSql(tableName: name);
     }
+
     return out;
   }
 }
