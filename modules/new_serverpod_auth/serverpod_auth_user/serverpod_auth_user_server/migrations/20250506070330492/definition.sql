@@ -1,6 +1,16 @@
 BEGIN;
 
 --
+-- Class AuthUser as table serverpod_auth_user
+--
+CREATE TABLE "serverpod_auth_user" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "created" timestamp without time zone NOT NULL,
+    "scopeNames" json NOT NULL,
+    "blocked" boolean NOT NULL
+);
+
+--
 -- Class CloudStorageEntry as table serverpod_cloud_storage
 --
 CREATE TABLE "serverpod_cloud_storage" (
@@ -241,9 +251,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_user
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_user', '20250416124930715', now())
+    VALUES ('serverpod_auth_user', '20250506070330492', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250416124930715', "timestamp" = now();
+    DO UPDATE SET "version" = '20250506070330492', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
