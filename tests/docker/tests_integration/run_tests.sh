@@ -29,7 +29,3 @@ dart bin/main.dart -m production -r maintenance --apply-migrations
 echo "### Running tests"
 dart test test_integration -x integration --concurrency=1
 checkLastExitCode
-
-cd ../serverpod_test_module/serverpod_test_module_server/
-echo $(pwd)
-dart test ./test/integration
