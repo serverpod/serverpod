@@ -23,7 +23,7 @@ typedef InitializeFutureCall = void Function(
 /// [Serverpod] is restarted.
 class FutureCallManager {
   final Session _internalSession;
-  final FutureCallSessionBuilder _sessionProvider;
+  final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
 
   final FutureCallConfig _config;
@@ -47,7 +47,7 @@ class FutureCallManager {
     required InitializeFutureCall initializeFutureCall,
   })  : _diagnosticsService = diagnosticsService,
         _internalSession = internalSession,
-        _sessionProvider = sessionProvider,
+        _sessionBuilder = sessionProvider,
         _initializeFutureCall = initializeFutureCall {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
@@ -158,7 +158,7 @@ class FutureCallManager {
     required FutureCallEntry futureCallEntry,
     required FutureCall<SerializableModel> futureCall,
   }) async {
-    final futureCallSession = _sessionProvider(futureCallEntry.name);
+    final futureCallSession = _sessionBuilder(futureCallEntry.name);
 
     try {
       dynamic object;

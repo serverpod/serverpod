@@ -8,7 +8,7 @@ import '../test_tools/serverpod_test_tools.dart';
 export 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 
 class FutureCallManagerBuilder {
-  FutureCallSessionBuilder _sessionProvider;
+  FutureCallSessionBuilder _sessionBuilder;
 
   Session _internalSession;
 
@@ -31,7 +31,7 @@ class FutureCallManagerBuilder {
   FutureCallManagerBuilder({
     required FutureCallSessionBuilder sessionProvider,
     required Session internalSession,
-  })  : _sessionProvider = sessionProvider,
+  })  : _sessionBuilder = sessionProvider,
         _internalSession = internalSession;
 
   factory FutureCallManagerBuilder.fromTestSessionBuilder(
@@ -48,7 +48,7 @@ class FutureCallManagerBuilder {
         _protocol,
         diagnosticsService: _diagnosticsService,
         internalSession: _internalSession,
-        sessionProvider: _sessionProvider,
+        sessionProvider: _sessionBuilder,
         initializeFutureCall: _initializeFutureCall,
       );
 
@@ -86,7 +86,7 @@ class FutureCallManagerBuilder {
   FutureCallManagerBuilder withSessionProvider(
     FutureCallSessionBuilder sessionProvider,
   ) {
-    _sessionProvider = sessionProvider;
+    _sessionBuilder = sessionProvider;
     return this;
   }
 }
