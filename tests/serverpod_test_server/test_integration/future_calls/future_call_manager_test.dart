@@ -40,10 +40,6 @@ void main() async {
           CompleterTestCall(), 'test-db-entry-call');
     });
 
-    tearDown(() async {
-      await futureCallManager.stop();
-    });
-
     group('when scheduling a FutureCall', () {
       setUp(() async {
         await futureCallManager.scheduleFutureCall(
@@ -87,10 +83,6 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await futureCallManager.stop();
-    });
-
     group('when cancelling the scheduled FutureCall', () {
       setUp(() async {
         await futureCallManager.cancelFutureCall('unique-identifier-1337');
@@ -126,10 +118,6 @@ void main() async {
         '1',
         'unique-identifier-1337',
       );
-    });
-
-    tearDown(() async {
-      await futureCallManager.stop();
     });
 
     group('when cancelling a non-scheduled FutureCall', () {
@@ -174,10 +162,6 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await futureCallManager.stop();
-    });
-
     group('when executing a scheduled but unregistered FutureCall', () {
       test('then no error is thrown and the FutureCallEntry is removed',
           () async {
@@ -219,10 +203,6 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await futureCallManager.stop();
-    });
-
     group('when running scheduled FutureCalls', () {
       setUp(() async {
         await futureCallManager.runScheduledFutureCalls();
@@ -246,11 +226,8 @@ void main() async {
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
-    late Session session;
 
     setUp(() async {
-      session = sessionBuilder.build();
-
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
               .build();
@@ -267,15 +244,15 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await futureCallManager.stop();
-    });
-
     group('when start is called', () {
       setUp(() async {
         futureCallManager.start();
         // Wait briefly to allow processing to occur (or not occur)
         await Future.delayed(Duration(milliseconds: 100));
+      });
+
+      tearDown(() async {
+        await futureCallManager.stop();
       });
 
       test('then no calls are processed', () async {
