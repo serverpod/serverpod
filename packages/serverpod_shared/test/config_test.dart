@@ -846,4 +846,96 @@ serverId: testServerIdFromConfig
 
     expect(config.serverId, 'testServerIdFromArg');
   });
+
+  test(
+      'Given a Serverpod config without futureCallExecutionEnabled when loading from Map then the futureCallExecutionEnabled is set to true.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.futureCallExecutionEnabled, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with futureCallExecutionEnabled set to false when loading from Map then the futureCallExecutionEnabled is set to false.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCallExecutionEnabled: false
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.futureCallExecutionEnabled, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config without futureCallExecutionEnabled and environment contains SERVERPOD_DISABLE_FUTURE_CALL_EXECUTION set to false when loading from Map then the futureCallExecutionEnabled is set to false.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED': 'false',
+      },
+    );
+
+    expect(config.futureCallExecutionEnabled, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config with futureCallExecutionEnabled set to false and environment contains SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED set to true when loading from Map then the futureCallExecutionEnabled is set to true.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCallExecutionEnabled: false
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED': 'true',
+      },
+    );
+
+    expect(config.futureCallExecutionEnabled, isTrue);
+  });
 }

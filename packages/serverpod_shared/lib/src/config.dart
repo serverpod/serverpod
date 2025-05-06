@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as path;
 
 /// The configuration sections for the serverpod configuration file.
 typedef Convert<T> = T Function(String value);
@@ -45,6 +45,12 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
 
+  /// Configuration for future call handling.
+  final FutureCallConfig futureCall;
+
+  /// True if future call execution should be disabled.
+  final bool futureCallExecutionEnabled;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -58,6 +64,8 @@ class ServerpodConfig {
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
+    this.futureCall = const FutureCallConfig(),
+    this.futureCallExecutionEnabled = true,
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig(
               persistentEnabled: database != null,
@@ -154,6 +162,21 @@ class ServerpodConfig {
           )
         : null;
 
+    var futureCallConfigJson =
+        _buildFutureCallConfigMap(configMap, environment);
+    var futureCallConfig = futureCallConfigJson != null
+        ? FutureCallConfig._fromJson(
+            futureCallConfigJson,
+            ServerpodConfigMap.futureCall,
+          )
+        : const FutureCallConfig(
+            concurrencyLimit:
+                FutureCallConfig.defaultFutureCallConcurrencyLimit,
+          );
+
+    var futureCallExecutionEnabled =
+        _readIsFutureCallExecutionEnabled(configMap, environment);
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -165,6 +188,8 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
       sessionLogs: sessionLogsConfig,
+      futureCall: futureCallConfig,
+      futureCallExecutionEnabled: futureCallExecutionEnabled,
     );
   }
 
@@ -218,6 +243,8 @@ class ServerpodConfig {
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
     if (sessionLogs != null) str += sessionLogs.toString();
+    str += futureCall.toString();
+    str += 'future call execution enabled: $futureCallExecutionEnabled\n';
 
     return str;
   }
@@ -425,6 +452,71 @@ class RedisConfig {
   }
 }
 
+/// Configuration for future call handling.
+class FutureCallConfig {
+  /// The maximum number of concurrent running future calls. If the limit is
+  /// reached, future calls will be postponed until a slot is available.
+  ///
+  /// If the limit is `null`, the amount of concurrent future calls will be
+  /// unlimited.
+  final int? concurrencyLimit;
+
+  /// How long to wait before checking the queue again.
+  final Duration scanInterval;
+
+  /// Creates a new [FutureCallConfig].
+  const FutureCallConfig({
+    this.concurrencyLimit,
+    this.scanInterval =
+        const Duration(milliseconds: defaultFutureCallScanIntervalMs),
+  });
+
+  /// The default concurrency limit for future calls.
+  static const int defaultFutureCallConcurrencyLimit = 1;
+
+  /// The default scan interval for future calls.
+  static const int defaultFutureCallScanIntervalMs = 5000;
+
+  factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
+    final scanInterval =
+        futureCallConfigJson[ServerpodEnv.futureCallScanInterval.configKey];
+
+    final hasConcurrencyLimitKey = futureCallConfigJson.containsKey(
+      ServerpodEnv.futureCallConcurrencyLimit.configKey,
+    );
+
+    int? concurrencyLimit = hasConcurrencyLimitKey
+        ? futureCallConfigJson[
+            ServerpodEnv.futureCallConcurrencyLimit.configKey]
+        : null;
+
+    // If the user sets the concurrency limit to 0 or a negative number, this
+    // means to want to enable unlimited concurrency
+    if (concurrencyLimit != null && concurrencyLimit < 1) {
+      concurrencyLimit = null;
+    }
+
+    return FutureCallConfig(
+      // If the user did not configure the concurrency limit, use the default
+      concurrencyLimit: hasConcurrencyLimitKey
+          ? concurrencyLimit
+          : defaultFutureCallConcurrencyLimit,
+      scanInterval: Duration(
+        milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
+      ),
+    );
+  }
+
+  @override
+  String toString() {
+    var output = StringBuffer();
+    output.writeln('future call concurrency limit: $concurrencyLimit');
+    output
+        .writeln('future call scan interval: ${scanInterval.inMilliseconds}ms');
+    return output.toString();
+  }
+}
+
 /// Configuration for session logging.
 class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
@@ -555,6 +647,15 @@ Map? _buildSessionLogsConfigMap(
   ]);
 }
 
+Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
+  var futureCallConfig = configMap[ServerpodConfigMap.futureCall] ?? {};
+
+  return _buildConfigMap(futureCallConfig, environment, [
+    (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
+    (ServerpodEnv.futureCallScanInterval, int.parse),
+  ]);
+}
+
 Map? _buildConfigMap(
   Map<dynamic, dynamic> serverConfig,
   Map<String, String> environment,
@@ -618,6 +719,24 @@ String _readServerId(
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
+}
+
+bool _readIsFutureCallExecutionEnabled(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var futureCallsExecutionEnabled =
+      configMap[ServerpodEnv.futureCallExecutionEnabled.configKey];
+  futureCallsExecutionEnabled =
+      environment[ServerpodEnv.futureCallExecutionEnabled.envVariable] ??
+          futureCallsExecutionEnabled;
+
+  if (futureCallsExecutionEnabled is String) {
+    futureCallsExecutionEnabled = bool.tryParse(futureCallsExecutionEnabled);
+  }
+
+  futureCallsExecutionEnabled ??= true;
+  return futureCallsExecutionEnabled;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

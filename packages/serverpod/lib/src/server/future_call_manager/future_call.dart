@@ -1,7 +1,7 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'server.dart';
-import 'session.dart';
+import '../server.dart';
+import '../session.dart';
 
 /// Superclass of a [FutureCall], override the [invoke] method to create a
 /// custom [FutureCall]. The call also needs to be registered with the top
