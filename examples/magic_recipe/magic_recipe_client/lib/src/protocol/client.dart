@@ -12,9 +12,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
-import 'package:magic_recipe_client/src/protocol/greeting.dart' as _i4;
-import 'package:magic_recipe_client/src/protocol/recipes/recipe.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'package:magic_recipe_client/src/protocol/recipes/recipe.dart' as _i4;
+import 'protocol.dart' as _i5;
 
 /// {@category Endpoint}
 class EndpointAdmin extends _i1.EndpointRef {
@@ -47,22 +46,27 @@ class EndpointAdmin extends _i1.EndpointRef {
         'deleteUser',
         {'userId': userId},
       );
-}
 
-/// This is an example endpoint that returns a greeting message through its [hello] method.
-/// {@category Endpoint}
-class EndpointGreeting extends _i1.EndpointRef {
-  EndpointGreeting(_i1.EndpointCaller caller) : super(caller);
+  /// Trigger a cleanup of deleted recipes.
+  ///
+  /// This will immediately delete all recipes that were deleted - this is an
+  /// example for how you can trigger future calls from the admin endpoint.
+  _i2.Future<void> triggerDeletedRecipeCleanup() =>
+      caller.callServerEndpoint<void>(
+        'admin',
+        'triggerDeletedRecipeCleanup',
+        {},
+      );
 
-  @override
-  String get name => 'greeting';
-
-  /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i4.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i4.Greeting>(
-        'greeting',
-        'hello',
-        {'name': name},
+  /// Schedule a future call to cleanup deleted recipes.
+  ///
+  /// The future call will be saved to the database and executed at the
+  /// specified time. This future call will reschedule itself every 5 minutes.
+  _i2.Future<void> scheduleDeletedRecipeCleanup() =>
+      caller.callServerEndpoint<void>(
+        'admin',
+        'scheduleDeletedRecipeCleanup',
+        {},
       );
 }
 
@@ -77,11 +81,11 @@ class EndpointRecipe extends _i1.EndpointRef {
   String get name => 'recipe';
 
   /// Pass in a string containing the ingredients and get a recipe back.
-  _i2.Stream<_i5.Recipe> generateRecipeAsStream(
+  _i2.Stream<_i4.Recipe> generateRecipeAsStream(
     String ingredients, [
     String? imagePath,
   ]) =>
-      caller.callStreamingServerEndpoint<_i2.Stream<_i5.Recipe>, _i5.Recipe>(
+      caller.callStreamingServerEndpoint<_i2.Stream<_i4.Recipe>, _i4.Recipe>(
         'recipe',
         'generateRecipeAsStream',
         {
@@ -92,11 +96,11 @@ class EndpointRecipe extends _i1.EndpointRef {
       );
 
   /// Pass in a string containing the ingredients and get a recipe back.
-  _i2.Future<_i5.Recipe> generateRecipe(
+  _i2.Future<_i4.Recipe> generateRecipe(
     String ingredients, [
     String? imagePath,
   ]) =>
-      caller.callServerEndpoint<_i5.Recipe>(
+      caller.callServerEndpoint<_i4.Recipe>(
         'recipe',
         'generateRecipe',
         {
@@ -106,8 +110,8 @@ class EndpointRecipe extends _i1.EndpointRef {
       );
 
   /// This method returns all the generated recipes from the database.
-  _i2.Future<List<_i5.Recipe>> getRecipes() =>
-      caller.callServerEndpoint<List<_i5.Recipe>>(
+  _i2.Future<List<_i4.Recipe>> getRecipes() =>
+      caller.callServerEndpoint<List<_i4.Recipe>>(
         'recipe',
         'getRecipes',
         {},
@@ -165,7 +169,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i5.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -176,14 +180,11 @@ class Client extends _i1.ServerpodClientShared {
               disconnectStreamsOnLostInternetConnection,
         ) {
     admin = EndpointAdmin(this);
-    greeting = EndpointGreeting(this);
     recipe = EndpointRecipe(this);
     modules = Modules(this);
   }
 
   late final EndpointAdmin admin;
-
-  late final EndpointGreeting greeting;
 
   late final EndpointRecipe recipe;
 
@@ -192,7 +193,6 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'admin': admin,
-        'greeting': greeting,
         'recipe': recipe,
       };
 

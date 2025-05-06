@@ -16,6 +16,24 @@ class AdminDashboard extends StatelessWidget {
             const Text('Admin Dashboard'),
             const Text('List of users'),
             const SizedBox(height: 20),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    await client.admin.triggerDeletedRecipeCleanup();
+                  },
+                  child: const Text('Trigger deleted recipe cleanup'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    await client.admin.scheduleDeletedRecipeCleanup();
+                  },
+                  child: const Text('Schedule deleted recipe cleanup'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             Expanded(child: UserList()),
           ],
         ),

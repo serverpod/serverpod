@@ -1,4 +1,4 @@
-import 'package:magic_recipe_server/src/birthday_reminder.dart';
+import 'package:magic_recipe_server/src/recipes/remove_deleted_recipes_future_call.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:magic_recipe_server/src/web/routes/root.dart';
@@ -65,8 +65,8 @@ void run(List<String> args) async {
   // lose them if the server is restarted.
 
   pod.registerFutureCall(
-    BirthdayReminder(),
-    FutureCallNames.birthdayReminder.name,
+    RemoveDeletedRecipesFutureCall(),
+    FutureCallNames.removeDeletedRecipes.name,
   );
 
   // You can schedule future calls for a later time during startup. But you can also
@@ -74,12 +74,8 @@ void run(List<String> args) async {
   // there is also [futureCallAtTime] if you want to schedule a future call at a
   // specific time.
   await pod.futureCallWithDelay(
-    FutureCallNames.birthdayReminder.name,
-    Greeting(
-      message: 'Hello!',
-      author: 'Serverpod Server',
-      timestamp: DateTime.now(),
-    ),
+    FutureCallNames.removeDeletedRecipes.name,
+    null,
     Duration(seconds: 5),
   );
 }
@@ -89,5 +85,6 @@ void run(List<String> args) async {
 /// This is better than using a string literal, as it will reduce the risk of
 /// typos and make it easier to refactor the code.
 enum FutureCallNames {
-  birthdayReminder,
+  removeDeletedRecipes,
+  rescheduleRemoveDeletedRecipes,
 }

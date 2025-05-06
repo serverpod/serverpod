@@ -3,8 +3,8 @@ admin:
   - blockUser:
   - unblockUser:
   - deleteUser:
-greeting:
-  - hello:
+  - triggerDeletedRecipeCleanup:
+  - scheduleDeletedRecipeCleanup:
 recipe:
   - generateRecipeAsStream:
   - generateRecipe:

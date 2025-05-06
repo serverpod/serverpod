@@ -11,10 +11,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../admin/admin_endpoint.dart' as _i2;
-import '../greeting_endpoint.dart' as _i3;
-import '../recipes/recipe_endpoint.dart' as _i4;
-import 'package:magic_recipe_server/src/generated/protocol.dart' as _i5;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
+import '../recipes/recipe_endpoint.dart' as _i3;
+import 'package:magic_recipe_server/src/generated/protocol.dart' as _i4;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -26,13 +25,7 @@ class Endpoints extends _i1.EndpointDispatch {
           'admin',
           null,
         ),
-      'greeting': _i3.GreetingEndpoint()
-        ..initialize(
-          server,
-          'greeting',
-          null,
-        ),
-      'recipe': _i4.RecipeEndpoint()
+      'recipe': _i3.RecipeEndpoint()
         ..initialize(
           server,
           'recipe',
@@ -106,30 +99,26 @@ class Endpoints extends _i1.EndpointDispatch {
             params['userId'],
           ),
         ),
-      },
-    );
-    connectors['greeting'] = _i1.EndpointConnector(
-      name: 'greeting',
-      endpoint: endpoints['greeting']!,
-      methodConnectors: {
-        'hello': _i1.MethodConnector(
-          name: 'hello',
-          params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
+        'triggerDeletedRecipeCleanup': _i1.MethodConnector(
+          name: 'triggerDeletedRecipeCleanup',
+          params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['greeting'] as _i3.GreetingEndpoint).hello(
-            session,
-            params['name'],
-          ),
-        )
+              (endpoints['admin'] as _i2.AdminEndpoint)
+                  .triggerDeletedRecipeCleanup(session),
+        ),
+        'scheduleDeletedRecipeCleanup': _i1.MethodConnector(
+          name: 'scheduleDeletedRecipeCleanup',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint)
+                  .scheduleDeletedRecipeCleanup(session),
+        ),
       },
     );
     connectors['recipe'] = _i1.EndpointConnector(
@@ -154,7 +143,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint).generateRecipe(
+              (endpoints['recipe'] as _i3.RecipeEndpoint).generateRecipe(
             session,
             params['ingredients'],
             params['imagePath'],
@@ -167,7 +156,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint).getRecipes(session),
+              (endpoints['recipe'] as _i3.RecipeEndpoint).getRecipes(session),
         ),
         'deleteRecipe': _i1.MethodConnector(
           name: 'deleteRecipe',
@@ -182,7 +171,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint).deleteRecipe(
+              (endpoints['recipe'] as _i3.RecipeEndpoint).deleteRecipe(
             session,
             params['recipeId'],
           ),
@@ -200,12 +189,12 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint)
+              (endpoints['recipe'] as _i3.RecipeEndpoint)
                   .getUploadDescription(
                     session,
                     params['filename'],
                   )
-                  .then((record) => _i5.mapRecordToJson(record)),
+                  .then((record) => _i4.mapRecordToJson(record)),
         ),
         'verifyUpload': _i1.MethodConnector(
           name: 'verifyUpload',
@@ -220,7 +209,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint).verifyUpload(
+              (endpoints['recipe'] as _i3.RecipeEndpoint).verifyUpload(
             session,
             params['path'],
           ),
@@ -238,7 +227,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint).getPublicUrlForPath(
+              (endpoints['recipe'] as _i3.RecipeEndpoint).getPublicUrlForPath(
             session,
             params['path'],
           ),
@@ -264,7 +253,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['recipe'] as _i4.RecipeEndpoint)
+              (endpoints['recipe'] as _i3.RecipeEndpoint)
                   .generateRecipeAsStream(
             session,
             params['ingredients'],
@@ -273,6 +262,6 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth'] = _i6.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i5.Endpoints()..initializeEndpoints(server);
   }
 }

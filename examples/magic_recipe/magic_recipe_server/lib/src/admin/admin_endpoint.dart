@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_escaping_inner_quotes
 
+import 'package:magic_recipe_server/server.dart';
+import 'package:magic_recipe_server/src/recipes/remove_deleted_recipes_future_call.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 
@@ -87,5 +89,25 @@ class AdminEndpoint extends Endpoint {
       session.log('Failed to delete account',
           exception: e, level: LogLevel.error, stackTrace: s);
     }
+  }
+
+  /// Trigger a cleanup of deleted recipes.
+  ///
+  /// This will immediately delete all recipes that were deleted - this is an
+  /// example for how you can trigger future calls from the admin endpoint.
+  Future<void> triggerDeletedRecipeCleanup(Session session) async {
+    await RemoveDeletedRecipesFutureCall().invoke(session, null);
+  }
+
+  /// Schedule a future call to cleanup deleted recipes.
+  ///
+  /// The future call will be saved to the database and executed at the
+  /// specified time. This future call will reschedule itself every 5 minutes.
+  Future<void> scheduleDeletedRecipeCleanup(Session session) async {
+    await pod.futureCallWithDelay(
+      FutureCallNames.rescheduleRemoveDeletedRecipes.name,
+      null,
+      Duration(seconds: 5),
+    );
   }
 }

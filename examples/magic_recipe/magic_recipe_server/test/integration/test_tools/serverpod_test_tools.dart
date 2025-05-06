@@ -15,9 +15,8 @@ import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
-import 'package:magic_recipe_server/src/generated/greeting.dart' as _i5;
-import 'package:magic_recipe_server/src/generated/recipes/recipe.dart' as _i6;
-import 'package:magic_recipe_server/src/generated/protocol.dart' as _i7;
+import 'package:magic_recipe_server/src/generated/recipes/recipe.dart' as _i5;
+import 'package:magic_recipe_server/src/generated/protocol.dart' as _i6;
 import 'package:magic_recipe_server/src/generated/protocol.dart';
 import 'package:magic_recipe_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -104,8 +103,6 @@ void withServerpod(
 class TestEndpoints {
   late final _AdminEndpoint admin;
 
-  late final _GreetingEndpoint greeting;
-
   late final _RecipeEndpoint recipe;
 }
 
@@ -117,10 +114,6 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.EndpointDispatch endpoints,
   ) {
     admin = _AdminEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    greeting = _GreetingEndpoint(
       endpoints,
       serializationManager,
     );
@@ -254,40 +247,54 @@ class _AdminEndpoint {
       }
     });
   }
-}
 
-class _GreetingEndpoint {
-  _GreetingEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
-
-  final _i2.EndpointDispatch _endpointDispatch;
-
-  final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<_i5.Greeting> hello(
-    _i1.TestSessionBuilder sessionBuilder,
-    String name,
-  ) async {
+  _i3.Future<void> triggerDeletedRecipeCleanup(
+      _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'greeting',
-        method: 'hello',
+        endpoint: 'admin',
+        method: 'triggerDeletedRecipeCleanup',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'greeting',
-          methodName: 'hello',
-          parameters: _i1.testObjectToJson({'name': name}),
+          endpointPath: 'admin',
+          methodName: 'triggerDeletedRecipeCleanup',
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.Greeting>);
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> scheduleDeletedRecipeCleanup(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'scheduleDeletedRecipeCleanup',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'scheduleDeletedRecipeCleanup',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -306,12 +313,12 @@ class _RecipeEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Stream<_i6.Recipe> generateRecipeAsStream(
+  _i3.Stream<_i5.Recipe> generateRecipeAsStream(
     _i1.TestSessionBuilder sessionBuilder,
     String ingredients, [
     String? imagePath,
   ]) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i6.Recipe>();
+    var _localTestStreamManager = _i1.TestStreamManager<_i5.Recipe>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -342,7 +349,7 @@ class _RecipeEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Future<_i6.Recipe> generateRecipe(
+  _i3.Future<_i5.Recipe> generateRecipe(
     _i1.TestSessionBuilder sessionBuilder,
     String ingredients, [
     String? imagePath,
@@ -367,7 +374,7 @@ class _RecipeEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i6.Recipe>);
+        ) as _i3.Future<_i5.Recipe>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -375,7 +382,7 @@ class _RecipeEndpoint {
     });
   }
 
-  _i3.Future<List<_i6.Recipe>> getRecipes(
+  _i3.Future<List<_i5.Recipe>> getRecipes(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -394,7 +401,7 @@ class _RecipeEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<_i6.Recipe>>);
+        ) as _i3.Future<List<_i5.Recipe>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -455,7 +462,7 @@ class _RecipeEndpoint {
               _localCallContext.arguments,
             )
             .then((record) =>
-                _i7.Protocol().deserialize<(String?, String)>(record));
+                _i6.Protocol().deserialize<(String?, String)>(record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

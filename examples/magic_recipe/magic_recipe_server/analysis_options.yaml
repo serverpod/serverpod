@@ -11,13 +11,14 @@
 # (the recommended set includes the core lints).
 # The core lints are also what is used by pub.dev for scoring packages.
 
-include: package:lint/strict.yaml
+include: package:lints/recommended.yaml
 
 # Uncomment the following section to specify additional rules.
 
 linter:
   rules:
-    - lines_longer_than_80_chars
+    - unawaited_futures
+    - avoid_print
 
 analyzer:
   exclude:
