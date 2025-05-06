@@ -240,6 +240,34 @@ jobs:
         run: dart test test_integration
         working-directory: ${{ matrix.path }}
 
+  module_integration_tests:
+    name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.19.0', '3.29.0']
+        module: ['tests/serverpod_test_module/serverpod_test_module_server']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Start containers
+        run: docker compose up --build -V -d
+        working-directory: ${{ matrix.module }}
+      - name: Wait for services to be ready
+        run: |
+          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
+          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
+        working-directory: tests/docker/tests_integration
+      - name: Run integration tests
+        run: dart test -t integration
+        working-directory: ${{ matrix.module }}
+      - name: Stop containers
+        if: always()
+        run: docker compose down
+        working-directory: ${{ matrix.module }}
+
   integration_test_server:
     name: Serverpod integration tests (server)
     runs-on: ubuntu-latest
