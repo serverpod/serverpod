@@ -99,7 +99,7 @@ void main() async {
           where: (entry) => entry.name.equals(testCallName),
         );
 
-        expect(futureCallEntries, hasLength(0));
+        expect(futureCallEntries, isEmpty);
       });
     });
   });
@@ -127,22 +127,17 @@ void main() async {
       );
     });
 
-    group('when cancelling a non-scheduled FutureCall', () {
-      setUp(() async {
-        await futureCallManager.cancelFutureCall('non-existing-identifier');
-      });
+    test(
+        'when cancelling a non-scheduled FutureCall'
+        'then scheduled FutureCall is not removed', () async {
+      await futureCallManager.cancelFutureCall('non-existing-identifier');
 
-      test('then no error is thrown and the database is not affected',
-          () async {
-        await futureCallManager.cancelFutureCall('non-existing-identifier');
+      final futureCallEntries = await FutureCallEntry.db.find(
+        session,
+        where: (entry) => entry.name.equals(testCallName),
+      );
 
-        final futureCallEntries = await FutureCallEntry.db.find(
-          session,
-          where: (entry) => entry.name.equals(testCallName),
-        );
-
-        expect(futureCallEntries, hasLength(1));
-      });
+      expect(futureCallEntries, hasLength(1));
     });
   });
 
@@ -170,18 +165,17 @@ void main() async {
       );
     });
 
-    group('when executing a scheduled but unregistered FutureCall', () {
-      test('then no error is thrown and the FutureCallEntry is removed',
-          () async {
-        await futureCallManager.runScheduledFutureCalls();
+    test(
+        'when executing all scheduled FutureCalls '
+        'then FutureCall entry is removed from the database', () async {
+      await futureCallManager.runScheduledFutureCalls();
 
-        final futureCallEntries = await FutureCallEntry.db.find(
-          session,
-          where: (entry) => entry.name.equals(testCallName),
-        );
+      final futureCallEntries = await FutureCallEntry.db.find(
+        session,
+        where: (entry) => entry.name.equals(testCallName),
+      );
 
-        expect(futureCallEntries, hasLength(0));
-      });
+      expect(futureCallEntries, isEmpty);
     });
   });
 
@@ -227,12 +221,13 @@ void main() async {
           session,
         );
 
-        expect(futureCallEntries, hasLength(0));
+        expect(futureCallEntries, isEmpty);
       });
     });
   });
 
-  withServerpod('Given FutureCallManager with no due future calls',
+  withServerpod(
+      'Given FutureCallManager with registered future call that is not due',
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
@@ -242,6 +237,10 @@ void main() async {
     setUp(() async {
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .withConfig(FutureCallConfig(
+                // Set a short scan interval for testing
+                scanInterval: Duration(milliseconds: 1),
+              ))
               .build();
 
       testCall = CompleterTestCall();
@@ -260,14 +259,14 @@ void main() async {
       setUp(() async {
         futureCallManager.start();
         // Wait briefly to allow processing to occur (or not occur)
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(Duration(milliseconds: 10));
       });
 
       tearDown(() async {
         await futureCallManager.stop();
       });
 
-      test('then no calls are processed', () async {
+      test('then FutureCall is not processed', () async {
         expect(testCall.completer.isCompleted, isFalse);
       });
     });
@@ -283,6 +282,10 @@ void main() async {
     setUp(() async {
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .withConfig(FutureCallConfig(
+                // Set a short scan interval for testing
+                scanInterval: Duration(milliseconds: 1),
+              ))
               .build();
 
       testCall = CompleterTestCall();
