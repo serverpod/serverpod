@@ -17,6 +17,15 @@ class CompleterTestCall extends FutureCall<SimpleData> {
   }
 }
 
+class CounterTestCall extends FutureCall<SimpleData> {
+  int counter = 0;
+
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {
+    counter++;
+  }
+}
+
 void main() async {
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
@@ -370,6 +379,63 @@ void main() async {
       await Future.delayed(Duration(milliseconds: 100));
 
       expect(testCall.completer.isCompleted, isFalse);
+    });
+  });
+
+  withServerpod(
+      'Given FutureCallManager with due FutureCall scheduled multiple times',
+      (sessionBuilder, _) {
+    late FutureCallManager futureCallManager;
+    late CounterTestCall testCall;
+    late Session session;
+    var testCallName = 'testCall';
+    var identifier = 'alex';
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      futureCallManager =
+          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .build();
+
+      testCall = CounterTestCall();
+
+      futureCallManager.registerFutureCall(testCall, testCallName);
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        SimpleData(num: 4),
+        DateTime.now().subtract(const Duration(seconds: 1)),
+        '1',
+        identifier,
+      );
+
+      await futureCallManager.scheduleFutureCall(
+        testCallName,
+        SimpleData(num: 4),
+        DateTime.now().subtract(const Duration(seconds: 1)),
+        '1',
+        identifier,
+      );
+    });
+
+    group('when running all scheduled FutureCalls', () {
+      setUp(() async {
+        await futureCallManager.runScheduledFutureCalls();
+      });
+
+      test('then the FutureCall is executed multiple times', () async {
+        await expectLater(testCall.counter, equals(2));
+      });
+
+      test('then the FutureCallEntries are deleted from the database',
+          () async {
+        final futureCallEntries = await FutureCallEntry.db.find(
+          session,
+        );
+
+        expect(futureCallEntries, isEmpty);
+      });
     });
   });
 }
