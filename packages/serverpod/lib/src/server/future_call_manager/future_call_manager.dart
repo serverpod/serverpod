@@ -17,10 +17,17 @@ typedef InitializeFutureCall = void Function(
   String name,
 );
 
-/// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
-/// be called at a certain time in the future. The call request and its
-/// arguments are stored in the database, so it is persistent even if the
-/// [Serverpod] is restarted.
+/// The [FutureCallManager] is responsible for managing and executing
+/// [FutureCall]s in the [Serverpod] framework. A [FutureCall] is a task
+/// that is scheduled to run at a specific time in the future. These tasks
+/// are persistent, meaning they are stored in the database and will still
+/// execute even if the server is restarted.
+///
+/// Key responsibilities of the [FutureCallManager]:
+/// - Scheduling future calls with optional arguments.
+/// - Cancelling scheduled future calls.
+/// - Registering future call handlers.
+/// - Monitoring and executing overdue future calls.
 class FutureCallManager {
   final Session _internalSession;
   final FutureCallSessionBuilder _sessionBuilder;
@@ -36,8 +43,16 @@ class FutureCallManager {
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
 
-  /// Creates a new [FutureCallManager]. Typically, this is done internally by
-  /// the [Serverpod].
+  /// Creates a new [FutureCallManager]. Typically, this is instantiated
+  /// internally by the [Serverpod].
+  ///
+  /// - [config]: Configuration for future calls, such as concurrency limits.
+  /// - [serializationManager]: Handles serialization and deserialization of
+  ///   objects passed to future calls.
+  /// - [diagnosticsService]: Service for reporting errors and diagnostics.
+  /// - [internalSession]: A session used internally for database operations.
+  /// - [sessionProvider]: A function to create sessions for executing future calls.
+  /// - [initializeFutureCall]: A function to initialize a [FutureCall] with its name.
   FutureCallManager(
     this._config,
     this._serializationManager, {
@@ -62,10 +77,15 @@ class FutureCallManager {
     );
   }
 
-  /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
-  /// passed as an argument. The `invoke` method of the [FutureCall] will
-  /// be called at or after the specified [time]. Set the identifier if you need
-  /// to be able to cancel the call.
+  /// Schedules a [FutureCall] by its [name]. The call will execute at or
+  /// after the specified [time]. Optionally, a [SerializableModel] can
+  /// be passed as an argument to the call.
+  ///
+  /// - [name]: The name of the future call to schedule.
+  /// - [object]: An optional argument to pass to the future call.
+  /// - [time]: The time at which the future call should execute.
+  /// - [serverId]: The ID of the server responsible for executing the call.
+  /// - [identifier]: An optional unique identifier for the call, used for cancellation.
   Future<void> scheduleFutureCall(
     String name,
     SerializableModel? object,
@@ -90,8 +110,8 @@ class FutureCallManager {
     await FutureCallEntry.db.insertRow(session, entry);
   }
 
-  /// Cancels a [FutureCall] with the specified identifier. If no future call
-  /// with the specified identifier is found, this call will have no effect.
+  /// Cancels a [FutureCall] with the specified [identifier]. If no future
+  /// call with the given identifier exists, this method has no effect.
   Future<void> cancelFutureCall(String identifier) async {
     var session = _internalSession;
 
@@ -101,7 +121,10 @@ class FutureCallManager {
     );
   }
 
-  /// Registers a [FutureCall] with the manager.
+  /// Registers a [FutureCall] with the manager. This associates a [FutureCall]
+  /// implementation with a specific [name].
+  ///
+  /// Throws an exception if a future call with the same name is already registered.
   void registerFutureCall(FutureCall futureCall, String name) {
     if (_futureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
@@ -112,7 +135,8 @@ class FutureCallManager {
     _futureCalls[name] = futureCall;
   }
 
-  /// Runs all scheduled future calls that are past their due date.
+  /// Executes all scheduled future calls that are past their due date. This
+  /// method scans the database for overdue tasks and processes them.
   Future<void> runScheduledFutureCalls() async {
     stdout.writeln('Processing future calls.');
 
@@ -121,19 +145,21 @@ class FutureCallManager {
     await _scheduler.drain();
   }
 
-  /// Starts the future call manager to monitor the database for overdue future
-  /// calls and execute them.
+  /// Starts the [FutureCallManager], enabling it to monitor the database
+  /// for overdue future calls and execute them automatically.
   void start() {
     _scanner.start();
   }
 
-  /// Stops the future call manager from monitoring overdue future calls for
-  /// execution.
+  /// Stops the [FutureCallManager], preventing it from monitoring and
+  /// executing overdue future calls.
   Future<void> stop() async {
     await _scanner.stop();
     await _scheduler.drain();
   }
 
+  /// Internal method to dispatch a list of [FutureCallEntry] objects to
+  /// the task scheduler for execution.
   void _dispatchEntries(List<FutureCallEntry> entries) {
     final callbacks = entries.map<TaskCallback?>((entry) {
       final futureCall = _futureCalls[entry.name];
