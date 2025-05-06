@@ -77,39 +77,6 @@ class FutureCallManager {
     );
   }
 
-  /// Schedules a [FutureCall] by its [name]. The call will execute at or
-  /// after the specified [time]. Optionally, a [SerializableModel] can
-  /// be passed as an argument to the call.
-  ///
-  /// - [name]: The name of the future call to schedule.
-  /// - [object]: An optional argument to pass to the future call.
-  /// - [time]: The time at which the future call should execute.
-  /// - [serverId]: The ID of the server responsible for executing the call.
-  /// - [identifier]: An optional unique identifier for the call, used for cancellation.
-  Future<void> scheduleFutureCall(
-    String name,
-    SerializableModel? object,
-    DateTime time,
-    String serverId,
-    String? identifier,
-  ) async {
-    String? serialization;
-    if (object != null) {
-      serialization = SerializationManager.encode(object.toJson());
-    }
-
-    var entry = FutureCallEntry(
-      name: name,
-      serializedObject: serialization,
-      time: time,
-      serverId: serverId,
-      identifier: identifier,
-    );
-
-    var session = _internalSession;
-    await FutureCallEntry.db.insertRow(session, entry);
-  }
-
   /// Cancels a [FutureCall] with the specified [identifier]. If no future
   /// call with the given identifier exists, this method has no effect.
   Future<void> cancelFutureCall(String identifier) async {
@@ -143,6 +110,39 @@ class FutureCallManager {
     await _scanner.scanFutureCallEntries();
 
     await _scheduler.drain();
+  }
+
+  /// Schedules a [FutureCall] by its [name]. The call will execute at or
+  /// after the specified [time]. Optionally, a [SerializableModel] can
+  /// be passed as an argument to the call.
+  ///
+  /// - [name]: The name of the future call to schedule.
+  /// - [object]: An optional argument to pass to the future call.
+  /// - [time]: The time at which the future call should execute.
+  /// - [serverId]: The ID of the server responsible for executing the call.
+  /// - [identifier]: An optional unique identifier for the call, used for cancellation.
+  Future<void> scheduleFutureCall(
+    String name,
+    SerializableModel? object,
+    DateTime time,
+    String serverId,
+    String? identifier,
+  ) async {
+    String? serialization;
+    if (object != null) {
+      serialization = SerializationManager.encode(object.toJson());
+    }
+
+    var entry = FutureCallEntry(
+      name: name,
+      serializedObject: serialization,
+      time: time,
+      serverId: serverId,
+      identifier: identifier,
+    );
+
+    var session = _internalSession;
+    await FutureCallEntry.db.insertRow(session, entry);
   }
 
   /// Starts the [FutureCallManager], enabling it to monitor the database
