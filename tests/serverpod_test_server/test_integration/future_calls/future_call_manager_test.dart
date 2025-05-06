@@ -298,76 +298,67 @@ void main() async {
     });
   });
 
-  withServerpod('Given FutureCallManager running in continuous mode',
+  withServerpod(
+      'Given FutureCallManager that has been stopped from continuous mode',
       (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late CompleterTestCall testCall;
+    var testCallName = 'after-stop-call';
 
     setUp(() async {
       futureCallManager =
           FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+              .withConfig(FutureCallConfig(
+                // Set a short scan interval for testing
+                scanInterval: Duration(milliseconds: 1),
+              ))
               .build();
+
+      var canaryCallName = 'canary-call';
+      var canaryCall = CompleterTestCall();
+      futureCallManager.registerFutureCall(
+        canaryCall,
+        canaryCallName,
+      );
 
       testCall = CompleterTestCall();
       futureCallManager.registerFutureCall(
-          testCall, 'continuous-mode-stop-call');
+        testCall,
+        testCallName,
+      );
+
+      await futureCallManager.scheduleFutureCall(
+        canaryCallName,
+        SimpleData(num: 1),
+        DateTime.now(),
+        '1',
+        'stop-test-id',
+      );
 
       futureCallManager.start();
 
-      await futureCallManager.stop();
+      // Wait for the canary call to be processed
+      await canaryCall.completer.future;
 
+      await futureCallManager.stop();
+    });
+
+    test('when scheduling a new future call then future call is not processed',
+        () async {
       await futureCallManager.scheduleFutureCall(
-        'continuous-mode-stop-call',
+        testCallName,
         SimpleData(num: 3),
         DateTime.now(),
         '1',
         'stop-test-id',
       );
-    });
 
-    group('when stop is called', () {
-      test('then future calls are no longer processed', () async {
-        await Future.delayed(Duration(milliseconds: 100));
+      // Since scan interval is set to 1, we need to wait a bit to ensure
+      // that the scheduler has had a chance to process any new calls if it
+      // were to do so.
+      await Future.delayed(Duration(milliseconds: 100));
 
-        expect(testCall.completer.isCompleted, isFalse);
-      });
-    });
-  });
-
-  withServerpod('Given FutureCallManager running in continuous mode',
-      (sessionBuilder, _) {
-    late FutureCallManager futureCallManager;
-    late CompleterTestCall testCall;
-
-    setUp(() async {
-      futureCallManager =
-          FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
-              .build();
-
-      testCall = CompleterTestCall();
-      futureCallManager.registerFutureCall(
-          testCall, 'continuous-mode-new-call-after-stop');
-
-      futureCallManager.start();
-      await futureCallManager.stop();
-    });
-
-    group('when a new future call is scheduled after stop', () {
-      setUp(() async {
-        await futureCallManager.scheduleFutureCall(
-          'continuous-mode-new-call-after-stop',
-          SimpleData(num: 5),
-          DateTime.now().subtract(Duration(seconds: 1)),
-          '1',
-          'new-call-after-stop-id',
-        );
-      });
-
-      test('then the call is not processed', () async {
-        await Future.delayed(Duration(milliseconds: 100));
-
-        expect(testCall.completer.isCompleted, isFalse);
-      });
+      expect(testCall.completer.isCompleted, isFalse);
     });
   });
 }
