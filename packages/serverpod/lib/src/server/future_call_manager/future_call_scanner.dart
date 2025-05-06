@@ -57,28 +57,6 @@ class FutureCallScanner {
         _dispatchEntries = dispatchEntries,
         _diagnosticReporting = diagnosticsService;
 
-  /// Starts the task scanner, which will scan the database for overdue future
-  /// calls at the given interval.
-  void start() {
-    if (_timer != null) {
-      return;
-    }
-
-    _timer = Timer.periodic(
-      _scanInterval,
-      (_) => scanFutureCallEntries(),
-    );
-  }
-
-  /// Stops the task scanner.
-  Future<void> stop() async {
-    _isStopping = true;
-
-    _timer?.cancel();
-
-    await _scanCompleter.future;
-  }
-
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {
     if (_isStopping || !_scanCompleter.isCompleted || _shouldSkipScan()) {
@@ -117,5 +95,27 @@ class FutureCallScanner {
     }
 
     _scanCompleter.complete();
+  }
+
+  /// Starts the task scanner, which will scan the database for overdue future
+  /// calls at the given interval.
+  void start() {
+    if (_timer != null) {
+      return;
+    }
+
+    _timer = Timer.periodic(
+      _scanInterval,
+      (_) => scanFutureCallEntries(),
+    );
+  }
+
+  /// Stops the task scanner.
+  Future<void> stop() async {
+    _isStopping = true;
+
+    _timer?.cancel();
+
+    await _scanCompleter.future;
   }
 }
