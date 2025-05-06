@@ -42,7 +42,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when scheduling a FutureCall', () {
@@ -90,7 +89,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when cancelling the scheduled FutureCall', () {
@@ -132,7 +130,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when cancelling a non-scheduled FutureCall', () {
@@ -179,7 +176,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when executing a scheduled but unregistered FutureCall', () {
@@ -225,7 +221,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when running scheduled FutureCalls', () {
@@ -274,7 +269,6 @@ void main() async {
 
     tearDown(() async {
       await futureCallManager.stop();
-      await session.close();
     });
 
     group('when start is called', () {
