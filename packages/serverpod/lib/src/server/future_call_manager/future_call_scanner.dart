@@ -81,7 +81,7 @@ class FutureCallScanner {
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {
-    if (_isStopping || _shouldSkipScan() || !_scanCompleter.isCompleted) {
+    if (_isStopping || !_scanCompleter.isCompleted || _shouldSkipScan()) {
       return;
     }
 
