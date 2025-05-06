@@ -1,26 +1,60 @@
 import 'dart:async';
 import 'dart:collection';
 
-/// A callback that returns a [Future],
-/// used for scheduled tasks in [ServerpodTaskScheduler].
+/// A callback function that performs an asynchronous task.
+///
+/// This is the type of function that can be scheduled and executed by
+/// [ServerpodTaskScheduler].
 typedef TaskCallback = Future<void> Function();
 
-/// A class responsible for scheduling and executing task callbacks.
+/// A task scheduler that manages the execution of asynchronous tasks with
+/// optional concurrency limits.
+///
+/// The [ServerpodTaskScheduler] allows you to queue multiple asynchronous
+/// tasks (defined as [TaskCallback]) and ensures they are executed in the
+/// order they are added. If a concurrency limit is specified, it ensures
+/// that no more than the specified number of tasks run concurrently.
 class ServerpodTaskScheduler {
+  /// The maximum number of tasks that can run concurrently.
+  ///
+  /// If `null`, there is no concurrency limit, and tasks will run as soon
+  /// as they are added to the queue.
   final int? _concurrencyLimit;
 
+  /// A queue that holds the tasks to be executed.
+  ///
+  /// Tasks are added to this queue and processed in the order they are added.
   final _queue = Queue<TaskCallback>();
 
+  /// The number of tasks currently running.
+  ///
+  /// This is used to track the number of tasks being executed concurrently
+  /// and enforce the concurrency limit.
   var _runningTaskCallbacks = 0;
 
+  /// A completer that is used to signal when the scheduler has stopped
+  /// processing tasks.
+  ///
+  /// This is set when the [stop] method is called and completed when all
+  /// tasks in the queue have finished processing.
   Completer<void>? _stoppingCompleter;
 
-  /// Creates a new [ServerpodTaskScheduler].
+  /// Creates a new instance of [ServerpodTaskScheduler].
+  ///
+  /// The [concurrencyLimit] parameter specifies the maximum number of tasks
+  /// that can run concurrently. If `null`, there is no concurrency limit.
   ServerpodTaskScheduler({
     required int? concurrencyLimit,
   }) : _concurrencyLimit = concurrencyLimit;
 
-  /// Makes sure any running task callbacks and queued task callbacks are processed.
+  /// Stops the scheduler and ensures all queued and running tasks are
+  /// completed before returning.
+  ///
+  /// The method returns a [Future] that completes when all tasks in the queue
+  /// have finished processing.
+  ///
+  /// Once this method is called, no new tasks can be added to the scheduler
+  /// until the returned [Future] completes.
   Future<void> stop() async {
     final stoppingCompleter = Completer<void>();
 
@@ -31,8 +65,8 @@ class ServerpodTaskScheduler {
     return stoppingCompleter.future;
   }
 
-  /// Returns `true` if the concurrent limit for task callbacks is reached.
-  /// Returns `false` otherwise.
+  /// This method checks whether the number of currently running tasks has
+  /// reached the specified concurrency limit.
   bool isConcurrentLimitReached() {
     final concurrencyLimit = _concurrencyLimit;
 
@@ -46,6 +80,12 @@ class ServerpodTaskScheduler {
   }
 
   /// Adds a list of [TaskCallback] to the queue.
+  ///
+  /// The tasks will be executed in the order they are added, subject to the
+  /// concurrency limit.
+  ///
+  /// If this method is called when the [stop] method has been called, this
+  /// method will throw a [StateError].
   Future<void> addTaskCallbacks(
     List<TaskCallback> taskCallbacks,
   ) async {
@@ -80,10 +120,9 @@ class ServerpodTaskScheduler {
       );
     }
 
-    // If the queue is empty and there are no running task callbacks,
-    // complete the stopping completer.
+    // If the stopping completer is not null, and there are no running tasks
+    // and the queue is empty, complete the stopping completer.
     final stoppingCompleter = _stoppingCompleter;
-
     if (stoppingCompleter != null &&
         _queue.isEmpty &&
         _runningTaskCallbacks <= 0) {
