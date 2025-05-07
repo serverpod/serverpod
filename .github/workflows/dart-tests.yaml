@@ -261,11 +261,11 @@ jobs:
           ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
         working-directory: tests/docker/tests_integration
       - name: Run integration tests
-        run: dart test -t integration
+        run: dart test -t integration --concurrency=1
         working-directory: ${{ matrix.module }}
       - name: Stop containers
         if: always()
-        run: docker compose down
+        run: docker compose down -v
         working-directory: ${{ matrix.module }}
 
   integration_test_server:
