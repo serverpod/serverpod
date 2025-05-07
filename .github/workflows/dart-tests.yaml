@@ -246,7 +246,10 @@ jobs:
     strategy:
       matrix:
         flutter-version: ['3.19.0', '3.29.0']
-        module: ['tests/serverpod_test_module/serverpod_test_module_server']
+        module: [
+          'tests/serverpod_test_module/serverpod_test_module_server',
+          'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server'
+        ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
