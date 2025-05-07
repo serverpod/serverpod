@@ -3,16 +3,16 @@ import 'dart:convert';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_session_server/src/business/user_session_secrets.dart';
+import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// Management functions for [UserSession]s.
+/// Management functions for [AuthSession]s.
 ///
-/// This should be used instead of [UserSession.db].
-abstract final class UserSessions {
+/// This should be used instead of [AuthSession.db].
+abstract final class AuthSessions {
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
   /// Only looks at keys crated with this package (by checking the prefix),
@@ -33,23 +33,23 @@ abstract final class UserSessions {
     if (parts.length != 3) {
       throw ArgumentError('Unexpected key format', 'key');
     }
-    final userSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
+    final authSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
     final secret = parts[2];
 
-    final userSession = await UserSession.db.findById(
+    final authSession = await AuthSession.db.findById(
       session,
-      userSessionId,
+      authSessionId,
     );
 
-    if (userSession == null) {
-      throw Exception('Did not find user session with ID "$userSessionId"');
+    if (authSession == null) {
+      throw Exception('Did not find auth session with ID "$authSessionId"');
     }
 
     final maximumSessionLifetime =
-        UserSessionConfig.current.maximumSessionLifetime;
+        AuthSessionConfig.current.maximumSessionLifetime;
 
     if (maximumSessionLifetime != null &&
-        userSession.created
+        authSession.created
             .add(maximumSessionLifetime)
             .isBefore(DateTime.now())) {
       throw Exception('Session has expired');
@@ -57,10 +57,10 @@ abstract final class UserSessions {
 
     final sessionKeyHash = hashSessionKey(
       secret,
-      pepper: UserSessionSecrets.sessionKeyHashPepper,
+      pepper: AuthSessionSecrets.sessionKeyHashPepper,
     );
 
-    if (sessionKeyHash != userSession.sessionKeyHash) {
+    if (sessionKeyHash != authSession.sessionKeyHash) {
       throw Exception(
         'Provided `secret` did not result in correct session key hash.',
       );
@@ -68,14 +68,14 @@ abstract final class UserSessions {
 
     // Setup scopes
     final scopes = <Scope>{};
-    for (final scopeName in userSession.scopeNames) {
+    for (final scopeName in authSession.scopeNames) {
       scopes.add(Scope(scopeName));
     }
 
     return AuthenticationInfo(
-      userSession.authUserId,
+      authSession.authUserId,
       scopes,
-      authId: userSessionId.toString(),
+      authId: authSessionId.toString(),
     );
   }
 
@@ -99,7 +99,7 @@ abstract final class UserSessions {
     final secret = generateRandomString();
     final hash = hashSessionKey(
       secret,
-      pepper: UserSessionSecrets.sessionKeyHashPepper,
+      pepper: AuthSessionSecrets.sessionKeyHashPepper,
     );
 
     final scopeNames = <String>{
@@ -107,9 +107,9 @@ abstract final class UserSessions {
         if (scope.name != null) scope.name!,
     };
 
-    final userSession = await UserSession.db.insertRow(
+    final authSession = await AuthSession.db.insertRow(
       session,
-      UserSession(
+      AuthSession(
         authUserId: userId,
         scopeNames: scopeNames,
         sessionKeyHash: hash,
@@ -117,7 +117,7 @@ abstract final class UserSessions {
       ),
     );
 
-    return _buildSessionKey(secret: secret, userSessionId: userSession.id!);
+    return _buildSessionKey(secret: secret, authSessionId: authSession.id!);
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.
@@ -139,7 +139,7 @@ abstract final class UserSessions {
     if (userId == null) return;
 
     // Delete all sessions for the user
-    final auths = await UserSession.db.deleteWhere(
+    final auths = await AuthSession.db.deleteWhere(
       session,
       where: (final row) => row.authUserId.equals(userId),
     );
@@ -168,29 +168,30 @@ abstract final class UserSessions {
   /// If the session does not exist, this method will have no effect.
   static Future<void> destroySession(
     final Session session, {
-    required final UuidValue userSessionId,
+    required final UuidValue authSessionId,
   }) async {
     // Delete the user session for the current device
-    final userSession = (await UserSession.db.deleteWhere(
+    final authSession = (await AuthSession.db.deleteWhere(
       session,
-      where: (final row) => row.id.equals(userSessionId),
+      where: (final row) => row.id.equals(authSessionId),
     ))
         .firstOrNull;
-    if (userSession == null) {
+
+    if (authSession == null) {
       return;
     }
 
     // Notify the client about the revoked authentication for the specific
     // user session
     await session.messages.authenticationRevoked(
-      userSession.authUserId,
-      RevokedAuthenticationAuthId(authId: userSessionId.toString()),
+      authSession.authUserId,
+      RevokedAuthenticationAuthId(authId: authSessionId.toString()),
     );
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
     final authInfo = await session.authenticated;
-    if (userSession.authUserId == authInfo?.userUuid) {
+    if (authSession.authUserId == authInfo?.userUuid) {
       session.updateAuthenticated(null);
     }
   }
@@ -200,9 +201,9 @@ abstract final class UserSessions {
   static const _sessionKeyPrefix = 'sas';
 
   static String _buildSessionKey({
-    required final UuidValue userSessionId,
+    required final UuidValue authSessionId,
     required final String secret,
   }) {
-    return '$_sessionKeyPrefix:${base64Encode(userSessionId.toBytes())}:$secret';
+    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:$secret';
   }
 }

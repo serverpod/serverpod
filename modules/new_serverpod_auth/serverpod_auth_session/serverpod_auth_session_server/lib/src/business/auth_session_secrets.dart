@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
-/// Secrets used for user sessions.
-abstract class UserSessionSecrets {
+/// Secrets used for sessions.
+abstract class AuthSessionSecrets {
   /// The configuration key for the session key pepper entry.
   static String sessionKeyHashPepperConfigurationKey =
       'serverpod_auth_session.sessionKeyHashPepper';
@@ -16,7 +16,7 @@ abstract class UserSessionSecrets {
 
     if (pepper == null || pepper.isEmpty) {
       throw Exception(
-        'Password "${UserSessionSecrets.sessionKeyHashPepperConfigurationKey}" is not set',
+        'Password "${AuthSessionSecrets.sessionKeyHashPepperConfigurationKey}" is not set',
       );
     }
 

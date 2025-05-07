@@ -1,6 +1,6 @@
-class: UserSession
+class: AuthSession
 serverOnly: true
-table: serverpod_auth_session_user_session
+table: serverpod_auth_session
 fields:
   id: UuidValue?, defaultPersist=random
 

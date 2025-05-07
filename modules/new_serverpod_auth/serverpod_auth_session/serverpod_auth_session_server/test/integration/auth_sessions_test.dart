@@ -8,7 +8,7 @@ import '../../test/integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given the `UserSessions` implementation, ',
+    'Given the `AuthSessions` implementation, ',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue userUuid;
@@ -25,14 +25,14 @@ void main() {
       test(
         'when creating a session for a user, then the authentication handler resolves the returned secret correctly back to the user ID.',
         () async {
-          final sessionSecret = await UserSessions.createSession(
+          final sessionSecret = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
             scopes: const {},
           );
 
-          final authInfo = await UserSessions.authenticationHandler(
+          final authInfo = await AuthSessions.authenticationHandler(
             session,
             sessionSecret,
           );
@@ -44,14 +44,14 @@ void main() {
       test(
         'when creating a session for a user with custom scopes, then the authentication handler returns those scopes.',
         () async {
-          final sessionSecret = await UserSessions.createSession(
+          final sessionSecret = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
             scopes: {Scope.admin},
           );
 
-          final authInfo = await UserSessions.authenticationHandler(
+          final authInfo = await AuthSessions.authenticationHandler(
             session,
             sessionSecret,
           );
@@ -63,14 +63,14 @@ void main() {
       test(
         'when revoking a specific session for a user, then it is revoked but other sessions are unaffected.',
         () async {
-          final sessionSecretA = await UserSessions.createSession(
+          final sessionSecretA = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
             scopes: const {},
           );
 
-          final sessionSecretB = await UserSessions.createSession(
+          final sessionSecretB = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
@@ -80,26 +80,26 @@ void main() {
           // Revoke session A
           {
             final authInfoABeforeRevocation =
-                await UserSessions.authenticationHandler(
+                await AuthSessions.authenticationHandler(
               session,
               sessionSecretA,
             );
 
-            await UserSessions.destroySession(
+            await AuthSessions.destroySession(
               session,
-              userSessionId: authInfoABeforeRevocation!.userSessionUuid,
+              authSessionId: authInfoABeforeRevocation!.authSessionId,
             );
           }
 
           await expectLater(
-            () => UserSessions.authenticationHandler(
+            () => AuthSessions.authenticationHandler(
               session,
               sessionSecretA,
             ),
             throwsA(isA<Exception>()),
           );
 
-          final authInfoB = await UserSessions.authenticationHandler(
+          final authInfoB = await AuthSessions.authenticationHandler(
             session,
             sessionSecretB,
           );
@@ -111,7 +111,7 @@ void main() {
       test(
         'when revoking a session for a user, then a message for it is broadcast.',
         () async {
-          final sessionSecretA = await UserSessions.createSession(
+          final sessionSecretA = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
@@ -119,7 +119,7 @@ void main() {
           );
 
           final authInfoABeforeRevocation =
-              await UserSessions.authenticationHandler(
+              await AuthSessions.authenticationHandler(
             session,
             sessionSecretA,
           );
@@ -134,9 +134,9 @@ void main() {
             revocationMessages.add,
           );
 
-          await UserSessions.destroySession(
+          await AuthSessions.destroySession(
             session,
-            userSessionId: authInfoABeforeRevocation.userSessionUuid,
+            authSessionId: authInfoABeforeRevocation.authSessionId,
           );
 
           session.messages.removeListener(
@@ -157,14 +157,14 @@ void main() {
       test(
         'when revoking all sessions for a user, then all their sessions are revoked.',
         () async {
-          final sessionSecretA = await UserSessions.createSession(
+          final sessionSecretA = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
             scopes: const {},
           );
 
-          final sessionSecretB = await UserSessions.createSession(
+          final sessionSecretB = await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
@@ -172,20 +172,20 @@ void main() {
           );
 
           expect(
-            await UserSessions.authenticationHandler(
+            await AuthSessions.authenticationHandler(
               session,
               sessionSecretA,
             ),
             isNotNull,
           );
 
-          await UserSessions.destroyAllSessions(
+          await AuthSessions.destroyAllSessions(
             session,
             userId: userUuid,
           );
 
           await expectLater(
-            () => UserSessions.authenticationHandler(
+            () => AuthSessions.authenticationHandler(
               session,
               sessionSecretA,
             ),
@@ -193,7 +193,7 @@ void main() {
           );
 
           await expectLater(
-            () => UserSessions.authenticationHandler(
+            () => AuthSessions.authenticationHandler(
               session,
               sessionSecretB,
             ),
@@ -206,7 +206,7 @@ void main() {
         'when revoking all session for a user, then a message for it is broadcast.',
         () async {
           // ignore: unused_result
-          await UserSessions.createSession(
+          await AuthSessions.createSession(
             session,
             userId: userUuid,
             method: 'test',
@@ -222,7 +222,7 @@ void main() {
             revocationMessages.add,
           );
 
-          await UserSessions.destroyAllSessions(
+          await AuthSessions.destroyAllSessions(
             session,
             userId: userUuid,
           );
