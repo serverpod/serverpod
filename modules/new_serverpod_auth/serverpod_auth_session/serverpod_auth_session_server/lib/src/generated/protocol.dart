@@ -13,8 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i3;
-import 'user_session.dart' as _i4;
-export 'user_session.dart';
+import 'auth_session.dart' as _i4;
+export 'auth_session.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -25,8 +25,8 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     _i2.TableDefinition(
-      name: 'serverpod_auth_session_user_session',
-      dartName: 'UserSession',
+      name: 'serverpod_auth_session',
+      dartName: 'AuthSession',
       schema: 'public',
       module: 'serverpod_auth_session',
       columns: [
@@ -71,7 +71,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
-          constraintName: 'serverpod_auth_session_user_session_fk_0',
+          constraintName: 'serverpod_auth_session_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_user',
           referenceTableSchema: 'public',
@@ -83,7 +83,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_session_user_session_pkey',
+          indexName: 'serverpod_auth_session_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -107,11 +107,11 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i4.UserSession) {
-      return _i4.UserSession.fromJson(data) as T;
+    if (t == _i4.AuthSession) {
+      return _i4.AuthSession.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.UserSession?>()) {
-      return (data != null ? _i4.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.AuthSession?>()) {
+      return (data != null ? _i4.AuthSession.fromJson(data) : null) as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -129,8 +129,8 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.UserSession) {
-      return 'UserSession';
+    if (data is _i4.AuthSession) {
+      return 'AuthSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -149,8 +149,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'UserSession') {
-      return deserialize<_i4.UserSession>(data['data']);
+    if (dataClassName == 'AuthSession') {
+      return deserialize<_i4.AuthSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -178,8 +178,8 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i4.UserSession:
-        return _i4.UserSession.t;
+      case _i4.AuthSession:
+        return _i4.AuthSession.t;
     }
     return null;
   }

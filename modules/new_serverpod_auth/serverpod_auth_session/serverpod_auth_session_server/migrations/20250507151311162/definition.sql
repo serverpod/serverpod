@@ -1,9 +1,9 @@
 BEGIN;
 
 --
--- Class UserSession as table serverpod_auth_session_user_session
+-- Class AuthSession as table serverpod_auth_session
 --
-CREATE TABLE "serverpod_auth_session_user_session" (
+CREATE TABLE "serverpod_auth_session" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "authUserId" uuid NOT NULL,
     "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -229,10 +229,10 @@ CREATE TABLE "serverpod_auth_user" (
 );
 
 --
--- Foreign relations for "serverpod_auth_session_user_session" table
+-- Foreign relations for "serverpod_auth_session" table
 --
-ALTER TABLE ONLY "serverpod_auth_session_user_session"
-    ADD CONSTRAINT "serverpod_auth_session_user_session_fk_0"
+ALTER TABLE ONLY "serverpod_auth_session"
+    ADD CONSTRAINT "serverpod_auth_session_fk_0"
     FOREIGN KEY("authUserId")
     REFERENCES "serverpod_auth_user"("id")
     ON DELETE CASCADE
@@ -273,9 +273,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_session
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_session', '20250507072228374', now())
+    VALUES ('serverpod_auth_session', '20250507151311162', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250507072228374', "timestamp" = now();
+    DO UPDATE SET "version" = '20250507151311162', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

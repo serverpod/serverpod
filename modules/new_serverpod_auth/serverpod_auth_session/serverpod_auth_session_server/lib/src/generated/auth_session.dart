@@ -15,9 +15,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i2;
 
-abstract class UserSession
+abstract class AuthSession
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  UserSession._({
+  AuthSession._({
     this.id,
     required this.authUserId,
     this.authUser,
@@ -27,7 +27,7 @@ abstract class UserSession
     required this.method,
   }) : created = created ?? DateTime.now();
 
-  factory UserSession({
+  factory AuthSession({
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
@@ -35,10 +35,10 @@ abstract class UserSession
     required Set<String> scopeNames,
     required String sessionKeyHash,
     required String method,
-  }) = _UserSessionImpl;
+  }) = _AuthSessionImpl;
 
-  factory UserSession.fromJson(Map<String, dynamic> jsonSerialization) {
-    return UserSession(
+  factory AuthSession.fromJson(Map<String, dynamic> jsonSerialization) {
+    return AuthSession(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
@@ -57,9 +57,9 @@ abstract class UserSession
     );
   }
 
-  static final t = UserSessionTable();
+  static final t = AuthSessionTable();
 
-  static const db = UserSessionRepository._();
+  static const db = AuthSessionRepository._();
 
   @override
   _i1.UuidValue? id;
@@ -88,10 +88,10 @@ abstract class UserSession
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
-  /// Returns a shallow copy of this [UserSession]
+  /// Returns a shallow copy of this [AuthSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserSession copyWith({
+  AuthSession copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
@@ -118,26 +118,26 @@ abstract class UserSession
     return {if (id != null) 'id': id?.toJson()};
   }
 
-  static UserSessionInclude include({_i2.AuthUserInclude? authUser}) {
-    return UserSessionInclude._(authUser: authUser);
+  static AuthSessionInclude include({_i2.AuthUserInclude? authUser}) {
+    return AuthSessionInclude._(authUser: authUser);
   }
 
-  static UserSessionIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserSessionTable>? where,
+  static AuthSessionIncludeList includeList({
+    _i1.WhereExpressionBuilder<AuthSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserSessionTable>? orderBy,
+    _i1.OrderByBuilder<AuthSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserSessionTable>? orderByList,
-    UserSessionInclude? include,
+    _i1.OrderByListBuilder<AuthSessionTable>? orderByList,
+    AuthSessionInclude? include,
   }) {
-    return UserSessionIncludeList._(
+    return AuthSessionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(UserSession.t),
+      orderBy: orderBy?.call(AuthSession.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(UserSession.t),
+      orderByList: orderByList?.call(AuthSession.t),
       include: include,
     );
   }
@@ -150,8 +150,8 @@ abstract class UserSession
 
 class _Undefined {}
 
-class _UserSessionImpl extends UserSession {
-  _UserSessionImpl({
+class _AuthSessionImpl extends AuthSession {
+  _AuthSessionImpl({
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
@@ -169,11 +169,11 @@ class _UserSessionImpl extends UserSession {
           method: method,
         );
 
-  /// Returns a shallow copy of this [UserSession]
+  /// Returns a shallow copy of this [AuthSession]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserSession copyWith({
+  AuthSession copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
@@ -182,7 +182,7 @@ class _UserSessionImpl extends UserSession {
     String? sessionKeyHash,
     String? method,
   }) {
-    return UserSession(
+    return AuthSession(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
       authUser:
@@ -195,9 +195,9 @@ class _UserSessionImpl extends UserSession {
   }
 }
 
-class UserSessionTable extends _i1.Table<_i1.UuidValue?> {
-  UserSessionTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_session_user_session') {
+class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
+  AuthSessionTable({super.tableRelation})
+      : super(tableName: 'serverpod_auth_session') {
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -246,7 +246,7 @@ class UserSessionTable extends _i1.Table<_i1.UuidValue?> {
     if (_authUser != null) return _authUser!;
     _authUser = _i1.createRelationTable(
       relationFieldName: 'authUser',
-      field: UserSession.t.authUserId,
+      field: AuthSession.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
@@ -274,8 +274,8 @@ class UserSessionTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class UserSessionInclude extends _i1.IncludeObject {
-  UserSessionInclude._({_i2.AuthUserInclude? authUser}) {
+class AuthSessionInclude extends _i1.IncludeObject {
+  AuthSessionInclude._({_i2.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
@@ -285,12 +285,12 @@ class UserSessionInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserSession.t;
+  _i1.Table<_i1.UuidValue?> get table => AuthSession.t;
 }
 
-class UserSessionIncludeList extends _i1.IncludeList {
-  UserSessionIncludeList._({
-    _i1.WhereExpressionBuilder<UserSessionTable>? where,
+class AuthSessionIncludeList extends _i1.IncludeList {
+  AuthSessionIncludeList._({
+    _i1.WhereExpressionBuilder<AuthSessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -298,22 +298,22 @@ class UserSessionIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(UserSession.t);
+    super.where = where?.call(AuthSession.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserSession.t;
+  _i1.Table<_i1.UuidValue?> get table => AuthSession.t;
 }
 
-class UserSessionRepository {
-  const UserSessionRepository._();
+class AuthSessionRepository {
+  const AuthSessionRepository._();
 
-  final attachRow = const UserSessionAttachRowRepository._();
+  final attachRow = const AuthSessionAttachRowRepository._();
 
-  /// Returns a list of [UserSession]s matching the given query parameters.
+  /// Returns a list of [AuthSession]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -335,21 +335,21 @@ class UserSessionRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<UserSession>> find(
+  Future<List<AuthSession>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserSessionTable>? where,
+    _i1.WhereExpressionBuilder<AuthSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserSessionTable>? orderBy,
+    _i1.OrderByBuilder<AuthSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserSessionTable>? orderByList,
+    _i1.OrderByListBuilder<AuthSessionTable>? orderByList,
     _i1.Transaction? transaction,
-    UserSessionInclude? include,
+    AuthSessionInclude? include,
   }) async {
-    return session.db.find<UserSession>(
-      where: where?.call(UserSession.t),
-      orderBy: orderBy?.call(UserSession.t),
-      orderByList: orderByList?.call(UserSession.t),
+    return session.db.find<AuthSession>(
+      where: where?.call(AuthSession.t),
+      orderBy: orderBy?.call(AuthSession.t),
+      orderByList: orderByList?.call(AuthSession.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -358,7 +358,7 @@ class UserSessionRepository {
     );
   }
 
-  /// Returns the first matching [UserSession] matching the given query parameters.
+  /// Returns the first matching [AuthSession] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -375,20 +375,20 @@ class UserSessionRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<UserSession?> findFirstRow(
+  Future<AuthSession?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserSessionTable>? where,
+    _i1.WhereExpressionBuilder<AuthSessionTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserSessionTable>? orderBy,
+    _i1.OrderByBuilder<AuthSessionTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserSessionTable>? orderByList,
+    _i1.OrderByListBuilder<AuthSessionTable>? orderByList,
     _i1.Transaction? transaction,
-    UserSessionInclude? include,
+    AuthSessionInclude? include,
   }) async {
-    return session.db.findFirstRow<UserSession>(
-      where: where?.call(UserSession.t),
-      orderBy: orderBy?.call(UserSession.t),
-      orderByList: orderByList?.call(UserSession.t),
+    return session.db.findFirstRow<AuthSession>(
+      where: where?.call(AuthSession.t),
+      orderBy: orderBy?.call(AuthSession.t),
+      orderByList: orderByList?.call(AuthSession.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -396,119 +396,119 @@ class UserSessionRepository {
     );
   }
 
-  /// Finds a single [UserSession] by its [id] or null if no such row exists.
-  Future<UserSession?> findById(
+  /// Finds a single [AuthSession] by its [id] or null if no such row exists.
+  Future<AuthSession?> findById(
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
-    UserSessionInclude? include,
+    AuthSessionInclude? include,
   }) async {
-    return session.db.findById<UserSession>(
+    return session.db.findById<AuthSession>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
-  /// Inserts all [UserSession]s in the list and returns the inserted rows.
+  /// Inserts all [AuthSession]s in the list and returns the inserted rows.
   ///
-  /// The returned [UserSession]s will have their `id` fields set.
+  /// The returned [AuthSession]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<UserSession>> insert(
+  Future<List<AuthSession>> insert(
     _i1.Session session,
-    List<UserSession> rows, {
+    List<AuthSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserSession>(
+    return session.db.insert<AuthSession>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [UserSession] and returns the inserted row.
+  /// Inserts a single [AuthSession] and returns the inserted row.
   ///
-  /// The returned [UserSession] will have its `id` field set.
-  Future<UserSession> insertRow(
+  /// The returned [AuthSession] will have its `id` field set.
+  Future<AuthSession> insertRow(
     _i1.Session session,
-    UserSession row, {
+    AuthSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserSession>(
+    return session.db.insertRow<AuthSession>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserSession]s in the list and returns the updated rows. If
+  /// Updates all [AuthSession]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<UserSession>> update(
+  Future<List<AuthSession>> update(
     _i1.Session session,
-    List<UserSession> rows, {
-    _i1.ColumnSelections<UserSessionTable>? columns,
+    List<AuthSession> rows, {
+    _i1.ColumnSelections<AuthSessionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserSession>(
+    return session.db.update<AuthSession>(
       rows,
-      columns: columns?.call(UserSession.t),
+      columns: columns?.call(AuthSession.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [UserSession]. The row needs to have its id set.
+  /// Updates a single [AuthSession]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<UserSession> updateRow(
+  Future<AuthSession> updateRow(
     _i1.Session session,
-    UserSession row, {
-    _i1.ColumnSelections<UserSessionTable>? columns,
+    AuthSession row, {
+    _i1.ColumnSelections<AuthSessionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserSession>(
+    return session.db.updateRow<AuthSession>(
       row,
-      columns: columns?.call(UserSession.t),
+      columns: columns?.call(AuthSession.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [UserSession]s in the list and returns the deleted rows.
+  /// Deletes all [AuthSession]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<UserSession>> delete(
+  Future<List<AuthSession>> delete(
     _i1.Session session,
-    List<UserSession> rows, {
+    List<AuthSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserSession>(
+    return session.db.delete<AuthSession>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [UserSession].
-  Future<UserSession> deleteRow(
+  /// Deletes a single [AuthSession].
+  Future<AuthSession> deleteRow(
     _i1.Session session,
-    UserSession row, {
+    AuthSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserSession>(
+    return session.db.deleteRow<AuthSession>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<UserSession>> deleteWhere(
+  Future<List<AuthSession>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserSessionTable> where,
+    required _i1.WhereExpressionBuilder<AuthSessionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserSession>(
-      where: where(UserSession.t),
+    return session.db.deleteWhere<AuthSession>(
+      where: where(AuthSession.t),
       transaction: transaction,
     );
   }
@@ -517,40 +517,40 @@ class UserSessionRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserSessionTable>? where,
+    _i1.WhereExpressionBuilder<AuthSessionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserSession>(
-      where: where?.call(UserSession.t),
+    return session.db.count<AuthSession>(
+      where: where?.call(AuthSession.t),
       limit: limit,
       transaction: transaction,
     );
   }
 }
 
-class UserSessionAttachRowRepository {
-  const UserSessionAttachRowRepository._();
+class AuthSessionAttachRowRepository {
+  const AuthSessionAttachRowRepository._();
 
-  /// Creates a relation between the given [UserSession] and [AuthUser]
-  /// by setting the [UserSession]'s foreign key `authUserId` to refer to the [AuthUser].
+  /// Creates a relation between the given [AuthSession] and [AuthUser]
+  /// by setting the [AuthSession]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
     _i1.Session session,
-    UserSession userSession,
+    AuthSession authSession,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,
   }) async {
-    if (userSession.id == null) {
-      throw ArgumentError.notNull('userSession.id');
+    if (authSession.id == null) {
+      throw ArgumentError.notNull('authSession.id');
     }
     if (authUser.id == null) {
       throw ArgumentError.notNull('authUser.id');
     }
 
-    var $userSession = userSession.copyWith(authUserId: authUser.id);
-    await session.db.updateRow<UserSession>(
-      $userSession,
-      columns: [UserSession.t.authUserId],
+    var $authSession = authSession.copyWith(authUserId: authUser.id);
+    await session.db.updateRow<AuthSession>(
+      $authSession,
+      columns: [AuthSession.t.authUserId],
       transaction: transaction,
     );
   }

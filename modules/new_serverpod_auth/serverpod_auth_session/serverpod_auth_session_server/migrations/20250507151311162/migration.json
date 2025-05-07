@@ -3,8 +3,8 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "serverpod_auth_session_user_session",
-        "dartName": "UserSession",
+        "name": "serverpod_auth_session",
+        "dartName": "AuthSession",
         "module": "serverpod_auth_session",
         "schema": "public",
         "columns": [
@@ -49,7 +49,7 @@
         ],
         "foreignKeys": [
           {
-            "constraintName": "serverpod_auth_session_user_session_fk_0",
+            "constraintName": "serverpod_auth_session_fk_0",
             "columns": [
               "authUserId"
             ],
@@ -64,7 +64,7 @@
         ],
         "indexes": [
           {
-            "indexName": "serverpod_auth_session_user_session_pkey",
+            "indexName": "serverpod_auth_session_pkey",
             "elements": [
               {
                 "type": 0,
