@@ -533,8 +533,18 @@ class Serverpod {
     if (Features.enableMigrations) {
       int? maxAttempts =
           commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+      try {
+        await _connectToDatabase(
+          session: internalSession,
+          maxAttempts: maxAttempts,
+        );
+      } catch (e, stackTrace) {
+        const message = 'Failed to connect to the database.';
+        _reportException(e, stackTrace, message: message);
+        throw ExitException(1, '$message: $e');
+      }
+
       await _applyMigrations(
-        maxDatabaseConnectionAttempts: maxAttempts,
         applyRepairMigration: commandLineArgs.applyRepairMigration,
         applyMigrations: commandLineArgs.applyMigrations,
       );
@@ -638,21 +648,9 @@ class Serverpod {
   }
 
   Future<void> _applyMigrations({
-    required int? maxDatabaseConnectionAttempts,
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    try {
-      await _connectToDatabase(
-        session: internalSession,
-        maxAttempts: maxDatabaseConnectionAttempts,
-      );
-    } catch (e, stackTrace) {
-      const message = 'Failed to connect to the database.';
-      _reportException(e, stackTrace, message: message);
-      throw ExitException(1, '$message: $e');
-    }
-
     try {
       logVerbose('Initializing migration manager.');
       _migrationManager = MigrationManager();
