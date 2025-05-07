@@ -548,6 +548,8 @@ class Serverpod {
         applyRepairMigration: commandLineArgs.applyRepairMigration,
         applyMigrations: commandLineArgs.applyMigrations,
       );
+
+      await _loadRuntimeSettings();
     } else if (commandLineArgs.applyMigrations ||
         commandLineArgs.applyRepairMigration) {
       stderr.writeln(
@@ -694,8 +696,6 @@ class Serverpod {
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
-
-    await _loadRuntimeSettings();
   }
 
   Future<void> _loadRuntimeSettings() async {
