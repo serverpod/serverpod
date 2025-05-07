@@ -690,6 +690,10 @@ class Serverpod {
       _reportException(e, stackTrace, message: message);
     }
 
+    await _loadRuntimeSettings();
+  }
+
+  Future<void> _loadRuntimeSettings() async {
     logVerbose('Loading runtime settings.');
     try {
       _runtimeSettings =
