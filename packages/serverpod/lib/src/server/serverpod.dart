@@ -531,7 +531,13 @@ class Serverpod {
     }
 
     if (Features.enableMigrations) {
-      await _applyMigrations();
+      int? maxAttempts =
+          commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+      await _applyMigrations(
+        maxDatabaseConnectionAttempts: maxAttempts,
+        applyRepairMigration: commandLineArgs.applyRepairMigration,
+        applyMigrations: commandLineArgs.applyMigrations,
+      );
     } else if (commandLineArgs.applyMigrations ||
         commandLineArgs.applyRepairMigration) {
       stderr.writeln(
@@ -631,14 +637,15 @@ class Serverpod {
     }
   }
 
-  Future<void> _applyMigrations() async {
-    int? maxAttempts =
-        commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
-
+  Future<void> _applyMigrations({
+    required int? maxDatabaseConnectionAttempts,
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) async {
     try {
       await _connectToDatabase(
         session: internalSession,
-        maxAttempts: maxAttempts,
+        maxAttempts: maxDatabaseConnectionAttempts,
       );
     } catch (e, stackTrace) {
       const message = 'Failed to connect to the database.';
@@ -651,7 +658,7 @@ class Serverpod {
       _migrationManager = MigrationManager();
       await migrationManager.initialize(internalSession);
 
-      if (commandLineArgs.applyRepairMigration) {
+      if (applyRepairMigration) {
         logVerbose('Applying database repair migration');
         var appliedRepairMigration =
             await migrationManager.applyRepairMigration(internalSession);
@@ -664,7 +671,7 @@ class Serverpod {
         await migrationManager.initialize(internalSession);
       }
 
-      if (commandLineArgs.applyMigrations) {
+      if (applyMigrations) {
         logVerbose('Applying database migrations.');
         var migrationsApplied =
             await migrationManager.migrateToLatest(internalSession);
