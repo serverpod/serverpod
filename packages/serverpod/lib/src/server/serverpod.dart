@@ -142,20 +142,6 @@ class Serverpod {
     return server;
   }
 
-  MigrationManager? _migrationManager;
-
-  /// The migration manager used by this [Serverpod].
-  MigrationManager get migrationManager {
-    var manager = _migrationManager;
-    if (manager == null) {
-      throw StateError(
-        'Migrations are disabled, supply a database configuration '
-        'to enable this feature.',
-      );
-    }
-    return manager;
-  }
-
   late LogManager _logManager;
 
   /// The [LogManager] of the Serverpod, its typically only used internally
@@ -651,7 +637,7 @@ class Serverpod {
   }) async {
     try {
       logVerbose('Initializing migration manager.');
-      _migrationManager = MigrationManager();
+      var migrationManager = MigrationManager();
       await migrationManager.initialize(internalSession);
 
       if (applyRepairMigration) {
