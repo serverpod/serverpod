@@ -407,23 +407,20 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
-    // TODO: Support passing the distance as index configuration.
-    var distanceStr = '';
+    String distanceStr = '';
+    String pgvectorParams = '';
+
     if (type == 'hnsw' || type == 'ivfflat') {
-      distanceStr = ' vector_l2_ops';
+      distanceStr = ' ${vectorDistanceFunction!.asDistanceFunction()}';
+
+      var paramStrings = parameters?.entries.map((e) => '${e.key}=${e.value}');
+      pgvectorParams = (paramStrings?.isNotEmpty == true)
+          ? ' WITH (${paramStrings!.join(', ')})'
+          : '';
     }
 
-    // TODO: Support passing parameters as index configuration.
-    var pgvectorParams = '';
-    if (type == 'hnsw') {
-      pgvectorParams = ' WITH (m=16, ef_construction=64)';
-    } else if (type == 'ivfflat') {
-      pgvectorParams = ' WITH (lists=100)';
-    }
-
-    out +=
-        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
+    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
 
     return out;
   }
@@ -491,10 +488,10 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Must be declared before any table creation.
     if (actions.any((e) =>
         (e.createTable != null &&
-          e.createTable!.columns
+            e.createTable!.columns
                 .any((c) => c.columnType == ColumnType.vector)) ||
         (e.alterTable != null &&
-          e.alterTable!.addColumns
+            e.alterTable!.addColumns
                 .any((c) => c.columnType == ColumnType.vector)))) {
       out += _sqlCreateVectorExtensionIfAvailable();
       out += '\n';
@@ -802,5 +799,12 @@ extension ColumnTypeComparison on ColumnType {
     }
 
     return this == other;
+  }
+}
+
+extension VectorIndexDistanceFunction on VectorDistanceFunction {
+  String asDistanceFunction([String vectorType = 'vector']) {
+    var funcCode = (this == VectorDistanceFunction.innerProduct) ? 'ip' : name;
+    return '${vectorType}_${funcCode}_ops';
   }
 }

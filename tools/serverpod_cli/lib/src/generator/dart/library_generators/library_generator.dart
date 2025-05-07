@@ -329,7 +329,7 @@ class LibraryGenerator {
             ..docs.add('''
   /// Wraps serialized data with its class name so that it can be deserialized
   /// with [deserializeByClassName].
-  /// 
+  ///
   /// Records and containers containing records will be return in their JSON representation in the returned map.''')
             ..name = 'wrapWithClassName'
             ..returns = refer('Map<String, dynamic>')
@@ -1104,9 +1104,9 @@ class LibraryGenerator {
         (m) => m
           ..docs.add('''
             /// Maps any `Record`s known to this [Protocol] to their JSON representation
-            /// 
+            ///
             /// Throws in case the record type is not known.
-            /// 
+            ///
             /// This method will return `null` (only) for `null` inputs.''')
           ..name = _mapRecordToJsonFuncName
           ..returns = refer('Map<String, dynamic>?')

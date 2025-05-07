@@ -595,12 +595,16 @@ class ModelParser {
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
+      var distanceFunction = _parseDistanceFunction(nodeDocument, type);
+      var parameters = _parseParametersKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
         name: indexName,
         type: type,
         unique: unique,
         fields: indexFields,
+        vectorDistanceFunction: distanceFunction,
+        parameters: parameters,
       );
     });
 
@@ -643,6 +647,46 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static VectorDistanceFunction? _parseDistanceFunction(
+    YamlMap documentContents,
+    String indexType,
+  ) {
+    var node = documentContents.nodes[Keyword.distanceFunction];
+    var nodeValue = node?.value;
+
+    if (nodeValue is! String) {
+      return VectorIndexType.values.any((e) => e.name == indexType)
+          ? VectorDistanceFunction.l2
+          : null;
+    }
+
+    try {
+      return unsafeConvertToEnum(
+        value: nodeValue,
+        enumValues: VectorDistanceFunction.values,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Map<String, String>? _parseParametersKey(YamlMap documentContents) {
+    var parametersNode = documentContents.nodes[Keyword.parameters];
+    if (parametersNode is! YamlMap) return null;
+
+    Map<String, String> parameters = {};
+    for (var entry in parametersNode.nodes.entries) {
+      if (entry.key is YamlScalar) {
+        var key = (entry.key as YamlScalar).value;
+        if (key is String) {
+          parameters[key] = entry.value.value.toString();
+        }
+      }
+    }
+
+    return parameters.isNotEmpty ? parameters : null;
   }
 
   static ProtocolEnumValueDefinition? _parseEnumDefaultValue(

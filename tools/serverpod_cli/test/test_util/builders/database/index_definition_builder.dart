@@ -57,6 +57,10 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withType(String type) {
     _type = type;
+    if ((_type == 'hnsw' || _type == 'ivfflat') &&
+        _vectorDistanceFunction == null) {
+      _vectorDistanceFunction = VectorDistanceFunction.l2;
+    }
     return this;
   }
 

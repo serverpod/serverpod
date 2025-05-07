@@ -65,7 +65,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
-                vectorDistanceFunction: index.vectorDistanceFunction,
+                vectorDistanceFunction: index.isVectorIndex
+                    ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
+                    : null,
                 parameters: index.parameters,
               ),
           ],

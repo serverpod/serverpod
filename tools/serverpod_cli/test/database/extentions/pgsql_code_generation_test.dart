@@ -212,32 +212,7 @@ END
     expect(pgsql, isNot(contains(createVectorExtension)));
   });
 
-  test(
-      'Given a database definition with Vector field in one of the tables, then code for creating vector extension is not generated.',
-      () {
-    var citizen = 'citizen';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(citizen.sentenceCase)
-          .withFileName(citizen)
-          .withTableName(citizen)
-          .withVectorField('vector')
-          .build(),
-    ];
-
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    );
-    var pgsql = databaseDefinition.toPgSql(installedModules: []);
-
-    expect(pgsql, contains(createVectorExtension));
-  });
-
-  test(
-      'Given a table definition with an HNSW index on a vector field, then the SQL should include the correct HNSW parameters.',
-      () {
+  group('Given a table definition with a vector field', () {
     var modelName = 'vectorModel';
     var models = [
       ModelClassDefinitionBuilder()
@@ -248,74 +223,189 @@ END
           .build(),
     ];
 
-    var tableDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    ).tables.first;
+    var databaseDefinition =
+        createDatabaseDefinitionFromModels(models, 'example', []);
+    var tableDefinition = databaseDefinition.tables.first;
 
-    var indexName = '${modelName}_embedding_hnsw_idx';
-    var index = IndexDefinitionBuilder()
-        .withIndexName(indexName)
-        .withElements([
-          IndexElementDefinition(
-            type: IndexElementDefinitionType.column,
-            definition: 'embedding',
-          )
-        ])
-        .withType('hnsw')
-        .withIsUnique(false)
-        .withIsPrimary(false)
-        .build();
+    test('then code for creating vector extension is generated.', () {
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
 
-    var sql = index.toPgSql(tableName: tableDefinition.name);
+      expect(pgsql, contains(createVectorExtension));
+    });
 
-    expect(
-      sql,
-      'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-      'USING hnsw ("embedding" vector_l2_ops) WITH (m=16, ef_construction=64);\n',
-    );
-  });
+    test(
+        'when defining an HNSW index with no custom parameters, then the SQL should have no parameters.',
+        () {
+      var indexName = '${modelName}_embedding_hnsw_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'embedding',
+            )
+          ])
+          .withType('hnsw')
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
 
-  test(
-      'Given a table definition with an IVFFlat index on a vector field, then the SQL should include the correct IVFFlat parameters.',
-      () {
-    var modelName = 'vectorModel';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.sentenceCase)
-          .withFileName(modelName)
-          .withTableName(modelName)
-          .withVectorField('embedding', dimension: 1536)
-          .build(),
-    ];
+      var sql = index.toPgSql(tableName: tableDefinition.name);
 
-    var tableDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    ).tables.first;
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING hnsw ("embedding" vector_l2_ops);\n',
+      );
+    });
 
-    var indexName = '${modelName}_embedding_ivfflat_idx';
-    var index = IndexDefinitionBuilder()
-        .withIndexName(indexName)
-        .withElements([
-          IndexElementDefinition(
-            type: IndexElementDefinitionType.column,
-            definition: 'embedding',
-          )
-        ])
-        .withType('ivfflat')
-        .withIsUnique(false)
-        .withIsPrimary(false)
-        .build();
+    test(
+        'when defining an IVFFlat index with custom parameters, then the SQL should have no parameters.',
+        () {
+      var indexName = '${modelName}_embedding_ivfflat_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'embedding',
+            )
+          ])
+          .withType('ivfflat')
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
 
-    var sql = index.toPgSql(tableName: tableDefinition.name);
+      var sql = index.toPgSql(tableName: tableDefinition.name);
 
-    expect(
-      sql,
-      'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-      'USING ivfflat ("embedding" vector_l2_ops) WITH (lists=100);\n',
-    );
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING ivfflat ("embedding" vector_l2_ops);\n',
+      );
+    });
+
+    test(
+        'Given a table definition with an HNSW index with custom parameters on a vector field, then the SQL should include the correct HNSW parameters.',
+        () {
+      var indexName = '${modelName}_embedding_hnsw_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'embedding',
+            )
+          ])
+          .withType('hnsw')
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .withVectorDistanceFunction(VectorDistanceFunction.cosine)
+          .withParameters({'m': '16', 'ef_construction': '128'})
+          .build();
+
+      var sql = index.toPgSql(tableName: tableDefinition.name);
+
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING hnsw ("embedding" vector_cosine_ops) WITH (m=16, ef_construction=128);\n',
+      );
+    });
+
+    test(
+        'Given a table definition with an IVFFlat index with custom parameters on a vector field, then the SQL should include the correct IVFFlat parameters.',
+        () {
+      var indexName = '${modelName}_embedding_ivfflat_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'embedding',
+            )
+          ])
+          .withType('ivfflat')
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .withVectorDistanceFunction(VectorDistanceFunction.innerProduct)
+          .withParameters({'lists': '100'})
+          .build();
+
+      var sql = index.toPgSql(tableName: tableDefinition.name);
+
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING ivfflat ("embedding" vector_ip_ops) WITH (lists=100);\n',
+      );
+    });
+
+    test(
+        'when creating vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+        () {
+      var distanceFunctions = {
+        VectorDistanceFunction.l2: 'vector_l2_ops',
+        VectorDistanceFunction.innerProduct: 'vector_ip_ops',
+        VectorDistanceFunction.cosine: 'vector_cosine_ops',
+        VectorDistanceFunction.l1: 'vector_l1_ops',
+        VectorDistanceFunction.hamming: 'vector_hamming_ops',
+        VectorDistanceFunction.jaccard: 'vector_jaccard_ops',
+      };
+
+      for (var entry in distanceFunctions.entries) {
+        var distance = entry.key;
+        var expectedOps = entry.value;
+        var indexName = '${modelName}_embedding_idx_$distance';
+
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: 'embedding',
+              )
+            ])
+            .withType('hnsw')
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .withVectorDistanceFunction(distance)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING hnsw ("embedding" $expectedOps);\n',
+        );
+      }
+    });
+
+    test(
+        'when defining a BTREE index on a vector field, then the SQL should not include any vector distance ops.',
+        () {
+      var indexName = '${modelName}_embedding_btree_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: 'embedding',
+            )
+          ])
+          .withType('btree')
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
+
+      var sql = index.toPgSql(tableName: tableDefinition.name);
+
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING btree ("embedding");\n',
+      );
+    });
   });
 }
