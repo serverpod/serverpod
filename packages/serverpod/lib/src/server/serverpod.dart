@@ -526,10 +526,6 @@ class Serverpod {
     // attempting to connect to the database.
     _databasePoolManager?.start();
 
-    if (_databasePoolManager == null) {
-      _runtimeSettings = _defaultRuntimeSettings;
-    }
-
     if (Features.enableMigrations) {
       int? maxAttempts =
           commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
