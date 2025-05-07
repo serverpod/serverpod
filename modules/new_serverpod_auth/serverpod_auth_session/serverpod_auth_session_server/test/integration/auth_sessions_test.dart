@@ -235,6 +235,79 @@ void main() {
           expect(revocationMessages, [isA<RevokedAuthenticationUser>()]);
         },
       );
+
+      test(
+        "when sending an invalid session key which has the module's prefix, an `ArgumentError` is thrown",
+        () async {
+          await expectLater(
+            () => AuthSessions.authenticationHandler(
+              session,
+              'sas:xx',
+            ),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
+
+      test(
+        'when sending an invalid session key which does not contain the correct secret, an exception is thrown',
+        () async {
+          final sessionSecret = await AuthSessions.createSession(
+            session,
+            userId: userUuid,
+            method: 'test',
+            scopes: const {},
+          );
+
+          final parts = sessionSecret.split(':');
+          parts[2] = 'not-the-secret';
+          final invalidSessionSecret = parts.join(':');
+
+          await expectLater(
+            () => AuthSessions.authenticationHandler(
+              session,
+              invalidSessionSecret,
+            ),
+            throwsA(
+              isA<Exception>().having(
+                (final e) => e.toString(),
+                'message',
+                contains('did not result in correct session key hash'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when sending an invalid session key which does not contain a known session entry ID, an exception is thrown',
+        () async {
+          final sessionSecret = await AuthSessions.createSession(
+            session,
+            userId: userUuid,
+            method: 'test',
+            scopes: const {},
+          );
+
+          final parts = sessionSecret.split(':');
+          parts[1] = 'm6XDpRhOTWKfSbkTLC5oRA=='; // abse64 encoded UUID
+          final invalidSessionSecret = parts.join(':');
+
+          await expectLater(
+            () => AuthSessions.authenticationHandler(
+              session,
+              invalidSessionSecret,
+            ),
+            throwsA(
+              isA<Exception>().having(
+                (final e) => e.toString(),
+                'message',
+                contains('Did not find auth session with ID'),
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 }
