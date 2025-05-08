@@ -231,7 +231,7 @@ void main() {
             );
           });
 
-          test('then it is revoked not usable anymore.', () async {
+          test('then it is not usable anymore.', () async {
             final authInfoA = await AuthSessions.authenticationHandler(
               session,
               sessionSecretA,
@@ -240,7 +240,7 @@ void main() {
             expect(authInfoA, isNull);
           });
 
-          test('then the other session is still active.', () async {
+          test('then the other is still usable.', () async {
             final authInfoB = await AuthSessions.authenticationHandler(
               session,
               sessionSecretB,
