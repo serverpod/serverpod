@@ -119,7 +119,7 @@ abstract final class AuthSessions {
   @useResult
   static Future<String> createSession(
     final Session session, {
-    required final UuidValue userId,
+    required final UuidValue authUserId,
     required final String method,
     required final Set<Scope> scopes,
   }) async {
@@ -137,7 +137,7 @@ abstract final class AuthSessions {
     final authSession = await AuthSession.db.insertRow(
       session,
       AuthSession(
-        authUserId: userId,
+        authUserId: authUserId,
         scopeNames: scopeNames,
         sessionKeyHash: hash,
         method: method,
@@ -155,19 +155,19 @@ abstract final class AuthSessions {
   /// found for the user.
   static Future<void> destroyAllSessions(
     final Session session, {
-    required final UuidValue userId,
+    required final UuidValue authUserId,
   }) async {
     // Delete all sessions for the user
     final auths = await AuthSession.db.deleteWhere(
       session,
-      where: (final row) => row.authUserId.equals(userId),
+      where: (final row) => row.authUserId.equals(authUserId),
     );
 
     if (auths.isEmpty) return;
 
     // Notify clients about the revoked authentication for the user
     await session.messages.authenticationRevoked(
-      userId,
+      authUserId,
       RevokedAuthenticationUser(),
     );
   }
