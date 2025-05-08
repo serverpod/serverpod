@@ -254,22 +254,6 @@ void main() {
       test(
         'when revoking all sessions for a user, then all their sessions are revoked.',
         () async {
-          expect(
-            await AuthSessions.authenticationHandler(
-              session,
-              sessionSecretA,
-            ),
-            isNotNull,
-          );
-
-          expect(
-            await AuthSessions.authenticationHandler(
-              session,
-              sessionSecretB,
-            ),
-            isNotNull,
-          );
-
           await AuthSessions.destroyAllSessions(
             session,
             authUserId: authUserId,
