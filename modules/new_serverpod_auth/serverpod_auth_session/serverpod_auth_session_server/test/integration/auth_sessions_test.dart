@@ -91,13 +91,12 @@ void main() {
             );
           }
 
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              sessionSecretA,
-            ),
-            throwsA(isA<Exception>()),
+          final authInfoA = await AuthSessions.authenticationHandler(
+            session,
+            sessionSecretA,
           );
+
+          expect(authInfoA, isNull);
 
           final authInfoB = await AuthSessions.authenticationHandler(
             session,
@@ -184,21 +183,19 @@ void main() {
             userId: userUuid,
           );
 
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              sessionSecretA,
-            ),
-            throwsA(isA<Exception>()),
+          final authInfoA = await AuthSessions.authenticationHandler(
+            session,
+            sessionSecretA,
           );
 
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              sessionSecretB,
-            ),
-            throwsA(isA<Exception>()),
+          expect(authInfoA, isNull);
+
+          final authInfoB = await AuthSessions.authenticationHandler(
+            session,
+            sessionSecretB,
           );
+
+          expect(authInfoB, isNull);
         },
       );
 
@@ -237,20 +234,19 @@ void main() {
       );
 
       test(
-        "when sending an invalid session key which has the module's prefix, an `ArgumentError` is thrown",
+        "when sending an invalid session key which has the module's prefix, then `null` is returned.",
         () async {
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              'sas:xx',
-            ),
-            throwsA(isA<ArgumentError>()),
+          final authInfo = await AuthSessions.authenticationHandler(
+            session,
+            'sas:xx',
           );
+
+          expect(authInfo, isNull);
         },
       );
 
       test(
-        'when sending an invalid session key which does not contain the correct secret, an exception is thrown',
+        'when sending an invalid session key which does not contain the correct secret, then `null` is returned.',
         () async {
           final sessionSecret = await AuthSessions.createSession(
             session,
@@ -263,24 +259,17 @@ void main() {
           parts[2] = 'not-the-secret';
           final invalidSessionSecret = parts.join(':');
 
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              invalidSessionSecret,
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains('did not result in correct session key hash'),
-              ),
-            ),
+          final authInfo = await AuthSessions.authenticationHandler(
+            session,
+            invalidSessionSecret,
           );
+
+          expect(authInfo, isNull);
         },
       );
 
       test(
-        'when sending an invalid session key which does not contain a known session entry ID, an exception is thrown',
+        'when sending an invalid session key which does not contain a known session entry ID, then `null` is returned.`',
         () async {
           final sessionSecret = await AuthSessions.createSession(
             session,
@@ -293,19 +282,12 @@ void main() {
           parts[1] = 'm6XDpRhOTWKfSbkTLC5oRA=='; // abse64 encoded UUID
           final invalidSessionSecret = parts.join(':');
 
-          await expectLater(
-            () => AuthSessions.authenticationHandler(
-              session,
-              invalidSessionSecret,
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains('Did not find auth session with ID'),
-              ),
-            ),
+          final authInfo = await AuthSessions.authenticationHandler(
+            session,
+            invalidSessionSecret,
           );
+
+          expect(authInfo, isNull);
         },
       );
     },

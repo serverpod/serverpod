@@ -14,12 +14,12 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 abstract final class AuthSessions {
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
-  /// Only looks at keys crated with this package (by checking the prefix),
+  /// Only looks at keys created with this package (by checking the prefix),
   /// returns `null` for all other inputs.
   ///
-  /// In case the key looks like it was created from this package, but
-  /// does not belong to a valid session, this throws (instead of returning
-  /// `null`, which would only be acceptable for a non-authenticated user).
+  /// In case the session looks like it was created with this package, but
+  /// does not resolve to a valid authentication info (anymore), this will
+  /// return `null`, and log details of the reason for rejection.
   static Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String key,
@@ -30,9 +30,25 @@ abstract final class AuthSessions {
 
     final parts = key.split(':');
     if (parts.length != 3) {
-      throw ArgumentError('Unexpected key format', 'key');
+      session.log(
+        'Unexpected key format',
+        level: LogLevel.debug,
+      );
     }
-    final authSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
+    final UuidValue authSessionId;
+
+    try {
+      authSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed to parse auth session ID',
+        level: LogLevel.debug,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+
+      return null;
+    }
     final secret = parts[2];
 
     final authSession = await AuthSession.db.findById(
@@ -41,7 +57,12 @@ abstract final class AuthSessions {
     );
 
     if (authSession == null) {
-      throw Exception('Did not find auth session with ID "$authSessionId"');
+      session.log(
+        'Did not find auth session with ID "$authSessionId"',
+        level: LogLevel.debug,
+      );
+
+      return null;
     }
 
     final maximumSessionLifetime =
@@ -51,7 +72,12 @@ abstract final class AuthSessions {
         authSession.created
             .add(maximumSessionLifetime)
             .isBefore(DateTime.now())) {
-      throw Exception('Session has expired');
+      session.log(
+        'Session has expired',
+        level: LogLevel.debug,
+      );
+
+      return null;
     }
 
     final sessionKeyHash = hashSessionKey(
@@ -60,9 +86,12 @@ abstract final class AuthSessions {
     );
 
     if (sessionKeyHash != authSession.sessionKeyHash) {
-      throw Exception(
+      session.log(
         'Provided `secret` did not result in correct session key hash.',
+        level: LogLevel.debug,
       );
+
+      return null;
     }
 
     // Setup scopes
