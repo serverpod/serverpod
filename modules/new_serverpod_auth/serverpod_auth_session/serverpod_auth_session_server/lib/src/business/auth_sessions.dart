@@ -6,7 +6,6 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Management functions for [AuthSession]s.
@@ -86,9 +85,6 @@ abstract final class AuthSessions {
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
   /// In most situations this should not be called directly, but rather through an authentication provider.
-  ///
-  /// - `updateSession`: If set to `true`, the session will be updated with
-  ///   the authenticated user's information. The default is `true`.
   @useResult
   static Future<String> createSession(
     final Session session, {
@@ -124,20 +120,12 @@ abstract final class AuthSessions {
   ///
   /// This means that all sessions connected to the user will be terminated.
   ///
-  /// If the user being signed out is the currently authenticated user, the
-  /// session's authentication information will be cleared.
-  ///
-  /// Note: The method will fail silently if no authentication information is
+  /// Note: The method will not do anything if no authentication information is
   /// found for the user.
   static Future<void> destroyAllSessions(
     final Session session, {
-    /// The user ID to sign out
-    /// If `null`, the [session]'s current user will be used
-    UuidValue? userId,
+    required final UuidValue userId,
   }) async {
-    userId ??= (await session.authenticated)?.userUuid;
-    if (userId == null) return;
-
     // Delete all sessions for the user
     final auths = await AuthSession.db.deleteWhere(
       session,
@@ -151,13 +139,6 @@ abstract final class AuthSessions {
       userId,
       RevokedAuthenticationUser(),
     );
-
-    // Clear session authentication if the signed-out user is the currently
-    // authenticated user
-    final authInfo = await session.authenticated;
-    if (userId == authInfo?.userUuid) {
-      session.updateAuthenticated(null);
-    }
   }
 
   /// Signs out the user from the current device by deleting the specific
@@ -187,13 +168,6 @@ abstract final class AuthSessions {
       authSession.authUserId,
       RevokedAuthenticationAuthId(authId: authSessionId.toString()),
     );
-
-    // Clear session authentication if the signed-out user is the currently
-    // authenticated user
-    final authInfo = await session.authenticated;
-    if (authSession.authUserId == authInfo?.userUuid) {
-      session.updateAuthenticated(null);
-    }
   }
 
   /// Prefix for sessions keys
