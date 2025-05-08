@@ -215,11 +215,10 @@ void main() {
         sessionSecretB = await _createAuthSession(session, authUserId);
       });
 
-      test(
-        'when revoking a single session, then it is revoked but the other session is unaffected.',
-        () async {
-          // Revoke session A
-          {
+      group(
+        'when revoking a single session,',
+        () {
+          setUp(() async {
             final authInfoABeforeRevocation =
                 await AuthSessions.authenticationHandler(
               session,
@@ -230,21 +229,25 @@ void main() {
               session,
               authSessionId: authInfoABeforeRevocation!.authSessionId,
             );
-          }
+          });
 
-          final authInfoA = await AuthSessions.authenticationHandler(
-            session,
-            sessionSecretA,
-          );
+          test('then it is revoked not usable anymore.', () async {
+            final authInfoA = await AuthSessions.authenticationHandler(
+              session,
+              sessionSecretA,
+            );
 
-          expect(authInfoA, isNull);
+            expect(authInfoA, isNull);
+          });
 
-          final authInfoB = await AuthSessions.authenticationHandler(
-            session,
-            sessionSecretB,
-          );
+          test('then the other session is still active.', () async {
+            final authInfoB = await AuthSessions.authenticationHandler(
+              session,
+              sessionSecretB,
+            );
 
-          expect(authInfoB, isNotNull);
+            expect(authInfoB, isNotNull);
+          });
         },
       );
 
