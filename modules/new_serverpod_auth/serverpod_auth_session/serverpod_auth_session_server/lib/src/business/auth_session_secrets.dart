@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// Secrets used for sessions.
@@ -11,7 +12,7 @@ abstract class AuthSessionSecrets {
   /// This influences the stored session hashes, so it must not be changed for a given deployment,
   /// as otherwise all sessions become invalid.
   static String get sessionKeyHashPepper {
-    final pepper =
+    final pepper = sessionKeyHashPepperTestOverride ??
         Serverpod.instance.getPassword(sessionKeyHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
@@ -22,4 +23,8 @@ abstract class AuthSessionSecrets {
 
     return pepper;
   }
+
+  /// Pepper override for testing, to be returned for [sessionKeyHashPepper].
+  @visibleForTesting
+  static String? sessionKeyHashPepperTestOverride;
 }
