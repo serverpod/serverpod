@@ -34,9 +34,11 @@ abstract final class AuthSessions {
         'Unexpected key format',
         level: LogLevel.debug,
       );
-    }
-    final UuidValue authSessionId;
 
+      return null;
+    }
+
+    final UuidValue authSessionId;
     try {
       authSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
     } catch (e, stackTrace) {
