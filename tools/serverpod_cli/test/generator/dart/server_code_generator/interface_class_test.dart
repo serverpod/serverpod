@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -11,7 +12,9 @@ import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
-final config = GeneratorConfigBuilder().withName(projectName).build();
+final config = GeneratorConfigBuilder()
+    .withName(projectName)
+    .withEnabledExperimentalFeatures([ExperimentalFeature.interfaces]).build();
 const generator = DartServerCodeGenerator();
 
 void main() {

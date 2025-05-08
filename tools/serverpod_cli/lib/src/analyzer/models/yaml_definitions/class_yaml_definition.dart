@@ -43,6 +43,8 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.isImplementing,
         valueRestriction: restrictions.validateImplementedInterfaceNames,
+        isHidden: !restrictions.config
+            .isExperimentalFeatureEnabled(ExperimentalFeature.interfaces),
       ),
       ValidateNode(
         Keyword.table,
