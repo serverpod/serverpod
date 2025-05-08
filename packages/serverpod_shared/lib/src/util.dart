@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:super_string/super_string.dart';
+
 import 'package:crypto/crypto.dart';
+import 'package:super_string/super_string.dart';
 
 final Random _random = Random.secure();
 
-/// Generates a random string of the specified length.
+/// Generates a secure random string of the specified length.
+///
+/// The resulting String is `base64` encoded and capped at [length],
+/// and thus has a lower entropy than [length] bytes.
 String generateRandomString([int length = 32]) {
   var values = List<int>.generate(length, (int i) => _random.nextInt(256));
   return base64Url.encode(values).substring(0, length);
