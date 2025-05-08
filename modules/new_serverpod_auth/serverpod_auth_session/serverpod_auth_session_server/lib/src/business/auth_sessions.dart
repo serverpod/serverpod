@@ -172,10 +172,10 @@ abstract final class AuthSessions {
     );
   }
 
-  /// Signs out the user from the current device by deleting the specific
-  /// session. This does not affect the user's sessions on other
-  /// devices. If the user being signed out is the currently authenticated user,
-  /// the session's authentication information will be cleared.
+  /// Removes the specified session and thus signs out its user on its device.
+  ///
+  /// This does not affect the user's sessions on other
+  /// devices.
   ///
   /// If the session does not exist, this method will have no effect.
   static Future<void> destroySession(
