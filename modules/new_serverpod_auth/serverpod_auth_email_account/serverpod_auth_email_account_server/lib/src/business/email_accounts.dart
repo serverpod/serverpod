@@ -178,10 +178,12 @@ abstract final class EmailAccounts {
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
+    final Transaction? transaction,
   }) async {
     final request = await EmailAccountRequest.db.findById(
       session,
       accountRequestId,
+      transaction: transaction,
     );
 
     if (request == null ||
