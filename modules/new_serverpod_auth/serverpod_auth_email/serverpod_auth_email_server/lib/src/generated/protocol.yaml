@@ -1,2 +1,6 @@
-module:
-  - hello:
+emailAccount:
+  - login:
+  - requestAccount:
+  - finishRegistration:
+  - requestPasswordReset:
+  - completePasswordReset:
