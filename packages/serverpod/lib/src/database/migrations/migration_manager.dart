@@ -52,7 +52,7 @@ class MigrationManager {
 
   /// Returns true if the database structure is up to date. If not, it will
   /// print a warning to stderr.
-  Future<bool> verifyDatabaseIntegrity(Session session) async {
+  static Future<bool> verifyDatabaseIntegrity(Session session) async {
     var warnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
