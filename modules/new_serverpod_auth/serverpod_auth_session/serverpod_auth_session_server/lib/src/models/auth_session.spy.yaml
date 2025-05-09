@@ -1,0 +1,24 @@
+class: AuthSession
+serverOnly: true
+table: serverpod_auth_session
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this session belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this sesion was created.
+  created: DateTime, default=now
+
+  ### The scopes this session provides access to.
+  scopeNames: Set<String>
+
+  ### Hashed version of the session key.
+  ###
+  ### The clients authentication header will be compared against this to check the validity of the session.
+  sessionKeyHash: String
+
+  ### The method of signing in this key was generated through.
+  ###
+  ### This can be either email, a social login, etc.
+  method: String
