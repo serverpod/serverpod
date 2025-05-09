@@ -1,4 +1,5 @@
 export 'src/business/authentication_handler.dart';
+export 'src/business/anonymous_auth.dart';
 export 'src/business/user_authentication.dart';
 export 'src/business/config.dart';
 export 'src/business/email_auth.dart';

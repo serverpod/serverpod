@@ -1,0 +1,14 @@
+### Database bindings for a sign in with email.
+class: AnonymousAuth
+table: serverpod_anonymous_auth
+fields:
+  ### The id of the user, corresponds to the id field in [UserInfo].
+  userId: int
+
+  ### The hashed password of the user.
+  hash: String
+
+indexes:
+  serverpod_anonymous_auth_userid:
+    fields: userId
+    unique: true

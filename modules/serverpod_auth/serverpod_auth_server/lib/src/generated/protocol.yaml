@@ -2,6 +2,9 @@ admin:
   - getUserInfo:
   - blockUser:
   - unblockUser:
+anonymous:
+  - createAccount:
+  - authenticate:
 apple:
   - authenticate:
 email:
