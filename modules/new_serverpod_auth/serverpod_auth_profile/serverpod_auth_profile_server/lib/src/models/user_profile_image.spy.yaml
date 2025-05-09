@@ -1,0 +1,18 @@
+class: UserProfileImage
+serverOnly: true
+table: serverpod_auth_profile_user_profile_image
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile image belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### Version of the image. Increased by one for every uploaded image.
+  version: int
+
+  ### The URL to the image.
+  url: String
+
+indexes:
+  serverpod_auth_profile_user_profile_image_auth_user_id_version:
+    fields: authUserId, version

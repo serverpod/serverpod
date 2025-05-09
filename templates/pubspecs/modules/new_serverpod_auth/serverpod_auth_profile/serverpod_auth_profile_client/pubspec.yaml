@@ -1,0 +1,9 @@
+name: serverpod_auth_profile_client
+description: Serverpod authentication user profile client module.
+version: SERVERPOD_VERSION
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
