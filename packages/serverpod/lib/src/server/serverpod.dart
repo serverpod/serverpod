@@ -638,7 +638,6 @@ class Serverpod {
     try {
       logVerbose('Initializing migration manager.');
       var migrationManager = MigrationManager();
-      await migrationManager.initialize(internalSession);
 
       if (applyRepairMigration) {
         logVerbose('Applying database repair migration');
@@ -650,7 +649,6 @@ class Serverpod {
           stdout.writeln(
               'Database repair migration "$appliedRepairMigration" applied.');
         }
-        await migrationManager.initialize(internalSession);
       }
 
       if (applyMigrations) {
@@ -667,8 +665,6 @@ class Serverpod {
             stdout.writeln(' - $migration');
           }
         }
-
-        await migrationManager.initialize(internalSession);
       }
 
       logVerbose('Verifying database integrity.');

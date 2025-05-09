@@ -23,7 +23,7 @@ class MigrationManager {
 
   /// Initializing the [MigrationManager] by loading the current version
   /// from the database and available migrations.
-  Future<void> initialize(Session session) async {
+  Future<void> _initialize(Session session) async {
     installedVersions.clear();
     try {
       installedVersions.addAll(await DatabaseMigrationVersion.db.find(session));
@@ -154,6 +154,8 @@ class MigrationManager {
     await session.db.unsafeSimpleExecute(
       repairMigration.sqlMigration,
     );
+
+    await _initialize(session);
     return repairMigration.versionName;
   }
 
@@ -162,6 +164,7 @@ class MigrationManager {
   /// Returns the migrations applied.
   /// Returns null if latest version was already installed.
   Future<List<String>?> migrateToLatest(Session session) async {
+    await _initialize(session);
     var latestVersion = getLatestVersion();
 
     var moduleName = session.serverpod.serializationManager.getModuleName();
@@ -172,11 +175,14 @@ class MigrationManager {
 
     var installedVersion = getInstalledVersion(moduleName);
 
-    return await _migrateToLatestModule(
+    var migrationsApplied = await _migrateToLatestModule(
       session,
       latestVersion: latestVersion,
       fromVersion: installedVersion,
     );
+
+    await _initialize(session);
+    return migrationsApplied;
   }
 
   /// Migration a single module to the latest version.
