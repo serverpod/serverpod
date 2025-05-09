@@ -81,6 +81,14 @@ echo "\nserverpod_auth_user_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
 dart $CLI generate --no-analytics --experimental-features=all
 
+echo "\nserverpod_auth_session"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_profile_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+dart $CLI generate --no-analytics --experimental-features=all
+
 # Chat module
 
 echo "\nserverpod_chat_server"
