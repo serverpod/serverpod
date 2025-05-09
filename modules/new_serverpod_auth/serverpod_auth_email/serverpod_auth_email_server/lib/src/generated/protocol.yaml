@@ -1,0 +1,6 @@
+emailAccount:
+  - login:
+  - requestAccount:
+  - finishRegistration:
+  - requestPasswordReset:
+  - completePasswordReset:
