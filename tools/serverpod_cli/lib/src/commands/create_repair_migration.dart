@@ -24,8 +24,8 @@ enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
     argName: 'mode',
     argAbbrev: 'm',
     defaultsTo: 'development',
-    helpText: 'Used to specify which database to fetch the live database '
-        'definition from.',
+    helpText: 'Used to specify which database configuration to use when '
+        'fetching the live database definition.',
     allowedValues: runModes,
   ));
 
