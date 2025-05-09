@@ -21,9 +21,9 @@ class MigrationManager {
   /// directory. Available after [initialize] has been called.
   final List<String> availableVersions = [];
 
-  /// Initializing the [MigrationManager] by loading the current version
+  /// Updates the state of the [MigrationManager] by loading the current version
   /// from the database and available migrations.
-  Future<void> initialize(Session session) async {
+  Future<void> _updateState(Session session) async {
     installedVersions.clear();
     try {
       installedVersions.addAll(await DatabaseMigrationVersion.db.find(session));
@@ -52,7 +52,7 @@ class MigrationManager {
 
   /// Returns true if the database structure is up to date. If not, it will
   /// print a warning to stderr.
-  Future<bool> verifyDatabaseIntegrity(Session session) async {
+  static Future<bool> verifyDatabaseIntegrity(Session session) async {
     var warnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
@@ -141,20 +141,27 @@ class MigrationManager {
       return null;
     }
 
-    var appliedRepairMigration = await DatabaseMigrationVersion.db.findFirstRow(
-        session,
-        where: (t) =>
-            t.module.equals(MigrationConstants.repairMigrationModuleName));
+    String? appliedVersionName = repairMigration.versionName;
+    await _withMigrationLock(session, () async {
+      var appliedRepairMigration = await DatabaseMigrationVersion.db
+          .findFirstRow(session,
+              where: (t) => t.module
+                  .equals(MigrationConstants.repairMigrationModuleName));
 
-    if (appliedRepairMigration != null &&
-        appliedRepairMigration.version == repairMigration.versionName) {
-      return null;
-    }
+      if (appliedRepairMigration != null &&
+          appliedRepairMigration.version == repairMigration.versionName) {
+        appliedVersionName = null;
+        return;
+      }
 
-    await session.db.unsafeSimpleExecute(
-      repairMigration.sqlMigration,
-    );
-    return repairMigration.versionName;
+      await session.db.unsafeSimpleExecute(
+        repairMigration.sqlMigration,
+      );
+
+      await _updateState(session);
+    });
+
+    return appliedVersionName;
   }
 
   /// Migrates all modules to the latest version.
@@ -162,21 +169,57 @@ class MigrationManager {
   /// Returns the migrations applied.
   /// Returns null if latest version was already installed.
   Future<List<String>?> migrateToLatest(Session session) async {
-    var latestVersion = getLatestVersion();
+    List<String>? migrationsApplied = [];
 
-    var moduleName = session.serverpod.serializationManager.getModuleName();
+    await _withMigrationLock(session, () async {
+      await _updateState(session);
+      var latestVersion = getLatestVersion();
 
-    if (isVersionInstalled(moduleName, latestVersion)) {
-      return null;
-    }
+      var moduleName = session.serverpod.serializationManager.getModuleName();
 
-    var installedVersion = getInstalledVersion(moduleName);
+      if (isVersionInstalled(moduleName, latestVersion)) {
+        migrationsApplied = null;
+        return;
+      }
 
-    return await _migrateToLatestModule(
-      session,
-      latestVersion: latestVersion,
-      fromVersion: installedVersion,
-    );
+      var installedVersion = getInstalledVersion(moduleName);
+
+      migrationsApplied = await _migrateToLatestModule(
+        session,
+        latestVersion: latestVersion,
+        fromVersion: installedVersion,
+      );
+      await _updateState(session);
+    });
+
+    return migrationsApplied;
+  }
+
+  Future<void> _withMigrationLock(
+    Session session,
+    Future<void> Function() action,
+  ) async {
+    const String lockName = 'serverpod_migration_lock';
+
+    /// Use a transaction to ensure that the advisory lock is retained
+    /// until the transaction is completed.
+    ///
+    /// This ensures that we are only running migrations once at a time.
+    await session.db.transaction((transaction) async {
+      await session.db.unsafeExecute(
+        "SELECT pg_advisory_lock(hashtext('$lockName'));",
+        transaction: transaction,
+      );
+
+      try {
+        await action();
+      } finally {
+        await session.db.unsafeExecute(
+          "SELECT pg_advisory_unlock(hashtext('$lockName'));",
+          transaction: transaction,
+        );
+      }
+    });
   }
 
   /// Migration a single module to the latest version.
