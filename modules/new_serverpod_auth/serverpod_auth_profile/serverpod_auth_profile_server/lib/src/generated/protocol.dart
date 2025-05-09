@@ -116,7 +116,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_profile_email',
+          indexName: 'serverpod_auth_profile_user_profile_email',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -129,7 +129,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_profile_user_id',
+          indexName: 'serverpod_auth_profile_user_profile_email_auth_user_id',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -203,7 +203,8 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_profile_image_user_id_version',
+          indexName:
+              'serverpod_auth_profile_user_profile_image_auth_user_id_version',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
