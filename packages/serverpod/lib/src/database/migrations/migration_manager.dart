@@ -21,9 +21,9 @@ class MigrationManager {
   /// directory. Available after [initialize] has been called.
   final List<String> availableVersions = [];
 
-  /// Initializing the [MigrationManager] by loading the current version
+  /// Updates the state of the [MigrationManager] by loading the current version
   /// from the database and available migrations.
-  Future<void> _initialize(Session session) async {
+  Future<void> _updateState(Session session) async {
     installedVersions.clear();
     try {
       installedVersions.addAll(await DatabaseMigrationVersion.db.find(session));
@@ -158,7 +158,7 @@ class MigrationManager {
         repairMigration.sqlMigration,
       );
 
-      await _initialize(session);
+      await _updateState(session);
     });
 
     return appliedVersionName;
@@ -172,7 +172,7 @@ class MigrationManager {
     List<String>? migrationsApplied = [];
 
     await _withMigrationLock(session, () async {
-      await _initialize(session);
+      await _updateState(session);
       var latestVersion = getLatestVersion();
 
       var moduleName = session.serverpod.serializationManager.getModuleName();
@@ -189,7 +189,7 @@ class MigrationManager {
         latestVersion: latestVersion,
         fromVersion: installedVersion,
       );
-      await _initialize(session);
+      await _updateState(session);
     });
 
     return migrationsApplied;
