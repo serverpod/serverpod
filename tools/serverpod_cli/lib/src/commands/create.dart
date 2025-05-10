@@ -38,7 +38,8 @@ enum CreateOption<V> implements OptionDefinition<V> {
     argName: 'name',
     argAbbrev: 'n',
     argPos: 0,
-    helpText: 'The name of the project to create.',
+    helpText: 'The name of the project to create.\n'
+        'Can also be specified as the first argument.',
     mandatory: true,
   ));
 
