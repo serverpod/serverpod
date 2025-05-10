@@ -1,6 +1,8 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/model_source_builder.dart';
@@ -97,5 +99,185 @@ fields:
     expect(addForeignKeyToExistingTable, greaterThanOrEqualTo(0));
 
     expect(createNewModelTable, lessThan(addForeignKeyToExistingTable));
+  });
+
+  group('UUID v7 function generation in migrations', () {
+    const v7functionHeader = 'create or replace function gen_random_uuid_v7()';
+
+    test(
+        'Given no tables with UUID v7 default columns when generating migration SQL then the UUID v7 function declaration is not included.',
+        () {
+      final sourceDefinition =
+          DatabaseDefinitionBuilder().withDefaultModules().build();
+
+      final targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('table_without_uuid')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.integer)
+                  .build())
+              .build())
+          .build();
+
+      final migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      final psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(psql, isNot(contains(v7functionHeader)));
+    });
+
+    test(
+        'Given a new table with UUID v7 default column when generating migration SQL then the UUID v7 function declaration is included.',
+        () {
+      final sourceDefinition =
+          DatabaseDefinitionBuilder().withDefaultModules().build();
+
+      final targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('table_with_uuid')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.uuid)
+                  .withColumnDefault(pgsqlFunctionRandomUuidV7)
+                  .build())
+              .build())
+          .build();
+
+      final migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      final psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(psql, contains(v7functionHeader));
+    });
+
+    test(
+        'Given an existing table when adding a column with UUID v7 default then the UUID v7 function declaration is included.',
+        () {
+      final sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.integer)
+                  .build())
+              .build())
+          .build();
+
+      final targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.integer)
+                  .build())
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('uuid_column')
+                  .withColumnType(ColumnType.uuid)
+                  .withColumnDefault(pgsqlFunctionRandomUuidV7)
+                  .build())
+              .build())
+          .build();
+
+      final migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      final psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(psql, contains(v7functionHeader));
+    });
+
+    test(
+        'Given a table with a UUID column when modifying it to use UUID v7 default then the UUID v7 function declaration is included.',
+        () {
+      final sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('modify_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.integer)
+                  .build())
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('uuid_column')
+                  .withColumnType(ColumnType.uuid)
+                  .build())
+              .build())
+          .build();
+
+      final targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('modify_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withColumnType(ColumnType.integer)
+                  .build())
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('uuid_column')
+                  .withColumnType(ColumnType.uuid)
+                  .withColumnDefault(pgsqlFunctionRandomUuidV7)
+                  .build())
+              .build())
+          .build();
+
+      final migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      final psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(psql, contains(v7functionHeader));
+    });
+
+    test(
+        'Given a table with UUID v7 default when changing to UUID v4 default then the UUID v7 function declaration is not included.',
+        () {
+      final sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('uuid_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('uuid_column')
+                  .withColumnType(ColumnType.uuid)
+                  .withColumnDefault(pgsqlFunctionRandomUuidV7)
+                  .build())
+              .build())
+          .build();
+
+      final targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(TableDefinitionBuilder()
+              .withName('uuid_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('uuid_column')
+                  .withColumnType(ColumnType.uuid)
+                  .withColumnDefault('gen_random_uuid()')
+                  .build())
+              .build())
+          .build();
+
+      final migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      final psql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(psql, isNot(contains(v7functionHeader)));
+    });
   });
 }
