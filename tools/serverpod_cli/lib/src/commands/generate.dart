@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
@@ -14,26 +15,35 @@ import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-class GenerateCommand extends ServerpodCommand {
+enum GenerateOption<V> implements OptionDefinition<V> {
+  watch(FlagOption(
+    argName: 'watch',
+    argAbbrev: 'w',
+    defaultsTo: false,
+    negatable: false,
+    helpText: 'Watch for changes and continuously generate code.',
+  ));
+
+  const GenerateOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class GenerateCommand extends ServerpodCommand<GenerateOption> {
   @override
   final name = 'generate';
   @override
   final description = 'Generate code from yaml files for server and clients.';
 
-  GenerateCommand() {
-    argParser.addFlag(
-      'watch',
-      abbr: 'w',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Watch for changes and continuously generate code.',
-    );
-  }
+  GenerateCommand() : super(options: GenerateOption.values);
 
   @override
-  Future<void> run() async {
+  Future<void> runWithConfig(
+    Configuration<GenerateOption> commandConfig,
+  ) async {
     // Always do a full generate.
-    bool watch = argResults!['watch'];
+    bool watch = commandConfig.value(GenerateOption.watch);
 
     // TODO: add a -d option to select the directory
     GeneratorConfig config;

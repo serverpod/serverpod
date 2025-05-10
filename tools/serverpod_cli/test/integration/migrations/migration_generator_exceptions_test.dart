@@ -43,7 +43,7 @@ void main() {
         expect(
           generator.repairMigration(
             runMode:
-                CreateRepairMigrationCommand.runModes.first /* development */,
+                CreateRepairMigrationOption.runModes.first /* development */,
             force: false,
           ),
           throwsA(isA<MigrationVersionLoadException>()
