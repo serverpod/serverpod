@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:pgvector/pgvector.dart';
 import 'package:uuid/uuid.dart';
+
+import 'pgvector.dart';
 
 /// Adds clone method that create a deep copy of a ByteData.
 extension CloneByteData on ByteData {

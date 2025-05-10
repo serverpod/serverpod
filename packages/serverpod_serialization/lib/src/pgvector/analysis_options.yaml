@@ -1,0 +1,5 @@
+# Disable the rules that are not used on `pgvector` package to avoid
+# having to change the code style and facilitate future merges.
+linter:
+  rules:
+    public_member_api_docs: false

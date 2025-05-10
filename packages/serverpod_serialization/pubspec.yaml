@@ -12,7 +12,6 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  pgvector: ^0.2.0
   postgres: ^3.1.2
   yaml: ^3.1.2
   uuid: ^4.1.0
