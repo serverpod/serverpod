@@ -127,7 +127,21 @@ extension IndexComparisons on IndexDefinition {
         other.indexName == indexName &&
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
-        other.type == type;
+        other.type == type &&
+        other.vectorDistanceFunction == vectorDistanceFunction &&
+        _parametersMapEquals(other.parameters);
+  }
+
+  bool _parametersMapEquals(Map<String, String>? other) {
+    final parameters = this.parameters;
+    if (parameters == null && other == null) return true;
+    if (parameters == null || other == null) return false;
+    if (parameters.length != other.length) return false;
+
+    for (var key in {...parameters.keys, ...other.keys}) {
+      if (parameters[key] != other[key]) return false;
+    }
+    return true;
   }
 }
 

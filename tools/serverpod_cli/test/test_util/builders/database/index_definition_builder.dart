@@ -7,6 +7,8 @@ class IndexDefinitionBuilder {
   bool _isUnique;
   bool _isPrimary;
   String? _predicate;
+  VectorDistanceFunction? _vectorDistanceFunction;
+  Map<String, String>? _parameters;
 
   IndexDefinitionBuilder()
       : _indexName = 'example_index',
@@ -14,7 +16,9 @@ class IndexDefinitionBuilder {
         _type = 'btree',
         _isUnique = false,
         _isPrimary = false,
-        _predicate = null;
+        _predicate = null,
+        _vectorDistanceFunction = null,
+        _parameters = null;
 
   IndexDefinition build() {
     return IndexDefinition(
@@ -24,6 +28,8 @@ class IndexDefinitionBuilder {
       isUnique: _isUnique,
       isPrimary: _isPrimary,
       predicate: _predicate,
+      vectorDistanceFunction: _vectorDistanceFunction,
+      parameters: _parameters,
     );
   }
 
@@ -66,6 +72,18 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withPredicate(String? predicate) {
     _predicate = predicate;
+    return this;
+  }
+
+  IndexDefinitionBuilder withVectorDistanceFunction(
+    VectorDistanceFunction? vectorDistanceFunction,
+  ) {
+    _vectorDistanceFunction = vectorDistanceFunction;
+    return this;
+  }
+
+  IndexDefinitionBuilder withParameters(Map<String, String>? parameters) {
+    _parameters = parameters;
     return this;
   }
 }

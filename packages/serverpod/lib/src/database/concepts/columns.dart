@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// A function that returns a [Column] for a [Table].
@@ -512,7 +513,7 @@ mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
     return ColumnVectorDistance(VectorDistanceExpression(
       this,
       _encodeValueForQuery(other),
-      VectorDistanceOperator.l2,
+      VectorDistanceFunction.l2,
     ));
   }
 
@@ -521,7 +522,7 @@ mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
     return ColumnVectorDistance(VectorDistanceExpression(
       this,
       _encodeValueForQuery(other),
-      VectorDistanceOperator.innerProduct,
+      VectorDistanceFunction.innerProduct,
     ));
   }
 
@@ -530,7 +531,7 @@ mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
     return ColumnVectorDistance(VectorDistanceExpression(
       this,
       _encodeValueForQuery(other),
-      VectorDistanceOperator.cosine,
+      VectorDistanceFunction.cosine,
     ));
   }
 
@@ -539,7 +540,7 @@ mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
     return ColumnVectorDistance(VectorDistanceExpression(
       this,
       _encodeValueForQuery(other),
-      VectorDistanceOperator.l1,
+      VectorDistanceFunction.l1,
     ));
   }
 }
@@ -822,31 +823,10 @@ class _NotInSetExpression extends _SetColumnExpression {
   String get operator => 'NOT IN';
 }
 
-/// Vector distance operator type used with pgvector.
-enum VectorDistanceOperator {
-  /// L2 (Euclidean) distance
-  l2,
-
-  /// Inner product distance
-  innerProduct,
-
-  /// Cosine distance
-  cosine,
-
-  /// L1 (Manhattan) distance
-  l1,
-
-  /// Hamming distance (binary vectors)
-  hamming,
-
-  /// Jaccard distance (binary vectors)
-  jaccard,
-}
-
 /// Vector distance expression for use with pgvector.
 class VectorDistanceExpression extends _TwoPartColumnExpression<Vector> {
   /// The vector distance operator to calculate.
-  final VectorDistanceOperator distanceOperator;
+  final VectorDistanceFunction distanceOperator;
 
   /// Creates a new [VectorDistanceExpression].
   VectorDistanceExpression(super.column, super.other, this.distanceOperator);
@@ -854,17 +834,17 @@ class VectorDistanceExpression extends _TwoPartColumnExpression<Vector> {
   @override
   String get operator {
     switch (distanceOperator) {
-      case VectorDistanceOperator.l2:
+      case VectorDistanceFunction.l2:
         return '<->';
-      case VectorDistanceOperator.innerProduct:
+      case VectorDistanceFunction.innerProduct:
         return '<#>';
-      case VectorDistanceOperator.cosine:
+      case VectorDistanceFunction.cosine:
         return '<=>';
-      case VectorDistanceOperator.l1:
+      case VectorDistanceFunction.l1:
         return '<+>';
-      case VectorDistanceOperator.hamming:
+      case VectorDistanceFunction.hamming:
         return '<~>';
-      case VectorDistanceOperator.jaccard:
+      case VectorDistanceFunction.jaccard:
         return '<%>';
     }
   }

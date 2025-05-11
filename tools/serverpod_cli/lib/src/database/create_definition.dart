@@ -65,6 +65,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
+                vectorDistanceFunction: index.vectorDistanceFunction,
+                parameters: index.parameters,
               ),
           ],
           managed: classDefinition.manageMigration,

@@ -1596,6 +1596,12 @@ extension on DatabaseDefinition {
                 'type': literalString(index.type),
                 'isUnique': literalBool(index.isUnique),
                 'isPrimary': literalBool(index.isPrimary),
+                if (index.vectorDistanceFunction != null)
+                  'vectorDistanceFunction': refer(
+                      'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',
+                      serverpodProtocolUrl(serverCode)),
+                if (index.parameters != null)
+                  'parameters': literalMap(index.parameters!),
               }),
           ]),
           'managed': literalBool(table.isManaged),

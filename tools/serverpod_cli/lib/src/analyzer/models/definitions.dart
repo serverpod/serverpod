@@ -329,12 +329,20 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// The vector index distance function, if it is a vector index.
+  final VectorDistanceFunction? vectorDistanceFunction;
+
+  /// The parameters of the index, if any. Used for Vector indexes.
+  final Map<String, String>? parameters;
+
   /// Create a new [SerializableModelIndexDefinition].
   SerializableModelIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
     required this.fields,
+    this.vectorDistanceFunction,
+    this.parameters,
   });
 }
 
