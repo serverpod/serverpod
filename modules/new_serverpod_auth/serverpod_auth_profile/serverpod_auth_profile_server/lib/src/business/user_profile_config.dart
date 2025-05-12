@@ -75,7 +75,9 @@ class UserProfileConfig {
 
 /// Generates a default user image (avatar) for a user who hasn't uploaded a
 /// user image.
-typedef UserImageGenerator = Future<Image> Function(UserProfile userprofile);
+typedef UserImageGenerator = Future<Image> Function(
+  UserProfileModel userProfile,
+);
 
 /// Defines the format of stored user images.
 enum UserProfileImageType {
@@ -86,29 +88,26 @@ enum UserProfileImageType {
   jpg,
 }
 
-/// Callback to be invoked with the new user profile about to be created before it gets created.
-///
-/// The [userProfile] argument will not have an `id` set yet. The callback may modify the passed [userProfile],
-/// in which case the returned value will be inserted in the database.
-typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfile> Function(
+/// Callback to be invoked with the new user profile data before it gets created.
+typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfileModel> Function(
   Session session,
-  UserProfile userProfile,
+  UserProfileModel userProfile,
 );
 
 /// Callback to be invoked with the new user profile after it has been created.
 typedef AfterUserProfileCreatedHandler = FutureOr<void> Function(
   Session session,
-  UserProfile userProfile,
+  UserProfileModel userProfile,
 );
 
 /// Callback to be invoked with the new user profile before it will be updated.
-typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfile> Function(
+typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfileModel> Function(
   Session session,
-  UserProfile userProfile,
+  UserProfileModel userProfile,
 );
 
 /// Callback to be invoked with the updated user profile after it has been updated.
 typedef AfterUserProfileUpdatedHandler = FutureOr<void> Function(
   Session session,
-  UserProfile userProfile,
+  UserProfileModel userProfile,
 );

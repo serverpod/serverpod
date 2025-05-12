@@ -3,8 +3,10 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
+import 'package:serverpod_auth_profile_server/src/generated/user_profile_image.dart';
 import 'package:serverpod_auth_profile_server/src/util/roboto_138_fnt.dart';
 
 /// Business logic to handle user images.
@@ -109,7 +111,17 @@ abstract final class UserProfileImages {
       path: path,
     ))!;
 
-    // Store the path to the image.
+    await setUserImageFromOwnedUrl(session, authUserId, version, publicUrl);
+  }
+
+  /// Sets the profile image to the given URL, which is presumed to be owned by this application.
+  @visibleForTesting
+  static Future<void> setUserImageFromOwnedUrl(
+    final Session session,
+    final UuidValue authUserId,
+    final int version,
+    final Uri publicUrl,
+  ) async {
     var profileImage = UserProfileImage(
       authUserId: authUserId,
       version: version,
@@ -144,7 +156,7 @@ int _colorFromHexStr(final String hexStr) {
 }
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
-Future<Image> defaultUserImageGenerator(final UserProfile userInfo) {
+Future<Image> defaultUserImageGenerator(final UserProfileModel userInfo) {
   return Isolate.run(() {
     final imageSize = UserProfileConfig.current.userImageSize;
     final image = Image(width: 256, height: 256);
@@ -167,7 +179,7 @@ Future<Image> defaultUserImageGenerator(final UserProfile userInfo) {
 
     // Pick color based on user id from the default colors (from material design).
     final color = _defaultUserImageColors[
-        userInfo.id!.hashCode % _defaultUserImageColors.length];
+        userInfo.authUserId.hashCode % _defaultUserImageColors.length];
     fill(image,
         color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
             color & 0xff, (color >> 24) & 0xff));

@@ -24,9 +24,9 @@ void main() {
       test(
         'when creating a user profile, then it can be looked up by (auth) user ID.',
         () async {
-          final createdUserProfile = await UserProfiles.createUserProfile(
+          await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId, userName: 'test_user'),
           );
 
           final foundUserProfile = await UserProfiles.maybeFindUserByUserId(
@@ -34,14 +34,8 @@ void main() {
             authUserId,
           );
 
-          expect(
-            createdUserProfile.id,
-            foundUserProfile?.id,
-          );
-          expect(
-            foundUserProfile?.authUserId,
-            authUserId,
-          );
+          expect(foundUserProfile?.authUserId, authUserId);
+          expect(foundUserProfile?.userName, 'test_user');
         },
       );
 
@@ -50,13 +44,13 @@ void main() {
         () async {
           await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId),
           );
 
           await expectLater(
             () async => await UserProfiles.createUserProfile(
               session,
-              UserProfile(authUserId: authUserId),
+              UserProfileModel(authUserId: authUserId),
             ),
             throwsA(
               isA<Exception>().having(
@@ -81,7 +75,7 @@ void main() {
 
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId),
           );
 
           expect(
@@ -92,34 +86,9 @@ void main() {
       );
 
       test(
-        'when creating a new user profile, then `onBeforeUserProfileCreated` can to redirect to an existing one profile (avoiding a conflict).',
-        () async {
-          final existingProfile = await UserProfiles.createUserProfile(
-            session,
-            UserProfile(authUserId: authUserId),
-          );
-
-          UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileCreated: (final session, final userProfile) =>
-                existingProfile,
-          );
-
-          final createdUserProfile = await UserProfiles.createUserProfile(
-            session,
-            UserProfile(authUserId: authUserId),
-          );
-
-          expect(
-            existingProfile.id,
-            createdUserProfile.id,
-          );
-        },
-      );
-
-      test(
         'when creating a new user profile, then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
         () async {
-          UserProfile? createdProfileFromCallback;
+          UserProfileModel? createdProfileFromCallback;
           UserProfileConfig.current = UserProfileConfig(
               onAfterUserProfileCreated: (final session, final userProfile) {
             createdProfileFromCallback = userProfile;
@@ -127,16 +96,12 @@ void main() {
 
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId),
           );
 
           expect(
-            createdProfileFromCallback?.id,
-            isNotNull,
-          );
-          expect(
-            identical(createdUserProfile, createdProfileFromCallback),
-            isTrue,
+            createdUserProfile.toJsonForProtocol(),
+            equals(createdProfileFromCallback?.toJsonForProtocol()),
           );
         },
       );
@@ -144,17 +109,18 @@ void main() {
       test(
         'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
         () async {
-          UserProfile? updatedProfileFromCallback;
+          UserProfileModel? updatedProfileFromCallback;
           UserProfileConfig.current = UserProfileConfig(
               onBeforeUserProfileUpdated: (final session, final userProfile) {
             updatedProfileFromCallback = userProfile;
             return userProfile.copyWith(
-                userName: 'username from onBeforeUserProfileUpdated hook');
+              userName: 'username from onBeforeUserProfileUpdated hook',
+            );
           });
 
-          final createdUserProfile = await UserProfiles.createUserProfile(
+          await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId),
           );
 
           // Insert does not count as update
@@ -167,14 +133,9 @@ void main() {
           );
 
           expect(
-            updatedProfileFromCallback?.id,
-            createdUserProfile.id!,
-          );
-          expect(
             updatedProfileFromCallback!.fullName,
             'Updated full name',
           );
-
           expect(
             updatedUserProfile.userName,
             'username from onBeforeUserProfileUpdated hook',
@@ -185,15 +146,15 @@ void main() {
       test(
         'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
         () async {
-          UserProfile? updatedProfileFromCallback;
+          UserProfileModel? updatedProfileFromCallback;
           UserProfileConfig.current = UserProfileConfig(
               onAfterUserProfileUpdated: (final session, final userProfile) {
             updatedProfileFromCallback = userProfile;
           });
 
-          final createdUserProfile = await UserProfiles.createUserProfile(
+          await UserProfiles.createUserProfile(
             session,
-            UserProfile(authUserId: authUserId),
+            UserProfileModel(authUserId: authUserId),
           );
 
           // Insert does not count as update
@@ -206,10 +167,6 @@ void main() {
           );
 
           expect(
-            updatedProfileFromCallback?.id,
-            createdUserProfile.id!,
-          );
-          expect(
             updatedProfileFromCallback!.fullName,
             'Updated full name',
           );
@@ -221,7 +178,7 @@ void main() {
         () async {
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfile(
+            UserProfileModel(
               authUserId: authUserId,
               email: 'Test@serverpod.Dev',
             ),
@@ -238,10 +195,7 @@ void main() {
             'test@serverpod.dev',
           );
 
-          expect(
-            resultFromLowerCase?.id,
-            createdUserProfile.id!,
-          );
+          expect(resultFromLowerCase?.authUserId, authUserId);
 
           final resultFromUppercase =
               await UserProfiles.maybeFindUserProfileByEmail(
@@ -249,10 +203,7 @@ void main() {
             'TEST@SERVERPOD.DEV',
           );
 
-          expect(
-            resultFromUppercase?.id,
-            createdUserProfile.id!,
-          );
+          expect(resultFromUppercase?.authUserId, authUserId);
         },
       );
 
@@ -273,7 +224,7 @@ void main() {
 
           final profileA = await UserProfiles.createUserProfile(
             session,
-            UserProfile(
+            UserProfileModel(
               authUserId: userA.id!,
               email: email,
             ),
@@ -281,13 +232,14 @@ void main() {
 
           final profileB = await UserProfiles.createUserProfile(
             session,
-            UserProfile(
+            UserProfileModel(
               authUserId: userB.id!,
               email: email,
             ),
           );
 
-          expect(profileA.id, isNot(profileB.id));
+          expect(profileA.authUserId, userA.id!);
+          expect(profileB.authUserId, userB.id!);
 
           final matchesByEmail = await UserProfiles.maybeFindUserProfileByEmail(
             session,
@@ -317,7 +269,7 @@ void main() {
 
       await UserProfiles.createUserProfile(
         session,
-        UserProfile(authUserId: authUserId),
+        UserProfileModel(authUserId: authUserId),
       );
     });
 
@@ -371,6 +323,40 @@ void main() {
         profileAfterDelete,
         isNull,
       );
+    });
+
+    test(
+        'when the image is updated, then the new URL is available on the profile on read.',
+        () async {
+      // NOTE: This exercises only the libray-internal part of the image handling, as we don't have access to object storage in this test
+
+      await UserProfileImages.setUserImageFromOwnedUrl(
+        session,
+        authUserId,
+        1,
+        Uri.parse('https://serverpod.dev/image1.png'),
+      );
+
+      final readUpdatedProfile = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+
+      expect(readUpdatedProfile?.imageUrl, 'https://serverpod.dev/image1.png');
+
+      await UserProfileImages.setUserImageFromOwnedUrl(
+        session,
+        authUserId,
+        2,
+        Uri.parse('https://serverpod.dev/image2.png'),
+      );
+
+      final readUpdatedProfile2 = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+
+      expect(readUpdatedProfile2?.imageUrl, 'https://serverpod.dev/image2.png');
     });
   });
 }

@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
+import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// User profile management endpoint.
@@ -20,13 +22,7 @@ abstract class UserProfileEndpoint extends Endpoint {
       include: UserProfile.include(image: UserProfileImage.include()),
     );
 
-    return UserProfileModel(
-      authUserId: authUserId,
-      userName: profile?.userName,
-      fullName: profile?.fullName,
-      email: profile?.email,
-      imageUrl: profile?.image?.url,
-    );
+    return profile.toModel(authUserId);
   }
 
   /// Removes the users uploaded image, replacing it with the default user
@@ -81,7 +77,9 @@ abstract class UserProfileEndpoint extends Endpoint {
 
   /// Changes the full name of a user.
   Future<void> changeFullName(
-      final Session session, final String fullName) async {
+    final Session session,
+    final String fullName,
+  ) async {
     if (!UserProfileConfig.current.userCanEditFullName) {
       throw AccessDeniedException(
         message: 'Fullname change is disabled.',

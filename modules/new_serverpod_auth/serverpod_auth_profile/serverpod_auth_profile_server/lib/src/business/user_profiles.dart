@@ -1,5 +1,8 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
+import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.dart';
 
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
@@ -7,9 +10,9 @@ abstract final class UserProfiles {
   ///
   /// In case the `onBeforeUserProfileCreated` hook redirects this creation onto an existing profile,
   /// no profile will be created, but the existing profile will be updated with the return value of the hook.
-  static Future<UserProfile> createUserProfile(
+  static Future<UserProfileModel> createUserProfile(
     final Session session,
-    UserProfile userProfile,
+    UserProfileModel userProfile,
   ) async {
     userProfile = userProfile.copyWith(
       email: userProfile.email?.toLowerCase().trim(),
@@ -19,9 +22,21 @@ abstract final class UserProfiles {
             ?.call(session, userProfile)) ??
         userProfile;
 
-    userProfile = userProfile.id == null
-        ? await UserProfile.db.insertRow(session, userProfile)
-        : await _updateProfile(session, userProfile);
+    if (userProfile.imageUrl != null) {
+      throw Exception('An image can not be set when creating a user.');
+    }
+
+    final savedProfile = await UserProfile.db.insertRow(
+      session,
+      UserProfile(
+        authUserId: userProfile.authUserId,
+        userName: userProfile.userName,
+        fullName: userProfile.fullName,
+        email: userProfile.email,
+      ),
+    );
+
+    userProfile = savedProfile.toModel(userProfile.authUserId);
 
     await UserProfileConfig.current.onAfterUserProfileCreated?.call(
       session,
@@ -35,7 +50,7 @@ abstract final class UserProfiles {
   ///
   /// Returns `null` if no user profile with that email is found,
   /// or there already exist 2 or more with that email address.
-  static Future<UserProfile?> maybeFindUserProfileByEmail(
+  static Future<UserProfileModel?> maybeFindUserProfileByEmail(
     final Session session,
     String email,
   ) async {
@@ -46,7 +61,13 @@ abstract final class UserProfiles {
       where: (final t) => t.email.equals(email),
     );
 
-    return profiles.singleOrNull;
+    final profile = profiles.singleOrNull;
+
+    if (profile == null) {
+      return null;
+    }
+
+    return profile.toModel(profile.authUserId);
   }
 
   /// Find a user profile by the `AuthUser`'s ID.
@@ -54,7 +75,7 @@ abstract final class UserProfiles {
   /// By default the result is cached locally on the server. You can configure the cache
   /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
-  static Future<UserProfile> findUserProfileByUserId(
+  static Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
     final UuidValue userId, {
     final bool useCache = true,
@@ -68,23 +89,24 @@ abstract final class UserProfiles {
   /// result is cached locally on the server. You can configure the cache
   /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
-  static Future<UserProfile?> maybeFindUserByUserId(
+  static Future<UserProfileModel?> maybeFindUserByUserId(
     final Session session,
     final UuidValue authUserId, {
     final bool useCache = true,
   }) async {
     final cacheKey = _userProfileCacheKey(authUserId);
-    UserProfile? userInfo;
+    UserProfileModel? userInfo;
 
     if (useCache) {
-      userInfo = await session.caches.local.get<UserProfile>(cacheKey);
+      userInfo = await session.caches.local.get<UserProfileModel>(cacheKey);
       if (userInfo != null) return userInfo;
     }
 
-    userInfo = await UserProfile.db.findFirstRow(
-      session,
-      where: (final t) => t.authUserId.equals(authUserId),
-    );
+    final userProfile = await _maybeFindUserProfile(session, authUserId);
+
+    if (userProfile != null) {
+      userInfo = userProfile.toModel(authUserId);
+    }
 
     if (useCache && userInfo != null) {
       await session.caches.local.put(
@@ -98,60 +120,59 @@ abstract final class UserProfiles {
   }
 
   /// Updates a profiles's user name.
-  static Future<UserProfile> changeUserName(
+  static Future<UserProfileModel> changeUserName(
     final Session session,
     final UuidValue userId,
     final String newUserName,
   ) async {
-    var userProfile = await findUserProfileByUserId(
+    final userProfile = await _findUserProfile(
       session,
       userId,
-      useCache: false,
     );
 
     userProfile.userName = newUserName;
 
-    userProfile = await _updateProfile(session, userProfile);
+    final updatedProfile = await _updateProfile(session, userProfile);
 
-    return userProfile;
+    return updatedProfile.toModel(userId);
   }
 
   /// Updates a profile's full name.
-  static Future<UserProfile> changeFullName(
+  static Future<UserProfileModel> changeFullName(
     final Session session,
     final UuidValue userId,
     final String newFullName,
   ) async {
-    var userProfile = await findUserProfileByUserId(
+    final userProfile = await _findUserProfile(
       session,
       userId,
-      useCache: false,
     );
 
     userProfile.fullName = newFullName;
 
-    userProfile = await _updateProfile(session, userProfile);
+    final updatedProfile = await _updateProfile(session, userProfile);
 
-    return userProfile;
+    return updatedProfile.toModel(userId);
   }
 
   /// Updates a profile's image.
-  static Future<UserProfile> changeImage(
+  @internal
+  static Future<UserProfileModel> changeImage(
     final Session session,
     final UuidValue userId,
     final UserProfileImage? newImage,
   ) async {
-    var userProfile = await findUserProfileByUserId(
+    var userProfile = await _findUserProfile(
       session,
       userId,
-      useCache: false,
     );
 
+    userProfile.imageId = newImage?.id!;
     userProfile.image = newImage;
 
     userProfile = await _updateProfile(session, userProfile);
 
-    return userProfile;
+    return userProfile.toModel(userId);
   }
 
   /// Remove the user profile for the given [authUserId].
@@ -173,21 +194,46 @@ abstract final class UserProfiles {
     final Session session,
     UserProfile userProfile,
   ) async {
-    userProfile =
-        await UserProfileConfig.current.onBeforeUserProfileUpdated?.call(
-              session,
-              userProfile,
-            ) ??
-            userProfile;
+    if (userProfile.imageId != null && userProfile.image == null) {
+      throw Exception(
+        'Can not update profile with an `imageId` when the full `image` is not set.',
+      );
+    }
+    if (userProfile.imageId != userProfile.image?.id) {
+      throw Exception(
+        'Can not update profile when `imageId` and `image` do not point to the same entity.',
+      );
+    }
 
-    userProfile = await UserProfile.db.updateRow(session, userProfile);
+    final modelBeforeChange = userProfile.toModel(userProfile.authUserId);
+    final modifiedProfile = await UserProfileConfig
+        .current.onBeforeUserProfileUpdated
+        ?.call(session, modelBeforeChange);
+    if (modifiedProfile != null) {
+      if (modifiedProfile.imageUrl != modelBeforeChange.imageUrl) {
+        throw Exception(
+          "The profile's `imageUrl` must not be changed by the `onBeforeUserProfileUpdated` hook",
+        );
+      }
 
-    await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
+      userProfile = userProfile.copyWith(
+        userName: modifiedProfile.userName,
+        fullName: modifiedProfile.fullName,
+        email: modifiedProfile.email,
+      );
+    }
+
+    userProfile = await UserProfile.db.updateRow(
       session,
       userProfile,
     );
 
-    await _invalidateCacheForUser(session, userProfile.id!);
+    await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
+      session,
+      userProfile.toModel(userProfile.authUserId),
+    );
+
+    await _invalidateCacheForUser(session, userProfile.authUserId);
 
     return userProfile;
   }
@@ -208,5 +254,33 @@ abstract final class UserProfiles {
     final cacheKey = _userProfileCacheKey(userId);
 
     await session.caches.local.invalidateKey(cacheKey);
+  }
+
+  static Future<UserProfile?> _maybeFindUserProfile(
+    final Session session,
+    final UuidValue authUserId,
+  ) async {
+    final userProfile = await UserProfile.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(authUserId),
+      include: UserProfile.include(
+        image: UserProfileImage.include(),
+      ),
+    );
+
+    return userProfile;
+  }
+
+  static Future<UserProfile> _findUserProfile(
+    final Session session,
+    final UuidValue authUserId,
+  ) async {
+    final userProfile = await _maybeFindUserProfile(session, authUserId);
+
+    if (userProfile == null) {
+      throw Exception('Did not find profile for user "$authUserId"');
+    }
+
+    return userProfile;
   }
 }
