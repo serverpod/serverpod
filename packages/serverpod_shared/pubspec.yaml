@@ -12,11 +12,11 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  yaml: ^3.1.1
+  yaml: ^3.1.2
   path: ^1.8.2
   super_string: ^1.0.3
   crypto: ^3.0.2
-  meta: ^1.8.0
+  meta: ^1.11.0
 
 dev_dependencies:
   serverpod_lints: 2.6.0
