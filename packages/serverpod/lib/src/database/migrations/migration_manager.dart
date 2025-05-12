@@ -204,6 +204,12 @@ class MigrationManager {
     /// Use a transaction to ensure that the advisory lock is retained
     /// until the transaction is completed.
     ///
+    /// The transaction ensures that the session used for acquiring the
+    /// lock is kept alive in the underlying connection pool, and that we
+    /// can later use that exact same session for releasing the lock.
+    /// The transaction is thus only used to get the desired behavior from
+    /// the database driver, and does not have any effect on the Postgres level.
+    ///
     /// This ensures that we are only running migrations once at a time.
     await session.db.transaction((transaction) async {
       await session.db.unsafeExecute(
