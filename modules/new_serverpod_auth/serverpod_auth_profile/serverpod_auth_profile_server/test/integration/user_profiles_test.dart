@@ -139,16 +139,16 @@ void main() {
     },
   );
 
-  withServerpod('Given the `UserProfiles` and an `AuthUser` with a profile,',
+  withServerpod(
+      'Given the `UserProfiles` and an `AuthUser` with an empty profile,',
       (final sessionBuilder, final endpoints) {
     late Session session;
-    late AuthUser authUser;
     late UuidValue authUserId;
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUser = await AuthUser.db.insertRow(
+      final authUser = await AuthUser.db.insertRow(
         session,
         AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
       );
@@ -157,80 +157,6 @@ void main() {
       await UserProfiles.createUserProfile(
         session,
         UserProfileModel(authUserId: authUserId),
-      );
-
-      await UserProfiles.setUserImageFromOwnedUrl(
-        session,
-        authUserId,
-        1,
-        Uri.parse('https://serverpod.dev/image1.png'),
-      );
-    });
-
-    test('when deleting the user profile, then the auth user is unaffected.',
-        () async {
-      final userProfile = await UserProfiles.maybeFindUserByUserId(
-        session,
-        authUserId,
-      );
-      expect(userProfile, isNotNull);
-      expect(userProfile?.imageUrl, isNotNull);
-
-      await UserProfiles.deleteProfileForUser(session, authUserId);
-
-      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
-        session,
-        authUserId,
-      );
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
-
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        authUserAfterDelete,
-        isNotNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
-      );
-    });
-
-    test('when deleting the auth user, then the profile is cleaned up as well.',
-        () async {
-      await AuthUser.db.deleteRow(session, authUser);
-
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
-
-      expect(
-        authUserAfterDelete,
-        isNull,
-      );
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
       );
     });
 
@@ -345,5 +271,181 @@ void main() {
         );
       },
     );
+
+    test(
+      "when updating the profile's user name, then the updated value is visible through the cached `findUserProfileByUserId` method.",
+      () async {
+        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBeforeUpdate.userName, isNull);
+
+        final updatedResult = await UserProfiles.changeUserName(
+          session,
+          authUserId,
+          'updated',
+        );
+        expect(updatedResult.userName, 'updated');
+
+        final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileAfterUpdate.userName, 'updated');
+      },
+    );
+
+    test(
+      "when updating the profile's full name, then the updated value is visible through the cached `findUserProfileByUserId` method.",
+      () async {
+        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBeforeUpdate.fullName, isNull);
+
+        final updatedResult = await UserProfiles.changeFullName(
+          session,
+          authUserId,
+          'updated',
+        );
+        expect(updatedResult.fullName, 'updated');
+
+        final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileAfterUpdate.fullName, 'updated');
+      },
+    );
+
+    test(
+      "when updating the profile's image, then the updated value is visible through the cached `findUserProfileByUserId` method.",
+      () async {
+        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBeforeUpdate.imageUrl, isNull);
+
+        final updatedResult = await UserProfiles.setUserImageFromOwnedUrl(
+          session,
+          authUserId,
+          1,
+          Uri.parse('https://serverpod.dev/image1.png'),
+        );
+        expect(
+          updatedResult.imageUrl.toString(),
+          'https://serverpod.dev/image1.png',
+        );
+
+        final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(
+          profileAfterUpdate.imageUrl?.toString(),
+          'https://serverpod.dev/image1.png',
+        );
+      },
+    );
+  });
+
+  withServerpod(
+      'Given the `UserProfiles` and an `AuthUser` with a profile with an image,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late AuthUser authUser;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+      authUserId = authUser.id!;
+
+      await UserProfiles.createUserProfile(
+        session,
+        UserProfileModel(authUserId: authUserId),
+      );
+
+      await UserProfiles.setUserImageFromOwnedUrl(
+        session,
+        authUserId,
+        1,
+        Uri.parse('https://serverpod.dev/image1.png'),
+      );
+    });
+
+    test('when deleting the user profile, then the auth user is unaffected.',
+        () async {
+      final userProfile = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+      expect(userProfile, isNotNull);
+      expect(userProfile?.imageUrl, isNotNull);
+
+      await UserProfiles.deleteProfileForUser(session, authUserId);
+
+      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+      final authUserAfterDelete = await AuthUser.db.findById(
+        session,
+        authUserId,
+      );
+      final profileImagesAfterDelete = await UserProfileImage.db.find(
+        session,
+      );
+
+      expect(
+        profileAfterDelete,
+        isNull,
+      );
+      expect(
+        authUserAfterDelete,
+        isNotNull,
+      );
+      expect(
+        profileImagesAfterDelete,
+        isEmpty,
+      );
+    });
+
+    test('when deleting the auth user, then the profile is cleaned up as well.',
+        () async {
+      await AuthUser.db.deleteRow(session, authUser);
+
+      final authUserAfterDelete = await AuthUser.db.findById(
+        session,
+        authUserId,
+      );
+      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+      final profileImagesAfterDelete = await UserProfileImage.db.find(
+        session,
+      );
+
+      expect(
+        authUserAfterDelete,
+        isNull,
+      );
+      expect(
+        profileAfterDelete,
+        isNull,
+      );
+      expect(
+        profileImagesAfterDelete,
+        isEmpty,
+      );
+    });
   });
 }
