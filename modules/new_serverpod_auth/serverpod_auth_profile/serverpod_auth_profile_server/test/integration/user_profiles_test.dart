@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
+import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -271,6 +272,13 @@ void main() {
         session,
         UserProfileModel(authUserId: authUserId),
       );
+
+      await UserProfiles.setUserImageFromOwnedUrl(
+        session,
+        authUserId,
+        1,
+        Uri.parse('https://serverpod.dev/image1.png'),
+      );
     });
 
     test('when deleting the user profile, then the auth user is unaffected.',
@@ -280,6 +288,7 @@ void main() {
         authUserId,
       );
       expect(userProfile, isNotNull);
+      expect(userProfile?.imageUrl, isNotNull);
 
       await UserProfiles.deleteProfileForUser(session, authUserId);
 
@@ -291,6 +300,9 @@ void main() {
         session,
         authUserId,
       );
+      final profileImagesAfterDelete = await UserProfileImage.db.find(
+        session,
+      );
 
       expect(
         profileAfterDelete,
@@ -299,6 +311,10 @@ void main() {
       expect(
         authUserAfterDelete,
         isNotNull,
+      );
+      expect(
+        profileImagesAfterDelete,
+        isEmpty,
       );
     });
 
@@ -314,6 +330,9 @@ void main() {
         session,
         authUserId,
       );
+      final profileImagesAfterDelete = await UserProfileImage.db.find(
+        session,
+      );
 
       expect(
         authUserAfterDelete,
@@ -322,6 +341,10 @@ void main() {
       expect(
         profileAfterDelete,
         isNull,
+      );
+      expect(
+        profileImagesAfterDelete,
+        isEmpty,
       );
     });
 

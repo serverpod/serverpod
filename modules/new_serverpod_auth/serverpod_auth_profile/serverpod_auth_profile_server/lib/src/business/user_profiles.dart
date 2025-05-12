@@ -232,7 +232,11 @@ abstract final class UserProfiles {
         await UserProfileConfig.current.userImageGenerator(userProfile);
     final imageBytes = await Isolate.run(() => _encodeImage(image));
 
-    return _setUserImage(session, authUserId, imageBytes);
+    return _setUserImage(
+      session,
+      authUserId,
+      imageBytes,
+    );
   }
 
   static Uint8List _encodeImage(final Image image) =>
@@ -249,10 +253,12 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes,
   ) async {
+    final userProfile = await _findUserProfile(session, authUserId);
+
     // Find the latest version of the user image if any.
     final oldImageRef = await UserProfileImage.db.findFirstRow(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
+      where: (final t) => t.userProfileId.equals(userProfile.id!),
       orderBy: (final t) => t.version,
       orderDescending: true,
     );
@@ -290,18 +296,15 @@ abstract final class UserProfiles {
     final int version,
     final Uri publicUrl,
   ) async {
+    var userProfile = await _findUserProfile(session, authUserId);
+
     var profileImage = UserProfileImage(
-      authUserId: authUserId,
+      userProfileId: userProfile.id!,
       version: version,
       url: publicUrl,
     );
 
     profileImage = await UserProfileImage.db.insertRow(session, profileImage);
-
-    var userProfile = await _findUserProfile(
-      session,
-      authUserId,
-    );
 
     userProfile.imageId = profileImage.id!;
     userProfile.image = profileImage;
