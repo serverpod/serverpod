@@ -24,25 +24,28 @@ abstract class UserProfileEndpoint extends Endpoint {
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
-  Future<void> removeUserImage(final Session session) async {
+  Future<UserProfileModel> removeUserImage(final Session session) async {
     if (!UserProfileConfig.current.userCanEditUserImage) {
       throw AccessDeniedException(message: 'User image change is disabled.');
     }
 
     final userId = (await session.authenticated)!.userUuid;
 
-    await UserProfileImages.setDefaultUserImage(session, userId);
+    return UserProfiles.setDefaultUserImage(session, userId);
   }
 
   /// Sets a new user image for the signed in user.
-  Future<void> setUserImage(final Session session, final ByteData image) async {
+  Future<UserProfileModel> setUserImage(
+    final Session session,
+    final ByteData image,
+  ) async {
     if (!UserProfileConfig.current.userCanEditUserImage) {
       throw AccessDeniedException(message: 'User image change is disabled.');
     }
 
     final userId = (await session.authenticated)!.userUuid;
 
-    await UserProfileImages.setUserImageFromBytes(
+    return UserProfiles.setUserImageFromBytes(
       session,
       userId,
       image.buffer.asUint8List(),
@@ -50,7 +53,7 @@ abstract class UserProfileEndpoint extends Endpoint {
   }
 
   /// Changes the name of a user.
-  Future<void> changeUserName(
+  Future<UserProfileModel> changeUserName(
     final Session session,
     final String userName,
   ) async {
@@ -69,11 +72,11 @@ abstract class UserProfileEndpoint extends Endpoint {
 
     final userId = (await session.authenticated)!.userUuid;
 
-    await UserProfiles.changeUserName(session, userId, trimmedUserName);
+    return UserProfiles.changeUserName(session, userId, trimmedUserName);
   }
 
   /// Changes the full name of a user.
-  Future<void> changeFullName(
+  Future<UserProfileModel> changeFullName(
     final Session session,
     final String fullName,
   ) async {
@@ -94,6 +97,6 @@ abstract class UserProfileEndpoint extends Endpoint {
 
     final userId = (await session.authenticated)!.userUuid;
 
-    await UserProfiles.changeFullName(session, userId, trimmedFullName);
+    return UserProfiles.changeFullName(session, userId, trimmedFullName);
   }
 }

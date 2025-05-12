@@ -330,7 +330,7 @@ void main() {
         () async {
       // NOTE: This exercises only the libray-internal part of the image handling, as we don't have access to object storage in this test
 
-      await UserProfileImages.setUserImageFromOwnedUrl(
+      await UserProfiles.setUserImageFromOwnedUrl(
         session,
         authUserId,
         1,
@@ -347,7 +347,7 @@ void main() {
         'https://serverpod.dev/image1.png',
       );
 
-      await UserProfileImages.setUserImageFromOwnedUrl(
+      await UserProfiles.setUserImageFromOwnedUrl(
         session,
         authUserId,
         2,

@@ -1,3 +1,8 @@
+import 'dart:isolate';
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
+import 'package:image/image.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
@@ -156,26 +161,6 @@ abstract final class UserProfiles {
     return updatedProfile.toModel();
   }
 
-  /// Updates a profile's image.
-  @internal
-  static Future<UserProfileModel> changeImage(
-    final Session session,
-    final UuidValue authUserId,
-    final UserProfileImage? newImage,
-  ) async {
-    var userProfile = await _findUserProfile(
-      session,
-      authUserId,
-    );
-
-    userProfile.imageId = newImage?.id!;
-    userProfile.image = newImage;
-
-    userProfile = await _updateProfile(session, userProfile);
-
-    return userProfile.toModel();
-  }
-
   /// Remove the user profile for the given [authUserId].
   ///
   /// In case the user did not have a profile, nothing is changed.
@@ -190,6 +175,142 @@ abstract final class UserProfiles {
 
     await _invalidateCacheForUser(session, authUserId);
   }
+
+// #region Profile images
+
+  /// Sets a user's image from the provided [url].
+  ///
+  /// The image is downloaded, stored in the cloud and associated with the user.
+  static Future<UserProfileModel> setUserImageFromUrl(
+    final Session session,
+    final UuidValue authUserId,
+    final Uri url,
+  ) async {
+    final result = await http.get(url);
+    final bytes = result.bodyBytes;
+
+    return setUserImageFromBytes(session, authUserId, bytes);
+  }
+
+  /// Sets a user's image from image data.
+  ///
+  /// The image is resized before being stored in the cloud and associated with the user.
+  static Future<UserProfileModel> setUserImageFromBytes(
+    final Session session,
+    final UuidValue authUserId,
+    final Uint8List imageBytes,
+  ) async {
+    final reEncodedImageBytes = await Isolate.run(() async {
+      var image = decodeImage(imageBytes)!;
+
+      final imageSize = UserProfileConfig.current.userImageSize;
+      if (image.width != imageSize || image.height != imageSize) {
+        image = copyResizeCropSquare(
+          image,
+          size: imageSize,
+          interpolation: Interpolation.average,
+        );
+      }
+
+      return _encodeImage(image);
+    });
+
+    return _setUserImage(session, authUserId, reEncodedImageBytes);
+  }
+
+  /// Sets a user's image to the default image for that user.
+  static Future<UserProfileModel> setDefaultUserImage(
+    final Session session,
+    final UuidValue authUserId,
+  ) async {
+    final userProfile = await UserProfiles.findUserProfileByUserId(
+      session,
+      authUserId,
+    );
+
+    final image =
+        await UserProfileConfig.current.userImageGenerator(userProfile);
+    final imageBytes = await Isolate.run(() => _encodeImage(image));
+
+    return _setUserImage(session, authUserId, imageBytes);
+  }
+
+  static Uint8List _encodeImage(final Image image) =>
+      switch (UserProfileConfig.current.userImageFormat) {
+        UserProfileImageType.jpg => encodeJpg(
+            image,
+            quality: UserProfileConfig.current.userImageQuality,
+          ),
+        UserProfileImageType.png => encodePng(image),
+      };
+
+  static Future<UserProfileModel> _setUserImage(
+    final Session session,
+    final UuidValue authUserId,
+    final Uint8List imageBytes,
+  ) async {
+    // Find the latest version of the user image if any.
+    final oldImageRef = await UserProfileImage.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(authUserId),
+      orderBy: (final t) => t.version,
+      orderDescending: true,
+    );
+
+    // Add one to the version number or create a new version 1.
+    final version = (oldImageRef?.version ?? 0) + 1;
+
+    String pathExtension;
+    if (UserProfileConfig.current.userImageFormat == UserProfileImageType.jpg) {
+      pathExtension = '.jpg';
+    } else {
+      pathExtension = '.png';
+    }
+
+    // Store the image.
+    final path = 'serverpod/user_images/$authUserId-$version$pathExtension';
+    await session.storage.storeFile(
+      storageId: 'public',
+      path: path,
+      byteData: ByteData.view(imageBytes.buffer),
+    );
+    final publicUrl = (await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: path,
+    ))!;
+
+    return setUserImageFromOwnedUrl(session, authUserId, version, publicUrl);
+  }
+
+  /// Sets the profile image to the given URL, which is presumed to be owned by this application.
+  @visibleForTesting
+  static Future<UserProfileModel> setUserImageFromOwnedUrl(
+    final Session session,
+    final UuidValue authUserId,
+    final int version,
+    final Uri publicUrl,
+  ) async {
+    var profileImage = UserProfileImage(
+      authUserId: authUserId,
+      version: version,
+      url: publicUrl,
+    );
+
+    profileImage = await UserProfileImage.db.insertRow(session, profileImage);
+
+    var userProfile = await _findUserProfile(
+      session,
+      authUserId,
+    );
+
+    userProfile.imageId = profileImage.id!;
+    userProfile.image = profileImage;
+
+    userProfile = await _updateProfile(session, userProfile);
+
+    return userProfile.toModel();
+  }
+// #endregion
 
   static Future<UserProfile> _updateProfile(
     final Session session,
@@ -229,12 +350,12 @@ abstract final class UserProfiles {
       userProfile,
     );
 
+    await _invalidateCacheForUser(session, userProfile.authUserId);
+
     await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
       session,
       userProfile.toModel(),
     );
-
-    await _invalidateCacheForUser(session, userProfile.authUserId);
 
     return userProfile;
   }
