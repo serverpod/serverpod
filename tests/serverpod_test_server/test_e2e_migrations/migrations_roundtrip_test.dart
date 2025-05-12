@@ -1124,4 +1124,91 @@ fields:
       expect(migrationRegistry.versions, isNot(contains(tag)));
     });
   });
+
+  /// Issue: https://github.com/serverpod/serverpod/issues/3503
+  group(
+      'Given an existing table when a new table is added that is lexically sorted after the existing table and the existing table references the new table',
+      () {
+    var oldTable = 'a_old_table';
+    var newTable = 'z_new_table';
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS $oldTable, $newTable;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    test(
+        'when creating and applying migrations then both tables and the relation exist in the database.',
+        () async {
+      var initialTag = 'create-old-table';
+      // a Prefix ensure that it is lexically sorted before the new table
+      var initialStateProtocols = {
+        oldTable: '''
+class: OldTable
+table: $oldTable
+fields:
+  name: String
+'''
+      };
+      await MigrationTestUtils.createInitialState(
+          migrationProtocols: [initialStateProtocols], tag: initialTag);
+
+      var newTag = 'add-new-table-with-relation';
+      // z Prefix ensure that it is lexically sorted after the old table
+      var targetStateProtocols = {
+        oldTable: '''
+class: OldTable
+table: $oldTable
+fields:
+  name: String
+  newTableId: NewTable?, relation(optional)
+''',
+        newTable: '''
+class: NewTable
+table: $newTable
+fields:
+  description: String
+'''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: newTag,
+      );
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyNewMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+      expect(
+        applyNewMigrationExitCode,
+        0,
+        reason: 'Failed to apply new migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+      var databaseTables = liveDefinition.tables.map((t) => t.name);
+      expect(
+        databaseTables,
+        containsAll([oldTable, newTable]),
+        reason: 'Could not find both tables in live table definitions.',
+      );
+
+      var oldTableDefinition = liveDefinition.tables.firstWhere(
+        (t) => t.name == oldTable,
+      );
+      var relations = oldTableDefinition.foreignKeys;
+      expect(
+        relations,
+        isNotEmpty,
+        reason: 'Could not find relation from old_table to new_table.',
+      );
+    });
+  });
 }
