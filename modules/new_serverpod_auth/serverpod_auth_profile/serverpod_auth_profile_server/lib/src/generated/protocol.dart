@@ -158,7 +158,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
-          name: 'authUserId',
+          name: 'userProfileId',
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
@@ -179,8 +179,8 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_profile_user_profile_image_fk_0',
-          columns: ['authUserId'],
-          referenceTable: 'serverpod_auth_user',
+          columns: ['userProfileId'],
+          referenceTable: 'serverpod_auth_profile_user_profile',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -209,7 +209,7 @@ class Protocol extends _i1.SerializationManagerServer {
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'authUserId',
+              definition: 'userProfileId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,

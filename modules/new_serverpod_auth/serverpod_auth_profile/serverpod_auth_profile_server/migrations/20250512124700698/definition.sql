@@ -22,13 +22,13 @@ CREATE UNIQUE INDEX "serverpod_auth_profile_user_profile_email_auth_user_id" ON 
 --
 CREATE TABLE "serverpod_auth_profile_user_profile_image" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "authUserId" uuid NOT NULL,
+    "userProfileId" uuid NOT NULL,
     "version" bigint NOT NULL,
     "url" text NOT NULL
 );
 
 -- Indexes
-CREATE INDEX "serverpod_auth_profile_user_profile_image_auth_user_id_version" ON "serverpod_auth_profile_user_profile_image" USING btree ("authUserId", "version");
+CREATE INDEX "serverpod_auth_profile_user_profile_image_auth_user_id_version" ON "serverpod_auth_profile_user_profile_image" USING btree ("userProfileId", "version");
 
 --
 -- Class CloudStorageEntry as table serverpod_cloud_storage
@@ -267,8 +267,8 @@ ALTER TABLE ONLY "serverpod_auth_profile_user_profile"
 --
 ALTER TABLE ONLY "serverpod_auth_profile_user_profile_image"
     ADD CONSTRAINT "serverpod_auth_profile_user_profile_image_fk_0"
-    FOREIGN KEY("authUserId")
-    REFERENCES "serverpod_auth_user"("id")
+    FOREIGN KEY("userProfileId")
+    REFERENCES "serverpod_auth_profile_user_profile"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -307,9 +307,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_profile
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_profile', '20250512120555218', now())
+    VALUES ('serverpod_auth_profile', '20250512124700698', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250512120555218', "timestamp" = now();
+    DO UPDATE SET "version" = '20250512124700698', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

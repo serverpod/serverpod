@@ -12,23 +12,22 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i2;
+import 'user_profile.dart' as _i2;
 
 abstract class UserProfileImage
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   UserProfileImage._({
     this.id,
-    required this.authUserId,
-    this.authUser,
+    required this.userProfileId,
+    this.userProfile,
     required this.version,
     required this.url,
   });
 
   factory UserProfileImage({
     _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _i1.UuidValue userProfileId,
+    _i2.UserProfile? userProfile,
     required int version,
     required Uri url,
   }) = _UserProfileImageImpl;
@@ -38,12 +37,12 @@ abstract class UserProfileImage
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
+      userProfileId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['userProfileId']),
+      userProfile: jsonSerialization['userProfile'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+          : _i2.UserProfile.fromJson(
+              (jsonSerialization['userProfile'] as Map<String, dynamic>)),
       version: jsonSerialization['version'] as int,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
     );
@@ -56,10 +55,10 @@ abstract class UserProfileImage
   @override
   _i1.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _i1.UuidValue userProfileId;
 
-  /// The [AuthUser] this profile image belongs to
-  _i2.AuthUser? authUser;
+  /// The [UserProfile] this image belongs to.
+  _i2.UserProfile? userProfile;
 
   /// Version of the image. Increased by one for every uploaded image.
   int version;
@@ -75,8 +74,8 @@ abstract class UserProfileImage
   @_i1.useResult
   UserProfileImage copyWith({
     _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _i1.UuidValue? userProfileId,
+    _i2.UserProfile? userProfile,
     int? version,
     Uri? url,
   });
@@ -84,8 +83,8 @@ abstract class UserProfileImage
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'authUserId': authUserId.toJson(),
-      if (authUser != null) 'authUser': authUser?.toJson(),
+      'userProfileId': userProfileId.toJson(),
+      if (userProfile != null) 'userProfile': userProfile?.toJson(),
       'version': version,
       'url': url.toJson(),
     };
@@ -96,8 +95,9 @@ abstract class UserProfileImage
     return {if (id != null) 'id': id?.toJson()};
   }
 
-  static UserProfileImageInclude include({_i2.AuthUserInclude? authUser}) {
-    return UserProfileImageInclude._(authUser: authUser);
+  static UserProfileImageInclude include(
+      {_i2.UserProfileInclude? userProfile}) {
+    return UserProfileImageInclude._(userProfile: userProfile);
   }
 
   static UserProfileImageIncludeList includeList({
@@ -131,14 +131,14 @@ class _Undefined {}
 class _UserProfileImageImpl extends UserProfileImage {
   _UserProfileImageImpl({
     _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _i1.UuidValue userProfileId,
+    _i2.UserProfile? userProfile,
     required int version,
     required Uri url,
   }) : super._(
           id: id,
-          authUserId: authUserId,
-          authUser: authUser,
+          userProfileId: userProfileId,
+          userProfile: userProfile,
           version: version,
           url: url,
         );
@@ -149,16 +149,17 @@ class _UserProfileImageImpl extends UserProfileImage {
   @override
   UserProfileImage copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
-    Object? authUser = _Undefined,
+    _i1.UuidValue? userProfileId,
+    Object? userProfile = _Undefined,
     int? version,
     Uri? url,
   }) {
     return UserProfileImage(
       id: id is _i1.UuidValue? ? id : this.id,
-      authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      userProfileId: userProfileId ?? this.userProfileId,
+      userProfile: userProfile is _i2.UserProfile?
+          ? userProfile
+          : this.userProfile?.copyWith(),
       version: version ?? this.version,
       url: url ?? this.url,
     );
@@ -168,8 +169,8 @@ class _UserProfileImageImpl extends UserProfileImage {
 class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileImageTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_profile_user_profile_image') {
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
+    userProfileId = _i1.ColumnUuid(
+      'userProfileId',
       this,
     );
     version = _i1.ColumnInt(
@@ -182,10 +183,10 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
-  late final _i1.ColumnUuid authUserId;
+  late final _i1.ColumnUuid userProfileId;
 
-  /// The [AuthUser] this profile image belongs to
-  _i2.AuthUserTable? _authUser;
+  /// The [UserProfile] this image belongs to.
+  _i2.UserProfileTable? _userProfile;
 
   /// Version of the image. Increased by one for every uploaded image.
   late final _i1.ColumnInt version;
@@ -193,45 +194,45 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   /// The URL to the image.
   late final _i1.ColumnUri url;
 
-  _i2.AuthUserTable get authUser {
-    if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
-      relationFieldName: 'authUser',
-      field: UserProfileImage.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+  _i2.UserProfileTable get userProfile {
+    if (_userProfile != null) return _userProfile!;
+    _userProfile = _i1.createRelationTable(
+      relationFieldName: 'userProfile',
+      field: UserProfileImage.t.userProfileId,
+      foreignField: _i2.UserProfile.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _i2.UserProfileTable(tableRelation: foreignTableRelation),
     );
-    return _authUser!;
+    return _userProfile!;
   }
 
   @override
   List<_i1.Column> get columns => [
         id,
-        authUserId,
+        userProfileId,
         version,
         url,
       ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'authUser') {
-      return authUser;
+    if (relationField == 'userProfile') {
+      return userProfile;
     }
     return null;
   }
 }
 
 class UserProfileImageInclude extends _i1.IncludeObject {
-  UserProfileImageInclude._({_i2.AuthUserInclude? authUser}) {
-    _authUser = authUser;
+  UserProfileImageInclude._({_i2.UserProfileInclude? userProfile}) {
+    _userProfile = userProfile;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _i2.UserProfileInclude? _userProfile;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _i1.Include?> get includes => {'userProfile': _userProfile};
 
   @override
   _i1.Table<_i1.UuidValue?> get table => UserProfileImage.t;
@@ -481,25 +482,26 @@ class UserProfileImageRepository {
 class UserProfileImageAttachRowRepository {
   const UserProfileImageAttachRowRepository._();
 
-  /// Creates a relation between the given [UserProfileImage] and [AuthUser]
-  /// by setting the [UserProfileImage]'s foreign key `authUserId` to refer to the [AuthUser].
-  Future<void> authUser(
+  /// Creates a relation between the given [UserProfileImage] and [UserProfile]
+  /// by setting the [UserProfileImage]'s foreign key `userProfileId` to refer to the [UserProfile].
+  Future<void> userProfile(
     _i1.Session session,
     UserProfileImage userProfileImage,
-    _i2.AuthUser authUser, {
+    _i2.UserProfile userProfile, {
     _i1.Transaction? transaction,
   }) async {
     if (userProfileImage.id == null) {
       throw ArgumentError.notNull('userProfileImage.id');
     }
-    if (authUser.id == null) {
-      throw ArgumentError.notNull('authUser.id');
+    if (userProfile.id == null) {
+      throw ArgumentError.notNull('userProfile.id');
     }
 
-    var $userProfileImage = userProfileImage.copyWith(authUserId: authUser.id);
+    var $userProfileImage =
+        userProfileImage.copyWith(userProfileId: userProfile.id);
     await session.db.updateRow<UserProfileImage>(
       $userProfileImage,
-      columns: [UserProfileImage.t.authUserId],
+      columns: [UserProfileImage.t.userProfileId],
       transaction: transaction,
     );
   }

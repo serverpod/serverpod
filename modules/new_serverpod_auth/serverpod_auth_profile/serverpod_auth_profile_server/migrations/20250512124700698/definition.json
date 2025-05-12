@@ -134,7 +134,7 @@
           "dartType": "UuidValue?"
         },
         {
-          "name": "authUserId",
+          "name": "userProfileId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -156,9 +156,9 @@
         {
           "constraintName": "serverpod_auth_profile_user_profile_image_fk_0",
           "columns": [
-            "authUserId"
+            "userProfileId"
           ],
-          "referenceTable": "serverpod_auth_user",
+          "referenceTable": "serverpod_auth_profile_user_profile",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -185,7 +185,7 @@
           "elements": [
             {
               "type": 0,
-              "definition": "authUserId"
+              "definition": "userProfileId"
             },
             {
               "type": 0,
@@ -1389,7 +1389,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_profile",
-      "version": "20250512120555218"
+      "version": "20250512124700698"
     },
     {
       "module": "serverpod",
