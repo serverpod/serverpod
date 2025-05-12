@@ -23,7 +23,7 @@ void main() {
       });
 
       test(
-        'when creating a user profile, then it can be looked up by (auth) user ID.',
+        'when creating a user profile, then it can be looked up by the auth user ID.',
         () async {
           await UserProfiles.createUserProfile(
             session,
@@ -37,32 +37,6 @@ void main() {
 
           expect(foundUserProfile?.authUserId, authUserId);
           expect(foundUserProfile?.userName, 'test_user');
-        },
-      );
-
-      test(
-        'when trying to create a second user profile for the same auth user, then this fails.',
-        () async {
-          await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(authUserId: authUserId),
-          );
-
-          await expectLater(
-            () async => await UserProfiles.createUserProfile(
-              session,
-              UserProfileModel(authUserId: authUserId),
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains(
-                  'duplicate key value violates unique constraint',
-                ),
-              ),
-            ),
-          );
         },
       );
 
@@ -108,15 +82,13 @@ void main() {
       );
 
       test(
-        'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
+        'when creating a new user profile, then `onBeforeUserProfileUpdated` is not invoked.',
         () async {
-          UserProfileModel? updatedProfileFromCallback;
+          var invoked = false;
           UserProfileConfig.current = UserProfileConfig(
               onBeforeUserProfileUpdated: (final session, final userProfile) {
-            updatedProfileFromCallback = userProfile;
-            return userProfile.copyWith(
-              userName: 'username from onBeforeUserProfileUpdated hook',
-            );
+            invoked = true;
+            return userProfile;
           });
 
           await UserProfiles.createUserProfile(
@@ -125,32 +97,17 @@ void main() {
           );
 
           // Insert does not count as update
-          expect(updatedProfileFromCallback, null);
-
-          final updatedUserProfile = await UserProfiles.changeFullName(
-            session,
-            authUserId,
-            'Updated full name',
-          );
-
-          expect(
-            updatedProfileFromCallback!.fullName,
-            'Updated full name',
-          );
-          expect(
-            updatedUserProfile.userName,
-            'username from onBeforeUserProfileUpdated hook',
-          );
+          expect(invoked, isFalse);
         },
       );
 
       test(
-        'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
+        'when creating a new user profile, then `onAfterUserProfileUpdated` is not invoked.',
         () async {
-          UserProfileModel? updatedProfileFromCallback;
+          var invoked = false;
           UserProfileConfig.current = UserProfileConfig(
               onAfterUserProfileUpdated: (final session, final userProfile) {
-            updatedProfileFromCallback = userProfile;
+            invoked = true;
           });
 
           await UserProfiles.createUserProfile(
@@ -158,19 +115,7 @@ void main() {
             UserProfileModel(authUserId: authUserId),
           );
 
-          // Insert does not count as update
-          expect(updatedProfileFromCallback, null);
-
-          await UserProfiles.changeFullName(
-            session,
-            authUserId,
-            'Updated full name',
-          );
-
-          expect(
-            updatedProfileFromCallback!.fullName,
-            'Updated full name',
-          );
+          expect(invoked, isFalse);
         },
       );
 
@@ -387,5 +332,77 @@ void main() {
         'https://serverpod.dev/image2.png',
       );
     });
+
+    test(
+      'when trying to create a second user profile for the same auth user ID, then this fails.',
+      () async {
+        await expectLater(
+          () async => await UserProfiles.createUserProfile(
+            session,
+            UserProfileModel(authUserId: authUserId),
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (final e) => e.toString(),
+              'message',
+              contains(
+                'duplicate key value violates unique constraint',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
+      () async {
+        UserProfileModel? updatedProfileFromCallback;
+        UserProfileConfig.current = UserProfileConfig(
+            onBeforeUserProfileUpdated: (final session, final userProfile) {
+          updatedProfileFromCallback = userProfile;
+          return userProfile.copyWith(
+            userName: 'username from onBeforeUserProfileUpdated hook',
+          );
+        });
+
+        final updatedUserProfile = await UserProfiles.changeFullName(
+          session,
+          authUserId,
+          'Updated full name',
+        );
+
+        expect(
+          updatedProfileFromCallback!.fullName,
+          'Updated full name',
+        );
+        expect(
+          updatedUserProfile.userName,
+          'username from onBeforeUserProfileUpdated hook',
+        );
+      },
+    );
+
+    test(
+      'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
+      () async {
+        UserProfileModel? updatedProfileFromCallback;
+        UserProfileConfig.current = UserProfileConfig(
+            onAfterUserProfileUpdated: (final session, final userProfile) {
+          updatedProfileFromCallback = userProfile;
+        });
+
+        await UserProfiles.changeFullName(
+          session,
+          authUserId,
+          'Updated full name',
+        );
+
+        expect(
+          updatedProfileFromCallback!.fullName,
+          'Updated full name',
+        );
+      },
+    );
   });
 }
