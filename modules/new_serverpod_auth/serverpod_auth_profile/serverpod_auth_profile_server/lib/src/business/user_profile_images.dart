@@ -125,7 +125,7 @@ abstract final class UserProfileImages {
     var profileImage = UserProfileImage(
       authUserId: authUserId,
       version: version,
-      url: publicUrl.toString(),
+      url: publicUrl,
     );
 
     profileImage = await UserProfileImage.db.insertRow(session, profileImage);

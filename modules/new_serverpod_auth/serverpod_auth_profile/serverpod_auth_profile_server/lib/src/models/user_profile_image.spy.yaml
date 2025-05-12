@@ -11,7 +11,7 @@ fields:
   version: int
 
   ### The URL to the image.
-  url: String
+  url: Uri
 
 indexes:
   serverpod_auth_profile_user_profile_image_auth_user_id_version:

@@ -342,7 +342,10 @@ void main() {
         authUserId,
       );
 
-      expect(readUpdatedProfile?.imageUrl, 'https://serverpod.dev/image1.png');
+      expect(
+        readUpdatedProfile?.imageUrl.toString(),
+        'https://serverpod.dev/image1.png',
+      );
 
       await UserProfileImages.setUserImageFromOwnedUrl(
         session,
@@ -356,7 +359,10 @@ void main() {
         authUserId,
       );
 
-      expect(readUpdatedProfile2?.imageUrl, 'https://serverpod.dev/image2.png');
+      expect(
+        readUpdatedProfile2?.imageUrl.toString(),
+        'https://serverpod.dev/image2.png',
+      );
     });
   });
 }

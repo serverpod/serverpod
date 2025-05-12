@@ -15,4 +15,4 @@ fields:
   email: String?
 
   ### The user's profile image
-  imageUrl: String?
+  imageUrl: Uri?
