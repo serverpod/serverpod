@@ -7,7 +7,7 @@ import '../../test/integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given the `UserSessions` implementation, ',
+    'Given the `UserProfiles` implementation and an existing `AuthUser`,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -299,4 +299,78 @@ void main() {
       );
     },
   );
+
+  withServerpod('Given the `UserProfiles` and an `AuthUser` with a profile,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late AuthUser authUser;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+      authUserId = authUser.id!;
+
+      await UserProfiles.createUserProfile(
+        session,
+        UserProfile(authUserId: authUserId),
+      );
+    });
+
+    test('when deleting the user profile, then the auth user is unaffected.',
+        () async {
+      final userProfile = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+      expect(userProfile, isNotNull);
+
+      await UserProfiles.deleteProfileForUser(session, authUserId);
+
+      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+      final authUserAfterDelete = await AuthUser.db.findById(
+        session,
+        authUserId,
+      );
+
+      expect(
+        profileAfterDelete,
+        isNull,
+      );
+      expect(
+        authUserAfterDelete,
+        isNotNull,
+      );
+    });
+
+    test('when deleting the auth user, then the profile is cleaned up as well.',
+        () async {
+      await AuthUser.db.deleteRow(session, authUser);
+
+      final authUserAfterDelete = await AuthUser.db.findById(
+        session,
+        authUserId,
+      );
+      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+        session,
+        authUserId,
+      );
+
+      expect(
+        authUserAfterDelete,
+        isNull,
+      );
+      expect(
+        profileAfterDelete,
+        isNull,
+      );
+    });
+  });
 }

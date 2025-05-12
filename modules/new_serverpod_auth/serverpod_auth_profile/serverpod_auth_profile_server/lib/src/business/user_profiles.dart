@@ -6,7 +6,7 @@ abstract final class UserProfiles {
   /// Creates a new user and stores it in the database.
   ///
   /// In case the `onBeforeUserProfileCreated` hook redirects this creation onto an existing profile,
-  /// no profile will be created, but the existing profile will be updated with the return value of the hook
+  /// no profile will be created, but the existing profile will be updated with the return value of the hook.
   static Future<UserProfile> createUserProfile(
     final Session session,
     UserProfile userProfile,
@@ -152,6 +152,21 @@ abstract final class UserProfiles {
     userProfile = await _updateProfile(session, userProfile);
 
     return userProfile;
+  }
+
+  /// Remove the user profile for the given [authUserId].
+  ///
+  /// In case the user did not have a profile, nothing is changed.
+  static Future<void> deleteProfileForUser(
+    final Session session,
+    final UuidValue authUserId,
+  ) async {
+    await UserProfile.db.deleteWhere(
+      session,
+      where: (final t) => t.authUserId.equals(authUserId),
+    );
+
+    await _invalidateCacheForUser(session, authUserId);
   }
 
   static Future<UserProfile> _updateProfile(
