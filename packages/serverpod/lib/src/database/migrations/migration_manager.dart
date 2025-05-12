@@ -13,6 +13,8 @@ import '../extensions.dart';
 
 /// The migration manager handles migrations of the database.
 class MigrationManager {
+  final Directory _projectDirectory;
+
   /// List of installed migration versions. Available after [initialize] has
   /// been called.
   final List<DatabaseMigrationVersion> installedVersions = [];
@@ -21,9 +23,14 @@ class MigrationManager {
   /// directory. Available after [initialize] has been called.
   final List<String> availableVersions = [];
 
+  /// Creates a new migration manager.
+  ///
+  /// The [projectDirectory] is the directory where the project is located.
+  MigrationManager(this._projectDirectory);
+
   /// Applies the repair migration to the database.
   Future<String?> applyRepairMigration(Session session) async {
-    var repairMigration = RepairMigration.load(Directory.current);
+    var repairMigration = RepairMigration.load(_projectDirectory);
     if (repairMigration == null) {
       return null;
     }
@@ -132,7 +139,7 @@ class MigrationManager {
 
     if (fromVersion == null) {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
-        Directory.current,
+        _projectDirectory,
         latestVersion,
       );
       var sqlDefinition = await definitionSqlFile.readAsString();
@@ -143,7 +150,7 @@ class MigrationManager {
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
-          Directory.current,
+          _projectDirectory,
           version,
         );
         var sqlMigration = await migrationSqlFile.readAsString();

@@ -637,7 +637,7 @@ class Serverpod {
   }) async {
     try {
       logVerbose('Initializing migration manager.');
-      var migrationManager = MigrationManager();
+      var migrationManager = MigrationManager(Directory.current);
 
       if (applyRepairMigration) {
         logVerbose('Applying database repair migration');
