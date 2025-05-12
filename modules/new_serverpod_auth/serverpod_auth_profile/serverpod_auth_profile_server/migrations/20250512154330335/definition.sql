@@ -14,7 +14,6 @@ CREATE TABLE "serverpod_auth_profile_user_profile" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_auth_profile_user_profile_email" ON "serverpod_auth_profile_user_profile" USING btree ("email");
 CREATE UNIQUE INDEX "serverpod_auth_profile_user_profile_email_auth_user_id" ON "serverpod_auth_profile_user_profile" USING btree ("authUserId");
 
 --
@@ -307,9 +306,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_profile
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_profile', '20250512124700698', now())
+    VALUES ('serverpod_auth_profile', '20250512154330335', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250512124700698', "timestamp" = now();
+    DO UPDATE SET "version" = '20250512154330335', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

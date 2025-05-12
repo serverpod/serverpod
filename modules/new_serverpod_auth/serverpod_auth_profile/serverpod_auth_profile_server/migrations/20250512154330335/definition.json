@@ -94,18 +94,6 @@
           "isPrimary": true
         },
         {
-          "indexName": "serverpod_auth_profile_user_profile_email",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
           "indexName": "serverpod_auth_profile_user_profile_email_auth_user_id",
           "elements": [
             {
@@ -1389,7 +1377,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_profile",
-      "version": "20250512124700698"
+      "version": "20250512154330335"
     },
     {
       "module": "serverpod",
