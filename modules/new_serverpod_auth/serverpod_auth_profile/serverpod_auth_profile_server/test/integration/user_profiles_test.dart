@@ -120,7 +120,7 @@ void main() {
       );
 
       test(
-        'when looking for an existing user profile by email, then it finds the matches case-insensitively.',
+        'when creating a new profile, then the email is stored in lower-case.',
         () async {
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
@@ -134,65 +134,6 @@ void main() {
             createdUserProfile.email,
             'test@serverpod.dev',
           );
-
-          final resultFromLowerCase =
-              await UserProfiles.maybeFindUserProfileByEmail(
-            session,
-            'test@serverpod.dev',
-          );
-
-          expect(resultFromLowerCase?.authUserId, authUserId);
-
-          final resultFromUppercase =
-              await UserProfiles.maybeFindUserProfileByEmail(
-            session,
-            'TEST@SERVERPOD.DEV',
-          );
-
-          expect(resultFromUppercase?.authUserId, authUserId);
-        },
-      );
-
-      test(
-        'when looking for an existing user profile by email, then no result is returned if 2 profiles use the same email.',
-        () async {
-          const email = 'double@serverpod.dev';
-
-          final userA = await AuthUser.db.insertRow(
-            session,
-            AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-          );
-
-          final userB = await AuthUser.db.insertRow(
-            session,
-            AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-          );
-
-          final profileA = await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(
-              authUserId: userA.id!,
-              email: email,
-            ),
-          );
-
-          final profileB = await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(
-              authUserId: userB.id!,
-              email: email,
-            ),
-          );
-
-          expect(profileA.authUserId, userA.id!);
-          expect(profileB.authUserId, userB.id!);
-
-          final matchesByEmail = await UserProfiles.maybeFindUserProfileByEmail(
-            session,
-            email,
-          );
-
-          expect(matchesByEmail, isNull);
         },
       );
     },

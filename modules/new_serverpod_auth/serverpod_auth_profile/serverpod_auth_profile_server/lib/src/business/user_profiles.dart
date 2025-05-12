@@ -51,30 +51,6 @@ abstract final class UserProfiles {
     return userProfile;
   }
 
-  /// Finds a user profile by its email address.
-  ///
-  /// Returns `null` if no user profile with that email is found,
-  /// or there already exist 2 or more with that email address.
-  static Future<UserProfileModel?> maybeFindUserProfileByEmail(
-    final Session session,
-    String email,
-  ) async {
-    email = email.toLowerCase().trim();
-
-    final profiles = await UserProfile.db.find(
-      session,
-      where: (final t) => t.email.equals(email),
-    );
-
-    final profile = profiles.singleOrNull;
-
-    if (profile == null) {
-      return null;
-    }
-
-    return profile.toModel();
-  }
-
   /// Find a user profile by the `AuthUser`'s ID.
   ///
   /// By default the result is cached locally on the server. You can configure the cache
