@@ -105,7 +105,7 @@ abstract final class UserProfiles {
   static Future<UserProfileModel> changeUserName(
     final Session session,
     final UuidValue authUserId,
-    final String newUserName,
+    final String? newUserName,
   ) async {
     final userProfile = await _findUserProfile(
       session,
@@ -123,7 +123,7 @@ abstract final class UserProfiles {
   static Future<UserProfileModel> changeFullName(
     final Session session,
     final UuidValue authUserId,
-    final String newFullName,
+    final String? newFullName,
   ) async {
     final userProfile = await _findUserProfile(
       session,

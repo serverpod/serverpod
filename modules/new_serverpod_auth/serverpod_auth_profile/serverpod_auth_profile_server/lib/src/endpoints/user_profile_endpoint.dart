@@ -55,30 +55,21 @@ abstract class UserProfileEndpoint extends Endpoint {
   /// Changes the name of a user.
   Future<UserProfileModel> changeUserName(
     final Session session,
-    final String userName,
+    final String? userName,
   ) async {
     if (!UserProfileConfig.current.userCanEditUserName) {
       throw AccessDeniedException(message: 'Username change is disabled.');
     }
 
-    final trimmedUserName = userName.trim();
-    if (trimmedUserName == '') {
-      throw ArgumentError.value(
-        userName,
-        'userName',
-        'User name must not be an empty or whitespace-only string.',
-      );
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
-    return UserProfiles.changeUserName(session, userId, trimmedUserName);
+    return UserProfiles.changeUserName(session, userId, userName);
   }
 
   /// Changes the full name of a user.
   Future<UserProfileModel> changeFullName(
     final Session session,
-    final String fullName,
+    final String? fullName,
   ) async {
     if (!UserProfileConfig.current.userCanEditFullName) {
       throw AccessDeniedException(
@@ -86,17 +77,8 @@ abstract class UserProfileEndpoint extends Endpoint {
       );
     }
 
-    final trimmedFullName = fullName.trim();
-    if (trimmedFullName == '') {
-      throw ArgumentError.value(
-        fullName,
-        'fullName',
-        'Full name must not be an empty or whitespace-only string.',
-      );
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
-    return UserProfiles.changeFullName(session, userId, trimmedFullName);
+    return UserProfiles.changeFullName(session, userId, fullName);
   }
 }
