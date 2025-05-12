@@ -51,37 +51,6 @@ class MigrationManager {
     return appliedVersionName;
   }
 
-  /// Returns the installed version of the given module, or null if no version
-  /// is installed.
-  String? _getInstalledVersion(String module) {
-    var installed = installedVersions.firstWhereOrNull(
-      (element) => element.module == module,
-    );
-    if (installed == null) {
-      return null;
-    }
-    return installed.version;
-  }
-
-  /// Returns the latest version of the given module from available migrations.
-  String _getLatestVersion() {
-    if (availableVersions.isEmpty) {
-      throw Exception('No migrations found in project.');
-    }
-    return availableVersions.last;
-  }
-
-  /// Returns true if the latest version of a module is installed.
-  bool _isVersionInstalled(String module, String version) {
-    var installed = installedVersions.firstWhereOrNull(
-      (element) => element.module == module,
-    );
-    if (installed == null) {
-      return false;
-    }
-    return version == installed.version;
-  }
-
   /// Migrates all modules to the latest version.
   ///
   /// Returns the migrations applied.
@@ -113,6 +82,26 @@ class MigrationManager {
     return migrationsApplied;
   }
 
+  /// Returns the installed version of the given module, or null if no version
+  /// is installed.
+  String? _getInstalledVersion(String module) {
+    var installed = installedVersions.firstWhereOrNull(
+      (element) => element.module == module,
+    );
+    if (installed == null) {
+      return null;
+    }
+    return installed.version;
+  }
+
+  /// Returns the latest version of the given module from available migrations.
+  String _getLatestVersion() {
+    if (availableVersions.isEmpty) {
+      throw Exception('No migrations found in project.');
+    }
+    return availableVersions.last;
+  }
+
   /// Lists all versions newer than the given version for the given module.
   List<String> _getVersionsToApply(String fromVersion) {
     if (availableVersions.isEmpty) return [];
@@ -122,6 +111,17 @@ class MigrationManager {
       throw Exception('Version $fromVersion not found in project.');
     }
     return availableVersions.sublist(index + 1);
+  }
+
+  /// Returns true if the latest version of a module is installed.
+  bool _isVersionInstalled(String module, String version) {
+    var installed = installedVersions.firstWhereOrNull(
+      (element) => element.module == module,
+    );
+    if (installed == null) {
+      return false;
+    }
+    return version == installed.version;
   }
 
   Future<List<({String version, String sql})>> _loadMigrationSQL(
