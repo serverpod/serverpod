@@ -110,28 +110,15 @@ abstract final class UserProfileImages {
     ))!;
 
     // Store the path to the image.
-    final profileImage = UserProfileImage(
+    var profileImage = UserProfileImage(
       authUserId: authUserId,
       version: version,
       url: publicUrl.toString(),
     );
-    await UserProfileImage.db.insertRow(session, profileImage);
 
-    // Update the user profile with the new image.
-    var userProfile = await UserProfiles.findUserProfileByUserId(
-      session,
-      authUserId,
-      useCache: false,
-    );
+    profileImage = await UserProfileImage.db.insertRow(session, profileImage);
 
-    userProfile.image = profileImage;
-
-    userProfile = await UserProfile.db.updateRow(session, userProfile);
-
-    await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
-      session,
-      userProfile,
-    );
+    await UserProfiles.changeImage(session, authUserId, profileImage);
   }
 }
 

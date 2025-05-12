@@ -142,6 +142,47 @@ void main() {
       );
 
       test(
+        'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
+        () async {
+          UserProfile? updatedProfileFromCallback;
+          UserProfileConfig.current = UserProfileConfig(
+              onBeforeUserProfileUpdated: (final session, final userProfile) {
+            updatedProfileFromCallback = userProfile;
+            return userProfile.copyWith(
+                userName: 'username from onBeforeUserProfileUpdated hook');
+          });
+
+          final createdUserProfile = await UserProfiles.createUserProfile(
+            session,
+            UserProfile(authUserId: authUserId),
+          );
+
+          // Insert does not count as update
+          expect(updatedProfileFromCallback, null);
+
+          final updatedUserProfile = await UserProfiles.changeFullName(
+            session,
+            authUserId,
+            'Updated full name',
+          );
+
+          expect(
+            updatedProfileFromCallback?.id,
+            createdUserProfile.id!,
+          );
+          expect(
+            updatedProfileFromCallback!.fullName,
+            'Updated full name',
+          );
+
+          expect(
+            updatedUserProfile.userName,
+            'username from onBeforeUserProfileUpdated hook',
+          );
+        },
+      );
+
+      test(
         'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
         () async {
           UserProfile? updatedProfileFromCallback;

@@ -4,6 +4,9 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
   /// Creates a new user and stores it in the database.
+  ///
+  /// In case the `onBeforeUserProfileCreated` hook redirects this creation onto an existing profile,
+  /// no profile will be created, but the existing profile will be updated with the return value of the hook
   static Future<UserProfile> createUserProfile(
     final Session session,
     UserProfile userProfile,
@@ -18,7 +21,7 @@ abstract final class UserProfiles {
 
     userProfile = userProfile.id == null
         ? await UserProfile.db.insertRow(session, userProfile)
-        : await UserProfile.db.updateRow(session, userProfile);
+        : await _updateProfile(session, userProfile);
 
     await UserProfileConfig.current.onAfterUserProfileCreated?.call(
       session,
@@ -94,7 +97,7 @@ abstract final class UserProfiles {
     return userInfo;
   }
 
-  /// Updates a users name.
+  /// Updates a profiles's user name.
   static Future<UserProfile> changeUserName(
     final Session session,
     final UuidValue userId,
@@ -107,19 +110,13 @@ abstract final class UserProfiles {
     );
 
     userProfile.userName = newUserName;
-    userProfile = await UserProfile.db.updateRow(session, userProfile);
 
-    await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
-      session,
-      userProfile,
-    );
-
-    await _invalidateCacheForUser(session, userId);
+    userProfile = await _updateProfile(session, userProfile);
 
     return userProfile;
   }
 
-  /// Updates a users name.
+  /// Updates a profile's full name.
   static Future<UserProfile> changeFullName(
     final Session session,
     final UuidValue userId,
@@ -132,6 +129,42 @@ abstract final class UserProfiles {
     );
 
     userProfile.fullName = newFullName;
+
+    userProfile = await _updateProfile(session, userProfile);
+
+    return userProfile;
+  }
+
+  /// Updates a profile's image.
+  static Future<UserProfile> changeImage(
+    final Session session,
+    final UuidValue userId,
+    final UserProfileImage? newImage,
+  ) async {
+    var userProfile = await findUserProfileByUserId(
+      session,
+      userId,
+      useCache: false,
+    );
+
+    userProfile.image = newImage;
+
+    userProfile = await _updateProfile(session, userProfile);
+
+    return userProfile;
+  }
+
+  static Future<UserProfile> _updateProfile(
+    final Session session,
+    UserProfile userProfile,
+  ) async {
+    userProfile =
+        await UserProfileConfig.current.onBeforeUserProfileUpdated?.call(
+              session,
+              userProfile,
+            ) ??
+            userProfile;
+
     userProfile = await UserProfile.db.updateRow(session, userProfile);
 
     await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
@@ -139,7 +172,7 @@ abstract final class UserProfiles {
       userProfile,
     );
 
-    await _invalidateCacheForUser(session, userId);
+    await _invalidateCacheForUser(session, userProfile.id!);
 
     return userProfile;
   }

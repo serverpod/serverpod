@@ -43,9 +43,14 @@ class UserProfileConfig {
   /// Called after a user profile has been created.
   final AfterUserProfileCreatedHandler? onAfterUserProfileCreated;
 
+  /// Called before a user profile is about to be updated.
+  ///
+  /// This happens when the profile's user name, full name, or picture will be changed.
+  final BeforeUserProfileUpdatedHandler? onBeforeUserProfileUpdated;
+
   /// Called whenever a user profile has been updated.
   ///
-  /// This can be when the user's (full) name or profile picture has been changed.
+  /// This happens when the profile's user name, full name, or picture has been changed.
   final AfterUserProfileUpdatedHandler? onAfterUserProfileUpdated;
 
   /// Create a new user profile configuration.
@@ -60,6 +65,7 @@ class UserProfileConfig {
     this.userImageQuality = 70,
     this.onBeforeUserProfileCreated,
     this.onAfterUserProfileCreated,
+    this.onBeforeUserProfileUpdated,
     this.onAfterUserProfileUpdated,
   });
 
@@ -91,6 +97,12 @@ typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfile> Function(
 
 /// Callback to be invoked with the new user profile after it has been created.
 typedef AfterUserProfileCreatedHandler = FutureOr<void> Function(
+  Session session,
+  UserProfile userProfile,
+);
+
+/// Callback to be invoked with the new user profile before it will be updated.
+typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfile> Function(
   Session session,
   UserProfile userProfile,
 );
