@@ -210,7 +210,7 @@ class MigrationManager {
     /// The transaction is thus only used to get the desired behavior from
     /// the database driver, and does not have any effect on the Postgres level.
     ///
-    /// This ensures that we are only running migrations once at a time.
+    /// This ensures that we are only running migrations one at a time.
     await session.db.transaction((transaction) async {
       await session.db.unsafeExecute(
         "SELECT pg_advisory_lock(hashtext('$lockName'));",
