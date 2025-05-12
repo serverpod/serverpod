@@ -227,6 +227,106 @@ class JsonStdOutLogWriter extends LogWriter {
 }
 
 @internal
+class TextStdOutLogWriter extends LogWriter {
+  final int _logId;
+  final Session _session;
+
+  TextStdOutLogWriter(this._session) : _logId = _session.sessionId.hashCode;
+
+  @override
+  Future<void> logEntry(LogEntry entry) async {
+    var message =
+        '[LOG] ${entry.logLevel.name.toUpperCase()} | session=$_logId | message=${entry.message}';
+
+    if (entry.error != null ||
+        entry.logLevel == LogLevel.error ||
+        entry.logLevel == LogLevel.fatal) {
+      _write(message, true);
+    } else {
+      _write(message);
+    }
+
+    _maybeLogError(entry.error, entry.stackTrace);
+  }
+
+  @override
+  Future<void> logMessage(MessageLogEntry entry) async {
+    _write(
+      '[STREAM MESSAGE] ${entry.endpoint} | session=$_logId | messageId=${entry.messageId} | messageName=${entry.messageName}',
+    );
+
+    _maybeLogError(entry.error, entry.stackTrace);
+  }
+
+  @override
+  Future<void> logQuery(QueryLogEntry entry) async {
+    _write(
+      '[QUERY] session=$_logId | id=${entry.id} | time=${entry.duration}ms | query=${entry.query}',
+    );
+
+    _maybeLogError(entry.error, entry.stackTrace);
+  }
+
+  @override
+  Future<void> openLog(SessionLogEntry entry) async {
+    var message = switch (_session) {
+      StreamingSession() =>
+        '[STREAM OPENED] ${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''} | session=$_logId | user=${entry.authenticatedUserId}',
+      MethodStreamSession() =>
+        '[METHOD STREAM OPENED] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId}',
+      _ => null,
+    };
+
+    if (message != null) {
+      _write(message);
+    }
+
+    _maybeLogError(entry.error, entry.stackTrace);
+  }
+
+  @override
+  Future<int> closeLog(SessionLogEntry entry) async {
+    var message = switch (_session) {
+      MethodCallSession() =>
+        '[METHOD] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
+      FutureCallSession() =>
+        '[FUTURE CALL] ${_session.futureCallName} | session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms',
+      WebCallSession() =>
+        '[WEB] ${entry.endpoint} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
+      StreamingSession() =>
+        '[STREAM CLOSED] ${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
+      MethodStreamSession() =>
+        '[METHOD STREAM CLOSED] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
+      InternalSession() =>
+        '[INTERNAL] session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms ',
+      _ =>
+        '[UNKNOWN] session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms',
+    };
+
+    _write(message);
+    _maybeLogError(entry.error, entry.stackTrace);
+
+    return _logId;
+  }
+
+  void _maybeLogError(String? error, String? stackTrace) {
+    if (error != null) {
+      _write('error=$error', true);
+      _write('stackTrace=$stackTrace', true);
+    }
+  }
+
+  void _write(String message, [bool error = false]) {
+    var now = DateTime.now().toUtc();
+    if (error) {
+      stderr.writeln('$now $message');
+    } else {
+      stdout.writeln('$now $message');
+    }
+  }
+}
+
+@internal
 class MultipleLogWriter extends LogWriter {
   final List<LogWriter> _logWriters;
 
