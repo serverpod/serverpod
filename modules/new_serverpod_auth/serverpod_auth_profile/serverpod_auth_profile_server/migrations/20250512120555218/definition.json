@@ -149,7 +149,7 @@
           "name": "url",
           "columnType": 0,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "Uri"
         }
       ],
       "foreignKeys": [
@@ -1389,7 +1389,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_profile",
-      "version": "20250507124705783"
+      "version": "20250512120555218"
     },
     {
       "module": "serverpod",

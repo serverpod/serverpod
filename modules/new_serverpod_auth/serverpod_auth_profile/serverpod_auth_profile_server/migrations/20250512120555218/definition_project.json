@@ -149,7 +149,7 @@
           "name": "url",
           "columnType": 0,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "Uri"
         }
       ],
       "foreignKeys": [

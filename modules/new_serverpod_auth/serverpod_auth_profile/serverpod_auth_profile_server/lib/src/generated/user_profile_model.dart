@@ -26,7 +26,7 @@ abstract class UserProfileModel
     String? userName,
     String? fullName,
     String? email,
-    String? imageUrl,
+    Uri? imageUrl,
   }) = _UserProfileModelImpl;
 
   factory UserProfileModel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +36,9 @@ abstract class UserProfileModel
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      imageUrl: jsonSerialization['imageUrl'] as String?,
+      imageUrl: jsonSerialization['imageUrl'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(jsonSerialization['imageUrl']),
     );
   }
 
@@ -55,7 +57,7 @@ abstract class UserProfileModel
   String? email;
 
   /// The user's profile image
-  String? imageUrl;
+  Uri? imageUrl;
 
   /// Returns a shallow copy of this [UserProfileModel]
   /// with some or all fields replaced by the given arguments.
@@ -65,7 +67,7 @@ abstract class UserProfileModel
     String? userName,
     String? fullName,
     String? email,
-    String? imageUrl,
+    Uri? imageUrl,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +76,7 @@ abstract class UserProfileModel
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (imageUrl != null) 'imageUrl': imageUrl?.toJson(),
     };
   }
 
@@ -85,7 +87,7 @@ abstract class UserProfileModel
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (imageUrl != null) 'imageUrl': imageUrl?.toJson(),
     };
   }
 
@@ -103,7 +105,7 @@ class _UserProfileModelImpl extends UserProfileModel {
     String? userName,
     String? fullName,
     String? email,
-    String? imageUrl,
+    Uri? imageUrl,
   }) : super._(
           authUserId: authUserId,
           userName: userName,
@@ -128,7 +130,7 @@ class _UserProfileModelImpl extends UserProfileModel {
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
-      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
+      imageUrl: imageUrl is Uri? ? imageUrl : this.imageUrl,
     );
   }
 }

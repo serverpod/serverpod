@@ -30,7 +30,7 @@ abstract class UserProfileImage
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required int version,
-    required String url,
+    required Uri url,
   }) = _UserProfileImageImpl;
 
   factory UserProfileImage.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -45,7 +45,7 @@ abstract class UserProfileImage
           : _i2.AuthUser.fromJson(
               (jsonSerialization['authUser'] as Map<String, dynamic>)),
       version: jsonSerialization['version'] as int,
-      url: jsonSerialization['url'] as String,
+      url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
     );
   }
 
@@ -65,7 +65,7 @@ abstract class UserProfileImage
   int version;
 
   /// The URL to the image.
-  String url;
+  Uri url;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -78,7 +78,7 @@ abstract class UserProfileImage
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
     int? version,
-    String? url,
+    Uri? url,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ abstract class UserProfileImage
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
       'version': version,
-      'url': url,
+      'url': url.toJson(),
     };
   }
 
@@ -134,7 +134,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required int version,
-    required String url,
+    required Uri url,
   }) : super._(
           id: id,
           authUserId: authUserId,
@@ -152,7 +152,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
     int? version,
-    String? url,
+    Uri? url,
   }) {
     return UserProfileImage(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -176,7 +176,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
       'version',
       this,
     );
-    url = _i1.ColumnString(
+    url = _i1.ColumnUri(
       'url',
       this,
     );
@@ -191,7 +191,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnInt version;
 
   /// The URL to the image.
-  late final _i1.ColumnString url;
+  late final _i1.ColumnUri url;
 
   _i2.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;

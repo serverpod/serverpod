@@ -173,7 +173,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'url',
           columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'Uri',
         ),
       ],
       foreignKeys: [
