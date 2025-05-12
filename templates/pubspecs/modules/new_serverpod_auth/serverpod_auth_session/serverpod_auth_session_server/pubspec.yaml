@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   crypto: ^3.0.2
-  meta: ^1.8.0
+  meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
