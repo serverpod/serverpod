@@ -9,6 +9,8 @@ typedef Convert<T> = T Function(String value);
 
 const int _defaultMaxRequestSize = 524288;
 
+const String _developmentRunMode = 'development';
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -54,7 +56,7 @@ class ServerpodConfig {
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
-    this.runMode = 'development',
+    this.runMode = _developmentRunMode,
     this.serverId = 'default',
     this.maxRequestSize = 524288,
     this.insightsServer,
@@ -70,6 +72,9 @@ class ServerpodConfig {
             SessionLogConfig(
               persistentEnabled: database != null,
               consoleEnabled: database == null,
+              consoleLogFormat: runMode == _developmentRunMode
+                  ? ConsoleLogFormat.text
+                  : ConsoleLogFormat.defaultFormat,
             ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
@@ -517,6 +522,32 @@ class FutureCallConfig {
   }
 }
 
+/// Valid values for console log format.
+enum ConsoleLogFormat {
+  /// JSON format.
+  json,
+
+  /// Human-readable text format.
+  text;
+
+  /// Returns a list of all enum names.
+  static final List<String> allEnumNames =
+      ConsoleLogFormat.values.map((e) => e.name).toList();
+
+  /// Default format for console logging.
+  static const defaultFormat = ConsoleLogFormat.json;
+
+  /// Parses a string into a [ConsoleLogFormat].
+  static ConsoleLogFormat parse(String value) {
+    return ConsoleLogFormat.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => throw ArgumentError(
+        'Invalid console log format: "$value". Valid values are: ${allEnumNames.join(', ')}',
+      ),
+    );
+  }
+}
+
 /// Configuration for session logging.
 class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
@@ -525,11 +556,15 @@ class SessionLogConfig {
   /// True if console logging should be enabled.
   final bool consoleEnabled;
 
+  /// The format for the console log.
+  final ConsoleLogFormat consoleLogFormat;
+
   /// Creates a new [SessionLogConfig].
   SessionLogConfig({
     required this.persistentEnabled,
     required this.consoleEnabled,
-  });
+    ConsoleLogFormat? consoleLogFormat,
+  }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
 
   factory SessionLogConfig._fromJson(
     Map sessionLogConfigJson,
@@ -545,6 +580,14 @@ class SessionLogConfig {
       name,
     );
 
+    var configuredLogFormat =
+        sessionLogConfigJson[ServerpodEnv.sessionConsoleLogFormat.configKey];
+
+    ConsoleLogFormat logFormat = ConsoleLogFormat.defaultFormat;
+    if (configuredLogFormat != null) {
+      logFormat = ConsoleLogFormat.parse(configuredLogFormat);
+    }
+
     return SessionLogConfig(
       persistentEnabled: sessionLogConfigJson[
               ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
@@ -552,6 +595,7 @@ class SessionLogConfig {
       consoleEnabled: sessionLogConfigJson[
               ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
           false,
+      consoleLogFormat: logFormat,
     );
   }
 
@@ -644,6 +688,7 @@ Map? _buildSessionLogsConfigMap(
   return _buildConfigMap(logsConfig, environment, [
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
+    (ServerpodEnv.sessionConsoleLogFormat, null),
   ]);
 }
 
