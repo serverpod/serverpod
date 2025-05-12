@@ -10,7 +10,42 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-class CreateMigrationCommand extends ServerpodCommand {
+enum CreateMigrationOption<V> implements OptionDefinition<V> {
+  force(CreateMigrationCommand.forceOption),
+  tag(CreateMigrationCommand.tagOption);
+
+  const CreateMigrationOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
+  static const forceOption = FlagOption(
+    argName: 'force',
+    argAbbrev: 'f',
+    negatable: false,
+    defaultsTo: false,
+    helpText:
+        'Creates the migration even if there are warnings or information that '
+        'may be destroyed.',
+  );
+
+  static const tagOption = StringOption(
+    argName: 'tag',
+    argAbbrev: 't',
+    helpText: 'Add a tag to the revision to easier identify it.',
+    customValidator: _validateTag,
+  );
+
+  static void _validateTag(String tag) {
+    if (!StringValidators.isValidTagName(tag)) {
+      throw const FormatException(
+        'Tag names can only contain lowercase letters, numbers, and dashes.',
+      );
+    }
+  }
+
   @override
   final name = 'create-migration';
 
@@ -18,37 +53,15 @@ class CreateMigrationCommand extends ServerpodCommand {
   final description =
       'Creates a migration from the last migration to the current state of the database.';
 
-  CreateMigrationCommand() {
-    argParser.addFlag(
-      'force',
-      abbr: 'f',
-      negatable: false,
-      defaultsTo: false,
-      help:
-          'Creates the migration even if there are warnings or information that '
-          'may be destroyed.',
-    );
-    argParser.addOption(
-      'tag',
-      abbr: 't',
-      help: 'Add a tag to the revision to easier identify it.',
-    );
-  }
+  CreateMigrationCommand() : super(options: CreateMigrationOption.values);
 
   @override
-  void run() async {
-    bool force = argResults!['force'];
-    String? tag = argResults!['tag'];
+  Future<void> runWithConfig(
+    final Configuration<CreateMigrationOption> commandConfig,
+  ) async {
+    bool force = commandConfig.value(CreateMigrationOption.force);
+    String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
-    if (tag != null) {
-      if (!StringValidators.isValidTagName(tag)) {
-        log.error(
-          'Invalid tag name. Tag names can only contain lowercase letters, '
-          'number, and dashes.',
-        );
-        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-      }
-    }
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();

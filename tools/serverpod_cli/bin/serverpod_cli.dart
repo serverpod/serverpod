@@ -55,7 +55,12 @@ Future<void> _main(List<String> args) async {
   // formatted usage messages.
   initializeLogger();
   var runner = buildCommandRunner();
-  await runner.run(args);
+  try {
+    await runner.run(args);
+  } on UsageException catch (e) {
+    log.error(e.toString());
+    throw ExitException.error();
+  }
 }
 
 ServerpodCommandRunner buildCommandRunner() {

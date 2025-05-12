@@ -9,6 +9,8 @@ import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+import '../commands/version.dart' show VersionCommand;
+
 Future<void> _preCommandEnvironmentChecks() async {
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
@@ -63,7 +65,7 @@ Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
   await _preCommandPrints(runner as ServerpodCommandRunner);
 }
 
-class ServerpodCommandRunner extends BetterCommandRunner {
+class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   final bool _productionMode;
   final Version _cliVersion;
 
@@ -72,34 +74,29 @@ class ServerpodCommandRunner extends BetterCommandRunner {
     super.description, {
     required bool productionMode,
     required Version cliVersion,
-    super.logError,
-    super.logInfo,
+    super.messageOutput,
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
   })  : _productionMode = productionMode,
-        _cliVersion = cliVersion {
-    argParser.addMultiOption(
-      'experimental-features',
-      help:
-          'Enable experimental features. Experimental features might be removed at any time.',
-      allowed: ExperimentalFeature.values.map((e) => e.name),
-      defaultsTo: [],
-    );
-  }
+        _cliVersion = cliVersion,
+        super(globalOptions: GlobalOption.values);
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
-    var enabledExperimentalFeatures = topLevelResults['experimental-features'];
+    if (globalConfiguration.value(GlobalOption.version)) {
+      await commands['version']?.run();
+    }
 
-    var experimentalFeatures = <ExperimentalFeature>[];
-    for (var feature in enabledExperimentalFeatures) {
-      log.info(
-        'Enabling experimental feature: $feature.',
-      );
-      experimentalFeatures.add(ExperimentalFeature.fromString(feature));
+    var experimentalFeatures = globalConfiguration.value(
+      GlobalOption.experimentalFeatures,
+    );
+
+    for (var feature in experimentalFeatures) {
+      log.info('Enabling experimental feature: ${feature.name}.');
     }
     CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+
     await super.runCommand(topLevelResults);
   }
 
@@ -112,8 +109,9 @@ class ServerpodCommandRunner extends BetterCommandRunner {
     return ServerpodCommandRunner(
       'serverpod',
       'Manage your serverpod app development',
-      logError: log.error,
-      logInfo: log.info,
+      messageOutput: MessageOutput(
+        usageLogger: log.info,
+      ),
       setLogLevel: _configureLogLevel,
       onBeforeRunCommand: onBeforeRunCommand,
       onAnalyticsEvent: (String event) => analytics.track(event: event),
@@ -138,4 +136,33 @@ class ServerpodCommandRunner extends BetterCommandRunner {
 
     log.logLevel = logLevel;
   }
+}
+
+/// The global configuration options for the Serverpod CLI.
+enum GlobalOption<V> implements OptionDefinition<V> {
+  quiet(BetterCommandRunnerFlags.quietOption),
+  verbose(BetterCommandRunnerFlags.verboseOption),
+  analytics(BetterCommandRunnerFlags.analyticsOption),
+  version(
+    FlagOption(
+      argName: 'version',
+      helpText: VersionCommand.usageDescription,
+      negatable: false,
+      defaultsTo: false,
+    ),
+  ),
+  experimentalFeatures(
+    MultiOption<ExperimentalFeature>(
+      multiParser: MultiParser(EnumParser(ExperimentalFeature.values)),
+      argName: 'experimental-features',
+      defaultsTo: [],
+      helpText:
+          'Enable experimental features. Experimental features might be removed at any time.',
+    ),
+  );
+
+  const GlobalOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
 }

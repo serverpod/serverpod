@@ -7,12 +7,38 @@ import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-class CreateRepairMigrationCommand extends ServerpodCommand {
+import 'create_migration.dart' show CreateMigrationCommand;
+
+enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
+  force(CreateMigrationCommand.forceOption),
+  tag(CreateMigrationCommand.tagOption),
+  version(StringOption(
+    argName: 'version',
+    argAbbrev: 'v',
+    helpText: 'The target version for the repair. If not specified, the latest '
+        'migration version will be repaired.',
+  )),
+  mode(StringOption(
+    argName: 'mode',
+    argAbbrev: 'm',
+    defaultsTo: 'development',
+    helpText: 'Used to specify which database configuration to use when '
+        'fetching the live database definition.',
+    allowedValues: runModes,
+  ));
+
   static const runModes = <String>['development', 'staging', 'production'];
 
+  const CreateRepairMigrationOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class CreateRepairMigrationCommand
+    extends ServerpodCommand<CreateRepairMigrationOption> {
   @override
   final name = 'create-repair-migration';
 
@@ -21,51 +47,18 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       'Repairs the database by comparing the target state to what is in the '
       'live database instead of comparing to the latest migration.';
 
-  CreateRepairMigrationCommand() {
-    argParser.addFlag(
-      'force',
-      abbr: 'f',
-      negatable: false,
-      defaultsTo: false,
-      help:
-          'Creates the migration even if there are warnings or information that '
-          'may be destroyed.',
-    );
-    argParser.addOption(
-      'version',
-      abbr: 'v',
-      help: 'The target version for the repair. If not specified, the latest '
-          'migration version will be repaired.',
-    );
-    argParser.addOption(
-      'mode',
-      abbr: 'm',
-      defaultsTo: 'development',
-      allowed: runModes,
-      help: 'Used to specify which database to fetch the live database '
-          'definition from.',
-    );
-    argParser.addOption(
-      'tag',
-      abbr: 't',
-      help: 'Add a tag to the revision to easier identify it.',
-    );
-  }
+  CreateRepairMigrationCommand()
+      : super(options: CreateRepairMigrationOption.values);
 
   @override
-  void run() async {
-    bool force = argResults!['force'];
-    String mode = argResults!['mode'];
-    String? tag = argResults!['tag'];
-    String? targetVersion = argResults!['version'];
-
-    if (tag != null && !StringValidators.isValidTagName(tag)) {
-      log.error(
-        'Invalid tag name. Tag names can only contain lowercase letters, '
-        'number, and dashes.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
+  Future<void> runWithConfig(
+    final Configuration<CreateRepairMigrationOption> commandConfig,
+  ) async {
+    bool force = commandConfig.value(CreateRepairMigrationOption.force);
+    String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+    String mode = commandConfig.value(CreateRepairMigrationOption.mode);
+    String? targetVersion =
+        commandConfig.optionalValue(CreateRepairMigrationOption.version);
 
     GeneratorConfig config;
     try {

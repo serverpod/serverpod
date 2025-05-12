@@ -212,9 +212,6 @@ class InsightsEndpoint extends Endpoint {
     // Get database definition of the live database.
     var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
 
-    // Make sure that the migration manager is up-to-date.
-    await session.serverpod.migrationManager.initialize(session);
-
     return databaseDefinition;
   }
 
@@ -227,7 +224,9 @@ class InsightsEndpoint extends Endpoint {
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
 
-    var versions = MigrationVersions.listVersions();
+    var versions = MigrationVersions.listVersions(
+      projectDirectory: Directory.current,
+    );
 
     var latestAvailableMigrations = <DatabaseMigrationVersion>[];
     if (versions.isNotEmpty) {
