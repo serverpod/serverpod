@@ -77,10 +77,11 @@ abstract final class UserProfiles {
   /// setting [useCache] to false.
   static Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
-    final UuidValue userId, {
+    final UuidValue authUserId, {
     final bool useCache = true,
   }) async {
-    return (await maybeFindUserByUserId(session, userId, useCache: useCache))!;
+    return (await maybeFindUserByUserId(session, authUserId,
+        useCache: useCache))!;
   }
 
   /// Looks for a user profile by the `AuthUser`'s ID.
@@ -122,49 +123,49 @@ abstract final class UserProfiles {
   /// Updates a profiles's user name.
   static Future<UserProfileModel> changeUserName(
     final Session session,
-    final UuidValue userId,
+    final UuidValue authUserId,
     final String newUserName,
   ) async {
     final userProfile = await _findUserProfile(
       session,
-      userId,
+      authUserId,
     );
 
     userProfile.userName = newUserName;
 
     final updatedProfile = await _updateProfile(session, userProfile);
 
-    return updatedProfile.toModel(userId);
+    return updatedProfile.toModel(authUserId);
   }
 
   /// Updates a profile's full name.
   static Future<UserProfileModel> changeFullName(
     final Session session,
-    final UuidValue userId,
+    final UuidValue authUserId,
     final String newFullName,
   ) async {
     final userProfile = await _findUserProfile(
       session,
-      userId,
+      authUserId,
     );
 
     userProfile.fullName = newFullName;
 
     final updatedProfile = await _updateProfile(session, userProfile);
 
-    return updatedProfile.toModel(userId);
+    return updatedProfile.toModel(authUserId);
   }
 
   /// Updates a profile's image.
   @internal
   static Future<UserProfileModel> changeImage(
     final Session session,
-    final UuidValue userId,
+    final UuidValue authUserId,
     final UserProfileImage? newImage,
   ) async {
     var userProfile = await _findUserProfile(
       session,
-      userId,
+      authUserId,
     );
 
     userProfile.imageId = newImage?.id!;
@@ -172,7 +173,7 @@ abstract final class UserProfiles {
 
     userProfile = await _updateProfile(session, userProfile);
 
-    return userProfile.toModel(userId);
+    return userProfile.toModel(authUserId);
   }
 
   /// Remove the user profile for the given [authUserId].
@@ -240,18 +241,18 @@ abstract final class UserProfiles {
 
   static String _userProfileCacheKey(
     /// ID of then [AuthUser]
-    final UuidValue userId,
+    final UuidValue authUserId,
   ) {
-    return 'serverpod_auth_profile_$userId';
+    return 'serverpod_auth_profile_$authUserId';
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user profile
   /// is fetched it's fresh from the database.
   static Future<void> _invalidateCacheForUser(
     final Session session,
-    final UuidValue userId,
+    final UuidValue authUserId,
   ) async {
-    final cacheKey = _userProfileCacheKey(userId);
+    final cacheKey = _userProfileCacheKey(authUserId);
 
     await session.caches.local.invalidateKey(cacheKey);
   }

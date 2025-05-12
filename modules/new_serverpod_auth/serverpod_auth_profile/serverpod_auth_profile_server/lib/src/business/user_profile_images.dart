@@ -54,17 +54,18 @@ abstract final class UserProfileImages {
   /// Sets a user's image to the default image for that user.
   static Future<void> setDefaultUserImage(
     final Session session,
-    final UuidValue userId,
+    final UuidValue authUserId,
   ) async {
-    final userInfo = await UserProfiles.findUserProfileByUserId(
+    final userProfile = await UserProfiles.findUserProfileByUserId(
       session,
-      userId,
+      authUserId,
     );
 
-    final image = await UserProfileConfig.current.userImageGenerator(userInfo);
+    final image =
+        await UserProfileConfig.current.userImageGenerator(userProfile);
     final imageBytes = await Isolate.run(() => _encodeImage(image));
 
-    await _setUserImage(session, userId, imageBytes);
+    await _setUserImage(session, authUserId, imageBytes);
   }
 
   static Uint8List _encodeImage(final Image image) =>

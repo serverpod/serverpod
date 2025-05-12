@@ -14,11 +14,11 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        final user = await AuthUser.db.insertRow(
+        final authUser = await AuthUser.db.insertRow(
           session,
           AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
         );
-        authUserId = user.id!;
+        authUserId = authUser.id!;
       });
 
       test(
