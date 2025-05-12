@@ -224,7 +224,9 @@ class InsightsEndpoint extends Endpoint {
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
 
-    var versions = MigrationVersions.listVersions();
+    var versions = MigrationVersions.listVersions(
+      projectDirectory: Directory.current,
+    );
 
     var latestAvailableMigrations = <DatabaseMigrationVersion>[];
     if (versions.isNotEmpty) {

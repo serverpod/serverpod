@@ -200,7 +200,9 @@ class MigrationManager {
     availableVersions.clear();
     var warnings = <String>[];
     try {
-      availableVersions.addAll(MigrationVersions.listVersions());
+      availableVersions.addAll(MigrationVersions.listVersions(
+        projectDirectory: _projectDirectory,
+      ));
     } catch (e) {
       warnings.add(
           'Failed to determine migration versions for project: ${e.toString()}');
