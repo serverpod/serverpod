@@ -3,8 +3,6 @@ import 'dart:typed_data';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
-import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// User profile management endpoint.
@@ -16,13 +14,12 @@ abstract class UserProfileEndpoint extends Endpoint {
   Future<UserProfileModel> get(final Session session) async {
     final authUserId = (await session.authenticated)!.userUuid;
 
-    final profile = await UserProfile.db.findFirstRow(
+    final profile = await UserProfiles.findUserProfileByUserId(
       session,
-      where: (final t) => t.authUserId.equals(authUserId),
-      include: UserProfile.include(image: UserProfileImage.include()),
+      authUserId,
     );
 
-    return profile.toModel(authUserId);
+    return profile;
   }
 
   /// Removes the users uploaded image, replacing it with the default user

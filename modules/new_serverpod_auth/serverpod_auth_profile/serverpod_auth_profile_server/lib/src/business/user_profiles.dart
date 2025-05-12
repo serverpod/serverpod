@@ -36,7 +36,7 @@ abstract final class UserProfiles {
       ),
     );
 
-    userProfile = savedProfile.toModel(userProfile.authUserId);
+    userProfile = savedProfile.toModel();
 
     await UserProfileConfig.current.onAfterUserProfileCreated?.call(
       session,
@@ -67,7 +67,7 @@ abstract final class UserProfiles {
       return null;
     }
 
-    return profile.toModel(profile.authUserId);
+    return profile.toModel();
   }
 
   /// Find a user profile by the `AuthUser`'s ID.
@@ -106,7 +106,7 @@ abstract final class UserProfiles {
     final userProfile = await _maybeFindUserProfile(session, authUserId);
 
     if (userProfile != null) {
-      userInfo = userProfile.toModel(authUserId);
+      userInfo = userProfile.toModel();
     }
 
     if (useCache && userInfo != null) {
@@ -135,7 +135,7 @@ abstract final class UserProfiles {
 
     final updatedProfile = await _updateProfile(session, userProfile);
 
-    return updatedProfile.toModel(authUserId);
+    return updatedProfile.toModel();
   }
 
   /// Updates a profile's full name.
@@ -153,7 +153,7 @@ abstract final class UserProfiles {
 
     final updatedProfile = await _updateProfile(session, userProfile);
 
-    return updatedProfile.toModel(authUserId);
+    return updatedProfile.toModel();
   }
 
   /// Updates a profile's image.
@@ -173,7 +173,7 @@ abstract final class UserProfiles {
 
     userProfile = await _updateProfile(session, userProfile);
 
-    return userProfile.toModel(authUserId);
+    return userProfile.toModel();
   }
 
   /// Remove the user profile for the given [authUserId].
@@ -206,7 +206,7 @@ abstract final class UserProfiles {
       );
     }
 
-    final modelBeforeChange = userProfile.toModel(userProfile.authUserId);
+    final modelBeforeChange = userProfile.toModel();
     final modifiedProfile = await UserProfileConfig
         .current.onBeforeUserProfileUpdated
         ?.call(session, modelBeforeChange);
@@ -231,7 +231,7 @@ abstract final class UserProfiles {
 
     await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
       session,
-      userProfile.toModel(userProfile.authUserId),
+      userProfile.toModel(),
     );
 
     await _invalidateCacheForUser(session, userProfile.authUserId);
