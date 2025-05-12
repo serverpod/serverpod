@@ -53,7 +53,7 @@ class MigrationManager {
 
   /// Returns the installed version of the given module, or null if no version
   /// is installed.
-  String? getInstalledVersion(String module) {
+  String? _getInstalledVersion(String module) {
     var installed = installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
@@ -64,20 +64,15 @@ class MigrationManager {
   }
 
   /// Returns the latest version of the given module from available migrations.
-  String getLatestVersion() {
+  String _getLatestVersion() {
     if (availableVersions.isEmpty) {
       throw Exception('No migrations found in project.');
     }
     return availableVersions.last;
   }
 
-  /// Returns true if any version of the given module is installed.
-  bool isAnyInstalled(String module) {
-    return getInstalledVersion(module) != null;
-  }
-
   /// Returns true if the latest version of a module is installed.
-  bool isVersionInstalled(String module, String version) {
+  bool _isVersionInstalled(String module, String version) {
     var installed = installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
@@ -96,16 +91,16 @@ class MigrationManager {
 
     await _withMigrationLock(session, () async {
       await _updateState(session);
-      var latestVersion = getLatestVersion();
+      var latestVersion = _getLatestVersion();
 
       var moduleName = session.serverpod.serializationManager.getModuleName();
 
-      if (isVersionInstalled(moduleName, latestVersion)) {
+      if (_isVersionInstalled(moduleName, latestVersion)) {
         migrationsApplied = null;
         return;
       }
 
-      var installedVersion = getInstalledVersion(moduleName);
+      var installedVersion = _getInstalledVersion(moduleName);
 
       migrationsApplied = await _migrateToLatestModule(
         session,
