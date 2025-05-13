@@ -18,9 +18,19 @@ abstract final class UserProfiles {
     final Session session,
     UserProfileModel userProfile,
   ) async {
-    userProfile = (await UserProfileConfig.current.onBeforeUserProfileCreated
-            ?.call(session, userProfile)) ??
-        userProfile;
+    final modifiedProfile = await UserProfileConfig
+        .current.onBeforeUserProfileCreated
+        ?.call(session, userProfile);
+
+    if (modifiedProfile != null) {
+      if (modifiedProfile.authUserId != userProfile.authUserId) {
+        throw Exception(
+          'The `onBeforeUserProfileCreated` hook returned profile data for a different auth user',
+        );
+      }
+
+      userProfile = modifiedProfile;
+    }
 
     userProfile = userProfile.copyWith(
       email: userProfile.email?.toLowerCase().trim(),
@@ -170,10 +180,7 @@ abstract final class UserProfiles {
 
 // #region Profile images
 
-  /// Sets a user's image from the provided [url].
-  ///
-  /// The image is downloaded, stored in the cloud and associated with the user.
-  static Future<UserProfileModel> setUserImageFromUrl(
+  static Future<UserProfileImage> _createImageFromUrl(
     final Session session,
     final UuidValue authUserId,
     final Uri url,
@@ -181,13 +188,10 @@ abstract final class UserProfiles {
     final result = await http.get(url);
     final bytes = result.bodyBytes;
 
-    return setUserImageFromBytes(session, authUserId, bytes);
+    return _createImageFromBytes(session, authUserId, bytes);
   }
 
-  /// Sets a user's image from image data.
-  ///
-  /// The image is resized before being stored in the cloud and associated with the user.
-  static Future<UserProfileModel> setUserImageFromBytes(
+  static Future<UserProfileImage> _createImageFromBytes(
     final Session session,
     final UuidValue authUserId,
     final Uint8List imageBytes,
@@ -207,45 +211,7 @@ abstract final class UserProfiles {
       return _encodeImage(image);
     });
 
-    return _setUserImage(session, authUserId, reEncodedImageBytes);
-  }
-
-  /// Sets a user's image to the default image for that user.
-  static Future<UserProfileModel> setDefaultUserImage(
-    final Session session,
-    final UuidValue authUserId,
-  ) async {
-    final userProfile = await UserProfiles.findUserProfileByUserId(
-      session,
-      authUserId,
-    );
-
-    final image =
-        await UserProfileConfig.current.userImageGenerator(userProfile);
-    final imageBytes = await Isolate.run(() => _encodeImage(image));
-
-    return _setUserImage(
-      session,
-      authUserId,
-      imageBytes,
-    );
-  }
-
-  static Uint8List _encodeImage(final Image image) =>
-      switch (UserProfileConfig.current.userImageFormat) {
-        UserProfileImageType.jpg => encodeJpg(
-            image,
-            quality: UserProfileConfig.current.userImageQuality,
-          ),
-        UserProfileImageType.png => encodePng(image),
-      };
-
-  static Future<UserProfileModel> _setUserImage(
-    final Session session,
-    final UuidValue authUserId,
-    final Uint8List imageBytes,
-  ) async {
-    var userProfile = await _findUserProfile(session, authUserId);
+    final userProfile = await _findUserProfile(session, authUserId);
 
     // Find the latest version of the user image if any.
     final oldImageRef = await UserProfileImage.db.findFirstRow(
@@ -270,23 +236,87 @@ abstract final class UserProfiles {
     await session.storage.storeFile(
       storageId: 'public',
       path: path,
-      byteData: ByteData.view(imageBytes.buffer),
+      byteData: ByteData.view(reEncodedImageBytes.buffer),
     );
     final publicUrl = (await session.storage.getPublicUrl(
       storageId: 'public',
       path: path,
     ))!;
 
-    var profileImage = UserProfileImage(
+    final profileImage = UserProfileImage(
       userProfileId: userProfile.id!,
       version: version,
       url: publicUrl,
     );
 
-    profileImage = await UserProfileImage.db.insertRow(session, profileImage);
+    return UserProfileImage.db.insertRow(session, profileImage);
+  }
 
-    userProfile.imageId = profileImage.id!;
-    userProfile.image = profileImage;
+  /// Sets a user's image from the provided [url].
+  ///
+  /// The image is downloaded, stored in the cloud and associated with the user.
+  static Future<UserProfileModel> setUserImageFromUrl(
+    final Session session,
+    final UuidValue authUserId,
+    final Uri url,
+  ) async {
+    final image = await _createImageFromUrl(session, authUserId, url);
+
+    return _setUserImage(session, authUserId, image);
+  }
+
+  /// Sets a user's image from image data.
+  ///
+  /// The image is resized before being stored in the cloud and associated with the user.
+  static Future<UserProfileModel> setUserImageFromBytes(
+    final Session session,
+    final UuidValue authUserId,
+    final Uint8List imageBytes,
+  ) async {
+    final image = await _createImageFromBytes(session, authUserId, imageBytes);
+
+    return _setUserImage(session, authUserId, image);
+  }
+
+  /// Sets a user's image to the default image for that user.
+  static Future<UserProfileModel> setDefaultUserImage(
+    final Session session,
+    final UuidValue authUserId,
+  ) async {
+    final userProfile = await UserProfiles.findUserProfileByUserId(
+      session,
+      authUserId,
+    );
+
+    final image =
+        await UserProfileConfig.current.userImageGenerator(userProfile);
+    final imageBytes = await Isolate.run(() => _encodeImage(image));
+
+    return setUserImageFromBytes(
+      session,
+      authUserId,
+      imageBytes,
+    );
+  }
+
+  static Uint8List _encodeImage(final Image image) =>
+      switch (UserProfileConfig.current.userImageFormat) {
+        UserProfileImageType.jpg => encodeJpg(
+            image,
+            quality: UserProfileConfig.current.userImageQuality,
+          ),
+        UserProfileImageType.png => encodePng(image),
+      };
+
+  static Future<UserProfileModel> _setUserImage(
+    final Session session,
+    final UuidValue authUserId,
+    final UserProfileImage image,
+  ) async {
+    var userProfile = await _findUserProfile(session, authUserId);
+
+    userProfile.imageId = image.id!;
+    userProfile.image = image;
 
     userProfile = await _updateProfile(session, userProfile);
 
@@ -320,17 +350,40 @@ abstract final class UserProfiles {
     final modifiedProfile = await UserProfileConfig
         .current.onBeforeUserProfileUpdated
         ?.call(session, modelBeforeChange);
+
     if (modifiedProfile != null) {
-      if (modifiedProfile.imageUrl != modelBeforeChange.imageUrl) {
+      if (modifiedProfile.authUserId != userProfile.authUserId) {
         throw Exception(
-          "The profile's `imageUrl` must not be changed by the `onBeforeUserProfileUpdated` hook",
+          'The `onBeforeUserProfileUpdated` hook returned profile data for a different auth user',
         );
+      }
+
+      if (modifiedProfile.imageUrl != modelBeforeChange.imageUrl) {
+        final newImageUrl = modifiedProfile.imageUrl;
+
+        if (newImageUrl != null) {
+          final newImage = await _createImageFromUrl(
+            session,
+            modifiedProfile.authUserId,
+            newImageUrl,
+          );
+
+          userProfile = userProfile.copyWith(
+            imageId: newImage.id!,
+            image: newImage,
+          );
+        } else {
+          userProfile = userProfile.copyWith(
+            imageId: null,
+            image: null,
+          );
+        }
       }
 
       userProfile = userProfile.copyWith(
         userName: modifiedProfile.userName,
         fullName: modifiedProfile.fullName,
-        email: modifiedProfile.email,
+        email: modifiedProfile.email?.toLowerCase().trim(),
       );
     }
 

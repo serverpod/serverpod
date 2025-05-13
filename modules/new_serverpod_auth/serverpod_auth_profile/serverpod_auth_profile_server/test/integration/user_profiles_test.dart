@@ -251,6 +251,31 @@ void main() {
     );
 
     test(
+      'when updating `onBeforeUserProfileUpdated` returns a new image URL, then the final profile will refer to a local copy of it.',
+      () async {
+        UserProfileConfig.current = UserProfileConfig(
+            onBeforeUserProfileUpdated: (final session, final userProfile) {
+          return userProfile.copyWith(
+            imageUrl: Uri.parse(
+              'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
+            ),
+          );
+        });
+
+        final updatedUserProfile = await UserProfiles.changeFullName(
+          session,
+          authUserId,
+          'updated',
+        );
+
+        expect(
+          updatedUserProfile.imageUrl.toString(),
+          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+        );
+      },
+    );
+
+    test(
       'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
       () async {
         UserProfileModel? updatedProfileFromCallback;
