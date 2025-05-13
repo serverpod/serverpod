@@ -23,5 +23,7 @@ dependency_overrides:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
   serverpod_test:
     path: ../../../../packages/serverpod_test
