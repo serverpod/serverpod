@@ -8,7 +8,10 @@ environment:
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION
+  serverpod_auth_user_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:
     path: ../../../../packages/serverpod_client
+  serverpod_auth_user_client:
+    path: ../../serverpod_auth_user/serverpod_auth_user_client
