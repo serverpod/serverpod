@@ -449,8 +449,19 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     out += '\n';
 
     // Must be declared at the beginning for the function to be available.
-    out += _sqlUuidGenerateV7FunctionDeclaration();
-    out += '\n';
+    // Only add the function if it is used by any column on the migration.
+    if (actions.any((e) =>
+        (e.createTable != null &&
+            e.createTable!.columns
+                .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7)) ||
+        (e.alterTable != null &&
+            (e.alterTable!.addColumns
+                    .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7) ||
+                e.alterTable!.modifyColumns
+                    .any((c) => c.newDefault == pgsqlFunctionRandomUuidV7))))) {
+      out += _sqlUuidGenerateV7FunctionDeclaration();
+      out += '\n';
+    }
 
     var foreignKeyActions = '';
     for (var action in actions) {
