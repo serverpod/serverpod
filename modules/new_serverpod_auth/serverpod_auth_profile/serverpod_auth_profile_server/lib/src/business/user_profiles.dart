@@ -56,13 +56,24 @@ abstract final class UserProfiles {
   /// By default the result is cached locally on the server. You can configure the cache
   /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
+  ///
+  /// Throws a [UserProfileNotFoundException] in case no profile exists for the given [authUserId].
   static Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
     final bool useCache = true,
   }) async {
-    return (await maybeFindUserByUserId(session, authUserId,
-        useCache: useCache))!;
+    final profile = await maybeFindUserProfileByUserId(
+      session,
+      authUserId,
+      useCache: useCache,
+    );
+
+    if (profile == null) {
+      throw UserProfileNotFoundException(authUserId);
+    }
+
+    return profile;
   }
 
   /// Looks for a user profile by the `AuthUser`'s ID.
@@ -71,7 +82,7 @@ abstract final class UserProfiles {
   /// result is cached locally on the server. You can configure the cache
   /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
-  static Future<UserProfileModel?> maybeFindUserByUserId(
+  static Future<UserProfileModel?> maybeFindUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
     final bool useCache = true,
@@ -303,6 +314,12 @@ abstract final class UserProfiles {
     if (userProfile.imageId != userProfile.image?.id) {
       throw Exception(
         'Can not update profile when `imageId` and `image` do not point to the same entity.',
+      );
+    }
+    if (userProfile.image != null &&
+        userProfile.image!.userProfileId != userProfile.id) {
+      throw Exception(
+        'The given image belongs to user ${userProfile.image!.userProfileId} and thus can not be used on the profile of user ${userProfile.id}',
       );
     }
 

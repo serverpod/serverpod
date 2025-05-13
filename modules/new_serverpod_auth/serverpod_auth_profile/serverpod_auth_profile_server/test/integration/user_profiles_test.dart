@@ -30,7 +30,8 @@ void main() {
             UserProfileModel(authUserId: authUserId, userName: 'test_user'),
           );
 
-          final foundUserProfile = await UserProfiles.maybeFindUserByUserId(
+          final foundUserProfile =
+              await UserProfiles.maybeFindUserProfileByUserId(
             session,
             authUserId,
           );
@@ -136,6 +137,16 @@ void main() {
           );
         },
       );
+
+      test(
+        "when attempting to read a user's profile before it was created, then a `UserProfileNotFoundException` is thrown.",
+        () async {
+          await expectLater(
+            () => UserProfiles.findUserProfileByUserId(session, authUserId),
+            throwsA(isA<UserProfileNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -172,7 +183,8 @@ void main() {
         Uri.parse('https://serverpod.dev/image1.png'),
       );
 
-      final readUpdatedProfile = await UserProfiles.maybeFindUserByUserId(
+      final readUpdatedProfile =
+          await UserProfiles.maybeFindUserProfileByUserId(
         session,
         authUserId,
       );
@@ -189,7 +201,8 @@ void main() {
         Uri.parse('https://serverpod.dev/image2.png'),
       );
 
-      final readUpdatedProfile2 = await UserProfiles.maybeFindUserByUserId(
+      final readUpdatedProfile2 =
+          await UserProfiles.maybeFindUserProfileByUserId(
         session,
         authUserId,
       );
@@ -383,7 +396,7 @@ void main() {
 
     test('when deleting the user profile, then the auth user is unaffected.',
         () async {
-      final userProfile = await UserProfiles.maybeFindUserByUserId(
+      final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
         session,
         authUserId,
       );
@@ -392,7 +405,8 @@ void main() {
 
       await UserProfiles.deleteProfileForUser(session, authUserId);
 
-      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+      final profileAfterDelete =
+          await UserProfiles.maybeFindUserProfileByUserId(
         session,
         authUserId,
       );
@@ -426,7 +440,8 @@ void main() {
         session,
         authUserId,
       );
-      final profileAfterDelete = await UserProfiles.maybeFindUserByUserId(
+      final profileAfterDelete =
+          await UserProfiles.maybeFindUserProfileByUserId(
         session,
         authUserId,
       );

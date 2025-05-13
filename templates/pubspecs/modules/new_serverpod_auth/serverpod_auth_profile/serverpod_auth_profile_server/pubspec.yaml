@@ -14,6 +14,7 @@ dependencies:
   meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
+  uuid: ^4.1.0
 
 dev_dependencies:
   lints: '>=3.0.0 <6.0.0'
