@@ -1,0 +1,18 @@
+### Database table for tracking failed anonymous sign-ins. Saves IP-address,
+### time, and email to be prevent brute force attacks.
+class: AnonymousFailedSignIn
+table: serverpod_anonymous_failed_sign_in
+fields:
+  ### UserId attempting to sign in with.
+  userId: int
+
+  ### The time of the sign in attempt.
+  time: DateTime
+
+  ### The IP address of the sign in attempt.
+  ipAddress: String
+indexes:
+  serverpod_anonymous_failed_sign_in_userid_idx:
+    fields: userId
+  serverpod_anonymous_failed_sign_in_time_idx:
+    fields: time

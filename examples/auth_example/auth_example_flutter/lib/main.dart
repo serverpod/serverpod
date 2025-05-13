@@ -42,6 +42,9 @@ class MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
+    // Load any active session stored in shared_preferences.
+    sessionManager.initialize();
+
     // Make sure that we rebuild the page if signed in status changes.
     sessionManager.addListener(() {
       setState(() {});
@@ -54,8 +57,9 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body:
-          sessionManager.isSignedIn ? const AccountPage() : const SignInPage(),
+      body: sessionManager.isSignedIn
+          ? const AccountPage()
+          : SignInPage(sessionManager),
     );
   }
 }

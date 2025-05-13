@@ -32,6 +32,7 @@ dependencies:
   serverpod_auth_shared_flutter: 2.6.0
   serverpod_auth_google_flutter: 2.6.0
   serverpod_auth_apple_flutter: 2.6.0
+  serverpod_auth_anonymous_flutter: 2.6.0
   auth_example_client:
     path: ../auth_example_client
 
@@ -56,6 +57,8 @@ dependency_overrides:
     path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter
   serverpod_auth_apple_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter
+  serverpod_auth_anonymous_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_anonymous_flutter
   serverpod_auth_client:
     path: ../../../modules/serverpod_auth/serverpod_auth_client
   serverpod_client:
