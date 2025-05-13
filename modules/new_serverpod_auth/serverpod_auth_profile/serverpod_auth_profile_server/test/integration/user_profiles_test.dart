@@ -10,7 +10,7 @@ import '../../test/integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given the `UserProfiles` implementation and an existing `AuthUser`,',
+    'Given an existing `AuthUser`,',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -134,8 +134,7 @@ void main() {
     },
   );
 
-  withServerpod(
-      'Given the `UserProfiles` and an `AuthUser` with an empty profile,',
+  withServerpod('Given an `AuthUser` with an empty profile,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -378,8 +377,7 @@ void main() {
     );
   });
 
-  withServerpod(
-      'Given the `UserProfiles` and an `AuthUser` with a profile with an image,',
+  withServerpod('Given an `AuthUser` with a profile with an image,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late AuthUser authUser;
