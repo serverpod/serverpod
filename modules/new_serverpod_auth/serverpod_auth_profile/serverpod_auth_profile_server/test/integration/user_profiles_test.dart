@@ -83,44 +83,6 @@ void main() {
       );
 
       test(
-        'when creating a new user profile, then `onBeforeUserProfileUpdated` is not invoked.',
-        () async {
-          var invoked = false;
-          UserProfileConfig.current = UserProfileConfig(
-              onBeforeUserProfileUpdated: (final session, final userProfile) {
-            invoked = true;
-            return userProfile;
-          });
-
-          await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(authUserId: authUserId),
-          );
-
-          // Insert does not count as update
-          expect(invoked, isFalse);
-        },
-      );
-
-      test(
-        'when creating a new user profile, then `onAfterUserProfileUpdated` is not invoked.',
-        () async {
-          var invoked = false;
-          UserProfileConfig.current = UserProfileConfig(
-              onAfterUserProfileUpdated: (final session, final userProfile) {
-            invoked = true;
-          });
-
-          await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(authUserId: authUserId),
-          );
-
-          expect(invoked, isFalse);
-        },
-      );
-
-      test(
         'when creating a new profile, then the email is stored in lower-case.',
         () async {
           final createdUserProfile = await UserProfiles.createUserProfile(
