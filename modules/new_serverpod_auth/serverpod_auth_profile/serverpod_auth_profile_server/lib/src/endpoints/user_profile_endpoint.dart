@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
@@ -25,10 +24,6 @@ abstract class UserProfileEndpoint extends Endpoint {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<UserProfileModel> removeUserImage(final Session session) async {
-    if (!UserProfileConfig.current.userCanEditUserImage) {
-      throw AccessDeniedException(message: 'User image change is disabled.');
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
     return UserProfiles.setDefaultUserImage(session, userId);
@@ -39,10 +34,6 @@ abstract class UserProfileEndpoint extends Endpoint {
     final Session session,
     final ByteData image,
   ) async {
-    if (!UserProfileConfig.current.userCanEditUserImage) {
-      throw AccessDeniedException(message: 'User image change is disabled.');
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
     return UserProfiles.setUserImageFromBytes(
@@ -57,10 +48,6 @@ abstract class UserProfileEndpoint extends Endpoint {
     final Session session,
     final String? userName,
   ) async {
-    if (!UserProfileConfig.current.userCanEditUserName) {
-      throw AccessDeniedException(message: 'Username change is disabled.');
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
     return UserProfiles.changeUserName(session, userId, userName);
@@ -71,12 +58,6 @@ abstract class UserProfileEndpoint extends Endpoint {
     final Session session,
     final String? fullName,
   ) async {
-    if (!UserProfileConfig.current.userCanEditFullName) {
-      throw AccessDeniedException(
-        message: 'Fullname change is disabled.',
-      );
-    }
-
     final userId = (await session.authenticated)!.userUuid;
 
     return UserProfiles.changeFullName(session, userId, fullName);

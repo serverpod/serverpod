@@ -6,15 +6,6 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 
 /// Configuration options for the user profile module.
 class UserProfileConfig {
-  /// True if users can update their profile images.
-  final bool userCanEditUserImage;
-
-  /// True if users can edit their user names.
-  final bool userCanEditUserName;
-
-  /// True if users can edit their full name.
-  final bool userCanEditFullName;
-
   /// The size of user images.
   ///
   /// Defaults to 256.
@@ -55,9 +46,6 @@ class UserProfileConfig {
 
   /// Create a new user profile configuration.
   UserProfileConfig({
-    this.userCanEditUserImage = true,
-    this.userCanEditUserName = true,
-    this.userCanEditFullName = true,
     this.userImageSize = 256,
     this.userInfoCacheLifetime = const Duration(minutes: 1),
     this.userImageGenerator = defaultUserImageGenerator,
