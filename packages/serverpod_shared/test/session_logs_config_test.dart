@@ -56,10 +56,10 @@ apiServer:
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
       expect(
-        config.sessionLogs?.consoleLogFormat,
+        config.sessionLogs.consoleLogFormat,
         ConsoleLogFormat.json,
       );
     },
@@ -88,8 +88,8 @@ database:
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
     },
   );
 
@@ -149,8 +149,8 @@ sessionLogs:
         environment: {},
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
     },
   );
 
@@ -180,8 +180,8 @@ sessionLogs:
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
     },
   );
 
@@ -212,9 +212,9 @@ sessionLogs:
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
-      expect(config.sessionLogs?.consoleLogFormat, ConsoleLogFormat.text);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
     },
   );
 
@@ -251,9 +251,9 @@ sessionLogs:
         },
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
-      expect(config.sessionLogs?.consoleLogFormat, ConsoleLogFormat.json);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
     },
   );
 

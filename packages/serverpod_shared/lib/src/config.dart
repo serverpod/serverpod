@@ -41,7 +41,7 @@ class ServerpodConfig {
   late final String? serviceSecret;
 
   /// Configuration for Session logs.
-  final SessionLogConfig? sessionLogs;
+  final SessionLogConfig sessionLogs;
 
   /// The timeout for the diagnostic event handlers.
   /// Default is 30 seconds.
@@ -247,7 +247,7 @@ class ServerpodConfig {
 
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
-    if (sessionLogs != null) str += sessionLogs.toString();
+    str += sessionLogs.toString();
     str += futureCall.toString();
     str += 'future call execution enabled: $futureCallExecutionEnabled\n';
 
