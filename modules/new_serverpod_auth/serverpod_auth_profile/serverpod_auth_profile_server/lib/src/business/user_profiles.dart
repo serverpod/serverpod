@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
@@ -246,7 +245,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes,
   ) async {
-    final userProfile = await _findUserProfile(session, authUserId);
+    var userProfile = await _findUserProfile(session, authUserId);
 
     // Find the latest version of the user image if any.
     final oldImageRef = await UserProfileImage.db.findFirstRow(
@@ -278,19 +277,6 @@ abstract final class UserProfiles {
       path: path,
     ))!;
 
-    return setUserImageFromOwnedUrl(session, authUserId, version, publicUrl);
-  }
-
-  /// Sets the profile image to the given URL, which is presumed to be owned by this application.
-  @visibleForTesting
-  static Future<UserProfileModel> setUserImageFromOwnedUrl(
-    final Session session,
-    final UuidValue authUserId,
-    final int version,
-    final Uri publicUrl,
-  ) async {
-    var userProfile = await _findUserProfile(session, authUserId);
-
     var profileImage = UserProfileImage(
       userProfileId: userProfile.id!,
       version: version,
@@ -306,6 +292,7 @@ abstract final class UserProfiles {
 
     return userProfile.toModel();
   }
+
 // #endregion
 
   static Future<UserProfile> _updateProfile(

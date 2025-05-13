@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
@@ -158,11 +160,10 @@ void main() {
         () async {
       // NOTE: This exercises only the libray-internal part of the image handling, as we don't have access to object storage in this test
 
-      await UserProfiles.setUserImageFromOwnedUrl(
+      await UserProfiles.setUserImageFromBytes(
         session,
         authUserId,
-        1,
-        Uri.parse('https://serverpod.dev/image1.png'),
+        onePixelPng,
       );
 
       final readUpdatedProfile =
@@ -173,14 +174,18 @@ void main() {
 
       expect(
         readUpdatedProfile?.imageUrl.toString(),
-        'https://serverpod.dev/image1.png',
+        allOf(contains('http://localhost'), endsWith('-1.jpg')),
       );
 
-      await UserProfiles.setUserImageFromOwnedUrl(
+      final profileAfterUpdate = await UserProfiles.setUserImageFromBytes(
         session,
         authUserId,
-        2,
-        Uri.parse('https://serverpod.dev/image2.png'),
+        onePixelPng,
+      );
+
+      expect(
+        profileAfterUpdate.imageUrl.toString(),
+        allOf(contains('http://localhost'), endsWith('-2.jpg')),
       );
 
       final readUpdatedProfile2 =
@@ -191,7 +196,7 @@ void main() {
 
       expect(
         readUpdatedProfile2?.imageUrl.toString(),
-        'https://serverpod.dev/image2.png',
+        allOf(contains('http://localhost'), endsWith('-2.jpg')),
       );
     });
 
@@ -324,24 +329,25 @@ void main() {
         );
         expect(profileBeforeUpdate.imageUrl, isNull);
 
-        final updatedResult = await UserProfiles.setUserImageFromOwnedUrl(
+        final updatedResult = await UserProfiles.setUserImageFromBytes(
           session,
           authUserId,
-          1,
-          Uri.parse('https://serverpod.dev/image1.png'),
+          onePixelPng,
         );
+
         expect(
           updatedResult.imageUrl.toString(),
-          'https://serverpod.dev/image1.png',
+          allOf(contains('http://localhost'), endsWith('-1.jpg')),
         );
 
         final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
           session,
           authUserId,
         );
+
         expect(
           profileAfterUpdate.imageUrl?.toString(),
-          'https://serverpod.dev/image1.png',
+          allOf(contains('http://localhost'), endsWith('-1.jpg')),
         );
       },
     );
@@ -368,11 +374,10 @@ void main() {
         UserProfileModel(authUserId: authUserId),
       );
 
-      await UserProfiles.setUserImageFromOwnedUrl(
+      await UserProfiles.setDefaultUserImage(
         session,
         authUserId,
-        1,
-        Uri.parse('https://serverpod.dev/image1.png'),
+        // onePixelPng,
       );
     });
 
@@ -446,3 +451,7 @@ void main() {
     });
   });
 }
+
+final onePixelPng = base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+);
