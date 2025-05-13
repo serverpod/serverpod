@@ -85,7 +85,7 @@ void main() async {
         where: (t) => t.company.name.equals('Serverpod'),
       );
       var citizenNames = citizens.map((e) => e.name);
-      expect(citizenNames, ['Alex', 'Isak']);
+      expect(citizenNames, unorderedEquals(['Alex', 'Isak']));
     });
   });
 
@@ -105,7 +105,7 @@ void main() async {
 
     test('then expected models are returned.', () {
       var citizenNames = citizensWithCompanyTownStockholm.map((e) => e.name);
-      expect(citizenNames, ['Alex', 'Isak', 'Theo', 'Haris']);
+      expect(citizenNames, unorderedEquals(['Alex', 'Isak', 'Theo', 'Haris']));
     });
   });
 }
