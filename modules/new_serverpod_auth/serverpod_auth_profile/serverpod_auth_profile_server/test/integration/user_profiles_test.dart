@@ -109,6 +109,26 @@ void main() {
           );
         },
       );
+
+      test(
+        'when creating a user profile with an image URL, then a local copy of the image is exposed on the user.',
+        () async {
+          final createdProfile = await UserProfiles.createUserProfile(
+            session,
+            UserProfileModel(
+              authUserId: authUserId,
+              imageUrl: Uri.parse(
+                'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
+              ),
+            ),
+          );
+
+          expect(
+            createdProfile.imageUrl?.toString(),
+            contains('http://localhost'),
+          );
+        },
+      );
     },
   );
 

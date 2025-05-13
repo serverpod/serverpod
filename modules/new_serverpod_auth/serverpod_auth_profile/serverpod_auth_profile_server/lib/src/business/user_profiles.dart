@@ -19,19 +19,17 @@ abstract final class UserProfiles {
     final Session session,
     UserProfileModel userProfile,
   ) async {
-    userProfile = userProfile.copyWith(
-      email: userProfile.email?.toLowerCase().trim(),
-    );
-
     userProfile = (await UserProfileConfig.current.onBeforeUserProfileCreated
             ?.call(session, userProfile)) ??
         userProfile;
 
-    if (userProfile.imageUrl != null) {
-      throw Exception('An image can not be set when creating a user.');
-    }
+    userProfile = userProfile.copyWith(
+      email: userProfile.email?.toLowerCase().trim(),
+    );
 
-    final savedProfile = await UserProfile.db.insertRow(
+    final imageUrl = userProfile.imageUrl;
+
+    final createdProfile = await UserProfile.db.insertRow(
       session,
       UserProfile(
         authUserId: userProfile.authUserId,
@@ -41,14 +39,22 @@ abstract final class UserProfiles {
       ),
     );
 
-    userProfile = savedProfile.toModel();
+    var createdProfileModel = createdProfile.toModel();
+
+    if (imageUrl != null) {
+      createdProfileModel = await UserProfiles.setUserImageFromUrl(
+        session,
+        userProfile.authUserId,
+        imageUrl,
+      );
+    }
 
     await UserProfileConfig.current.onAfterUserProfileCreated?.call(
       session,
-      userProfile,
+      createdProfileModel,
     );
 
-    return userProfile;
+    return createdProfileModel;
   }
 
   /// Find a user profile by the `AuthUser`'s ID.
