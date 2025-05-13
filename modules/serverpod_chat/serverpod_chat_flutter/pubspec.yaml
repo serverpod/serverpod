@@ -3,7 +3,7 @@
 
 name: serverpod_chat_flutter
 description: Flutter widgets for the Serverpod chat module.
-version: 2.6.0
+version: 2.7.0
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -19,15 +19,15 @@ dependencies:
   intl: '>=0.19.0 <0.21.0'
   url_launcher: ^6.1.10
   path: ^1.8.2
-  serverpod_auth_client: 2.6.0
-  serverpod_chat_client: 2.6.0
-  serverpod_auth_shared_flutter: 2.6.0
+  serverpod_auth_client: 2.7.0
+  serverpod_chat_client: 2.7.0
+  serverpod_auth_shared_flutter: 2.7.0
   web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 2.6.0
+  serverpod_lints: 2.7.0
   mocktail: ^1.0.0
 
 dependency_overrides:

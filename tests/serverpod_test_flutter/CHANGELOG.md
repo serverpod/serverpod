@@ -1,3 +1,13 @@
+## 2.7.0
+- feat: Adds support for storing `String`-representable user id in `AuthenticationInfo`.
+- feat: Adds support for `UUIDv7` as a default value in models.
+- feat: Adds support for the `@doNotGenerate` annotation for endpoint methods. (Replaces `@ignoreEndpoint`.)
+- feat: Adds support for configuring execution, scan interval, and concurrency limit for future calls.
+- fix: Fixes an issue where migrations could add foreign key relations before their associated table was created.
+- fix: Prevents multiple servers from running migrations in parallel.
+- fix: Fixes an issue where the end of a call would not be logged to the console.
+- fix: Failed health checks now respond with a 503 status code.
+
 ## 2.6.0
 - feat: Adds support for endpoint inheritance.
 - feat: Adds support for `@ignoreEndpoint` annotation for endpoint methods.

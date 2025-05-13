@@ -3,7 +3,7 @@
 
 name: serverpod_auth_firebase_flutter
 description: Sign in with Firebase for the Serverpod auth module.
-version: 2.6.0
+version: 2.7.0
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -17,13 +17,13 @@ dependencies:
   flutter:
     sdk: flutter
   material_design_icons_flutter: ">=6.0.0 <8.0.0"
-  serverpod_auth_client: 2.6.0
-  serverpod_auth_shared_flutter: 2.6.0
+  serverpod_auth_client: 2.7.0
+  serverpod_auth_shared_flutter: 2.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 2.6.0
+  serverpod_lints: 2.7.0
 
 dependency_overrides:
   serverpod_auth_client:

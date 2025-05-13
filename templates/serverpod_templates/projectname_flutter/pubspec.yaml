@@ -24,7 +24,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: 2.6.0
+  serverpod_flutter: 2.7.0
   projectname_client:
     path: ../projectname_client
 

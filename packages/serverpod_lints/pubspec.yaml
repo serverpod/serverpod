@@ -3,7 +3,7 @@
 
 name: serverpod_lints
 description: Lints used by internal Serverpod packages.
-version: 2.6.0
+version: 2.7.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
