@@ -326,19 +326,18 @@ abstract final class UserProfiles {
     final Session session,
     UserProfile userProfile,
   ) async {
-    if (userProfile.imageId != null && userProfile.image == null) {
-      throw Exception(
-        'Can not update profile with an `imageId` when the full `image` is not set.',
-      );
-    }
     if (userProfile.imageId != userProfile.image?.id) {
-      throw Exception(
-        'Can not update profile when `imageId` and `image` do not point to the same entity.',
+      throw ArgumentError.value(
+        userProfile,
+        'userProfile',
+        '`image.id` and `imageId` do not match. To update a profile in the database and get the fully hydrated object, both need to be set accordingly.',
       );
     }
     if (userProfile.image != null &&
         userProfile.image!.userProfileId != userProfile.id) {
-      throw Exception(
+      throw ArgumentError.value(
+        userProfile,
+        'userProfile',
         'The given image belongs to user ${userProfile.image!.userProfileId} and thus can not be used on the profile of user ${userProfile.id}',
       );
     }
@@ -350,7 +349,7 @@ abstract final class UserProfiles {
 
     if (modifiedProfile != null) {
       if (modifiedProfile.authUserId != userProfile.authUserId) {
-        throw Exception(
+        throw StateError(
           'The `onBeforeUserProfileUpdated` hook returned profile data for a different auth user',
         );
       }
@@ -439,7 +438,7 @@ abstract final class UserProfiles {
     final userProfile = await _maybeFindUserProfile(session, authUserId);
 
     if (userProfile == null) {
-      throw Exception('Did not find profile for user "$authUserId"');
+      throw UserProfileNotFoundException(authUserId);
     }
 
     return userProfile;
