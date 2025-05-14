@@ -11,9 +11,6 @@ import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.da
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
   /// Creates a new user and stores it in the database.
-  ///
-  /// In case the `onBeforeUserProfileCreated` hook redirects this creation onto an existing profile,
-  /// no profile will be created, but the existing profile will be updated with the return value of the hook.
   static Future<UserProfileModel> createUserProfile(
     final Session session,
     UserProfileModel userProfile,
