@@ -14,9 +14,11 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i3;
 import 'user_profile.dart' as _i4;
-import 'user_profile_image.dart' as _i5;
-import 'user_profile_model.dart' as _i6;
+import 'user_profile_data.dart' as _i5;
+import 'user_profile_image.dart' as _i6;
+import 'user_profile_model.dart' as _i7;
 export 'user_profile.dart';
+export 'user_profile_data.dart';
 export 'user_profile_image.dart';
 export 'user_profile_model.dart';
 
@@ -222,20 +224,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i4.UserProfile) {
       return _i4.UserProfile.fromJson(data) as T;
     }
-    if (t == _i5.UserProfileImage) {
-      return _i5.UserProfileImage.fromJson(data) as T;
+    if (t == _i5.UserProfileData) {
+      return _i5.UserProfileData.fromJson(data) as T;
     }
-    if (t == _i6.UserProfileModel) {
-      return _i6.UserProfileModel.fromJson(data) as T;
+    if (t == _i6.UserProfileImage) {
+      return _i6.UserProfileImage.fromJson(data) as T;
+    }
+    if (t == _i7.UserProfileModel) {
+      return _i7.UserProfileModel.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.UserProfile?>()) {
       return (data != null ? _i4.UserProfile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.UserProfileImage?>()) {
-      return (data != null ? _i5.UserProfileImage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.UserProfileData?>()) {
+      return (data != null ? _i5.UserProfileData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.UserProfileModel?>()) {
-      return (data != null ? _i6.UserProfileModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.UserProfileImage?>()) {
+      return (data != null ? _i6.UserProfileImage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.UserProfileModel?>()) {
+      return (data != null ? _i7.UserProfileModel.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -253,10 +261,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i4.UserProfile) {
       return 'UserProfile';
     }
-    if (data is _i5.UserProfileImage) {
+    if (data is _i5.UserProfileData) {
+      return 'UserProfileData';
+    }
+    if (data is _i6.UserProfileImage) {
       return 'UserProfileImage';
     }
-    if (data is _i6.UserProfileModel) {
+    if (data is _i7.UserProfileModel) {
       return 'UserProfileModel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -279,11 +290,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'UserProfile') {
       return deserialize<_i4.UserProfile>(data['data']);
     }
+    if (dataClassName == 'UserProfileData') {
+      return deserialize<_i5.UserProfileData>(data['data']);
+    }
     if (dataClassName == 'UserProfileImage') {
-      return deserialize<_i5.UserProfileImage>(data['data']);
+      return deserialize<_i6.UserProfileImage>(data['data']);
     }
     if (dataClassName == 'UserProfileModel') {
-      return deserialize<_i6.UserProfileModel>(data['data']);
+      return deserialize<_i7.UserProfileModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -313,8 +327,8 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i4.UserProfile:
         return _i4.UserProfile.t;
-      case _i5.UserProfileImage:
-        return _i5.UserProfileImage.t;
+      case _i6.UserProfileImage:
+        return _i6.UserProfileImage.t;
     }
     return null;
   }
