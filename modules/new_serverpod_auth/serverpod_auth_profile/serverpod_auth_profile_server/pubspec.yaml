@@ -12,7 +12,6 @@ environment:
 dependencies:
   http: '>=1.0.0 <2.0.0'
   image: ^4.0.15
-  meta: ^1.11.0
   serverpod: 2.6.0
   serverpod_auth_user_server: 2.6.0
   uuid: ^4.1.0
