@@ -52,3 +52,9 @@ maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 sessionLogs:
   consoleEnabled: false
 # persistentEnabled: true
+
+# futureCallExecutionEnabled: true # Defaults to true
+
+#futureCall:
+#  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
+#  scanInterval: 5000 # Unit in milliseconds, defaults to 5000
