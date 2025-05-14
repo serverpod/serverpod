@@ -77,9 +77,10 @@ enum UserProfileImageType {
 }
 
 /// Callback to be invoked with the new user profile data before it gets created.
-typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfileModel> Function(
+typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfileData> Function(
   Session session,
-  UserProfileModel userProfile,
+  UuidValue authUserId,
+  UserProfileData userProfile,
 );
 
 /// Callback to be invoked with the new user profile after it has been created.
@@ -89,9 +90,10 @@ typedef AfterUserProfileCreatedHandler = FutureOr<void> Function(
 );
 
 /// Callback to be invoked with the new user profile before it will be updated.
-typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfileModel> Function(
+typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfileData> Function(
   Session session,
-  UserProfileModel userProfile,
+  UuidValue authUserId,
+  UserProfileData userProfile,
 );
 
 /// Callback to be invoked with the updated user profile after it has been updated.

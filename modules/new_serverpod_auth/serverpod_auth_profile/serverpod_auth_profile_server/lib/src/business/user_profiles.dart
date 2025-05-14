@@ -13,47 +13,34 @@ abstract final class UserProfiles {
   /// Creates a new user and stores it in the database.
   static Future<UserProfileModel> createUserProfile(
     final Session session,
-    UserProfileModel userProfile,
+    final UuidValue authUserId,
+    UserProfileData userProfile,
   ) async {
-    final modifiedProfile = await UserProfileConfig
-        .current.onBeforeUserProfileCreated
-        ?.call(session, userProfile);
-
-    if (modifiedProfile != null) {
-      if (modifiedProfile.authUserId != userProfile.authUserId) {
-        throw Exception(
-          'The `onBeforeUserProfileCreated` hook returned profile data for a different auth user',
-        );
-      }
-
-      userProfile = modifiedProfile;
+    final onBeforeUserProfileCreated =
+        UserProfileConfig.current.onBeforeUserProfileCreated;
+    if (onBeforeUserProfileCreated != null) {
+      userProfile = await onBeforeUserProfileCreated(
+        session,
+        authUserId,
+        userProfile,
+      );
     }
 
     userProfile = userProfile.copyWith(
       email: userProfile.email?.toLowerCase().trim(),
     );
 
-    final imageUrl = userProfile.imageUrl;
-
     final createdProfile = await UserProfile.db.insertRow(
       session,
       UserProfile(
-        authUserId: userProfile.authUserId,
+        authUserId: authUserId,
         userName: userProfile.userName,
         fullName: userProfile.fullName,
         email: userProfile.email,
       ),
     );
 
-    var createdProfileModel = createdProfile.toModel();
-
-    if (imageUrl != null) {
-      createdProfileModel = await UserProfiles.setUserImageFromUrl(
-        session,
-        userProfile.authUserId,
-        imageUrl,
-      );
-    }
+    final createdProfileModel = createdProfile.toModel();
 
     await UserProfileConfig.current.onAfterUserProfileCreated?.call(
       session,
@@ -342,40 +329,11 @@ abstract final class UserProfiles {
       );
     }
 
-    final modelBeforeChange = userProfile.toModel();
     final modifiedProfile = await UserProfileConfig
         .current.onBeforeUserProfileUpdated
-        ?.call(session, modelBeforeChange);
+        ?.call(session, userProfile.authUserId, userProfile.toProfileData());
 
     if (modifiedProfile != null) {
-      if (modifiedProfile.authUserId != userProfile.authUserId) {
-        throw StateError(
-          'The `onBeforeUserProfileUpdated` hook returned profile data for a different auth user',
-        );
-      }
-
-      if (modifiedProfile.imageUrl != modelBeforeChange.imageUrl) {
-        final newImageUrl = modifiedProfile.imageUrl;
-
-        if (newImageUrl != null) {
-          final newImage = await _createImageFromUrl(
-            session,
-            modifiedProfile.authUserId,
-            newImageUrl,
-          );
-
-          userProfile = userProfile.copyWith(
-            imageId: newImage.id!,
-            image: newImage,
-          );
-        } else {
-          userProfile = userProfile.copyWith(
-            imageId: null,
-            image: null,
-          );
-        }
-      }
-
       userProfile = userProfile.copyWith(
         userName: modifiedProfile.userName,
         fullName: modifiedProfile.fullName,

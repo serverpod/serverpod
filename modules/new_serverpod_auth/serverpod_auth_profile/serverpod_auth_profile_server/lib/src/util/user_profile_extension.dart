@@ -14,3 +14,15 @@ extension UserProfileToUserProfileModel on UserProfile {
     );
   }
 }
+
+/// Extensions method to convert a [UserProfile] to its core data representation.
+extension UserProfileToUserProfileData on UserProfile {
+  /// Returns the model of the database entity.
+  UserProfileData toProfileData() {
+    return UserProfileData(
+      userName: userName,
+      fullName: fullName,
+      email: email,
+    );
+  }
+}

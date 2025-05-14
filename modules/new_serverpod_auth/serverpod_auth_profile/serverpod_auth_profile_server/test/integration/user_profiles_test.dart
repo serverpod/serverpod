@@ -29,7 +29,8 @@ void main() {
         () async {
           await UserProfiles.createUserProfile(
             session,
-            UserProfileModel(authUserId: authUserId, userName: 'test_user'),
+            authUserId,
+            UserProfileData(userName: 'test_user'),
           );
 
           final foundUserProfile =
@@ -47,13 +48,15 @@ void main() {
         'when creating a new user profile, then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
         () async {
           UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileCreated: (final session, final userProfile) =>
-                userProfile.copyWith(fullName: 'overwritten full name'),
+            onBeforeUserProfileCreated:
+                (final session, final authUserId, final userProfile) =>
+                    userProfile.copyWith(fullName: 'overwritten full name'),
           );
 
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfileModel(authUserId: authUserId),
+            authUserId,
+            UserProfileData(),
           );
 
           expect(
@@ -74,7 +77,8 @@ void main() {
 
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfileModel(authUserId: authUserId),
+            authUserId,
+            UserProfileData(),
           );
 
           expect(
@@ -89,8 +93,8 @@ void main() {
         () async {
           final createdUserProfile = await UserProfiles.createUserProfile(
             session,
-            UserProfileModel(
-              authUserId: authUserId,
+            authUserId,
+            UserProfileData(
               email: 'Test@serverpod.Dev',
             ),
           );
@@ -108,26 +112,6 @@ void main() {
           await expectLater(
             () => UserProfiles.findUserProfileByUserId(session, authUserId),
             throwsA(isA<UserProfileNotFoundException>()),
-          );
-        },
-      );
-
-      test(
-        'when creating a user profile with an image URL, then a local copy of the image is exposed on the user.',
-        () async {
-          final createdProfile = await UserProfiles.createUserProfile(
-            session,
-            UserProfileModel(
-              authUserId: authUserId,
-              imageUrl: Uri.parse(
-                'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
-              ),
-            ),
-          );
-
-          expect(
-            createdProfile.imageUrl?.toString(),
-            contains('http://localhost'),
           );
         },
       );
@@ -150,7 +134,8 @@ void main() {
 
       await UserProfiles.createUserProfile(
         session,
-        UserProfileModel(authUserId: authUserId),
+        authUserId,
+        UserProfileData(),
       );
     });
 
@@ -205,7 +190,8 @@ void main() {
         await expectLater(
           () async => await UserProfiles.createUserProfile(
             session,
-            UserProfileModel(authUserId: authUserId),
+            authUserId,
+            UserProfileData(),
           ),
           throwsA(
             isA<Exception>().having(
@@ -223,9 +209,10 @@ void main() {
     test(
       'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
       () async {
-        UserProfileModel? updatedProfileFromCallback;
+        UserProfileData? updatedProfileFromCallback;
         UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileUpdated: (final session, final userProfile) {
+            onBeforeUserProfileUpdated:
+                (final session, final authUserId, final userProfile) {
           updatedProfileFromCallback = userProfile;
           return userProfile.copyWith(
             userName: 'username from onBeforeUserProfileUpdated hook',
@@ -245,31 +232,6 @@ void main() {
         expect(
           updatedUserProfile.userName,
           'username from onBeforeUserProfileUpdated hook',
-        );
-      },
-    );
-
-    test(
-      'when updating `onBeforeUserProfileUpdated` returns a new image URL, then the final profile will refer to a local copy of it.',
-      () async {
-        UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileUpdated: (final session, final userProfile) {
-          return userProfile.copyWith(
-            imageUrl: Uri.parse(
-              'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
-            ),
-          );
-        });
-
-        final updatedUserProfile = await UserProfiles.changeFullName(
-          session,
-          authUserId,
-          'updated',
-        );
-
-        expect(
-          updatedUserProfile.imageUrl.toString(),
-          allOf(contains('http://localhost'), endsWith('-1.jpg')),
         );
       },
     );
@@ -394,7 +356,8 @@ void main() {
 
       await UserProfiles.createUserProfile(
         session,
-        UserProfileModel(authUserId: authUserId),
+        authUserId,
+        UserProfileData(),
       );
 
       await UserProfiles.setDefaultUserImage(
