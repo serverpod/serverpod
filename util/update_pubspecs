@@ -6,6 +6,9 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+# Makes script exit on first non-zero error code
+set -e
+
 VERSION=`cat SERVERPOD_VERSION`
 DART_VERSION=`cat DART_VERSION`
 FLUTTER_VERSION=`cat FLUTTER_VERSION`
