@@ -95,6 +95,8 @@ abstract final class EmailAccounts {
 
     final verificationCode = Random.secure().nextString(length: 20);
 
+    // TODO: Check whether the account request is expired, as the clean up function might not have run yet
+
     final EmailAccountRequest request;
     try {
       request = await EmailAccountRequest.db.insertRow(
@@ -332,6 +334,58 @@ abstract final class EmailAccounts {
         email: email,
         passwordHash: password,
       ),
+    );
+  }
+
+  /// Cleans up the log of failed login attempts older than [olderThan].
+  static Future<void> deleteFailedLoginAttempts(
+    final Session session, {
+    required final Duration olderThan,
+  }) async {
+    final removeBefore = DateTime.now().subtract(olderThan);
+
+    await EmailAccountFailedLoginAttempt.db.deleteWhere(
+      session,
+      where: (final t) => t.attemptedAt < removeBefore,
+    );
+  }
+
+  /// Cleans up the log of failed password reset attempts older than [olderThan].
+  static Future<void> deletePasswordResetAttempts(
+    final Session session, {
+    required final Duration olderThan,
+  }) async {
+    final removeBefore = DateTime.now().subtract(olderThan);
+
+    await EmailAccountPasswordResetAttempt.db.deleteWhere(
+      session,
+      where: (final t) => t.attemptedAt < removeBefore,
+    );
+  }
+
+  /// Cleans up expired password reset attempts.
+  static Future<void> deleteExpiredPasswordResetRequests(
+    final Session session,
+  ) async {
+    final lastValidDateTime = DateTime.now()
+        .subtract(EmailAccountConfig.current.passwordResetCodeLifetime);
+
+    await EmailAccountPasswordResetRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.created < lastValidDateTime,
+    );
+  }
+
+  /// Cleans up expired account creation requests.
+  static Future<void> deleteExpiredAccountCreations(
+    final Session session,
+  ) async {
+    final lastValidDateTime = DateTime.now().subtract(
+        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+
+    await EmailAccountRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.created < lastValidDateTime,
     );
   }
 
