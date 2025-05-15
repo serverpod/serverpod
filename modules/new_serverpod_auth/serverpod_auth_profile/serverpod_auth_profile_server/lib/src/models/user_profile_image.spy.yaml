@@ -10,7 +10,13 @@ fields:
   ### Version of the image. Increased by one for every uploaded image.
   version: int
 
-  ### The URL to the image.
+  ### Storage in which the image is stored.
+  storageId: String
+
+  ### Path inside [storageId] at which the image is stored.
+  path: String
+
+  ### The public URL to access the image.
   url: Uri
 
 indexes:

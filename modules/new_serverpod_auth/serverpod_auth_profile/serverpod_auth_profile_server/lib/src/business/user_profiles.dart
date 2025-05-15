@@ -146,17 +146,50 @@ abstract final class UserProfiles {
     return updatedProfile.toModel();
   }
 
-  /// Remove the user profile for the given [authUserId].
+  /// Remove the user profile, incl. images, for the given [authUserId].
   ///
   /// In case the user did not have a profile, nothing is changed.
+  ///
+  /// Returns successfully if the profile data could was removed from the database,
+  /// even if some profile images could not be deleted.
   static Future<void> deleteProfileForUser(
     final Session session,
     final UuidValue authUserId,
   ) async {
+    final profile = await UserProfile.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(authUserId),
+    );
+
+    if (profile == null) {
+      return;
+    }
+
+    final images = await UserProfileImage.db.find(
+      session,
+      where: (final t) => t.userProfileId.equals(profile.id!),
+    );
+
     await UserProfile.db.deleteWhere(
       session,
       where: (final t) => t.authUserId.equals(authUserId),
     );
+
+    for (final image in images) {
+      try {
+        await session.storage.deleteFile(
+          storageId: image.storageId,
+          path: image.path,
+        );
+      } catch (e, stackTrace) {
+        session.log(
+          'Failed to delete user image from storage',
+          level: LogLevel.error,
+          exception: e,
+          stackTrace: stackTrace,
+        );
+      }
+    }
 
     await _invalidateCacheForUser(session, authUserId);
   }
@@ -213,21 +246,23 @@ abstract final class UserProfiles {
       pathExtension = '.png';
     }
 
-    // Store the image.
+    const storageId = 'public';
     final path = 'serverpod/user_images/$authUserId-$version$pathExtension';
     await session.storage.storeFile(
-      storageId: 'public',
+      storageId: storageId,
       path: path,
       byteData: ByteData.view(reEncodedImageBytes.buffer),
     );
     final publicUrl = (await session.storage.getPublicUrl(
-      storageId: 'public',
+      storageId: storageId,
       path: path,
     ))!;
 
     final profileImage = UserProfileImage(
       userProfileId: userProfile.id!,
       version: version,
+      storageId: storageId,
+      path: path,
       url: publicUrl,
     );
 

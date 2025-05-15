@@ -401,7 +401,6 @@ void main() {
       await UserProfiles.setDefaultUserImage(
         session,
         authUserId,
-        // onePixelPng,
       );
     });
 
@@ -440,6 +439,37 @@ void main() {
       expect(
         profileImagesAfterDelete,
         isEmpty,
+      );
+    });
+
+    test(
+        'when deleting the user profile, then the images are deleted from storage as well.',
+        () async {
+      final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
+        session,
+        authUserId,
+      );
+      expect(userProfile, isNotNull);
+      expect(userProfile?.imageUrl, isNotNull);
+
+      final imageBeforeDelete =
+          (await UserProfileImage.db.find(session)).single;
+      expect(
+        await session.storage.fileExists(
+          storageId: imageBeforeDelete.storageId,
+          path: imageBeforeDelete.path,
+        ),
+        isTrue,
+      );
+
+      await UserProfiles.deleteProfileForUser(session, authUserId);
+
+      expect(
+        await session.storage.fileExists(
+          storageId: imageBeforeDelete.storageId,
+          path: imageBeforeDelete.path,
+        ),
+        isFalse,
       );
     });
 
