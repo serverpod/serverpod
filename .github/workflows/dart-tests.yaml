@@ -248,7 +248,8 @@ jobs:
         flutter-version: ['3.19.0', '3.29.0']
         module: [
           'tests/serverpod_test_module/serverpod_test_module_server',
-          'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server'
+          'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
+          'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server'
         ]
     steps:
       - uses: actions/checkout@v3

@@ -1,0 +1,24 @@
+class: UserProfileImage
+serverOnly: true
+table: serverpod_auth_profile_user_profile_image
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [UserProfile] this image belongs to.
+  userProfile: UserProfile?, relation(onDelete=Cascade)
+
+  ### Version of the image. Increased by one for every uploaded image.
+  version: int
+
+  ### Storage in which the image is stored.
+  storageId: String
+
+  ### Path inside [storageId] at which the image is stored.
+  path: String
+
+  ### The public URL to access the image.
+  url: Uri
+
+indexes:
+  serverpod_auth_profile_user_profile_image_auth_user_id_version:
+    fields: userProfileId, version
