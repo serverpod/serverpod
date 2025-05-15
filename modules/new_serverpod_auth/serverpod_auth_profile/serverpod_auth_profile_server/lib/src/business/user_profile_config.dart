@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
@@ -28,6 +30,11 @@ class UserProfileConfig {
   /// Defaults to 70.
   final int userImageQuality;
 
+  /// The function used to fetch profile image by URL.
+  ///
+  /// Defaults to `http.get()`.
+  final FutureOr<Uint8List> Function(Uri url) imageFetchFunc;
+
   /// Called when a user profile is about to be created.
   final BeforeUserProfileCreatedHandler? onBeforeUserProfileCreated;
 
@@ -55,6 +62,7 @@ class UserProfileConfig {
     this.onAfterUserProfileCreated,
     this.onBeforeUserProfileUpdated,
     this.onAfterUserProfileUpdated,
+    this.imageFetchFunc = _defaultImageFetch,
   });
 
   /// The current user profile module configuration.
@@ -101,3 +109,9 @@ typedef AfterUserProfileUpdatedHandler = FutureOr<void> Function(
   Session session,
   UserProfileModel userProfile,
 );
+
+Future<Uint8List> _defaultImageFetch(final Uri url) async {
+  final result = await http.get(url);
+
+  return result.bodyBytes;
+}

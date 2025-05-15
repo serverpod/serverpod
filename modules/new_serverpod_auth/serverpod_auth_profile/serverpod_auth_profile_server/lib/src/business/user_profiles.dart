@@ -1,7 +1,6 @@
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
@@ -169,8 +168,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url,
   ) async {
-    final result = await http.get(url);
-    final bytes = result.bodyBytes;
+    final bytes = await UserProfileConfig.current.imageFetchFunc(url);
 
     return _createImageFromBytes(session, authUserId, bytes);
   }

@@ -126,6 +126,10 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
+      UserProfileConfig.current = UserProfileConfig(
+        imageFetchFunc: (final _) => onePixelPng,
+      );
+
       final authUser = await AuthUser.db.insertRow(
         session,
         AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
@@ -351,7 +355,7 @@ void main() {
           session,
           authUserId,
           Uri.parse(
-            'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
+            'https://serverpod.dev/external-profile-image.png',
           ),
         );
 
