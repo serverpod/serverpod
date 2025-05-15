@@ -138,6 +138,18 @@
             "dartType": "int"
           },
           {
+            "name": "storageId",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "path",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
             "name": "url",
             "columnType": 0,
             "isNullable": false,

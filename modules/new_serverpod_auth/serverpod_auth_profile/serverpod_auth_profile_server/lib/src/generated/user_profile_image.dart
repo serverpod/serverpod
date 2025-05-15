@@ -21,6 +21,8 @@ abstract class UserProfileImage
     required this.userProfileId,
     this.userProfile,
     required this.version,
+    required this.storageId,
+    required this.path,
     required this.url,
   });
 
@@ -29,6 +31,8 @@ abstract class UserProfileImage
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
     required int version,
+    required String storageId,
+    required String path,
     required Uri url,
   }) = _UserProfileImageImpl;
 
@@ -44,6 +48,8 @@ abstract class UserProfileImage
           : _i2.UserProfile.fromJson(
               (jsonSerialization['userProfile'] as Map<String, dynamic>)),
       version: jsonSerialization['version'] as int,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
     );
   }
@@ -63,7 +69,13 @@ abstract class UserProfileImage
   /// Version of the image. Increased by one for every uploaded image.
   int version;
 
-  /// The URL to the image.
+  /// Storage in which the image is stored.
+  String storageId;
+
+  /// Path inside [storageId] at which the image is stored.
+  String path;
+
+  /// The public URL to access the image.
   Uri url;
 
   @override
@@ -77,6 +89,8 @@ abstract class UserProfileImage
     _i1.UuidValue? userProfileId,
     _i2.UserProfile? userProfile,
     int? version,
+    String? storageId,
+    String? path,
     Uri? url,
   });
   @override
@@ -86,6 +100,8 @@ abstract class UserProfileImage
       'userProfileId': userProfileId.toJson(),
       if (userProfile != null) 'userProfile': userProfile?.toJson(),
       'version': version,
+      'storageId': storageId,
+      'path': path,
       'url': url.toJson(),
     };
   }
@@ -134,12 +150,16 @@ class _UserProfileImageImpl extends UserProfileImage {
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
     required int version,
+    required String storageId,
+    required String path,
     required Uri url,
   }) : super._(
           id: id,
           userProfileId: userProfileId,
           userProfile: userProfile,
           version: version,
+          storageId: storageId,
+          path: path,
           url: url,
         );
 
@@ -152,6 +172,8 @@ class _UserProfileImageImpl extends UserProfileImage {
     _i1.UuidValue? userProfileId,
     Object? userProfile = _Undefined,
     int? version,
+    String? storageId,
+    String? path,
     Uri? url,
   }) {
     return UserProfileImage(
@@ -161,6 +183,8 @@ class _UserProfileImageImpl extends UserProfileImage {
           ? userProfile
           : this.userProfile?.copyWith(),
       version: version ?? this.version,
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
       url: url ?? this.url,
     );
   }
@@ -177,6 +201,14 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
       'version',
       this,
     );
+    storageId = _i1.ColumnString(
+      'storageId',
+      this,
+    );
+    path = _i1.ColumnString(
+      'path',
+      this,
+    );
     url = _i1.ColumnUri(
       'url',
       this,
@@ -191,7 +223,13 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   /// Version of the image. Increased by one for every uploaded image.
   late final _i1.ColumnInt version;
 
-  /// The URL to the image.
+  /// Storage in which the image is stored.
+  late final _i1.ColumnString storageId;
+
+  /// Path inside [storageId] at which the image is stored.
+  late final _i1.ColumnString path;
+
+  /// The public URL to access the image.
   late final _i1.ColumnUri url;
 
   _i2.UserProfileTable get userProfile {
@@ -212,6 +250,8 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
         id,
         userProfileId,
         version,
+        storageId,
+        path,
         url,
       ];
 
