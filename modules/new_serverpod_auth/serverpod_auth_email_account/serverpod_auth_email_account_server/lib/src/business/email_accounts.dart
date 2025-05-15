@@ -138,13 +138,15 @@ abstract final class EmailAccounts {
     final Session session, {
     required final String verificationCode,
   }) async {
-    final request = (await EmailAccountRequest.db.find(session,
-            where: (final t) => t.verificationCode.equals(verificationCode)))
-        .where((final r) => r.created
-            .add(
-                EmailAccountConfig.current.registrationVerificationCodeLifetime)
-            .isAfter(DateTime.now()))
-        .firstOrNull;
+    final oldestValidRegistrationTime = DateTime.now().subtract(
+        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+
+    final request = await EmailAccountRequest.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.verificationCode.equals(verificationCode) &
+          (t.created > oldestValidRegistrationTime),
+    );
 
     if (request == null) {
       return null;
@@ -163,13 +165,15 @@ abstract final class EmailAccounts {
     /// Authentication user ID this account should be linked up with
     required final UuidValue authUserId,
   }) async {
-    final request = (await EmailAccountRequest.db.find(session,
-            where: (final t) => t.verificationCode.equals(verificationCode)))
-        .where((final r) => r.created
-            .add(
-                EmailAccountConfig.current.registrationVerificationCodeLifetime)
-            .isAfter(DateTime.now()))
-        .singleOrNull;
+    final oldestValidRegistrationTime = DateTime.now().subtract(
+        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+
+    final request = await EmailAccountRequest.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.verificationCode.equals(verificationCode) &
+          (t.created > oldestValidRegistrationTime),
+    );
 
     if (request == null) {
       throw Exception('Email account request not found');
@@ -243,13 +247,14 @@ abstract final class EmailAccounts {
     required final String resetCode,
     required final String newPassword,
   }) async {
-    final resetRequest = (await EmailAccountPasswordResetRequest.db.find(
-            session,
-            where: (final t) => t.verificationCode.equals(resetCode)))
-        .where((final r) => r.created
-            .add(EmailAccountConfig.current.passwordResetCodeLifetime)
-            .isAfter(DateTime.now()))
-        .singleOrNull;
+    final resetRequest = await EmailAccountPasswordResetRequest.db.findFirstRow(
+      session,
+      where: (final t) =>
+          t.verificationCode.equals(resetCode) &
+          (t.created >
+              DateTime.now().subtract(
+                  EmailAccountConfig.current.passwordResetCodeLifetime)),
+    );
 
     if (resetRequest == null) {
       throw Exception('Password reset request not found.');
@@ -402,14 +407,13 @@ abstract final class EmailAccounts {
 
   static Future<bool> _hasTooManyPasswordResetAttempts(
       final Session session, final String email) async {
-    final recentRequests = (await EmailAccountPasswordResetAttempt.db.find(
-            session,
-            where: (final t) =>
-                t.email.equals(email) |
-                t.ipAddress.equals(session.remoteIpAddress)))
-        .where((final r) => r.attemptedAt
-            .isAfter(DateTime.now().subtract(const Duration(hours: 1))))
-        .length;
+    final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
+      session,
+      where: (final t) =>
+          (t.email.equals(email) |
+              t.ipAddress.equals(session.remoteIpAddress)) &
+          (t.attemptedAt > DateTime.now().subtract(const Duration(hours: 1))),
+    );
 
     return (recentRequests >= 3);
   }
