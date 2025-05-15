@@ -430,18 +430,31 @@ void main() async {
       await server.shutdown(exitProcess: false);
     });
 
-    test(
-        'Given a log settings that enable all logging and the serverpod config does not have a database config when calling a noop method then a single log entry is pushed to stdout.',
-        () async {
-      var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
+    group(
+        'Given a log settings that enable all logging and the serverpod config does not have a database config when calling a noop method ',
+        () {
+      setUp(() async {
+        var settings = RuntimeSettingsBuilder().build();
+        await server.updateRuntimeSettings(settings);
 
-      await client.logging.emptyMethod();
+        await client.logging.emptyMethod();
+      });
 
-      expect(record.output, containsCount('"id"', 1));
+      test('then two entries are pushed to stdout.', () {
+        expect(record.output, containsCount('"endpoint":"logging"', 2));
+        expect(record.output, containsCount('"method":"emptyMethod"', 2));
+      });
 
-      expect(record.output, contains('"endpoint":"logging"'));
-      expect(record.output, contains('"method":"emptyMethod"'));
+      test('then a session open entry is pushed to stdout.', () {
+        // "isOpen" is true as long as the session is open.
+        expect(record.output, containsCount('"isOpen":true', 1));
+      });
+
+      test('then a session closed entry is pushed to stdout.', () {
+        // "isOpen" is false when the session is closed and "duration" is set.
+        expect(record.output, containsCount('"isOpen":false', 1));
+        expect(record.output, containsCount('"duration"', 1));
+      });
     });
   });
 }

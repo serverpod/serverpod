@@ -9,9 +9,10 @@ class MigrationVersions {
   /// Returns an empty list if no migrations are available or if the module
   /// directory does not exist.
   static List<String> listVersions({
-    Directory? directory,
+    required Directory projectDirectory,
   }) {
-    directory ??= defaultMigrationsDirectory;
+    var directory =
+        MigrationConstants.migrationsBaseDirectory(projectDirectory);
 
     var moduleDirectory = Directory(path.join(
       directory.path,
@@ -28,8 +29,4 @@ class MigrationVersions {
 
     return migrationVersions;
   }
-
-  /// Gets the default migrations directory.
-  static Directory get defaultMigrationsDirectory =>
-      MigrationConstants.migrationsBaseDirectory(Directory.current);
 }

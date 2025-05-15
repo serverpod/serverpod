@@ -248,6 +248,7 @@ jobs:
         flutter-version: ['3.19.0', '3.29.0']
         module: [
           'tests/serverpod_test_module/serverpod_test_module_server',
+          'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
           'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server'
         ]
     steps:
@@ -268,7 +269,7 @@ jobs:
         working-directory: ${{ matrix.module }}
       - name: Stop containers
         if: always()
-        run: docker compose down
+        run: docker compose down -v
         working-directory: ${{ matrix.module }}
 
   integration_test_server:

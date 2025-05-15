@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_serialization
-version: 2.6.0
+version: 2.7.0
 description: Serialization package for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -12,11 +12,11 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  yaml: ^3.1.1
+  yaml: ^3.1.2
   uuid: ^4.1.0
 
 dev_dependencies:
-  serverpod_lints: 2.6.0
+  serverpod_lints: 2.7.0
   test: ^1.24.2
 
 dependency_overrides:

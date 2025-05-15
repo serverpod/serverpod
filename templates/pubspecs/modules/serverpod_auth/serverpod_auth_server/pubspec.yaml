@@ -15,7 +15,7 @@ dependencies:
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   openid_client: ^0.4.8
-  meta: ^1.8.0
+  meta: ^1.11.0
   googleapis: '>=11.0.0 <15.0.0'
   googleapis_auth: '>=1.6.0 <3.0.0'
   http: '>=1.0.0 <2.0.0'

@@ -3,20 +3,20 @@
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 2.6.0
+version: 2.7.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod: 2.6.0
-  serverpod_serialization: 2.6.0
-  serverpod_shared: 2.6.0
+  serverpod: 2.7.0
+  serverpod_serialization: 2.7.0
+  serverpod_shared: 2.7.0
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   openid_client: ^0.4.8
-  meta: ^1.8.0
+  meta: ^1.11.0
   googleapis: '>=11.0.0 <15.0.0'
   googleapis_auth: '>=1.6.0 <3.0.0'
   http: '>=1.0.0 <2.0.0'
@@ -25,9 +25,9 @@ dependencies:
   pointycastle: ^3.7.4
 
 dev_dependencies:
-  serverpod_lints: 2.6.0
+  serverpod_lints: 2.7.0
   test: ^1.24.2
-  serverpod_test: 2.6.0
+  serverpod_test: 2.7.0
 
 dependency_overrides:
   serverpod:

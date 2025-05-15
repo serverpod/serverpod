@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_test
-version: 2.6.0
+version: 2.7.0
 description: Severpod test tools to simplify testing of endpoints.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -12,10 +12,10 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod_lints: 2.6.0
+  serverpod_lints: 2.7.0
   test: ^1.24.2
-  serverpod: 2.6.0
-  meta: ^1.8.0
+  serverpod: 2.7.0
+  meta: ^1.11.0
   synchronized: ^3.1.0
 
 dependency_overrides:

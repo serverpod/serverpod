@@ -142,20 +142,6 @@ class Serverpod {
     return server;
   }
 
-  MigrationManager? _migrationManager;
-
-  /// The migration manager used by this [Serverpod].
-  MigrationManager get migrationManager {
-    var manager = _migrationManager;
-    if (manager == null) {
-      throw StateError(
-        'Migrations are disabled, supply a database configuration '
-        'to enable this feature.',
-      );
-    }
-    return manager;
-  }
-
   late LogManager _logManager;
 
   /// The [LogManager] of the Serverpod, its typically only used internally
@@ -526,12 +512,26 @@ class Serverpod {
     // attempting to connect to the database.
     _databasePoolManager?.start();
 
-    if (_databasePoolManager == null) {
-      _runtimeSettings = _defaultRuntimeSettings;
-    }
-
     if (Features.enableMigrations) {
-      await _applyMigrations();
+      int? maxAttempts =
+          commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+      try {
+        await _connectToDatabase(
+          session: internalSession,
+          maxAttempts: maxAttempts,
+        );
+      } catch (e, stackTrace) {
+        const message = 'Failed to connect to the database.';
+        _reportException(e, stackTrace, message: message);
+        throw ExitException(1, '$message: $e');
+      }
+
+      await _applyMigrations(
+        applyRepairMigration: commandLineArgs.applyRepairMigration,
+        applyMigrations: commandLineArgs.applyMigrations,
+      );
+
+      await _loadRuntimeSettings();
     } else if (commandLineArgs.applyMigrations ||
         commandLineArgs.applyRepairMigration) {
       stderr.writeln(
@@ -631,27 +631,15 @@ class Serverpod {
     }
   }
 
-  Future<void> _applyMigrations() async {
-    int? maxAttempts =
-        commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
-
-    try {
-      await _connectToDatabase(
-        session: internalSession,
-        maxAttempts: maxAttempts,
-      );
-    } catch (e, stackTrace) {
-      const message = 'Failed to connect to the database.';
-      _reportException(e, stackTrace, message: message);
-      throw ExitException(1, '$message: $e');
-    }
-
+  Future<void> _applyMigrations({
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) async {
     try {
       logVerbose('Initializing migration manager.');
-      _migrationManager = MigrationManager();
-      await migrationManager.initialize(internalSession);
+      var migrationManager = MigrationManager(Directory.current);
 
-      if (commandLineArgs.applyRepairMigration) {
+      if (applyRepairMigration) {
         logVerbose('Applying database repair migration');
         var appliedRepairMigration =
             await migrationManager.applyRepairMigration(internalSession);
@@ -661,10 +649,9 @@ class Serverpod {
           stdout.writeln(
               'Database repair migration "$appliedRepairMigration" applied.');
         }
-        await migrationManager.initialize(internalSession);
       }
 
-      if (commandLineArgs.applyMigrations) {
+      if (applyMigrations) {
         logVerbose('Applying database migrations.');
         var migrationsApplied =
             await migrationManager.migrateToLatest(internalSession);
@@ -678,18 +665,18 @@ class Serverpod {
             stdout.writeln(' - $migration');
           }
         }
-
-        await migrationManager.initialize(internalSession);
       }
 
       logVerbose('Verifying database integrity.');
-      await migrationManager.verifyDatabaseIntegrity(internalSession);
+      await MigrationManager.verifyDatabaseIntegrity(internalSession);
     } catch (e, stackTrace) {
       _exitCode = 1;
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
+  }
 
+  Future<void> _loadRuntimeSettings() async {
     logVerbose('Loading runtime settings.');
     try {
       _runtimeSettings =

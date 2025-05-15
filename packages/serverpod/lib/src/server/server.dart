@@ -245,6 +245,7 @@ class Server {
       if (allOk) {
         request.response.writeln('OK ${DateTime.now().toUtc()}');
       } else {
+        request.response.statusCode = HttpStatus.serviceUnavailable;
         request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
       }
       for (var issue in issues) {

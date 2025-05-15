@@ -1,9 +1,15 @@
 name: serverpod_auth_user_client
 description: Serverpod authentication user client module.
-version: 2.6.0
+version: 2.7.0
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod_client: 2.6.0
+  serverpod_client: 2.7.0
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
