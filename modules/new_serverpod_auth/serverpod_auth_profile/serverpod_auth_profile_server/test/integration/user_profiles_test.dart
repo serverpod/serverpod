@@ -307,7 +307,7 @@ void main() {
     );
 
     test(
-      "when updating the profile's image, then the updated value is visible through the cached `findUserProfileByUserId` method.",
+      "when updating the profile's image from bytes, then the updated value is visible through the cached `findUserProfileByUserId` method.",
       () async {
         final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
           session,
@@ -319,6 +319,40 @@ void main() {
           session,
           authUserId,
           onePixelPng,
+        );
+
+        expect(
+          updatedResult.imageUrl.toString(),
+          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+        );
+
+        final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+
+        expect(
+          profileAfterUpdate.imageUrl?.toString(),
+          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+        );
+      },
+    );
+
+    test(
+      "when updating the profile's image from a URL, then the updated value is visible through the cached `findUserProfileByUserId` method.",
+      () async {
+        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBeforeUpdate.imageUrl, isNull);
+
+        final updatedResult = await UserProfiles.setUserImageFromUrl(
+          session,
+          authUserId,
+          Uri.parse(
+            'https://avatars.githubusercontent.com/u/48181558?s=200&v=4',
+          ),
         );
 
         expect(
