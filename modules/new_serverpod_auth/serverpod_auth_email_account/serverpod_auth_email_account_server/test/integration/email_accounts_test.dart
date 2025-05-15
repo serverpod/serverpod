@@ -35,64 +35,59 @@ void main() {
         UuidValue? accountRequestId;
         test('then a verification code is sent out via the callback.',
             () async {
-          accountRequestId = await EmailAccounts.requestAccount(
+          final result = await EmailAccounts.requestAccount(
             session,
             email: email,
             password: password,
           );
+          accountRequestId = result.accountRequestId;
 
           expect(sentVerificationToken, isNotNull);
           expect(accountRequestId, isNotNull);
         });
 
-        test('then the pending account can be verified with the mail token.',
+        test('then no further account can be requested for the same email',
             () async {
-          final verificationResult = await EmailAccounts.verifyAccountRequest(
+          final result = await EmailAccounts.requestAccount(
             session,
-            verificationCode: sentVerificationToken!,
+            email: email,
+            password: password,
           );
 
-          expect(verificationResult, isNotNull);
-          expect(verificationResult?.emailAccountRequestId, accountRequestId);
-          expect(verificationResult?.email, email.toLowerCase());
+          expect(
+            result.result,
+            EmailAccountRequestResult.emailAlreadyRequested,
+          );
+          expect(result.accountRequestId, isNull);
         });
 
         test(
             'then the same email can not be used for a second account request while the other one is pending.',
             () async {
-          await expectLater(
-            () => EmailAccounts.requestAccount(
-              session,
-              email: email,
-              password: password,
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains('duplicate key value violates unique'),
-              ),
-            ),
+          final result = await EmailAccounts.requestAccount(
+            session,
+            email: email,
+            password: password,
           );
+
+          expect(
+              result.result, EmailAccountRequestResult.emailAlreadyRequested);
         });
 
         test(
             'then a lower-case variant of the same email can not be used for a second account request while the other one is pending.',
             () async {
-          await expectLater(
-            () => EmailAccounts.requestAccount(
-              session,
-              email: email.toLowerCase(),
-              password: password,
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains('duplicate key value violates unique'),
-              ),
-            ),
+          final result = await EmailAccounts.requestAccount(
+            session,
+            email: email.toLowerCase(),
+            password: password,
           );
+
+          expect(
+            result.result,
+            EmailAccountRequestResult.emailAlreadyRequested,
+          );
+          expect(result.accountRequestId, isNull);
         });
 
         UuidValue? authUserId;
@@ -136,20 +131,14 @@ void main() {
 
         test('then no further user can be registered with the same email.',
             () async {
-          await expectLater(
-            () => EmailAccounts.requestAccount(
-              session,
-              email: email.toUpperCase(),
-              password: password,
-            ),
-            throwsA(
-              isA<Exception>().having(
-                (final e) => e.toString(),
-                'message',
-                contains('Email already registered'),
-              ),
-            ),
+          final result = await EmailAccounts.requestAccount(
+            session,
+            email: email.toUpperCase(),
+            password: password,
           );
+
+          expect(
+              result.result, EmailAccountRequestResult.emailAlreadyRegistered);
         });
 
         test('then a password reset can be requests for the account.',
@@ -211,13 +200,12 @@ void main() {
 
         test('then requesting a reset for a non-existing email errs.',
             () async {
-          await expectLater(
-            () => EmailAccounts.requestPasswordReset(
-              session,
-              email: '404@serverpod.dev',
-            ),
-            throwsA(isA<Exception>()),
+          final result = await EmailAccounts.requestPasswordReset(
+            session,
+            email: '404@serverpod.dev',
           );
+
+          expect(result, PasswordResetResult.emailDoesNotExist);
         });
       });
     },

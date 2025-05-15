@@ -60,42 +60,72 @@ abstract final class EmailAccounts {
     return account.authUserId;
   }
 
-  /// Returns the registration process ID.
+  /// Returns the result of the operation and a process ID for the account request.
   ///
-  /// The caller may store additional information attached to this ID,
-  /// which will be returned from [verify] later on.
-  static Future<UuidValue> requestAccount(
+  /// An account request is only created if the `result` is [EmailAccountRequestResult.accountRequestCreated].
+  /// In all other cases `accountRequestId` will be `null`
+  ///
+  /// The caller should ensure that the actual result does not leak to the outside / client.
+  /// Instead clients generally should always see a message like "If this email was not registered already,
+  /// a new account has been created and a verification email has been sent".
+  /// This prevents the endpoint being misused to scan for registered/valid email addresses.
+  ///
+  /// The caller might decide to initiate a password reset (per email, not in the client response), to help users which try
+  /// to register but already have a valid account.
+  ///
+  /// In the success case of [EmailAccountRequestResult.accountRequestCreated], the caller may store additional information
+  /// attached to the `accountRequestId`, which will be returned from [verifyAccountRequest] later on.
+  static Future<
+          ({EmailAccountRequestResult result, UuidValue? accountRequestId})>
+      requestAccount(
     final Session session, {
     required String email,
-    required String password,
+    required final String password,
   }) async {
     email = email.trim().toLowerCase();
-    password = password.trim();
 
     final existingAccountCount = await EmailAccount.db
         .count(session, where: (final t) => t.email.equals(email));
     if (existingAccountCount > 0) {
-      throw Exception('Email already registered');
+      return (
+        result: EmailAccountRequestResult.emailAlreadyRegistered,
+        accountRequestId: null,
+      );
     }
 
     final verificationCode = Random.secure().nextString(length: 20);
 
-    final request = await EmailAccountRequest.db.insertRow(
-      session,
-      EmailAccountRequest(
-        email: email,
-        passwordHash: password,
-        created: DateTime.now(),
-        verificationCode: verificationCode,
-      ),
-    );
+    final EmailAccountRequest request;
+    try {
+      request = await EmailAccountRequest.db.insertRow(
+        session,
+        EmailAccountRequest(
+          email: email,
+          passwordHash: password,
+          created: DateTime.now(),
+          verificationCode: verificationCode,
+        ),
+      );
+    } on DatabaseQueryException catch (e) {
+      if (e.constraintName == 'serverpod_auth_email_account_request_email') {
+        return (
+          result: EmailAccountRequestResult.emailAlreadyRequested,
+          accountRequestId: null,
+        );
+      }
+
+      rethrow;
+    }
 
     EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
       email: email,
       verificationToken: verificationCode,
     );
 
-    return request.id!;
+    return (
+      result: EmailAccountRequestResult.accountRequestCreated,
+      accountRequestId: request.id!,
+    );
   }
 
   /// Returns the account request creation ID if the request is valid.
@@ -161,8 +191,12 @@ abstract final class EmailAccounts {
     return (emailAccountId: account.id!, email: request.email);
   }
 
-  /// Sends out a password reset email for the given account.
-  static Future<void> requestPasswordReset(
+  /// Sends out a password reset email for the given account, if it exists.
+  ///
+  /// The caller may check the returned [PasswordResetResult], but this
+  /// should not be exposed to the client, so that this method can not be
+  /// misused to check which emails are registered.
+  static Future<PasswordResetResult> requestPasswordReset(
     final Session session, {
     required String email,
   }) async {
@@ -180,7 +214,7 @@ abstract final class EmailAccounts {
     );
 
     if (account == null) {
-      throw Exception('No account found for email.');
+      return PasswordResetResult.emailDoesNotExist;
     }
 
     final resetToken = Random.secure().nextString(length: 20);
@@ -197,6 +231,8 @@ abstract final class EmailAccounts {
       email: email,
       resetToken: resetToken,
     );
+
+    return PasswordResetResult.passwordResetSent;
   }
 
   /// Returns the auth user ID for the successfully changed password
@@ -334,4 +370,35 @@ extension on Session {
         ? session.httpRequest.remoteIpAddress
         : '';
   }
+}
+
+/// The result of the [EmailAccounts.createAccount] operation.
+///
+/// This describes the detailed status of the operation to the caller.
+///
+/// In the general case the caller should take care not to leak this to clients,
+/// such that outside clients can not use this result to determine wheter or not a specific
+/// acccount is registered on the server.
+enum EmailAccountRequestResult {
+  /// An account request has been created.
+  accountRequestCreated,
+
+  /// There is a pending account request for this email already.
+  ///
+  /// No account request has been created.
+  emailAlreadyRequested,
+
+  /// There an account for this email already.
+  ///
+  /// No account request has been created.
+  emailAlreadyRegistered,
+}
+
+/// Describes the result of a password reset operation.
+enum PasswordResetResult {
+  /// A password reset email has been sent.
+  passwordResetSent,
+
+  /// No account exists for the given email.
+  emailDoesNotExist,
 }
