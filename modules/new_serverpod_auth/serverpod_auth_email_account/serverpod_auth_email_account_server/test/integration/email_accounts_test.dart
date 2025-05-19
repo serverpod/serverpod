@@ -18,15 +18,19 @@ void main() {
         String? sentVerificationToken;
         String? sentPasswordResetToken;
         EmailAccountConfig.current = EmailAccountConfig(
-          sendRegistrationVerificationMail: ({
+          sendRegistrationVerificationMail: (
+            final session, {
             required final email,
             required final verificationToken,
+            required final transaction,
           }) {
             sentVerificationToken = verificationToken;
           },
-          sendPasswordResetMail: ({
+          sendPasswordResetMail: (
+            final session, {
             required final email,
             required final resetToken,
+            required final transaction,
           }) {
             sentPasswordResetToken = resetToken;
           },

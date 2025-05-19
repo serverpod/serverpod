@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_email_account_server/src/util/random_string.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Email account management functions.
@@ -16,49 +13,57 @@ abstract final class EmailAccounts {
     final Session session, {
     required String email,
     required String password,
+    final Transaction? transaction,
   }) async {
-    email = email.trim().toLowerCase();
-    password = password.trim();
+    return session.transactionOrSavepoint((final transaction) async {
+      email = email.trim().toLowerCase();
+      password = password.trim();
 
-    var account = await EmailAccount.db.findFirstRow(
-      session,
-      where: (final t) => t.email.equals(email),
-    );
-
-    if (await _hasTooManyFailedSignIns(session, email)) {
-      throw EmailAccountLoginException(
-        reason: EmailAccountLoginFailureReason.tooManyAttempts,
+      var account = await EmailAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.email.equals(email),
+        transaction: transaction,
       );
-    }
 
-    try {
-      account ??=
-          await _importExistingUser(session, email: email, password: password);
-    } catch (_) {
-      await _logFailedSignIn(session, email);
+      if (await _hasTooManyFailedSignIns(session, email)) {
+        throw EmailAccountLoginException(
+          reason: EmailAccountLoginFailureReason.tooManyAttempts,
+        );
+      }
 
-      rethrow;
-    }
+      try {
+        account ??= await _importExistingUser(
+          session,
+          email: email,
+          password: password,
+          transaction: transaction,
+        );
+      } catch (_) {
+        await _logFailedSignIn(session, email);
 
-    if (account == null) {
-      throw EmailAccountLoginException(
-        reason: EmailAccountLoginFailureReason.invalidCredentials,
-      );
-    }
+        rethrow;
+      }
 
-    if (!PasswordHash.validateHash(
-      email: email,
-      password: password,
-      hash: account.passwordHash,
-    )) {
-      await _logFailedSignIn(session, email);
+      if (account == null) {
+        throw EmailAccountLoginException(
+          reason: EmailAccountLoginFailureReason.invalidCredentials,
+        );
+      }
 
-      throw EmailAccountLoginException(
-        reason: EmailAccountLoginFailureReason.invalidCredentials,
-      );
-    }
+      if (!PasswordHash.validateHash(
+        email: email,
+        password: password,
+        hash: account.passwordHash,
+      )) {
+        await _logFailedSignIn(session, email);
 
-    return account.authUserId;
+        throw EmailAccountLoginException(
+          reason: EmailAccountLoginFailureReason.invalidCredentials,
+        );
+      }
+
+      return account.authUserId;
+    }, transaction: transaction);
   }
 
   /// Returns the result of the operation and a process ID for the account request.
@@ -84,53 +89,84 @@ abstract final class EmailAccounts {
     final Session session, {
     required String email,
     required final String password,
+    final Transaction? transaction,
   }) async {
-    email = email.trim().toLowerCase();
+    return session.transactionOrSavepoint((final transaction) async {
+      email = email.trim().toLowerCase();
 
-    final existingAccountCount = await EmailAccount.db
-        .count(session, where: (final t) => t.email.equals(email));
-    if (existingAccountCount > 0) {
-      return (
-        result: EmailAccountRequestResult.emailAlreadyRegistered,
-        accountRequestId: null,
-      );
-    }
-
-    final verificationCode = generateRandomString(20);
-
-    // TODO: Check whether the account request is expired, as the clean up function might not have run yet
-
-    final EmailAccountRequest request;
-    try {
-      request = await EmailAccountRequest.db.insertRow(
+      final existingAccountCount = await EmailAccount.db.count(
         session,
-        EmailAccountRequest(
-          email: email,
-          passwordHash: password,
-          created: DateTime.now(),
-          verificationCode: verificationCode,
-        ),
+        where: (final t) => t.email.equals(email),
+        transaction: transaction,
       );
-    } on DatabaseQueryException catch (e) {
-      if (e.constraintName == 'serverpod_auth_email_account_request_email') {
+      if (existingAccountCount > 0) {
         return (
-          result: EmailAccountRequestResult.emailAlreadyRequested,
+          result: EmailAccountRequestResult.emailAlreadyRegistered,
           accountRequestId: null,
         );
       }
 
-      rethrow;
-    }
+      final verificationCode = generateRandomString(20);
 
-    EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
-      email: email,
-      verificationToken: verificationCode,
-    );
+      final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
+        session,
+        where: (final t) => t.email.equals(email),
+        transaction: transaction,
+      );
+      if (pendingAccountRequest != null) {
+        if (pendingAccountRequest.created.isBefore(DateTime.now().subtract(
+          EmailAccountConfig.current.registrationVerificationCodeLifetime,
+        ))) {
+          await EmailAccountRequest.db.deleteRow(
+            session,
+            pendingAccountRequest,
+            transaction: transaction,
+          );
+        } else {
+          return (
+            result: EmailAccountRequestResult.emailAlreadyRequested,
+            accountRequestId: null,
+          );
+        }
+      }
 
-    return (
-      result: EmailAccountRequestResult.accountRequestCreated,
-      accountRequestId: request.id!,
-    );
+      final EmailAccountRequest request;
+      try {
+        request = await EmailAccountRequest.db.insertRow(
+          session,
+          EmailAccountRequest(
+            email: email,
+            passwordHash: PasswordHash.createHash(
+              email: email,
+              password: password,
+            ),
+            verificationCode: verificationCode,
+          ),
+          transaction: transaction,
+        );
+      } on DatabaseQueryException catch (e) {
+        if (e.constraintName == 'serverpod_auth_email_account_request_email') {
+          return (
+            result: EmailAccountRequestResult.emailAlreadyRequested,
+            accountRequestId: null,
+          );
+        }
+
+        rethrow;
+      }
+
+      EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
+        session,
+        email: email,
+        verificationToken: verificationCode,
+        transaction: transaction,
+      );
+
+      return (
+        result: EmailAccountRequestResult.accountRequestCreated,
+        accountRequestId: request.id!,
+      );
+    }, transaction: transaction);
   }
 
   /// Returns the account request creation ID if the request is valid.
@@ -142,7 +178,8 @@ abstract final class EmailAccounts {
     required final String verificationCode,
   }) async {
     final oldestValidRegistrationTime = DateTime.now().subtract(
-        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+      EmailAccountConfig.current.registrationVerificationCodeLifetime,
+    );
 
     final request = await EmailAccountRequest.db.findFirstRow(
       session,
@@ -167,37 +204,44 @@ abstract final class EmailAccounts {
 
     /// Authentication user ID this account should be linked up with
     required final UuidValue authUserId,
+    final Transaction? transaction,
   }) async {
-    final oldestValidRegistrationTime = DateTime.now().subtract(
-        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+    return session.transactionOrSavepoint((final transaction) async {
+      final oldestValidRegistrationTime = DateTime.now().subtract(
+        EmailAccountConfig.current.registrationVerificationCodeLifetime,
+      );
 
-    final request = await EmailAccountRequest.db.findFirstRow(
-      session,
-      where: (final t) =>
-          t.verificationCode.equals(verificationCode) &
-          (t.created > oldestValidRegistrationTime),
-    );
+      final request = await EmailAccountRequest.db.findFirstRow(
+        session,
+        where: (final t) =>
+            t.verificationCode.equals(verificationCode) &
+            (t.created > oldestValidRegistrationTime),
+        transaction: transaction,
+      );
 
-    if (request == null) {
-      throw Exception('Email account request not found');
-    }
+      if (request == null) {
+        throw Exception('Email account request not found');
+      }
 
-    await EmailAccountRequest.db.deleteRow(session, request);
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        request,
+        transaction: transaction,
+      );
 
-    final account = await EmailAccount.db.insertRow(
-      session,
-      EmailAccount(
-        authUserId: authUserId,
-        created: DateTime.now(),
-        email: request.email,
-        passwordHash: PasswordHash.createHash(
+      final account = await EmailAccount.db.insertRow(
+        session,
+        EmailAccount(
+          authUserId: authUserId,
+          created: DateTime.now(),
           email: request.email,
-          password: request.passwordHash,
+          passwordHash: request.passwordHash,
         ),
-      ),
-    );
+        transaction: transaction,
+      );
 
-    return (emailAccountId: account.id!, email: request.email);
+      return (emailAccountId: account.id!, email: request.email);
+    }, transaction: transaction);
   }
 
   /// Sends out a password reset email for the given account, if it exists.
@@ -208,40 +252,55 @@ abstract final class EmailAccounts {
   static Future<PasswordResetResult> requestPasswordReset(
     final Session session, {
     required String email,
+    final Transaction? transaction,
   }) async {
-    email = email.trim().toLowerCase();
+    return session.transactionOrSavepoint((final transaction) async {
+      email = email.trim().toLowerCase();
 
-    await _logPasswordResetAttempt(session, email);
+      await _logPasswordResetAttempt(
+        session,
+        email,
+        transaction: transaction,
+      );
 
-    if (await _hasTooManyPasswordResetAttempts(session, email)) {
-      throw Exception('Too many password reset requests in the last hour.');
-    }
+      if (await _hasTooManyPasswordResetAttempts(
+        session,
+        email,
+        transaction: transaction,
+      )) {
+        throw Exception('Too many password reset requests in the last hour.');
+      }
 
-    final account = await EmailAccount.db.findFirstRow(
-      session,
-      where: (final t) => t.email.equals(email),
-    );
+      final account = await EmailAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.email.equals(email),
+        transaction: transaction,
+      );
 
-    if (account == null) {
-      return PasswordResetResult.emailDoesNotExist;
-    }
+      if (account == null) {
+        return PasswordResetResult.emailDoesNotExist;
+      }
 
-    final resetToken = generateRandomString(20);
+      final resetToken = generateRandomString(20);
 
-    await EmailAccountPasswordResetRequest.db.insertRow(
-      session,
-      EmailAccountPasswordResetRequest(
-        authenticationId: account.id!,
-        verificationCode: resetToken,
-      ),
-    );
+      await EmailAccountPasswordResetRequest.db.insertRow(
+        session,
+        EmailAccountPasswordResetRequest(
+          authenticationId: account.id!,
+          verificationCode: resetToken,
+        ),
+        transaction: transaction,
+      );
 
-    EmailAccountConfig.current.sendPasswordResetMail?.call(
-      email: email,
-      resetToken: resetToken,
-    );
+      EmailAccountConfig.current.sendPasswordResetMail?.call(
+        session,
+        email: email,
+        resetToken: resetToken,
+        transaction: transaction,
+      );
 
-    return PasswordResetResult.passwordResetSent;
+      return PasswordResetResult.passwordResetSent;
+    }, transaction: transaction);
   }
 
   /// Returns the auth user ID for the successfully changed password
@@ -249,38 +308,51 @@ abstract final class EmailAccounts {
     final Session session, {
     required final String resetCode,
     required final String newPassword,
+    final Transaction? transaction,
   }) async {
-    final resetRequest = await EmailAccountPasswordResetRequest.db.findFirstRow(
-      session,
-      where: (final t) =>
-          t.verificationCode.equals(resetCode) &
-          (t.created >
-              DateTime.now().subtract(
-                  EmailAccountConfig.current.passwordResetCodeLifetime)),
-    );
+    return session.transactionOrSavepoint((final transaction) async {
+      final oldestValidResetDate = DateTime.now().subtract(
+        EmailAccountConfig.current.passwordResetCodeLifetime,
+      );
 
-    if (resetRequest == null) {
-      throw Exception('Password reset request not found.');
-    }
+      final resetRequest =
+          await EmailAccountPasswordResetRequest.db.findFirstRow(
+        session,
+        where: (final t) =>
+            t.verificationCode.equals(resetCode) &
+            (t.created > oldestValidResetDate),
+        transaction: transaction,
+      );
 
-    await EmailAccountPasswordResetRequest.db.deleteRow(session, resetRequest);
+      if (resetRequest == null) {
+        throw Exception('Password reset request not found.');
+      }
 
-    final account = (await EmailAccount.db.findById(
-      session,
-      resetRequest.authenticationId,
-    ))!;
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        transaction: transaction,
+      );
 
-    await EmailAccount.db.updateRow(
-      session,
-      account.copyWith(
-        passwordHash: PasswordHash.createHash(
-          email: account.email,
-          password: newPassword,
+      final account = (await EmailAccount.db.findById(
+        session,
+        resetRequest.authenticationId,
+        transaction: transaction,
+      ))!;
+
+      await EmailAccount.db.updateRow(
+        session,
+        account.copyWith(
+          passwordHash: PasswordHash.createHash(
+            email: account.email,
+            password: newPassword,
+          ),
         ),
-      ),
-    );
+        transaction: transaction,
+      );
 
-    return account.authUserId;
+      return account.authUserId;
+    }, transaction: transaction);
   }
 
   static Future<bool> _hasTooManyFailedSignIns(
@@ -318,6 +390,7 @@ abstract final class EmailAccounts {
     final Session session, {
     required final String email,
     required final String password,
+    required final Transaction transaction,
   }) async {
     final importFunc = EmailAccountConfig.current.existingUserImportFunction;
 
@@ -329,6 +402,7 @@ abstract final class EmailAccounts {
       session,
       email: email,
       password: password,
+      transaction: transaction,
     );
 
     if (userId == null) {
@@ -340,8 +414,12 @@ abstract final class EmailAccounts {
       EmailAccount(
         authUserId: userId,
         email: email,
-        passwordHash: password,
+        passwordHash: PasswordHash.createHash(
+          email: email,
+          password: password,
+        ),
       ),
+      transaction: transaction,
     );
   }
 
@@ -398,24 +476,32 @@ abstract final class EmailAccounts {
   }
 
   static Future<void> _logPasswordResetAttempt(
-      final Session session, final String email) async {
+    final Session session,
+    final String email, {
+    required final Transaction transaction,
+  }) async {
     await EmailAccountPasswordResetAttempt.db.insertRow(
       session,
       EmailAccountPasswordResetAttempt(
         email: email,
         ipAddress: session.remoteIpAddress,
       ),
+      transaction: transaction,
     );
   }
 
   static Future<bool> _hasTooManyPasswordResetAttempts(
-      final Session session, final String email) async {
+    final Session session,
+    final String email, {
+    required final Transaction transaction,
+  }) async {
     final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
       session,
       where: (final t) =>
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
           (t.attemptedAt > DateTime.now().subtract(const Duration(hours: 1))),
+      transaction: transaction,
     );
 
     return (recentRequests >= 3);
@@ -462,4 +548,47 @@ enum PasswordResetResult {
 
   /// No account exists for the given email.
   emailDoesNotExist,
+}
+
+extension on Session {
+  /// Runs the closure [f] in isolation, inside the parent [Transaction] (if any).
+  ///
+  /// Either creates a new transaction for [f],
+  /// or creates a savepoint inside the given transaction,
+  /// and would discard any modifications if [f] fails.
+  Future<R> transactionOrSavepoint<R>(
+    final TransactionFunction<R> f, {
+    required Transaction? transaction,
+  }) async {
+    // Use the implicit transaction from tests
+    // ignore: invalid_use_of_visible_for_testing_member
+    transaction ??= this.transaction;
+
+    if (transaction == null) {
+      return db.transaction(f);
+    }
+
+    Savepoint? savepoint;
+    try {
+      savepoint = await transaction.createSavepoint();
+
+      final result = await f(transaction);
+
+      await savepoint.release();
+
+      return result;
+    } catch (_) {
+      try {
+        await savepoint?.rollback();
+      } catch (e, stackTrace) {
+        log(
+          'Failed to roll back to savepoint.',
+          exception: e,
+          stackTrace: stackTrace,
+        );
+      }
+
+      rethrow;
+    }
+  }
 }

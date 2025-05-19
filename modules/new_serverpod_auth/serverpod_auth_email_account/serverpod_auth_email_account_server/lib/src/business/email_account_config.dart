@@ -11,6 +11,7 @@ typedef ExistingEmailUserImportFunction = Future<UuidValue?> Function(
   Session session, {
   required String email,
   required String password,
+  required Transaction transaction,
 });
 
 /// Configuration options for the email account module.
@@ -40,15 +41,19 @@ class EmailAccountConfig {
   final int maxAllowedEmailSignInAttempts;
 
   /// Callback to be invoked for sending outgoing registration emails for the email address verification.
-  final void Function({
+  final void Function(
+    Session session, {
     required String email,
     required String verificationToken,
+    required Transaction transaction,
   })? sendRegistrationVerificationMail;
 
   /// Callback to be invoked for sending outgoing password reset emails.
-  final void Function({
+  final void Function(
+    Session session, {
     required String email,
     required String resetToken,
+    required Transaction transaction,
   })? sendPasswordResetMail;
 
   /// Existing email account import function.

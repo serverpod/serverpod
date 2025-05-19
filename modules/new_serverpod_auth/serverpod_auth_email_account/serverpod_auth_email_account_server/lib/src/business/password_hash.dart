@@ -22,7 +22,7 @@ abstract final class PasswordHash {
       throw ArgumentError.value(
         email,
         'email',
-        'Email is not given in lower-case.',
+        'Email is not given in lower-case',
       );
     }
 
@@ -57,7 +57,7 @@ abstract final class PasswordHash {
       throw ArgumentError.value(
         email,
         'email',
-        'Email is not given in lower-case.',
+        'Email is not given in lower-case',
       );
     }
 
@@ -65,7 +65,7 @@ abstract final class PasswordHash {
       throw ArgumentError.value(
         hash,
         'hash',
-        'Hash is not of the supported kind.',
+        'Hash is not of the supported kind',
       );
     }
 
