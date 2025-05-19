@@ -7,8 +7,8 @@ fields:
   ### The [UserProfile] this image belongs to.
   userProfile: UserProfile?, relation(onDelete=Cascade)
 
-  ### Version of the image. Increased by one for every uploaded image.
-  version: int
+  ### The time when this profile image was created.
+  created: DateTime, default=now
 
   ### Storage in which the image is stored.
   storageId: String
@@ -18,7 +18,3 @@ fields:
 
   ### The public URL to access the image.
   url: Uri
-
-indexes:
-  serverpod_auth_profile_user_profile_image_auth_user_id_version:
-    fields: userProfileId, version

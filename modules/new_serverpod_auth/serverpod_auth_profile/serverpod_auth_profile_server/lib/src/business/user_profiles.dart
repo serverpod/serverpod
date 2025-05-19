@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
@@ -265,6 +266,12 @@ abstract final class UserProfiles {
     final Uint8List imageBytes, {
     required final Transaction transaction,
   }) async {
+    final userProfile = await _findUserProfile(
+      session,
+      authUserId,
+      transaction: transaction,
+    );
+
     final reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes)!;
 
@@ -280,23 +287,7 @@ abstract final class UserProfiles {
       return _encodeImage(image);
     });
 
-    final userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-
-    // Find the latest version of the user image if any.
-    final oldImageRef = await UserProfileImage.db.findFirstRow(
-      session,
-      where: (final t) => t.userProfileId.equals(userProfile.id!),
-      orderBy: (final t) => t.version,
-      orderDescending: true,
-      transaction: transaction,
-    );
-
-    // Add one to the version number or create a new version 1.
-    final version = (oldImageRef?.version ?? 0) + 1;
+    final imageId = generateRandomString(6);
 
     String pathExtension;
     if (UserProfileConfig.current.userImageFormat == UserProfileImageType.jpg) {
@@ -306,7 +297,7 @@ abstract final class UserProfiles {
     }
 
     const storageId = 'public';
-    final path = 'serverpod/user_images/$authUserId-$version$pathExtension';
+    final path = 'serverpod/user_images/$authUserId-$imageId$pathExtension';
     await session.storage.storeFile(
       storageId: storageId,
       path: path,
@@ -319,14 +310,16 @@ abstract final class UserProfiles {
 
     final profileImage = UserProfileImage(
       userProfileId: userProfile.id!,
-      version: version,
       storageId: storageId,
       path: path,
       url: publicUrl,
     );
 
-    return UserProfileImage.db
-        .insertRow(session, profileImage, transaction: transaction);
+    return UserProfileImage.db.insertRow(
+      session,
+      profileImage,
+      transaction: transaction,
+    );
   }
 
   /// Sets a user's image from the provided [url].
@@ -339,11 +332,19 @@ abstract final class UserProfiles {
     final Transaction? transaction,
   }) async {
     return session.transactionOrSavepoint((final transaction) async {
-      final image = await _createImageFromUrl(session, authUserId, url,
-          transaction: transaction);
+      final image = await _createImageFromUrl(
+        session,
+        authUserId,
+        url,
+        transaction: transaction,
+      );
 
-      return _setUserImage(session, authUserId, image,
-          transaction: transaction);
+      return _setUserImage(
+        session,
+        authUserId,
+        image,
+        transaction: transaction,
+      );
     }, transaction: transaction);
   }
 

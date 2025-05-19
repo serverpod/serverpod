@@ -13,6 +13,7 @@ dependencies:
   image: ^4.0.15
   serverpod: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
   uuid: ^4.1.0
 
 dev_dependencies:

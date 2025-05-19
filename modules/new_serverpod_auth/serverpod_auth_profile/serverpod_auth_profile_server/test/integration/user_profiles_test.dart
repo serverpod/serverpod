@@ -183,23 +183,20 @@ void main() {
     test(
         'when the image is updated, then the new URL is available on the profile on read.',
         () async {
-      // NOTE: This exercises only the libray-internal part of the image handling, as we don't have access to object storage in this test
-
       await UserProfiles.setUserImageFromBytes(
         session,
         authUserId,
         onePixelPng,
       );
 
-      final readUpdatedProfile =
-          await UserProfiles.maybeFindUserProfileByUserId(
+      final readUpdatedProfile = await UserProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
 
       expect(
-        readUpdatedProfile?.imageUrl.toString(),
-        allOf(contains('http://localhost'), endsWith('-1.jpg')),
+        readUpdatedProfile.imageUrl.toString(),
+        allOf(startsWith('http://localhost'), endsWith('.jpg')),
       );
 
       final profileAfterUpdate = await UserProfiles.setUserImageFromBytes(
@@ -209,19 +206,22 @@ void main() {
       );
 
       expect(
+        profileAfterUpdate.imageUrl,
+        isNot(readUpdatedProfile.imageUrl),
+      );
+      expect(
         profileAfterUpdate.imageUrl.toString(),
-        allOf(contains('http://localhost'), endsWith('-2.jpg')),
+        allOf(startsWith('http://localhost'), endsWith('.jpg')),
       );
 
-      final readUpdatedProfile2 =
-          await UserProfiles.maybeFindUserProfileByUserId(
+      final readUpdatedProfile2 = await UserProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
 
       expect(
-        readUpdatedProfile2?.imageUrl.toString(),
-        allOf(contains('http://localhost'), endsWith('-2.jpg')),
+        readUpdatedProfile2.imageUrl,
+        profileAfterUpdate.imageUrl,
       );
     });
 
@@ -404,8 +404,8 @@ void main() {
         );
 
         expect(
-          updatedResult.imageUrl.toString(),
-          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+          updatedResult.imageUrl?.toString(),
+          allOf(startsWith('http://localhost'), endsWith('.jpg')),
         );
 
         final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
@@ -414,8 +414,8 @@ void main() {
         );
 
         expect(
-          profileAfterUpdate.imageUrl?.toString(),
-          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+          profileAfterUpdate.imageUrl,
+          updatedResult.imageUrl,
         );
       },
     );
@@ -439,7 +439,7 @@ void main() {
 
         expect(
           updatedResult.imageUrl.toString(),
-          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+          allOf(startsWith('http://localhost'), endsWith('.jpg')),
         );
 
         final profileAfterUpdate = await UserProfiles.findUserProfileByUserId(
@@ -448,8 +448,8 @@ void main() {
         );
 
         expect(
-          profileAfterUpdate.imageUrl?.toString(),
-          allOf(contains('http://localhost'), endsWith('-1.jpg')),
+          profileAfterUpdate.imageUrl,
+          updatedResult.imageUrl,
         );
       },
     );
