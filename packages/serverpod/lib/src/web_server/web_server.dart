@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
+import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
@@ -20,7 +21,7 @@ class WebServer {
   late final int _port;
 
   /// A list of [Route] which defines how to handle path passed to the server.
-  final List<Route> routes = <Route>[];
+  final router = ServerpodRouter();
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -56,7 +57,7 @@ class WebServer {
   /// calls are routed.
   void addRoute(Route route, String matchPath) {
     route._matchPath = matchPath;
-    routes.add(route);
+    router.add(route);
   }
 
   /// Starts the webserver.
@@ -153,15 +154,17 @@ class WebServer {
       authenticationKey: authenticationKey,
     );
 
-    // Check routes
-    for (var route in routes) {
-      if (route._isMatch(uri.path)) {
-        var found = await _handleRouteCall(route, session, request);
-        if (found) {
-          await request.response.close();
-          await session.close();
-          return;
-        }
+    final match = router.lookup(
+      request.method.toMethod(),
+      uri.path,
+    );
+    if (match != null) {
+      final route = match.value;
+      var found = await _handleRouteCall(route, session, request);
+      if (found) {
+        await request.response.close();
+        await session.close();
+        return;
       }
     }
 
@@ -284,18 +287,6 @@ abstract class Route {
   /// `request.response`.
   Future<bool> handleCall(Session session, HttpRequest request);
 
-  bool _isMatch(String path) {
-    if (_matchPath == null) {
-      return false;
-    }
-    if (_matchPath!.endsWith('*')) {
-      var start = _matchPath!.substring(0, _matchPath!.length - 1);
-      return path.startsWith(start);
-    } else {
-      return _matchPath == path;
-    }
-  }
-
   // TODO: May want to create another abstraction layer here, to handle other
   // types of responses too. Or at least clarify the naming of the method.
 
@@ -360,4 +351,37 @@ abstract class WidgetRoute extends Route {
     request.response.write(widget.toString());
     return true;
   }
+}
+
+extension type ServerpodRouter._(Router<Route> _router) {
+  ServerpodRouter() : _router = Router<Route>();
+  void add(Route route) =>
+      _router.add(route.method.toMethod(), route._matchPath!, route);
+  LookupResult<Route>? lookup(Method method, String path) =>
+      _router.lookup(method, path);
+  bool get isEmpty => _router.isEmpty;
+}
+
+// Temporary helper method
+extension on String {
+  Method toMethod() => switch (this.toLowerCase()) {
+        'get' => Method.get,
+        'head' => Method.head,
+        'post' => Method.post,
+        'put' => Method.put,
+        'delete' => Method.delete,
+        'patch' => Method.patch,
+        'options' => Method.options,
+        'trace' => Method.trace,
+        'connect' => Method.connect,
+        _ => throw UnsupportedError,
+      };
+}
+
+// Temporary helper method
+extension on RouteMethod {
+  Method toMethod() => switch (this) {
+        RouteMethod.get => Method.get,
+        RouteMethod.post => Method.post,
+      };
 }
