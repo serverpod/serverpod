@@ -583,6 +583,89 @@ void main() {
       );
     });
   });
+
+  withServerpod(
+    'Given an existing `AuthUser`,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await AuthUser.db.insertRow(
+          session,
+          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+        );
+
+        authUserId = authUser.id!;
+      });
+
+      Future<void> clearDb() async {
+        final session = sessionBuilder.build();
+        await UserProfile.db.deleteWhere(
+          session,
+          where: (final f) => Constant.bool(true),
+        );
+        await UserProfileImage.db.deleteWhere(
+          session,
+          where: (final f) => Constant.bool(true),
+        );
+      }
+
+      setUpAll(clearDb);
+
+      tearDown(clearDb);
+
+      test(
+          'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
+          () async {
+        expect(session.transaction, isNull);
+
+        await session.db.transaction<void>((final transaction) async {
+          await UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(),
+            transaction: transaction,
+          );
+
+          expect(await UserProfile.db.count(session), 0);
+          expect(
+            await UserProfile.db.count(session, transaction: transaction),
+            1,
+          );
+
+          await UserProfiles.setUserImageFromBytes(
+            session,
+            authUserId,
+            onePixelPng,
+            transaction: transaction,
+          );
+
+          expect(await UserProfileImage.db.count(session), 0);
+          expect(
+            await UserProfileImage.db.count(session, transaction: transaction),
+            1,
+          );
+
+          await expectLater(
+            () => UserProfiles.changeUserName(
+              session,
+              authUserId,
+              'updated',
+            ),
+            throwsA(isA<UserProfileNotFoundException>()),
+          );
+
+          await transaction.cancel();
+        });
+
+        expect(await UserProfile.db.count(session), 0);
+      });
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
 }
 
 final onePixelPng = base64Decode(
