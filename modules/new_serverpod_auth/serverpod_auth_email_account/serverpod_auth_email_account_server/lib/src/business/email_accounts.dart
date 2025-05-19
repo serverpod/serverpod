@@ -130,30 +130,18 @@ abstract final class EmailAccounts {
         }
       }
 
-      final EmailAccountRequest request;
-      try {
-        request = await EmailAccountRequest.db.insertRow(
-          session,
-          EmailAccountRequest(
+      final emailAccountRequest = await EmailAccountRequest.db.insertRow(
+        session,
+        EmailAccountRequest(
+          email: email,
+          passwordHash: PasswordHash.createHash(
             email: email,
-            passwordHash: PasswordHash.createHash(
-              email: email,
-              password: password,
-            ),
-            verificationCode: verificationCode,
+            password: password,
           ),
-          transaction: transaction,
-        );
-      } on DatabaseQueryException catch (e) {
-        if (e.constraintName == 'serverpod_auth_email_account_request_email') {
-          return (
-            result: EmailAccountRequestResult.emailAlreadyRequested,
-            accountRequestId: null,
-          );
-        }
-
-        rethrow;
-      }
+          verificationCode: verificationCode,
+        ),
+        transaction: transaction,
+      );
 
       EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
         session,
@@ -164,7 +152,7 @@ abstract final class EmailAccounts {
 
       return (
         result: EmailAccountRequestResult.accountRequestCreated,
-        accountRequestId: request.id!,
+        accountRequestId: emailAccountRequest.id!,
       );
     }, transaction: transaction);
   }
