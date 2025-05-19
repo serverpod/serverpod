@@ -128,10 +128,11 @@
           "dartType": "UuidValue"
         },
         {
-          "name": "version",
-          "columnType": 6,
+          "name": "created",
+          "columnType": 4,
           "isNullable": false,
-          "dartType": "int"
+          "columnDefault": "CURRENT_TIMESTAMP",
+          "dartType": "DateTime"
         },
         {
           "name": "storageId",
@@ -179,22 +180,6 @@
           "type": "btree",
           "isUnique": true,
           "isPrimary": true
-        },
-        {
-          "indexName": "serverpod_auth_profile_user_profile_image_auth_user_id_version",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "userProfileId"
-            },
-            {
-              "type": 0,
-              "definition": "version"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
         }
       ],
       "managed": true
@@ -1389,7 +1374,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_profile",
-      "version": "20250515091402870"
+      "version": "20250519092101868"
     },
     {
       "module": "serverpod",

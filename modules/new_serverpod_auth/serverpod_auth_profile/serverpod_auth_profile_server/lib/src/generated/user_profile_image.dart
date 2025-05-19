@@ -20,17 +20,17 @@ abstract class UserProfileImage
     this.id,
     required this.userProfileId,
     this.userProfile,
-    required this.version,
+    DateTime? created,
     required this.storageId,
     required this.path,
     required this.url,
-  });
+  }) : created = created ?? DateTime.now();
 
   factory UserProfileImage({
     _i1.UuidValue? id,
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
-    required int version,
+    DateTime? created,
     required String storageId,
     required String path,
     required Uri url,
@@ -47,7 +47,7 @@ abstract class UserProfileImage
           ? null
           : _i2.UserProfile.fromJson(
               (jsonSerialization['userProfile'] as Map<String, dynamic>)),
-      version: jsonSerialization['version'] as int,
+      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
@@ -66,8 +66,8 @@ abstract class UserProfileImage
   /// The [UserProfile] this image belongs to.
   _i2.UserProfile? userProfile;
 
-  /// Version of the image. Increased by one for every uploaded image.
-  int version;
+  /// The time when this profile image was created.
+  DateTime created;
 
   /// Storage in which the image is stored.
   String storageId;
@@ -88,7 +88,7 @@ abstract class UserProfileImage
     _i1.UuidValue? id,
     _i1.UuidValue? userProfileId,
     _i2.UserProfile? userProfile,
-    int? version,
+    DateTime? created,
     String? storageId,
     String? path,
     Uri? url,
@@ -99,7 +99,7 @@ abstract class UserProfileImage
       if (id != null) 'id': id?.toJson(),
       'userProfileId': userProfileId.toJson(),
       if (userProfile != null) 'userProfile': userProfile?.toJson(),
-      'version': version,
+      'created': created.toJson(),
       'storageId': storageId,
       'path': path,
       'url': url.toJson(),
@@ -149,7 +149,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     _i1.UuidValue? id,
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
-    required int version,
+    DateTime? created,
     required String storageId,
     required String path,
     required Uri url,
@@ -157,7 +157,7 @@ class _UserProfileImageImpl extends UserProfileImage {
           id: id,
           userProfileId: userProfileId,
           userProfile: userProfile,
-          version: version,
+          created: created,
           storageId: storageId,
           path: path,
           url: url,
@@ -171,7 +171,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     Object? id = _Undefined,
     _i1.UuidValue? userProfileId,
     Object? userProfile = _Undefined,
-    int? version,
+    DateTime? created,
     String? storageId,
     String? path,
     Uri? url,
@@ -182,7 +182,7 @@ class _UserProfileImageImpl extends UserProfileImage {
       userProfile: userProfile is _i2.UserProfile?
           ? userProfile
           : this.userProfile?.copyWith(),
-      version: version ?? this.version,
+      created: created ?? this.created,
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       url: url ?? this.url,
@@ -197,9 +197,10 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
       'userProfileId',
       this,
     );
-    version = _i1.ColumnInt(
-      'version',
+    created = _i1.ColumnDateTime(
+      'created',
       this,
+      hasDefault: true,
     );
     storageId = _i1.ColumnString(
       'storageId',
@@ -220,8 +221,8 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   /// The [UserProfile] this image belongs to.
   _i2.UserProfileTable? _userProfile;
 
-  /// Version of the image. Increased by one for every uploaded image.
-  late final _i1.ColumnInt version;
+  /// The time when this profile image was created.
+  late final _i1.ColumnDateTime created;
 
   /// Storage in which the image is stored.
   late final _i1.ColumnString storageId;
@@ -249,7 +250,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         userProfileId,
-        version,
+        created,
         storageId,
         path,
         url,

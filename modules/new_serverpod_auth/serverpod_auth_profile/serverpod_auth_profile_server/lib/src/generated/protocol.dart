@@ -153,10 +153,11 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'UuidValue',
         ),
         _i2.ColumnDefinition(
-          name: 'version',
-          columnType: _i2.ColumnType.bigint,
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
-          dartType: 'int',
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
         ),
         _i2.ColumnDefinition(
           name: 'storageId',
@@ -202,25 +203,7 @@ class Protocol extends _i1.SerializationManagerServer {
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName:
-              'serverpod_auth_profile_user_profile_image_auth_user_id_version',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'userProfileId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'version',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
+        )
       ],
       managed: true,
     ),
