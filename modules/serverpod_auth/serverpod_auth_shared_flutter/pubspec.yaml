@@ -28,7 +28,6 @@ dependencies:
   # See https://pub.dev/packages/image_picker for installation instructions.
   image_picker: ^1.0.0
 
-
 dev_dependencies:
   serverpod_lints: 2.8.0
   flutter_test:
