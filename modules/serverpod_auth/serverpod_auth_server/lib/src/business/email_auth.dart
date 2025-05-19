@@ -658,9 +658,8 @@ class Emails {
     var failedSignIn = EmailFailedSignIn(
       email: email,
       time: DateTime.now(),
-      ipAddress: session is MethodCallSession
-          ? session.httpRequest.remoteIpAddress
-          : '',
+      ipAddress:
+          session is MethodCallSession ? session.request.remoteIpAddress : '',
     );
     await EmailFailedSignIn.db.insertRow(session, failedSignIn);
   }
