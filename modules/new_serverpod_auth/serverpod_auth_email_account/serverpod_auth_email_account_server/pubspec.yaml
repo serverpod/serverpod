@@ -15,6 +15,7 @@ dependencies:
   pointycastle: ^3.7.4
   serverpod: 2.7.0
   serverpod_auth_user_server: 2.7.0
+  serverpod_shared: 2.7.0
 
 dev_dependencies:
   lints: '>=3.0.0 <6.0.0'

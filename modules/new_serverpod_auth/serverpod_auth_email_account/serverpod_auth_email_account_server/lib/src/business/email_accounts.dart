@@ -5,6 +5,7 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_email_account_server/src/util/random_string.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Email account management functions.
 abstract final class EmailAccounts {
@@ -76,8 +77,10 @@ abstract final class EmailAccounts {
   /// In the success case of [EmailAccountRequestResult.accountRequestCreated], the caller may store additional information
   /// attached to the `accountRequestId`, which will be returned from [verifyAccountRequest] later on.
   static Future<
-          ({EmailAccountRequestResult result, UuidValue? accountRequestId})>
-      requestAccount(
+      ({
+        EmailAccountRequestResult result,
+        UuidValue? accountRequestId,
+      })> requestAccount(
     final Session session, {
     required String email,
     required final String password,
@@ -93,7 +96,7 @@ abstract final class EmailAccounts {
       );
     }
 
-    final verificationCode = Random.secure().nextString(length: 20);
+    final verificationCode = generateRandomString(20);
 
     // TODO: Check whether the account request is expired, as the clean up function might not have run yet
 
@@ -223,7 +226,7 @@ abstract final class EmailAccounts {
       return PasswordResetResult.emailDoesNotExist;
     }
 
-    final resetToken = Random.secure().nextString(length: 20);
+    final resetToken = generateRandomString(20);
 
     await EmailAccountPasswordResetRequest.db.insertRow(
       session,
