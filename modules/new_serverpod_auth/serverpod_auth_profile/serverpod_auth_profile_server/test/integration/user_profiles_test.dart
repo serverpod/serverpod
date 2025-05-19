@@ -117,6 +117,7 @@ void main() {
               session,
               authUserId,
               UserProfileData(),
+              transaction: session.transaction,
             ),
             throwsA(isA<UnimplementedError>()),
           );

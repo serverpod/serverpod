@@ -560,12 +560,8 @@ extension on Session {
   /// and would discard any modifications if [f] fails.
   Future<R> transactionOrSavepoint<R>(
     final TransactionFunction<R> f, {
-    required Transaction? transaction,
+    required final Transaction? transaction,
   }) async {
-    // Use the implicit transaction from tests
-    // ignore: invalid_use_of_visible_for_testing_member
-    transaction ??= this.transaction;
-
     if (transaction == null) {
       return db.transaction(f);
     }
