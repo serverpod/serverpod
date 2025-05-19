@@ -42,6 +42,7 @@ abstract final class UserProfiles {
             fullName: userProfile.fullName,
             email: userProfile.email,
           ),
+          transaction: transaction,
         );
 
         final createdProfileModel = createdProfile.toModel();
@@ -409,8 +410,11 @@ abstract final class UserProfiles {
     final UserProfileImage image, {
     required final Transaction transaction,
   }) async {
-    var userProfile =
-        await _findUserProfile(session, authUserId, transaction: transaction);
+    var userProfile = await _findUserProfile(
+      session,
+      authUserId,
+      transaction: transaction,
+    );
 
     userProfile.imageId = image.id!;
     userProfile.image = image;
@@ -466,6 +470,7 @@ abstract final class UserProfiles {
     userProfile = await UserProfile.db.updateRow(
       session,
       userProfile,
+      transaction: transaction,
     );
 
     await _invalidateCacheForUser(session, userProfile.authUserId);
