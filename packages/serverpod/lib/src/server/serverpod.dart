@@ -16,6 +16,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/shutdown_listener_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -152,6 +153,15 @@ class Serverpod {
   LogSettingsManager? _logSettingsManager;
 
   FutureCallManager? _futureCallManager;
+
+  /// The [ShutdownListenerManager] of the Serverpod, used to manage listeners
+  /// that are called when the server is shutting down. This allows for
+  /// performing custom cleanup operations, releasing resources, or saving
+  /// state before the server terminates.
+  ShutdownListenerManager get shutdownListenerManager =>
+      _shutdownListenerManager;
+
+  late ShutdownListenerManager _shutdownListenerManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -349,6 +359,9 @@ class Serverpod {
           message: 'Error in Serverpod initialization');
       rethrow;
     }
+
+    // Initializes shutdown listener manager
+    _shutdownListenerManager = ShutdownListenerManager();
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -886,6 +899,7 @@ class Serverpod {
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
     var futures = [
+      _shutdownListenerManager.handleShutdown(),
       _shutdownTestAuditor(),
       _internalSession.close(),
       redisController?.stop(),
