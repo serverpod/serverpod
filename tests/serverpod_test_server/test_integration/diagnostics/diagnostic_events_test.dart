@@ -14,7 +14,7 @@ import 'test_exception_handler.dart';
 
 class ExceptionRoute extends WidgetRoute {
   @override
-  Future<Widget> build(Session session, HttpRequest request) async {
+  Future<Widget> build(Session session, Request context) async {
     throw UnimplementedError('ExceptionRoute not implemented');
   }
 }
@@ -171,7 +171,7 @@ void main() {
             containsPair('operationType', 'OperationType.method'),
             contains('sessionId'),
             containsPair('userAuthInfo', null),
-            contains('connectionInfo'),
+            contains('clientIpAddress'),
             containsPair('uri', 'http://localhost:8080/exceptionTest'),
             containsPair('endpoint', 'exceptionTest'),
             containsPair('methodName', 'throwNormalException'),
