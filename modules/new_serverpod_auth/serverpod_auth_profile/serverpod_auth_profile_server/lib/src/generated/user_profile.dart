@@ -76,7 +76,7 @@ abstract class UserProfile
 
   _i1.UuidValue authUserId;
 
-  /// The [AuthUser] this profile belongs to
+  /// The [AuthUser] this profile belongs to.
   _i2.AuthUser? authUser;
 
   /// The first name of the user or the user's nickname.
@@ -98,7 +98,7 @@ abstract class UserProfile
 
   _i1.UuidValue? imageId;
 
-  /// The user's profile image
+  /// The user's profile image.
   _i3.UserProfileImage? image;
 
   @override
@@ -261,7 +261,7 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnUuid authUserId;
 
-  /// The [AuthUser] this profile belongs to
+  /// The [AuthUser] this profile belongs to.
   _i2.AuthUserTable? _authUser;
 
   /// The first name of the user or the user's nickname.
@@ -283,7 +283,7 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnUuid imageId;
 
-  /// The user's profile image
+  /// The user's profile image.
   _i3.UserProfileImageTable? _image;
 
   _i2.AuthUserTable get authUser {

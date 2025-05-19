@@ -41,7 +41,7 @@ abstract class UserProfileModel implements _i1.SerializableModel {
     );
   }
 
-  /// The [AuthUser]'s ID this profile belongs to
+  /// The [AuthUser]'s ID this profile belongs to.
   _i1.UuidValue authUserId;
 
   /// The first name of the user or the user's nickname.
@@ -55,7 +55,7 @@ abstract class UserProfileModel implements _i1.SerializableModel {
   /// Stored in lower-case.
   String? email;
 
-  /// The user's profile image
+  /// The public URL of the user's profile image.
   Uri? imageUrl;
 
   /// Returns a shallow copy of this [UserProfileModel]
