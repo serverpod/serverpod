@@ -10,7 +10,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
-  /// Creates a new user and stores it in the database.
+  /// Creates a new user profile and stores it in the database.
   static Future<UserProfileModel> createUserProfile(
     final Session session,
     final UuidValue authUserId,
@@ -66,6 +66,8 @@ abstract final class UserProfiles {
   /// setting [useCache] to false.
   ///
   /// Throws a [UserProfileNotFoundException] in case no profile exists for the given [authUserId].
+  ///
+  /// In case a [transaction] is passed, the cache will not be used.
   static Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
@@ -189,8 +191,8 @@ abstract final class UserProfiles {
   ///
   /// In case the user did not have a profile, nothing is changed.
   ///
-  /// Returns successfully if the profile data could was removed from the database,
-  /// even if some profile images could not be deleted.
+  /// Returns successfully if the profile data was removed from the database,
+  /// even if some profile images could not be deleted from the file storage.
   ///
   /// In case the `transaction` is later rolled back, the deleted images will
   /// still be missing from the storage.
@@ -216,7 +218,7 @@ abstract final class UserProfiles {
         transaction: transaction,
       );
 
-      // This also deletes the user profile images
+      // This also deletes the user profile image entries from the database
       await UserProfile.db.deleteWhere(
         session,
         where: (final t) => t.authUserId.equals(authUserId),
