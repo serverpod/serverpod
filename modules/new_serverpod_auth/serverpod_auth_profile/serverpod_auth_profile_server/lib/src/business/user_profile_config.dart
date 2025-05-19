@@ -88,27 +88,31 @@ enum UserProfileImageType {
 typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfileData> Function(
   Session session,
   UuidValue authUserId,
-  UserProfileData userProfile,
-);
+  UserProfileData userProfile, {
+  required Transaction transaction,
+});
 
 /// Callback to be invoked with the new user profile after it has been created.
 typedef AfterUserProfileCreatedHandler = FutureOr<void> Function(
   Session session,
-  UserProfileModel userProfile,
-);
+  UserProfileModel userProfile, {
+  required Transaction transaction,
+});
 
 /// Callback to be invoked with the new user profile before it will be updated.
 typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfileData> Function(
   Session session,
   UuidValue authUserId,
-  UserProfileData userProfile,
-);
+  UserProfileData userProfile, {
+  required Transaction transaction,
+});
 
 /// Callback to be invoked with the updated user profile after it has been updated.
 typedef AfterUserProfileUpdatedHandler = FutureOr<void> Function(
   Session session,
-  UserProfileModel userProfile,
-);
+  UserProfileModel userProfile, {
+  required Transaction transaction,
+});
 
 Future<Uint8List> _defaultImageFetch(final Uri url) async {
   final result = await http.get(url);

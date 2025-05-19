@@ -17,10 +17,14 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
+
+        UserProfileConfig.current = UserProfileConfig();
+
         final authUser = await AuthUser.db.insertRow(
           session,
           AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
         );
+
         authUserId = authUser.id!;
       });
 
@@ -48,9 +52,13 @@ void main() {
         'when creating a new user profile, then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
         () async {
           UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileCreated:
-                (final session, final authUserId, final userProfile) =>
-                    userProfile.copyWith(fullName: 'overwritten full name'),
+            onBeforeUserProfileCreated: (
+              final session,
+              final authUserId,
+              final userProfile, {
+              required final transaction,
+            }) =>
+                userProfile.copyWith(fullName: 'overwritten full name'),
           );
 
           final createdUserProfile = await UserProfiles.createUserProfile(
@@ -70,8 +78,12 @@ void main() {
         'when creating a new user profile, then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
         () async {
           UserProfileModel? createdProfileFromCallback;
-          UserProfileConfig.current = UserProfileConfig(
-              onAfterUserProfileCreated: (final session, final userProfile) {
+          UserProfileConfig.current =
+              UserProfileConfig(onAfterUserProfileCreated: (
+            final session,
+            final userProfile, {
+            required final transaction,
+          }) {
             createdProfileFromCallback = userProfile;
           });
 
@@ -85,6 +97,31 @@ void main() {
             createdUserProfile.toJsonForProtocol(),
             equals(createdProfileFromCallback?.toJsonForProtocol()),
           );
+        },
+      );
+
+      test(
+        'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+        () async {
+          UserProfileConfig.current =
+              UserProfileConfig(onAfterUserProfileCreated: (
+            final session,
+            final userProfile, {
+            required final transaction,
+          }) {
+            throw UnimplementedError();
+          });
+
+          expect(
+            () => UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(),
+            ),
+            throwsA(isA<UnimplementedError>()),
+          );
+
+          expect(await UserProfile.db.find(session), isEmpty);
         },
       );
 
@@ -214,9 +251,13 @@ void main() {
       'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
       () async {
         UserProfileData? updatedProfileFromCallback;
-        UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileUpdated:
-                (final session, final authUserId, final userProfile) {
+        UserProfileConfig.current =
+            UserProfileConfig(onBeforeUserProfileUpdated: (
+          final session,
+          final authUserId,
+          final userProfile, {
+          required final transaction,
+        }) {
           updatedProfileFromCallback = userProfile;
           return userProfile.copyWith(
             userName: 'username from onBeforeUserProfileUpdated hook',
@@ -241,11 +282,48 @@ void main() {
     );
 
     test(
+      'when `onAfterUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
+      () async {
+        UserProfileConfig.current =
+            UserProfileConfig(onAfterUserProfileUpdated: (
+          final session,
+          final userProfile, {
+          required final transaction,
+        }) {
+          throw UnimplementedError();
+        });
+
+        await expectLater(
+          () => UserProfiles.changeFullName(
+            session,
+            authUserId,
+            'Updated full name',
+          ),
+          throwsA(isA<UnimplementedError>()),
+        );
+
+        final profile = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+          transaction: session.transaction,
+        );
+        expect(
+          profile.fullName,
+          isNull,
+        );
+      },
+    );
+
+    test(
       'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
       () async {
         UserProfileModel? updatedProfileFromCallback;
-        UserProfileConfig.current = UserProfileConfig(
-            onAfterUserProfileUpdated: (final session, final userProfile) {
+        UserProfileConfig.current =
+            UserProfileConfig(onAfterUserProfileUpdated: (
+          final session,
+          final userProfile, {
+          required final transaction,
+        }) {
           updatedProfileFromCallback = userProfile;
         });
 
