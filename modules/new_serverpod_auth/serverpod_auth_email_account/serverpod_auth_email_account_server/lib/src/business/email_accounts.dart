@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Email account management functions.
 abstract final class EmailAccounts {
@@ -106,7 +105,8 @@ abstract final class EmailAccounts {
         );
       }
 
-      final verificationCode = generateRandomString(20);
+      final verificationCode =
+          EmailAccountConfig.current.registrationVerificationCodeGenerator();
 
       final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
         session,
@@ -269,7 +269,8 @@ abstract final class EmailAccounts {
         return PasswordResetResult.emailDoesNotExist;
       }
 
-      final resetToken = generateRandomString(20);
+      final resetToken =
+          EmailAccountConfig.current.passwordResetCodeGenerator();
 
       await EmailAccountPasswordResetRequest.db.insertRow(
         session,

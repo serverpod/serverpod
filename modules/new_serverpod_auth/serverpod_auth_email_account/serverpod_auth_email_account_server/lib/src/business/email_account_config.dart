@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_email_account_server/src/util/verification_code_generator.dart';
 
 /// Import function to use an older email based authentication system.
 ///
@@ -24,10 +25,20 @@ class EmailAccountConfig {
   ///  Default is 15 minutes.
   final Duration registrationVerificationCodeLifetime;
 
+  /// Function returning the registration verification code.
+  ///
+  /// By default this is a 8 digits alpha-numeric lower-case code.
+  final String Function() registrationVerificationCodeGenerator;
+
   /// The time for password resets to be valid.
   ///
   ///  Default is 15 minutes.
   final Duration passwordResetCodeLifetime;
+
+  /// Function returning the password rest verification code.
+  ///
+  /// By default this is a 8 digits alpha-numeric lower-case code.
+  final String Function() passwordResetCodeGenerator;
 
   /// The reset period for email sign in attempts.
   ///
@@ -67,7 +78,10 @@ class EmailAccountConfig {
   /// Set [current] to apply this configuration.
   EmailAccountConfig({
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
+    this.registrationVerificationCodeGenerator =
+        defaultVerificationCodeGenerator,
     this.passwordResetCodeLifetime = const Duration(minutes: 15),
+    this.passwordResetCodeGenerator = defaultVerificationCodeGenerator,
     this.sendRegistrationVerificationMail,
     this.sendPasswordResetMail,
     this.existingUserImportFunction,

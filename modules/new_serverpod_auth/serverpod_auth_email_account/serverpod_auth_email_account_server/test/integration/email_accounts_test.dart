@@ -3,7 +3,6 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
-// Import the generated test helper file, it contains everything you need.
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
