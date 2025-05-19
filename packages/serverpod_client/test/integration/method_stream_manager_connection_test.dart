@@ -4,12 +4,13 @@
 library;
 
 import 'dart:async';
-import 'dart:io';
 
+import 'package:relic/relic.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:test/test.dart';
+import 'package:web_socket/web_socket.dart';
 
 import '../test_utils/method_stream_connection_details_builder.dart';
 import '../test_utils/test_web_socket_server.dart';
@@ -44,7 +45,7 @@ void main() async {
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             pingCommandsReceived++;
             // Do nothing
           });
@@ -113,16 +114,16 @@ void main() async {
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(
               event,
               TestSerializationManager(),
             );
             if (message is PingCommand) {
               pingCommandsReceived++;
-              webSocket.add(PongCommand.buildMessage());
+              webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
-              webSocket.add(OpenMethodStreamResponse.buildMessage(
+              webSocket.sendText(OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
                 method: message.method,
@@ -176,15 +177,15 @@ void main() async {
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(
               event,
               TestSerializationManager(),
             );
             if (message is PingCommand) {
-              webSocket.add(PongCommand.buildMessage());
+              webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
-              webSocket.add(OpenMethodStreamResponse.buildMessage(
+              webSocket.sendText(OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
                 method: message.method,
@@ -236,22 +237,22 @@ void main() async {
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(
               event,
               TestSerializationManager(),
             );
             if (message is PingCommand) {
-              webSocket.add(PongCommand.buildMessage());
+              webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
-              webSocket.add(OpenMethodStreamResponse.buildMessage(
+              webSocket.sendText(OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
                 method: message.method,
                 responseType: OpenMethodStreamResponseType.success,
               ));
 
-              webSocket.add(
+              webSocket.sendText(
                 CloseMethodStreamCommand.buildMessage(
                   endpoint: message.endpoint,
                   connectionId: message.connectionId,
@@ -291,7 +292,7 @@ void main() async {
 
   group('Given open method streaming connection', () {
     Completer<Uri> callbackUrlFuture;
-    late WebSocket testWebSocket;
+    late RelicWebSocket testWebSocket;
     late Completer<void> webSocketClosed;
     late Future<void> Function() closeServer;
     late MethodStreamConnectionDetails streamConnectionDetails;
@@ -301,15 +302,15 @@ void main() async {
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
           testWebSocket = webSocket;
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(
               event,
               TestSerializationManager(),
             );
             if (message is PingCommand) {
-              webSocket.add(PongCommand.buildMessage());
+              webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
-              webSocket.add(OpenMethodStreamResponse.buildMessage(
+              webSocket.sendText(OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
                 method: message.method,
@@ -371,15 +372,15 @@ void main() async {
       closeMethodStreamCommandCompleter = Completer<CloseMethodStreamCommand>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((event) {
+          webSocket.textEvents.listen((event) {
             var message = WebSocketMessage.fromJsonString(
               event,
               TestSerializationManager(),
             );
             if (message is PingCommand) {
-              webSocket.add(PongCommand.buildMessage());
+              webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
-              webSocket.add(OpenMethodStreamResponse.buildMessage(
+              webSocket.sendText(OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
                 method: message.method,
@@ -446,4 +447,11 @@ void main() async {
       await expectLater(webSocketClosed.future, completes);
     });
   });
+}
+
+extension on RelicWebSocket {
+  Stream<String> get textEvents => events
+      .where((e) => e is TextDataReceived)
+      .cast<TextDataReceived>()
+      .map((e) => e.text);
 }

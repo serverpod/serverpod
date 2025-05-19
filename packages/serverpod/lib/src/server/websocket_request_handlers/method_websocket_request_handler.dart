@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
+import 'package:web_socket/web_socket.dart';
 
 import 'helpers/method_stream_manager.dart';
 
@@ -18,14 +20,14 @@ class MethodWebsocketRequestHandler {
   /// Returns a [Future] that completes when the websocket is closed.
   static Future<void> handleWebsocket(
     Server server,
-    WebSocket webSocket,
-    HttpRequest request,
+    RelicWebSocket webSocket,
+    Request request,
     void Function() onClosed,
   ) async {
     var webSocketIntermediary = _WebSocketIntermediary(
       server: server,
       webSocket: webSocket,
-      httpRequest: request,
+      request: request,
     );
 
     var methodStreamManager = _createMethodStreamManager(
@@ -35,7 +37,13 @@ class MethodWebsocketRequestHandler {
 
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
-      await for (String jsonData in webSocket) {
+      await for (final event in webSocket.events) {
+        final jsonData = switch (event) {
+          TextDataReceived() => event.text,
+          BinaryDataReceived() => utf8.decode(event.data),
+          CloseReceived() => null,
+        };
+        if (jsonData == null) continue;
         WebSocketMessage message;
         try {
           message = WebSocketMessage.fromJsonString(
@@ -121,7 +129,7 @@ class MethodWebsocketRequestHandler {
       server.serverpod.internalSubmitEvent(
         ExceptionEvent(e, stackTrace, message: 'Method stream websocket error'),
         space: OriginSpace.framework,
-        context: contextFromHttpRequest(server, request, OperationType.stream),
+        context: contextFromRequest(server, request, OperationType.stream),
       );
       if (e is! UnknownMessageException ||
           server.serverpod.runtimeSettings.logMalformedCalls) {
@@ -136,8 +144,7 @@ class MethodWebsocketRequestHandler {
         '${methodStreamManager.openInputStreamCount} in-streams still open.',
       );
       await methodStreamManager.closeAllStreams();
-      // Send a close message to the client.
-      await webSocket.close();
+      await webSocket.tryClose();
       onClosed();
     }
   }
@@ -147,7 +154,7 @@ class MethodWebsocketRequestHandler {
     Server server,
   ) {
     return MethodStreamManager(
-      httpRequest: webSocket.httpRequest,
+      request: webSocket.request,
       onInputStreamClosed: (
         UuidValue methodStreamId,
         String parameterName,
@@ -189,7 +196,7 @@ class MethodWebsocketRequestHandler {
           space: OriginSpace.application,
           context: _makeEventContext(
             server,
-            httpRequest: webSocket.httpRequest,
+            request: webSocket.request,
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
             streamConnectionId: methodStreamId,
@@ -449,7 +456,7 @@ class MethodWebsocketRequestHandler {
       context: streamCommandMessage != null
           ? _makeEventContext(
               server,
-              httpRequest: webSocketIntermediary.httpRequest,
+              request: webSocketIntermediary.request,
               endpoint: streamCommandMessage.endpoint,
               method: streamCommandMessage.method,
               streamConnectionId: streamCommandMessage.connectionId,
@@ -462,7 +469,7 @@ class MethodWebsocketRequestHandler {
 
 StreamOpContext _makeEventContext(
   Server server, {
-  required HttpRequest httpRequest,
+  required Request request,
   required String endpoint,
   required String method,
   required UuidValue streamConnectionId,
@@ -474,9 +481,8 @@ StreamOpContext _makeEventContext(
     serverRunMode: server.runMode,
     sessionId: session?.sessionId,
     userAuthInfo: session?.authInfoOrNull,
-    connectionInfo: httpRequest.connectionInfo?.toConnectionInfo() ??
-        ConnectionInfo.empty(),
-    uri: httpRequest.uri,
+    remoteInfo: session?.remoteInfo,
+    uri: request.requestedUri,
     endpoint: endpoint,
     methodName: method,
     streamConnectionId: streamConnectionId,
@@ -485,18 +491,22 @@ StreamOpContext _makeEventContext(
 
 class _WebSocketIntermediary {
   final Server server;
-  final WebSocket webSocket;
-  final HttpRequest httpRequest;
+  final RelicWebSocket _webSocket;
+  final Request request;
 
   _WebSocketIntermediary({
     required this.server,
-    required this.webSocket,
-    required this.httpRequest,
-  });
+    required RelicWebSocket webSocket,
+    required this.request,
+  }) : _webSocket = webSocket;
 
   void tryAdd(dynamic data) {
     try {
-      webSocket.add(data);
+      return switch (data) {
+        String s => _webSocket.sendText(s),
+        Uint8List b => _webSocket.sendBytes(b),
+        _ => throw ArgumentError.notNull,
+      };
     } catch (e, stackTrace) {
       stderr.writeln(
           'Error "$e", when trying to send data over websocket: $data');

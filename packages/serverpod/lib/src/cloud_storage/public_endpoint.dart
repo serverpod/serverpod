@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
@@ -15,37 +13,30 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
   /// Retrieves a file from the public database cloud storage.
   Future<ByteData?> file(MethodCallSession session, String path) async {
-    var response = session.httpRequest.response;
-
     // Fetch the file from storage.
     var file =
         await session.storage.retrieveFile(storageId: 'public', path: path);
 
     // Set the response code
     if (file == null) {
-      response.statusCode = HttpStatus.notFound;
-      return null;
+      throw EndpointNotFoundException('File not found: $path');
     }
 
     // TODO: Support more extension types.
-
-    var extension = p.extension(path);
-    extension = extension.toLowerCase();
-    if (extension == '.js') {
-      response.headers.contentType = ContentType('text', 'javascript');
-    } else if (extension == '.css') {
-      response.headers.contentType = ContentType('text', 'css');
-    } else if (extension == '.png') {
-      response.headers.contentType = ContentType('image', 'png');
-    } else if (extension == '.jpg') {
-      response.headers.contentType = ContentType('image', 'jpeg');
-    } else if (extension == '.svg') {
-      response.headers.contentType = ContentType('image', 'svg+xml');
-    } else if (extension == '.ttf') {
-      response.headers.contentType = ContentType('application', 'x-font-ttf');
-    } else if (extension == '.woff') {
-      response.headers.contentType = ContentType('application', 'x-font-woff');
-    }
+    // Content-Type headers are usually set by Server.dart or by returning a specific
+    // Response object. Endpoint methods returning ByteData with sendByteDataAsRaw=true
+    // will typically have Content-Type set by the server, often to application/octet-stream.
+    // The custom logic below is removed for now.
+    // var extension = p.extension(path);
+    // extension = extension.toLowerCase();
+    // if (extension == '.js') {
+    // } else if (extension == '.css') {
+    // } else if (extension == '.png') {
+    // } else if (extension == '.jpg') {
+    // } else if (extension == '.svg') {
+    // } else if (extension == '.ttf') {
+    // } else if (extension == '.woff') {
+    // }
 
     // Retrieve the file from storage and return it.
     return file;
@@ -67,7 +58,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     if (uploadInfo.authKey != key) return false;
 
-    var body = await _readBinaryBody(session.httpRequest);
+    var body = await _readBinaryBody(session.request);
     if (body == null) return false;
 
     var byteData = ByteData.view(Uint8List.fromList(body).buffer);
@@ -85,17 +76,17 @@ class CloudStoragePublicEndpoint extends Endpoint {
     return true;
   }
 
-  Future<List<int>?> _readBinaryBody(HttpRequest request) async {
+  Future<List<int>?> _readBinaryBody(Request request) async {
     // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
+    int len = 0;
+    var builder = BytesBuilder();
 
-    await for (var segment in request) {
-      len += segment.length;
+    await for (var chunk in request.read()) {
+      len += chunk.length;
       if (len > server.serverpod.config.maxRequestSize) return null;
-      data += segment;
+      builder.add(chunk);
     }
-    return data;
+    return builder.toBytes();
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an

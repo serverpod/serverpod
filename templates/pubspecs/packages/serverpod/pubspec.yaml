@@ -37,6 +37,7 @@ dependencies:
   serverpod_shared: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   uuid: ^4.1.0
+  web_socket: ^1.0.0
 
 dev_dependencies:
   test: ^1.24.2

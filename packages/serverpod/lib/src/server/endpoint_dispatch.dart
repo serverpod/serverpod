@@ -424,11 +424,11 @@ class StreamParameterDescription<T> {
 }
 
 /// The [Result] of an [Endpoint] method call.
-abstract class Result {}
+sealed class Result {}
 
 /// A successful result from an [Endpoint] method call containing the return
 /// value of the call.
-class ResultSuccess extends Result {
+final class ResultSuccess extends Result {
   /// The returned value of a successful [Endpoint] method call.
   final dynamic returnValue;
 
@@ -441,7 +441,7 @@ class ResultSuccess extends Result {
 
 /// The result of a failed [Endpoint] method call where the parameters where not
 /// valid.
-class ResultInvalidParams extends Result {
+final class ResultInvalidParams extends Result {
   /// Description of the error.
   final String errorDescription;
 
@@ -456,7 +456,7 @@ class ResultInvalidParams extends Result {
 
 /// The result of a failed [Endpoint] method call where the
 /// endpoint was not found.
-class ResultNoSuchEndpoint extends Result {
+final class ResultNoSuchEndpoint extends Result {
   /// Description of the error.
   final String errorDescription;
 
@@ -529,7 +529,7 @@ class InvalidEndpointMethodTypeException extends EndpointDispatchException {
 /// The input parameters were invalid.
 class InvalidParametersException extends EndpointDispatchException {
   @override
-  String message = 'Invalid parameters';
+  final String message;
 
   /// Creates a new [InvalidParametersException].
   InvalidParametersException(this.message);
@@ -545,7 +545,7 @@ enum AuthenticationFailureReason {
 }
 
 /// The result of a failed [Endpoint] method call where authentication failed.
-class ResultAuthenticationFailed extends Result {
+final class ResultAuthenticationFailed extends Result {
   /// Description of the error.
   final String errorDescription;
 
@@ -579,7 +579,7 @@ class ResultAuthenticationFailed extends Result {
 
 /// The result of a failed [Endpoint] method call where an [Exception] was
 /// thrown during execution of the method.
-class ResultInternalServerError extends Result {
+final class ResultInternalServerError extends Result {
   /// The Exception that was thrown.
   final String exception;
 
@@ -600,7 +600,7 @@ class ResultInternalServerError extends Result {
 
 /// The result of a failed [Endpoint] method call, with a custom status code,
 /// and an optional message.
-class ResultStatusCode extends Result {
+final class ResultStatusCode extends Result {
   /// The status code to be returned to the client.
   final int statusCode;
 
@@ -617,7 +617,7 @@ class ResultStatusCode extends Result {
 }
 
 /// The result of a failed [Endpoint] method call, with a custom exception.
-class ExceptionResult<T extends SerializableException> extends Result {
+final class ExceptionResult<T extends SerializableException> extends Result {
   /// The exception to be returned to the client.
   final T model;
 

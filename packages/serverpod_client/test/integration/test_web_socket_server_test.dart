@@ -6,6 +6,7 @@ library;
 import 'dart:async';
 
 import 'package:test/test.dart';
+import 'package:web_socket/src/web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../test_utils/test_web_socket_server.dart';
@@ -19,8 +20,17 @@ void main() async {
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
-          webSocket.listen((message) {
-            webSocket.add(message);
+          webSocket.events.listen((message) {
+            switch (message) {
+              case TextDataReceived():
+                webSocket.sendText(message.text);
+                break;
+              case BinaryDataReceived():
+                webSocket.sendBytes(message.data);
+                break;
+              case CloseReceived():
+                break;
+            }
           });
         },
         onConnected: (host) {
@@ -53,9 +63,9 @@ void main() async {
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
           var messageIndex = 0;
-          webSocket.listen((message) {
+          webSocket.events.listen((message) {
             if (messageIndex < sequence.length) {
-              webSocket.add(sequence[messageIndex++]);
+              webSocket.sendText(sequence[messageIndex++]);
             }
           });
         },

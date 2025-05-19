@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide X509Certificate;
+import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -20,7 +21,7 @@ class Server {
   // The key is a unique identifier for the connection.
   // The value is a tuple of a [Future] that completes when the connection is
   // closed and the [WebSocket] object.
-  final Map<String, (Future<void>, WebSocket)> _webSockets = {};
+  final Map<String, (Future<void>, RelicWebSocket)> _webSockets = {};
 
   /// The [Serverpod] managing the server.
   final Serverpod serverpod;
@@ -75,16 +76,7 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  HttpServer? _httpServer;
-
-  /// The [HttpServer] responsible for handling calls.
-  HttpServer get httpServer {
-    var httpServer = _httpServer;
-    if (httpServer == null) {
-      throw StateError('httpServer not started');
-    }
-    return httpServer;
-  }
+  RelicServer? _relicServer;
 
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
@@ -127,109 +119,61 @@ class Server {
   /// Starts the server.
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
-    HttpServer httpServer;
     try {
-      var context = _securityContext;
-      httpServer = await switch (context) {
-        SecurityContext() => HttpServer.bindSecure(
-            InternetAddress.anyIPv6,
-            port,
-            context,
-          ),
-        _ => HttpServer.bind(InternetAddress.anyIPv6, port),
-      };
+      _relicServer = await serve(
+        _relicRequestHandler,
+        InternetAddress.anyIPv6,
+        port,
+        context: _securityContext, // serve uses 'context' for SecurityContext
+      );
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
           message: 'Failed to bind socket, port $port may already be in use.');
       return false;
     }
 
-    try {
-      _runServer(httpServer);
-    } catch (e, stackTrace) {
-      await _reportFrameworkException(e, stackTrace,
-          message: 'Internal server error. Failed to run server.');
-      return false;
-    }
-
     _running = true;
-    stdout.writeln('$name listening on port $port');
+    stdout.writeln(
+        '$name listening on port $port at ${InternetAddress.anyIPv6.address}');
+    serverpod.logVerbose(
+      'Server started on ${InternetAddress.anyIPv6.address}:$port',
+    );
     return _running;
   }
 
-  void _runServer(HttpServer httpServer) async {
-    serverpod.logVerbose(
-      'runServer address: ${httpServer.address}, port: ${httpServer.port}',
-    );
-
-    _httpServer = httpServer;
-    httpServer.autoCompress = true;
-
+  FutureOr<HandledContext> _relicRequestHandler(NewContext context) async {
     try {
-      await for (var request in httpServer) {
-        serverpod.logVerbose(
-          'received request: ${request.method} ${request.uri.path}',
-        );
-
-        _handleRequestWithErrorBoundary(request);
-      }
+      return await _handleRequest(context);
     } catch (e, stackTrace) {
-      await _reportFrameworkException(e, stackTrace,
-          message: 'Internal server error. httpSever.listen failed.');
-    }
-
-    stdout.writeln('$name stopped');
-  }
-
-  void _handleRequestWithErrorBoundary(HttpRequest request) async {
-    // [Future.sync] ensures no synchronous error is accidentally thrown from the handler
-    // https://dart.dev/libraries/async/futures-error-handling#solution-using-future-sync-to-wrap-your-code
-    await Future.sync(() {
-      return _handleRequest(request);
-    }).catchError((e, stackTrace) async {
       await _reportFrameworkException(
         e,
         stackTrace,
-        message: 'Internal server error. _handleRequest failed with exception.',
-        httpRequest: request,
+        message:
+            'Internal server error. Request handler failed with exception.',
+        request: context.request,
       );
-
-      request.response.statusCode = HttpStatus.internalServerError;
-      return request.response.close();
-    });
+      return context.withResponse(Response.internalServerError(
+        body: Body.fromString('Internal Server Error'),
+      ));
+    }
   }
 
-  //TODO: encode analyze
-  Future<void> _handleRequest(HttpRequest request) async {
-    serverpod
-        .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
+  FutureOr<HandledContext> _handleRequest(NewContext context) async {
+    final request = context.request;
+    final uri = request.requestedUri;
+    serverpod.logVerbose('handleRequest: ${request.method} ${uri.path}');
 
-    for (var header in httpResponseHeaders.entries) {
-      request.response.headers.add(header.key, header.value);
-    }
-
-    Uri uri;
-
-    try {
-      uri = request.requestedUri;
-    } catch (e, stackTrace) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Malformed call, invalid uri from '
-              '${request.connectionInfo!.remoteAddress.address}',
-          httpRequest: request,
-        );
+    // TODO: Make httpResponseHeaders a Headers object from the get-go.
+    // or better yet, use middleware
+    final headers = Headers.build((mh) {
+      for (var rh in httpResponseHeaders.entries) {
+        mh[rh.key] = ['${rh.value}'];
       }
-
-      request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
-    }
+    });
 
     var readBody = true;
 
+    // TODO: Use Router instead of manual dispatch on path and verb
     if (uri.path == '/') {
       // Perform health checks
       var checks = await performHealthChecks(serverpod);
@@ -242,30 +186,32 @@ class Server {
         }
       }
 
+      var responseBuffer = StringBuffer();
       if (allOk) {
-        request.response.writeln('OK ${DateTime.now().toUtc()}');
+        responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
       } else {
-        request.response.statusCode = HttpStatus.serviceUnavailable;
-        request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
+        responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
       }
       for (var issue in issues) {
-        request.response.writeln(issue);
+        responseBuffer.writeln(issue);
       }
 
-      await request.response.close();
-      return;
+      var response = Response(
+        allOk ? HttpStatus.ok : HttpStatus.serviceUnavailable,
+        body: Body.fromString(responseBuffer.toString()),
+        headers: headers,
+      );
+      return context.withResponse(response);
     } else if (uri.path == '/websocket') {
-      await _dispatchWebSocketUpgradeRequest(
-        request,
+      return await _dispatchWebSocketUpgradeRequest(
+        context,
         EndpointWebsocketRequestHandler.handleWebsocket,
       );
-      return;
     } else if (uri.path == '/v1/websocket') {
-      await _dispatchWebSocketUpgradeRequest(
-        request,
+      return await _dispatchWebSocketUpgradeRequest(
+        context,
         MethodWebsocketRequestHandler.handleWebsocket,
       );
-      return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
     }
@@ -273,19 +219,18 @@ class Server {
     // This OPTIONS check is necessary when making requests from
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
-    if (request.method == 'OPTIONS') {
-      for (var header in httpOptionsResponseHeaders.entries) {
-        request.response.headers.add(header.key, header.value);
-      }
+    if (request.method == RequestMethod.options) {
+      final combinedHeaders = headers.transform((mh) {
+        for (var orh in httpOptionsResponseHeaders.entries) {
+          mh[orh.key] = ['${orh.value}'];
+        }
+        mh.contentLength = 0; // TODO: Why set this explicitly?
+      });
 
-      // Safari and potentially other browsers require Content-Length=0.
-      request.response.headers.add('Content-Length', 0);
-      request.response.statusCode = HttpStatus.ok;
-      await request.response.close();
-      return;
+      return context.withResponse(Response.ok(headers: combinedHeaders));
     }
 
-    String body;
+    late final String body;
     if (readBody) {
       try {
         body = await _readBody(request);
@@ -294,147 +239,156 @@ class Server {
           // TODO: Log to database?
           stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
-        request.response.statusCode = HttpStatus.requestEntityTooLarge;
-        request.response.write(e.errorDescription);
-        await request.response.close();
-        return;
+        return context.withResponse(Response(
+          HttpStatus.requestEntityTooLarge,
+          body: Body.fromString(e.errorDescription),
+          headers: headers,
+        ));
       } catch (e, stackTrace) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Internal server error. Failed to read body of request.',
-          httpRequest: request,
-        );
-
-        request.response.statusCode = HttpStatus.badRequest;
-        await request.response.close();
-        return;
+        await _reportFrameworkException(e, stackTrace,
+            message: 'Internal server error. Failed to read body of request.',
+            request: context.request);
+        return context.withResponse(Response.badRequest(
+          body: Body.fromString('Failed to read request body.'),
+          headers: headers,
+        ));
       }
     } else {
       body = '';
     }
 
     var result = await _handleUriCall(uri, body, request);
+    if (serverpod.runtimeSettings.logMalformedCalls) {
+      _logMalformedCalls(result);
+    }
+    return context.withResponse(_toResponse(result, headers));
+  }
 
-    if (result is ResultNoSuchEndpoint) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Log to database?
-        stderr.writeln('Malformed call: $result');
-      }
-
-      request.response.statusCode = HttpStatus.notFound;
-      request.response.writeln(result.errorDescription);
-      await request.response.close();
-      return;
-    } else if (result is ResultInvalidParams) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Log to database?
-        stderr.writeln('Malformed call: $result');
-      }
-
-      request.response.statusCode = HttpStatus.badRequest;
-      request.response.writeln(result.errorDescription);
-      await request.response.close();
-      return;
-    } else if (result is ResultAuthenticationFailed) {
-      if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Log to database?
-        stderr.writeln('Access denied: $result');
-      }
-
-      request.response.statusCode = switch (result.reason) {
-        AuthenticationFailureReason.unauthenticated => HttpStatus.unauthorized,
-        AuthenticationFailureReason.insufficientAccess => HttpStatus.forbidden,
-      };
-      await request.response.close();
-      return;
-    } else if (result is ResultInternalServerError) {
-      request.response.statusCode = HttpStatus.internalServerError;
-      request.response.writeln(
-          'Internal server error. Call log id: ${result.sessionLogId}');
-      await request.response.close();
-      return;
-    } else if (result is ResultStatusCode) {
-      request.response.statusCode = result.statusCode;
-      if (result.message != null) {
-        request.response.writeln(result.message);
-      }
-      await request.response.close();
-      return;
-    } else if (result is ExceptionResult) {
-      request.response.headers.contentType = ContentType.json;
-      request.response.statusCode = HttpStatus.badRequest;
-
-      var serializedModel =
-          serializationManager.encodeWithTypeForProtocol(result.model);
-      request.response.write(serializedModel);
-      await request.response.close();
-    } else if (result is ResultSuccess) {
-      // Set content type.
-      if (!result.sendByteDataAsRaw) {
-        request.response.headers.contentType =
-            ContentType('application', 'json', charset: 'utf-8');
-      }
-
-      // Send the response
-      if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
-        var byteData = result.returnValue as ByteData?;
-        if (byteData != null) {
-          request.response.add(byteData.buffer.asUint8List());
-        }
-      } else {
-        var serializedModel = SerializationManager.encodeForProtocol(
-          result.returnValue,
-        );
-        request.response.write(serializedModel);
-      }
-      await request.response.close();
-      return;
+  void _logMalformedCalls(Result result) {
+    final error = switch (result) {
+      ResultInvalidParams() => 'Malformed call',
+      ResultNoSuchEndpoint() => 'Malformed call',
+      ResultAuthenticationFailed() => 'Access denied',
+      // ResultInternalServerError // TODO: historically not included
+      _ => null
+    };
+    if (error != null) {
+      // TODO: Log to database?
+      stderr.writeln('$error: $result');
     }
   }
 
-  Future<void> _dispatchWebSocketUpgradeRequest(
-    HttpRequest request,
+  Response _toResponse(Result result, Headers headers) {
+    switch (result) {
+      case ResultNoSuchEndpoint():
+        return Response.notFound(
+          body: Body.fromString(result.errorDescription),
+          headers: headers,
+        );
+      case ResultInvalidParams():
+        return Response.badRequest(
+          body: Body.fromString(result.errorDescription),
+          headers: headers,
+        );
+      case ResultAuthenticationFailed():
+        var authFailedStatusCode = switch (result.reason) {
+          AuthenticationFailureReason.unauthenticated =>
+            HttpStatus.unauthorized,
+          AuthenticationFailureReason.insufficientAccess =>
+            HttpStatus.forbidden,
+        };
+        return Response(
+          authFailedStatusCode,
+          headers: headers,
+        );
+      case ResultInternalServerError():
+        return Response.internalServerError(
+          body: Body.fromString(
+              'Internal server error. Call log id: ${result.sessionLogId}'),
+          headers: headers,
+        );
+      case ResultStatusCode():
+        return Response(
+          result.statusCode,
+          body: result.message != null
+              ? Body.fromString(result.message!)
+              : Body.empty(),
+          headers: headers,
+        );
+      case ExceptionResult():
+        var serializedModel =
+            serializationManager.encodeWithTypeForProtocol(result.model);
+        return Response(
+          HttpStatus.badRequest,
+          body: Body.fromString(serializedModel, mimeType: MimeType.json),
+          headers: headers,
+        );
+      case ResultSuccess():
+        final Body responseBody;
+        if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
+          var byteData = result.returnValue as ByteData?;
+          responseBody = byteData != null
+              ? Body.fromData(byteData.buffer.asUint8List())
+              : Body.empty();
+        } else {
+          var serializedModel = SerializationManager.encodeForProtocol(
+            result.returnValue,
+          );
+          responseBody =
+              Body.fromString(serializedModel, mimeType: MimeType.json);
+          // MimeType.json should set Content-Type. If charset needed and not set by MimeType:
+          // currentHeadersMap['Content-Type'] = ['application/json; char–set=utf-8'];
+        }
+        return Response.ok(
+          body: responseBody,
+          headers: headers,
+        );
+    }
+  }
+
+  FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
+    NewContext newContext,
     Future<void> Function(
       Server,
-      WebSocket,
-      HttpRequest,
+      RelicWebSocket,
+      Request,
       void Function(),
     ) requestHandler,
   ) async {
-    WebSocket webSocket;
-    try {
-      webSocket = await WebSocketTransformer.upgrade(request);
-    } on WebSocketException catch (e, stackTrace) {
-      await _reportFrameworkException(
-        e,
-        stackTrace,
-        message: 'Failed to upgrade connection to websocket.',
-        httpRequest: request,
-        operationType: OperationType.stream,
-      );
-      return;
-    }
-    webSocket.pingInterval = const Duration(seconds: 30);
-    var websocketKey = const Uuid().v4();
-    _webSockets[websocketKey] = (
-      requestHandler(
-        this,
-        webSocket,
-        request,
-        () => _webSockets.remove(websocketKey),
-      ),
-      webSocket
-    );
+    return newContext.connect((webSocket) async {
+      try {
+        // TODO(kasper): Should we keep doing this?
+        webSocket.pingInterval = const Duration(seconds: 30);
+
+        var websocketKey = const Uuid().v4();
+        final handlerFuture = requestHandler(
+          this,
+          webSocket,
+          newContext.request,
+          () => _webSockets.remove(websocketKey),
+        );
+
+        _webSockets[websocketKey] = (handlerFuture, webSocket);
+
+        await handlerFuture;
+      } catch (e, stackTrace) {
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Failed to upgrade connection to websocket.',
+          operationType: OperationType.stream,
+        );
+      }
+    });
   }
 
-  Future<String> _readBody(HttpRequest request) async {
+  Future<String> _readBody(Request request) async {
     var builder = BytesBuilder(copy: false);
     var len = 0;
     var maxRequestSize = serverpod.config.maxRequestSize;
-    var tooLargeForSure = request.contentLength > maxRequestSize;
+    var tooLargeForSure = (request.body.contentLength ?? -1) > maxRequestSize;
     if (!tooLargeForSure) {
-      await for (var segment in request) {
+      await for (var segment in request.read()) {
         if (tooLargeForSure) continue; // always drain request, if reading begun
         len += segment.length;
         tooLargeForSure = len > maxRequestSize;
@@ -453,7 +407,7 @@ class Server {
   Future<Result> _handleUriCall(
     Uri uri,
     String body,
-    HttpRequest request,
+    Request request,
   ) async {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
@@ -499,18 +453,20 @@ class Server {
     // Get the authentication key, if any
     // If it is provided in the HTTP authorization header we use that,
     // otherwise we look for it in the query parameters (the old method).
-    var authHeaderValue =
-        request.headers.value(HttpHeaders.authorizationHeader);
     String? authenticationKey;
+    String? authenticationHeaderValue;
+
     try {
-      authenticationKey = unwrapAuthHeaderValue(authHeaderValue);
-    } on AuthHeaderEncodingException catch (_) {
+      authenticationHeaderValue = request.headers.authorization?.headerValue;
+      authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
+    } on InvalidHeaderException catch (_) {
+      // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
       return ResultStatusCode(
         400,
-        'Request has invalid "authorization" header: $authHeaderValue',
+        'Request has invalid "authorization" header: $authenticationHeaderValue',
       );
     }
-    authenticationKey ??= queryParameters['auth'];
+    authenticationKey ??= queryParameters['auth'] as String?;
 
     MethodCallSession? maybeSession;
     try {
@@ -521,7 +477,7 @@ class Server {
             uri: uri,
             body: body,
             path: path,
-            httpRequest: request,
+            request: request,
             method: methodName,
             endpoint: endpointName,
             queryParameters: queryParameters,
@@ -544,7 +500,7 @@ class Server {
             StackTrace.current,
           ),
           space: OriginSpace.framework,
-          context: contextFromHttpRequest(this, request, OperationType.method),
+          context: contextFromRequest(this, request, OperationType.method),
         );
 
         return ResultInternalServerError(
@@ -567,7 +523,7 @@ class Server {
         serverpod.internalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           space: OriginSpace.application,
-          context: contextFromSession(session, httpRequest: request),
+          context: contextFromSession(session, request: request),
         );
 
         rethrow;
@@ -603,12 +559,12 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _httpServer?.close();
+    await _relicServer?.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
       webSocketCompletions.add(webSocketCompletion);
-      await webSocket.close();
+      await webSocket.tryClose();
     }
 
     // Wait for all WebSockets to close.
@@ -621,7 +577,7 @@ class Server {
     Object e,
     StackTrace stackTrace, {
     String? message,
-    HttpRequest? httpRequest,
+    Request? request,
     OperationType? operationType,
   }) async {
     var now = DateTime.now().toUtc();
@@ -631,8 +587,8 @@ class Server {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
-    var context = httpRequest != null
-        ? contextFromHttpRequest(this, httpRequest, operationType)
+    var context = request != null
+        ? contextFromRequest(this, request, operationType)
         : contextFromServer(this);
 
     serverpod.internalSubmitEvent(

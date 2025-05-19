@@ -58,8 +58,6 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     }
   }
 
-  var connectionsInfo = pod.server.httpServer.connectionsInfo();
-
   return ServerHealthResult(
     metrics: [
       if (dbHealthy != null)
@@ -94,9 +92,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       ServerHealthConnectionInfo(
         serverId: pod.serverId,
         timestamp: timestamp,
-        active: connectionsInfo.active,
-        closing: connectionsInfo.closing,
-        idle: connectionsInfo.idle,
+        active: 0, // Placeholder, was: connectionsInfo.active
+        closing: 0, // Placeholder, was: connectionsInfo.closing
+        idle: 0, // Placeholder, was: connectionsInfo.idle
         granularity: 1,
       )
     ],
