@@ -4,7 +4,7 @@ table: serverpod_auth_profile_user_profile
 fields:
   id: UuidValue?, defaultPersist=random
 
-  ### The [AuthUser] this profile belongs to
+  ### The [AuthUser] this profile belongs to.
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
 
   ### The first name of the user or the user's nickname.
@@ -24,7 +24,7 @@ fields:
   ### The time when this user was created.
   created: DateTime, default=now
 
-  ### The user's profile image
+  ### The user's profile image.
   image: UserProfileImage?, relation(optional)
 
 indexes:

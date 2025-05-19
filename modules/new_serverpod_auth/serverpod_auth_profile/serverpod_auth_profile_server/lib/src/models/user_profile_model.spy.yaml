@@ -1,6 +1,6 @@
 class: UserProfileModel
 fields:
-  ### The [AuthUser]'s ID this profile belongs to
+  ### The [AuthUser]'s ID this profile belongs to.
   authUserId: UuidValue
 
   ### The first name of the user or the user's nickname.
@@ -14,5 +14,5 @@ fields:
   ### Stored in lower-case.
   email: String?
 
-  ### The user's profile image
+  ### The public URL of the user's profile image.
   imageUrl: Uri?
