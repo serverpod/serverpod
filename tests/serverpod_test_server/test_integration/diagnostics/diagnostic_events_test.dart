@@ -270,7 +270,7 @@ void main() {
     test(
         'when a client calls web url with malformed json '
         'then the diagnostic event handler gets called', () async {
-      var response = http.post(
+      var response = http.get(
         Uri.parse('http://localhost:8082/exception'),
       );
       await response;
