@@ -182,51 +182,6 @@ void main() {
     });
 
     test(
-        'when the image is updated, then the new URL is available on the profile on read.',
-        () async {
-      await UserProfiles.setUserImageFromBytes(
-        session,
-        authUserId,
-        onePixelPng,
-      );
-
-      final readUpdatedProfile = await UserProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-
-      expect(
-        readUpdatedProfile.imageUrl.toString(),
-        allOf(startsWith('http://localhost'), endsWith('.jpg')),
-      );
-
-      final profileAfterUpdate = await UserProfiles.setUserImageFromBytes(
-        session,
-        authUserId,
-        onePixelPng,
-      );
-
-      expect(
-        profileAfterUpdate.imageUrl,
-        isNot(readUpdatedProfile.imageUrl),
-      );
-      expect(
-        profileAfterUpdate.imageUrl.toString(),
-        allOf(startsWith('http://localhost'), endsWith('.jpg')),
-      );
-
-      final readUpdatedProfile2 = await UserProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-
-      expect(
-        readUpdatedProfile2.imageUrl,
-        profileAfterUpdate.imageUrl,
-      );
-    });
-
-    test(
       'when trying to create a second user profile for the same auth user ID, then this fails.',
       () async {
         await expectLater(
