@@ -101,6 +101,34 @@ void main() {
       );
 
       test(
+        'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+        () async {
+          UserProfileConfig.current =
+              UserProfileConfig(onBeforeUserProfileCreated: (
+            final session,
+            final authUserId,
+            final userProfile, {
+            required final transaction,
+          }) {
+            throw UnimplementedError();
+          });
+
+          expect(
+            () => UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(),
+              transaction: session.transaction,
+            ),
+            throwsA(isA<UnimplementedError>()),
+          );
+
+          expect(await UserProfile.db.find(session), isEmpty);
+        },
+        skip: true,
+      );
+
+      test(
         'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
         () async {
           UserProfileConfig.current =
@@ -235,6 +263,41 @@ void main() {
           'username from onBeforeUserProfileUpdated hook',
         );
       },
+    );
+
+    test(
+      'when `onBeforeUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
+      () async {
+        UserProfileConfig.current =
+            UserProfileConfig(onBeforeUserProfileUpdated: (
+          final session,
+          final authUserId,
+          final userProfile, {
+          required final transaction,
+        }) {
+          throw UnimplementedError();
+        });
+
+        await expectLater(
+          () => UserProfiles.changeFullName(
+            session,
+            authUserId,
+            'Updated full name',
+          ),
+          throwsA(isA<UnimplementedError>()),
+        );
+
+        final profile = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+          transaction: session.transaction,
+        );
+        expect(
+          profile.fullName,
+          isNull,
+        );
+      },
+      skip: true,
     );
 
     test(
