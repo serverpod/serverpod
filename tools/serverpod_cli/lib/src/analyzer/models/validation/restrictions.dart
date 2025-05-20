@@ -1301,10 +1301,11 @@ class Restrictions {
     }
 
     for (var key in content.keys) {
+      var value = content[key];
       if (allowedParams.contains(key) &&
           parameterTypes.containsKey(key) &&
-          content[key] != null &&
-          content[key].runtimeType != parameterTypes[key]) {
+          value != null &&
+          value.runtimeType != parameterTypes[key]) {
         errors.add(SourceSpanSeverityException(
           'The "$key" parameter must be a '
           '${parameterTypes[key]!.toString().toLowerCase()}.',

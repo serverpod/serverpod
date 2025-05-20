@@ -9,9 +9,9 @@ class Bit {
 
   factory Bit(List<bool> value) {
     var length = value.length;
-    var data = Uint8List(((length + 7) / 8).toInt());
+    var data = Uint8List((length + 7) ~/ 8);
     for (var i = 0; i < length; i++) {
-      data[(i / 8).toInt()] |= (value[i] ? 1 : 0) << (7 - (i % 8));
+      data[i ~/ 8] |= (value[i] ? 1 : 0) << (7 - (i % 8));
     }
     return Bit._(length, data);
   }
@@ -23,7 +23,7 @@ class Bit {
   }
 
   Uint8List toBinary() {
-    var bytes = new Uint8List(4 + ((_len + 7) / 8).toInt());
+    var bytes = new Uint8List(4 + (_len + 7) ~/ 8);
     var buf = new ByteData.view(bytes.buffer, bytes.offsetInBytes);
 
     buf.setInt32(0, _len);
@@ -38,7 +38,7 @@ class Bit {
   List<bool> toList() {
     var vec = <bool>[];
     for (var i = 0; i < _len; i++) {
-      vec.add((_data[(i / 8).toInt()] >> (7 - (i % 8))) & 1 == 1);
+      vec.add((_data[i ~/ 8] >> (7 - (i % 8))) & 1 == 1);
     }
     return vec;
   }
