@@ -203,9 +203,10 @@ abstract class EndpointWebsocketRequestHandler {
     stderr.writeln('$stackTrace');
 
     var context = session != null
-        ? contextFromSession(session, httpRequest: httpRequest)
+        ? contextFromSession(session, requestInfo: httpRequest?.toRequestInfo())
         : httpRequest != null
-            ? contextFromHttpRequest(server, httpRequest, OperationType.stream)
+            ? contextFromRequest(
+                server, httpRequest.toRequestInfo(), OperationType.stream)
             : contextFromServer(server);
 
     server.serverpod.internalSubmitEvent(
