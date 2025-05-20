@@ -29,9 +29,18 @@ cd $BASE/modules/serverpod_auth/serverpod_auth_server
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
-
 echo "\nserverpod_auth_user_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_session_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_profile_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 

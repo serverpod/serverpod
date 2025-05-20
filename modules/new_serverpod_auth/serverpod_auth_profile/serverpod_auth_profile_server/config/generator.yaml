@@ -1,0 +1,9 @@
+type: module
+nickname: serverpod_auth_profile
+
+modules:
+  serverpod_auth_user:
+    nickname: auth_user
+
+client_package_path: ../serverpod_auth_profile_client
+server_test_tools_path: test/integration/test_tools
