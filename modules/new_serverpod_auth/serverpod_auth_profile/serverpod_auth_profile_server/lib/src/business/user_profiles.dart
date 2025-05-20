@@ -61,23 +61,15 @@ abstract final class UserProfiles {
 
   /// Find a user profile by the `AuthUser`'s ID.
   ///
-  /// By default the result is cached locally on the server. You can configure the cache
-  /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
-  /// setting [useCache] to false.
-  ///
   /// Throws a [UserProfileNotFoundException] in case no profile exists for the given [authUserId].
-  ///
-  /// In case a [transaction] is passed, the cache will not be used.
   static Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
-    final bool useCache = true,
     final Transaction? transaction,
   }) async {
     final profile = await maybeFindUserProfileByUserId(
       session,
       authUserId,
-      useCache: useCache,
       transaction: transaction,
     );
 
@@ -89,50 +81,18 @@ abstract final class UserProfiles {
   }
 
   /// Looks for a user profile by the `AuthUser`'s ID.
-  ///
-  /// Returns `null` if no profile is found. By default the
-  /// result is cached locally on the server. You can configure the cache
-  /// lifetime in [UserProfileConfig], or disable it on a call to call basis by
-  /// setting [useCache] to false.
-  ///
-  /// In case a [transaction] is passed, the cache will not be used.
   static Future<UserProfileModel?> maybeFindUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
-    bool useCache = true,
     final Transaction? transaction,
   }) async {
-    if (transaction != null) {
-      useCache = false;
-    }
-
-    final cacheKey = _userProfileCacheKey(authUserId);
-    UserProfileModel? userInfo;
-
-    if (useCache) {
-      userInfo = await session.caches.local.get<UserProfileModel>(cacheKey);
-      if (userInfo != null) return userInfo;
-    }
-
     final userProfile = await _maybeFindUserProfile(
       session,
       authUserId,
       transaction: transaction,
     );
 
-    if (userProfile != null) {
-      userInfo = userProfile.toModel();
-    }
-
-    if (useCache && userInfo != null) {
-      await session.caches.local.put(
-        cacheKey,
-        userInfo,
-        lifetime: UserProfileConfig.current.userInfoCacheLifetime,
-      );
-    }
-
-    return userInfo;
+    return userProfile?.toModel();
   }
 
   /// Updates a profiles's user name.
@@ -224,8 +184,6 @@ abstract final class UserProfiles {
         where: (final t) => t.authUserId.equals(authUserId),
         transaction: transaction,
       );
-
-      await _invalidateCacheForUser(session, authUserId);
 
       for (final image in images) {
         try {
@@ -475,8 +433,6 @@ abstract final class UserProfiles {
       transaction: transaction,
     );
 
-    await _invalidateCacheForUser(session, userProfile.authUserId);
-
     await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
       session,
       userProfile.toModel(),
@@ -484,24 +440,6 @@ abstract final class UserProfiles {
     );
 
     return userProfile;
-  }
-
-  static String _userProfileCacheKey(
-    /// ID of then [AuthUser]
-    final UuidValue authUserId,
-  ) {
-    return 'serverpod_auth_profile_$authUserId';
-  }
-
-  /// Invalidates the cache for a user and makes sure the next time a user profile
-  /// is fetched it's fresh from the database.
-  static Future<void> _invalidateCacheForUser(
-    final Session session,
-    final UuidValue authUserId,
-  ) async {
-    final cacheKey = _userProfileCacheKey(authUserId);
-
-    await session.caches.local.invalidateKey(cacheKey);
   }
 
   static Future<UserProfile?> _maybeFindUserProfile(

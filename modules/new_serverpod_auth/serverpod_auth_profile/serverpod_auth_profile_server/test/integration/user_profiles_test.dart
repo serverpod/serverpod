@@ -299,12 +299,6 @@ void main() {
     test(
       "when updating the profile's user name, then the updated value is visible through the cached `findUserProfileByUserId` method.",
       () async {
-        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
-        expect(profileBeforeUpdate.userName, isNull);
-
         final updatedResult = await UserProfiles.changeUserName(
           session,
           authUserId,
@@ -323,12 +317,6 @@ void main() {
     test(
       "when updating the profile's full name, then the updated value is visible through the cached `findUserProfileByUserId` method.",
       () async {
-        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
-        expect(profileBeforeUpdate.fullName, isNull);
-
         final updatedResult = await UserProfiles.changeFullName(
           session,
           authUserId,
@@ -347,12 +335,6 @@ void main() {
     test(
       "when updating the profile's image from bytes, then the updated value is visible through the cached `findUserProfileByUserId` method.",
       () async {
-        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
-        expect(profileBeforeUpdate.imageUrl, isNull);
-
         final updatedResult = await UserProfiles.setUserImageFromBytes(
           session,
           authUserId,
@@ -379,12 +361,6 @@ void main() {
     test(
       "when updating the profile's image from a URL, then the updated value is visible through the cached `findUserProfileByUserId` method.",
       () async {
-        final profileBeforeUpdate = await UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
-        expect(profileBeforeUpdate.imageUrl, isNull);
-
         final updatedResult = await UserProfiles.setUserImageFromUrl(
           session,
           authUserId,
