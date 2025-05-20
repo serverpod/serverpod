@@ -11,7 +11,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  postgres: ^3.1.2
+  postgres: ^3.4.0
   yaml: ^3.1.2
   uuid: ^4.1.0
 
