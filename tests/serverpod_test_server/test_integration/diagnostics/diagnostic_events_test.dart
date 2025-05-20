@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
+import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -14,7 +15,7 @@ import 'test_exception_handler.dart';
 
 class ExceptionRoute extends WidgetRoute {
   @override
-  Future<Widget> build(Session session, HttpRequest request) async {
+  Future<Widget> build(Session session, Request context) async {
     throw UnimplementedError('ExceptionRoute not implemented');
   }
 }

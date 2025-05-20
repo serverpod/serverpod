@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
+import 'package:relic/io_adapter.dart';
 import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -18,10 +19,12 @@ class WebServer {
   final String serverId;
 
   /// The port the webserver is running on.
-  late final int _port;
+  late final int port;
 
-  /// A list of [Route] which defines how to handle path passed to the server.
+  /// Router for handling incoming requests.
   final router = ServerpodRouter();
+
+  RelicServer? _server;
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -40,18 +43,13 @@ class WebServer {
       );
     }
 
-    _port = config.port;
+    port = config.port;
   }
 
   bool _running = false;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
-
-  HttpServer? _httpServer;
-
-  /// Returns the [HttpServer] this webserver is using to handle connections.
-  HttpServer get httpServer => _httpServer!;
 
   /// Adds a [Route] to the server, together with a path that defines how
   /// calls are routed.
@@ -72,38 +70,23 @@ class WebServer {
 
     try {
       var context = _securityContext;
-      _httpServer = await switch (context) {
-        SecurityContext() => HttpServer.bindSecure(
-            InternetAddress.anyIPv6,
-            _port,
-            context,
-          ),
-        _ => HttpServer.bind(
-            InternetAddress.anyIPv6,
-            _port,
-          ),
-      };
+      _server = await serve(
+        _handleRequest,
+        InternetAddress.anyIPv6,
+        port,
+        context: context,
+      );
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
           message: 'Failed to bind socket, '
-              'port $_port may already be in use.');
+              'port $port may already be in use.');
 
       return false;
     }
-    httpServer.autoCompress = true;
-
-    runZonedGuarded(
-      _start,
-      (e, stackTrace) async {
-        // Last resort error handling
-
-        await _reportException(e, stackTrace, message: 'Relic zoned error');
-      },
-    );
-
     return true;
   }
 
+  /*
   void _start() async {
     logInfo('Webserver listening on port $_port');
 
@@ -112,40 +95,47 @@ class WebServer {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
-          await _reportException(e, stackTrace, httpRequest: request);
+          await _reportException(e, stackTrace, request: request);
         }
       }
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace);
     }
   }
+  */
 
-  void _handleRequest(HttpRequest request) async {
+  FutureOr<HandledContext> _handleRequest(NewContext context) async {
+    final request = context.request;
+    var headers = Headers.empty();
     if (serverpod.runMode == ServerpodRunMode.production) {
-      request.response.headers.add('Strict-Transport-Security',
-          'max-age=63072000; includeSubDomains; preload');
+      headers = headers.transform((mh) {
+        mh.strictTransportSecurity = StrictTransportSecurityHeader(
+          maxAge: 63072000,
+          includeSubDomains: true,
+          preload: true,
+        );
+      });
     }
 
     Uri uri;
     try {
       uri = request.requestedUri;
     } catch (e) {
-      logDebug(
-          'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
+// TODO(kasper)
+//      logDebug(
+//          'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
 
-      request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
+      return context.withResponse(Response.badRequest());
     }
 
     String? authenticationKey;
-    for (var cookie in request.cookies) {
+    for (var cookie in request.headers.cookie?.cookies ?? []) {
       if (cookie.name == 'auth') {
         authenticationKey = cookie.value;
       }
     }
 
-    var queryParameters = request.uri.queryParameters;
+    var queryParameters = request.url.queryParameters;
     authenticationKey ??= queryParameters['auth'];
 
     WebCallSession session = WebCallSession(
@@ -160,41 +150,33 @@ class WebServer {
     );
     if (match != null) {
       final route = match.value;
-      var found = await _handleRouteCall(route, session, request);
-      if (found) {
-        await request.response.close();
-        await session.close();
-        return;
-      }
+      return await _handleRouteCall(route, session, context);
     }
 
     // No matching patch found
-    request.response.statusCode = HttpStatus.notFound;
-    await request.response.close();
-    await session.close();
+    return context.withResponse(Response.notFound());
   }
 
-  Future<bool> _handleRouteCall(
-      Route route, Session session, HttpRequest request) async {
-    route.setHeaders(request.response.headers);
+  Future<HandledContext> _handleRouteCall(
+    Route route,
+    Session session,
+    NewContext context,
+  ) async {
+    // TODO: route.setHeaders(request.response.headers);
     try {
-      var found = await route.handleCall(session, request);
-      return found;
+      return await route.handleCall(session, context);
     } catch (e, stackTrace) {
+      final request = context.request;
       await _reportException(
         e,
         stackTrace,
         space: OriginSpace.application,
         session: session,
-        httpRequest: request,
+        request: request,
       );
 
-      request.response.statusCode = HttpStatus.internalServerError;
-      request.response.write('Internal Server Error');
-
-      await request.response.close();
+      return context.withResponse(Response.internalServerError());
     }
-    return true;
   }
 
   Future<void> _reportException(
@@ -203,7 +185,7 @@ class WebServer {
     OriginSpace space = OriginSpace.framework,
     String? message,
     Session? session,
-    HttpRequest? httpRequest,
+    Request? request,
   }) async {
     logError(
       message != null ? '$message $e' : e,
@@ -211,10 +193,10 @@ class WebServer {
     );
 
     var context = session != null
-        ? contextFromSession(session, httpRequest: httpRequest)
-        : httpRequest != null
-            ? contextFromHttpRequest(
-                serverpod.server, httpRequest, OperationType.web)
+        ? contextFromSession(session, requestInfo: request.toRequestInfo())
+        : request != null
+            ? contextFromRequest(
+                serverpod.server, request.toRequestInfo(), OperationType.web)
             : contextFromServer(serverpod.server);
 
     serverpod.internalSubmitEvent(
@@ -247,9 +229,10 @@ class WebServer {
 
   /// Stops the webserver.
   Future<void> stop() async {
-    var localHttpServer = _httpServer;
-    if (localHttpServer != null) {
-      await localHttpServer.close();
+    final server = _server;
+    if (server != null) {
+      _server = null;
+      await server.close();
     }
     _running = false;
   }
@@ -276,56 +259,35 @@ abstract class Route {
   /// Creates a new [Route].
   Route({this.method = RouteMethod.get});
 
-  /// Sets the headers of the response. Default is text/html with UTF-8
-  /// encoding.
-  void setHeaders(HttpHeaders headers) {
-    headers.contentType = ContentType('text', 'html', charset: 'utf-8');
-  }
-
   /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
   /// `request.response`.
-  Future<bool> handleCall(Session session, HttpRequest request);
+  FutureOr<HandledContext> handleCall(Session session, NewContext request);
 
   // TODO: May want to create another abstraction layer here, to handle other
   // types of responses too. Or at least clarify the naming of the method.
 
   /// Returns the body of the request, assuming it is standard URL encoded form
   /// post request.
-  static Future<Map<String, String>> getBody(HttpRequest request) async {
-    var body = await _readBody(request);
+  static Future<Map<String, String>> getBody(Request request) async {
+    var body = await request.readAsString();
 
     var params = <String, String>{};
 
-    if (body != null) {
-      var encodedParams = body.split('&');
-      for (var encodedParam in encodedParams) {
-        var comps = encodedParam.split('=');
-        if (comps.length != 2) {
-          continue;
-        }
-
-        var name = Uri.decodeQueryComponent(comps[0]);
-        var value = Uri.decodeQueryComponent(comps[1]);
-
-        params[name] = value;
+    var encodedParams = body.split('&');
+    for (var encodedParam in encodedParams) {
+      var comps = encodedParam.split('=');
+      if (comps.length != 2) {
+        continue;
       }
+
+      var name = Uri.decodeQueryComponent(comps[0]);
+      var value = Uri.decodeQueryComponent(comps[1]);
+
+      params[name] = value;
     }
 
     return params;
-  }
-
-  static Future<String?> _readBody(HttpRequest request) async {
-    var builder = BytesBuilder();
-    var len = 0;
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > 10240) {
-        return null;
-      }
-      builder.add(segment);
-    }
-    return const Utf8Decoder().convert(builder.toBytes());
   }
 }
 
@@ -334,22 +296,24 @@ abstract class Route {
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web [Widget] from the current [session]
   /// and [request].
-  Future<AbstractWidget> build(Session session, HttpRequest request);
+  Future<AbstractWidget> build(Session session, Request request);
 
   @override
-  Future<bool> handleCall(Session session, HttpRequest request) async {
-    var widget = await build(session, request);
+  FutureOr<HandledContext> handleCall(
+    Session session,
+    NewContext context,
+  ) async {
+    var widget = await build(session, context.request);
 
-    if (widget is WidgetJson) {
-      request.response.headers.contentType = ContentType('application', 'json');
-    } else if (widget is WidgetRedirect) {
+    if (widget is WidgetRedirect) {
       var uri = Uri.parse(widget.url);
-      await request.response.redirect(uri);
-      return true;
+      return context.withResponse(Response.seeOther(uri));
     }
 
-    request.response.write(widget.toString());
-    return true;
+    final mimeType = widget is WidgetJson ? MimeType.json : MimeType.plainText;
+    return context.withResponse(Response.ok(
+      body: Body.fromString(widget.toString(), mimeType: mimeType),
+    ));
   }
 }
 
@@ -384,4 +348,24 @@ extension on RouteMethod {
         RouteMethod.get => Method.get,
         RouteMethod.post => Method.post,
       };
+}
+
+// Temporary helper method
+extension on RequestMethod {
+  Method toMethod() => switch (this) {
+        RequestMethod.get => Method.get,
+        RequestMethod.head => Method.head,
+        RequestMethod.post => Method.post,
+        RequestMethod.put => Method.put,
+        RequestMethod.delete => Method.delete,
+        RequestMethod.patch => Method.patch,
+        RequestMethod.options => Method.options,
+        RequestMethod.trace => Method.trace,
+        RequestMethod.connect => Method.connect,
+        _ => throw UnimplementedError(),
+      };
+}
+
+extension on Request? {
+  RequestInfo toRequestInfo() => RequestInfo.empty; // TODO
 }

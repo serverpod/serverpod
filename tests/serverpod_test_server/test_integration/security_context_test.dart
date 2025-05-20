@@ -190,7 +190,7 @@ void main() {
       test('then server can be accessed over https', () async {
         HttpClientRequest request =
             await HttpClient(context: securityContext).getUrl(
-          Uri.https('localhost:${serverpod.webServer.httpServer.port}'),
+          Uri.https('localhost:${serverpod.webServer.port}'),
         );
         var response = await request.close();
 
@@ -199,7 +199,7 @@ void main() {
 
       test('then server cannot be accessed over http', () async {
         HttpClientRequest request = await HttpClient().getUrl(
-          Uri.http('localhost:${serverpod.webServer.httpServer.port}'),
+          Uri.http('localhost:${serverpod.webServer.port}'),
         );
 
         expect(
@@ -229,7 +229,7 @@ void main() {
 
       test('then server can be accessed over http', () async {
         HttpClientRequest request = await HttpClient().getUrl(
-          Uri.http('localhost:${serverpod.webServer.httpServer.port}'),
+          Uri.http('localhost:${serverpod.webServer.port}'),
         );
 
         var response = await request.close();
@@ -240,7 +240,7 @@ void main() {
       test('then server cannot be accessed over https', () async {
         expect(
           () async => await HttpClient(context: securityContext).getUrl(
-            Uri.https('localhost:${serverpod.webServer.httpServer.port}'),
+            Uri.https('localhost:${serverpod.webServer.port}'),
           ),
           throwsA(isA<HandshakeException>()),
         );

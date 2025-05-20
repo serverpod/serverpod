@@ -8,7 +8,7 @@ import 'package:serverpod_auth_server/src/web/widgets/google_sign_in_redirect_pa
 /// serverpod_auth_google_flutter package.
 class RouteGoogleSignIn extends WidgetRoute {
   @override
-  Future<AbstractWidget> build(Session session, HttpRequest request) async {
+  Future<AbstractWidget> build(Session session, Request request) async {
     return GoogleSignInRedirectPageWidget();
   }
 }
