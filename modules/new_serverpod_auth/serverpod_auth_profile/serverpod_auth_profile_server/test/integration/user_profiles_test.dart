@@ -534,17 +534,12 @@ void main() {
 
       Future<void> clearDb() async {
         final session = sessionBuilder.build();
-        await UserProfile.db.deleteWhere(
+        // also cleans up related profile and profile images
+        await AuthUser.db.deleteWhere(
           session,
-          where: (final f) => Constant.bool(true),
-        );
-        await UserProfileImage.db.deleteWhere(
-          session,
-          where: (final f) => Constant.bool(true),
+          where: (final f) => f.id.equals(authUserId),
         );
       }
-
-      setUpAll(clearDb);
 
       tearDown(clearDb);
 
