@@ -15,11 +15,31 @@ DiagnosticEventContext contextFromServer(Server server) {
   );
 }
 
+class RequestInfo {
+  final ConnectionInfo connectionInfo;
+  final Uri uri;
+
+  const RequestInfo(this.connectionInfo, this.uri);
+
+  static final empty = RequestInfo(ConnectionInfo.empty(), Uri());
+}
+
+extension HttpRequestEx on HttpRequest? {
+  RequestInfo toRequestInfo() {
+    final self = this;
+    if (self == null) return RequestInfo.empty;
+    return RequestInfo(
+      self.connectionInfo?.toConnectionInfo() ?? ConnectionInfo.empty(),
+      self.uri,
+    );
+  }
+}
+
 /// Creates a new [ClientCallOpContext] given a [Server]
-/// and an [HttpRequest].
-ClientCallOpContext contextFromHttpRequest(
+/// and an [RequestInfo].
+ClientCallOpContext contextFromRequest(
   Server server,
-  HttpRequest httpRequest, [
+  RequestInfo requestInfo, [
   OperationType? operationType,
 ]) {
   return ClientCallOpContext(
@@ -29,9 +49,8 @@ ClientCallOpContext contextFromHttpRequest(
     operationType: operationType,
     sessionId: null,
     userAuthInfo: null,
-    connectionInfo: httpRequest.connectionInfo?.toConnectionInfo() ??
-        ConnectionInfo.empty(),
-    uri: httpRequest.uri,
+    connectionInfo: requestInfo.connectionInfo,
+    uri: requestInfo.uri,
   );
 }
 
@@ -39,22 +58,19 @@ ClientCallOpContext contextFromHttpRequest(
 /// and an [HttpRequest] if available.
 OperationEventContext contextFromSession(
   Session session, {
-  HttpRequest? httpRequest,
+  RequestInfo? requestInfo,
 }) {
   return switch (session) {
     FutureCallSession futureCall => _fromFutureCall(
         futureCall,
       ),
-    WebCallSession webCall => _fromWebCall(
-        webCall,
-        httpRequest: httpRequest,
-      ),
+    WebCallSession webCall => _fromWebCall(webCall, requestInfo),
     MethodCallSession methodCall => _fromMethodCall(
         methodCall,
       ),
     MethodStreamSession methodStream => _fromMethodStream(
         methodStream,
-        httpRequest: httpRequest,
+        requestInfo: requestInfo,
       ),
     StreamingSession streaming => _fromStreaming(
         streaming,
@@ -84,17 +100,17 @@ FutureCallOpContext _fromFutureCall(
     );
 
 WebCallOpContext _fromWebCall(
-  WebCallSession session, {
-  HttpRequest? httpRequest,
-}) =>
+  WebCallSession session,
+  RequestInfo? requestInfo,
+) =>
     WebCallOpContext(
       serverName: session.server.name,
       serverId: session.server.serverId,
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(httpRequest?.connectionInfo),
-      uri: httpRequest?.uri ?? Uri.http('', session.endpoint),
+      connectionInfo: requestInfo?.connectionInfo ?? ConnectionInfo.empty(),
+      uri: requestInfo?.uri ?? Uri.http('', session.endpoint),
     );
 
 MethodCallOpContext _fromMethodCall(
@@ -114,7 +130,7 @@ MethodCallOpContext _fromMethodCall(
 
 StreamOpContext _fromMethodStream(
   MethodStreamSession session, {
-  HttpRequest? httpRequest,
+  RequestInfo? requestInfo,
 }) =>
     StreamOpContext(
       serverName: session.server.name,
@@ -122,8 +138,8 @@ StreamOpContext _fromMethodStream(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(httpRequest?.connectionInfo),
-      uri: httpRequest?.uri ?? Uri.http('localhost'),
+      connectionInfo: requestInfo?.connectionInfo ?? ConnectionInfo.empty(),
+      uri: requestInfo?.uri ?? Uri.http('localhost'),
       endpoint: session.endpoint,
       methodName: session.method,
       streamConnectionId: session.connectionId,
