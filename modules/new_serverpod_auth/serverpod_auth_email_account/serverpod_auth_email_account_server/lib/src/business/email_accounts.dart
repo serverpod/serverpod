@@ -11,12 +11,11 @@ abstract final class EmailAccounts {
   static Future<UuidValue> login(
     final Session session, {
     required String email,
-    required String password,
+    required final String password,
     final Transaction? transaction,
   }) async {
     return session.transactionOrSavepoint((final transaction) async {
       email = email.trim().toLowerCase();
-      password = password.trim();
 
       var account = await EmailAccount.db.findFirstRow(
         session,
@@ -90,6 +89,11 @@ abstract final class EmailAccounts {
     required final String password,
     final Transaction? transaction,
   }) async {
+    if (!EmailAccountConfig.current
+        .registrationPasswordValidationFunction(password)) {
+      throw EmailAccountPasswordPolicyViolationException();
+    }
+
     return session.transactionOrSavepoint((final transaction) async {
       email = email.trim().toLowerCase();
 

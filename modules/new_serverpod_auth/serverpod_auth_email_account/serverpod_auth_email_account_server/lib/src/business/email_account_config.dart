@@ -15,6 +15,11 @@ typedef ExistingEmailUserImportFunction = Future<UuidValue?> Function(
   required Transaction transaction,
 });
 
+/// Function to be called to check whether a password matches the requirements during registration.
+typedef RegistrationPasswordValidationFunction = bool Function(
+  String password,
+);
+
 /// Configuration options for the email account module.
 class EmailAccountConfig {
   /// The currently active configuration.
@@ -73,6 +78,15 @@ class EmailAccountConfig {
   /// an import using this function is attempted.
   final ExistingEmailUserImportFunction? existingUserImportFunction;
 
+  /// Function to check passwords against a policy during registration.
+  ///
+  /// If the rules are changed after a registration, subsequent logins with
+  /// the old password are still accepted and the user will not be forced to update it.
+  ///
+  /// Defaults to ensuring that the password is not padded by whitespace and is at least 8 characters long.
+  final RegistrationPasswordValidationFunction
+      registrationPasswordValidationFunction;
+
   /// Create a new email account configuration.
   ///
   /// Set [current] to apply this configuration.
@@ -87,5 +101,11 @@ class EmailAccountConfig {
     this.existingUserImportFunction,
     this.emailSignInFailureResetTime = const Duration(minutes: 5),
     this.maxAllowedEmailSignInAttempts = 5,
+    this.registrationPasswordValidationFunction =
+        _defaultRegistrationPasswordValidationFunction,
   });
+}
+
+bool _defaultRegistrationPasswordValidationFunction(final String password) {
+  return password.trim() == password && password.length >= 8;
 }

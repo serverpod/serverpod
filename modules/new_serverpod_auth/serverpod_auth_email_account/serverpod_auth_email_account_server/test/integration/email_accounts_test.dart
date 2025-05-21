@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
+import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -12,7 +13,7 @@ void main() {
       group('when creating a new email authentication,', () {
         final session = sessionBuilder.build();
         const email = 'INTEGRATION_TEST_1@serverpod.DEV';
-        const password = 'admin';
+        const password = 'admin1234';
 
         String? sentVerificationToken;
         String? sentPasswordResetToken;
@@ -34,6 +35,17 @@ void main() {
             sentPasswordResetToken = resetToken;
           },
         );
+
+        test('then an error is thrown for short passwords.', () async {
+          await expectLater(
+            () => EmailAccounts.requestAccount(
+              session,
+              email: email,
+              password: 'short',
+            ),
+            throwsA(isA<EmailAccountPasswordPolicyViolationException>()),
+          );
+        });
 
         UuidValue? accountRequestId;
         test('then a verification code is sent out via the callback.',
