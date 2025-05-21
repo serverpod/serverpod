@@ -30,7 +30,7 @@ abstract class DatabaseUtil {
   ///   all other code with access to the same transaction at the time this method runs can see the modifications
   ///   made while [f] is still running. Furthermore, creating multiple savepoints in parallel and rolling some
   ///   of them back can lead to unexpected behavior, undoing other modifications done in parallel.
-  ///   
+  ///
   ///   Changes made in this mode will only be visible on the outside database (without access to the same transaction)
   ///   once the given `transaction` is committed.
   static Future<R> runInTransactionOrSavepoint<R>(
