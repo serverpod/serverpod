@@ -310,18 +310,6 @@
             "type": "btree",
             "isUnique": true,
             "isPrimary": true
-          },
-          {
-            "indexName": "serverpod_auth_email_account_password_reset_request_code",
-            "elements": [
-              {
-                "type": 0,
-                "definition": "verificationCode"
-              }
-            ],
-            "type": "btree",
-            "isUnique": true,
-            "isPrimary": false
           }
         ],
         "managed": true
