@@ -171,18 +171,14 @@ abstract final class EmailAccounts {
     required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
-    final oldestValidRegistrationTime = DateTime.now().subtract(
-      EmailAccountConfig.current.registrationVerificationCodeLifetime,
-    );
-
-    final request = await EmailAccountRequest.db.findFirstRow(
+    final request = await EmailAccountRequest.db.findById(
       session,
-      where: (final t) =>
-          t.verificationCode.equals(verificationCode) &
-          (t.created > oldestValidRegistrationTime),
+      accountRequestId,
     );
 
-    if (request == null) {
+    if (request == null ||
+        request.isExpired ||
+        request.verificationCode != verificationCode) {
       return null;
     }
 
@@ -193,8 +189,9 @@ abstract final class EmailAccounts {
   ///
   /// Returns the `ID` of the new email authentication, and the email address used during registration.
   ///
-  /// Throws an `EmailAccountRequestNotFoundException` in case the [accountRequestId] does not point to an existing request.
-  /// Throws an `EmailAccountRequestExpiredException` in case the request's validation window has elapsed.
+  /// Throws an [EmailAccountRequestNotFoundException] in case the [accountRequestId] does not point to an existing request.
+  /// Throws an [EmailAccountRequestExpiredException] in case the request's validation window has elapsed.
+  /// /// Throws [EmailAccountRequestUnauthorizedException] in case the [verificationCode] is not valid.
   static Future<({UuidValue emailAccountId, String email})> createAccount(
     final Session session, {
     required final UuidValue accountRequestId,
@@ -217,6 +214,10 @@ abstract final class EmailAccounts {
 
       if (request.isExpired) {
         throw EmailAccountRequestExpiredException();
+      }
+
+      if (request.verificationCode != verificationCode) {
+        throw EmailAccountRequestUnauthorizedException();
       }
 
       await EmailAccountRequest.db.deleteRow(
@@ -300,10 +301,33 @@ abstract final class EmailAccounts {
     }, transaction: transaction);
   }
 
+  /// Returns whether the password reset request is still valid.
+  ///
+  /// If this returns a value, this means `completePasswordReset` will succeed.
+  static Future<bool> verifyPasswordResetRequest(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+  }) async {
+    final request = await EmailAccountPasswordResetRequest.db.findById(
+      session,
+      passwordResetRequestId,
+    );
+
+    if (request == null ||
+        request.isExpired ||
+        request.verificationCode != verificationCode) {
+      return false;
+    }
+
+    return true;
+  }
+
   /// Returns the auth user ID for the successfully changed password
   ///
   /// Throws [EmailAccountPasswordResetRequestNotFoundException] in case no reset request could be found for [passwordResetRequestId].
   /// Throws [EmailAccountPasswordResetRequestExpiredException] in case the reset request has expired.
+  /// Throws [EmailAccountPasswordResetRequestUnauthorizedException] in case the [verificationCode] is not valid.
   static Future<UuidValue> completePasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
@@ -324,6 +348,10 @@ abstract final class EmailAccounts {
 
       if (resetRequest.isExpired) {
         throw EmailAccountPasswordResetRequestExpiredException();
+      }
+
+      if (resetRequest.verificationCode != verificationCode) {
+        throw EmailAccountPasswordResetRequestUnauthorizedException();
       }
 
       await EmailAccountPasswordResetRequest.db.deleteRow(
