@@ -2,24 +2,34 @@ import 'package:serverpod/serverpod.dart';
 
 /// Provides utility functions for working with the [Database].
 abstract class DatabaseUtil {
-  /// Runs the closure [f] in isolation and undoing any changes in case it fails.
+  /// Runs the closure [f] in isolation and undoes any changes to the database in case it [f] fails.
   ///
-  /// This either reused the parent [transaction], or creates one itself.
-  /// In case a [transaction] is given, this will create an internal savepoint.
+  /// Depending on whether the [transaction] parameter is refers to an active transaction (non-`null`)
+  /// or not, the method has 2 slightly distinct behaviors:
   ///
-  /// In case [f] errs, it will restore the database connection to the
-  /// state before [f] was invoked, either by discard its transaction
-  /// or rolling back to the previously created savepoint.
+  /// - In case no [transaction] was given (`null`), the method [f] is run in a new transaction.
   ///
-  /// In case the parent [transaction] is also used in parallel outside of
-  /// [f], all modifications done in [f] will be visible there as well.
-  /// In this case also restoring the savepoint in case of error would
-  /// undo any changes made in parallel. So ideally the passed [transaction]
-  /// should not be used elsewhere until this methods completes.
+  ///   If [f] should error, the internally created transaction is cancelled.
   ///
-  /// In case [f] fails but the system is unable to restore the previous state
-  /// by rolling back to the savepoint, a [RollbackToSavepointFailedException] is thrown.
-  /// In that case the caller should discard the [transaction], if one was provided.
+  ///   Code outside of [f] accessing the database, which does not have access to the internal
+  ///   transaction, can not see any changes until this methods finishes.
+  ///
+  ///   Once this method is finished all changes are persisted to the database.
+  ///
+  /// - In case an active [transaction] was given, this method creates a [savepoint](https://www.postgresql.org/docs/current/sql-savepoint.html)
+  ///   before invoking [f].
+  ///
+  ///   In case [f] errs, this methods rolls back to the previously savepoint, thus undoing any
+  ///   changes made in [f]. If the rollback to the savepoint should fail for whatever reason,
+  ///   this method will throw a [RollbackToSavepointFailedException], which the error from [f]
+  ///   available as `innerException`. In this case the entire [transaction] is in an unclear
+  ///   state and should probably be discard by the caller.
+  ///
+  ///   Callers that pass a [transaction] should ensure that it is not used in parallel while this method
+  ///   still executes. Since in this case only a savepoint is created (and not an entirely separate transaction),
+  ///   all other code with access to the same transaction at the time this method runs can see the modifications
+  ///   made while [f] is still running. Furthermore creating multiple savepoints in parallel and rolling some
+  ///   of them back can lead to undefined behavior.
   static Future<R> runInTransactionOrSavepoint<R>(
     final Database database,
     final Transaction? transaction,
