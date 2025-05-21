@@ -150,7 +150,8 @@ abstract final class EmailAccounts {
       EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
         session,
         email: email,
-        verificationToken: verificationCode,
+        accountRequestId: emailAccountRequest.id!,
+        verificationCode: verificationCode,
         transaction: transaction,
       );
 
@@ -167,6 +168,7 @@ abstract final class EmailAccounts {
   static Future<({UuidValue emailAccountRequestId, String email})?>
       verifyAccountRequest(
     final Session session, {
+    required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
     final oldestValidRegistrationTime = DateTime.now().subtract(
@@ -190,8 +192,12 @@ abstract final class EmailAccounts {
   /// Finalize the email authentication creation.
   ///
   /// Returns the `ID` of the new email authentication, and the email address used during registration.
+  ///
+  /// Throws an `EmailAccountRequestNotFoundException` in case the [accountRequestId] does not point to an existing request.
+  /// Throws an `EmailAccountRequestExpiredException` in case the request's validation window has elapsed.
   static Future<({UuidValue emailAccountId, String email})> createAccount(
     final Session session, {
+    required final UuidValue accountRequestId,
     required final String verificationCode,
 
     /// Authentication user ID this account should be linked up with
@@ -199,20 +205,18 @@ abstract final class EmailAccounts {
     final Transaction? transaction,
   }) async {
     return session.transactionOrSavepoint((final transaction) async {
-      final oldestValidRegistrationTime = DateTime.now().subtract(
-        EmailAccountConfig.current.registrationVerificationCodeLifetime,
-      );
-
-      final request = await EmailAccountRequest.db.findFirstRow(
+      final request = await EmailAccountRequest.db.findById(
         session,
-        where: (final t) =>
-            t.verificationCode.equals(verificationCode) &
-            (t.created > oldestValidRegistrationTime),
+        accountRequestId,
         transaction: transaction,
       );
 
       if (request == null) {
-        throw Exception('Email account request not found');
+        throw EmailAccountRequestNotFoundException();
+      }
+
+      if (request.isExpired) {
+        throw EmailAccountRequestExpiredException();
       }
 
       await EmailAccountRequest.db.deleteRow(
@@ -225,7 +229,6 @@ abstract final class EmailAccounts {
         session,
         EmailAccount(
           authUserId: authUserId,
-          created: DateTime.now(),
           email: request.email,
           passwordHash: request.passwordHash,
         ),
@@ -274,9 +277,9 @@ abstract final class EmailAccounts {
       }
 
       final resetToken =
-          EmailAccountConfig.current.passwordResetCodeGenerator();
+          EmailAccountConfig.current.passwordResetVerificationCodeGenerator();
 
-      await EmailAccountPasswordResetRequest.db.insertRow(
+      final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
         session,
         EmailAccountPasswordResetRequest(
           authenticationId: account.id!,
@@ -288,7 +291,8 @@ abstract final class EmailAccounts {
       EmailAccountConfig.current.sendPasswordResetMail?.call(
         session,
         email: email,
-        resetToken: resetToken,
+        passwordResetRequestId: resetRequest.id!,
+        verificationCode: resetToken,
         transaction: transaction,
       );
 
@@ -297,28 +301,29 @@ abstract final class EmailAccounts {
   }
 
   /// Returns the auth user ID for the successfully changed password
+  ///
+  /// Throws [EmailAccountPasswordResetRequestNotFoundException] in case no reset request could be found for [passwordResetRequestId].
+  /// Throws [EmailAccountPasswordResetRequestExpiredException] in case the reset request has expired.
   static Future<UuidValue> completePasswordReset(
     final Session session, {
-    required final String resetCode,
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
     required final String newPassword,
     final Transaction? transaction,
   }) async {
     return session.transactionOrSavepoint((final transaction) async {
-      final oldestValidResetDate = DateTime.now().subtract(
-        EmailAccountConfig.current.passwordResetCodeLifetime,
-      );
-
-      final resetRequest =
-          await EmailAccountPasswordResetRequest.db.findFirstRow(
+      final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
         session,
-        where: (final t) =>
-            t.verificationCode.equals(resetCode) &
-            (t.created > oldestValidResetDate),
+        passwordResetRequestId,
         transaction: transaction,
       );
 
       if (resetRequest == null) {
-        throw Exception('Password reset request not found.');
+        throw EmailAccountPasswordResetRequestNotFoundException();
+      }
+
+      if (resetRequest.isExpired) {
+        throw EmailAccountPasswordResetRequestExpiredException();
       }
 
       await EmailAccountPasswordResetRequest.db.deleteRow(
@@ -583,5 +588,25 @@ extension on Session {
 
       rethrow;
     }
+  }
+}
+
+extension on EmailAccountRequest {
+  bool get isExpired {
+    final oldestValidRegistrationTime = DateTime.now().subtract(
+      EmailAccountConfig.current.registrationVerificationCodeLifetime,
+    );
+
+    return created.isBefore(oldestValidRegistrationTime);
+  }
+}
+
+extension on EmailAccountPasswordResetRequest {
+  bool get isExpired {
+    final oldestValidResetDate = DateTime.now().subtract(
+      EmailAccountConfig.current.passwordResetCodeLifetime,
+    );
+
+    return created.isBefore(oldestValidResetDate);
   }
 }

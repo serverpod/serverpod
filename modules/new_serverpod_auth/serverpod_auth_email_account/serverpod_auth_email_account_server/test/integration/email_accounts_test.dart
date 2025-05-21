@@ -15,24 +15,38 @@ void main() {
         const email = 'INTEGRATION_TEST_1@serverpod.DEV';
         const password = 'admin1234';
 
-        String? sentVerificationToken;
-        String? sentPasswordResetToken;
+        (
+          UuidValue id,
+          String verificationCode
+        )? sentAccountRequestVerificationCode;
+        (
+          UuidValue id,
+          String verificationCode
+        )? sentPasswordResetVerificationCode;
         EmailAccountConfig.current = EmailAccountConfig(
           sendRegistrationVerificationMail: (
             final session, {
             required final email,
-            required final verificationToken,
+            required final accountRequestId,
+            required final verificationCode,
             required final transaction,
           }) {
-            sentVerificationToken = verificationToken;
+            sentAccountRequestVerificationCode = (
+              accountRequestId,
+              verificationCode,
+            );
           },
           sendPasswordResetMail: (
             final session, {
             required final email,
-            required final resetToken,
+            required final passwordResetRequestId,
+            required final verificationCode,
             required final transaction,
           }) {
-            sentPasswordResetToken = resetToken;
+            sentPasswordResetVerificationCode = (
+              passwordResetRequestId,
+              verificationCode,
+            );
           },
         );
 
@@ -57,8 +71,9 @@ void main() {
           );
           accountRequestId = result.accountRequestId;
 
-          expect(sentVerificationToken, isNotNull);
+          expect(sentAccountRequestVerificationCode, isNotNull);
           expect(accountRequestId, isNotNull);
+          expect(sentAccountRequestVerificationCode?.$1, accountRequestId);
         });
 
         test('then no further account can be requested for the same email',
@@ -115,7 +130,8 @@ void main() {
 
           final result = await EmailAccounts.createAccount(
             session,
-            verificationCode: sentVerificationToken!,
+            accountRequestId: sentAccountRequestVerificationCode!.$1,
+            verificationCode: sentAccountRequestVerificationCode!.$2,
             authUserId: authUserId!,
           );
 
@@ -163,7 +179,7 @@ void main() {
             email: email.toUpperCase(),
           );
 
-          expect(sentPasswordResetToken, isNotNull);
+          expect(sentPasswordResetVerificationCode, isNotNull);
         });
 
         const newPassword = 'newpw123';
@@ -171,7 +187,8 @@ void main() {
             () async {
           final userId = await EmailAccounts.completePasswordReset(
             session,
-            resetCode: sentPasswordResetToken!,
+            passwordResetRequestId: sentPasswordResetVerificationCode!.$1,
+            verificationCode: sentPasswordResetVerificationCode!.$2,
             newPassword: newPassword,
           );
 
@@ -184,7 +201,8 @@ void main() {
           await expectLater(
             () => EmailAccounts.completePasswordReset(
               session,
-              resetCode: sentPasswordResetToken!,
+              passwordResetRequestId: sentPasswordResetVerificationCode!.$1,
+              verificationCode: sentPasswordResetVerificationCode!.$2,
               newPassword: 'xxxxxxx',
             ),
             throwsA(isA<Exception>()),
