@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_email_account_server/src/util/registration_password_policy.dart';
 import 'package:serverpod_auth_email_account_server/src/util/verification_code_generator.dart';
 
 /// Import function to use an older email based authentication system.
@@ -109,10 +110,6 @@ class EmailAccountConfig {
     this.emailSignInFailureResetTime = const Duration(minutes: 5),
     this.maxAllowedEmailSignInAttempts = 5,
     this.registrationPasswordValidationFunction =
-        _defaultRegistrationPasswordValidationFunction,
+        defaultRegistrationPasswordValidationFunction,
   });
-}
-
-bool _defaultRegistrationPasswordValidationFunction(final String password) {
-  return password.trim() == password && password.length >= 8;
 }

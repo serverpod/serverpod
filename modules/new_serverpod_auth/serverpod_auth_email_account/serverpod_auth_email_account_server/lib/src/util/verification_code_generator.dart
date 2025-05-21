@@ -10,6 +10,9 @@ String defaultVerificationCodeGenerator() {
 
   return List<String>.generate(
     8,
-    (final _) => alphabet.substring(0, _random.nextInt(alphabet.length)),
+    (final _) {
+      final i = _random.nextInt(alphabet.length);
+      return alphabet.substring(i, i + 1);
+    },
   ).join();
 }
