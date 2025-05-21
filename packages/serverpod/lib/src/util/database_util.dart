@@ -20,7 +20,7 @@ abstract class DatabaseUtil {
   /// In case [f] fails but the system is unable to restore the previous state
   /// by rolling back to the savepoint, a [RollbackToSavepointFailedException] is thrown.
   /// In that case the caller should discard the [transaction], if one was provided.
-  static Future<R> transactionOrSavepoint<R>(
+  static Future<R> runInTransactionOrSavepoint<R>(
     final Database database,
     final Transaction? transaction,
     final TransactionFunction<R> f, {

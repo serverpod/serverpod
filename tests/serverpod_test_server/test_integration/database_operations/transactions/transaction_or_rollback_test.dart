@@ -21,7 +21,7 @@ void main() async {
           'when creating a transaction with `transactionOrSavepoint` without passing in the test transaction, '
           'then the data is visible inside and outside of the transaction.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           null,
           (final transaction) async {
@@ -52,7 +52,7 @@ void main() async {
           'when creating a transaction with `transactionOrSavepoint` based upon the test transaction, '
           'then the data is visible inside and outside of the explicitly passed transaction.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           // ignore: invalid_use_of_visible_for_testing_member
           session.transaction!,
@@ -84,7 +84,7 @@ void main() async {
           'when throwing inside the `transactionOrSavepoint` (without the test transaction) callback after a write, '
           'then the write is not observable outside.', () async {
         try {
-          await DatabaseUtil.transactionOrSavepoint(
+          await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
             (final transaction) async {
@@ -114,7 +114,7 @@ void main() async {
           'when throwing inside the `transactionOrSavepoint` (with the test transaction) callback after a write, '
           'then the write is not observable outside.', () async {
         try {
-          await DatabaseUtil.transactionOrSavepoint(
+          await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             // ignore: invalid_use_of_visible_for_testing_member
             session.transaction!,
@@ -146,7 +146,7 @@ void main() async {
           'then the write is not observable outside.', () async {
         try {
           await session.db.transaction((transaction) async {
-            await DatabaseUtil.transactionOrSavepoint(
+            await DatabaseUtil.runInTransactionOrSavepoint(
               session.db,
               transaction,
               (final transaction) async {
@@ -199,7 +199,7 @@ void main() async {
           'when creating a transaction with `transactionOrSavepoint`, '
           'then the data is visible only on the transaction until the closure completes.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           null,
           (final transaction) async {
@@ -230,11 +230,11 @@ void main() async {
           'when creating two independent transactions with `transactionOrSavepoint`, '
           'then the data is visible only to each transaction that wrote it.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           null,
           (final transaction1) async {
-            await DatabaseUtil.transactionOrSavepoint(
+            await DatabaseUtil.runInTransactionOrSavepoint(
               session.db,
               null,
               (final transaction2) async {
@@ -272,7 +272,7 @@ void main() async {
           'when creating savepoint under an existing transaction with `transactionOrSavepoint`, '
           'then the data is visible only to each transaction argument given to the callback.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           null,
           (final transaction1) async {
@@ -282,7 +282,7 @@ void main() async {
               transaction: transaction1,
             );
 
-            await DatabaseUtil.transactionOrSavepoint(
+            await DatabaseUtil.runInTransactionOrSavepoint(
               session.db,
               transaction1,
               (final transaction2) async {
@@ -322,7 +322,7 @@ void main() async {
           'when throwing in a nested savepoint callback, '
           'then the parent transaction can still be completed and its data be visible on the outside.',
           () async {
-        await DatabaseUtil.transactionOrSavepoint(
+        await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
           null,
           (final transaction1) async {
@@ -333,7 +333,7 @@ void main() async {
             );
 
             try {
-              await DatabaseUtil.transactionOrSavepoint(
+              await DatabaseUtil.runInTransactionOrSavepoint(
                 session.db,
                 transaction1,
                 (final transaction2) async {
@@ -367,7 +367,7 @@ void main() async {
           'then the the data written with the transaction is not visible on the outside.',
           () async {
         try {
-          await DatabaseUtil.transactionOrSavepoint(
+          await DatabaseUtil.runInTransactionOrSavepoint(
             session.db,
             null,
             (final transaction) async {

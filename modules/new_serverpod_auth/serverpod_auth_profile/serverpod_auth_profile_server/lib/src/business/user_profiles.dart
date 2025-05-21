@@ -17,7 +17,7 @@ abstract final class UserProfiles {
     UserProfileData userProfile, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -103,7 +103,7 @@ abstract final class UserProfiles {
     final String? newUserName, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -133,7 +133,7 @@ abstract final class UserProfiles {
     final String? newFullName, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -170,7 +170,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -305,7 +305,7 @@ abstract final class UserProfiles {
     final Uri url, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -335,7 +335,7 @@ abstract final class UserProfiles {
     final Uint8List imageBytes, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
@@ -362,7 +362,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
