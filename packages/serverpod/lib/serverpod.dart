@@ -36,3 +36,6 @@ export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
 
 export 'package:meta/meta.dart' show useResult;
+
+// Utils
+export 'package:serverpod/src/util/database_util.dart';
