@@ -16,7 +16,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
-import 'package:serverpod/src/server/shutdown_listener_manager.dart';
+import 'package:serverpod/src/server/shutdown_task_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -154,14 +154,16 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
-  /// The [ShutdownListenerManager] of the Serverpod, used to manage listeners
-  /// that are called when the server is shutting down. This allows for
-  /// performing custom cleanup operations, releasing resources, or saving
-  /// state before the server terminates.
-  ShutdownListenerManager get shutdownListenerManager =>
-      _shutdownListenerManager;
+  /// Provides access to the shutdown task manager.
+  ///
+  /// The shutdown task manager is responsible for executing tasks during server
+  /// shutdown. It ensures that all resources are properly released and services
+  /// are stopped in the correct order. You can use this to add custom shutdown
+  /// tasks using [ShutdownTaskManager.addTask], [ShutdownTaskManager.addTaskBefore],
+  /// or [ShutdownTaskManager.addTaskAfter].
+  ShutdownTaskManager get shutdownTaskManager => _shutdownTaskManager;
 
-  late ShutdownListenerManager _shutdownListenerManager;
+  late ShutdownTaskManager _shutdownTaskManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -207,6 +209,65 @@ class Serverpod {
     _runtimeSettings = settings;
     _logSettingsManager = LogSettingsManager(settings);
     _logManager = LogManager(settings, serverId: serverId);
+  }
+
+  /// Initializes the shutdown task manager and registers default shutdown 
+  /// tasks.
+  ///
+  /// This method is called during server startup and sets up the shutdown task 
+  /// manager with all the necessary tasks to properly shut down the server. 
+  /// It registers tasks for closing sessions, stopping services, and releasing
+  /// resources in the appropriate order. The tasks are executed when [shutdown]
+  /// is called.
+  void _initializeShutdownTaskManager() {
+    _shutdownTaskManager = ShutdownTaskManager(_reportException);
+
+    _shutdownTaskManager.addTask(
+      'Test Auditor',
+      _shutdownTestAuditor,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Internal Session',
+      _internalSession.close,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Redis Controller',
+      redisController?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Server',
+      server.shutdown,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Web Server',
+      _webServer?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Service Server',
+      _serviceServer?.shutdown,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Future Call Manager',
+      _futureCallManager?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Health Check Manager',
+      _healthCheckManager?.stop,
+    );
+
+    // This needs to be closed last as it is used by the other services.
+    _shutdownTaskManager.addTask(
+      'Database Pool Manager',
+      _databasePoolManager?.stop,
+      sequential: true,
+    );
   }
 
   /// Updates the runtime settings and writes the new settings to the database.
@@ -360,8 +421,8 @@ class Serverpod {
       rethrow;
     }
 
-    // Initializes shutdown listener manager
-    _shutdownListenerManager = ShutdownListenerManager();
+    // Initializes shutdown task manager
+    _initializeShutdownTaskManager();
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -890,7 +951,8 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
+  /// If [exitProcess] is set to false, the process will not exit at the end of 
+  /// the shutdown.
   Future<void> shutdown({
     bool exitProcess = true,
     int? signalNumber,
@@ -898,51 +960,7 @@ class Serverpod {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
-    var futures = [
-      _shutdownListenerManager.handleShutdown(),
-      _shutdownTestAuditor(),
-      _internalSession.close(),
-      redisController?.stop(),
-      server.shutdown(),
-      _webServer?.stop(),
-      _serviceServer?.shutdown(),
-      _futureCallManager?.stop(),
-      _healthCheckManager?.stop(),
-    ].nonNulls;
-
-    Object? shutdownError;
-    await futures.wait.onError((ParallelWaitError e, stackTrace) {
-      shutdownError = e;
-      var errors = e.errors;
-      if (errors is Iterable<AsyncError?>) {
-        for (var error in errors.nonNulls) {
-          _reportException(
-            error.error,
-            error.stackTrace,
-            message: 'Error in server shutdown',
-          );
-        }
-      } else {
-        _reportException(
-          errors,
-          stackTrace,
-          message: 'Error in serverpod shutdown',
-        );
-      }
-      return e.values;
-    });
-
-    try {
-      // This needs to be closed last as it is used by the other services.
-      await _databasePoolManager?.stop();
-    } catch (e, stackTrace) {
-      shutdownError = e;
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error in database pool manager shutdown',
-      );
-    }
+    Object? shutdownError = await _shutdownTaskManager.handleShutdown();
 
     stdout.writeln(
         'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}');
@@ -953,7 +971,7 @@ class Serverpod {
     }
 
     if (shutdownError != null) {
-      throw shutdownError as Object;
+      throw shutdownError;
     }
   }
 
