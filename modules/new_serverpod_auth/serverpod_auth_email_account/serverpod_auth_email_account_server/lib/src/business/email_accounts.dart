@@ -391,7 +391,7 @@ abstract final class EmailAccounts {
       where: (final t) =>
           t.email.equals(email) &
           (t.attemptedAt >
-              DateTime.now().toUtc().subtract(
+              DateTime.now().subtract(
                   EmailAccountConfig.current.emailSignInFailureResetTime)),
     );
 
@@ -450,10 +450,15 @@ abstract final class EmailAccounts {
   }
 
   /// Cleans up the log of failed login attempts older than [olderThan].
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time window that
+  /// is checked upon login, as configured in [EmailAccountConfig.emailSignInFailureResetTime].
   static Future<void> deleteFailedLoginAttempts(
     final Session session, {
-    required final Duration olderThan,
+    Duration? olderThan,
   }) async {
+    olderThan ??= EmailAccountConfig.current.emailSignInFailureResetTime;
+
     final removeBefore = DateTime.now().subtract(olderThan);
 
     await EmailAccountFailedLoginAttempt.db.deleteWhere(
@@ -463,10 +468,15 @@ abstract final class EmailAccounts {
   }
 
   /// Cleans up the log of failed password reset attempts older than [olderThan].
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time window that
+  /// is checked upon password reset requets, as configured in [EmailAccountConfig.maxPasswordResetAttempts].
   static Future<void> deletePasswordResetAttempts(
     final Session session, {
-    required final Duration olderThan,
+    Duration? olderThan,
   }) async {
+    olderThan ??= EmailAccountConfig.current.maxPasswordResetAttempts.timeframe;
+
     final removeBefore = DateTime.now().subtract(olderThan);
 
     await EmailAccountPasswordResetAttempt.db.deleteWhere(
@@ -479,8 +489,9 @@ abstract final class EmailAccounts {
   static Future<void> deleteExpiredPasswordResetRequests(
     final Session session,
   ) async {
-    final lastValidDateTime = DateTime.now()
-        .subtract(EmailAccountConfig.current.passwordResetCodeLifetime);
+    final lastValidDateTime = DateTime.now().subtract(
+      EmailAccountConfig.current.passwordResetCodeLifetime,
+    );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
@@ -493,7 +504,8 @@ abstract final class EmailAccounts {
     final Session session,
   ) async {
     final lastValidDateTime = DateTime.now().subtract(
-        EmailAccountConfig.current.registrationVerificationCodeLifetime);
+      EmailAccountConfig.current.registrationVerificationCodeLifetime,
+    );
 
     await EmailAccountRequest.db.deleteWhere(
       session,
@@ -521,16 +533,21 @@ abstract final class EmailAccounts {
     final String email, {
     required final Transaction transaction,
   }) async {
+    final oldestRelevantAttemptTimestamp = DateTime.now().subtract(
+      EmailAccountConfig.current.maxPasswordResetAttempts.timeframe,
+    );
+
     final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
       session,
       where: (final t) =>
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
-          (t.attemptedAt > DateTime.now().subtract(const Duration(hours: 1))),
+          (t.attemptedAt > oldestRelevantAttemptTimestamp),
       transaction: transaction,
     );
 
-    return (recentRequests >= 3);
+    return recentRequests >
+        EmailAccountConfig.current.maxPasswordResetAttempts.maxAttempts;
   }
 }
 

@@ -94,6 +94,11 @@ class EmailAccountConfig {
   final RegistrationPasswordValidationFunction
       registrationPasswordValidationFunction;
 
+  /// How many password reset attempts are allowed per email or IP.
+  ///
+  /// Defaults to allowing at most 3 attempts in the last hour.
+  final ({Duration timeframe, int maxAttempts}) maxPasswordResetAttempts;
+
   /// Create a new email account configuration.
   ///
   /// Set [current] to apply this configuration.
@@ -111,5 +116,9 @@ class EmailAccountConfig {
     this.maxAllowedEmailSignInAttempts = 5,
     this.registrationPasswordValidationFunction =
         defaultRegistrationPasswordValidationFunction,
+    this.maxPasswordResetAttempts = (
+      timeframe: const Duration(hours: 1),
+      maxAttempts: 3,
+    ),
   });
 }
