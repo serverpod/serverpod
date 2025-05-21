@@ -161,10 +161,10 @@ class DatabaseLogWriter extends LogWriter {
 }
 
 @internal
-class StdOutLogWriter extends LogWriter {
+class JsonStdOutLogWriter extends LogWriter {
   final int _logId;
 
-  StdOutLogWriter(Session session) : _logId = session.sessionId.hashCode;
+  JsonStdOutLogWriter(Session session) : _logId = session.sessionId.hashCode;
 
   @override
   Future<void> logEntry(LogEntry entry) async {

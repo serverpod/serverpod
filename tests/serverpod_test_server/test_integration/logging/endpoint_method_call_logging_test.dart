@@ -400,7 +400,7 @@ void main() async {
     });
   });
 
-  group('Stdout logger -', () {
+  group('JSON Stdout logger -', () {
     late MockStdout record;
 
     setUp(() async {
@@ -417,6 +417,7 @@ void main() async {
           sessionLogs: SessionLogConfig(
             persistentEnabled: false,
             consoleEnabled: true,
+            consoleLogFormat: ConsoleLogFormat.json,
           ),
         ),
       );

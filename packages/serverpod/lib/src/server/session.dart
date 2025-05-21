@@ -186,7 +186,7 @@ abstract class Session implements DatabaseAccessor {
     }
 
     if (Features.enableConsoleLogging) {
-      logWriters.add(StdOutLogWriter(session));
+      logWriters.add(JsonStdOutLogWriter(session));
     }
 
     if ((_isLongLived(session)) &&
