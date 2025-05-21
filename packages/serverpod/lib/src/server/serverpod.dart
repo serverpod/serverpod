@@ -159,8 +159,8 @@ class Serverpod {
   /// The shutdown task manager is responsible for executing tasks during server
   /// shutdown. It ensures that all resources are properly released and services
   /// are stopped in the correct order. You can use this to add custom shutdown
-  /// tasks using [ShutdownTaskManager.addTask], [ShutdownTaskManager.addTaskBefore],
-  /// or [ShutdownTaskManager.addTaskAfter].
+  /// tasks using [ShutdownTaskManager.addTask], [ShutdownTaskManager.addTaskBeforeShutdown],
+  /// or [ShutdownTaskManager.addTaskAfterShutdown].
   ShutdownTaskManager get shutdownTaskManager => _shutdownTaskManager;
 
   late ShutdownTaskManager _shutdownTaskManager;

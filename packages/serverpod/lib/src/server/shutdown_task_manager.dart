@@ -67,7 +67,7 @@ class ShutdownTaskManager {
   /// The [callback] is the function that will be executed during shutdown.
   /// If [sequential] is true, the task will be executed sequentially,
   /// otherwise it will be executed in parallel with other non-sequential tasks.
-  void addTaskBefore<T>(
+  void addTaskBeforeShutdown<T>(
     String id,
     Future<T> Function()? callback, {
     bool sequential = false,
@@ -88,7 +88,7 @@ class ShutdownTaskManager {
   /// The [callback] is the function that will be executed during shutdown.
   /// If [sequential] is true, the task will be executed sequentially,
   /// otherwise it will be executed in parallel with other non-sequential tasks.
-  void addTaskAfter<T>(
+  void addTaskAfterShutdown<T>(
     String id,
     Future<T> Function()? callback, {
     bool sequential = false,
@@ -159,9 +159,9 @@ class ShutdownTaskManager {
   ///
   /// This method is the main entry point for the shutdown process. It executes
   /// all registered tasks in the following order:
-  /// 1. Tasks added with [addTaskBefore]
+  /// 1. Tasks added with [addTaskBeforeShutdown]
   /// 2. Tasks added with [addTask]
-  /// 3. Tasks added with [addTaskAfter]
+  /// 3. Tasks added with [addTaskAfterShutdown]
   ///
   /// Within each group, tasks are executed according to their
   /// [ShutdownTask.sequentialTask] flag, with non-sequential tasks running in
