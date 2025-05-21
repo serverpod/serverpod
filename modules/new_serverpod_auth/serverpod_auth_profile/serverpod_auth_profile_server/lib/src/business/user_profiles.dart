@@ -19,6 +19,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final onBeforeUserProfileCreated =
             UserProfileConfig.current.onBeforeUserProfileCreated;
@@ -56,7 +57,6 @@ abstract final class UserProfiles {
 
         return createdProfileModel;
       },
-      transaction: transaction,
     );
   }
 
@@ -105,6 +105,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final userProfile = await _findUserProfile(
           session,
@@ -122,7 +123,6 @@ abstract final class UserProfiles {
 
         return updatedProfile.toModel();
       },
-      transaction: transaction,
     );
   }
 
@@ -135,6 +135,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final userProfile = await _findUserProfile(
           session,
@@ -152,7 +153,6 @@ abstract final class UserProfiles {
 
         return updatedProfile.toModel();
       },
-      transaction: transaction,
     );
   }
 
@@ -172,6 +172,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final profile = await UserProfile.db.findFirstRow(
           session,
@@ -212,7 +213,6 @@ abstract final class UserProfiles {
           }
         }
       },
-      transaction: transaction,
     );
   }
 
@@ -307,6 +307,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final image = await _createImageFromUrl(
           session,
@@ -322,7 +323,6 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
       },
-      transaction: transaction,
     );
   }
 
@@ -337,6 +337,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final image = await _createImageFromBytes(
           session,
@@ -352,7 +353,6 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
       },
-      transaction: transaction,
     );
   }
 
@@ -364,6 +364,7 @@ abstract final class UserProfiles {
   }) async {
     return DatabaseUtil.transactionOrSavepoint(
       session.db,
+      transaction,
       (final transaction) async {
         final userProfile = await UserProfiles.findUserProfileByUserId(
           session,
@@ -382,7 +383,6 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
       },
-      transaction: transaction,
     );
   }
 

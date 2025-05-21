@@ -23,6 +23,7 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          null,
           (final transaction) async {
             await SimpleData.db.insertRow(
               session,
@@ -39,7 +40,6 @@ void main() async {
               1,
             );
           },
-          transaction: null,
         );
 
         expect(
@@ -54,6 +54,8 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          // ignore: invalid_use_of_visible_for_testing_member
+          session.transaction!,
           (final transaction) async {
             await SimpleData.db.insertRow(
               session,
@@ -70,8 +72,6 @@ void main() async {
               1,
             );
           },
-          // ignore: invalid_use_of_visible_for_testing_member
-          transaction: session.transaction!,
         );
 
         expect(
@@ -86,6 +86,7 @@ void main() async {
         try {
           await DatabaseUtil.transactionOrSavepoint(
             session.db,
+            null,
             (final transaction) async {
               await SimpleData.db.insertRow(
                 session,
@@ -100,7 +101,6 @@ void main() async {
 
               throw _ForcedTestException();
             },
-            transaction: null,
           );
         } on _ForcedTestException catch (_) {}
 
@@ -116,6 +116,8 @@ void main() async {
         try {
           await DatabaseUtil.transactionOrSavepoint(
             session.db,
+            // ignore: invalid_use_of_visible_for_testing_member
+            session.transaction!,
             (final transaction) async {
               await SimpleData.db.insertRow(
                 session,
@@ -130,8 +132,6 @@ void main() async {
 
               throw _ForcedTestException();
             },
-            // ignore: invalid_use_of_visible_for_testing_member
-            transaction: session.transaction!,
           );
         } on _ForcedTestException catch (_) {}
 
@@ -148,6 +148,7 @@ void main() async {
           await session.db.transaction((transaction) async {
             await DatabaseUtil.transactionOrSavepoint(
               session.db,
+              transaction,
               (final transaction) async {
                 await SimpleData.db.insertRow(
                   session,
@@ -162,7 +163,6 @@ void main() async {
 
                 throw _ForcedTestException();
               },
-              transaction: transaction,
             );
           });
         } on _ForcedTestException catch (_) {}
@@ -201,6 +201,7 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          null,
           (final transaction) async {
             await SimpleData.db.insertRow(
               session,
@@ -217,7 +218,6 @@ void main() async {
               0,
             );
           },
-          transaction: null,
         );
 
         expect(
@@ -232,9 +232,11 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          null,
           (final transaction1) async {
             await DatabaseUtil.transactionOrSavepoint(
               session.db,
+              null,
               (final transaction2) async {
                 await SimpleData.db.insertRow(
                   session,
@@ -256,10 +258,8 @@ void main() async {
                   1,
                 );
               },
-              transaction: null,
             );
           },
-          transaction: null,
         );
 
         expect(
@@ -274,6 +274,7 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          null,
           (final transaction1) async {
             await SimpleData.db.insertRow(
               session,
@@ -283,6 +284,7 @@ void main() async {
 
             await DatabaseUtil.transactionOrSavepoint(
               session.db,
+              transaction1,
               (final transaction2) async {
                 expect(identical(transaction1, transaction2), isTrue);
 
@@ -301,7 +303,6 @@ void main() async {
                   2,
                 );
               },
-              transaction: transaction1,
             );
 
             expect(
@@ -309,7 +310,6 @@ void main() async {
               2,
             );
           },
-          transaction: null,
         );
 
         expect(
@@ -324,6 +324,7 @@ void main() async {
           () async {
         await DatabaseUtil.transactionOrSavepoint(
           session.db,
+          null,
           (final transaction1) async {
             await SimpleData.db.insertRow(
               session,
@@ -332,24 +333,27 @@ void main() async {
             );
 
             try {
-              await DatabaseUtil.transactionOrSavepoint(session.db,
-                  (final transaction2) async {
-                await SimpleData.db.insertRow(
-                  session,
-                  SimpleData(num: 2),
-                  transaction: transaction1,
-                );
+              await DatabaseUtil.transactionOrSavepoint(
+                session.db,
+                transaction1,
+                (final transaction2) async {
+                  await SimpleData.db.insertRow(
+                    session,
+                    SimpleData(num: 2),
+                    transaction: transaction1,
+                  );
 
-                expect(
-                  await SimpleData.db.count(session, transaction: transaction2),
-                  2,
-                );
+                  expect(
+                    await SimpleData.db
+                        .count(session, transaction: transaction2),
+                    2,
+                  );
 
-                throw _ForcedTestException();
-              }, transaction: transaction1);
+                  throw _ForcedTestException();
+                },
+              );
             } on _ForcedTestException catch (_) {}
           },
-          transaction: null,
         );
 
         expect(
@@ -365,6 +369,7 @@ void main() async {
         try {
           await DatabaseUtil.transactionOrSavepoint(
             session.db,
+            null,
             (final transaction) async {
               await SimpleData.db.insertRow(
                 session,
@@ -383,7 +388,6 @@ void main() async {
 
               throw _ForcedTestException();
             },
-            transaction: null,
           );
         } on _ForcedTestException catch (_) {}
 

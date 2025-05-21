@@ -22,9 +22,8 @@ abstract class DatabaseUtil {
   /// In that case the caller should discard the [transaction], if one was provided.
   static Future<R> transactionOrSavepoint<R>(
     final Database database,
+    final Transaction? transaction,
     final TransactionFunction<R> f, {
-    required final Transaction? transaction,
-
     /// Settings to be applied in case a new transaction is created.
     final TransactionSettings? settings,
   }) async {
