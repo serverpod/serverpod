@@ -16,6 +16,10 @@ abstract class DatabaseUtil {
   /// In this case also restoring the savepoint in case of error would
   /// undo any changes made in parallel. So ideally the passed [transaction]
   /// should not be used elsewhere until this methods completes.
+  ///
+  /// In case [f] fails but the system is unable to restore the previous state
+  /// by rolling back to the savepoint, a [RollbackToSavepointFailedException] is thrown.
+  /// In that case the caller should discard the [transaction], if one was provided.
   static Future<R> transactionOrSavepoint<R>(
     final Database database,
     final TransactionFunction<R> f, {
@@ -40,14 +44,26 @@ abstract class DatabaseUtil {
     } catch (_) {
       try {
         await savepoint?.rollback();
-      } catch (e, stackTrace) {
-        // ignore: avoid_print
-        print(
-          'Failed to roll back to savepoint: $e, $stackTrace',
-        );
+      } catch (e) {
+        throw RollbackToSavepointFailedException(e);
       }
 
       rethrow;
     }
+  }
+}
+
+/// Exception thrown when an attempt to rollback to a savepoint in response
+/// to clean up after another exception fails.
+class RollbackToSavepointFailedException implements Exception {
+  /// The inner exception which caused the rollback to the savepoint to be attempted in the first place.
+  final Object innerException;
+
+  /// Creates a new instance of a rollback failed exception, wrapping the [innerException].
+  RollbackToSavepointFailedException(this.innerException);
+
+  @override
+  String toString() {
+    return 'RollbackToSavepointFailedException(innerException: $innerException)';
   }
 }
