@@ -7,241 +7,423 @@ import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'Given the `EmailAccounts` utility,',
-    (final sessionBuilder, final endpoints) {
-      group('when creating a new email authentication,', () {
-        final session = sessionBuilder.build();
-        const email = 'INTEGRATION_TEST_1@serverpod.DEV';
-        const password = 'admin1234';
+  withServerpod('Given an empty environment,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
 
-        (
-          UuidValue id,
-          String verificationCode
-        )? sentAccountRequestVerificationCode;
-        (
-          UuidValue id,
-          String verificationCode
-        )? sentPasswordResetVerificationCode;
-        EmailAccountConfig.current = EmailAccountConfig(
-          sendRegistrationVerificationMail: (
-            final session, {
-            required final email,
-            required final accountRequestId,
-            required final verificationCode,
-            required final transaction,
-          }) {
-            sentAccountRequestVerificationCode = (
-              accountRequestId,
-              verificationCode,
-            );
-          },
-          sendPasswordResetMail: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final verificationCode,
-            required final transaction,
-          }) {
-            sentPasswordResetVerificationCode = (
-              passwordResetRequestId,
-              verificationCode,
-            );
-          },
-        );
+    setUp(() async {
+      session = sessionBuilder.build();
+    });
 
-        test('then an error is thrown for short passwords.', () async {
-          await expectLater(
-            () => EmailAccounts.requestAccount(
-              session,
-              email: email,
-              password: 'short',
-            ),
-            throwsA(isA<EmailAccountPasswordPolicyViolationException>()),
-          );
-        });
+    tearDown(() {
+      EmailAccountConfig.current = EmailAccountConfig();
+    });
 
-        UuidValue? accountRequestId;
-        test('then a verification code is sent out via the callback.',
-            () async {
-          final result = await EmailAccounts.requestAccount(
-            session,
-            email: email,
-            password: password,
-          );
-          accountRequestId = result.accountRequestId;
+    test(
+        'when trying to create a new account with a short password, '
+        'then an error is thrown for short passwords.', () async {
+      await expectLater(
+        () => EmailAccounts.requestAccount(
+          session,
+          email: 'test@serverpod.dev',
+          password: 'short',
+        ),
+        throwsA(isA<EmailAccountPasswordPolicyViolationException>()),
+      );
+    });
 
-          expect(sentAccountRequestVerificationCode, isNotNull);
-          expect(accountRequestId, isNotNull);
-          expect(sentAccountRequestVerificationCode?.$1, accountRequestId);
-        });
+    test(
+        'when requesting a new account, '
+        'then the configured callback is invoked with a valid process ID and verification code.',
+        () async {
+      UuidValue? receivedAccountRequestId;
+      String? receivedVerificationCode;
+      EmailAccountConfig.current = EmailAccountConfig(
+        sendRegistrationVerificationMail: (
+          final session, {
+          required final email,
+          required final accountRequestId,
+          required final verificationCode,
+          required final transaction,
+        }) {
+          receivedAccountRequestId = accountRequestId;
+          receivedVerificationCode = verificationCode;
+        },
+      );
 
-        test('then no further account can be requested for the same email',
-            () async {
-          final result = await EmailAccounts.requestAccount(
-            session,
-            email: email,
-            password: password,
-          );
+      final result = await EmailAccounts.requestAccount(
+        session,
+        email: 'test123@serverpod.dev',
+        password: 'Abc1234!',
+      );
 
-          expect(
-            result.result,
-            EmailAccountRequestResult.emailAlreadyRequested,
-          );
-          expect(result.accountRequestId, isNull);
-        });
+      expect(receivedAccountRequestId, isNotNull);
+      expect(receivedVerificationCode, isNotNull);
 
-        test(
-            'then the same email can not be used for a second account request while the other one is pending.',
-            () async {
-          final result = await EmailAccounts.requestAccount(
-            session,
-            email: email,
-            password: password,
-          );
+      expect(result.result, EmailAccountRequestResult.accountRequestCreated);
+      expect(result.accountRequestId, receivedAccountRequestId);
+    });
+  });
 
-          expect(
-              result.result, EmailAccountRequestResult.emailAlreadyRequested);
-        });
+  withServerpod('Given a pending email account request,',
+      (final sessionBuilder, final endpoints) {
+    const email = 'Test1@serverpod.dev';
+    late Session session;
+    late UuidValue pendingAccountRequestId;
+    late String pendingAccountVerificationCode;
 
-        test(
-            'then a lower-case variant of the same email can not be used for a second account request while the other one is pending.',
-            () async {
-          final result = await EmailAccounts.requestAccount(
-            session,
-            email: email.toLowerCase(),
-            password: password,
-          );
+    setUp(() async {
+      session = sessionBuilder.build();
 
-          expect(
-            result.result,
-            EmailAccountRequestResult.emailAlreadyRequested,
-          );
-          expect(result.accountRequestId, isNull);
-        });
+      EmailAccountConfig.current = EmailAccountConfig(
+        sendRegistrationVerificationMail: (
+          final session, {
+          required final email,
+          required final accountRequestId,
+          required final verificationCode,
+          required final transaction,
+        }) {
+          pendingAccountRequestId = accountRequestId;
+          pendingAccountVerificationCode = verificationCode;
+        },
+      );
 
-        UuidValue? authUserId;
-        test('then the request can be converted into an account.', () async {
-          authUserId = (await AuthUser.db.insertRow(
-            session,
-            AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-          ))
-              .id;
+      await EmailAccounts.requestAccount(
+        session,
+        email: email,
+        password: 'Abc1234!',
+      );
 
-          final result = await EmailAccounts.createAccount(
-            session,
-            accountRequestId: sentAccountRequestVerificationCode!.$1,
-            verificationCode: sentAccountRequestVerificationCode!.$2,
-            authUserId: authUserId!,
-          );
+      EmailAccountConfig.current = EmailAccountConfig();
+    });
 
-          expect(result.email, email.toLowerCase());
-        });
+    test(
+        'when requesting a new account for the same email address, then it fails with an "already requested" error.',
+        () async {
+      final result = await EmailAccounts.requestAccount(
+        session,
+        email: email,
+        password: '1223456789',
+      );
 
-        test('then the user can log in with their new credentials.', () async {
-          final loggedInUser = await EmailAccounts.login(
-            session,
-            email: email,
-            password: password,
-          );
+      expect(
+        result.result,
+        EmailAccountRequestResult.emailAlreadyRequested,
+      );
+      expect(result.accountRequestId, isNull);
+    });
 
-          expect(loggedInUser, authUserId!);
-        });
+    test(
+        'when requesting a new account for the same email address in all lower-case, then it fails with an "already requested" error.',
+        () async {
+      final result = await EmailAccounts.requestAccount(
+        session,
+        email: email.toLowerCase(),
+        password: '1223456789',
+      );
 
-        test(
-            'then the user can log in with their new credentials in a different case.',
-            () async {
-          final loggedInUser = await EmailAccounts.login(
-            session,
-            email: email.toUpperCase(),
-            password: password,
-          );
+      expect(
+        result.result,
+        EmailAccountRequestResult.emailAlreadyRequested,
+      );
+      expect(result.accountRequestId, isNull);
+    });
 
-          expect(loggedInUser, authUserId!);
-        });
+    test(
+        'when verifying the account request with the correct code, then it passes and returns the associated email.',
+        () async {
+      final result = await EmailAccounts.verifyAccountRequest(
+        session,
+        accountRequestId: pendingAccountRequestId,
+        verificationCode: pendingAccountVerificationCode,
+      );
 
-        test('then no further user can be registered with the same email.',
-            () async {
-          final result = await EmailAccounts.requestAccount(
-            session,
-            email: email.toUpperCase(),
-            password: password,
-          );
+      expect(result, isNotNull);
+      expect(result?.emailAccountRequestId, pendingAccountRequestId);
+      expect(result?.email, email.toLowerCase());
+    });
 
-          expect(
-              result.result, EmailAccountRequestResult.emailAlreadyRegistered);
-        });
+    test(
+        'when verifying the account request with an incorrect code, then it returns `null`.',
+        () async {
+      final result = await EmailAccounts.verifyAccountRequest(
+        session,
+        accountRequestId: pendingAccountRequestId,
+        verificationCode: 'some invalid code',
+      );
 
-        test('then a password reset can be requests for the account.',
-            () async {
-          await EmailAccounts.requestPasswordReset(
-            session,
-            email: email.toUpperCase(),
-          );
+      expect(result, isNull);
+    });
 
-          expect(sentPasswordResetVerificationCode, isNotNull);
-        });
+    test('when creating an account from the request, then it succeeds.',
+        () async {
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
 
-        const newPassword = 'newpw123';
-        test('then the password can be changed with the received token.',
-            () async {
-          final userId = await EmailAccounts.completePasswordReset(
-            session,
-            passwordResetRequestId: sentPasswordResetVerificationCode!.$1,
-            verificationCode: sentPasswordResetVerificationCode!.$2,
-            newPassword: newPassword,
-          );
+      final result = await EmailAccounts.createAccount(
+        session,
+        authUserId: authUser.id!,
+        accountRequestId: pendingAccountRequestId,
+        verificationCode: pendingAccountVerificationCode,
+      );
 
-          expect(userId, authUserId);
-        });
+      expect(result.email, email.toLowerCase());
+    });
+  });
 
-        test(
-            'then the password can not be changed a second time with the received token.',
-            () async {
-          await expectLater(
-            () => EmailAccounts.completePasswordReset(
-              session,
-              passwordResetRequestId: sentPasswordResetVerificationCode!.$1,
-              verificationCode: sentPasswordResetVerificationCode!.$2,
-              newPassword: 'xxxxxxx',
-            ),
-            throwsA(isA<Exception>()),
-          );
-        });
+  withServerpod('Given a registered email account,',
+      (final sessionBuilder, final endpoints) {
+    const email = 'Test1@serverpod.dev';
+    const password = 'asdf1234';
+    late Session session;
+    late UuidValue authUserId;
 
-        test('then the user can log in with the new credentials.', () async {
-          final userId = await EmailAccounts.login(
-            session,
-            email: email.toUpperCase(),
-            password: newPassword,
-          );
+    setUp(() async {
+      session = sessionBuilder.build();
 
-          expect(userId, authUserId!);
-        });
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+      authUserId = authUser.id!;
 
-        test('then the user can not log in with the old credentials.',
-            () async {
-          await expectLater(
-            () => EmailAccounts.login(
-              session,
-              email: email,
-              password: password,
-            ),
-            throwsA(isA<Exception>()),
-          );
-        });
+      await _createEmailAccount(
+        session,
+        authUserId: authUserId,
+        email: email,
+        password: password,
+      );
+    });
 
-        test('then requesting a reset for a non-existing email errs.',
-            () async {
-          final result = await EmailAccounts.requestPasswordReset(
-            session,
-            email: '404@serverpod.dev',
-          );
+    tearDown(() {
+      EmailAccountConfig.current = EmailAccountConfig();
+    });
 
-          expect(result, PasswordResetResult.emailDoesNotExist);
-        });
-      });
+    test('when logging in with the original credentials, then it succeeds.',
+        () async {
+      final loggedInUser = await EmailAccounts.login(
+        session,
+        email: email,
+        password: password,
+      );
+
+      expect(loggedInUser, authUserId);
+    });
+
+    test(
+        'when logging in with the lower-case email variant of the credentials, then it succeeds.',
+        () async {
+      final loggedInUser = await EmailAccounts.login(
+        session,
+        email: email.toLowerCase(),
+        password: password,
+      );
+
+      expect(loggedInUser, authUserId);
+    });
+
+    test(
+        'when logging in with an invalid password, then it throws a `EmailAccountLoginException`.',
+        () async {
+      await expectLater(
+        () => EmailAccounts.login(
+          session,
+          email: email,
+          password: 'some other password',
+        ),
+        throwsA(isA<EmailAccountLoginException>()),
+      );
+    });
+
+    test(
+        'when attempting to create a new account using the same email in upper case, then it fails.',
+        () async {
+      final result = await EmailAccounts.requestAccount(
+        session,
+        email: email.toUpperCase(),
+        password: password,
+      );
+
+      expect(result.result, EmailAccountRequestResult.emailAlreadyRegistered);
+    });
+
+    test(
+        'when requesting a password reset for the account, then the process ID and verification code are given to the configured callback.',
+        () async {
+      UuidValue? receivedPasswordResetRequestId;
+      String? receivedVerificationCode;
+      EmailAccountConfig.current = EmailAccountConfig(
+        sendPasswordResetMail: (
+          final session, {
+          required final email,
+          required final passwordResetRequestId,
+          required final verificationCode,
+          required final transaction,
+        }) {
+          receivedPasswordResetRequestId = passwordResetRequestId;
+          receivedVerificationCode = verificationCode;
+        },
+      );
+
+      await EmailAccounts.requestPasswordReset(
+        session,
+        email: email.toUpperCase(),
+      );
+
+      expect(receivedPasswordResetRequestId, isNotNull);
+      expect(receivedVerificationCode, isNotNull);
+    });
+  });
+
+  withServerpod('Given a pending password reset request,',
+      (final sessionBuilder, final endpoints) {
+    const email = 'Test1@serverpod.dev';
+    const password = 'asdf1234';
+    late Session session;
+    late UuidValue authUserId;
+    late UuidValue paswordResetRequestId;
+    late String verificationCode;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+      authUserId = authUser.id!;
+
+      await _createEmailAccount(
+        session,
+        authUserId: authUserId,
+        email: email,
+        password: password,
+      );
+
+      (paswordResetRequestId, verificationCode) = await _requestPasswordReset(
+        session,
+        email: email,
+      );
+    });
+
+    test(
+        'when verifying the password reset with the correct code, then it succeeds.',
+        () async {
+      final result = await EmailAccounts.verifyPasswordResetRequest(
+        session,
+        passwordResetRequestId: paswordResetRequestId,
+        verificationCode: verificationCode,
+      );
+
+      expect(result, isTrue);
+    });
+
+    test(
+        'when verifying the password reset with an incorrect code, then it fails.',
+        () async {
+      final result = await EmailAccounts.verifyPasswordResetRequest(
+        session,
+        passwordResetRequestId: paswordResetRequestId,
+        verificationCode: 'asdf1234',
+      );
+
+      expect(result, isFalse);
+    });
+
+    test(
+        'when changing the password with the correct verification code, then it returns the auth user ID.',
+        () async {
+      final result = await EmailAccounts.completePasswordReset(
+        session,
+        passwordResetRequestId: paswordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: '1234asdf!!!',
+      );
+
+      expect(result, authUserId);
+    });
+
+    test(
+        'when changing the password with an incorrect verification code, then it fails.',
+        () async {
+      await expectLater(
+        () => EmailAccounts.completePasswordReset(
+          session,
+          passwordResetRequestId: paswordResetRequestId,
+          verificationCode: 'wrong',
+          newPassword: '1234asdf!!!',
+        ),
+        throwsA(isA<EmailAccountPasswordResetRequestUnauthorizedException>()),
+      );
+    });
+  });
+}
+
+Future<void> _createEmailAccount(
+  final Session session, {
+  required final UuidValue authUserId,
+  required final String email,
+  required final String password,
+}) async {
+  late UuidValue pendingAccountRequestId;
+  late String pendingAccountVerificationCode;
+  EmailAccountConfig.current = EmailAccountConfig(
+    sendRegistrationVerificationMail: (
+      final session, {
+      required final email,
+      required final accountRequestId,
+      required final verificationCode,
+      required final transaction,
+    }) {
+      pendingAccountRequestId = accountRequestId;
+      pendingAccountVerificationCode = verificationCode;
     },
-    rollbackDatabase: RollbackDatabase.afterAll,
   );
+
+  await EmailAccounts.requestAccount(
+    session,
+    email: email,
+    password: password,
+  );
+
+  await EmailAccounts.createAccount(
+    session,
+    authUserId: authUserId,
+    accountRequestId: pendingAccountRequestId,
+    verificationCode: pendingAccountVerificationCode,
+  );
+
+  EmailAccountConfig.current = EmailAccountConfig();
+}
+
+Future<(UuidValue paswordResetRequestId, String verificationCode)>
+    _requestPasswordReset(
+  final Session session, {
+  required final String email,
+}) async {
+  late UuidValue pendingPasswordResetRequestId;
+  late String pendingPasswordResetVerificationCode;
+  EmailAccountConfig.current = EmailAccountConfig(
+    sendPasswordResetMail: (
+      final session, {
+      required final email,
+      required final passwordResetRequestId,
+      required final transaction,
+      required final verificationCode,
+    }) {
+      pendingPasswordResetRequestId = passwordResetRequestId;
+      pendingPasswordResetVerificationCode = verificationCode;
+    },
+  );
+
+  await EmailAccounts.requestPasswordReset(
+    session,
+    email: email,
+  );
+
+  EmailAccountConfig.current = EmailAccountConfig();
+
+  return (pendingPasswordResetRequestId, pendingPasswordResetVerificationCode);
 }
