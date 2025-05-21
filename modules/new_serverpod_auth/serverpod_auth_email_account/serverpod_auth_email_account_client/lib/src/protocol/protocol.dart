@@ -12,10 +12,12 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'email_account_login_exception.dart' as _i2;
 import 'email_account_login_failure_reason.dart' as _i3;
+import 'email_account_password_does_not_match_policy_exception.dart' as _i4;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
-    as _i4;
+    as _i5;
 export 'email_account_login_exception.dart';
 export 'email_account_login_failure_reason.dart';
+export 'email_account_password_does_not_match_policy_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -37,6 +39,10 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i3.EmailAccountLoginFailureReason) {
       return _i3.EmailAccountLoginFailureReason.fromJson(data) as T;
     }
+    if (t == _i4.EmailAccountPasswordPolicyViolationException) {
+      return _i4.EmailAccountPasswordPolicyViolationException.fromJson(data)
+          as T;
+    }
     if (t == _i1.getType<_i2.EmailAccountLoginException?>()) {
       return (data != null
           ? _i2.EmailAccountLoginException.fromJson(data)
@@ -47,8 +53,13 @@ class Protocol extends _i1.SerializationManager {
           ? _i3.EmailAccountLoginFailureReason.fromJson(data)
           : null) as T;
     }
+    if (t == _i1.getType<_i4.EmailAccountPasswordPolicyViolationException?>()) {
+      return (data != null
+          ? _i4.EmailAccountPasswordPolicyViolationException.fromJson(data)
+          : null) as T;
+    }
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
+      return _i5.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -63,7 +74,10 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i3.EmailAccountLoginFailureReason) {
       return 'EmailAccountLoginFailureReason';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    if (data is _i4.EmailAccountPasswordPolicyViolationException) {
+      return 'EmailAccountPasswordPolicyViolationException';
+    }
+    className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_user.$className';
     }
@@ -82,9 +96,13 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'EmailAccountLoginFailureReason') {
       return deserialize<_i3.EmailAccountLoginFailureReason>(data['data']);
     }
+    if (dataClassName == 'EmailAccountPasswordPolicyViolationException') {
+      return deserialize<_i4.EmailAccountPasswordPolicyViolationException>(
+          data['data']);
+    }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

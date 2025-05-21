@@ -17,13 +17,15 @@ import 'email_account.dart' as _i4;
 import 'email_account_failed_login_attempt.dart' as _i5;
 import 'email_account_login_exception.dart' as _i6;
 import 'email_account_login_failure_reason.dart' as _i7;
-import 'email_account_password_reset_attempt.dart' as _i8;
-import 'email_account_password_reset_request.dart' as _i9;
-import 'email_account_request.dart' as _i10;
+import 'email_account_password_does_not_match_policy_exception.dart' as _i8;
+import 'email_account_password_reset_attempt.dart' as _i9;
+import 'email_account_password_reset_request.dart' as _i10;
+import 'email_account_request.dart' as _i11;
 export 'email_account.dart';
 export 'email_account_failed_login_attempt.dart';
 export 'email_account_login_exception.dart';
 export 'email_account_login_failure_reason.dart';
+export 'email_account_password_does_not_match_policy_exception.dart';
 export 'email_account_password_reset_attempt.dart';
 export 'email_account_password_reset_request.dart';
 export 'email_account_request.dart';
@@ -453,14 +455,18 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i7.EmailAccountLoginFailureReason) {
       return _i7.EmailAccountLoginFailureReason.fromJson(data) as T;
     }
-    if (t == _i8.EmailAccountPasswordResetAttempt) {
-      return _i8.EmailAccountPasswordResetAttempt.fromJson(data) as T;
+    if (t == _i8.EmailAccountPasswordPolicyViolationException) {
+      return _i8.EmailAccountPasswordPolicyViolationException.fromJson(data)
+          as T;
     }
-    if (t == _i9.EmailAccountPasswordResetRequest) {
-      return _i9.EmailAccountPasswordResetRequest.fromJson(data) as T;
+    if (t == _i9.EmailAccountPasswordResetAttempt) {
+      return _i9.EmailAccountPasswordResetAttempt.fromJson(data) as T;
     }
-    if (t == _i10.EmailAccountRequest) {
-      return _i10.EmailAccountRequest.fromJson(data) as T;
+    if (t == _i10.EmailAccountPasswordResetRequest) {
+      return _i10.EmailAccountPasswordResetRequest.fromJson(data) as T;
+    }
+    if (t == _i11.EmailAccountRequest) {
+      return _i11.EmailAccountRequest.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.EmailAccount?>()) {
       return (data != null ? _i4.EmailAccount.fromJson(data) : null) as T;
@@ -480,18 +486,23 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i7.EmailAccountLoginFailureReason.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i8.EmailAccountPasswordResetAttempt?>()) {
+    if (t == _i1.getType<_i8.EmailAccountPasswordPolicyViolationException?>()) {
       return (data != null
-          ? _i8.EmailAccountPasswordResetAttempt.fromJson(data)
+          ? _i8.EmailAccountPasswordPolicyViolationException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i9.EmailAccountPasswordResetRequest?>()) {
+    if (t == _i1.getType<_i9.EmailAccountPasswordResetAttempt?>()) {
       return (data != null
-          ? _i9.EmailAccountPasswordResetRequest.fromJson(data)
+          ? _i9.EmailAccountPasswordResetAttempt.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i10.EmailAccountRequest?>()) {
-      return (data != null ? _i10.EmailAccountRequest.fromJson(data) : null)
+    if (t == _i1.getType<_i10.EmailAccountPasswordResetRequest?>()) {
+      return (data != null
+          ? _i10.EmailAccountPasswordResetRequest.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i11.EmailAccountRequest?>()) {
+      return (data != null ? _i11.EmailAccountRequest.fromJson(data) : null)
           as T;
     }
     try {
@@ -519,13 +530,16 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i7.EmailAccountLoginFailureReason) {
       return 'EmailAccountLoginFailureReason';
     }
-    if (data is _i8.EmailAccountPasswordResetAttempt) {
+    if (data is _i8.EmailAccountPasswordPolicyViolationException) {
+      return 'EmailAccountPasswordPolicyViolationException';
+    }
+    if (data is _i9.EmailAccountPasswordResetAttempt) {
       return 'EmailAccountPasswordResetAttempt';
     }
-    if (data is _i9.EmailAccountPasswordResetRequest) {
+    if (data is _i10.EmailAccountPasswordResetRequest) {
       return 'EmailAccountPasswordResetRequest';
     }
-    if (data is _i10.EmailAccountRequest) {
+    if (data is _i11.EmailAccountRequest) {
       return 'EmailAccountRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -557,14 +571,18 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'EmailAccountLoginFailureReason') {
       return deserialize<_i7.EmailAccountLoginFailureReason>(data['data']);
     }
+    if (dataClassName == 'EmailAccountPasswordPolicyViolationException') {
+      return deserialize<_i8.EmailAccountPasswordPolicyViolationException>(
+          data['data']);
+    }
     if (dataClassName == 'EmailAccountPasswordResetAttempt') {
-      return deserialize<_i8.EmailAccountPasswordResetAttempt>(data['data']);
+      return deserialize<_i9.EmailAccountPasswordResetAttempt>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetRequest') {
-      return deserialize<_i9.EmailAccountPasswordResetRequest>(data['data']);
+      return deserialize<_i10.EmailAccountPasswordResetRequest>(data['data']);
     }
     if (dataClassName == 'EmailAccountRequest') {
-      return deserialize<_i10.EmailAccountRequest>(data['data']);
+      return deserialize<_i11.EmailAccountRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -596,12 +614,12 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i4.EmailAccount.t;
       case _i5.EmailAccountFailedLoginAttempt:
         return _i5.EmailAccountFailedLoginAttempt.t;
-      case _i8.EmailAccountPasswordResetAttempt:
-        return _i8.EmailAccountPasswordResetAttempt.t;
-      case _i9.EmailAccountPasswordResetRequest:
-        return _i9.EmailAccountPasswordResetRequest.t;
-      case _i10.EmailAccountRequest:
-        return _i10.EmailAccountRequest.t;
+      case _i9.EmailAccountPasswordResetAttempt:
+        return _i9.EmailAccountPasswordResetAttempt.t;
+      case _i10.EmailAccountPasswordResetRequest:
+        return _i10.EmailAccountPasswordResetRequest.t;
+      case _i11.EmailAccountRequest:
+        return _i11.EmailAccountRequest.t;
     }
     return null;
   }
