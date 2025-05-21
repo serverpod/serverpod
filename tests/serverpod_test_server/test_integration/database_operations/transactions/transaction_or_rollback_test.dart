@@ -271,8 +271,34 @@ void main() async {
       });
 
       test(
+        'when creating savepoint under an existing transaction with `transactionOrSavepoint`, '
+        'then both closures work on the exact same transaction.',
+        () async {
+          await DatabaseUtil.runInTransactionOrSavepoint(
+            session.db,
+            null,
+            (final transaction1) async {
+              await SimpleData.db.insertRow(
+                session,
+                SimpleData(num: 1),
+                transaction: transaction1,
+              );
+
+              await DatabaseUtil.runInTransactionOrSavepoint(
+                session.db,
+                transaction1,
+                (final transaction2) async {
+                  expect(identical(transaction1, transaction2), isTrue);
+                },
+              );
+            },
+          );
+        },
+      );
+
+      test(
           'when creating savepoint under an existing transaction with `transactionOrSavepoint`, '
-          'then the data is visible only to each transaction argument given to the callback.',
+          'then the data is visible in both closures (as they use the same underlying transaction).',
           () async {
         await DatabaseUtil.runInTransactionOrSavepoint(
           session.db,
@@ -288,8 +314,6 @@ void main() async {
               session.db,
               transaction1,
               (final transaction2) async {
-                expect(identical(transaction1, transaction2), isTrue);
-
                 await SimpleData.db.insertRow(
                   session,
                   SimpleData(num: 2),
