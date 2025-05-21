@@ -20,9 +20,12 @@ abstract class DatabaseUtil {
     final Database database,
     final TransactionFunction<R> f, {
     required final Transaction? transaction,
+
+    /// Settings to be applied in case a new transaction is created.
+    final TransactionSettings? settings,
   }) async {
     if (transaction == null) {
-      return database.transaction(f);
+      return database.transaction(f, settings: settings);
     }
 
     Savepoint? savepoint;
