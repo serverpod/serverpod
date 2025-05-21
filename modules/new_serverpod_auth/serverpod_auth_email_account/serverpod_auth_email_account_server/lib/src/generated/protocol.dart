@@ -22,9 +22,12 @@ import 'email_account_password_reset_attempt.dart' as _i9;
 import 'email_account_password_reset_request.dart' as _i10;
 import 'email_account_password_reset_request_expired_exception.dart' as _i11;
 import 'email_account_password_reset_request_not_found_exception.dart' as _i12;
-import 'email_account_request.dart' as _i13;
-import 'email_account_request_expired_exception.dart' as _i14;
-import 'email_account_request_not_found_exception.dart' as _i15;
+import 'email_account_password_reset_request_unauthorized_exception.dart'
+    as _i13;
+import 'email_account_request.dart' as _i14;
+import 'email_account_request_expired_exception.dart' as _i15;
+import 'email_account_request_not_found_exception.dart' as _i16;
+import 'email_account_request_unauthorized_exception.dart' as _i17;
 export 'email_account.dart';
 export 'email_account_failed_login_attempt.dart';
 export 'email_account_login_exception.dart';
@@ -34,9 +37,11 @@ export 'email_account_password_reset_attempt.dart';
 export 'email_account_password_reset_request.dart';
 export 'email_account_password_reset_request_expired_exception.dart';
 export 'email_account_password_reset_request_not_found_exception.dart';
+export 'email_account_password_reset_request_unauthorized_exception.dart';
 export 'email_account_request.dart';
 export 'email_account_request_expired_exception.dart';
 export 'email_account_request_not_found_exception.dart';
+export 'email_account_request_unauthorized_exception.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -468,14 +473,21 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i12.EmailAccountPasswordResetRequestNotFoundException.fromJson(
           data) as T;
     }
-    if (t == _i13.EmailAccountRequest) {
-      return _i13.EmailAccountRequest.fromJson(data) as T;
+    if (t == _i13.EmailAccountPasswordResetRequestUnauthorizedException) {
+      return _i13.EmailAccountPasswordResetRequestUnauthorizedException
+          .fromJson(data) as T;
     }
-    if (t == _i14.EmailAccountRequestExpiredException) {
-      return _i14.EmailAccountRequestExpiredException.fromJson(data) as T;
+    if (t == _i14.EmailAccountRequest) {
+      return _i14.EmailAccountRequest.fromJson(data) as T;
     }
-    if (t == _i15.EmailAccountRequestNotFoundException) {
-      return _i15.EmailAccountRequestNotFoundException.fromJson(data) as T;
+    if (t == _i15.EmailAccountRequestExpiredException) {
+      return _i15.EmailAccountRequestExpiredException.fromJson(data) as T;
+    }
+    if (t == _i16.EmailAccountRequestNotFoundException) {
+      return _i16.EmailAccountRequestNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i17.EmailAccountRequestUnauthorizedException) {
+      return _i17.EmailAccountRequestUnauthorizedException.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.EmailAccount?>()) {
       return (data != null ? _i4.EmailAccount.fromJson(data) : null) as T;
@@ -524,18 +536,31 @@ class Protocol extends _i1.SerializationManagerServer {
               data)
           : null) as T;
     }
-    if (t == _i1.getType<_i13.EmailAccountRequest?>()) {
-      return (data != null ? _i13.EmailAccountRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i14.EmailAccountRequestExpiredException?>()) {
+    if (t ==
+        _i1.getType<
+            _i13.EmailAccountPasswordResetRequestUnauthorizedException?>()) {
       return (data != null
-          ? _i14.EmailAccountRequestExpiredException.fromJson(data)
+          ? _i13.EmailAccountPasswordResetRequestUnauthorizedException.fromJson(
+              data)
           : null) as T;
     }
-    if (t == _i1.getType<_i15.EmailAccountRequestNotFoundException?>()) {
+    if (t == _i1.getType<_i14.EmailAccountRequest?>()) {
+      return (data != null ? _i14.EmailAccountRequest.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i15.EmailAccountRequestExpiredException?>()) {
       return (data != null
-          ? _i15.EmailAccountRequestNotFoundException.fromJson(data)
+          ? _i15.EmailAccountRequestExpiredException.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i16.EmailAccountRequestNotFoundException?>()) {
+      return (data != null
+          ? _i16.EmailAccountRequestNotFoundException.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i17.EmailAccountRequestUnauthorizedException?>()) {
+      return (data != null
+          ? _i17.EmailAccountRequestUnauthorizedException.fromJson(data)
           : null) as T;
     }
     try {
@@ -578,14 +603,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i12.EmailAccountPasswordResetRequestNotFoundException) {
       return 'EmailAccountPasswordResetRequestNotFoundException';
     }
-    if (data is _i13.EmailAccountRequest) {
+    if (data is _i13.EmailAccountPasswordResetRequestUnauthorizedException) {
+      return 'EmailAccountPasswordResetRequestUnauthorizedException';
+    }
+    if (data is _i14.EmailAccountRequest) {
       return 'EmailAccountRequest';
     }
-    if (data is _i14.EmailAccountRequestExpiredException) {
+    if (data is _i15.EmailAccountRequestExpiredException) {
       return 'EmailAccountRequestExpiredException';
     }
-    if (data is _i15.EmailAccountRequestNotFoundException) {
+    if (data is _i16.EmailAccountRequestNotFoundException) {
       return 'EmailAccountRequestNotFoundException';
+    }
+    if (data is _i17.EmailAccountRequestUnauthorizedException) {
+      return 'EmailAccountRequestUnauthorizedException';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -634,15 +665,25 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<
           _i12.EmailAccountPasswordResetRequestNotFoundException>(data['data']);
     }
+    if (dataClassName ==
+        'EmailAccountPasswordResetRequestUnauthorizedException') {
+      return deserialize<
+          _i13
+          .EmailAccountPasswordResetRequestUnauthorizedException>(data['data']);
+    }
     if (dataClassName == 'EmailAccountRequest') {
-      return deserialize<_i13.EmailAccountRequest>(data['data']);
+      return deserialize<_i14.EmailAccountRequest>(data['data']);
     }
     if (dataClassName == 'EmailAccountRequestExpiredException') {
-      return deserialize<_i14.EmailAccountRequestExpiredException>(
+      return deserialize<_i15.EmailAccountRequestExpiredException>(
           data['data']);
     }
     if (dataClassName == 'EmailAccountRequestNotFoundException') {
-      return deserialize<_i15.EmailAccountRequestNotFoundException>(
+      return deserialize<_i16.EmailAccountRequestNotFoundException>(
+          data['data']);
+    }
+    if (dataClassName == 'EmailAccountRequestUnauthorizedException') {
+      return deserialize<_i17.EmailAccountRequestUnauthorizedException>(
           data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
@@ -679,8 +720,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i9.EmailAccountPasswordResetAttempt.t;
       case _i10.EmailAccountPasswordResetRequest:
         return _i10.EmailAccountPasswordResetRequest.t;
-      case _i13.EmailAccountRequest:
-        return _i13.EmailAccountRequest.t;
+      case _i14.EmailAccountRequest:
+        return _i14.EmailAccountRequest.t;
     }
     return null;
   }
