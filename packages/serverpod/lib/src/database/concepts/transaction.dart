@@ -1,5 +1,10 @@
+import 'dart:async';
+
 /// A function performing a transaction, passed to the transaction method.
 typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
+
+/// A listener that will be called when the associated transaction has been committed to the database.
+typedef PostCommitListener = FutureOr<void> Function();
 
 /// A savepoint in a transaction.
 abstract interface class Savepoint {
@@ -23,6 +28,15 @@ abstract interface class Transaction {
   /// Creates a savepoint in the transaction that can be used to rollback to a
   /// previous state.
   Future<Savepoint> createSavepoint();
+
+  /// Adds a listener that will be called when the transaction has been committed to the database.
+  ///
+  /// The listener should return a [FutureOr] that completes when the listener
+  /// is done.
+  ///
+  /// Listeners added this way will be called in the order they were added.
+  /// If any listener throws its error will be logged and the next listener will be called.
+  void addPostCommitListener(PostCommitListener listener);
 }
 
 /// Isolation levels for transactions.
