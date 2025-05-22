@@ -1,5 +1,6 @@
 ### Vector distance functions exposed by pgvector.
 enum: VectorDistanceFunction
+serialized: byName
 values:
   ### L2 (Euclidean) distance
   - l2

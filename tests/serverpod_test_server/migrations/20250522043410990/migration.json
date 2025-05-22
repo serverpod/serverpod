@@ -83,7 +83,7 @@
             "type": "hnsw",
             "isUnique": false,
             "isPrimary": false,
-            "vectorDistanceFunction": 0
+            "vectorDistanceFunction": "l2"
           },
           {
             "indexName": "vector_index_hnsw",
@@ -96,7 +96,7 @@
             "type": "hnsw",
             "isUnique": false,
             "isPrimary": false,
-            "vectorDistanceFunction": 0
+            "vectorDistanceFunction": "l2"
           },
           {
             "indexName": "vector_index_hnsw_with_params",
@@ -109,7 +109,7 @@
             "type": "hnsw",
             "isUnique": false,
             "isPrimary": false,
-            "vectorDistanceFunction": 2,
+            "vectorDistanceFunction": "cosine",
             "parameters": {
               "m": "64",
               "ef_construction": "200"
@@ -126,7 +126,7 @@
             "type": "ivfflat",
             "isUnique": false,
             "isPrimary": false,
-            "vectorDistanceFunction": 0
+            "vectorDistanceFunction": "l2"
           },
           {
             "indexName": "vector_index_ivfflat_with_params",
@@ -139,7 +139,7 @@
             "type": "ivfflat",
             "isUnique": false,
             "isPrimary": false,
-            "vectorDistanceFunction": 1,
+            "vectorDistanceFunction": "innerProduct",
             "parameters": {
               "lists": "300"
             }

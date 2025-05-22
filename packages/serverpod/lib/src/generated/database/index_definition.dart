@@ -56,7 +56,7 @@ abstract class IndexDefinition
           jsonSerialization['vectorDistanceFunction'] == null
               ? null
               : _i3.VectorDistanceFunction.fromJson(
-                  (jsonSerialization['vectorDistanceFunction'] as int)),
+                  (jsonSerialization['vectorDistanceFunction'] as String)),
       parameters:
           (jsonSerialization['parameters'] as Map?)?.map((k, v) => MapEntry(
                 k as String,

@@ -31,28 +31,28 @@ enum VectorDistanceFunction implements _i1.SerializableModel {
   /// Jaccard distance (binary vectors)
   jaccard;
 
-  static VectorDistanceFunction fromJson(int index) {
-    switch (index) {
-      case 0:
+  static VectorDistanceFunction fromJson(String name) {
+    switch (name) {
+      case 'l2':
         return VectorDistanceFunction.l2;
-      case 1:
+      case 'innerProduct':
         return VectorDistanceFunction.innerProduct;
-      case 2:
+      case 'cosine':
         return VectorDistanceFunction.cosine;
-      case 3:
+      case 'l1':
         return VectorDistanceFunction.l1;
-      case 4:
+      case 'hamming':
         return VectorDistanceFunction.hamming;
-      case 5:
+      case 'jaccard':
         return VectorDistanceFunction.jaccard;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "VectorDistanceFunction"');
+            'Value "$name" cannot be converted to "VectorDistanceFunction"');
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
   @override
   String toString() => name;
 }
