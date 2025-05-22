@@ -1,0 +1,23 @@
+class: RefreshToken
+serverOnly: true
+table: serverpod_auth_jwt_refresh_token
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile belongs to.
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The scopes given to this session.
+  scopeNames: Set<String>
+
+  ### The most recent secret associated with this refresh token.
+  ###
+  ### This is changed on every rotation of the refresh token,
+  ### whenever a new access token is created.
+  secret: String
+
+  ### The time when the [refreshToken] was last rotated.
+  lastUpdated: DateTime, default=now
+
+  ### The time when the first refresh token was created.
+  created: DateTime, default=now
