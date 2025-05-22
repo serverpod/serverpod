@@ -16,7 +16,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
-import 'package:serverpod/src/server/shutdown_task_manager.dart';
+import 'package:serverpod/src/server/task_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -154,16 +154,16 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
-  /// Provides access to the shutdown task manager.
+  /// Provides access to the task manager.
   ///
-  /// The shutdown task manager is responsible for executing tasks during server
-  /// shutdown. It ensures that all resources are properly released and services
-  /// are stopped in the correct order. You can use this to add custom shutdown
-  /// tasks using [ShutdownTaskManager.addTask], [ShutdownTaskManager.addTaskBeforeShutdown],
-  /// or [ShutdownTaskManager.addTaskAfterShutdown].
-  ShutdownTaskManager get shutdownTaskManager => _shutdownTaskManager;
+  /// The task manager is responsible for executing tasks in a specific order.
+  /// In this case, it's used to manage server shutdown tasks, ensuring that all
+  /// resources are properly released and services are stopped in the correct order.
+  /// You can use this to add custom tasks using [TaskManager.addTask],
+  /// [TaskManager.addTaskBefore], or [TaskManager.addTaskAfter].
+  TaskManager get shutdownTaskManager => _shutdownTaskManager;
 
-  late ShutdownTaskManager _shutdownTaskManager;
+  late TaskManager _shutdownTaskManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -211,16 +211,15 @@ class Serverpod {
     _logManager = LogManager(settings, serverId: serverId);
   }
 
-  /// Initializes the shutdown task manager and registers default shutdown 
-  /// tasks.
+  /// Initializes the task manager and registers default shutdown tasks.
   ///
-  /// This method is called during server startup and sets up the shutdown task 
-  /// manager with all the necessary tasks to properly shut down the server. 
+  /// This method is called during server startup and sets up the task manager
+  /// with all the necessary tasks to properly shut down the server.
   /// It registers tasks for closing sessions, stopping services, and releasing
   /// resources in the appropriate order. The tasks are executed when [shutdown]
   /// is called.
   void _initializeShutdownTaskManager() {
-    _shutdownTaskManager = ShutdownTaskManager(_reportException);
+    _shutdownTaskManager = TaskManager(_reportException);
 
     _shutdownTaskManager.addTask(
       'Test Auditor',
@@ -260,13 +259,6 @@ class Serverpod {
     _shutdownTaskManager.addTask(
       'Health Check Manager',
       _healthCheckManager?.stop,
-    );
-
-    // This needs to be closed last as it is used by the other services.
-    _shutdownTaskManager.addTask(
-      'Database Pool Manager',
-      _databasePoolManager?.stop,
-      sequential: true,
     );
   }
 
@@ -951,7 +943,7 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  /// If [exitProcess] is set to false, the process will not exit at the end of 
+  /// If [exitProcess] is set to false, the process will not exit at the end of
   /// the shutdown.
   Future<void> shutdown({
     bool exitProcess = true,
@@ -960,7 +952,19 @@ class Serverpod {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
-    Object? shutdownError = await _shutdownTaskManager.handleShutdown();
+    Object? shutdownError = await _shutdownTaskManager.handleTasks();
+
+    // This needs to be closed last as it is used by the other services.
+    try {
+      await _databasePoolManager?.stop();
+    } catch (e, stackTrace) {
+      shutdownError = e;
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error in database pool manager shutdown',
+      );
+    }
 
     stdout.writeln(
         'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}');
