@@ -82,12 +82,12 @@ abstract final class EmailAccounts {
   /// to register but already have a valid account.
   ///
   /// In the success case of [EmailAccountRequestResult.accountRequestCreated], the caller may store additional information
-  /// attached to the `accountRequestId`, which will be returned from [verifyAccountRequest] later on.
+  /// attached to the `accountRequestId`, which will be returned from [verifyAccountCreation] later on.
   static Future<
       ({
         EmailAccountRequestResult result,
         UuidValue? accountRequestId,
-      })> requestAccount(
+      })> startAccountCreation(
     final Session session, {
     required String email,
     required final String password,
@@ -174,7 +174,7 @@ abstract final class EmailAccounts {
   ///
   /// If this returns a value, this means `createAccount` will succeed.
   static Future<({UuidValue emailAccountRequestId, String email})?>
-      verifyAccountRequest(
+      verifyAccountCreation(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
@@ -200,7 +200,8 @@ abstract final class EmailAccounts {
   /// Throws an [EmailAccountRequestNotFoundException] in case the [accountRequestId] does not point to an existing request.
   /// Throws an [EmailAccountRequestExpiredException] in case the request's validation window has elapsed.
   /// /// Throws [EmailAccountRequestUnauthorizedException] in case the [verificationCode] is not valid.
-  static Future<({UuidValue emailAccountId, String email})> createAccount(
+  static Future<({UuidValue emailAccountId, String email})>
+      completeAccountCreation(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
@@ -257,7 +258,7 @@ abstract final class EmailAccounts {
   /// The caller may check the returned [PasswordResetResult], but this
   /// should not be exposed to the client, so that this method can not be
   /// misused to check which emails are registered.
-  static Future<PasswordResetResult> requestPasswordReset(
+  static Future<PasswordResetResult> startPasswordReset(
     final Session session, {
     required String email,
     final Transaction? transaction,
@@ -321,7 +322,7 @@ abstract final class EmailAccounts {
   /// Returns whether the password reset request is still valid.
   ///
   /// If this returns a value, this means `completePasswordReset` will succeed.
-  static Future<bool> verifyPasswordResetRequest(
+  static Future<bool> verifyPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -583,7 +584,7 @@ extension on Session {
   }
 }
 
-/// The result of the [EmailAccounts.createAccount] operation.
+/// The result of the [EmailAccounts.completeAccountCreation] operation.
 ///
 /// This describes the detailed status of the operation to the caller.
 ///

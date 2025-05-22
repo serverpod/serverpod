@@ -23,7 +23,7 @@ void main() {
         'when trying to create a new account with a short password, '
         'then an error is thrown for short passwords.', () async {
       await expectLater(
-        () => EmailAccounts.requestAccount(
+        () => EmailAccounts.startAccountCreation(
           session,
           email: 'test@serverpod.dev',
           password: 'short',
@@ -51,7 +51,7 @@ void main() {
         },
       );
 
-      final result = await EmailAccounts.requestAccount(
+      final result = await EmailAccounts.startAccountCreation(
         session,
         email: 'test123@serverpod.dev',
         password: 'Abc1234!',
@@ -67,7 +67,7 @@ void main() {
     test(
         'when requesting a reset for a non-existent email, it returns "email does not exist" status.',
         () async {
-      final result = await EmailAccounts.requestPasswordReset(
+      final result = await EmailAccounts.startPasswordReset(
         session,
         email: '404@serverpod.dev',
       );
@@ -99,7 +99,7 @@ void main() {
         },
       );
 
-      await EmailAccounts.requestAccount(
+      await EmailAccounts.startAccountCreation(
         session,
         email: email,
         password: 'Abc1234!',
@@ -111,7 +111,7 @@ void main() {
     test(
         'when requesting a new account for the same email address, then it fails with an "already requested" error.',
         () async {
-      final result = await EmailAccounts.requestAccount(
+      final result = await EmailAccounts.startAccountCreation(
         session,
         email: email,
         password: '1223456789',
@@ -127,7 +127,7 @@ void main() {
     test(
         'when requesting a new account for the same email address in all lower-case, then it fails with an "already requested" error.',
         () async {
-      final result = await EmailAccounts.requestAccount(
+      final result = await EmailAccounts.startAccountCreation(
         session,
         email: email.toLowerCase(),
         password: '1223456789',
@@ -143,7 +143,7 @@ void main() {
     test(
         'when verifying the account request with the correct code, then it passes and returns the associated email.',
         () async {
-      final result = await EmailAccounts.verifyAccountRequest(
+      final result = await EmailAccounts.verifyAccountCreation(
         session,
         accountRequestId: pendingAccountRequestId,
         verificationCode: pendingAccountVerificationCode,
@@ -157,7 +157,7 @@ void main() {
     test(
         'when verifying the account request with an incorrect code, then it returns `null`.',
         () async {
-      final result = await EmailAccounts.verifyAccountRequest(
+      final result = await EmailAccounts.verifyAccountCreation(
         session,
         accountRequestId: pendingAccountRequestId,
         verificationCode: 'some invalid code',
@@ -173,7 +173,7 @@ void main() {
         AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
       );
 
-      final result = await EmailAccounts.createAccount(
+      final result = await EmailAccounts.completeAccountCreation(
         session,
         authUserId: authUser.id!,
         accountRequestId: pendingAccountRequestId,
@@ -260,7 +260,7 @@ void main() {
     test(
         'when attempting to create a new account using the same email in upper case, then it fails.',
         () async {
-      final result = await EmailAccounts.requestAccount(
+      final result = await EmailAccounts.startAccountCreation(
         session,
         email: email.toUpperCase(),
         password: password,
@@ -273,7 +273,7 @@ void main() {
         'when attempting to create the account again with same account request data, then it fails.',
         () async {
       await expectLater(
-        () => EmailAccounts.createAccount(session,
+        () => EmailAccounts.completeAccountCreation(session,
             authUserId: authUserId,
             accountRequestId: accountCreationParameters.accountRequestId,
             verificationCode: accountCreationParameters.verificationCode),
@@ -299,7 +299,7 @@ void main() {
         },
       );
 
-      await EmailAccounts.requestPasswordReset(
+      await EmailAccounts.startPasswordReset(
         session,
         email: email.toUpperCase(),
       );
@@ -343,7 +343,7 @@ void main() {
     test(
         'when verifying the password reset with the correct code, then it succeeds.',
         () async {
-      final result = await EmailAccounts.verifyPasswordResetRequest(
+      final result = await EmailAccounts.verifyPasswordReset(
         session,
         passwordResetRequestId: paswordResetRequestId,
         verificationCode: verificationCode,
@@ -355,7 +355,7 @@ void main() {
     test(
         'when verifying the password reset with an incorrect code, then it fails.',
         () async {
-      final result = await EmailAccounts.verifyPasswordResetRequest(
+      final result = await EmailAccounts.verifyPasswordReset(
         session,
         passwordResetRequestId: paswordResetRequestId,
         verificationCode: 'asdf1234',
@@ -477,13 +477,13 @@ Future<
     },
   );
 
-  await EmailAccounts.requestAccount(
+  await EmailAccounts.startAccountCreation(
     session,
     email: email,
     password: password,
   );
 
-  final creationResult = await EmailAccounts.createAccount(
+  final creationResult = await EmailAccounts.completeAccountCreation(
     session,
     authUserId: authUserId,
     accountRequestId: pendingAccountRequestId,
@@ -519,7 +519,7 @@ Future<(UuidValue paswordResetRequestId, String verificationCode)>
     },
   );
 
-  await EmailAccounts.requestPasswordReset(
+  await EmailAccounts.startPasswordReset(
     session,
     email: email,
   );
@@ -549,7 +549,7 @@ Future<void> _resetPassword(
     },
   );
 
-  await EmailAccounts.requestPasswordReset(
+  await EmailAccounts.startPasswordReset(
     session,
     email: email,
   );
