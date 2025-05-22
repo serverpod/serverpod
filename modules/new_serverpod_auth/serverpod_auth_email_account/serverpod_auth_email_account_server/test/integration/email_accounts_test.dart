@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given an empty environment,',
+  withServerpod('Given no auth users,',
       (final sessionBuilder, final endpoints) {
     late Session session;
 
@@ -179,6 +179,10 @@ void main() {
     const password = 'asdf1234';
     late Session session;
     late UuidValue authUserId;
+    late ({
+      UuidValue accountRequestId,
+      String verificationCode,
+    }) accountCreationParameters;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -189,11 +193,16 @@ void main() {
       );
       authUserId = authUser.id!;
 
-      await _createEmailAccount(
+      final accountCreationDetails = await _createEmailAccount(
         session,
         authUserId: authUserId,
         email: email,
         password: password,
+      );
+
+      accountCreationParameters = (
+        accountRequestId: accountCreationDetails.accountRequestId,
+        verificationCode: accountCreationDetails.verificationCode,
       );
     });
 
@@ -247,6 +256,18 @@ void main() {
       );
 
       expect(result.result, EmailAccountRequestResult.emailAlreadyRegistered);
+    });
+
+    test(
+        'when attempting to create the account again with same account request data, then it fails.',
+        () async {
+      await expectLater(
+        () => EmailAccounts.createAccount(session,
+            authUserId: authUserId,
+            accountRequestId: accountCreationParameters.accountRequestId,
+            verificationCode: accountCreationParameters.verificationCode),
+        throwsA(isA<EmailAccountRequestNotFoundException>()),
+      );
     });
 
     test(
@@ -361,7 +382,12 @@ void main() {
   });
 }
 
-Future<void> _createEmailAccount(
+Future<
+    ({
+      UuidValue accountRequestId,
+      String verificationCode,
+      UuidValue emailAccountId,
+    })> _createEmailAccount(
   final Session session, {
   required final UuidValue authUserId,
   required final String email,
@@ -388,7 +414,7 @@ Future<void> _createEmailAccount(
     password: password,
   );
 
-  await EmailAccounts.createAccount(
+  final creationResult = await EmailAccounts.createAccount(
     session,
     authUserId: authUserId,
     accountRequestId: pendingAccountRequestId,
@@ -396,6 +422,12 @@ Future<void> _createEmailAccount(
   );
 
   EmailAccountConfig.current = EmailAccountConfig();
+
+  return (
+    accountRequestId: pendingAccountRequestId,
+    verificationCode: pendingAccountVerificationCode,
+    emailAccountId: creationResult.emailAccountId,
+  );
 }
 
 Future<(UuidValue paswordResetRequestId, String verificationCode)>
