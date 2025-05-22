@@ -170,7 +170,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "extends" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+        'The "extends" property is not allowed for class type. Valid keys are {class, implements, table, managedMigration, serverOnly, fields, indexes}.',
       );
     });
 
@@ -250,8 +250,7 @@ void main() {
       }, skip: errors.isNotEmpty);
 
       test('then the field definition contains index.', () {
-        var field = child.fieldsIncludingInherited
-            .firstWhere((field) => field.name == 'name');
+        var field = child.allFields.firstWhere((field) => field.name == 'name');
         var index = field.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
@@ -509,7 +508,7 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "sealed" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+      'The "sealed" property is not allowed for class type. Valid keys are {class, implements, table, managedMigration, serverOnly, fields, indexes}.',
     );
   });
 

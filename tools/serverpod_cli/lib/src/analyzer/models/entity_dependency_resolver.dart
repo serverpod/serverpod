@@ -15,9 +15,10 @@ class ModelDependencyResolver {
       if (classDefinition is ModelClassDefinition) {
         _resolveInheritance(classDefinition, modelDefinitions);
       }
+      _resolveImplements(classDefinition, modelDefinitions);
 
       var fields = classDefinition is ModelClassDefinition
-          ? classDefinition.fieldsIncludingInherited
+          ? classDefinition.allFields
           : classDefinition.fields;
 
       for (var fieldDefinition in fields) {
@@ -65,6 +66,35 @@ class ModelDependencyResolver {
     parentClass.childClasses.add(
       ResolvedInheritanceDefinition(classDefinition),
     );
+  }
+
+  static void _resolveImplements(
+    ClassDefinition classDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    if (classDefinition.interfaceImplementations.isEmpty) {
+      return;
+    }
+
+    var resolvedImplements = <ImplementsDefinition>[];
+
+    for (var implementedClass in classDefinition.interfaceImplementations) {
+      if (implementedClass is! UnresolvedImplementsDefinition) {
+        continue;
+      }
+
+      var interfaceClass = modelDefinitions
+          .whereType<InterfaceClassDefinition>()
+          .where((element) => element.className == implementedClass.className)
+          .where((element) =>
+              element.type.moduleAlias == classDefinition.type.moduleAlias)
+          .firstOrNull;
+
+      if (interfaceClass != null) {
+        resolvedImplements.add(ResolvedImplementsDefinition(interfaceClass));
+      }
+    }
+    classDefinition.interfaceImplementations = resolvedImplements;
   }
 
   static void _resolveFieldIndexes(
