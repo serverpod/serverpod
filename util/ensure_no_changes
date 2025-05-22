@@ -2,7 +2,7 @@
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/pub_get_all"
+    echo "I.e. util/ensure_no_changes"
     exit 1
 fi
 
