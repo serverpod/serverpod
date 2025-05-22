@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
-  var runMode = 'development';
+  var developmentRunMode = 'development';
+  var productionRunMode = 'production';
   var serverId = 'default';
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
@@ -11,7 +12,7 @@ void main() {
   };
 
   test(
-    'Given a Serverpod config missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console logging enabled and persistent logging disabled',
+    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console text logging enabled and persistent logging disabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -22,14 +23,45 @@ apiServer:
 ''';
 
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(
+        config.sessionLogs.consoleLogFormat,
+        ConsoleLogFormat.text,
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console json logging enabled and persistent logging disabled',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        productionRunMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(
+        config.sessionLogs.consoleLogFormat,
+        ConsoleLogFormat.json,
+      );
     },
   );
 
@@ -50,14 +82,14 @@ database:
 ''';
 
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
     },
   );
 
@@ -77,7 +109,7 @@ sessionLogs:
 
       expect(
         () => ServerpodConfig.loadFromMap(
-          runMode,
+          developmentRunMode,
           serverId,
           passwords,
           loadYaml(serverpodConfig),
@@ -110,15 +142,15 @@ sessionLogs:
 ''';
 
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         loadYaml(serverpodConfig),
         environment: {},
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
     },
   );
 
@@ -142,14 +174,14 @@ sessionLogs:
 ''';
 
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
     },
   );
 
@@ -170,17 +202,19 @@ database:
 sessionLogs:
   persistentEnabled: false
   consoleEnabled: true
+  consoleLogFormat: text
 ''';
 
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isTrue);
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
     },
   );
 
@@ -188,7 +222,7 @@ sessionLogs:
     'Given a Serverpod config with sessionLogs and database when environment variables override them then sessionLogs config reflects the environment overrides',
     () {
       var config = ServerpodConfig.loadFromMap(
-        runMode,
+        developmentRunMode,
         serverId,
         passwords,
         {
@@ -207,16 +241,52 @@ sessionLogs:
           'sessionLogs': {
             'persistentEnabled': false,
             'consoleEnabled': true,
+            'consoleLogFormat': 'text',
           },
         },
         environment: {
           'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED': 'true',
           'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED': 'false',
+          'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT': 'json',
         },
       );
 
-      expect(config.sessionLogs?.persistentEnabled, isTrue);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with an invalid console log format then argument error is thrown',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: testUser
+sessionLogs:
+  persistentEnabled: false
+  consoleEnabled: true
+  consoleLogFormat: invalid_value
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          developmentRunMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
+            'Invalid console log format: "invalid_value". Valid values are: json, text')),
+      );
     },
   );
 }

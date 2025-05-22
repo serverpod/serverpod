@@ -135,6 +135,9 @@ enum ServerpodEnv {
   /// True if session console logging is enabled.
   sessionConsoleLogEnabled,
 
+  /// The format for the console log.
+  sessionConsoleLogFormat,
+
   /// The id of the server.
   serverId;
 
@@ -173,6 +176,7 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
+      (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
       (ServerpodEnv.serverId) => 'serverId',
     };
   }
@@ -218,6 +222,8 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
+      (ServerpodEnv.sessionConsoleLogFormat) =>
+        'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT',
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
     };
   }

@@ -186,7 +186,12 @@ abstract class Session implements DatabaseAccessor {
     }
 
     if (Features.enableConsoleLogging) {
-      logWriters.add(StdOutLogWriter(session));
+      var logFormat = session.serverpod.config.sessionLogs.consoleLogFormat;
+      var consoleLogger = switch (logFormat) {
+        ConsoleLogFormat.json => JsonStdOutLogWriter(session),
+        ConsoleLogFormat.text => TextStdOutLogWriter(session),
+      };
+      logWriters.add(consoleLogger);
     }
 
     if ((_isLongLived(session)) &&
