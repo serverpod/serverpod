@@ -566,12 +566,17 @@ class DatabaseConnection {
     );
 
     return _postgresConnection.runTx<R>(
-      (ctx) {
+      (ctx) async {
         var transaction = _PostgresTransaction(
           ctx,
           session,
         );
-        return transactionFunction(transaction);
+        final result = await transactionFunction(transaction);
+
+        unawaited(
+            runPostCommitListeners(session, transaction._postCommitListeners));
+
+        return result;
       },
       settings: pgTransactionSettings,
     );
@@ -751,6 +756,24 @@ class DatabaseConnection {
           };
         });
   }
+
+  Future<void> runPostCommitListeners(
+    Session session,
+    List<PostCommitListener> postCommitListeners,
+  ) async {
+    for (final postCommitListener in postCommitListeners) {
+      try {
+        await postCommitListener();
+      } catch (e, stackTrace) {
+        session.log(
+          'Post commit listener failed executing',
+          level: LogLevel.error,
+          exception: e,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+  }
 }
 
 Table _getTableOrAssert<T>(Session session, {required String operation}) {
@@ -801,6 +824,7 @@ class _PostgresSavepoint implements Savepoint {
 class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
   final Session _session;
+  final List<PostCommitListener> _postCommitListeners = [];
 
   _PostgresTransaction(
     this.executionContext,
@@ -828,6 +852,11 @@ class _PostgresTransaction implements Transaction {
     var savepointId = 'savepoint_$postgresCompatibleRandomString';
     await _query('SAVEPOINT $savepointId;');
     return _PostgresSavepoint(savepointId, this);
+  }
+
+  @override
+  void addPostCommitListener(PostCommitListener listener) {
+    _postCommitListeners.add(listener);
   }
 }
 
