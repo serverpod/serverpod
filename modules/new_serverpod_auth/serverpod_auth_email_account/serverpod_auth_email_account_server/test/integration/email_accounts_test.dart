@@ -63,6 +63,17 @@ void main() {
       expect(result.result, EmailAccountRequestResult.accountRequestCreated);
       expect(result.accountRequestId, receivedAccountRequestId);
     });
+
+    test(
+        'when requesting a reset for a non-existent email, it returns "email does not exist" status.',
+        () async {
+      final result = await EmailAccounts.requestPasswordReset(
+        session,
+        email: '404@serverpod.dev',
+      );
+
+      expect(result, PasswordResetResult.emailDoesNotExist);
+    });
   });
 
   withServerpod('Given a pending email account request,',
@@ -380,6 +391,64 @@ void main() {
       );
     });
   });
+
+  withServerpod('Given a completed password reset,',
+      (final sessionBuilder, final endpoints) {
+    const email = 'Test1@serverpod.dev';
+    const oldPassword = 'old123456';
+    const newPassword = 'new1234!';
+    late Session session;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+      authUserId = authUser.id!;
+
+      await _createEmailAccount(
+        session,
+        authUserId: authUserId,
+        email: email,
+        password: oldPassword,
+      );
+
+      await _resetPassword(
+        session,
+        email: email,
+        newPassword: newPassword,
+      );
+    });
+
+    test('when using the new credentials for the login, then it succeeds.',
+        () async {
+      final userId = await EmailAccounts.login(
+        session,
+        email: email,
+        password: newPassword,
+      );
+
+      expect(userId, authUserId);
+    });
+
+    test('when using the old credentials for the login, then it fails.',
+        () async {
+      await expectLater(
+        () => EmailAccounts.login(
+          session,
+          email: email,
+          password: oldPassword,
+        ),
+        throwsA(
+          isA<EmailAccountLoginException>().having((final e) => e.reason,
+              'reason', EmailAccountLoginFailureReason.invalidCredentials),
+        ),
+      );
+    });
+  });
 }
 
 Future<
@@ -458,4 +527,39 @@ Future<(UuidValue paswordResetRequestId, String verificationCode)>
   EmailAccountConfig.current = EmailAccountConfig();
 
   return (pendingPasswordResetRequestId, pendingPasswordResetVerificationCode);
+}
+
+Future<void> _resetPassword(
+  final Session session, {
+  required final String email,
+  required final String newPassword,
+}) async {
+  late UuidValue pendingPasswordResetRequestId;
+  late String pendingPasswordResetVerificationCode;
+  EmailAccountConfig.current = EmailAccountConfig(
+    sendPasswordResetMail: (
+      final session, {
+      required final email,
+      required final passwordResetRequestId,
+      required final transaction,
+      required final verificationCode,
+    }) {
+      pendingPasswordResetRequestId = passwordResetRequestId;
+      pendingPasswordResetVerificationCode = verificationCode;
+    },
+  );
+
+  await EmailAccounts.requestPasswordReset(
+    session,
+    email: email,
+  );
+
+  EmailAccountConfig.current = EmailAccountConfig();
+
+  await EmailAccounts.completePasswordReset(
+    session,
+    passwordResetRequestId: pendingPasswordResetRequestId,
+    verificationCode: pendingPasswordResetVerificationCode,
+    newPassword: newPassword,
+  );
 }
