@@ -14,54 +14,58 @@ abstract final class EmailAccounts {
     required final String password,
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      email = email.trim().toLowerCase();
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        email = email.trim().toLowerCase();
 
-      var account = await EmailAccount.db.findFirstRow(
-        session,
-        where: (final t) => t.email.equals(email),
-        transaction: transaction,
-      );
-
-      if (await _hasTooManyFailedSignIns(session, email)) {
-        throw EmailAccountLoginException(
-          reason: EmailAccountLoginFailureReason.tooManyAttempts,
-        );
-      }
-
-      try {
-        account ??= await _importExistingUser(
+        var account = await EmailAccount.db.findFirstRow(
           session,
-          email: email,
-          password: password,
+          where: (final t) => t.email.equals(email),
           transaction: transaction,
         );
-      } catch (_) {
-        await _logFailedSignIn(session, email);
 
-        rethrow;
-      }
+        if (await _hasTooManyFailedSignIns(session, email)) {
+          throw EmailAccountLoginException(
+            reason: EmailAccountLoginFailureReason.tooManyAttempts,
+          );
+        }
 
-      if (account == null) {
-        throw EmailAccountLoginException(
-          reason: EmailAccountLoginFailureReason.invalidCredentials,
-        );
-      }
+        try {
+          account ??= await _importExistingUser(
+            session,
+            email: email,
+            password: password,
+            transaction: transaction,
+          );
+        } catch (_) {
+          await _logFailedSignIn(session, email);
 
-      if (!PasswordHash.validateHash(
-        email: email,
-        password: password,
-        hash: account.passwordHash,
-      )) {
-        await _logFailedSignIn(session, email);
+          rethrow;
+        }
 
-        throw EmailAccountLoginException(
-          reason: EmailAccountLoginFailureReason.invalidCredentials,
-        );
-      }
+        if (account == null) {
+          throw EmailAccountLoginException(
+            reason: EmailAccountLoginFailureReason.invalidCredentials,
+          );
+        }
 
-      return account.authUserId;
-    }, transaction: transaction);
+        if (!PasswordHash.validateHash(
+          email: email,
+          password: password,
+          hash: account.passwordHash,
+        )) {
+          await _logFailedSignIn(session, email);
+
+          throw EmailAccountLoginException(
+            reason: EmailAccountLoginFailureReason.invalidCredentials,
+          );
+        }
+
+        return account.authUserId;
+      },
+    );
   }
 
   /// Returns the result of the operation and a process ID for the account request.
@@ -94,72 +98,76 @@ abstract final class EmailAccounts {
       throw EmailAccountPasswordPolicyViolationException();
     }
 
-    return session.transactionOrSavepoint((final transaction) async {
-      email = email.trim().toLowerCase();
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        email = email.trim().toLowerCase();
 
-      final existingAccountCount = await EmailAccount.db.count(
-        session,
-        where: (final t) => t.email.equals(email),
-        transaction: transaction,
-      );
-      if (existingAccountCount > 0) {
-        return (
-          result: EmailAccountRequestResult.emailAlreadyRegistered,
-          accountRequestId: null,
+        final existingAccountCount = await EmailAccount.db.count(
+          session,
+          where: (final t) => t.email.equals(email),
+          transaction: transaction,
         );
-      }
-
-      final verificationCode =
-          EmailAccountConfig.current.registrationVerificationCodeGenerator();
-
-      final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
-        session,
-        where: (final t) => t.email.equals(email),
-        transaction: transaction,
-      );
-      if (pendingAccountRequest != null) {
-        if (pendingAccountRequest.created.isBefore(DateTime.now().subtract(
-          EmailAccountConfig.current.registrationVerificationCodeLifetime,
-        ))) {
-          await EmailAccountRequest.db.deleteRow(
-            session,
-            pendingAccountRequest,
-            transaction: transaction,
-          );
-        } else {
+        if (existingAccountCount > 0) {
           return (
-            result: EmailAccountRequestResult.emailAlreadyRequested,
+            result: EmailAccountRequestResult.emailAlreadyRegistered,
             accountRequestId: null,
           );
         }
-      }
 
-      final emailAccountRequest = await EmailAccountRequest.db.insertRow(
-        session,
-        EmailAccountRequest(
-          email: email,
-          passwordHash: PasswordHash.createHash(
+        final verificationCode =
+            EmailAccountConfig.current.registrationVerificationCodeGenerator();
+
+        final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
+          session,
+          where: (final t) => t.email.equals(email),
+          transaction: transaction,
+        );
+        if (pendingAccountRequest != null) {
+          if (pendingAccountRequest.created.isBefore(DateTime.now().subtract(
+            EmailAccountConfig.current.registrationVerificationCodeLifetime,
+          ))) {
+            await EmailAccountRequest.db.deleteRow(
+              session,
+              pendingAccountRequest,
+              transaction: transaction,
+            );
+          } else {
+            return (
+              result: EmailAccountRequestResult.emailAlreadyRequested,
+              accountRequestId: null,
+            );
+          }
+        }
+
+        final emailAccountRequest = await EmailAccountRequest.db.insertRow(
+          session,
+          EmailAccountRequest(
             email: email,
-            password: password,
+            passwordHash: PasswordHash.createHash(
+              email: email,
+              password: password,
+            ),
+            verificationCode: verificationCode,
           ),
+          transaction: transaction,
+        );
+
+        EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
+          session,
+          email: email,
+          accountRequestId: emailAccountRequest.id!,
           verificationCode: verificationCode,
-        ),
-        transaction: transaction,
-      );
+          transaction: transaction,
+        );
 
-      EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
-        session,
-        email: email,
-        accountRequestId: emailAccountRequest.id!,
-        verificationCode: verificationCode,
-        transaction: transaction,
-      );
-
-      return (
-        result: EmailAccountRequestResult.accountRequestCreated,
-        accountRequestId: emailAccountRequest.id!,
-      );
-    }, transaction: transaction);
+        return (
+          result: EmailAccountRequestResult.accountRequestCreated,
+          accountRequestId: emailAccountRequest.id!,
+        );
+      },
+    );
   }
 
   /// Returns the account request creation ID if the request is valid.
@@ -201,43 +209,47 @@ abstract final class EmailAccounts {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final request = await EmailAccountRequest.db.findById(
-        session,
-        accountRequestId,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final request = await EmailAccountRequest.db.findById(
+          session,
+          accountRequestId,
+          transaction: transaction,
+        );
 
-      if (request == null) {
-        throw EmailAccountRequestNotFoundException();
-      }
+        if (request == null) {
+          throw EmailAccountRequestNotFoundException();
+        }
 
-      if (request.isExpired) {
-        throw EmailAccountRequestExpiredException();
-      }
+        if (request.isExpired) {
+          throw EmailAccountRequestExpiredException();
+        }
 
-      if (request.verificationCode != verificationCode) {
-        throw EmailAccountRequestUnauthorizedException();
-      }
+        if (request.verificationCode != verificationCode) {
+          throw EmailAccountRequestUnauthorizedException();
+        }
 
-      await EmailAccountRequest.db.deleteRow(
-        session,
-        request,
-        transaction: transaction,
-      );
+        await EmailAccountRequest.db.deleteRow(
+          session,
+          request,
+          transaction: transaction,
+        );
 
-      final account = await EmailAccount.db.insertRow(
-        session,
-        EmailAccount(
-          authUserId: authUserId,
-          email: request.email,
-          passwordHash: request.passwordHash,
-        ),
-        transaction: transaction,
-      );
+        final account = await EmailAccount.db.insertRow(
+          session,
+          EmailAccount(
+            authUserId: authUserId,
+            email: request.email,
+            passwordHash: request.passwordHash,
+          ),
+          transaction: transaction,
+        );
 
-      return (emailAccountId: account.id!, email: request.email);
-    }, transaction: transaction);
+        return (emailAccountId: account.id!, email: request.email);
+      },
+    );
   }
 
   /// Sends out a password reset email for the given account, if it exists.
@@ -250,55 +262,60 @@ abstract final class EmailAccounts {
     required String email,
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      email = email.trim().toLowerCase();
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        email = email.trim().toLowerCase();
 
-      await _logPasswordResetAttempt(
-        session,
-        email,
-        transaction: transaction,
-      );
+        await _logPasswordResetAttempt(
+          session,
+          email,
+          transaction: transaction,
+        );
 
-      if (await _hasTooManyPasswordResetAttempts(
-        session,
-        email,
-        transaction: transaction,
-      )) {
-        throw Exception('Too many password reset requests in the last hour.');
-      }
+        if (await _hasTooManyPasswordResetAttempts(
+          session,
+          email,
+          transaction: transaction,
+        )) {
+          throw Exception('Too many password reset requests in the last hour.');
+        }
 
-      final account = await EmailAccount.db.findFirstRow(
-        session,
-        where: (final t) => t.email.equals(email),
-        transaction: transaction,
-      );
+        final account = await EmailAccount.db.findFirstRow(
+          session,
+          where: (final t) => t.email.equals(email),
+          transaction: transaction,
+        );
 
-      if (account == null) {
-        return PasswordResetResult.emailDoesNotExist;
-      }
+        if (account == null) {
+          return PasswordResetResult.emailDoesNotExist;
+        }
 
-      final resetToken =
-          EmailAccountConfig.current.passwordResetVerificationCodeGenerator();
+        final resetToken =
+            EmailAccountConfig.current.passwordResetVerificationCodeGenerator();
 
-      final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
-        session,
-        EmailAccountPasswordResetRequest(
-          authenticationId: account.id!,
+        final resetRequest =
+            await EmailAccountPasswordResetRequest.db.insertRow(
+          session,
+          EmailAccountPasswordResetRequest(
+            authenticationId: account.id!,
+            verificationCode: resetToken,
+          ),
+          transaction: transaction,
+        );
+
+        EmailAccountConfig.current.sendPasswordResetMail?.call(
+          session,
+          email: email,
+          passwordResetRequestId: resetRequest.id!,
           verificationCode: resetToken,
-        ),
-        transaction: transaction,
-      );
+          transaction: transaction,
+        );
 
-      EmailAccountConfig.current.sendPasswordResetMail?.call(
-        session,
-        email: email,
-        passwordResetRequestId: resetRequest.id!,
-        verificationCode: resetToken,
-        transaction: transaction,
-      );
-
-      return PasswordResetResult.passwordResetSent;
-    }, transaction: transaction);
+        return PasswordResetResult.passwordResetSent;
+      },
+    );
   }
 
   /// Returns whether the password reset request is still valid.
@@ -335,50 +352,54 @@ abstract final class EmailAccounts {
     required final String newPassword,
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
-        session,
-        passwordResetRequestId,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
+          session,
+          passwordResetRequestId,
+          transaction: transaction,
+        );
 
-      if (resetRequest == null) {
-        throw EmailAccountPasswordResetRequestNotFoundException();
-      }
+        if (resetRequest == null) {
+          throw EmailAccountPasswordResetRequestNotFoundException();
+        }
 
-      if (resetRequest.isExpired) {
-        throw EmailAccountPasswordResetRequestExpiredException();
-      }
+        if (resetRequest.isExpired) {
+          throw EmailAccountPasswordResetRequestExpiredException();
+        }
 
-      if (resetRequest.verificationCode != verificationCode) {
-        throw EmailAccountPasswordResetRequestUnauthorizedException();
-      }
+        if (resetRequest.verificationCode != verificationCode) {
+          throw EmailAccountPasswordResetRequestUnauthorizedException();
+        }
 
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        transaction: transaction,
-      );
+        await EmailAccountPasswordResetRequest.db.deleteRow(
+          session,
+          resetRequest,
+          transaction: transaction,
+        );
 
-      final account = (await EmailAccount.db.findById(
-        session,
-        resetRequest.authenticationId,
-        transaction: transaction,
-      ))!;
+        final account = (await EmailAccount.db.findById(
+          session,
+          resetRequest.authenticationId,
+          transaction: transaction,
+        ))!;
 
-      await EmailAccount.db.updateRow(
-        session,
-        account.copyWith(
-          passwordHash: PasswordHash.createHash(
-            email: account.email,
-            password: newPassword,
+        await EmailAccount.db.updateRow(
+          session,
+          account.copyWith(
+            passwordHash: PasswordHash.createHash(
+              email: account.email,
+              password: newPassword,
+            ),
           ),
-        ),
-        transaction: transaction,
-      );
+          transaction: transaction,
+        );
 
-      return account.authUserId;
-    }, transaction: transaction);
+        return account.authUserId;
+      },
+    );
   }
 
   static Future<bool> _hasTooManyFailedSignIns(
@@ -591,49 +612,6 @@ enum PasswordResetResult {
 
   /// No account exists for the given email.
   emailDoesNotExist,
-}
-
-extension on Session {
-  /// Runs the closure [f] in isolation, inside the parent [Transaction] (if any).
-  ///
-  /// Either creates a new transaction for [f],
-  /// or creates a savepoint inside the given transaction,
-  /// and would discard any modifications if [f] fails.
-  Future<R> transactionOrSavepoint<R>(
-    final TransactionFunction<R> f, {
-    required Transaction? transaction,
-  }) async {
-    // Use the implicit transaction from tests
-    // ignore: invalid_use_of_visible_for_testing_member
-    transaction ??= this.transaction;
-
-    if (transaction == null) {
-      return db.transaction(f);
-    }
-
-    Savepoint? savepoint;
-    try {
-      savepoint = await transaction.createSavepoint();
-
-      final result = await f(transaction);
-
-      await savepoint.release();
-
-      return result;
-    } catch (_) {
-      try {
-        await savepoint?.rollback();
-      } catch (e, stackTrace) {
-        log(
-          'Failed to roll back to savepoint.',
-          exception: e,
-          stackTrace: stackTrace,
-        );
-      }
-
-      rethrow;
-    }
-  }
 }
 
 extension on EmailAccountRequest {
