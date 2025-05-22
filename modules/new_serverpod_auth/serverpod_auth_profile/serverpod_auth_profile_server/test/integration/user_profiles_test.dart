@@ -113,19 +113,17 @@ void main() {
             throw UnimplementedError();
           });
 
-          expect(
+          await expectLater(
             () => UserProfiles.createUserProfile(
               session,
               authUserId,
               UserProfileData(),
-              transaction: session.transaction,
             ),
             throwsA(isA<UnimplementedError>()),
           );
 
           expect(await UserProfile.db.find(session), isEmpty);
         },
-        skip: true,
       );
 
       test(
@@ -140,12 +138,11 @@ void main() {
             throw UnimplementedError();
           });
 
-          expect(
+          await expectLater(
             () => UserProfiles.createUserProfile(
               session,
               authUserId,
               UserProfileData(),
-              transaction: session.transaction,
             ),
             throwsA(isA<UnimplementedError>()),
           );
@@ -290,14 +287,12 @@ void main() {
         final profile = await UserProfiles.findUserProfileByUserId(
           session,
           authUserId,
-          transaction: session.transaction,
         );
         expect(
           profile.fullName,
           isNull,
         );
       },
-      skip: true,
     );
 
     test(
@@ -324,7 +319,6 @@ void main() {
         final profile = await UserProfiles.findUserProfileByUserId(
           session,
           authUserId,
-          transaction: session.transaction,
         );
         expect(
           profile.fullName,

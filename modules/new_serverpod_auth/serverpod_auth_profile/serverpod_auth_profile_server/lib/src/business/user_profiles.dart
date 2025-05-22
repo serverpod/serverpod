@@ -17,7 +17,9 @@ abstract final class UserProfiles {
     UserProfileData userProfile, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
       (final transaction) async {
         final onBeforeUserProfileCreated =
             UserProfileConfig.current.onBeforeUserProfileCreated;
@@ -55,7 +57,6 @@ abstract final class UserProfiles {
 
         return createdProfileModel;
       },
-      transaction: transaction,
     );
   }
 
@@ -102,23 +103,27 @@ abstract final class UserProfiles {
     final String? newUserName, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final userProfile = await _findUserProfile(
-        session,
-        authUserId,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
 
-      userProfile.userName = newUserName;
+        userProfile.userName = newUserName;
 
-      final updatedProfile = await _updateProfile(
-        session,
-        userProfile,
-        transaction: transaction,
-      );
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
 
-      return updatedProfile.toModel();
-    }, transaction: transaction);
+        return updatedProfile.toModel();
+      },
+    );
   }
 
   /// Updates a profile's full name.
@@ -128,23 +133,27 @@ abstract final class UserProfiles {
     final String? newFullName, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final userProfile = await _findUserProfile(
-        session,
-        authUserId,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
 
-      userProfile.fullName = newFullName;
+        userProfile.fullName = newFullName;
 
-      final updatedProfile = await _updateProfile(
-        session,
-        userProfile,
-        transaction: transaction,
-      );
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
 
-      return updatedProfile.toModel();
-    }, transaction: transaction);
+        return updatedProfile.toModel();
+      },
+    );
   }
 
   /// Remove the user profile, incl. images, for the given [authUserId].
@@ -161,46 +170,50 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final profile = await UserProfile.db.findFirstRow(
-        session,
-        where: (final t) => t.authUserId.equals(authUserId),
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final profile = await UserProfile.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(authUserId),
+          transaction: transaction,
+        );
 
-      if (profile == null) {
-        return;
-      }
-
-      final images = await UserProfileImage.db.find(
-        session,
-        where: (final t) => t.userProfileId.equals(profile.id!),
-        transaction: transaction,
-      );
-
-      // This also deletes the user profile image entries from the database
-      await UserProfile.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(authUserId),
-        transaction: transaction,
-      );
-
-      for (final image in images) {
-        try {
-          await session.storage.deleteFile(
-            storageId: image.storageId,
-            path: image.path,
-          );
-        } catch (e, stackTrace) {
-          session.log(
-            'Failed to delete user image from storage',
-            level: LogLevel.error,
-            exception: e,
-            stackTrace: stackTrace,
-          );
+        if (profile == null) {
+          return;
         }
-      }
-    }, transaction: transaction);
+
+        final images = await UserProfileImage.db.find(
+          session,
+          where: (final t) => t.userProfileId.equals(profile.id!),
+          transaction: transaction,
+        );
+
+        // This also deletes the user profile image entries from the database
+        await UserProfile.db.deleteWhere(
+          session,
+          where: (final t) => t.authUserId.equals(authUserId),
+          transaction: transaction,
+        );
+
+        for (final image in images) {
+          try {
+            await session.storage.deleteFile(
+              storageId: image.storageId,
+              path: image.path,
+            );
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to delete user image from storage',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+        }
+      },
+    );
   }
 
 // #region Profile images
@@ -292,21 +305,25 @@ abstract final class UserProfiles {
     final Uri url, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final image = await _createImageFromUrl(
-        session,
-        authUserId,
-        url,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final image = await _createImageFromUrl(
+          session,
+          authUserId,
+          url,
+          transaction: transaction,
+        );
 
-      return _setUserImage(
-        session,
-        authUserId,
-        image,
-        transaction: transaction,
-      );
-    }, transaction: transaction);
+        return _setUserImage(
+          session,
+          authUserId,
+          image,
+          transaction: transaction,
+        );
+      },
+    );
   }
 
   /// Sets a user's image from image data.
@@ -318,21 +335,25 @@ abstract final class UserProfiles {
     final Uint8List imageBytes, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint((final transaction) async {
-      final image = await _createImageFromBytes(
-        session,
-        authUserId,
-        imageBytes,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final image = await _createImageFromBytes(
+          session,
+          authUserId,
+          imageBytes,
+          transaction: transaction,
+        );
 
-      return _setUserImage(
-        session,
-        authUserId,
-        image,
-        transaction: transaction,
-      );
-    }, transaction: transaction);
+        return _setUserImage(
+          session,
+          authUserId,
+          image,
+          transaction: transaction,
+        );
+      },
+    );
   }
 
   /// Sets a user's image to the default image for that user.
@@ -341,7 +362,9 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return session.transactionOrSavepoint(
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
       (final transaction) async {
         final userProfile = await UserProfiles.findUserProfileByUserId(
           session,
@@ -360,7 +383,6 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
       },
-      transaction: transaction,
     );
   }
 
@@ -487,44 +509,5 @@ abstract final class UserProfiles {
         UserProfileImageType.png => encodePng(image),
       },
     );
-  }
-}
-
-extension on Session {
-  /// Runs the closure [f] in isolation, inside the parent [Transaction] (if any).
-  ///
-  /// Either creates a new transaction for [f],
-  /// or creates a savepoint inside the given transaction,
-  /// and would discard any modifications if [f] fails.
-  Future<R> transactionOrSavepoint<R>(
-    final TransactionFunction<R> f, {
-    required final Transaction? transaction,
-  }) async {
-    if (transaction == null) {
-      return db.transaction(f);
-    }
-
-    Savepoint? savepoint;
-    try {
-      savepoint = await transaction.createSavepoint();
-
-      final result = await f(transaction);
-
-      await savepoint.release();
-
-      return result;
-    } catch (_) {
-      try {
-        await savepoint?.rollback();
-      } catch (e, stackTrace) {
-        log(
-          'Failed to roll back to savepoint.',
-          exception: e,
-          stackTrace: stackTrace,
-        );
-      }
-
-      rethrow;
-    }
   }
 }
