@@ -63,7 +63,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   late final EmailAuthController _emailAuth;
   late final SignInWithEmailDialogLabels _localization;
 
-  _Page _page = _Page.createAccount;
+  _Page _page = _Page.signIn;
 
   bool _enabled = true;
   bool _isPasswordObscured = true;
