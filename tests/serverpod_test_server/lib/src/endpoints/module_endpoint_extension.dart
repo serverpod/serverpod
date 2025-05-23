@@ -32,7 +32,10 @@ class ModuleEndpointAdaptation extends IgnoredModuleEndpoint {
   }
 
   @override
-  Future<ModuleClass> echoModel(Session sesion, ModuleClass value) {
+  Future<IgnoreEndpointModel> echoModel(
+    Session sesion,
+    IgnoreEndpointModel value,
+  ) {
     return super.echoModel(sesion, value);
   }
 }
