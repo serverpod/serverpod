@@ -38,13 +38,10 @@ void main() {
     test('when calling `echoModel`, then the input value is returned verbatim.',
         () async {
       var response = await client.moduleEndpointSubclass
-          .echoModel(ModuleClass(name: 'test', data: 1));
+          .echoModel(IgnoreEndpointModel(name: 'test'));
 
-      expect(
-          response,
-          isA<ModuleClass>()
-              .having((c) => c.name, 'name', 'test')
-              .having((c) => c.data, 'data', 1));
+      expect(response,
+          isA<IgnoreEndpointModel>().having((c) => c.name, 'name', 'test'));
     });
 
     test(
@@ -93,13 +90,12 @@ void main() {
         'when calling `echoModel`, then the input value is returned verbatim (re-using the `super` implementation).',
         () async {
       var response = await client.moduleEndpointAdaptation
-          .echoModel(ModuleClass(name: 'test', data: 1));
+          .echoModel(IgnoreEndpointModel(name: 'test'));
 
       expect(
-          response,
-          isA<ModuleClass>()
-              .having((c) => c.name, 'name', 'test')
-              .having((c) => c.data, 'data', 1));
+        response,
+        isA<ModuleClass>().having((c) => c.name, 'name', 'test'),
+      );
     });
   });
 
