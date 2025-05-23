@@ -20,6 +20,11 @@ class EndpointDefinition {
   /// The methods this endpoint defines.
   final List<MethodDefinition> methods;
 
+  /// Whether this endpoint is only visible for testing, but not to the client.
+  ///
+  /// That means it can be instantiated, but was marked with `@doNotGenerate.
+  final bool onlyVisibleForTesting;
+
   /// Create a new [EndpointDefinition].
   const EndpointDefinition({
     required this.name,
@@ -27,6 +32,7 @@ class EndpointDefinition {
     required this.methods,
     required this.className,
     required this.filePath,
+    this.onlyVisibleForTesting = false,
   });
 }
 
