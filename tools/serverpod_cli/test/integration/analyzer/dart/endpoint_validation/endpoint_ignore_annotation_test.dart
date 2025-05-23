@@ -58,8 +58,11 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, isEmpty);
     });
 
-    test('then no endpoint definition is created.', () {
-      expect(endpointDefinitions, isEmpty);
+    test(
+        'then endpoint definition is created marked with `onlyVisibleForTesting`.',
+        () {
+      expect(endpointDefinitions, hasLength(1));
+      expect(endpointDefinitions.single.onlyVisibleForTesting, isTrue);
     });
   });
 
@@ -94,8 +97,11 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, isEmpty);
     });
 
-    test('then no endpoint definition is created.', () {
-      expect(endpointDefinitions, isEmpty);
+    test(
+        'then endpoint definition is created marked with `onlyVisibleForTesting`.',
+        () {
+      expect(endpointDefinitions, hasLength(1));
+      expect(endpointDefinitions.single.onlyVisibleForTesting, isTrue);
     });
   });
 
@@ -174,9 +180,12 @@ class SecondExampleEndpoint extends Endpoint {
       expect(collector.errors, isEmpty);
     });
 
-    test('then endpoint definition is created for the non-marked endpoint.',
+    test(
+        'then 2 endpoint definitions are created with one marked as `onlyVisibleForTesting`.',
         () {
-      expect(endpointDefinitions, hasLength(1));
+      expect(endpointDefinitions, hasLength(2));
+      expect(endpointDefinitions.first.onlyVisibleForTesting, isTrue);
+      expect(endpointDefinitions.last.onlyVisibleForTesting, isFalse);
     });
   });
 
@@ -215,17 +224,20 @@ class ChildExampleEndpoint extends BaseExampleEndpoint {}
     });
 
     test(
-        'then endpoint definition is created for the non-marked endpoint sub-class.',
+        'then 2 endpoint definitions are created with one marked as `onlyVisibleForTesting`.',
         () {
-      expect(endpointDefinitions, hasLength(1));
-      expect(endpointDefinitions.single.className, 'ChildExampleEndpoint');
+      expect(endpointDefinitions, hasLength(2));
+      expect(endpointDefinitions.first.name, 'BaseExampleEndpoint');
+      expect(endpointDefinitions.first.onlyVisibleForTesting, isTrue);
+      expect(endpointDefinitions.last.name, 'ChildExampleEndpoint');
+      expect(endpointDefinitions.last.onlyVisibleForTesting, isFalse);
     });
 
     test(
         'then endpoint definition of the created endpoint contains the inherited method',
         () {
-      expect(endpointDefinitions.single.methods, hasLength(1));
-      expect(endpointDefinitions.single.methods.single.name, 'hello');
+      expect(endpointDefinitions.last.methods, hasLength(1));
+      expect(endpointDefinitions.last.methods.single.name, 'hello');
     });
   });
 }
