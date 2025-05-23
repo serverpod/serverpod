@@ -42,6 +42,7 @@ cp CHANGELOG.md tests/serverpod_test_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_server/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_nonvector/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_flutter/CHANGELOG.md
 
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_server/CHANGELOG.md
@@ -82,6 +83,7 @@ cp README_subpackage.md tests/serverpod_test_client/README.md
 cp README_subpackage.md tests/serverpod_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_client/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_server/README.md
+cp README_subpackage.md tests/serverpod_test_nonvector/README.md
 cp README_subpackage.md tests/serverpod_test_flutter/README.md
 
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_server/README.md
