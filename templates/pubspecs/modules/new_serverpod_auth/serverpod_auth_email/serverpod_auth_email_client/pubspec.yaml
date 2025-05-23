@@ -1,0 +1,9 @@
+name: serverpod_auth_email_client
+description: Serverpod email authentication endpoint client module.
+version: SERVERPOD_VERSION
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
