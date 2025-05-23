@@ -2184,8 +2184,9 @@ class EndpointModuleEndpointSubclass extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<_i18.ModuleClass> echoModel(_i18.ModuleClass value) =>
-      caller.callServerEndpoint<_i18.ModuleClass>(
+  _i2.Future<_i18.IgnoreEndpointModel> echoModel(
+          _i18.IgnoreEndpointModel value) =>
+      caller.callServerEndpoint<_i18.IgnoreEndpointModel>(
         'moduleEndpointSubclass',
         'echoModel',
         {'value': value},
@@ -2229,8 +2230,9 @@ class EndpointModuleEndpointAdaptation extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<_i18.ModuleClass> echoModel(_i18.ModuleClass value) =>
-      caller.callServerEndpoint<_i18.ModuleClass>(
+  _i2.Future<_i18.IgnoreEndpointModel> echoModel(
+          _i18.IgnoreEndpointModel value) =>
+      caller.callServerEndpoint<_i18.IgnoreEndpointModel>(
         'moduleEndpointAdaptation',
         'echoModel',
         {'value': value},
@@ -2258,8 +2260,9 @@ class EndpointModuleEndpointReduction extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<_i18.ModuleClass> echoModel(_i18.ModuleClass value) =>
-      caller.callServerEndpoint<_i18.ModuleClass>(
+  _i2.Future<_i18.IgnoreEndpointModel> echoModel(
+          _i18.IgnoreEndpointModel value) =>
+      caller.callServerEndpoint<_i18.IgnoreEndpointModel>(
         'moduleEndpointReduction',
         'echoModel',
         {'value': value},
@@ -2307,8 +2310,9 @@ class EndpointModuleEndpointExtension extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<_i18.ModuleClass> echoModel(_i18.ModuleClass value) =>
-      caller.callServerEndpoint<_i18.ModuleClass>(
+  _i2.Future<_i18.IgnoreEndpointModel> echoModel(
+          _i18.IgnoreEndpointModel value) =>
+      caller.callServerEndpoint<_i18.IgnoreEndpointModel>(
         'moduleEndpointExtension',
         'echoModel',
         {'value': value},

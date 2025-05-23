@@ -7744,9 +7744,9 @@ class _ModuleEndpointSubclass {
     });
   }
 
-  _i3.Future<_i19.ModuleClass> echoModel(
+  _i3.Future<_i19.IgnoreEndpointModel> echoModel(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.ModuleClass value,
+    _i19.IgnoreEndpointModel value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -7765,7 +7765,7 @@ class _ModuleEndpointSubclass {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i19.ModuleClass>);
+        ) as _i3.Future<_i19.IgnoreEndpointModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7878,9 +7878,9 @@ class _ModuleEndpointAdaptation {
     });
   }
 
-  _i3.Future<_i19.ModuleClass> echoModel(
+  _i3.Future<_i19.IgnoreEndpointModel> echoModel(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.ModuleClass value,
+    _i19.IgnoreEndpointModel value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -7899,7 +7899,7 @@ class _ModuleEndpointAdaptation {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i19.ModuleClass>);
+        ) as _i3.Future<_i19.IgnoreEndpointModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7980,9 +7980,9 @@ class _ModuleEndpointReduction {
     });
   }
 
-  _i3.Future<_i19.ModuleClass> echoModel(
+  _i3.Future<_i19.IgnoreEndpointModel> echoModel(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.ModuleClass value,
+    _i19.IgnoreEndpointModel value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -8001,7 +8001,7 @@ class _ModuleEndpointReduction {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i19.ModuleClass>);
+        ) as _i3.Future<_i19.IgnoreEndpointModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -8166,9 +8166,9 @@ class _ModuleEndpointExtension {
     });
   }
 
-  _i3.Future<_i19.ModuleClass> echoModel(
+  _i3.Future<_i19.IgnoreEndpointModel> echoModel(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.ModuleClass value,
+    _i19.IgnoreEndpointModel value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -8187,7 +8187,7 @@ class _ModuleEndpointExtension {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i19.ModuleClass>);
+        ) as _i3.Future<_i19.IgnoreEndpointModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
