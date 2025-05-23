@@ -58,8 +58,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, isEmpty);
     });
 
-    test(
-        'then endpoint definition is created marked with `onlyVisibleForTesting`.',
+    test('then endpoint definition is created with `onlyVisibleForTesting`.',
         () {
       expect(endpointDefinitions, hasLength(1));
       expect(endpointDefinitions.single.onlyVisibleForTesting, isTrue);
@@ -97,8 +96,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, isEmpty);
     });
 
-    test(
-        'then endpoint definition is created marked with `onlyVisibleForTesting`.',
+    test('then endpoint definition is created with `onlyVisibleForTesting`.',
         () {
       expect(endpointDefinitions, hasLength(1));
       expect(endpointDefinitions.single.onlyVisibleForTesting, isTrue);
@@ -184,7 +182,9 @@ class SecondExampleEndpoint extends Endpoint {
         'then 2 endpoint definitions are created with one marked as `onlyVisibleForTesting`.',
         () {
       expect(endpointDefinitions, hasLength(2));
+      expect(endpointDefinitions.first.name, 'FirstExampleEndpoint');
       expect(endpointDefinitions.first.onlyVisibleForTesting, isTrue);
+      expect(endpointDefinitions.last.name, 'SecondExampleEndpoint');
       expect(endpointDefinitions.last.onlyVisibleForTesting, isFalse);
     });
   });
