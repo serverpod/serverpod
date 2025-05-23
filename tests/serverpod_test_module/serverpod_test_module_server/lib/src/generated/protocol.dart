@@ -11,8 +11,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'module_class.dart' as _i3;
-import 'module_feature/models/my_feature_model.dart' as _i4;
+import 'ignored_endpoint_model.dart' as _i3;
+import 'module_class.dart' as _i4;
+import 'module_feature/models/my_feature_model.dart' as _i5;
+export 'ignored_endpoint_model.dart';
 export 'module_class.dart';
 export 'module_feature/models/my_feature_model.dart';
 
@@ -31,23 +33,39 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.ModuleClass) {
-      return _i3.ModuleClass.fromJson(data) as T;
+    if (t == _i3.IgnoreEndpointModel) {
+      return _i3.IgnoreEndpointModel.fromJson(data) as T;
     }
-    if (t == _i4.MyModuleFeatureModel) {
-      return _i4.MyModuleFeatureModel.fromJson(data) as T;
+    if (t == _i4.ModuleClass) {
+      return _i4.ModuleClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.ModuleClass?>()) {
-      return (data != null ? _i3.ModuleClass.fromJson(data) : null) as T;
+    if (t == _i5.MyModuleFeatureModel) {
+      return _i5.MyModuleFeatureModel.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.MyModuleFeatureModel?>()) {
-      return (data != null ? _i4.MyModuleFeatureModel.fromJson(data) : null)
+    if (t == _i1.getType<_i3.IgnoreEndpointModel?>()) {
+      return (data != null ? _i3.IgnoreEndpointModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i4.ModuleClass?>()) {
+      return (data != null ? _i4.ModuleClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.MyModuleFeatureModel?>()) {
+      return (data != null ? _i5.MyModuleFeatureModel.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(int, BigInt)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<BigInt>(data['p'][1]),
+      ) as T;
+    }
+    if (t == Set<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
     }
     if (t == _i1.getType<(bool,)?>()) {
       return (data == null)
@@ -64,10 +82,13 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.ModuleClass) {
+    if (data is _i3.IgnoreEndpointModel) {
+      return 'IgnoreEndpointModel';
+    }
+    if (data is _i4.ModuleClass) {
       return 'ModuleClass';
     }
-    if (data is _i4.MyModuleFeatureModel) {
+    if (data is _i5.MyModuleFeatureModel) {
       return 'MyModuleFeatureModel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -83,11 +104,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'IgnoreEndpointModel') {
+      return deserialize<_i3.IgnoreEndpointModel>(data['data']);
+    }
     if (dataClassName == 'ModuleClass') {
-      return deserialize<_i3.ModuleClass>(data['data']);
+      return deserialize<_i4.ModuleClass>(data['data']);
     }
     if (dataClassName == 'MyModuleFeatureModel') {
-      return deserialize<_i4.MyModuleFeatureModel>(data['data']);
+      return deserialize<_i5.MyModuleFeatureModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -123,6 +147,14 @@ class Protocol extends _i1.SerializationManagerServer {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
+  }
+  if (record is (int, BigInt)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
+      ],
+    };
   }
   if (record is (bool,)) {
     return {

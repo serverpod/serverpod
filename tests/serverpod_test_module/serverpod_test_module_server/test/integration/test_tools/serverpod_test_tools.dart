@@ -14,10 +14,14 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:serverpod_test_module_server/src/generated/module_class.dart'
+import 'package:serverpod_test_module_server/src/generated/protocol.dart'
     as _i4;
-import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_module_server/src/generated/ignored_endpoint_model.dart'
     as _i5;
+import 'package:serverpod_test_module_server/src/generated/module_class.dart'
+    as _i6;
+import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
+    as _i7;
 import 'package:serverpod_test_module_server/src/generated/protocol.dart';
 import 'package:serverpod_test_module_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -102,6 +106,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final _IgnoredModuleEndpoint ignoredModule;
+
   late final _ModuleEndpoint module;
 
   late final _StreamingEndpoint streaming;
@@ -116,6 +122,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
+    ignoredModule = _IgnoredModuleEndpoint(
+      endpoints,
+      serializationManager,
+    );
     module = _ModuleEndpoint(
       endpoints,
       serializationManager,
@@ -128,6 +138,137 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _IgnoredModuleEndpoint {
+  _IgnoredModuleEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> echoString(
+    _i1.TestSessionBuilder sessionBuilder,
+    String value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'ignoredModule',
+        method: 'echoString',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'ignoredModule',
+          methodName: 'echoString',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<(int, BigInt)> echoRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (int, BigInt) value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'ignoredModule',
+        method: 'echoRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'ignoredModule',
+          methodName: 'echoRecord',
+          parameters:
+              _i1.testObjectToJson({'value': _i4.mapRecordToJson(value)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+                (record) => _i4.Protocol().deserialize<(int, BigInt)>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Set<int>> echoContainer(
+    _i1.TestSessionBuilder sessionBuilder,
+    Set<int> value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'ignoredModule',
+        method: 'echoContainer',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'ignoredModule',
+          methodName: 'echoContainer',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Set<int>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i5.IgnoreEndpointModel> echoModel(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i5.IgnoreEndpointModel value,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'ignoredModule',
+        method: 'echoModel',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'ignoredModule',
+          methodName: 'echoModel',
+          parameters: _i1.testObjectToJson({'value': value}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.IgnoreEndpointModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 
@@ -170,9 +311,9 @@ class _ModuleEndpoint {
     });
   }
 
-  _i3.Future<_i4.ModuleClass> modifyModuleObject(
+  _i3.Future<_i6.ModuleClass> modifyModuleObject(
     _i1.TestSessionBuilder sessionBuilder,
-    _i4.ModuleClass object,
+    _i6.ModuleClass object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -191,7 +332,7 @@ class _ModuleEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i4.ModuleClass>);
+        ) as _i3.Future<_i6.ModuleClass>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -364,7 +505,7 @@ class _MyModuleFeatureEndpoint {
     });
   }
 
-  _i3.Future<_i5.MyModuleFeatureModel> myFeatureModel(
+  _i3.Future<_i7.MyModuleFeatureModel> myFeatureModel(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -383,7 +524,7 @@ class _MyModuleFeatureEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.MyModuleFeatureModel>);
+        ) as _i3.Future<_i7.MyModuleFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
