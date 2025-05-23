@@ -39,7 +39,11 @@ dependency_overrides:
     path: ../../serverpod_test_client
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_cloud_storage_s3:
+    path: ../../../integrations/serverpod_cloud_storage_s3
   serverpod_auth_client:
     path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_auth_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_server
   serverpod_cli:
     path: ../../../tools/serverpod_cli
