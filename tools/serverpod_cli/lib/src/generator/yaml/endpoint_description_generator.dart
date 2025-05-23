@@ -20,6 +20,8 @@ class EndpointDescriptionGenerator extends CodeGenerator {
   }) {
     var out = '';
     for (var endpoint in protocolDefinition.endpoints) {
+      if (endpoint.onlyVisibleForTesting) continue;
+
       out += '${endpoint.name}:\n';
       for (var method in endpoint.methods) {
         out += '  - ${method.name}:\n';

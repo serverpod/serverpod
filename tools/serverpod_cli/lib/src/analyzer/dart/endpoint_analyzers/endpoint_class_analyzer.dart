@@ -22,6 +22,8 @@ abstract class EndpointClassAnalyzer {
       className: className,
       methods: methodDefinitions,
       filePath: filePath,
+      onlyVisibleForTesting:
+          !EndpointClassAnalyzer.isClientVisibleEndpointClass(element),
     );
   }
 
@@ -32,12 +34,20 @@ abstract class EndpointClassAnalyzer {
 
   /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
+  ///
+  /// To check wheter this should be exposed to the client, see [isClientVisibleEndpointClass].
   static bool isEndpointClass(ClassElement element) {
     if (!element.isConstructable) return false;
 
+    return isEndpointInterface(element);
+  }
+
+  /// Returns true if the [ClassElement] is an endpoint class that should
+  /// be validated, parsed, and exposed to the client.
+  static bool isClientVisibleEndpointClass(ClassElement element) {
     if (element.markedAsIgnored) return false;
 
-    return isEndpointInterface(element);
+    return isEndpointClass(element);
   }
 
   /// Returns `true` if the class extends the Serverpod `Endpoint` base class.

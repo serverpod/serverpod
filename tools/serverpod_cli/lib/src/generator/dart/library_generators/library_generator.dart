@@ -453,7 +453,9 @@ class LibraryGenerator {
     var modulePrefix =
         config.type != PackageType.module ? '' : '${config.name}.';
 
-    for (var endpointDef in protocolDefinition.endpoints) {
+    for (var endpointDef in protocolDefinition.exposedEndpoints) {
+      if (endpointDef.onlyVisibleForTesting) continue;
+
       var endpointClassName = getEndpointClassName(endpointDef.name);
 
       library.body.add(
@@ -578,7 +580,7 @@ class LibraryGenerator {
               ? refer('ServerpodClientShared', serverpodUrl(false))
               : refer('ModuleEndpointCaller', serverpodUrl(false))
           ..fields.addAll([
-            for (var endpointDef in protocolDefinition.endpoints)
+            for (var endpointDef in protocolDefinition.exposedEndpoints)
               Field((f) => f
                 ..late = true
                 ..modifier = FieldModifier.final$
@@ -688,7 +690,7 @@ class LibraryGenerator {
                       .add(refer('super').call([refer('client')]).code);
               }
               c.body = Block.of([
-                for (var endpointDef in protocolDefinition.endpoints)
+                for (var endpointDef in protocolDefinition.exposedEndpoints)
                   refer(endpointDef.name)
                       .assign(refer(getEndpointClassName(endpointDef.name))
                           .call([refer('this')]))
@@ -714,7 +716,7 @@ class LibraryGenerator {
                       refer('EndpointRef', serverpodUrl(false)),
                     ]))
                   ..body = literalMap({
-                    for (var endpointDef in protocolDefinition.endpoints)
+                    for (var endpointDef in protocolDefinition.exposedEndpoints)
                       '$modulePrefix${endpointDef.name}':
                           refer(endpointDef.name)
                   }).code,
@@ -1600,5 +1602,11 @@ extension on DatabaseDefinition {
         }),
       ...additionalTables,
     ]).code;
+  }
+}
+
+extension on ProtocolDefinition {
+  List<EndpointDefinition> get exposedEndpoints {
+    return endpoints.where((e) => !e.onlyVisibleForTesting).toList();
   }
 }

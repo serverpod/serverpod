@@ -4970,7 +4970,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i58.ModuleClass>(),
+              type: _i1.getType<_i58.IgnoreEndpointModel>(),
               nullable: false,
             )
           },
@@ -5063,7 +5063,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i58.ModuleClass>(),
+              type: _i1.getType<_i58.IgnoreEndpointModel>(),
               nullable: false,
             )
           },
@@ -5130,7 +5130,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i58.ModuleClass>(),
+              type: _i1.getType<_i58.IgnoreEndpointModel>(),
               nullable: false,
             )
           },
@@ -5248,7 +5248,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i58.ModuleClass>(),
+              type: _i1.getType<_i58.IgnoreEndpointModel>(),
               nullable: false,
             )
           },

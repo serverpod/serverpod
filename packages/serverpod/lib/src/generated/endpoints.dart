@@ -10,22 +10,34 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/insights.dart' as _i2;
-import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
-import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
-import 'package:serverpod/src/generated/database/filter/filter.dart' as _i5;
+import '../cloud_storage/public_endpoint.dart' as _i2;
+import '../endpoints/insights.dart' as _i3;
+import 'package:serverpod/src/generated/runtime_settings.dart' as _i4;
+import 'package:serverpod/src/generated/session_log_filter.dart' as _i5;
+import 'package:serverpod/src/generated/database/filter/filter.dart' as _i6;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'insights': _i2.InsightsEndpoint()
+      'cloudStoragePublic': _i2.CloudStoragePublicEndpoint()
+        ..initialize(
+          server,
+          'cloudStoragePublic',
+          null,
+        ),
+      'insights': _i3.InsightsEndpoint()
         ..initialize(
           server,
           'insights',
           null,
-        )
+        ),
     };
+    connectors['cloudStoragePublic'] = _i1.EndpointConnector(
+      name: 'cloudStoragePublic',
+      endpoint: endpoints['cloudStoragePublic']!,
+      methodConnectors: {},
+    );
     connectors['insights'] = _i1.EndpointConnector(
       name: 'insights',
       endpoint: endpoints['insights']!,
@@ -37,7 +49,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .getRuntimeSettings(session),
         ),
         'setRuntimeSettings': _i1.MethodConnector(
@@ -45,7 +57,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'runtimeSettings': _i1.ParameterDescription(
               name: 'runtimeSettings',
-              type: _i1.getType<_i3.RuntimeSettings>(),
+              type: _i1.getType<_i4.RuntimeSettings>(),
               nullable: false,
             )
           },
@@ -53,7 +65,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .setRuntimeSettings(
             session,
             params['runtimeSettings'],
@@ -66,7 +78,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .clearAllLogs(session),
         ),
         'getSessionLog': _i1.MethodConnector(
@@ -79,7 +91,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i4.SessionLogFilter?>(),
+              type: _i1.getType<_i5.SessionLogFilter?>(),
               nullable: true,
             ),
           },
@@ -87,7 +99,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).getSessionLog(
+              (endpoints['insights'] as _i3.InsightsEndpoint).getSessionLog(
             session,
             params['numEntries'],
             params['filter'],
@@ -103,7 +115,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i4.SessionLogFilter?>(),
+              type: _i1.getType<_i5.SessionLogFilter?>(),
               nullable: true,
             ),
           },
@@ -111,7 +123,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).getOpenSessionLog(
+              (endpoints['insights'] as _i3.InsightsEndpoint).getOpenSessionLog(
             session,
             params['numEntries'],
             params['filter'],
@@ -130,7 +142,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).getCachesInfo(
+              (endpoints['insights'] as _i3.InsightsEndpoint).getCachesInfo(
             session,
             params['fetchKeys'],
           ),
@@ -142,7 +154,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).shutdown(session),
+              (endpoints['insights'] as _i3.InsightsEndpoint).shutdown(session),
         ),
         'checkHealth': _i1.MethodConnector(
           name: 'checkHealth',
@@ -151,7 +163,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .checkHealth(session),
         ),
         'getHealthData': _i1.MethodConnector(
@@ -172,7 +184,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).getHealthData(
+              (endpoints['insights'] as _i3.InsightsEndpoint).getHealthData(
             session,
             params['start'],
             params['end'],
@@ -185,7 +197,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .hotReload(session),
         ),
         'getTargetTableDefinition': _i1.MethodConnector(
@@ -195,7 +207,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .getTargetTableDefinition(session),
         ),
         'getLiveDatabaseDefinition': _i1.MethodConnector(
@@ -205,7 +217,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .getLiveDatabaseDefinition(session),
         ),
         'getDatabaseDefinitions': _i1.MethodConnector(
@@ -215,7 +227,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .getDatabaseDefinitions(session),
         ),
         'fetchDatabaseBulkData': _i1.MethodConnector(
@@ -238,7 +250,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'filter': _i1.ParameterDescription(
               name: 'filter',
-              type: _i1.getType<_i5.Filter?>(),
+              type: _i1.getType<_i6.Filter?>(),
               nullable: true,
             ),
           },
@@ -246,7 +258,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .fetchDatabaseBulkData(
             session,
             table: params['table'],
@@ -268,7 +280,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).runQueries(
+              (endpoints['insights'] as _i3.InsightsEndpoint).runQueries(
             session,
             params['queries'],
           ),
@@ -286,7 +298,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint)
+              (endpoints['insights'] as _i3.InsightsEndpoint)
                   .getDatabaseRowCount(
             session,
             table: params['table'],
@@ -305,7 +317,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
+              (endpoints['insights'] as _i3.InsightsEndpoint).executeSql(
             session,
             params['sql'],
           ),
@@ -323,7 +335,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['insights'] as _i2.InsightsEndpoint).fetchFile(
+              (endpoints['insights'] as _i3.InsightsEndpoint).fetchFile(
             session,
             params['path'],
           ),
