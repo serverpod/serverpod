@@ -1,0 +1,4 @@
+### Model just used in the `@doNoGenerateEndpoint`
+class: IgnoreEndpointModel
+fields:
+  name: String

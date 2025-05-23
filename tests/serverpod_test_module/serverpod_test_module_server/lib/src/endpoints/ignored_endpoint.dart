@@ -19,7 +19,10 @@ class IgnoredModuleEndpoint extends Endpoint {
     return value;
   }
 
-  Future<ModuleClass> echoModel(Session sesion, ModuleClass value) async {
+  Future<IgnoreEndpointModel> echoModel(
+    Session sesion,
+    IgnoreEndpointModel value,
+  ) async {
     return value;
   }
 
