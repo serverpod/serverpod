@@ -1,12 +1,14 @@
 import 'dart:typed_data';
 import 'utils.dart';
 
+/// Represents a binary vector, where each element is either `true` or `false`.
 class Bit {
   final int _len;
   final Uint8List _data;
 
   const Bit._(this._len, this._data);
 
+  /// Creates a [Bit] from a list of boolean values.
   factory Bit(List<bool> value) {
     var length = value.length;
     var data = Uint8List((length + 7) ~/ 8);
@@ -16,15 +18,17 @@ class Bit {
     return Bit._(length, data);
   }
 
+  /// Creates a [Bit] from its binary representation.
   factory Bit.fromBinary(Uint8List bytes) {
-    var buf = new ByteData.view(bytes.buffer, bytes.offsetInBytes);
+    var buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
     var length = buf.getInt32(0);
     return Bit._(length, bytes.sublist(4));
   }
 
+  /// Converts the bit vector to its binary representation.
   Uint8List toBinary() {
-    var bytes = new Uint8List(4 + (_len + 7) ~/ 8);
-    var buf = new ByteData.view(bytes.buffer, bytes.offsetInBytes);
+    var bytes = Uint8List(4 + (_len + 7) ~/ 8);
+    var buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
 
     buf.setInt32(0, _len);
 
@@ -35,6 +39,7 @@ class Bit {
     return bytes;
   }
 
+  /// Returns the bit vector as a list of boolean values.
   List<bool> toList() {
     var vec = <bool>[];
     for (var i = 0; i < _len; i++) {
@@ -44,13 +49,11 @@ class Bit {
   }
 
   @override
-  String toString() {
-    return toList().map((v) => v ? '1' : '0').join();
-  }
+  String toString() => toList().map((v) => v ? '1' : '0').join();
 
   @override
   bool operator ==(Object other) =>
-      other is Bit && other._len == _len && listEquals(other._data, _data);
+      other is Bit && other._len == _len && other._data.equals(_data);
 
   @override
   int get hashCode => Object.hash(_len, _data);

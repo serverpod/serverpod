@@ -1,13 +1,17 @@
-bool listEquals<T>(List<T> a, List<T> b) {
-  if (a.length != b.length) {
-    return false;
-  }
-
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
+/// Extension method to compares two lists for equality.
+extension ListEquals<T> on List<T> {
+  /// Returns `true` if all elements of the lists are equal.
+  bool equals(List<T> other) {
+    if (length != other.length) {
       return false;
     }
-  }
 
-  return true;
+    for (var i = 0; i < length; i++) {
+      if (this[i] != other[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

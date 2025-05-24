@@ -1,13 +1,21 @@
 import 'dart:typed_data';
 import 'utils.dart';
 
+/// Represents a sparse vector that stores only non-zero elements.
 class SparseVector {
+  /// The total number of dimensions in the vector.
   final int dimensions;
+
+  /// The indices of non-zero values in the vector.
   final List<int> indices;
+
+  /// The non-zero values in the vector.
   final List<double> values;
 
-  SparseVector._(this.dimensions, this.indices, this.values);
+  /// Creates a new [SparseVector] object.
+  const SparseVector._(this.dimensions, this.indices, this.values);
 
+  /// Creates a [SparseVector] from a list of doubles with all values.
   factory SparseVector(List<double> value) {
     var dimensions = value.length;
     var indices = <int>[];
@@ -23,6 +31,10 @@ class SparseVector {
     return SparseVector._(dimensions, indices, values);
   }
 
+  /// Creates a [SparseVector] from a map of indices to values.
+  ///
+  /// Map keys are indices and values are the vector values at those positions.
+  /// The [dimensions] parameter specifies the total vector length.
   factory SparseVector.fromMap(Map<int, double> map, int dimensions) {
     var elements = map.entries.where((v) => v.value != 0).toList();
     elements.sort((a, b) => a.key.compareTo(b.key));
@@ -33,14 +45,15 @@ class SparseVector {
     return SparseVector._(dimensions, indices, values);
   }
 
+  /// Creates a [SparseVector] from its binary representation.
   factory SparseVector.fromBinary(Uint8List bytes) {
-    var buf = new ByteData.view(bytes.buffer, bytes.offsetInBytes);
+    var buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
     var dimensions = buf.getInt32(0);
     var nnz = buf.getInt32(4);
 
     var unused = buf.getInt32(8);
     if (unused != 0) {
-      throw FormatException('expected unused to be 0');
+      throw const FormatException('Expected unused to be 0.');
     }
 
     var indices = <int>[];
@@ -56,10 +69,11 @@ class SparseVector {
     return SparseVector._(dimensions, indices, values);
   }
 
+  /// Converts the sparse vector to its binary representation.
   Uint8List toBinary() {
     var nnz = indices.length;
-    var bytes = new Uint8List(12 + 8 * nnz);
-    var buf = new ByteData.view(bytes.buffer, bytes.offsetInBytes);
+    var bytes = Uint8List(12 + 8 * nnz);
+    var buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
 
     buf.setInt32(0, dimensions);
     buf.setInt32(4, nnz);
@@ -76,6 +90,7 @@ class SparseVector {
     return bytes;
   }
 
+  /// Returns the sparse vector as a dense list of double values.
   List<double> toList() {
     var vec = List<double>.filled(dimensions, 0.0);
     for (var i = 0; i < indices.length; i++) {
@@ -89,15 +104,15 @@ class SparseVector {
     var elements = [
       for (var i = 0; i < indices.length; i++) '${indices[i] + 1}:${values[i]}'
     ].join(',');
-    return '{${elements}}/${dimensions}';
+    return '{$elements}/$dimensions';
   }
 
   @override
   bool operator ==(Object other) =>
       other is SparseVector &&
       other.dimensions == dimensions &&
-      listEquals(other.indices, indices) &&
-      listEquals(other.values, values);
+      other.indices.equals(indices) &&
+      other.values.equals(values);
 
   @override
   int get hashCode => Object.hash(dimensions, indices, values);
