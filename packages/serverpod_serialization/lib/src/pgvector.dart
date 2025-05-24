@@ -32,7 +32,5 @@
 
 export 'pgvector/bit.dart' show Bit;
 export 'pgvector/halfvec.dart' show HalfVector;
-export 'pgvector/pgvector.dart' show pgvector;
-export 'pgvector/postgres.dart' show pgvectorEncoder;
 export 'pgvector/sparsevec.dart' show SparseVector;
 export 'pgvector/vector.dart' show Vector;

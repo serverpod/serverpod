@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:postgres/postgres.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -165,22 +164,6 @@ void main() {
       Vector vector = VectorJsonExtension.fromJson(listAsString);
 
       expect(vector.toJson(), [1.0, 2.0, 3.0]);
-    },
-  );
-
-  test(
-    'Given UndecodedBytes, when deserialized to a Vector using VectorJsonExtension.fromJson, then it creates a valid Vector.',
-    () {
-      Vector originalVector = const Vector([1.0, 2.0, 3.0]);
-      UndecodedBytes undecoded = UndecodedBytes(
-        typeOid: 0,
-        isBinary: true,
-        bytes: originalVector.toBinary(),
-        encoding: Encoding.getByName('utf-8')!,
-      );
-      Vector vector = VectorJsonExtension.fromJson(undecoded);
-
-      expect(vector.toJson(), originalVector.toJson());
     },
   );
 

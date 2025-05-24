@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:postgres/postgres.dart' show UndecodedBytes;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Expose toJson on DateTime
@@ -166,7 +165,6 @@ extension SetJsonExtension<T> on Set<T> {
 extension VectorJsonExtension on Vector {
   /// Returns a serialized version of the [Vector] with values serialized.
   static Vector fromJson(dynamic value) {
-    if (value is UndecodedBytes) return Vector.fromBinary(value.bytes);
     if (value is Uint8List) return Vector.fromBinary(value);
     if (value is String) return _fromString(value);
     if (value is List) return Vector(value.cast<double>());
