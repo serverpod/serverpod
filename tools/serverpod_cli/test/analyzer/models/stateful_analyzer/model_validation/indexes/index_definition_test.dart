@@ -277,7 +277,8 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "invalidKey" property is not allowed for example_index type. Valid keys are {fields, type, unique}.',
+      'The "invalidKey" property is not allowed for example_index type. Valid '
+      'keys are {fields, type, unique, distanceFunction, parameters}.',
     );
   });
 }

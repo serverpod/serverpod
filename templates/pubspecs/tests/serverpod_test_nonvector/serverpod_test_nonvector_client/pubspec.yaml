@@ -1,0 +1,20 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_nonvector_client
+version: 1.0.0
+description: Non-vector project test client for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

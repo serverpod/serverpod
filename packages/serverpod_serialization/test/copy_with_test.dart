@@ -71,4 +71,28 @@ void main() {
       });
     });
   });
+
+  group('Given a Vector', () {
+    test(
+        'when both the original and copy are serialized then they produce identical results.',
+        () {
+      Vector originalVector = const Vector([1.0, 2.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+    });
+
+    test(
+        'when clone is created, then the clone and original are deeply equal but not the same instance.',
+        () {
+      Vector originalVector = const Vector([1.0, 2.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+      expect(identical(copy, originalVector), isFalse);
+      expect(identical(copy.toList(), originalVector.toList()), isFalse);
+    });
+  });
 }

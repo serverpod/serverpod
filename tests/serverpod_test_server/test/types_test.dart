@@ -9,4 +9,16 @@ void main() {
       expect(ObjectWithUuid.t.uuidNullable, isA<ColumnUuid>());
     });
   });
+
+  group('Given declared ObjectWithVector class', () {
+    test('then vector fields are generated correctly.', () {
+      expect(ObjectWithVector.t.vector, isA<ColumnVector>());
+      expect(ObjectWithVector.t.vectorNullable, isA<ColumnVector>());
+    });
+
+    test('then vector fields have correct dimension.', () {
+      expect(ObjectWithVector.t.vector.dimension, 512);
+      expect(ObjectWithVector.t.vectorNullable.dimension, 512);
+    });
+  });
 }

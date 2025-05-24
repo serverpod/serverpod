@@ -119,6 +119,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<UuidValue>(t)) {
       if (data == null) return null as T;
       return UuidValueJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<Vector>(t)) {
+      if (data == null) return null as T;
+      return VectorJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -156,6 +159,8 @@ abstract class SerializationManager {
       return 'Uri';
     } else if (data is BigInt) {
       return 'BigInt';
+    } else if (data is Vector) {
+      return 'Vector';
     }
 
     return null;
@@ -187,6 +192,8 @@ abstract class SerializationManager {
         return deserialize<Uri>(data['data']);
       case 'BigInt':
         return deserialize<BigInt>(data['data']);
+      case 'Vector':
+        return deserialize<Vector>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -232,6 +239,8 @@ abstract class SerializationManager {
           return nonEncodable.toString();
         } else if (nonEncodable is BigInt) {
           return nonEncodable.toString();
+        } else if (nonEncodable is Vector) {
+          return nonEncodable.toList();
         } else if (nonEncodable is Set) {
           return nonEncodable.toList();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
@@ -323,6 +332,7 @@ const extensionSerializedTypes = [
   'UuidValue',
   'Uri',
   'BigInt',
+  'Vector',
   'Map',
   'List',
   'Set',

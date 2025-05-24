@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/index_element_definition.dart' as _i2;
+import '../database/vector_distance_function.dart' as _i3;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
@@ -23,6 +24,8 @@ abstract class IndexDefinition
     required this.isUnique,
     required this.isPrimary,
     this.predicate,
+    this.vectorDistanceFunction,
+    this.parameters,
   });
 
   factory IndexDefinition({
@@ -33,6 +36,8 @@ abstract class IndexDefinition
     required bool isUnique,
     required bool isPrimary,
     String? predicate,
+    _i3.VectorDistanceFunction? vectorDistanceFunction,
+    Map<String, String>? parameters,
   }) = _IndexDefinitionImpl;
 
   factory IndexDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -47,6 +52,16 @@ abstract class IndexDefinition
       isUnique: jsonSerialization['isUnique'] as bool,
       isPrimary: jsonSerialization['isPrimary'] as bool,
       predicate: jsonSerialization['predicate'] as String?,
+      vectorDistanceFunction:
+          jsonSerialization['vectorDistanceFunction'] == null
+              ? null
+              : _i3.VectorDistanceFunction.fromJson(
+                  (jsonSerialization['vectorDistanceFunction'] as String)),
+      parameters:
+          (jsonSerialization['parameters'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as String,
+              )),
     );
   }
 
@@ -72,6 +87,12 @@ abstract class IndexDefinition
   /// The predicate of this partial index, if it is one.
   String? predicate;
 
+  /// The vector index distance function, if it is a vector index.
+  _i3.VectorDistanceFunction? vectorDistanceFunction;
+
+  /// Parameters for the index, if needed.
+  Map<String, String>? parameters;
+
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -83,6 +104,8 @@ abstract class IndexDefinition
     bool? isUnique,
     bool? isPrimary,
     String? predicate,
+    _i3.VectorDistanceFunction? vectorDistanceFunction,
+    Map<String, String>? parameters,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -94,6 +117,9 @@ abstract class IndexDefinition
       'isUnique': isUnique,
       'isPrimary': isPrimary,
       if (predicate != null) 'predicate': predicate,
+      if (vectorDistanceFunction != null)
+        'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (parameters != null) 'parameters': parameters?.toJson(),
     };
   }
 
@@ -107,6 +133,9 @@ abstract class IndexDefinition
       'isUnique': isUnique,
       'isPrimary': isPrimary,
       if (predicate != null) 'predicate': predicate,
+      if (vectorDistanceFunction != null)
+        'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (parameters != null) 'parameters': parameters?.toJson(),
     };
   }
 
@@ -127,6 +156,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
     required bool isUnique,
     required bool isPrimary,
     String? predicate,
+    _i3.VectorDistanceFunction? vectorDistanceFunction,
+    Map<String, String>? parameters,
   }) : super._(
           indexName: indexName,
           tableSpace: tableSpace,
@@ -135,6 +166,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
           isUnique: isUnique,
           isPrimary: isPrimary,
           predicate: predicate,
+          vectorDistanceFunction: vectorDistanceFunction,
+          parameters: parameters,
         );
 
   /// Returns a shallow copy of this [IndexDefinition]
@@ -149,6 +182,8 @@ class _IndexDefinitionImpl extends IndexDefinition {
     bool? isUnique,
     bool? isPrimary,
     Object? predicate = _Undefined,
+    Object? vectorDistanceFunction = _Undefined,
+    Object? parameters = _Undefined,
   }) {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
@@ -158,6 +193,20 @@ class _IndexDefinitionImpl extends IndexDefinition {
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,
       predicate: predicate is String? ? predicate : this.predicate,
+      vectorDistanceFunction:
+          vectorDistanceFunction is _i3.VectorDistanceFunction?
+              ? vectorDistanceFunction
+              : this.vectorDistanceFunction,
+      parameters: parameters is Map<String, String>?
+          ? parameters
+          : this.parameters?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
     );
   }
 }

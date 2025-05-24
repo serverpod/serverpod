@@ -29,4 +29,42 @@ void main() {
       expect(bigIntColumn.like(intColumn), isTrue);
     });
   });
+
+  group('Given vector column definition', () {
+    ColumnDefinition vectorColumn = ColumnDefinition(
+      name: 'vector_field',
+      columnType: ColumnType.vector,
+      isNullable: false,
+      dartType: 'Vector(3)',
+      vectorDimension: 3,
+    );
+
+    test(
+        'when like checking vector column with same properties then check returns true.',
+        () {
+      ColumnDefinition sameVectorColumn = ColumnDefinition(
+        name: 'vector_field',
+        columnType: ColumnType.vector,
+        isNullable: false,
+        dartType: 'Vector(3)',
+        vectorDimension: 3,
+      );
+
+      expect(vectorColumn.like(sameVectorColumn), isTrue);
+    });
+
+    test(
+        'when like checking vector column with different dimension then check returns false.',
+        () {
+      ColumnDefinition differentDimensionColumn = ColumnDefinition(
+        name: 'vector_field',
+        columnType: ColumnType.vector,
+        isNullable: false,
+        dartType: 'Vector(4)',
+        vectorDimension: 4,
+      );
+
+      expect(vectorColumn.like(differentDimensionColumn), isFalse);
+    });
+  });
 }

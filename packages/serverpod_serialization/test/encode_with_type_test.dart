@@ -261,4 +261,28 @@ void main() {
     var typeName = protocol.encodeWithType(uuid);
     expect(typeName, '{"className":"null","data":null}');
   });
+
+  test(
+      'Given a Vector when encoding then output is the type name and value as a JSON string.',
+      () {
+    Vector vector = const Vector([1.0, 2.0, 3.0]);
+    var typeName = protocol.encodeWithType(vector);
+    expect(typeName, '{"className":"Vector","data":[1.0,2.0,3.0]}');
+  });
+
+  test(
+      'Given a non-null nullable Vector when encoding then output is the type name and value as a JSON string.',
+      () {
+    Vector? vector = const Vector([1.0, 2.0, 3.0]);
+    var typeName = protocol.encodeWithType(vector);
+    expect(typeName, '{"className":"Vector","data":[1.0,2.0,3.0]}');
+  });
+
+  test(
+      'Given a null nullable Vector when encoding then output is \'null\' for both the type name and data as a JSON string.',
+      () {
+    Vector? vector;
+    var typeName = protocol.encodeWithType(vector);
+    expect(typeName, '{"className":"null","data":null}');
+  });
 }

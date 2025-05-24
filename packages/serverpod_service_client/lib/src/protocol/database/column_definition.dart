@@ -20,6 +20,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     required this.isNullable,
     this.columnDefault,
     this.dartType,
+    this.vectorDimension,
   });
 
   factory ColumnDefinition({
@@ -28,6 +29,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     required bool isNullable,
     String? columnDefault,
     String? dartType,
+    int? vectorDimension,
   }) = _ColumnDefinitionImpl;
 
   factory ColumnDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,6 +40,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
       isNullable: jsonSerialization['isNullable'] as bool,
       columnDefault: jsonSerialization['columnDefault'] as String?,
       dartType: jsonSerialization['dartType'] as String?,
+      vectorDimension: jsonSerialization['vectorDimension'] as int?,
     );
   }
 
@@ -58,6 +61,10 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
   /// analyzing the database.
   String? dartType;
 
+  /// Stores the dimension of Vector type (e.g., 1536 for Vector(1536)).
+  /// Only populated for Vector types.
+  int? vectorDimension;
+
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -67,6 +74,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     bool? isNullable,
     String? columnDefault,
     String? dartType,
+    int? vectorDimension,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -76,6 +84,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
       'isNullable': isNullable,
       if (columnDefault != null) 'columnDefault': columnDefault,
       if (dartType != null) 'dartType': dartType,
+      if (vectorDimension != null) 'vectorDimension': vectorDimension,
     };
   }
 
@@ -94,12 +103,14 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
     required bool isNullable,
     String? columnDefault,
     String? dartType,
+    int? vectorDimension,
   }) : super._(
           name: name,
           columnType: columnType,
           isNullable: isNullable,
           columnDefault: columnDefault,
           dartType: dartType,
+          vectorDimension: vectorDimension,
         );
 
   /// Returns a shallow copy of this [ColumnDefinition]
@@ -112,6 +123,7 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
     bool? isNullable,
     Object? columnDefault = _Undefined,
     Object? dartType = _Undefined,
+    Object? vectorDimension = _Undefined,
   }) {
     return ColumnDefinition(
       name: name ?? this.name,
@@ -120,6 +132,8 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
       columnDefault:
           columnDefault is String? ? columnDefault : this.columnDefault,
       dartType: dartType is String? ? dartType : this.dartType,
+      vectorDimension:
+          vectorDimension is int? ? vectorDimension : this.vectorDimension,
     );
   }
 }

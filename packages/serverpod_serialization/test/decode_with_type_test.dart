@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:serverpod_serialization/src/serialization.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 class _TestProtocol extends SerializationManager {}
 
@@ -308,6 +307,36 @@ void main() {
       var encoded = protocol.encodeWithType(bigInt);
       var decoded = protocol.decodeWithType(encoded);
       expect(decoded, bigInt);
+    },
+  );
+
+  test(
+    'Given a Vector when encoding and decoding with type then output matches input.',
+    () {
+      Vector vector = const Vector([1.0, 2.0, 3.0]);
+      var encoded = protocol.encodeWithType(vector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, vector);
+    },
+  );
+
+  test(
+    'Given a non-null nullable Vector when encoding and decoding with type then output matches input.',
+    () {
+      Vector? vector = const Vector([1.0, 2.0, 3.0]);
+      var encoded = protocol.encodeWithType(vector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, vector);
+    },
+  );
+
+  test(
+    'Given a null nullable Vector when encoding and decoding with type then output matches input.',
+    () {
+      Vector? vector;
+      var encoded = protocol.encodeWithType(vector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, vector);
     },
   );
 }

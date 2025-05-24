@@ -563,4 +563,14 @@ void main() {
       ),
     ]);
   });
+
+  test(
+    'Given a field type of a vector when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Vector(512)?', extraClasses: []);
+      expect(type.className, 'Vector');
+      expect(type.nullable, isTrue);
+      expect(type.vectorDimension, 512);
+    },
+  );
 }

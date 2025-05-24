@@ -43,7 +43,10 @@ enum ColumnType implements _i1.SerializableModel {
 
   /// Used for unknown types, that have never been
   /// used by Serverpod.
-  unknown;
+  unknown,
+
+  /// Dart type: [Vector]
+  vector;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -67,6 +70,8 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.json;
       case 9:
         return ColumnType.unknown;
+      case 10:
+        return ColumnType.vector;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ColumnType"');

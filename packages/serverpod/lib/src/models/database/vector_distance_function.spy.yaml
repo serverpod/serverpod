@@ -1,0 +1,16 @@
+### Vector distance functions exposed by pgvector.
+enum: VectorDistanceFunction
+serialized: byName
+values:
+  ### L2 (Euclidean) distance
+  - l2
+  ### Inner product distance
+  - innerProduct
+  ### Cosine distance
+  - cosine
+  ### L1 (Manhattan) distance
+  - l1
+  ### Hamming distance (binary vectors)
+  - hamming
+  ### Jaccard distance (binary vectors)
+  - jaccard

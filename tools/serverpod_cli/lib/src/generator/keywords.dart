@@ -13,6 +13,10 @@ class SetKeyword {
   static const toSet = 'toSet';
 }
 
+class VectorKeyword {
+  static const className = 'Vector';
+}
+
 class Keyword {
   static const mapFunctionName = 'map';
   static const thisKeyword = 'this';

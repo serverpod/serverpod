@@ -8,6 +8,7 @@ class ColumnDefinitionBuilder {
   bool _isNullable;
   String? _columnDefault;
   String? _dartType;
+  int? _vectorDimension;
 
   ColumnDefinitionBuilder()
       : _name = 'name',
@@ -23,6 +24,7 @@ class ColumnDefinitionBuilder {
       isNullable: _isNullable,
       columnDefault: _columnDefault,
       dartType: _dartType,
+      vectorDimension: _vectorDimension,
     );
   }
 
@@ -77,6 +79,11 @@ class ColumnDefinitionBuilder {
 
   ColumnDefinitionBuilder withDartType(String? dartType) {
     _dartType = dartType;
+    return this;
+  }
+
+  ColumnDefinitionBuilder withVectorDimension(int? dimension) {
+    _vectorDimension = dimension;
     return this;
   }
 }
