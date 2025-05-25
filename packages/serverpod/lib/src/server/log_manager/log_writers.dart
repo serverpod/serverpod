@@ -170,9 +170,7 @@ class JsonStdOutLogWriter extends LogWriter {
   Future<void> logEntry(LogEntry entry) async {
     entry.sessionLogId = _logId;
 
-    if (entry.error != null ||
-        entry.logLevel == LogLevel.error ||
-        entry.logLevel == LogLevel.fatal) {
+    if (_isError(entry)) {
       stderr.writeln(entry);
     } else {
       stdout.writeln(entry);
@@ -238,9 +236,7 @@ class TextStdOutLogWriter extends LogWriter {
     var message =
         '[LOG] ${entry.logLevel.name.toUpperCase()} | session=$_logId | message=${entry.message}';
 
-    if (entry.error != null ||
-        entry.logLevel == LogLevel.error ||
-        entry.logLevel == LogLevel.fatal) {
+    if (_isError(entry)) {
       _write(message, true);
     } else {
       _write(message);
@@ -382,4 +378,10 @@ class MultipleLogWriter extends LogWriter {
       _logWriters.map((writer) => writer.openLog(entry)),
     );
   }
+}
+
+bool _isError(LogEntry entry) {
+  return entry.error != null ||
+      entry.logLevel == LogLevel.error ||
+      entry.logLevel == LogLevel.fatal;
 }
