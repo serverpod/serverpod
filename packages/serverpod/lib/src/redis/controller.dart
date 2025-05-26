@@ -25,6 +25,9 @@ class RedisController {
   /// The password of the Redis server. Not required, but recommended.
   final String? password;
 
+  /// require ssl
+  final bool requireSsl;
+
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
 
   Command? _command;
@@ -42,6 +45,7 @@ class RedisController {
     required this.port,
     this.user,
     this.password,
+    this.requireSsl = false,
   });
 
   /// Starts the controller and connects to Redis. Maintains an open connection
@@ -72,10 +76,19 @@ class RedisController {
     try {
       var connection = RedisConnection();
 
-      _command = await connection.connect(host, port);
+      if (requireSsl) {
+        _command = await connection.connectSecure(host, port);
+      } else {
+        _command = await connection.connect(host, port);
+      }
+
       if (password != null) {
-        // TODO: Username
-        var result = await _command!.send_object(['AUTH', password]);
+        dynamic result;
+        if (user != null) {
+          result = await _command!.send_object(['AUTH', user, password]);
+        } else {
+          result = await _command!.send_object(['AUTH', password]);
+        }
         _connecting = false;
         return (result == 'OK');
       } else {
@@ -114,7 +127,12 @@ class RedisController {
       var connection = RedisConnection();
       _pubSubCommand = await connection.connect(host, port);
       if (password != null) {
-        var result = await _pubSubCommand!.send_object(['AUTH', password]);
+        dynamic result;
+        if (user != null) {
+          result = await _pubSubCommand!.send_object(['AUTH', user, password]);
+        } else {
+          result = await _pubSubCommand!.send_object(['AUTH', password]);
+        }
         _connecting = false;
         if (result != 'OK') return false;
       }
