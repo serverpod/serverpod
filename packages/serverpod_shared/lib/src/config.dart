@@ -409,6 +409,9 @@ class RedisConfig {
   /// Redis password (optional, but recommended).
   final String? password;
 
+  /// True if Redis requires an SSL connection.
+  final bool requireSsl;
+
   /// Creates a new [RedisConfig].
   RedisConfig({
     required this.enabled,
@@ -416,6 +419,7 @@ class RedisConfig {
     required this.port,
     this.user,
     this.password,
+    this.requireSsl = false,
   });
 
   factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
@@ -434,6 +438,7 @@ class RedisConfig {
       port: redisSetup[ServerpodEnv.redisPort.configKey],
       user: redisSetup[ServerpodEnv.redisUser.configKey],
       password: passwords[ServerpodPassword.redisPassword.configKey],
+      requireSsl: redisSetup[ServerpodEnv.redisRequireSsl.configKey] ?? false,
     );
   }
 
@@ -448,6 +453,7 @@ class RedisConfig {
     if (password != null) {
       str += 'redis pass: ********\n';
     }
+    str += 'redis require SSL: $requireSsl\n';
     return str;
   }
 }
@@ -634,6 +640,7 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.redisPort, int.parse),
     (ServerpodEnv.redisUser, null),
     (ServerpodEnv.redisEnabled, bool.parse),
+    (ServerpodEnv.redisRequireSsl, bool.parse),
   ]);
 }
 

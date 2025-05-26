@@ -81,6 +81,9 @@ enum ServerpodEnv {
   /// Toggle to enable the redis broker.
   redisEnabled,
 
+  /// Toggle to require SSL for the redis broker.
+  redisRequireSsl,
+
   /// The local port for the api server.
   apiPort,
 
@@ -152,6 +155,7 @@ enum ServerpodEnv {
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
       (ServerpodEnv.redisEnabled) => 'enabled',
+      (ServerpodEnv.redisRequireSsl) => 'requireSsl',
       (ServerpodEnv.apiPort) => ServerpodServerConfigMap.port,
       (ServerpodEnv.apiPublicHost) => ServerpodServerConfigMap.publicHost,
       (ServerpodEnv.apiPublicPort) => ServerpodServerConfigMap.publicPort,
@@ -192,6 +196,7 @@ enum ServerpodEnv {
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
       (ServerpodEnv.redisEnabled) => 'SERVERPOD_REDIS_ENABLED',
+      (ServerpodEnv.redisRequireSsl) => 'SERVERPOD_REDIS_REQUIRE_SSL',
       (ServerpodEnv.apiPort) => 'SERVERPOD_API_SERVER_PORT',
       (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_SERVER_PUBLIC_HOST',
       (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_SERVER_PUBLIC_PORT',
