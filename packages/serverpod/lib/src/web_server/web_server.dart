@@ -129,7 +129,7 @@ class WebServer {
     }
 
     String? authenticationKey;
-    for (var cookie in request.headers.cookie?.cookies ?? []) {
+    for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
       if (cookie.name == 'auth') {
         authenticationKey = cookie.value;
       }
