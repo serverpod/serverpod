@@ -12,8 +12,17 @@ void main() {
       (final sessionBuilder, final endpoints) {
     late Session session;
 
+    setUpAll(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride =
+          'test-private-key-for-HS512';
+    });
+
     setUp(() async {
       session = sessionBuilder.build();
+    });
+
+    tearDownAll(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = null;
     });
 
     test(
@@ -44,6 +53,11 @@ void main() {
     late Session session;
     late UuidValue authUserId;
 
+    setUpAll(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride =
+          'test-private-key-for-HS512';
+    });
+
     setUp(() async {
       session = sessionBuilder.build();
 
@@ -55,6 +69,9 @@ void main() {
       authUserId = authUser.id!;
     });
 
+    tearDownAll(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = null;
+    });
     test('when requesting a new token pair, then one is returned.', () async {
       await AuthenticationTokens.createTokens(
         session,
@@ -74,6 +91,9 @@ void main() {
     late TokenPair tokenPair;
 
     setUp(() async {
+      AuthenticationTokenSecrets.privateKeyTestOverride =
+          'test-private-key-for-HS512';
+
       session = sessionBuilder.build();
 
       final authUser = await AuthUser.db.insertRow(

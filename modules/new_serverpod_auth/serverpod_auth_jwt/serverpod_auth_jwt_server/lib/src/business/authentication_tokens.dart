@@ -4,7 +4,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
-import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
+import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -21,7 +21,7 @@ abstract class AuthenticationTokens {
     final String jwtAccessToken,
   ) async {
     try {
-      final result = _parseAccessToken(jwtAccessToken);
+      final result = JwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfo(
         result.authUserId,
@@ -61,7 +61,7 @@ abstract class AuthenticationTokens {
 
     return TokenPair(
       refreshToken: _buildRefreshTokenString(refreshToken: refreshToken),
-      accessToken: _generateAccessToken(refreshToken: refreshToken),
+      accessToken: JwtUtil.createJwt(refreshToken),
     );
   }
 
@@ -112,7 +112,7 @@ abstract class AuthenticationTokens {
 
     return TokenPair(
       refreshToken: _buildRefreshTokenString(refreshToken: refreshTokenRow),
-      accessToken: _generateAccessToken(refreshToken: refreshTokenRow),
+      accessToken: JwtUtil.createJwt(refreshTokenRow),
     );
   }
 
@@ -168,72 +168,6 @@ abstract class AuthenticationTokens {
   static String _generateRefreshTokenSecret() {
     return generateRandomString(64);
   }
-
-  /// Creates a new access token for the given user.
-  ///
-  /// For now all tokens are signed with the symmetric "HMAC with SHA-512" algorithm.
-  ///
-  /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
-  ///
-  /// NOTE: The tokens generated this way are not suitable to be given to 3rd party (untrusted) system, as they can not validate them.
-  ///       To validate the token one needs access to the key used for signing (since this is currently using a symmetric algorithm),
-  ///       which is not to be given out, as otherwise these system could create new tokens themselves.
-  ///
-  ///       Futhermore since the [refreshTokenId] is encoded in the access token, any attacker getting hold of an access token could
-  ///       use this to invalidate the refresh token by making a false request with the refresh token ID and any invalid secret to the
-  ///       [rotateRefreshToken] method.
-  ///
-  ///       Thus if the access token are ever desired to be used with such external system, they would need to switch to a public/private
-  ///       asymmetric signing scheme and a layer of indirection would have to be added between the access token and its refresh tokens.
-  static String _generateAccessToken({
-    required final RefreshToken refreshToken,
-  }) {
-    final jwt = JWT(
-      {
-        'scopeNames': refreshToken.scopeNames.toList(),
-      },
-      jwtId: refreshToken.id!.toString(),
-      subject: refreshToken.authUserId.toString(),
-      issuer: _jwtTokenIssuer,
-    );
-
-    return jwt.sign(
-      SecretKey(AuthenticationTokenSecrets.privateKey),
-      expiresIn: AuthenticationTokenConfig.current.defaultAccessTokenLifetime,
-      algorithm: JWTAlgorithm.HS512,
-    );
-  }
-
-  static ({
-    UuidValue refreshTokenId,
-    UuidValue authUserId,
-    Set<Scope> scopes,
-  }) _parseAccessToken(final String accessToken) {
-    final jwt = JWT.verify(
-      accessToken,
-      SecretKey(AuthenticationTokenSecrets.privateKey),
-      issuer: _jwtTokenIssuer,
-    );
-
-    final refreshTokenId = UuidValue.fromString(jwt.jwtId!);
-    final authUserId = UuidValue.fromString(jwt.subject!);
-
-    final scopeNames =
-        ((jwt.payload as Map)['scopeNames'] as List).cast<String>();
-
-    final scopes = {
-      for (final scopeName in scopeNames) Scope(scopeName),
-    };
-
-    return (
-      refreshTokenId: refreshTokenId,
-      authUserId: authUserId,
-      scopes: scopes,
-    );
-  }
-
-  static const _jwtTokenIssuer =
-      'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server';
 
   /// Prefix for refresh tokens
   /// "sajrt" being an abbreviation of "serverpod_auth_jwt RefrestToken"
