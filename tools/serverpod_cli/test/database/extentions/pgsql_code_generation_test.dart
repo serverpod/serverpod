@@ -197,7 +197,7 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
     EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';
   ELSE
-    RAISE EXCEPTION 'Required extension "vector" is not available on this instance. Please install pgvector.';
+    RAISE EXCEPTION 'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.';
   END IF;
 END
 \$\$;
