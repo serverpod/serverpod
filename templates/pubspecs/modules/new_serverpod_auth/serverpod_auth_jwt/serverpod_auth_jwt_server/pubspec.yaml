@@ -16,6 +16,7 @@ dependencies:
   serverpod_shared: SERVERPOD_VERSION
 
 dev_dependencies:
+  clock: ^1.1.1
   lints: '>=3.0.0 <6.0.0'
   serverpod_test: SERVERPOD_VERSION
   test: '^1.24.2'

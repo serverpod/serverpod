@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
@@ -143,12 +144,15 @@ void main() {
     test(
         'when rotating the tokens, then a new refresh and access token is returned.',
         () async {
-      // Need to more forward the clock, as otherwise the new access token has the same expiry data and thus looks equal.
-      await Future<void>.delayed(const Duration(seconds: 2));
-
-      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
-        session,
-        refreshToken: tokenPair.refreshToken,
+      final newTokenPair = await withClock(
+        // Need to more forward the clock, as otherwise the new access token has the same expiry date and thus looks equal.
+        Clock.fixed(DateTime.now().add(const Duration(seconds: 2))),
+        () async {
+          return await AuthenticationTokens.rotateRefreshToken(
+            session,
+            refreshToken: tokenPair.refreshToken,
+          );
+        },
       );
 
       expect(newTokenPair.accessToken, isNot(tokenPair.accessToken));
