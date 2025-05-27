@@ -12,6 +12,10 @@ abstract class AuthenticationTokenSecrets {
   /// The configuration key for the optional public key (for asymmetric cryptogrpahy) to verify access tokens with.
   static String publicKeyConfigurationKey = 'serverpod_auth_jwt.publicKey';
 
+  /// The configuration key for the token hash pepper.
+  static String tokenHashPepperConfigurationKey =
+      'serverpod_auth_jwt.tokenHashPepper';
+
   static AuthenticationTokenAlgorithm get algorithm {
     final algorithm = algorithmTestOverride ??
         Serverpod.instance.getPassword(algorithmConfigurationKey);
@@ -54,6 +58,23 @@ abstract class AuthenticationTokenSecrets {
     }
   }
 
+  /// The pepper used for hashing tokens.
+  ///
+  /// This influences the stored password, so it must not be changed for a given deployment,
+  /// as otherwise all passwords become invalid.
+  static String get tokenHashPepper {
+    final pepper = tokenHashPepperTestOverride ??
+        Serverpod.instance.getPassword(tokenHashPepperConfigurationKey);
+
+    if (pepper == null || pepper.isEmpty) {
+      throw Exception(
+        'Password "$tokenHashPepperConfigurationKey" is not set',
+      );
+    }
+
+    return pepper;
+  }
+
   @visibleForTesting
   static String? algorithmTestOverride;
 
@@ -63,6 +84,9 @@ abstract class AuthenticationTokenSecrets {
 
   @visibleForTesting
   static String? publicKeyTestOverride;
+
+  @visibleForTesting
+  static String? tokenHashPepperTestOverride;
 
   /// HMAC using SHA-512 hash algorithm
   static const algorithmHS512 = 'HS512';

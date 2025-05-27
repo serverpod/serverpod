@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
+import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
+import 'package:serverpod_auth_jwt_server/src/business/refresh_token_string.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -54,18 +54,25 @@ abstract class AuthenticationTokens {
     required final Set<Scope> scopes,
     final Transaction? transaction,
   }) async {
+    final secret = _generateRefreshTokenSecret();
+    final newHash = RefreshTokenSecretHash.createHash(secret: secret);
+
     final refreshToken = await RefreshToken.db.insertRow(
       session,
       RefreshToken(
         authUserId: authUserId,
-        secret: _generateRefreshTokenSecret(),
+        fixedSecret: _generateRefreshTokenFixedSecret(),
+        variableSecret: (newHash.hash, newHash.salt),
         scopeNames: scopes.names,
       ),
       transaction: transaction,
     );
 
     return TokenPair(
-      refreshToken: _buildRefreshTokenString(refreshToken: refreshToken),
+      refreshToken: RefreshTokenString.buildRefreshTokenString(
+        refreshToken: refreshToken,
+        secret: secret,
+      ),
       accessToken: JwtUtil.createJwt(refreshToken),
     );
   }
@@ -79,10 +86,12 @@ abstract class AuthenticationTokens {
     final Transaction? transaction,
   }) async {
     final UuidValue id;
-    final String refreshTokenSecret;
+    final String fixedSecret;
+    final String variableSecret;
 
     try {
-      (id, refreshTokenSecret) = _parseRefreshTokenString(refreshToken);
+      (:id, :fixedSecret, :variableSecret) =
+          RefreshTokenString.parseRefreshTokenString(refreshToken);
     } catch (e, _) {
       throw RefreshTokenMalformedException();
     }
@@ -93,30 +102,48 @@ abstract class AuthenticationTokens {
       transaction: transaction,
     );
 
-    if (refreshTokenRow == null) {
+    if (refreshTokenRow == null || refreshTokenRow.fixedSecret != fixedSecret) {
       throw RefreshTokenNotFoundException();
     }
 
-    if (refreshTokenRow.secret != refreshTokenSecret) {
-      await RefreshToken.db.deleteRow(session, refreshTokenRow);
+    if (refreshTokenRow.isExpired) {
+      await RefreshToken.db.deleteRow(
+        session,
+        refreshTokenRow,
+        transaction: transaction,
+      );
+
+      throw RefreshTokenExpiredException();
+    }
+
+    if (!RefreshTokenSecretHash.validateHash(
+      secret: variableSecret,
+      hash: refreshTokenRow.variableSecret.$1,
+      salt: refreshTokenRow.variableSecret.$2,
+    )) {
+      await RefreshToken.db
+          .deleteRow(session, refreshTokenRow, transaction: transaction);
 
       throw RefreshTokenInvalidSecretException();
     }
 
-    if (refreshTokenRow.isExpired) {
-      throw RefreshTokenExpiredException();
-    }
+    final newSecret = _generateRefreshTokenSecret();
+    final newHash = RefreshTokenSecretHash.createHash(secret: newSecret);
 
     refreshTokenRow = await RefreshToken.db.updateRow(
-        session,
-        refreshTokenRow.copyWith(
-          secret: _generateRefreshTokenSecret(),
-          lastUpdated: DateTime.now(),
-        ),
-        transaction: transaction);
+      session,
+      refreshTokenRow.copyWith(
+        variableSecret: (newHash.hash, newHash.salt),
+        lastUpdated: DateTime.now(),
+      ),
+      transaction: transaction,
+    );
 
     return TokenPair(
-      refreshToken: _buildRefreshTokenString(refreshToken: refreshTokenRow),
+      refreshToken: RefreshTokenString.buildRefreshTokenString(
+        refreshToken: refreshTokenRow,
+        secret: newSecret,
+      ),
       accessToken: JwtUtil.createJwt(refreshTokenRow),
     );
   }
@@ -170,46 +197,12 @@ abstract class AuthenticationTokens {
     );
   }
 
+  static String _generateRefreshTokenFixedSecret() {
+    return generateRandomString(16);
+  }
+
   static String _generateRefreshTokenSecret() {
     return generateRandomString(64);
-  }
-
-  /// Prefix for refresh tokens
-  /// "sajrt" being an abbreviation of "serverpod_auth_jwt RefrestToken"
-  static const _refreshTokenPrefix = 'sajrt';
-
-  /// Returns the external refresh token string
-  static String _buildRefreshTokenString({
-    required final RefreshToken refreshToken,
-  }) {
-    return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${refreshToken.secret}';
-  }
-
-  static (UuidValue id, String refreshToken) _parseRefreshTokenString(
-    final String refreshToken,
-  ) {
-    if (!refreshToken.startsWith('$_refreshTokenPrefix:')) {
-      throw ArgumentError.value(
-        refreshToken,
-        'refreshToken',
-        'Refresh token does not start with "$_refreshTokenPrefix"',
-      );
-    }
-
-    final parts = refreshToken.split(':');
-    if (parts.length != 3) {
-      throw ArgumentError.value(
-        refreshToken,
-        'refreshToken',
-        'Refresh token does not consist of 3 parts separated by ":".',
-      );
-    }
-
-    final refreshTokenId = UuidValue.fromByteList(base64Decode(parts[1]));
-
-    final refreshTokeSecret = parts[2];
-
-    return (refreshTokenId, refreshTokeSecret);
   }
 }
 

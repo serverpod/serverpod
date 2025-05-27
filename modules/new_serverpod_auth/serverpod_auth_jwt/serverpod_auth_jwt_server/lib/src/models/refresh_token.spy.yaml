@@ -10,11 +10,24 @@ fields:
   ### The scopes given to this session.
   scopeNames: Set<String>
 
-  ### The most recent secret associated with this refresh token.
+  ### The fixed part of the secret.
+  ###
+  ### Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
+  ### but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
+  ### may have been leaked at that point).
+  ### The the pure `id` is also part of the JWT access token for reference, we have to have this second
+  ### part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
+  ###
+  ### Currently uses 16 bytes of random data as input.
+  fixedSecret: String
+
+  ### The most recent rotating secret associated with this refresh token.
   ###
   ### This is changed on every rotation of the refresh token,
   ### whenever a new access token is created.
-  secret: String
+  ###
+  ### Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
+  variableSecret: (String hash, String salt)
 
   ### The time when the [refreshToken] was last rotated.
   lastUpdated: DateTime, default=now

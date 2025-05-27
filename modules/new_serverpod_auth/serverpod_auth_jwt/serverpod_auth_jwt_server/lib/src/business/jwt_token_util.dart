@@ -8,7 +8,6 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 @internal
 abstract class JwtUtil {
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
-  // TODO: Since we thread the refresh token ID around and now support external verification, we do indeed need to support a second factor/input for the refresh token verification
   static String createJwt(
     final RefreshToken refreshToken,
   ) {

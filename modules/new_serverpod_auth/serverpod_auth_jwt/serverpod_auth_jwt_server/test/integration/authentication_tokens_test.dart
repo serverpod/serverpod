@@ -113,6 +113,7 @@ void main() {
 
     tearDown(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = null;
+      AuthenticationTokenSecrets.tokenHashPepperTestOverride = null;
     });
 
     test(
@@ -230,6 +231,54 @@ void main() {
       );
 
       expect(authInfo, isNotNull);
+    });
+
+    test(
+        'when changing the configured pepper, then attempting to rotate the token throws an error.',
+        () async {
+      AuthenticationTokenSecrets.tokenHashPepperTestOverride = 'another pepper';
+
+      await expectLater(
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: tokenPair.refreshToken,
+        ),
+        throwsA(isA<RefreshTokenInvalidSecretException>()),
+      );
+    });
+
+    test(
+        'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
+        () async {
+      final tokenParts = tokenPair.refreshToken.split(':');
+      tokenParts[2] = 'updated fixed secret';
+
+      final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+      await expectLater(
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: tokenWithUpdatedFixedSecret,
+        ),
+        throwsA(isA<RefreshTokenNotFoundException>()),
+      );
+    });
+
+    test(
+        'when trying to rotate the token with a wrong variable secret, then it throws an error.',
+        () async {
+      final tokenParts = tokenPair.refreshToken.split(':');
+      tokenParts[3] = 'updated variable secret';
+
+      final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+      await expectLater(
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: tokenWithUpdatedFixedSecret,
+        ),
+        throwsA(isA<RefreshTokenInvalidSecretException>()),
+      );
     });
   });
 }

@@ -11,7 +11,8 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      secret: 'refresh-token-secret',
+      fixedSecret: '',
+      variableSecret: ('', ''),
     );
 
     setUpAll(() {
@@ -50,7 +51,8 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      secret: 'refresh-token-secret',
+      fixedSecret: '',
+      variableSecret: ('', ''),
     );
 
     late String token;
@@ -128,7 +130,8 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      secret: 'refresh-token-secret',
+      fixedSecret: '',
+      variableSecret: ('', ''),
     );
 
     setUpAll(() {
