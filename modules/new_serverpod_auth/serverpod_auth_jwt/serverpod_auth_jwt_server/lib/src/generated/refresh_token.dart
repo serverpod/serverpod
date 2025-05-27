@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i2;
+import 'package:serverpod_auth_jwt_server/src/generated/protocol.dart' as _i3;
 
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -22,7 +23,8 @@ abstract class RefreshToken
     required this.authUserId,
     this.authUser,
     required this.scopeNames,
-    required this.secret,
+    required this.fixedSecret,
+    required this.variableSecret,
     DateTime? lastUpdated,
     DateTime? created,
   })  : lastUpdated = lastUpdated ?? DateTime.now(),
@@ -33,7 +35,8 @@ abstract class RefreshToken
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    required String secret,
+    required String fixedSecret,
+    required (String, String) variableSecret,
     DateTime? lastUpdated,
     DateTime? created,
   }) = _RefreshTokenImpl;
@@ -52,7 +55,9 @@ abstract class RefreshToken
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
-      secret: jsonSerialization['secret'] as String,
+      fixedSecret: jsonSerialization['fixedSecret'] as String,
+      variableSecret: _i3.Protocol().deserialize<(String, String)>(
+          (jsonSerialization['variableSecret'] as Map<String, dynamic>)),
       lastUpdated:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUpdated']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
@@ -74,11 +79,24 @@ abstract class RefreshToken
   /// The scopes given to this session.
   Set<String> scopeNames;
 
-  /// The most recent secret associated with this refresh token.
+  /// The fixed part of the secret.
+  ///
+  /// Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
+  /// but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
+  /// may have been leaked at that point).
+  /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
+  /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
+  ///
+  /// Currently uses 16 bytes of random data as input.
+  String fixedSecret;
+
+  /// The most recent rotating secret associated with this refresh token.
   ///
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
-  String secret;
+  ///
+  /// Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
+  (String, String) variableSecret;
 
   /// The time when the [refreshToken] was last rotated.
   DateTime lastUpdated;
@@ -97,7 +115,8 @@ abstract class RefreshToken
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
     Set<String>? scopeNames,
-    String? secret,
+    String? fixedSecret,
+    (String, String)? variableSecret,
     DateTime? lastUpdated,
     DateTime? created,
   });
@@ -108,7 +127,8 @@ abstract class RefreshToken
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
       'scopeNames': scopeNames.toJson(),
-      'secret': secret,
+      'fixedSecret': fixedSecret,
+      'variableSecret': _i3.mapRecordToJson(variableSecret),
       'lastUpdated': lastUpdated.toJson(),
       'created': created.toJson(),
     };
@@ -157,7 +177,8 @@ class _RefreshTokenImpl extends RefreshToken {
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    required String secret,
+    required String fixedSecret,
+    required (String, String) variableSecret,
     DateTime? lastUpdated,
     DateTime? created,
   }) : super._(
@@ -165,7 +186,8 @@ class _RefreshTokenImpl extends RefreshToken {
           authUserId: authUserId,
           authUser: authUser,
           scopeNames: scopeNames,
-          secret: secret,
+          fixedSecret: fixedSecret,
+          variableSecret: variableSecret,
           lastUpdated: lastUpdated,
           created: created,
         );
@@ -179,7 +201,8 @@ class _RefreshTokenImpl extends RefreshToken {
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
-    String? secret,
+    String? fixedSecret,
+    (String, String)? variableSecret,
     DateTime? lastUpdated,
     DateTime? created,
   }) {
@@ -189,7 +212,12 @@ class _RefreshTokenImpl extends RefreshToken {
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      secret: secret ?? this.secret,
+      fixedSecret: fixedSecret ?? this.fixedSecret,
+      variableSecret: variableSecret ??
+          (
+            this.variableSecret.$1,
+            this.variableSecret.$2,
+          ),
       lastUpdated: lastUpdated ?? this.lastUpdated,
       created: created ?? this.created,
     );
@@ -207,8 +235,12 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       'scopeNames',
       this,
     );
-    secret = _i1.ColumnString(
-      'secret',
+    fixedSecret = _i1.ColumnString(
+      'fixedSecret',
+      this,
+    );
+    variableSecret = _i1.ColumnSerializable(
+      'variableSecret',
       this,
     );
     lastUpdated = _i1.ColumnDateTime(
@@ -231,11 +263,24 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// The scopes given to this session.
   late final _i1.ColumnSerializable scopeNames;
 
-  /// The most recent secret associated with this refresh token.
+  /// The fixed part of the secret.
+  ///
+  /// Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
+  /// but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
+  /// may have been leaked at that point).
+  /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
+  /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
+  ///
+  /// Currently uses 16 bytes of random data as input.
+  late final _i1.ColumnString fixedSecret;
+
+  /// The most recent rotating secret associated with this refresh token.
   ///
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
-  late final _i1.ColumnString secret;
+  ///
+  /// Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
+  late final _i1.ColumnSerializable variableSecret;
 
   /// The time when the [refreshToken] was last rotated.
   late final _i1.ColumnDateTime lastUpdated;
@@ -261,7 +306,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
         id,
         authUserId,
         scopeNames,
-        secret,
+        fixedSecret,
+        variableSecret,
         lastUpdated,
         created,
       ];

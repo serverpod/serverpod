@@ -7,7 +7,8 @@ CREATE TABLE "serverpod_auth_jwt_refresh_token" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "authUserId" uuid NOT NULL,
     "scopeNames" json NOT NULL,
-    "secret" text NOT NULL,
+    "fixedSecret" text NOT NULL,
+    "variableSecret" json NOT NULL,
     "lastUpdated" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -273,9 +274,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_jwt
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_jwt', '20250522114939016', now())
+    VALUES ('serverpod_auth_jwt', '20250527113801064', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250522114939016', "timestamp" = now();
+    DO UPDATE SET "version" = '20250527113801064', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

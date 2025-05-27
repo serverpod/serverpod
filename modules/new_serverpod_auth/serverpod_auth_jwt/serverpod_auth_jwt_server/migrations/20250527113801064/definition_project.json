@@ -27,10 +27,16 @@
           "dartType": "Set<String>"
         },
         {
-          "name": "secret",
+          "name": "fixedSecret",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
+        },
+        {
+          "name": "variableSecret",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "(String, String,)"
         },
         {
           "name": "lastUpdated",
