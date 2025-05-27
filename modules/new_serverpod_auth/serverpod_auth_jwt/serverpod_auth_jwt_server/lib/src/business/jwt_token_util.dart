@@ -17,7 +17,7 @@ abstract class JwtUtil {
       },
       jwtId: refreshToken.id!.toString(),
       subject: refreshToken.authUserId.toString(),
-      issuer: _jwtTokenIssuer,
+      issuer: _issuer,
     );
 
     final (JWTKey key, JWTAlgorithm algorithm) =
@@ -55,7 +55,7 @@ abstract class JwtUtil {
       jwt = JWT.verify(
         accessToken,
         key,
-        issuer: _jwtTokenIssuer,
+        issuer: _issuer,
       );
     } catch (_) {
       final fallbackAlgorithm =
@@ -74,7 +74,7 @@ abstract class JwtUtil {
       jwt = JWT.verify(
         accessToken,
         key,
-        issuer: _jwtTokenIssuer,
+        issuer: _issuer,
       );
     }
 
@@ -95,6 +95,5 @@ abstract class JwtUtil {
     );
   }
 
-  static const _jwtTokenIssuer =
-      'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server';
+  static String? get _issuer => AuthenticationTokenConfig.current.issuer;
 }

@@ -1,5 +1,6 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
@@ -58,6 +59,8 @@ void main() {
     late String token;
 
     setUp(() {
+      AuthenticationTokenConfig.current = AuthenticationTokenConfig();
+
       AuthenticationTokenSecrets.privateKeyTestOverride =
           'test-private-key-for-HS512';
       AuthenticationTokenSecrets.publicKeyTestOverride = '';
@@ -94,6 +97,33 @@ void main() {
     });
 
     test(
+        'when the JWT is inspected, then it will contain no issuer per the default configuration.',
+        () {
+      final token = JwtUtil.createJwt(testRefreshToken);
+
+      expect(
+        JWT.decode(token).issuer,
+        isNull,
+      );
+    });
+
+    test(
+        'when an issuer is configured and the JWT is inspected, then it will contain that issuer issuer.',
+        () {
+      AuthenticationTokenConfig.current = AuthenticationTokenConfig(
+        issuer:
+            'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
+      );
+
+      final token = JwtUtil.createJwt(testRefreshToken);
+
+      expect(
+        JWT.decode(token).issuer,
+        isNotNull,
+      );
+    });
+
+    test(
         'when the JWT header is inspected, then it name the HS512 as its `alg.',
         () {
       final token = JwtUtil.createJwt(testRefreshToken);
@@ -115,8 +145,22 @@ void main() {
       );
     });
 
-    test('when the HMAC key is change, then reading the token will fail.', () {
+    test('when the HMAC key is changed, then reading the token will fail.', () {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'new-secret-key';
+
+      expect(
+        () => JwtUtil.verifyJwt(token),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test(
+        'when the issuer is changed, then validating the previous token will fail.',
+        () {
+      AuthenticationTokenConfig.current = AuthenticationTokenConfig(
+        issuer:
+            'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
+      );
 
       expect(
         () => JwtUtil.verifyJwt(token),

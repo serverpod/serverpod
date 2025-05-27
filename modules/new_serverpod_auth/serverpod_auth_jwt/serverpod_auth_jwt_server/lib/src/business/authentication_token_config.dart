@@ -21,10 +21,21 @@ class AuthenticationTokenConfig {
   /// to keep the client with working credentials.
   final Duration refreshTokenLifetime;
 
+  /// The issuer set on the JWT access tokens.
+  ///
+  /// Set as `iss` claim.
+  /// https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
+  ///
+  /// If set, incoming tokens will be validated to contain the same issuer.
+  ///
+  /// Defaults to `null`.
+  final String? issuer;
+
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
     this.defaultAccessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
+    this.issuer,
   });
 
   /// The current JWT authentication module configuration.
