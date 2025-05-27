@@ -326,7 +326,7 @@ class TextStdOutLogWriter extends LogWriter {
         break;
       case FutureCallSession():
         _writeFormattedLog(
-          'FUTURE CALL',
+          'FUTURE',
           scope: _session.futureCallName,
           id: _logId,
           fields: {
