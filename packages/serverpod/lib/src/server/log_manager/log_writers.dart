@@ -226,98 +226,258 @@ class JsonStdOutLogWriter extends LogWriter {
 
 @internal
 class TextStdOutLogWriter extends LogWriter {
+  static bool headersWritten = false;
+
+  static void writeHeadersIfNeeded() {
+    if (!headersWritten) {
+      _writeFormatHeaders();
+      headersWritten = true;
+    }
+  }
+
   final int _logId;
   final Session _session;
 
-  TextStdOutLogWriter(this._session) : _logId = _session.sessionId.hashCode;
+  TextStdOutLogWriter(this._session) : _logId = _session.sessionId.hashCode {
+    writeHeadersIfNeeded();
+  }
 
   @override
   Future<void> logEntry(LogEntry entry) async {
-    var message =
-        '[LOG] ${entry.logLevel.name.toUpperCase()} | session=$_logId | message=${entry.message}';
-
-    if (_isError(entry)) {
-      _write(message, true);
-    } else {
-      _write(message);
-    }
-
-    _maybeLogError(entry.error, entry.stackTrace);
+    _writeFormattedLog(
+      'LOG',
+      scope: entry.logLevel.name.toUpperCase(),
+      id: _logId,
+      fields: {
+        'message': entry.message,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+      toStdErr: _isError(entry),
+    );
   }
 
   @override
   Future<void> logMessage(MessageLogEntry entry) async {
-    _write(
-      '[STREAM MESSAGE] ${entry.endpoint} | session=$_logId | messageId=${entry.messageId} | messageName=${entry.messageName}',
+    _writeFormattedLog(
+      'STREAM MESSAGE',
+      scope: entry.endpoint,
+      id: _logId,
+      fields: {
+        'id': entry.messageId,
+        'name': entry.messageName,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
     );
-
-    _maybeLogError(entry.error, entry.stackTrace);
   }
 
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
-    _write(
-      '[QUERY] session=$_logId | id=${entry.id} | time=${entry.duration}ms | query=${entry.query}',
+    _writeFormattedLog(
+      'QUERY',
+      scope: null,
+      id: _logId,
+      fields: {
+        'id': entry.id,
+        'time': '${entry.duration}ms',
+        'query': entry.query,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
     );
-
-    _maybeLogError(entry.error, entry.stackTrace);
   }
 
   @override
   Future<void> openLog(SessionLogEntry entry) async {
-    var message = switch (_session) {
-      StreamingSession() =>
-        '[STREAM OPENED] ${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''} | session=$_logId | user=${entry.authenticatedUserId}',
-      MethodStreamSession() =>
-        '[METHOD STREAM OPENED] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId}',
-      _ => null,
-    };
-
-    if (message != null) {
-      _write(message);
+    if (_session is! StreamingSession && _session is! MethodStreamSession) {
+      return;
     }
 
-    _maybeLogError(entry.error, entry.stackTrace);
+    _writeFormattedLog(
+      'STREAM OPEN',
+      scope:
+          '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
+      id: _logId,
+      fields: {
+        'user': entry.authenticatedUserId,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+    );
   }
 
   @override
   Future<int> closeLog(SessionLogEntry entry) async {
-    var message = switch (_session) {
-      MethodCallSession() =>
-        '[METHOD] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
-      FutureCallSession() =>
-        '[FUTURE CALL] ${_session.futureCallName} | session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms',
-      WebCallSession() =>
-        '[WEB] ${entry.endpoint} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
-      StreamingSession() =>
-        '[STREAM CLOSED] ${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
-      MethodStreamSession() =>
-        '[METHOD STREAM CLOSED] ${entry.endpoint}.${entry.method} | session=$_logId | user=${entry.authenticatedUserId} | queries=${entry.numQueries} | time=${entry.duration}ms',
-      InternalSession() =>
-        '[INTERNAL] session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms ',
-      _ =>
-        '[UNKNOWN] session=$_logId | queries=${entry.numQueries} | time=${entry.duration}ms',
-    };
-
-    _write(message);
-    _maybeLogError(entry.error, entry.stackTrace);
+    switch (_session) {
+      case MethodCallSession():
+        _writeFormattedLog(
+          'METHOD',
+          scope: '${entry.endpoint}.${entry.method}',
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case FutureCallSession():
+        _writeFormattedLog(
+          'FUTURE CALL',
+          scope: _session.futureCallName,
+          id: _logId,
+          fields: {
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case WebCallSession():
+        _writeFormattedLog(
+          'WEB',
+          scope: entry.endpoint,
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case StreamingSession() || MethodStreamSession():
+        _writeFormattedLog(
+          'STREAM CLOSED',
+          scope:
+              '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case InternalSession():
+        _writeFormattedLog(
+          'INTERNAL',
+          scope: null,
+          id: _logId,
+          fields: {
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      default:
+        // This should never happen, but we handle it gracefully.
+        _writeFormattedLog(
+          'UNKNOWN',
+          scope: null,
+          id: _logId,
+          fields: {
+            'sessionType': _session.runtimeType.toString(),
+            'queries': entry.numQueries,
+            'time': entry.duration,
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+    }
 
     return _logId;
   }
 
-  void _maybeLogError(String? error, String? stackTrace) {
+  static void _writeFormatHeaders() {
+    stdout.writeln(
+      '${'TIME'.padRight(27)}'
+      ' ${'ID'.padRight(10)}'
+      ' ${'TYPE'.padRight(14)}'
+      ' ${'SCOPE'.padRight(25)}'
+      'DETAILS',
+    );
+    stdout.writeln(
+      '${'-' * 27}' // Time
+      ' ${'-' * 10}' // Id
+      ' ${'-' * 14}' // Type
+      ' ${'-' * 24}' // SCOPE
+      ' ${'-' * 30}', // Details
+    );
+  }
+
+  static void _writeFormattedLog(
+    String type, {
+    required String? scope,
+    required int id,
+    required Map<String, dynamic> fields,
+    required String? error,
+    required String? stackTrace,
+    bool toStdErr = false,
+  }) {
+    var now = DateTime.now().toUtc();
+    _write(
+      type,
+      scope: scope,
+      id: id,
+      message: fields.isNotEmpty
+          ? fields.entries.map((e) => '${e.key}=${e.value}').join(', ')
+          : '',
+      now: now,
+      toStdErr: toStdErr,
+    );
+
     if (error != null) {
-      _write('error=$error', true);
-      _write('stackTrace=$stackTrace', true);
+      _write(
+        'ERROR',
+        scope: 'n/a',
+        id: id,
+        message: error,
+        now: now,
+        toStdErr: true,
+      );
+      if (stackTrace != null) {
+        _write(
+          'STACK TRACE',
+          scope: 'n/a',
+          id: id,
+          message: stackTrace,
+          now: now,
+          toStdErr: true,
+        );
+      }
     }
   }
 
-  void _write(String message, [bool error = false]) {
-    var now = DateTime.now().toUtc();
-    if (error) {
-      stderr.writeln('$now $message');
+  static void _write(
+    String type, {
+    required String? scope,
+    required int id,
+    required String message,
+    required DateTime now,
+    required bool toStdErr,
+  }) {
+    var output = StringBuffer();
+    output.write('$id'.padLeft(10));
+    output.write(' $type'.padRight(15));
+
+    output.write(' ${scope ?? 'n/a'}'.padRight(25));
+    output.write(' $message');
+
+    if (toStdErr) {
+      stderr.writeln('$now ${output.toString()}');
     } else {
-      stdout.writeln('$now $message');
+      stdout.writeln('$now ${output.toString()}');
     }
   }
 }
