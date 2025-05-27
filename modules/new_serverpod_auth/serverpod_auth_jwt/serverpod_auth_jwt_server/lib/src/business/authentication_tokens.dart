@@ -28,14 +28,19 @@ abstract class AuthenticationTokens {
         result.scopes,
         authId: result.refreshTokenId.toString(),
       );
-    } catch (e) {
+    } on JWTException catch (e, stackTrace) {
       if (e is! JWTUndefinedException) {
+        // Only log errors with the JWT if it was understood as a JWT and not any other format.
         session.log(
           'Invalid JWT access token',
           level: LogLevel.debug,
+          exception: e,
+          stackTrace: stackTrace,
         );
       }
 
+      return null;
+    } catch (e) {
       return null;
     }
   }
