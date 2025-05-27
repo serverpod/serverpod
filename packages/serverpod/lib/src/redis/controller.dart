@@ -125,7 +125,11 @@ class RedisController {
 
     try {
       var connection = RedisConnection();
-      _pubSubCommand = await connection.connect(host, port);
+      if (requireSsl) {
+        _pubSubCommand = await connection.connectSecure(host, port);
+      } else {
+        _pubSubCommand = await connection.connect(host, port);
+      }
       if (password != null) {
         dynamic result;
         if (user != null) {
