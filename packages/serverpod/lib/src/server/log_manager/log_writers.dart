@@ -246,7 +246,7 @@ class TextStdOutLogWriter extends LogWriter {
   Future<void> logEntry(LogEntry entry) async {
     _writeFormattedLog(
       'LOG',
-      scope: entry.logLevel.name.toUpperCase(),
+      context: entry.logLevel.name.toUpperCase(),
       id: _logId,
       fields: {
         'message': entry.message,
@@ -261,7 +261,7 @@ class TextStdOutLogWriter extends LogWriter {
   Future<void> logMessage(MessageLogEntry entry) async {
     _writeFormattedLog(
       'STREAM MESSAGE',
-      scope: entry.endpoint,
+      context: entry.endpoint,
       id: _logId,
       fields: {
         'id': entry.messageId,
@@ -276,7 +276,7 @@ class TextStdOutLogWriter extends LogWriter {
   Future<void> logQuery(QueryLogEntry entry) async {
     _writeFormattedLog(
       'QUERY',
-      scope: null,
+      context: null,
       id: _logId,
       fields: {
         'id': entry.id,
@@ -296,7 +296,7 @@ class TextStdOutLogWriter extends LogWriter {
 
     _writeFormattedLog(
       'STREAM OPEN',
-      scope:
+      context:
           '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
       id: _logId,
       fields: {
@@ -313,7 +313,7 @@ class TextStdOutLogWriter extends LogWriter {
       case MethodCallSession():
         _writeFormattedLog(
           'METHOD',
-          scope: '${entry.endpoint}.${entry.method}',
+          context: '${entry.endpoint}.${entry.method}',
           id: _logId,
           fields: {
             'user': entry.authenticatedUserId,
@@ -327,7 +327,7 @@ class TextStdOutLogWriter extends LogWriter {
       case FutureCallSession():
         _writeFormattedLog(
           'FUTURE',
-          scope: _session.futureCallName,
+          context: _session.futureCallName,
           id: _logId,
           fields: {
             'queries': entry.numQueries,
@@ -340,7 +340,7 @@ class TextStdOutLogWriter extends LogWriter {
       case WebCallSession():
         _writeFormattedLog(
           'WEB',
-          scope: entry.endpoint,
+          context: entry.endpoint,
           id: _logId,
           fields: {
             'user': entry.authenticatedUserId,
@@ -354,7 +354,7 @@ class TextStdOutLogWriter extends LogWriter {
       case StreamingSession() || MethodStreamSession():
         _writeFormattedLog(
           'STREAM CLOSED',
-          scope:
+          context:
               '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
           id: _logId,
           fields: {
@@ -369,7 +369,7 @@ class TextStdOutLogWriter extends LogWriter {
       case InternalSession():
         _writeFormattedLog(
           'INTERNAL',
-          scope: null,
+          context: null,
           id: _logId,
           fields: {
             'queries': entry.numQueries,
@@ -383,7 +383,7 @@ class TextStdOutLogWriter extends LogWriter {
         // This should never happen, but we handle it gracefully.
         _writeFormattedLog(
           'UNKNOWN',
-          scope: null,
+          context: null,
           id: _logId,
           fields: {
             'sessionType': _session.runtimeType.toString(),
@@ -404,21 +404,21 @@ class TextStdOutLogWriter extends LogWriter {
       '${'TIME'.padRight(27)}'
       ' ${'ID'.padRight(10)}'
       ' ${'TYPE'.padRight(14)}'
-      ' ${'SCOPE'.padRight(25)}'
+      ' ${'CONTEXT'.padRight(25)}'
       'DETAILS',
     );
     stdout.writeln(
       '${'-' * 27}' // Time
       ' ${'-' * 10}' // Id
       ' ${'-' * 14}' // Type
-      ' ${'-' * 24}' // SCOPE
+      ' ${'-' * 24}' // Context
       ' ${'-' * 30}', // Details
     );
   }
 
   static void _writeFormattedLog(
     String type, {
-    required String? scope,
+    required String? context,
     required int id,
     required Map<String, dynamic> fields,
     required String? error,
@@ -428,7 +428,7 @@ class TextStdOutLogWriter extends LogWriter {
     var now = DateTime.now().toUtc();
     _write(
       type,
-      scope: scope,
+      context: context,
       id: id,
       message: fields.isNotEmpty
           ? fields.entries.map((e) => '${e.key}=${e.value}').join(', ')
@@ -440,7 +440,7 @@ class TextStdOutLogWriter extends LogWriter {
     if (error != null) {
       _write(
         'ERROR',
-        scope: 'n/a',
+        context: 'n/a',
         id: id,
         message: error,
         now: now,
@@ -449,7 +449,7 @@ class TextStdOutLogWriter extends LogWriter {
       if (stackTrace != null) {
         _write(
           'STACK TRACE',
-          scope: 'n/a',
+          context: 'n/a',
           id: id,
           message: stackTrace,
           now: now,
@@ -461,7 +461,7 @@ class TextStdOutLogWriter extends LogWriter {
 
   static void _write(
     String type, {
-    required String? scope,
+    required String? context,
     required int id,
     required String message,
     required DateTime now,
@@ -471,7 +471,7 @@ class TextStdOutLogWriter extends LogWriter {
     output.write('$id'.padLeft(10));
     output.write(' $type'.padRight(15));
 
-    output.write(' ${scope ?? 'n/a'}'.padRight(25));
+    output.write(' ${context ?? 'n/a'}'.padRight(25));
     output.write(' $message');
 
     if (toStdErr) {
