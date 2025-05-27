@@ -254,6 +254,7 @@ apiServer:
 redis:
   host: localhost
   port: 6379
+  requireSsl: true
 ''';
 
     var config = ServerpodConfig.loadFromMap(
@@ -267,6 +268,7 @@ redis:
     expect(config.redis?.port, 6379);
     expect(config.redis?.password, 'password');
     expect(config.redis?.enabled, isFalse);
+    expect(config.redis?.requireSsl, isTrue);
   });
 
   test(

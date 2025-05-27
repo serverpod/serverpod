@@ -43,9 +43,9 @@ class RedisController {
   RedisController({
     required this.host,
     required this.port,
+    required this.requireSsl,
     this.user,
     this.password,
-    this.requireSsl = false,
   });
 
   /// Starts the controller and connects to Redis. Maintains an open connection
