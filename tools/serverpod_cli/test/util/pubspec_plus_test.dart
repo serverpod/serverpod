@@ -52,7 +52,7 @@ dev_dependencies:
         var lintsDep = depsByName['lints']!;
         expect(
           (lintsDep as HostedDep).dependency.version,
-          VersionConstraint.parse('>=3.0.0 <6.0.0'),
+          VersionConstraint.parse('>=3.0.0 <7.0.0'),
         );
       });
 
@@ -97,7 +97,7 @@ dev_dependencies:
         expect(lintsSpan.start.column, 9);
         expect(lintsSpan.end.line, 8);
         expect(lintsSpan.end.column, 25);
-        expect(lintsSpan.text, "'>=3.0.0 <6.0.0'");
+        expect(lintsSpan.text, "'>=3.0.0 <7.0.0'");
         expect(
           lintsSpan.message('<the message>'),
           'line 9, column 10: <the message>\n' // 1-based
