@@ -14,7 +14,7 @@ dependencies:
   serverpod_client: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: '>=3.0.0 <7.0.0'
 
 dependency_overrides:
   serverpod_client:
