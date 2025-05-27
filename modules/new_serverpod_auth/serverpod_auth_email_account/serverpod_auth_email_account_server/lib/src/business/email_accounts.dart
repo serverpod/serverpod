@@ -32,7 +32,11 @@ abstract final class EmailAccounts {
       (final transaction) async {
         email = email.trim().toLowerCase();
 
-        if (await _hasTooManyFailedSignIns(session, email)) {
+        if (await _hasTooManyFailedSignIns(
+          session,
+          email,
+          transaction: transaction,
+        )) {
           throw EmailAccountLoginException(
             reason: EmailAccountLoginFailureReason.tooManyAttempts,
           );
@@ -134,8 +138,9 @@ abstract final class EmailAccounts {
           }
         }
 
-        final passwordHash =
-            await EmailAccountSecretHash.createHash(value: password);
+        final passwordHash = await EmailAccountSecretHash.createHash(
+          value: password,
+        );
         final verificationCodeHash = await EmailAccountSecretHash.createHash(
           value: verificationCode,
         );
@@ -450,8 +455,9 @@ abstract final class EmailAccounts {
 
   static Future<bool> _hasTooManyFailedSignIns(
     final Session session,
-    final String email,
-  ) async {
+    final String email, {
+    final Transaction? transaction,
+  }) async {
     final oldestRelevantAttempt = clock
         .now()
         .subtract(EmailAccounts.config.failedLoginRateLimit.timeframe);
@@ -463,6 +469,7 @@ abstract final class EmailAccounts {
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
           (t.attemptedAt > oldestRelevantAttempt),
+      transaction: transaction,
     );
 
     return failedLoginAttemptCount >=
