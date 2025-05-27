@@ -50,11 +50,33 @@ abstract class JwtUtil {
         ECPublicKey(publicKey),
     };
 
-    final jwt = JWT.verify(
-      accessToken,
-      key,
-      issuer: _jwtTokenIssuer,
-    );
+    JWT jwt;
+    try {
+      jwt = JWT.verify(
+        accessToken,
+        key,
+        issuer: _jwtTokenIssuer,
+      );
+    } catch (_) {
+      final fallbackAlgorithm =
+          AuthenticationTokenSecrets.fallbackVerificationAlgorithm;
+      if (fallbackAlgorithm == null) {
+        rethrow;
+      }
+
+      final key = switch (fallbackAlgorithm) {
+        HmacSha512FallbackAuthenticationTokenAlgorithm(:final key) =>
+          SecretKey(key),
+        EcdsaSha512FallbackAuthenticationTokenAlgorithm(:final publicKey) =>
+          ECPublicKey(publicKey),
+      };
+
+      jwt = JWT.verify(
+        accessToken,
+        key,
+        issuer: _jwtTokenIssuer,
+      );
+    }
 
     final refreshTokenId = UuidValue.fromString(jwt.jwtId!);
     final authUserId = UuidValue.fromString(jwt.subject!);

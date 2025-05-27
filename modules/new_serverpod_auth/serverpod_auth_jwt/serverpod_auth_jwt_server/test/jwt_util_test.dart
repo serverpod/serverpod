@@ -175,6 +175,70 @@ void main() {
       },
     );
   });
+
+  group(
+      'Given a valid ES512 configuration and JWT created from a `RefreshToken`,',
+      () {
+    final testRefreshToken = RefreshToken(
+      id: const Uuid().v4obj(),
+      authUserId: const Uuid().v4obj(),
+      scopeNames: {'a', 'b', 'c'},
+      fixedSecret: '',
+      variableSecret: ('', ''),
+    );
+
+    late String token;
+
+    setUp(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = _testPrivateKey;
+      AuthenticationTokenSecrets.publicKeyTestOverride = _testPublicKey;
+      AuthenticationTokenSecrets.algorithmTestOverride =
+          AuthenticationTokenSecrets.algorithmES512;
+
+      token = JwtUtil.createJwt(testRefreshToken);
+    });
+
+    tearDown(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = null;
+      AuthenticationTokenSecrets.publicKeyTestOverride = null;
+      AuthenticationTokenSecrets.algorithmTestOverride = null;
+    });
+
+    test(
+        'when the configuration is changed to HMAC, then the validation fails.',
+        () {
+      AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
+      AuthenticationTokenSecrets.publicKeyTestOverride = '';
+      AuthenticationTokenSecrets.algorithmTestOverride =
+          AuthenticationTokenSecrets.algorithmHS512;
+
+      AuthenticationTokenSecrets.fallbackKeyTestOverride = '';
+      AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = '';
+
+      expectLater(
+        () => JwtUtil.verifyJwt(token),
+        throwsA(isA<Error>()),
+      );
+    });
+
+    test(
+        'when the configuration is changed to HMAC with the previous public key as a fallback, then the validation succeeds.',
+        () {
+      AuthenticationTokenSecrets.fallbackKeyTestOverride =
+          AuthenticationTokenSecrets.publicKeyTestOverride;
+      AuthenticationTokenSecrets.fallbackAlgorithmTestOverride =
+          AuthenticationTokenSecrets.algorithmTestOverride;
+
+      AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
+      AuthenticationTokenSecrets.publicKeyTestOverride = '';
+      AuthenticationTokenSecrets.algorithmTestOverride =
+          AuthenticationTokenSecrets.algorithmHS512;
+
+      final result = JwtUtil.verifyJwt(token);
+
+      expect(result.authUserId, testRefreshToken.authUserId);
+    });
+  });
 }
 
 const _testPrivateKey = '''-----BEGIN EC PRIVATE KEY-----

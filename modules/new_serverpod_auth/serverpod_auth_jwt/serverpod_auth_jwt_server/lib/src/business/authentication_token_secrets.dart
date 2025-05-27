@@ -12,6 +12,16 @@ abstract class AuthenticationTokenSecrets {
   /// The configuration key for the optional public key (for asymmetric cryptogrpahy) to verify access tokens with.
   static String publicKeyConfigurationKey = 'serverpod_auth_jwt.publicKey';
 
+  /// Which algorithm to use for the fallback token verification (during key rotation).
+  static String fallbackAlgorithmConfigurationKey =
+      'serverpod_auth_jwt.fallbackAlgorithm';
+
+  /// The key to be used for the fallback key verification (during token rotation).
+  ///
+  /// For the `HS512` algorithm, this would be the single secret.
+  /// For the `ES512` algorithm, this would be the public key.
+  static String fallbackKeyConfigurationKey = 'serverpod_auth_jwt.fallbackKey';
+
   /// The configuration key for the token hash pepper.
   static String tokenHashPepperConfigurationKey =
       'serverpod_auth_jwt.tokenHashPepper';
@@ -58,6 +68,43 @@ abstract class AuthenticationTokenSecrets {
     }
   }
 
+  /// The fallback algorithm to be used for verifications during key rotations.
+  static FallbackAuthenticationTokenAlgorithm?
+      get fallbackVerificationAlgorithm {
+    final algorithm = fallbackAlgorithmTestOverride ??
+        Serverpod.instance.getPassword(fallbackAlgorithmConfigurationKey);
+
+    final key = fallbackKeyTestOverride ??
+        Serverpod.instance.getPassword(fallbackKeyConfigurationKey);
+
+    if (algorithm == null && key == null) {
+      return null;
+    }
+
+    if (key == null || key.isEmpty) {
+      throw ArgumentError(
+        'No valid key was set',
+        fallbackKeyConfigurationKey,
+      );
+    }
+
+    switch (algorithm) {
+      case null || algorithmHS512:
+        return HmacSha512FallbackAuthenticationTokenAlgorithm(key: key);
+
+      case algorithmES512:
+        return EcdsaSha512FallbackAuthenticationTokenAlgorithm(
+          publicKey: key,
+        );
+
+      default:
+        throw ArgumentError(
+          '"$algorithm" is not a valid configuration option',
+          fallbackAlgorithmConfigurationKey,
+        );
+    }
+  }
+
   /// The pepper used for hashing tokens.
   ///
   /// This influences the stored password, so it must not be changed for a given deployment,
@@ -88,6 +135,12 @@ abstract class AuthenticationTokenSecrets {
   @visibleForTesting
   static String? tokenHashPepperTestOverride;
 
+  @visibleForTesting
+  static String? fallbackAlgorithmTestOverride;
+
+  @visibleForTesting
+  static String? fallbackKeyTestOverride;
+
   /// HMAC using SHA-512 hash algorithm
   static const algorithmHS512 = 'HS512';
 
@@ -116,6 +169,27 @@ class EcdsaSha512AuthenticationTokenAlgorithm
 
   EcdsaSha512AuthenticationTokenAlgorithm({
     required this.privateKey,
+    required this.publicKey,
+  });
+}
+
+@internal
+sealed class FallbackAuthenticationTokenAlgorithm {}
+
+@internal
+class HmacSha512FallbackAuthenticationTokenAlgorithm
+    implements FallbackAuthenticationTokenAlgorithm {
+  final String key;
+
+  const HmacSha512FallbackAuthenticationTokenAlgorithm({required this.key});
+}
+
+@internal
+class EcdsaSha512FallbackAuthenticationTokenAlgorithm
+    implements FallbackAuthenticationTokenAlgorithm {
+  final String publicKey;
+
+  EcdsaSha512FallbackAuthenticationTokenAlgorithm({
     required this.publicKey,
   });
 }
