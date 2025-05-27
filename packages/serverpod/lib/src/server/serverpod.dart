@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
@@ -168,10 +167,10 @@ class Serverpod {
     storage[cloudStorage.storageId] = cloudStorage;
   }
 
-  internal.RuntimeSettings get _defaultRuntimeSettings {
+  internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
     return internal.RuntimeSettings(
       logSettings: internal.LogSettings(
-        logAllSessions: false,
+        logAllSessions: runMode == ServerpodRunMode.development,
         logAllQueries: false,
         logSlowSessions: true,
         logSlowQueries: true,
@@ -188,10 +187,10 @@ class Serverpod {
     );
   }
 
-  internal.RuntimeSettings? _runtimeSettings;
+  late internal.RuntimeSettings _runtimeSettings;
 
   /// Serverpod runtime settings as read from the database.
-  internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
+  internal.RuntimeSettings get runtimeSettings => _runtimeSettings;
 
   void _updateLogSettings(internal.RuntimeSettings settings) {
     _runtimeSettings = settings;
@@ -360,7 +359,7 @@ class Serverpod {
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
-    _updateLogSettings(_defaultRuntimeSettings);
+    _updateLogSettings(_defaultRuntimeSettings(_runMode));
 
     // Setup database
     var databaseConfiguration = config.database;
@@ -540,7 +539,7 @@ class Serverpod {
       _exitCode = 1;
     }
 
-    _updateLogSettings(_runtimeSettings ?? _defaultRuntimeSettings);
+    _updateLogSettings(_runtimeSettings);
 
     // Connect to Redis
     if (Features.enableRedis) {
@@ -678,8 +677,10 @@ class Serverpod {
 
   Future<void> _loadRuntimeSettings() async {
     logVerbose('Loading runtime settings.');
+
+    internal.RuntimeSettings? runtimeSettings;
     try {
-      _runtimeSettings =
+      runtimeSettings =
           await internal.RuntimeSettings.db.findFirstRow(internalSession);
     } catch (e, stackTrace) {
       _exitCode = 1;
@@ -687,17 +688,19 @@ class Serverpod {
       _reportException(e, stackTrace, message: message);
     }
 
-    if (_runtimeSettings == null) {
+    if (runtimeSettings == null) {
       logVerbose('Runtime settings not found, creating default settings.');
       try {
-        _runtimeSettings = await RuntimeSettings.db
-            .insertRow(internalSession, _defaultRuntimeSettings);
+        runtimeSettings = await internal.RuntimeSettings.db
+            .insertRow(internalSession, _runtimeSettings);
+        _runtimeSettings = runtimeSettings;
       } catch (e, stackTrace) {
         _exitCode = 1;
         const message = 'Failed to store runtime settings.';
         _reportException(e, stackTrace, message: message);
       }
     } else {
+      _runtimeSettings = runtimeSettings;
       logVerbose('Runtime settings loaded.');
     }
   }
