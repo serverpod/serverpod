@@ -400,7 +400,7 @@ void main() async {
     });
   });
 
-  group('Stdout logger -', () {
+  group('JSON Stdout logger -', () {
     late MockStdout record;
 
     setUp(() async {
@@ -417,6 +417,7 @@ void main() async {
           sessionLogs: SessionLogConfig(
             persistentEnabled: false,
             consoleEnabled: true,
+            consoleLogFormat: ConsoleLogFormat.json,
           ),
         ),
       );
@@ -454,6 +455,60 @@ void main() async {
         // "isOpen" is false when the session is closed and "duration" is set.
         expect(record.output, containsCount('"isOpen":false', 1));
         expect(record.output, containsCount('"duration"', 1));
+      });
+    });
+  });
+
+  group('Text Stdout logger -', () {
+    late MockStdout record;
+
+    setUp(() async {
+      record = MockStdout();
+
+      server = IntegrationTestServer.create(
+        config: ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+          sessionLogs: SessionLogConfig(
+            persistentEnabled: false,
+            consoleEnabled: true,
+            consoleLogFormat: ConsoleLogFormat.text,
+          ),
+        ),
+      );
+
+      await IOOverrides.runZoned(() async {
+        await server.start();
+      }, stdout: () => record);
+    });
+
+    tearDown(() async {
+      await server.shutdown(exitProcess: false);
+    });
+
+    group(
+        'Given a log settings that enable all logging to the text logger when calling a noop method ',
+        () {
+      setUp(() async {
+        var settings = RuntimeSettingsBuilder().build();
+        await server.updateRuntimeSettings(settings);
+
+        await client.logging.emptyMethod();
+      });
+
+      test('then a single text log entry is pushed to stdout in text format.',
+          () {
+        expect(
+          record.output,
+          containsCount(
+            '${'METHOD'.padRight(14)} logging.emptyMethod',
+            1,
+          ),
+        );
       });
     });
   });

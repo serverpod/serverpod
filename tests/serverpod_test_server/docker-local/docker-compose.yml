@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16.3
+    image: pgvector/pgvector:pg16
     ports:
       - '8090:5432'
       - '5432:5432'

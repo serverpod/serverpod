@@ -139,6 +139,12 @@ Expression _buildFromJson(
     case ValueType.byteData:
     case ValueType.uuidValue:
     case ValueType.uri:
+    case ValueType.vector:
+      return _buildComplexTypeFromJson(
+        type,
+        valueExpression,
+        serverCode,
+      );
     case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,

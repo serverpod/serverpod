@@ -68,6 +68,11 @@ rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
 
+echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
 # Examples
 
 echo "examples/chat/chat_server"

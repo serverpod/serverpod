@@ -938,4 +938,26 @@ futureCallExecutionEnabled: false
 
     expect(config.futureCallExecutionEnabled, isTrue);
   });
+
+  test(
+      'Given a Serverpod config instance is created with runMode set to "development" when reading the consoleLogFormat then the consoleLogFormat is set to text',
+      () {
+    var config = ServerpodConfig(
+      runMode: 'development',
+      apiServer: ServerpodConfig.defaultConfig().apiServer,
+    );
+
+    expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
+  });
+
+  test(
+      'Given a Serverpod config instance is created with runMode set to "production" when reading the consoleLogFormat then the consoleLogFormat is set to json',
+      () {
+    var config = ServerpodConfig(
+      runMode: 'production',
+      apiServer: ServerpodConfig.defaultConfig().apiServer,
+    );
+
+    expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
+  });
 }
