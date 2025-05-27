@@ -505,7 +505,7 @@ void main() async {
         expect(
           record.output,
           containsCount(
-            '[METHOD] logging.emptyMethod',
+            '${'METHOD'.padRight(14)} logging.emptyMethod',
             1,
           ),
         );
