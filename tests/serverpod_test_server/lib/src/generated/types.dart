@@ -28,6 +28,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     this.aUuid,
     this.aUri,
     this.aBigInt,
+    this.aVector,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -48,6 +49,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -81,6 +83,9 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
           : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+      aVector: jsonSerialization['aVector'] == null
+          ? null
+          : _i1.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -130,6 +135,8 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   BigInt? aBigInt;
 
+  _i1.Vector? aVector;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -160,6 +167,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -181,6 +189,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -205,6 +214,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -260,6 +270,7 @@ class _TypesImpl extends Types {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -278,6 +289,7 @@ class _TypesImpl extends Types {
           aUuid: aUuid,
           aUri: aUri,
           aBigInt: aBigInt,
+          aVector: aVector,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
           aList: aList,
@@ -302,6 +314,7 @@ class _TypesImpl extends Types {
     Object? aUuid = _Undefined,
     Object? aUri = _Undefined,
     Object? aBigInt = _Undefined,
+    Object? aVector = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -322,6 +335,7 @@ class _TypesImpl extends Types {
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
+      aVector: aVector is _i1.Vector? ? aVector : this.aVector?.clone(),
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
@@ -392,6 +406,11 @@ class TypesTable extends _i1.Table<int?> {
       'aBigInt',
       this,
     );
+    aVector = _i1.ColumnVector(
+      'aVector',
+      this,
+      dimension: 3,
+    );
     anEnum = _i1.ColumnEnum(
       'anEnum',
       this,
@@ -440,6 +459,8 @@ class TypesTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBigInt aBigInt;
 
+  late final _i1.ColumnVector aVector;
+
   late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
   late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
@@ -465,6 +486,7 @@ class TypesTable extends _i1.Table<int?> {
         aUuid,
         aUri,
         aBigInt,
+        aVector,
         anEnum,
         aStringifiedEnum,
         aList,

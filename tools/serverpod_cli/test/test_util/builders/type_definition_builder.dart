@@ -10,6 +10,7 @@ class TypeDefinitionBuilder {
   bool _customClass;
   EnumDefinition? _enumDefinition;
   SerializableModelDefinition? _modelDefinition;
+  int? _vectorDimension;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -18,7 +19,8 @@ class TypeDefinitionBuilder {
         _url = null,
         _dartType = null,
         _customClass = false,
-        _modelDefinition = null;
+        _modelDefinition = null,
+        _vectorDimension = null;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -124,6 +126,11 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withVectorDimension(int dimension) {
+    _vectorDimension = dimension;
+    return this;
+  }
+
   TypeDefinition build() {
     return TypeDefinition(
       className: _className,
@@ -134,6 +141,7 @@ class TypeDefinitionBuilder {
       customClass: _customClass,
       enumDefinition: _enumDefinition,
       projectModelDefinition: _modelDefinition,
+      vectorDimension: _vectorDimension,
     );
   }
 }

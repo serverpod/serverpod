@@ -13,7 +13,7 @@ services:
     depends_on:
       - 'serverpod_test_server'
   postgres:
-    image: postgres:16.3
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test

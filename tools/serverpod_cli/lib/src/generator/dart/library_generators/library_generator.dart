@@ -329,7 +329,7 @@ class LibraryGenerator {
             ..docs.add('''
   /// Wraps serialized data with its class name so that it can be deserialized
   /// with [deserializeByClassName].
-  /// 
+  ///
   /// Records and containers containing records will be return in their JSON representation in the returned map.''')
             ..name = 'wrapWithClassName'
             ..returns = refer('Map<String, dynamic>')
@@ -1104,9 +1104,9 @@ class LibraryGenerator {
         (m) => m
           ..docs.add('''
             /// Maps any `Record`s known to this [Protocol] to their JSON representation
-            /// 
+            ///
             /// Throws in case the record type is not known.
-            /// 
+            ///
             /// This method will return `null` (only) for `null` inputs.''')
           ..name = _mapRecordToJsonFuncName
           ..returns = refer('Map<String, dynamic>?')
@@ -1543,6 +1543,8 @@ extension on DatabaseDefinition {
                   'dartType': literalString(column.dartType!),
                 if (column.columnDefault != null)
                   'columnDefault': literalString(column.columnDefault!),
+                if (column.vectorDimension != null)
+                  'vectorDimension': literalNum(column.vectorDimension!),
               }),
           ]),
           'foreignKeys': literalList([
@@ -1594,6 +1596,12 @@ extension on DatabaseDefinition {
                 'type': literalString(index.type),
                 'isUnique': literalBool(index.isUnique),
                 'isPrimary': literalBool(index.isPrimary),
+                if (index.vectorDistanceFunction != null)
+                  'vectorDistanceFunction': refer(
+                      'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',
+                      serverpodProtocolUrl(serverCode)),
+                if (index.parameters != null)
+                  'parameters': literalMap(index.parameters!),
               }),
           ]),
           'managed': literalBool(table.isManaged),

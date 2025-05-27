@@ -1,0 +1,34 @@
+apiServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+insightsServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+database:
+  host: localhost
+  port: 5432
+  name: serverpod_test
+  user: postgres
+
+redis:
+  enabled: true
+  host: localhost
+  port: 6379
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true
+
+futureCallExecutionEnabled: false

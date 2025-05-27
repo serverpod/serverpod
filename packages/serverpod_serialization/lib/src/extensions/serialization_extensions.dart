@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -157,5 +158,25 @@ extension SetJsonExtension<T> on Set<T> {
     }
 
     return set;
+  }
+}
+
+/// Expose toJson on Vector
+extension VectorJsonExtension on Vector {
+  /// Returns a serialized version of the [Vector] with values serialized.
+  static Vector fromJson(dynamic value) {
+    if (value is Uint8List) return Vector.fromBinary(value);
+    if (value is String) return _fromString(value);
+    if (value is List) return Vector(value.cast<double>());
+    if (value is Vector) return value;
+
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+
+  /// Returns a serialized version of the [Vector] as a [List<double>].
+  List<double> toJson() => toList();
+
+  static Vector _fromString(String value) {
+    return Vector((json.decode(value) as List).cast<double>());
   }
 }
