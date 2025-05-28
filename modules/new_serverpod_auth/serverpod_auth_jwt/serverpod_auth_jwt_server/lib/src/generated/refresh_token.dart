@@ -14,7 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i2;
-import 'package:serverpod_auth_jwt_server/src/generated/protocol.dart' as _i3;
+import 'dart:typed_data' as _i3;
 
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -24,7 +24,8 @@ abstract class RefreshToken
     this.authUser,
     required this.scopeNames,
     required this.fixedSecret,
-    required this.variableSecret,
+    required this.rotatingSecretHash,
+    required this.rotatingSecretSalt,
     DateTime? lastUpdated,
     DateTime? created,
   })  : lastUpdated = lastUpdated ?? DateTime.now(),
@@ -35,8 +36,9 @@ abstract class RefreshToken
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    required String fixedSecret,
-    required (String, String) variableSecret,
+    required _i3.ByteData fixedSecret,
+    required _i3.ByteData rotatingSecretHash,
+    required _i3.ByteData rotatingSecretSalt,
     DateTime? lastUpdated,
     DateTime? created,
   }) = _RefreshTokenImpl;
@@ -55,9 +57,12 @@ abstract class RefreshToken
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
-      fixedSecret: jsonSerialization['fixedSecret'] as String,
-      variableSecret: _i3.Protocol().deserialize<(String, String)>(
-          (jsonSerialization['variableSecret'] as Map<String, dynamic>)),
+      fixedSecret:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['fixedSecret']),
+      rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['rotatingSecretHash']),
+      rotatingSecretSalt: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['rotatingSecretSalt']),
       lastUpdated:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUpdated']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
@@ -87,18 +92,23 @@ abstract class RefreshToken
   /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
   /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
   ///
-  /// Currently uses 16 bytes of random data as input.
-  String fixedSecret;
+  /// Per default uses 16 bytes of random data.
+  _i3.ByteData fixedSecret;
 
   /// The most recent rotating secret associated with this refresh token.
   ///
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
   ///
-  /// Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
-  (String, String) variableSecret;
+  /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
+  _i3.ByteData rotatingSecretHash;
 
-  /// The time when the [refreshToken] was last rotated.
+  /// The salt used for comuting the [rotatingSecretHash].
+  ///
+  /// Per default uses 8 bytes of random data.
+  _i3.ByteData rotatingSecretSalt;
+
+  /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
   DateTime lastUpdated;
 
   /// The time when the first refresh token was created.
@@ -115,8 +125,9 @@ abstract class RefreshToken
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
     Set<String>? scopeNames,
-    String? fixedSecret,
-    (String, String)? variableSecret,
+    _i3.ByteData? fixedSecret,
+    _i3.ByteData? rotatingSecretHash,
+    _i3.ByteData? rotatingSecretSalt,
     DateTime? lastUpdated,
     DateTime? created,
   });
@@ -127,8 +138,9 @@ abstract class RefreshToken
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
       'scopeNames': scopeNames.toJson(),
-      'fixedSecret': fixedSecret,
-      'variableSecret': _i3.mapRecordToJson(variableSecret),
+      'fixedSecret': fixedSecret.toJson(),
+      'rotatingSecretHash': rotatingSecretHash.toJson(),
+      'rotatingSecretSalt': rotatingSecretSalt.toJson(),
       'lastUpdated': lastUpdated.toJson(),
       'created': created.toJson(),
     };
@@ -177,8 +189,9 @@ class _RefreshTokenImpl extends RefreshToken {
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    required String fixedSecret,
-    required (String, String) variableSecret,
+    required _i3.ByteData fixedSecret,
+    required _i3.ByteData rotatingSecretHash,
+    required _i3.ByteData rotatingSecretSalt,
     DateTime? lastUpdated,
     DateTime? created,
   }) : super._(
@@ -187,7 +200,8 @@ class _RefreshTokenImpl extends RefreshToken {
           authUser: authUser,
           scopeNames: scopeNames,
           fixedSecret: fixedSecret,
-          variableSecret: variableSecret,
+          rotatingSecretHash: rotatingSecretHash,
+          rotatingSecretSalt: rotatingSecretSalt,
           lastUpdated: lastUpdated,
           created: created,
         );
@@ -201,8 +215,9 @@ class _RefreshTokenImpl extends RefreshToken {
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
-    String? fixedSecret,
-    (String, String)? variableSecret,
+    _i3.ByteData? fixedSecret,
+    _i3.ByteData? rotatingSecretHash,
+    _i3.ByteData? rotatingSecretSalt,
     DateTime? lastUpdated,
     DateTime? created,
   }) {
@@ -212,12 +227,9 @@ class _RefreshTokenImpl extends RefreshToken {
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      fixedSecret: fixedSecret ?? this.fixedSecret,
-      variableSecret: variableSecret ??
-          (
-            this.variableSecret.$1,
-            this.variableSecret.$2,
-          ),
+      fixedSecret: fixedSecret ?? this.fixedSecret.clone(),
+      rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash.clone(),
+      rotatingSecretSalt: rotatingSecretSalt ?? this.rotatingSecretSalt.clone(),
       lastUpdated: lastUpdated ?? this.lastUpdated,
       created: created ?? this.created,
     );
@@ -235,12 +247,16 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       'scopeNames',
       this,
     );
-    fixedSecret = _i1.ColumnString(
+    fixedSecret = _i1.ColumnByteData(
       'fixedSecret',
       this,
     );
-    variableSecret = _i1.ColumnSerializable(
-      'variableSecret',
+    rotatingSecretHash = _i1.ColumnByteData(
+      'rotatingSecretHash',
+      this,
+    );
+    rotatingSecretSalt = _i1.ColumnByteData(
+      'rotatingSecretSalt',
       this,
     );
     lastUpdated = _i1.ColumnDateTime(
@@ -271,18 +287,23 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
   /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
   ///
-  /// Currently uses 16 bytes of random data as input.
-  late final _i1.ColumnString fixedSecret;
+  /// Per default uses 16 bytes of random data.
+  late final _i1.ColumnByteData fixedSecret;
 
   /// The most recent rotating secret associated with this refresh token.
   ///
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
   ///
-  /// Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
-  late final _i1.ColumnSerializable variableSecret;
+  /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
+  late final _i1.ColumnByteData rotatingSecretHash;
 
-  /// The time when the [refreshToken] was last rotated.
+  /// The salt used for comuting the [rotatingSecretHash].
+  ///
+  /// Per default uses 8 bytes of random data.
+  late final _i1.ColumnByteData rotatingSecretSalt;
+
+  /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
   late final _i1.ColumnDateTime lastUpdated;
 
   /// The time when the first refresh token was created.
@@ -307,7 +328,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
         authUserId,
         scopeNames,
         fixedSecret,
-        variableSecret,
+        rotatingSecretHash,
+        rotatingSecretSalt,
         lastUpdated,
         created,
       ];

@@ -28,15 +28,21 @@
         },
         {
           "name": "fixedSecret",
-          "columnType": 0,
+          "columnType": 5,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "dart:typed_data:ByteData"
         },
         {
-          "name": "variableSecret",
-          "columnType": 8,
+          "name": "rotatingSecretHash",
+          "columnType": 5,
           "isNullable": false,
-          "dartType": "(String, String,)"
+          "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "rotatingSecretSalt",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
         },
         {
           "name": "lastUpdated",
