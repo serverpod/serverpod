@@ -69,12 +69,9 @@ class ServerpodConfig {
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
   }) : sessionLogs = sessionLogs ??
-            SessionLogConfig(
-              persistentEnabled: database != null,
-              consoleEnabled: database == null,
-              consoleLogFormat: runMode == _developmentRunMode
-                  ? ConsoleLogFormat.text
-                  : ConsoleLogFormat.defaultFormat,
+            SessionLogConfig.buildDefault(
+              databaseEnabled: database != null,
+              runMode: runMode,
             ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
@@ -571,6 +568,21 @@ class SessionLogConfig {
     required this.consoleEnabled,
     ConsoleLogFormat? consoleLogFormat,
   }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
+
+  /// Creates a new default [SessionLogConfig] based on the run mode and
+  /// whether the database is enabled.
+  factory SessionLogConfig.buildDefault({
+    required bool databaseEnabled,
+    required String runMode,
+  }) {
+    return SessionLogConfig(
+      persistentEnabled: databaseEnabled,
+      consoleEnabled: !databaseEnabled || runMode == _developmentRunMode,
+      consoleLogFormat: runMode == _developmentRunMode
+          ? ConsoleLogFormat.text
+          : ConsoleLogFormat.defaultFormat,
+    );
+  }
 
   factory SessionLogConfig._fromJson(
     Map sessionLogConfigJson,

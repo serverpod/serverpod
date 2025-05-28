@@ -66,7 +66,7 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and console logging disabled',
+    'Given a Serverpod config with "development" run mode missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and console text logging is enabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -89,7 +89,43 @@ database:
       );
 
       expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(
+        config.sessionLogs.consoleLogFormat,
+        ConsoleLogFormat.text,
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with "production" run mode missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and json console logging disabled',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: testUser
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        productionRunMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.sessionLogs.persistentEnabled, isTrue);
       expect(config.sessionLogs.consoleEnabled, isFalse);
+      expect(
+        config.sessionLogs.consoleLogFormat,
+        ConsoleLogFormat.json,
+      );
     },
   );
 
