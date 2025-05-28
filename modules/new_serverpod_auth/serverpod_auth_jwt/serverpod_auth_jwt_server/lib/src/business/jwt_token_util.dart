@@ -7,6 +7,8 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 
 @internal
 abstract class JwtUtil {
+  static const _serverpodScopeNamesClaimKey = 'dev.serverpod.scopeNames';
+
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
   static String createJwt(
     final RefreshToken refreshToken, {
@@ -15,7 +17,8 @@ abstract class JwtUtil {
     final jwt = JWT(
       {
         ...?extraClaims,
-        'scopeNames': refreshToken.scopeNames.toList(),
+        if (refreshToken.scopeNames.isNotEmpty)
+          _serverpodScopeNamesClaimKey: refreshToken.scopeNames.toList(),
       },
       jwtId: refreshToken.id!.toString(),
       subject: refreshToken.authUserId.toString(),
@@ -83,8 +86,10 @@ abstract class JwtUtil {
     final refreshTokenId = UuidValue.fromString(jwt.jwtId!);
     final authUserId = UuidValue.fromString(jwt.subject!);
 
-    final scopeNames =
-        ((jwt.payload as Map)['scopeNames'] as List).cast<String>();
+    final scopeNamesClaim = (jwt.payload as Map)[_serverpodScopeNamesClaimKey];
+    final scopeNames = scopeNamesClaim != null
+        ? (scopeNamesClaim as List).cast<String>()
+        : const <String>[];
 
     final scopes = {
       for (final scopeName in scopeNames) Scope(scopeName),

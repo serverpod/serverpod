@@ -144,8 +144,35 @@ void main() {
       final token = JwtUtil.createJwt(testRefreshToken);
 
       expect(
-        (JWT.decode(token).payload as Map)['scopeNames'],
+        (JWT.decode(token).payload as Map)['dev.serverpod.scopeNames'],
         ['a', 'b', 'c'],
+      );
+    });
+
+    test(
+        'when the JWT is created without scopes, then it does not even contain they associated key.',
+        () {
+      final token = JwtUtil.createJwt(
+        testRefreshToken.copyWith(scopeNames: {}),
+      );
+
+      expect(
+        (JWT.decode(token).payload as Map)
+            .containsKey('dev.serverpod.scopeNames'),
+        isFalse,
+      );
+    });
+
+    test(
+        'when the JWT is created without scopes, then they come out as an empty set.',
+        () {
+      final token = JwtUtil.createJwt(
+        testRefreshToken.copyWith(scopeNames: {}),
+      );
+
+      expect(
+        JwtUtil.verifyJwt(token).scopes,
+        isEmpty,
       );
     });
 
