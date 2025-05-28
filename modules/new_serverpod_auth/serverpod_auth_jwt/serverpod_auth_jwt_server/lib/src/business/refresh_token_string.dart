@@ -14,9 +14,9 @@ abstract final class RefreshTokenString {
   /// Returns the external refresh token string
   static String buildRefreshTokenString({
     required final RefreshToken refreshToken,
-    required final Uint8List secret,
+    required final Uint8List rotatingSecret,
   }) {
-    return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${base64Encode(Uint8List.sublistView(refreshToken.fixedSecret))}:${base64Encode(secret)}';
+    return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${base64Encode(Uint8List.sublistView(refreshToken.fixedSecret))}:${base64Encode(rotatingSecret)}';
   }
 
   static RefreshTokenStringData parseRefreshTokenString(
@@ -43,12 +43,12 @@ abstract final class RefreshTokenString {
 
     final fixedSecret = base64Decode(parts[2]);
 
-    final variableSecret = base64Decode(parts[3]);
+    final rotatingSecret = base64Decode(parts[3]);
 
     return (
       id: refreshTokenId,
       fixedSecret: fixedSecret,
-      variableSecret: variableSecret,
+      rotatingSecret: rotatingSecret,
     );
   }
 }
@@ -57,5 +57,5 @@ abstract final class RefreshTokenString {
 typedef RefreshTokenStringData = ({
   UuidValue id,
   Uint8List fixedSecret,
-  Uint8List variableSecret,
+  Uint8List rotatingSecret,
 });

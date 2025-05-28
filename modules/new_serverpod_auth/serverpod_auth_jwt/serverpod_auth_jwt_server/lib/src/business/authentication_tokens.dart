@@ -75,7 +75,7 @@ abstract class AuthenticationTokens {
     return TokenPair(
       refreshToken: RefreshTokenString.buildRefreshTokenString(
         refreshToken: refreshToken,
-        secret: secret,
+        rotatingSecret: secret,
       ),
       accessToken: JwtUtil.createJwt(refreshToken),
     );
@@ -131,7 +131,7 @@ abstract class AuthenticationTokens {
     }
 
     if (!RefreshTokenSecretHash.validateHash(
-      secret: refreshTokenData.variableSecret,
+      secret: refreshTokenData.rotatingSecret,
       hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
       salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
     )) {
@@ -160,7 +160,7 @@ abstract class AuthenticationTokens {
     return TokenPair(
       refreshToken: RefreshTokenString.buildRefreshTokenString(
         refreshToken: refreshTokenRow,
-        secret: newSecret,
+        rotatingSecret: newSecret,
       ),
       accessToken: JwtUtil.createJwt(refreshTokenRow),
     );

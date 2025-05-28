@@ -34,7 +34,7 @@ abstract class JwtUtil {
 
     return jwt.sign(
       key,
-      expiresIn: AuthenticationTokenConfig.current.defaultAccessTokenLifetime,
+      expiresIn: AuthenticationTokenConfig.current.accessTokenLifetime,
       algorithm: algorithm,
     );
   }

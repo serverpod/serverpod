@@ -9,7 +9,7 @@ import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secr
 import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
 import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
 
-/// Class for hashing and verifying refresh token secrets.
+/// Class for hashing and verifying refresh token's rotating secret.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2

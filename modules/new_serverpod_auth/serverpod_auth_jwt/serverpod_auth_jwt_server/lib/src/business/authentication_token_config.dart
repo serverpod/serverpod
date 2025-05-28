@@ -1,12 +1,12 @@
 /// Configuration options for the JWT authentication module.
 class AuthenticationTokenConfig {
-  /// The default lifetime of access tokens.
+  /// The lifetime of access tokens.
   ///
   /// This will be encoded in each access token, and for
   /// incoming requests only the token's value will be used.
   ///
   /// Defaults to 10 minutes.
-  final Duration defaultAccessTokenLifetime;
+  final Duration accessTokenLifetime;
 
   /// The lifetime of a refresh token.
   ///
@@ -48,7 +48,7 @@ class AuthenticationTokenConfig {
 
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
-    this.defaultAccessTokenLifetime = const Duration(minutes: 10),
+    this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
     this.issuer,
     this.refreshTokenFixedSecretLength = 16,
