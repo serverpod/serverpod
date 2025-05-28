@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
+import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
 import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
 import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
@@ -19,7 +20,9 @@ abstract final class RefreshTokenSecretHash {
     required final Uint8List secret,
     @protected Uint8List? salt,
   }) {
-    salt ??= generateRandomBytes(8);
+    salt ??= generateRandomBytes(
+      AuthenticationTokenConfig.current.refreshTokenRotatingSecretSaltLength,
+    );
     final parameters = Argon2Parameters(
       Argon2Parameters.ARGON2_id,
       salt,

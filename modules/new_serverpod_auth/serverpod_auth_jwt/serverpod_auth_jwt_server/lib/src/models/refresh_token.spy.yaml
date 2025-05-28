@@ -31,7 +31,7 @@ fields:
 
   ### The salt used for comuting the [rotatingSecretHash].
   ###
-  ### Per default uses 8 bytes of random data.
+  ### Per default uses 16 bytes of random data.
   rotatingSecretSalt: ByteData
 
   ### The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.

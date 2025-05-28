@@ -216,11 +216,15 @@ abstract class AuthenticationTokens {
   }
 
   static Uint8List _generateRefreshTokenFixedSecret() {
-    return generateRandomBytes(16);
+    return generateRandomBytes(
+      AuthenticationTokenConfig.current.refreshTokenFixedSecretLength,
+    );
   }
 
   static Uint8List _generateRefreshTokenSecret() {
-    return generateRandomBytes(64);
+    return generateRandomBytes(
+      AuthenticationTokenConfig.current.refreshTokenRotatingSecretLength,
+    );
   }
 }
 

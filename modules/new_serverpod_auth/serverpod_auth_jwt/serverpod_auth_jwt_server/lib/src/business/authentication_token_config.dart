@@ -31,11 +31,29 @@ class AuthenticationTokenConfig {
   /// Defaults to `null`.
   final String? issuer;
 
+  /// The amount of random bytes used for the fixed secret part of each individual refresh token.
+  ///
+  /// Default to 16.
+  final int refreshTokenFixedSecretLength;
+
+  /// The amount of random bytes used for the rotating secret of the refresh token.
+  ///
+  /// Defaults to 64.
+  final int refreshTokenRotatingSecretLength;
+
+  /// The amount of random bytes used to hash the rotation secret of the refresh token with.
+  ///
+  /// Defaults to 16.
+  final int refreshTokenRotatingSecretSaltLength;
+
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
     this.defaultAccessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
     this.issuer,
+    this.refreshTokenFixedSecretLength = 16,
+    this.refreshTokenRotatingSecretLength = 64,
+    this.refreshTokenRotatingSecretSaltLength = 16,
   });
 
   /// The current JWT authentication module configuration.
