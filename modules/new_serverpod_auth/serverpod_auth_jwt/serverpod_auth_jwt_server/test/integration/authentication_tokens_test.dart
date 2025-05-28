@@ -3,7 +3,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
-import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
+import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 

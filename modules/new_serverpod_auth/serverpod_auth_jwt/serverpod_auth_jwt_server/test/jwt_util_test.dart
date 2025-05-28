@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
-import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
+import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 import 'package:test/test.dart';
 
@@ -44,6 +45,65 @@ void main() {
       expect(
         data.scopes.map((final s) => s.name!),
         testRefreshToken.scopeNames,
+      );
+    });
+
+    test(
+        'when an issuer is configured and the JWT is inspected, then it will contain that issuer issuer.',
+        () {
+      AuthenticationTokens.config = AuthenticationTokenConfig(
+        issuer:
+            'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
+      );
+
+      final token = JwtUtil.createJwt(testRefreshToken);
+
+      expect(
+        JWT.decode(token).issuer,
+        isNotNull,
+      );
+    });
+
+    test(
+        'when the JWT is created without scopes, then it does not even contain they associated key.',
+        () {
+      final token = JwtUtil.createJwt(
+        testRefreshToken.copyWith(scopeNames: {}),
+      );
+
+      expect(
+        (JWT.decode(token).payload as Map)
+            .containsKey('dev.serverpod.scopeNames'),
+        isFalse,
+      );
+    });
+
+    test(
+        'when the JWT is created without scopes, then they come out as an empty set.',
+        () {
+      final token = JwtUtil.createJwt(
+        testRefreshToken.copyWith(scopeNames: {}),
+      );
+
+      expect(
+        JwtUtil.verifyJwt(token).scopes,
+        isEmpty,
+      );
+    });
+
+    test(
+        'when the JWT is created with extra claims, then they come as they were set.',
+        () {
+      final token = JwtUtil.createJwt(
+        testRefreshToken.copyWith(
+          extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
+        ),
+        extraClaims: {'b': 1, 'a': 'test'},
+      );
+
+      expect(
+        JwtUtil.verifyJwt(token).extraClaims,
+        equals({'b': 1, 'a': 'test'}),
       );
     });
   });
@@ -92,8 +152,6 @@ void main() {
     test(
         "when the JWT is inspected, then it will contain the `RefreshToken`'s ID as `jwtId`.",
         () {
-      final token = JwtUtil.createJwt(testRefreshToken);
-
       expect(
         JWT.decode(token).jwtId,
         testRefreshToken.id!.toString(),
@@ -103,8 +161,6 @@ void main() {
     test(
         'when the JWT is inspected, then it will contain no issuer per the default configuration.',
         () {
-      final token = JwtUtil.createJwt(testRefreshToken);
-
       expect(
         JWT.decode(token).issuer,
         isNull,
@@ -112,67 +168,27 @@ void main() {
     });
 
     test(
-        'when an issuer is configured and the JWT is inspected, then it will contain that issuer issuer.',
+        'when the JWT header is inspected, then it name the HS512 as its "alg".',
         () {
-      AuthenticationTokens.config = AuthenticationTokenConfig(
-        issuer:
-            'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
-      );
-
-      final token = JwtUtil.createJwt(testRefreshToken);
-
-      expect(
-        JWT.decode(token).issuer,
-        isNotNull,
-      );
-    });
-
-    test(
-        'when the JWT header is inspected, then it name the HS512 as its `alg.',
-        () {
-      final token = JwtUtil.createJwt(testRefreshToken);
-
       expect(
         JWT.decode(token).header,
         equals({'alg': 'HS512', 'typ': 'JWT'}),
       );
     });
 
+    test('when the extra claims are inspected, then they will be empty.', () {
+      expect(
+        JwtUtil.verifyJwt(token).extraClaims,
+        isEmpty,
+      );
+    });
+
     test(
         'when the JWT is inspected, then it will contain the scopes as a list named "scopeNames" in the `payload`.',
         () {
-      final token = JwtUtil.createJwt(testRefreshToken);
-
       expect(
         (JWT.decode(token).payload as Map)['dev.serverpod.scopeNames'],
         ['a', 'b', 'c'],
-      );
-    });
-
-    test(
-        'when the JWT is created without scopes, then it does not even contain they associated key.',
-        () {
-      final token = JwtUtil.createJwt(
-        testRefreshToken.copyWith(scopeNames: {}),
-      );
-
-      expect(
-        (JWT.decode(token).payload as Map)
-            .containsKey('dev.serverpod.scopeNames'),
-        isFalse,
-      );
-    });
-
-    test(
-        'when the JWT is created without scopes, then they come out as an empty set.',
-        () {
-      final token = JwtUtil.createJwt(
-        testRefreshToken.copyWith(scopeNames: {}),
-      );
-
-      expect(
-        JwtUtil.verifyJwt(token).scopes,
-        isEmpty,
       );
     });
 

@@ -7,8 +7,6 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 
 @internal
 abstract class JwtUtil {
-  static const _serverpodScopeNamesClaimKey = 'dev.serverpod.scopeNames';
-
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
   static String createJwt(
     final RefreshToken refreshToken, {
@@ -54,6 +52,7 @@ abstract class JwtUtil {
     UuidValue refreshTokenId,
     UuidValue authUserId,
     Set<Scope> scopes,
+    Map<String, dynamic> extraClaims,
   }) verifyJwt(final String accessToken) {
     final key = switch (AuthenticationTokenSecrets.algorithm) {
       HmacSha512AuthenticationTokenAlgorithm(:final key) => SecretKey(key),
@@ -101,12 +100,33 @@ abstract class JwtUtil {
       for (final scopeName in scopeNames) Scope(scopeName),
     };
 
+    final allClaims = (jwt.payload as Map).cast<String, dynamic>();
+    final extraClaims = Map.fromEntries(
+      allClaims.entries.where((final e) =>
+          !_registeredClaims.contains(e.key) &&
+          e.key != _serverpodScopeNamesClaimKey),
+    );
+
     return (
       refreshTokenId: refreshTokenId,
       authUserId: authUserId,
       scopes: scopes,
+      extraClaims: extraClaims,
     );
   }
 
   static String? get _issuer => AuthenticationTokens.config.issuer;
+
+  /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
+  static const _registeredClaims = {
+    'iss',
+    'sub',
+    'aud',
+    'exp',
+    'nbf',
+    'iat',
+    'jti',
+  };
+
+  static const _serverpodScopeNamesClaimKey = 'dev.serverpod.scopeNames';
 }
