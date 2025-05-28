@@ -12,6 +12,12 @@ abstract class JwtUtil {
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
   static String createJwt(
     final RefreshToken refreshToken, {
+    /// Extra claims to be added to the JWT.
+    ///
+    /// These are added on the top level of the paylaod, so be sure not to conflict with the [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1),
+    /// as those will just overwrite any custom claims given here.
+    ///
+    /// Since these claims will be embedded in every access token (also across rotations), one should be mindful about there length and total size.
     final Map<String, dynamic>? extraClaims,
   }) {
     final jwt = JWT(
