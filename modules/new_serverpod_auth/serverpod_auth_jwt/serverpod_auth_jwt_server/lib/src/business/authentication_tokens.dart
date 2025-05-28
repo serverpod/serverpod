@@ -5,6 +5,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
+import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens_admin.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_string.dart';
@@ -13,7 +14,10 @@ import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
 import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
-abstract class AuthenticationTokens {
+abstract final class AuthenticationTokens {
+  /// Admin-related functions for managing authentication tokens.
+  static final admin = AuthenticationTokensAdmin();
+
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
   /// In case the session token looks like a JWT, but is not valid a debug-level

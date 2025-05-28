@@ -52,3 +52,7 @@ fields:
 
   ### The time when the first refresh token was created.
   created: DateTime, default=now
+
+indexes:
+  serverpod_auth_jwt_refresh_token_last_updated:
+    fields: lastUpdated
