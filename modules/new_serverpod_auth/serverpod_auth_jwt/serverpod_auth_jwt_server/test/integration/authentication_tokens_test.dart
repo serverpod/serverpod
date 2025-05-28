@@ -251,7 +251,7 @@ void main() {
         'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
         () async {
       final tokenParts = tokenPair.refreshToken.split(':');
-      tokenParts[2] = 'updated fixed secret';
+      tokenParts[2] = 'dGVzdA==';
 
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
 
@@ -268,7 +268,7 @@ void main() {
         'when trying to rotate the token with a wrong variable secret, then it throws an error.',
         () async {
       final tokenParts = tokenPair.refreshToken.split(':');
-      tokenParts[3] = 'updated variable secret';
+      tokenParts[3] = 'dGVzdA==';
 
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
 

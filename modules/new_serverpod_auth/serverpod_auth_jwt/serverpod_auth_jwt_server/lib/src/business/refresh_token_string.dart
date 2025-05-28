@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
@@ -13,16 +14,12 @@ abstract final class RefreshTokenString {
   /// Returns the external refresh token string
   static String buildRefreshTokenString({
     required final RefreshToken refreshToken,
-    required final String secret,
+    required final Uint8List secret,
   }) {
-    return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${refreshToken.fixedSecret}:$secret';
+    return '$_refreshTokenPrefix:${base64Encode(refreshToken.id!.toBytes())}:${base64Encode(Uint8List.sublistView(refreshToken.fixedSecret))}:${base64Encode(secret)}';
   }
 
-  static ({
-    UuidValue id,
-    String fixedSecret,
-    String variableSecret,
-  }) parseRefreshTokenString(
+  static RefreshTokenStringData parseRefreshTokenString(
     final String refreshToken,
   ) {
     if (!refreshToken.startsWith('$_refreshTokenPrefix:')) {
@@ -44,9 +41,9 @@ abstract final class RefreshTokenString {
 
     final refreshTokenId = UuidValue.fromByteList(base64Decode(parts[1]));
 
-    final fixedSecret = parts[2];
+    final fixedSecret = base64Decode(parts[2]);
 
-    final variableSecret = parts[3];
+    final variableSecret = base64Decode(parts[3]);
 
     return (
       id: refreshTokenId,
@@ -55,3 +52,10 @@ abstract final class RefreshTokenString {
     );
   }
 }
+
+/// The data obtained from reading in a refresh token string.
+typedef RefreshTokenStringData = ({
+  UuidValue id,
+  Uint8List fixedSecret,
+  Uint8List variableSecret,
+});

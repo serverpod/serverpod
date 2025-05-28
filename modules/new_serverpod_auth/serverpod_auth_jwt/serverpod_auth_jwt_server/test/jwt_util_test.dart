@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
@@ -12,8 +14,9 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      fixedSecret: '',
-      variableSecret: ('', ''),
+      fixedSecret: ByteData(0),
+      rotatingSecretHash: ByteData(0),
+      rotatingSecretSalt: ByteData(0),
     );
 
     setUpAll(() {
@@ -52,8 +55,9 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      fixedSecret: '',
-      variableSecret: ('', ''),
+      fixedSecret: ByteData(0),
+      rotatingSecretHash: ByteData(0),
+      rotatingSecretSalt: ByteData(0),
     );
 
     late String token;
@@ -174,8 +178,9 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      fixedSecret: '',
-      variableSecret: ('', ''),
+      fixedSecret: ByteData(0),
+      rotatingSecretHash: ByteData(0),
+      rotatingSecretSalt: ByteData(0),
     );
 
     setUpAll(() {
@@ -227,8 +232,9 @@ void main() {
       id: const Uuid().v4obj(),
       authUserId: const Uuid().v4obj(),
       scopeNames: {'a', 'b', 'c'},
-      fixedSecret: '',
-      variableSecret: ('', ''),
+      fixedSecret: ByteData(0),
+      rotatingSecretHash: ByteData(0),
+      rotatingSecretSalt: ByteData(0),
     );
 
     late String token;

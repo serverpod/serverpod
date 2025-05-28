@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -6,7 +8,8 @@ import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_string.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
+import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
 abstract class AuthenticationTokens {
@@ -61,8 +64,9 @@ abstract class AuthenticationTokens {
       session,
       RefreshToken(
         authUserId: authUserId,
-        fixedSecret: _generateRefreshTokenFixedSecret(),
-        variableSecret: (newHash.hash, newHash.salt),
+        fixedSecret: ByteData.sublistView(_generateRefreshTokenFixedSecret()),
+        rotatingSecretHash: ByteData.sublistView(newHash.hash),
+        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
       ),
       transaction: transaction,
@@ -85,24 +89,34 @@ abstract class AuthenticationTokens {
     required final String refreshToken,
     final Transaction? transaction,
   }) async {
-    final UuidValue id;
-    final String fixedSecret;
-    final String variableSecret;
+    final RefreshTokenStringData refreshTokenData;
 
     try {
-      (:id, :fixedSecret, :variableSecret) =
-          RefreshTokenString.parseRefreshTokenString(refreshToken);
-    } catch (e, _) {
+      refreshTokenData = RefreshTokenString.parseRefreshTokenString(
+        refreshToken,
+      );
+    } catch (e, stackTrace) {
+      session.log(
+        'Received malformed refresh token',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.debug,
+      );
+
       throw RefreshTokenMalformedException();
     }
 
     var refreshTokenRow = await RefreshToken.db.findById(
       session,
-      id,
+      refreshTokenData.id,
       transaction: transaction,
     );
 
-    if (refreshTokenRow == null || refreshTokenRow.fixedSecret != fixedSecret) {
+    if (refreshTokenRow == null ||
+        !uint8ListAreEqual(
+          Uint8List.sublistView(refreshTokenRow.fixedSecret),
+          refreshTokenData.fixedSecret,
+        )) {
       throw RefreshTokenNotFoundException();
     }
 
@@ -117,12 +131,15 @@ abstract class AuthenticationTokens {
     }
 
     if (!RefreshTokenSecretHash.validateHash(
-      secret: variableSecret,
-      hash: refreshTokenRow.variableSecret.$1,
-      salt: refreshTokenRow.variableSecret.$2,
+      secret: refreshTokenData.variableSecret,
+      hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
+      salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
     )) {
-      await RefreshToken.db
-          .deleteRow(session, refreshTokenRow, transaction: transaction);
+      await RefreshToken.db.deleteRow(
+        session,
+        refreshTokenRow,
+        transaction: transaction,
+      );
 
       throw RefreshTokenInvalidSecretException();
     }
@@ -133,7 +150,8 @@ abstract class AuthenticationTokens {
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
       refreshTokenRow.copyWith(
-        variableSecret: (newHash.hash, newHash.salt),
+        rotatingSecretHash: ByteData.sublistView(newHash.hash),
+        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         lastUpdated: DateTime.now(),
       ),
       transaction: transaction,
@@ -197,12 +215,12 @@ abstract class AuthenticationTokens {
     );
   }
 
-  static String _generateRefreshTokenFixedSecret() {
-    return generateRandomString(16);
+  static Uint8List _generateRefreshTokenFixedSecret() {
+    return generateRandomBytes(16);
   }
 
-  static String _generateRefreshTokenSecret() {
-    return generateRandomString(64);
+  static Uint8List _generateRefreshTokenSecret() {
+    return generateRandomBytes(64);
   }
 }
 

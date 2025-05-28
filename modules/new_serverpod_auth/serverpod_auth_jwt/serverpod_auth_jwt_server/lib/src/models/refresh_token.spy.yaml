@@ -18,18 +18,23 @@ fields:
   ### The the pure `id` is also part of the JWT access token for reference, we have to have this second
   ### part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
   ###
-  ### Currently uses 16 bytes of random data as input.
-  fixedSecret: String
+  ### Per default uses 16 bytes of random data.
+  fixedSecret: ByteData
 
   ### The most recent rotating secret associated with this refresh token.
   ###
   ### This is changed on every rotation of the refresh token,
   ### whenever a new access token is created.
   ###
-  ### Currently uses 64 bytes of random data, and its hash is stored peppered and salted.
-  variableSecret: (String hash, String salt)
+  ### Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
+  rotatingSecretHash: ByteData
 
-  ### The time when the [refreshToken] was last rotated.
+  ### The salt used for comuting the [rotatingSecretHash].
+  ###
+  ### Per default uses 8 bytes of random data.
+  rotatingSecretSalt: ByteData
+
+  ### The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
   lastUpdated: DateTime, default=now
 
   ### The time when the first refresh token was created.
