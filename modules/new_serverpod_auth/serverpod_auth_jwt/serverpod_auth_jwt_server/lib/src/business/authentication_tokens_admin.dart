@@ -15,7 +15,7 @@ final class AuthenticationTokensAdmin {
     final Transaction? transaction,
   }) async {
     final oldestValidRefreshTokenDate = DateTime.now()
-        .subtract(AuthenticationTokenConfig.current.refreshTokenLifetime);
+        .subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     await RefreshToken.db.deleteWhere(
       session,

@@ -63,7 +63,7 @@ void main() {
     late String token;
 
     setUp(() {
-      AuthenticationTokenConfig.current = AuthenticationTokenConfig();
+      AuthenticationTokens.config = AuthenticationTokenConfig();
 
       AuthenticationTokenSecrets.privateKeyTestOverride =
           'test-private-key-for-HS512';
@@ -114,7 +114,7 @@ void main() {
     test(
         'when an issuer is configured and the JWT is inspected, then it will contain that issuer issuer.',
         () {
-      AuthenticationTokenConfig.current = AuthenticationTokenConfig(
+      AuthenticationTokens.config = AuthenticationTokenConfig(
         issuer:
             'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
       );
@@ -161,7 +161,7 @@ void main() {
     test(
         'when the issuer is changed, then validating the previous token will fail.',
         () {
-      AuthenticationTokenConfig.current = AuthenticationTokenConfig(
+      AuthenticationTokens.config = AuthenticationTokenConfig(
         issuer:
             'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server',
       );

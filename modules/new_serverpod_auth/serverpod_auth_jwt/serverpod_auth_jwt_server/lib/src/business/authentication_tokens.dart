@@ -15,6 +15,9 @@ import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
 abstract final class AuthenticationTokens {
+  /// The current JWT authentication module configuration.
+  static AuthenticationTokenConfig config = AuthenticationTokenConfig();
+
   /// Admin-related functions for managing authentication tokens.
   static final admin = AuthenticationTokensAdmin();
 
@@ -238,13 +241,13 @@ abstract final class AuthenticationTokens {
 
   static Uint8List _generateRefreshTokenFixedSecret() {
     return generateRandomBytes(
-      AuthenticationTokenConfig.current.refreshTokenFixedSecretLength,
+      AuthenticationTokens.config.refreshTokenFixedSecretLength,
     );
   }
 
   static Uint8List _generateRefreshTokenSecret() {
     return generateRandomBytes(
-      AuthenticationTokenConfig.current.refreshTokenRotatingSecretLength,
+      AuthenticationTokens.config.refreshTokenRotatingSecretLength,
     );
   }
 }
@@ -259,7 +262,7 @@ extension on Set<Scope> {
 extension on RefreshToken {
   bool get isExpired {
     final oldestAcceptedRefreshTokenDate = DateTime.now()
-        .subtract(AuthenticationTokenConfig.current.refreshTokenLifetime);
+        .subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
   }

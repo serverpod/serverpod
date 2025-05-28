@@ -21,7 +21,7 @@ abstract final class RefreshTokenSecretHash {
     @protected Uint8List? salt,
   }) {
     salt ??= generateRandomBytes(
-      AuthenticationTokenConfig.current.refreshTokenRotatingSecretSaltLength,
+      AuthenticationTokens.config.refreshTokenRotatingSecretSaltLength,
     );
     final parameters = Argon2Parameters(
       Argon2Parameters.ARGON2_id,

@@ -55,7 +55,4 @@ class AuthenticationTokenConfig {
     this.refreshTokenRotatingSecretLength = 64,
     this.refreshTokenRotatingSecretSaltLength = 16,
   });
-
-  /// The current JWT authentication module configuration.
-  static AuthenticationTokenConfig current = AuthenticationTokenConfig();
 }
