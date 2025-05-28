@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
@@ -8,10 +10,11 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 @internal
 abstract class JwtUtil {
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
-  static String createJwt(
-    final RefreshToken refreshToken, {
-    final Map<String, dynamic>? extraClaims,
-  }) {
+  static String createJwt(final RefreshToken refreshToken) {
+    final extraClaims = refreshToken.extraClaims != null
+        ? jsonDecode(refreshToken.extraClaims!) as Map
+        : null;
+
     final jwt = JWT(
       {
         ...?extraClaims,

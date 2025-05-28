@@ -94,10 +94,7 @@ abstract final class AuthenticationTokens {
         refreshToken: refreshToken,
         rotatingSecret: secret,
       ),
-      accessToken: JwtUtil.createJwt(
-        refreshToken,
-        extraClaims: extraClaims,
-      ),
+      accessToken: JwtUtil.createJwt(refreshToken),
     );
   }
 
@@ -139,10 +136,6 @@ abstract final class AuthenticationTokens {
         )) {
       throw RefreshTokenNotFoundException();
     }
-
-    final extraClaims = refreshTokenRow.extraClaims != null
-        ? jsonDecode(refreshTokenRow.extraClaims!) as Map<String, dynamic>
-        : null;
 
     if (refreshTokenRow.isExpired) {
       await RefreshToken.db.deleteRow(
@@ -186,10 +179,7 @@ abstract final class AuthenticationTokens {
         refreshToken: refreshTokenRow,
         rotatingSecret: newSecret,
       ),
-      accessToken: JwtUtil.createJwt(
-        refreshTokenRow,
-        extraClaims: extraClaims,
-      ),
+      accessToken: JwtUtil.createJwt(refreshTokenRow),
     );
   }
 

@@ -98,7 +98,6 @@ void main() {
         testRefreshToken.copyWith(
           extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
         ),
-        extraClaims: {'b': 1, 'a': 'test'},
       );
 
       expect(
