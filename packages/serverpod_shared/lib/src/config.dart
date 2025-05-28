@@ -589,15 +589,6 @@ class SessionLogConfig {
     String name, {
     required bool databaseEnabled,
   }) {
-    _validateJsonConfig(
-      {
-        ServerpodEnv.sessionPersistentLogEnabled.configKey: bool,
-        ServerpodEnv.sessionConsoleLogEnabled.configKey: bool,
-      },
-      sessionLogConfigJson,
-      name,
-    );
-
     var configuredLogFormat =
         sessionLogConfigJson[ServerpodEnv.sessionConsoleLogFormat.configKey];
 

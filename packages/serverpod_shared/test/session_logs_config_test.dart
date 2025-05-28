@@ -140,7 +140,6 @@ apiServer:
   publicScheme: http
 sessionLogs:
   persistentEnabled: true
-  consoleEnabled: false
 ''';
 
       expect(
@@ -174,7 +173,6 @@ apiServer:
   publicScheme: http
 sessionLogs:
   persistentEnabled: false
-  consoleEnabled: true
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -186,7 +184,6 @@ sessionLogs:
       );
 
       expect(config.sessionLogs.persistentEnabled, isFalse);
-      expect(config.sessionLogs.consoleEnabled, isTrue);
     },
   );
 
@@ -206,7 +203,6 @@ database:
   user: testUser
 sessionLogs:
   persistentEnabled: true
-  consoleEnabled: false
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -217,7 +213,30 @@ sessionLogs:
       );
 
       expect(config.sessionLogs.persistentEnabled, isTrue);
-      expect(config.sessionLogs.consoleEnabled, isFalse);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with sessionLogs when consoleEnabled is true then consoleEnabled remains true',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+sessionLogs:
+  consoleEnabled: true
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        developmentRunMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.sessionLogs.consoleEnabled, isTrue);
     },
   );
 
