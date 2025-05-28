@@ -9,10 +9,12 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 abstract class JwtUtil {
   /// The auth user ID is set as `subject` and the refresh token ID for which this access token is generated is set as `jwtId`.
   static String createJwt(
-    final RefreshToken refreshToken,
-  ) {
+    final RefreshToken refreshToken, {
+    final Map<String, dynamic>? extraClaims,
+  }) {
     final jwt = JWT(
       {
+        ...?extraClaims,
         'scopeNames': refreshToken.scopeNames.toList(),
       },
       jwtId: refreshToken.id!.toString(),

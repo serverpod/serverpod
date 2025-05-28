@@ -8,7 +8,20 @@ fields:
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
 
   ### The scopes given to this session.
+  ###
+  ### These will also be added to each access token as a claim named "scopeNames".
   scopeNames: Set<String>
+
+  ### Extra claims to be added to each access token created for this refresh token.
+  ###
+  ### This is a `Map<String, dynamic>` where each entry uses the key as the claim name.
+  ### The value must be convertible to JSON.
+  ###
+  ### Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  ### or the above mentioned claim "scopeNames".
+  ###
+  ### This is only stored as a serialized String in the database due to schema limitations.
+  extraClaims: String?
 
   ### The fixed part of the secret.
   ###

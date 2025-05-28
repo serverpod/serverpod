@@ -3,6 +3,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
+import 'package:serverpod_auth_jwt_server/src/business/jwt_token_util.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -73,6 +74,7 @@ void main() {
     tearDownAll(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = null;
     });
+
     test('when requesting a new token pair, then one is returned.', () async {
       await AuthenticationTokens.createTokens(
         session,
@@ -80,9 +82,60 @@ void main() {
         scopes: {},
       );
     });
+
+    test(
+        'when requesting a new token pair with scopes, then those are visible on the initial access token.',
+        () async {
+      final tokenPair = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {const Scope('test')},
+      );
+
+      final decodedToken = JwtUtil.verifyJwt(tokenPair.accessToken);
+      expect(decodedToken.scopes, hasLength(1));
+      expect(decodedToken.scopes.single.name, 'test');
+    });
+
+    test(
+        'when requesting a new token pair with extra claims, then those are visible on the initial access token.',
+        () async {
+      final tokenPair = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        extraClaims: {'test': 123},
+      );
+
+      final decodedToken = JWT.decode(tokenPair.accessToken);
+
+      expect((decodedToken.payload as Map)['test'], 123);
+    });
+
+    test(
+        'when requesting a new token pair with extra claims that conflict with registered claims, then the registered claims will overwrite the given ones.',
+        () async {
+      final tokenPair = await withClock(
+        Clock.fixed(DateTime.utc(1970)),
+        () => AuthenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          extraClaims: {'exp': 123, 'custom': 'hello'},
+        ),
+      );
+
+      final decodedToken = JWT.decode(tokenPair.accessToken);
+
+      // expiration still set to default time of 10 minutes
+      expect((decodedToken.payload as Map)['exp'], 600);
+      expect((decodedToken.payload as Map)['custom'], 'hello');
+    });
   });
 
-  withServerpod('Given a valid `TokenPair` for a refresh token with scopes,', (
+  withServerpod(
+      'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
+      (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -108,6 +161,7 @@ void main() {
         session,
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
+        extraClaims: {'string': 'foo', 'int': 1},
       );
     });
 
@@ -148,12 +202,10 @@ void main() {
       final newTokenPair = await withClock(
         // Need to more forward the clock, as otherwise the new access token has the same expiry date and thus looks equal.
         Clock.fixed(DateTime.now().add(const Duration(seconds: 2))),
-        () async {
-          return await AuthenticationTokens.rotateRefreshToken(
-            session,
-            refreshToken: tokenPair.refreshToken,
-          );
-        },
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: tokenPair.refreshToken,
+        ),
       );
 
       expect(newTokenPair.accessToken, isNot(tokenPair.accessToken));
@@ -173,6 +225,20 @@ void main() {
 
       expect(newDecodedToken.jwtId, isNotNull);
       expect(decodedToken.jwtId, newDecodedToken.jwtId);
+    });
+
+    test(
+        'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
+        () async {
+      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+        session,
+        refreshToken: tokenPair.refreshToken,
+      );
+
+      final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+
+      expect((newDecodedToken.payload as Map)['string'], 'foo');
+      expect((newDecodedToken.payload as Map)['int'], 1);
     });
 
     test(

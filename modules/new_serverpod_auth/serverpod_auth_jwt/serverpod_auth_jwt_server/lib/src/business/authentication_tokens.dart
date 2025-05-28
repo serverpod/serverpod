@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
@@ -55,6 +56,7 @@ abstract class AuthenticationTokens {
     final Session session, {
     required final UuidValue authUserId,
     required final Set<Scope> scopes,
+    final Map<String, dynamic>? extraClaims,
     final Transaction? transaction,
   }) async {
     final secret = _generateRefreshTokenSecret();
@@ -68,6 +70,7 @@ abstract class AuthenticationTokens {
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
+        extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
       ),
       transaction: transaction,
     );
@@ -77,7 +80,10 @@ abstract class AuthenticationTokens {
         refreshToken: refreshToken,
         rotatingSecret: secret,
       ),
-      accessToken: JwtUtil.createJwt(refreshToken),
+      accessToken: JwtUtil.createJwt(
+        refreshToken,
+        extraClaims: extraClaims,
+      ),
     );
   }
 
@@ -119,6 +125,10 @@ abstract class AuthenticationTokens {
         )) {
       throw RefreshTokenNotFoundException();
     }
+
+    final extraClaims = refreshTokenRow.extraClaims != null
+        ? jsonDecode(refreshTokenRow.extraClaims!) as Map<String, dynamic>
+        : null;
 
     if (refreshTokenRow.isExpired) {
       await RefreshToken.db.deleteRow(
@@ -162,7 +172,10 @@ abstract class AuthenticationTokens {
         refreshToken: refreshTokenRow,
         rotatingSecret: newSecret,
       ),
-      accessToken: JwtUtil.createJwt(refreshTokenRow),
+      accessToken: JwtUtil.createJwt(
+        refreshTokenRow,
+        extraClaims: extraClaims,
+      ),
     );
   }
 
@@ -241,7 +254,9 @@ extension on Set<Scope> {
 
 extension on RefreshToken {
   bool get isExpired {
-    return lastUpdated.isBefore(DateTime.now()
-        .subtract(AuthenticationTokenConfig.current.refreshTokenLifetime));
+    final oldestAcceptedRefreshTokenDate = DateTime.now()
+        .subtract(AuthenticationTokenConfig.current.refreshTokenLifetime);
+
+    return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
   }
 }
