@@ -137,7 +137,7 @@ class RedisController {
         } else {
           result = await _pubSubCommand!.send_object(['AUTH', password]);
         }
-        _connecting = false;
+        _connectingPubSub = false;
         if (result != 'OK') return false;
       }
 
