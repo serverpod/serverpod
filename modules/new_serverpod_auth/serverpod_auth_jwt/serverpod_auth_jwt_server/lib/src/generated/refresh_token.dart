@@ -23,6 +23,7 @@ abstract class RefreshToken
     required this.authUserId,
     this.authUser,
     required this.scopeNames,
+    this.extraClaims,
     required this.fixedSecret,
     required this.rotatingSecretHash,
     required this.rotatingSecretSalt,
@@ -36,6 +37,7 @@ abstract class RefreshToken
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
+    String? extraClaims,
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
@@ -57,6 +59,7 @@ abstract class RefreshToken
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
+      extraClaims: jsonSerialization['extraClaims'] as String?,
       fixedSecret:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['fixedSecret']),
       rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
@@ -82,7 +85,20 @@ abstract class RefreshToken
   _i2.AuthUser? authUser;
 
   /// The scopes given to this session.
+  ///
+  /// These will also be added to each access token as a claim named "scopeNames".
   Set<String> scopeNames;
+
+  /// Extra claims to be added to each access token created for this refresh token.
+  ///
+  /// This is a `Map<String, dynamic>` where each entry uses the key as the claim name.
+  /// The value must be convertible to JSON.
+  ///
+  /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// or the above mentioned claim "scopeNames".
+  ///
+  /// This is only stored as a serialized String in the database due to schema limitations.
+  String? extraClaims;
 
   /// The fixed part of the secret.
   ///
@@ -125,6 +141,7 @@ abstract class RefreshToken
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
     Set<String>? scopeNames,
+    String? extraClaims,
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
@@ -138,6 +155,7 @@ abstract class RefreshToken
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
       'scopeNames': scopeNames.toJson(),
+      if (extraClaims != null) 'extraClaims': extraClaims,
       'fixedSecret': fixedSecret.toJson(),
       'rotatingSecretHash': rotatingSecretHash.toJson(),
       'rotatingSecretSalt': rotatingSecretSalt.toJson(),
@@ -189,6 +207,7 @@ class _RefreshTokenImpl extends RefreshToken {
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
+    String? extraClaims,
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
@@ -199,6 +218,7 @@ class _RefreshTokenImpl extends RefreshToken {
           authUserId: authUserId,
           authUser: authUser,
           scopeNames: scopeNames,
+          extraClaims: extraClaims,
           fixedSecret: fixedSecret,
           rotatingSecretHash: rotatingSecretHash,
           rotatingSecretSalt: rotatingSecretSalt,
@@ -215,6 +235,7 @@ class _RefreshTokenImpl extends RefreshToken {
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
+    Object? extraClaims = _Undefined,
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
@@ -227,6 +248,7 @@ class _RefreshTokenImpl extends RefreshToken {
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
+      extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
       fixedSecret: fixedSecret ?? this.fixedSecret.clone(),
       rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash.clone(),
       rotatingSecretSalt: rotatingSecretSalt ?? this.rotatingSecretSalt.clone(),
@@ -245,6 +267,10 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
     );
     scopeNames = _i1.ColumnSerializable(
       'scopeNames',
+      this,
+    );
+    extraClaims = _i1.ColumnString(
+      'extraClaims',
       this,
     );
     fixedSecret = _i1.ColumnByteData(
@@ -277,7 +303,20 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   _i2.AuthUserTable? _authUser;
 
   /// The scopes given to this session.
+  ///
+  /// These will also be added to each access token as a claim named "scopeNames".
   late final _i1.ColumnSerializable scopeNames;
+
+  /// Extra claims to be added to each access token created for this refresh token.
+  ///
+  /// This is a `Map<String, dynamic>` where each entry uses the key as the claim name.
+  /// The value must be convertible to JSON.
+  ///
+  /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// or the above mentioned claim "scopeNames".
+  ///
+  /// This is only stored as a serialized String in the database due to schema limitations.
+  late final _i1.ColumnString extraClaims;
 
   /// The fixed part of the secret.
   ///
@@ -327,6 +366,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
         id,
         authUserId,
         scopeNames,
+        extraClaims,
         fixedSecret,
         rotatingSecretHash,
         rotatingSecretSalt,

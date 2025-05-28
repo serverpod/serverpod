@@ -27,6 +27,12 @@
           "dartType": "Set<String>"
         },
         {
+          "name": "extraClaims",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
           "name": "fixedSecret",
           "columnType": 5,
           "isNullable": false,

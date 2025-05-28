@@ -27,6 +27,12 @@
           "dartType": "Set<String>"
         },
         {
+          "name": "extraClaims",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
           "name": "fixedSecret",
           "columnType": 5,
           "isNullable": false,
@@ -1280,7 +1286,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_jwt",
-      "version": "20250528074836519"
+      "version": "20250528103741358"
     },
     {
       "module": "serverpod",
