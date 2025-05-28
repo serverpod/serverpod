@@ -392,6 +392,7 @@ class Serverpod {
         port: redis.port,
         user: redis.user,
         password: redis.password,
+        requireSsl: redis.requireSsl,
       );
     }
 

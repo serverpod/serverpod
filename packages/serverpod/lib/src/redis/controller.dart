@@ -25,6 +25,9 @@ class RedisController {
   /// The password of the Redis server. Not required, but recommended.
   final String? password;
 
+  /// require ssl
+  final bool requireSsl;
+
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
 
   Command? _command;
@@ -40,6 +43,7 @@ class RedisController {
   RedisController({
     required this.host,
     required this.port,
+    required this.requireSsl,
     this.user,
     this.password,
   });
@@ -60,6 +64,33 @@ class RedisController {
     await _pubSubCommand?.get_connection().close();
   }
 
+  /// Shared helper to create and authenticate a Redis Command connection.
+  Future<Command?> _createAndAuthCommand() async {
+    try {
+      var connection = RedisConnection();
+      Command command = switch (requireSsl) {
+        true => await connection.connectSecure(host, port),
+        false => await connection.connect(host, port),
+      };
+
+      if (password != null) {
+        dynamic result = switch (user) {
+          String user => await command.send_object(['AUTH', user, password]),
+          null => await command.send_object(['AUTH', password]),
+        };
+
+        if (result != 'OK') return null;
+      }
+      return command;
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      return null;
+    }
+  }
+
   Future<bool> _connect() async {
     if (_command != null) {
       return true;
@@ -69,27 +100,9 @@ class RedisController {
     }
     _connecting = true;
 
-    try {
-      var connection = RedisConnection();
-
-      _command = await connection.connect(host, port);
-      if (password != null) {
-        // TODO: Username
-        var result = await _command!.send_object(['AUTH', password]);
-        _connecting = false;
-        return (result == 'OK');
-      } else {
-        _connecting = false;
-        return true;
-      }
-    } catch (e, stackTrace) {
-      _connecting = false;
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      return false;
-    }
+    _command = await _createAndAuthCommand();
+    _connecting = false;
+    return _command != null;
   }
 
   Future<void> _keepAlive() async {
@@ -110,48 +123,34 @@ class RedisController {
     }
     _connectingPubSub = true;
 
-    try {
-      var connection = RedisConnection();
-      _pubSubCommand = await connection.connect(host, port);
-      if (password != null) {
-        var result = await _pubSubCommand!.send_object(['AUTH', password]);
-        _connecting = false;
-        if (result != 'OK') return false;
-      }
-
-      runZonedGuarded(() {
-        _pubSub = PubSub(_pubSubCommand!);
-      }, (e, stackTrace) {
-        _invalidatePubSub();
-
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-        stderr.writeln('Local stacktrace:');
-        stderr.writeln('${StackTrace.current}');
-      });
-
-      var stream = _pubSub!.getStream();
-      unawaited(_listenToSubscriptions(stream));
-
-      if (_subscriptions.keys.isNotEmpty) {
-        _pubSub!.subscribe(_subscriptions.keys.toList());
-      }
-
+    _pubSubCommand = await _createAndAuthCommand();
+    if (_pubSubCommand == null) {
       _connectingPubSub = false;
-      return true;
-    } catch (e, stackTrace) {
-      _connectingPubSub = false;
+      return false;
+    }
+
+    runZonedGuarded(() {
+      _pubSub = PubSub(_pubSubCommand!);
+    }, (e, stackTrace) {
       _invalidatePubSub();
 
       stderr.writeln(
           '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
+      stderr.writeln('Local stacktrace:');
+      stderr.writeln('${StackTrace.current}');
+    });
 
-      return false;
+    var stream = _pubSub!.getStream();
+    unawaited(_listenToSubscriptions(stream));
+
+    if (_subscriptions.keys.isNotEmpty) {
+      _pubSub!.subscribe(_subscriptions.keys.toList());
     }
+
+    _connectingPubSub = false;
+    return true;
   }
 
   Future<void> _listenToSubscriptions(Stream stream) async {
