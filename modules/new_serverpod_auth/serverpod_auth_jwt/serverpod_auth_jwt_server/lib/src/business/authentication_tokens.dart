@@ -172,10 +172,12 @@ abstract class AuthenticationTokens {
   static Future<void> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
+    final Transaction? transaction,
   }) async {
     final auths = await RefreshToken.db.deleteWhere(
       session,
       where: (final row) => row.authUserId.equals(authUserId),
+      transaction: transaction,
     );
 
     if (auths.isEmpty) return;
@@ -196,10 +198,12 @@ abstract class AuthenticationTokens {
   static Future<void> destroyRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
+    final Transaction? transaction,
   }) async {
     final refreshToken = (await RefreshToken.db.deleteWhere(
       session,
       where: (final row) => row.id.equals(refreshTokenId),
+      transaction: transaction,
     ))
         .firstOrNull;
 
