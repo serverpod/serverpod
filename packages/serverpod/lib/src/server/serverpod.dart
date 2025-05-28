@@ -15,6 +15,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/task_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -152,6 +153,17 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
+  /// Provides access to the task manager.
+  ///
+  /// The task manager is responsible for executing tasks in a specific order.
+  /// In this case, it's used to manage server shutdown tasks, ensuring that all
+  /// resources are properly released and services are stopped in the correct order.
+  /// You can use this to add custom tasks using [TaskManager.addTask],
+  /// [TaskManager.addTaskBefore], or [TaskManager.addTaskAfter].
+  TaskManager get shutdownTaskManager => _shutdownTaskManager;
+
+  late TaskManager _shutdownTaskManager;
+
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
   /// `public` and `private`. The default storages are using the database,
@@ -196,6 +208,57 @@ class Serverpod {
     _runtimeSettings = settings;
     _logSettingsManager = LogSettingsManager(settings);
     _logManager = LogManager(settings, serverId: serverId);
+  }
+
+  /// Initializes the task manager and registers default shutdown tasks.
+  ///
+  /// This method is called during server startup and sets up the task manager
+  /// with all the necessary tasks to properly shut down the server.
+  /// It registers tasks for closing sessions, stopping services, and releasing
+  /// resources in the appropriate order. The tasks are executed when [shutdown]
+  /// is called.
+  void _initializeShutdownTaskManager() {
+    _shutdownTaskManager = TaskManager(_reportException);
+
+    _shutdownTaskManager.addTask(
+      'Test Auditor',
+      _shutdownTestAuditor,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Internal Session',
+      _internalSession.close,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Redis Controller',
+      redisController?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Server',
+      server.shutdown,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Web Server',
+      _webServer?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Service Server',
+      _serviceServer?.shutdown,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Future Call Manager',
+      _futureCallManager?.stop,
+    );
+
+    _shutdownTaskManager.addTask(
+      'Health Check Manager',
+      _healthCheckManager?.stop,
+    );
   }
 
   /// Updates the runtime settings and writes the new settings to the database.
@@ -348,6 +411,9 @@ class Serverpod {
           message: 'Error in Serverpod initialization');
       rethrow;
     }
+
+    // Initializes shutdown task manager
+    _initializeShutdownTaskManager();
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -881,7 +947,8 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
+  /// If [exitProcess] is set to false, the process will not exit at the end of
+  /// the shutdown.
   Future<void> shutdown({
     bool exitProcess = true,
     int? signalNumber,
@@ -889,41 +956,10 @@ class Serverpod {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
-    var futures = [
-      _shutdownTestAuditor(),
-      _internalSession.close(),
-      redisController?.stop(),
-      server.shutdown(),
-      _webServer?.stop(),
-      _serviceServer?.shutdown(),
-      _futureCallManager?.stop(),
-      _healthCheckManager?.stop(),
-    ].nonNulls;
+    Object? shutdownError = await _shutdownTaskManager.handleTasks();
 
-    Object? shutdownError;
-    await futures.wait.onError((ParallelWaitError e, stackTrace) {
-      shutdownError = e;
-      var errors = e.errors;
-      if (errors is Iterable<AsyncError?>) {
-        for (var error in errors.nonNulls) {
-          _reportException(
-            error.error,
-            error.stackTrace,
-            message: 'Error in server shutdown',
-          );
-        }
-      } else {
-        _reportException(
-          errors,
-          stackTrace,
-          message: 'Error in serverpod shutdown',
-        );
-      }
-      return e.values;
-    });
-
+    // This needs to be closed last as it is used by the other services.
     try {
-      // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
       shutdownError = e;
@@ -943,7 +979,7 @@ class Serverpod {
     }
 
     if (shutdownError != null) {
-      throw shutdownError as Object;
+      throw shutdownError;
     }
   }
 
