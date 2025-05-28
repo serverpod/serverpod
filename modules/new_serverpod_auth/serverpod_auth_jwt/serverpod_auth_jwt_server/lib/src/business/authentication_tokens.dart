@@ -5,6 +5,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
+import 'package:serverpod_auth_jwt_server/src/business/authentication_info_from_jwt.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens_admin.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
@@ -32,13 +33,9 @@ abstract final class AuthenticationTokens {
     final String jwtAccessToken,
   ) async {
     try {
-      final result = JwtUtil.verifyJwt(jwtAccessToken);
+      final tokenData = JwtUtil.verifyJwt(jwtAccessToken);
 
-      return AuthenticationInfo(
-        result.authUserId,
-        result.scopes,
-        authId: result.refreshTokenId.toString(),
-      );
+      return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
     } on JWTUndefinedException catch (_) {
       return null;
     } on JWTException catch (e, stackTrace) {

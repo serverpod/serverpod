@@ -184,6 +184,17 @@ void main() {
     });
 
     test(
+        'when calling the authentication handler, then the extra claims are available on the auth info.',
+        () async {
+      final authInfo = await AuthenticationTokens.authenticationHandler(
+        session,
+        tokenPair.accessToken,
+      );
+
+      expect(authInfo?.extraClaims, equals({'string': 'foo', 'int': 1}));
+    });
+
+    test(
         'when calling the authentication handler after the secret key has been changed, then it returns `null`.',
         () async {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'test 12345';

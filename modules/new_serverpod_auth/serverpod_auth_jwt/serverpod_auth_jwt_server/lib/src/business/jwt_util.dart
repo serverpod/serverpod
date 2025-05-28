@@ -45,12 +45,7 @@ abstract class JwtUtil {
     );
   }
 
-  static ({
-    UuidValue refreshTokenId,
-    UuidValue authUserId,
-    Set<Scope> scopes,
-    Map<String, dynamic> extraClaims,
-  }) verifyJwt(final String accessToken) {
+  static VerifiedJwtData verifyJwt(final String accessToken) {
     final key = switch (AuthenticationTokenSecrets.algorithm) {
       HmacSha512AuthenticationTokenAlgorithm(:final key) => SecretKey(key),
       EcdsaSha512AuthenticationTokenAlgorithm(:final publicKey) =>
@@ -127,3 +122,11 @@ abstract class JwtUtil {
 
   static const _serverpodScopeNamesClaimKey = 'dev.serverpod.scopeNames';
 }
+
+/// The data successfully verified and extracted from a JWT token.
+typedef VerifiedJwtData = ({
+  UuidValue refreshTokenId,
+  UuidValue authUserId,
+  Set<Scope> scopes,
+  Map<String, dynamic> extraClaims,
+});
