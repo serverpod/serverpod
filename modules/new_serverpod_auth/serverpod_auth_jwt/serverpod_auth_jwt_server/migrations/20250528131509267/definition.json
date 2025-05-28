@@ -92,6 +92,18 @@
           "type": "btree",
           "isUnique": true,
           "isPrimary": true
+        },
+        {
+          "indexName": "serverpod_auth_jwt_refresh_token_last_updated",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "lastUpdated"
+            }
+          ],
+          "type": "btree",
+          "isUnique": false,
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -1286,7 +1298,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_jwt",
-      "version": "20250528103741358"
+      "version": "20250528131509267"
     },
     {
       "module": "serverpod",
