@@ -95,8 +95,7 @@ abstract final class EmailAccounts {
     required final String password,
     final Transaction? transaction,
   }) async {
-    if (!EmailAccountConfig.current
-        .registrationPasswordValidationFunction(password)) {
+    if (!EmailAccountConfig.current.passwordValidationFunction(password)) {
       throw EmailAccountPasswordPolicyViolationException();
     }
 
@@ -374,8 +373,16 @@ abstract final class EmailAccounts {
           throw EmailAccountPasswordResetRequestExpiredException();
         }
 
-        await _logPasswordResetAttempt(session,
-            passwordResetRequestId: resetRequest.id!, transaction: transaction);
+        if (!EmailAccountConfig.current
+            .passwordValidationFunction(newPassword)) {
+          throw EmailAccountPasswordPolicyViolationException();
+        }
+
+        await _logPasswordResetAttempt(
+          session,
+          passwordResetRequestId: resetRequest.id!,
+          transaction: transaction,
+        );
 
         if (await _hasTooManyPasswordResetAttempts(session,
             passwordResetRequestId: resetRequest.id!,

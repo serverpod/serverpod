@@ -17,7 +17,7 @@ typedef ExistingEmailUserImportFunction = Future<UuidValue?> Function(
 });
 
 /// Function to be called to check whether a password matches the requirements during registration.
-typedef RegistrationPasswordValidationFunction = bool Function(
+typedef PasswordValidationFunction = bool Function(
   String password,
 );
 
@@ -90,14 +90,13 @@ class EmailAccountConfig {
   /// an import using this function is attempted.
   final ExistingEmailUserImportFunction? existingUserImportFunction;
 
-  /// Function to check passwords against a policy during registration.
+  /// Function to check passwords against a policy during registration and password change.
   ///
-  /// If the rules are changed after a registration, subsequent logins with
+  /// If the rules are changed after a password has been set, subsequent logins with
   /// the old password are still accepted and the user will not be forced to update it.
   ///
   /// Defaults to ensuring that the password is not padded by whitespace and is at least 8 characters long.
-  final RegistrationPasswordValidationFunction
-      registrationPasswordValidationFunction;
+  final PasswordValidationFunction passwordValidationFunction;
 
   /// How many password reset attempts are allowed per email or IP.
   ///
@@ -125,7 +124,7 @@ class EmailAccountConfig {
     this.existingUserImportFunction,
     this.emailSignInFailureResetTime = const Duration(minutes: 5),
     this.maxAllowedEmailSignInAttempts = 5,
-    this.registrationPasswordValidationFunction =
+    this.passwordValidationFunction =
         defaultRegistrationPasswordValidationFunction,
     this.maxPasswordResetAttempts = (
       timeframe: const Duration(hours: 1),
