@@ -17,7 +17,12 @@ fields:
   email: String
 
   ### The hashed password of the user.
-  passwordHash: String
+  ###
+  ### Obtain in conjunction with [passwordSalt].
+  passwordHash: ByteData
+
+  ### The salt used for creating the [passwordHash].
+  passwordSalt: ByteData
 
 indexes:
   serverpod_auth_email_account_email:

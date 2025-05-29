@@ -99,6 +99,11 @@ class EmailAccountConfig {
   /// Defaults to allowing at most 3 attempts in the last hour.
   final ({Duration timeframe, int maxAttempts}) maxPasswordResetAttempts;
 
+  /// The length of the random hash in bytes to be used for each password.
+  ///
+  /// Defaults to 16.
+  final int passwordHashSaltLength;
+
   /// Create a new email account configuration.
   ///
   /// Set [current] to apply this configuration.
@@ -120,5 +125,6 @@ class EmailAccountConfig {
       timeframe: const Duration(hours: 1),
       maxAttempts: 3,
     ),
+    this.passwordHashSaltLength = 16,
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
@@ -52,9 +54,9 @@ abstract final class EmailAccounts {
         }
 
         if (!PasswordHash.validateHash(
-          email: email,
           password: password,
-          hash: account.passwordHash,
+          hash: Uint8List.sublistView(account.passwordHash),
+          salt: Uint8List.sublistView(account.passwordSalt),
         )) {
           await _logFailedSignIn(session, email);
 
@@ -141,14 +143,14 @@ abstract final class EmailAccounts {
           }
         }
 
+        final passwordHash = PasswordHash.createHash(password: password);
+
         final emailAccountRequest = await EmailAccountRequest.db.insertRow(
           session,
           EmailAccountRequest(
             email: email,
-            passwordHash: PasswordHash.createHash(
-              email: email,
-              password: password,
-            ),
+            passwordHash: ByteData.sublistView(passwordHash.hash),
+            passwordSalt: ByteData.sublistView(passwordHash.salt),
             verificationCode: verificationCode,
           ),
           transaction: transaction,
@@ -244,6 +246,7 @@ abstract final class EmailAccounts {
             authUserId: authUserId,
             email: request.email,
             passwordHash: request.passwordHash,
+            passwordSalt: request.passwordSalt,
           ),
           transaction: transaction,
         );
@@ -387,13 +390,15 @@ abstract final class EmailAccounts {
           transaction: transaction,
         ))!;
 
+        final newPasswordHash = PasswordHash.createHash(
+          password: newPassword,
+        );
+
         await EmailAccount.db.updateRow(
           session,
           account.copyWith(
-            passwordHash: PasswordHash.createHash(
-              email: account.email,
-              password: newPassword,
-            ),
+            passwordHash: ByteData.sublistView(newPasswordHash.hash),
+            passwordSalt: ByteData.sublistView(newPasswordHash.salt),
           ),
           transaction: transaction,
         );
@@ -457,15 +462,17 @@ abstract final class EmailAccounts {
       return null;
     }
 
+    final passwordHash = PasswordHash.createHash(
+      password: password,
+    );
+
     return await EmailAccount.db.insertRow(
       session,
       EmailAccount(
         authUserId: userId,
         email: email,
-        passwordHash: PasswordHash.createHash(
-          email: email,
-          password: password,
-        ),
+        passwordHash: ByteData.sublistView(passwordHash.hash),
+        passwordSalt: ByteData.sublistView(passwordHash.salt),
       ),
       transaction: transaction,
     );
