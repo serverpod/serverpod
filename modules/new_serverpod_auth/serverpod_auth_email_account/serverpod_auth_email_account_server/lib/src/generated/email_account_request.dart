@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'dart:typed_data' as _i2;
 
 /// Pending email account registration.
 ///
@@ -23,6 +24,7 @@ abstract class EmailAccountRequest
     DateTime? created,
     required this.email,
     required this.passwordHash,
+    required this.passwordSalt,
     required this.verificationCode,
   }) : created = created ?? DateTime.now();
 
@@ -30,7 +32,8 @@ abstract class EmailAccountRequest
     _i1.UuidValue? id,
     DateTime? created,
     required String email,
-    required String passwordHash,
+    required _i2.ByteData passwordHash,
+    required _i2.ByteData passwordSalt,
     required String verificationCode,
   }) = _EmailAccountRequestImpl;
 
@@ -41,7 +44,10 @@ abstract class EmailAccountRequest
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
-      passwordHash: jsonSerialization['passwordHash'] as String,
+      passwordHash:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
+      passwordSalt:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
       verificationCode: jsonSerialization['verificationCode'] as String,
     );
   }
@@ -62,7 +68,12 @@ abstract class EmailAccountRequest
   String email;
 
   /// The hashed password of the user.
-  String passwordHash;
+  ///
+  /// Obtain in conjunction with [passwordSalt].
+  _i2.ByteData passwordHash;
+
+  /// The salt used for creating the [passwordHash].
+  _i2.ByteData passwordSalt;
 
   /// The verification code sent to the user.
   String verificationCode;
@@ -77,7 +88,8 @@ abstract class EmailAccountRequest
     _i1.UuidValue? id,
     DateTime? created,
     String? email,
-    String? passwordHash,
+    _i2.ByteData? passwordHash,
+    _i2.ByteData? passwordSalt,
     String? verificationCode,
   });
   @override
@@ -86,7 +98,8 @@ abstract class EmailAccountRequest
       if (id != null) 'id': id?.toJson(),
       'created': created.toJson(),
       'email': email,
-      'passwordHash': passwordHash,
+      'passwordHash': passwordHash.toJson(),
+      'passwordSalt': passwordSalt.toJson(),
       'verificationCode': verificationCode,
     };
   }
@@ -133,13 +146,15 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     _i1.UuidValue? id,
     DateTime? created,
     required String email,
-    required String passwordHash,
+    required _i2.ByteData passwordHash,
+    required _i2.ByteData passwordSalt,
     required String verificationCode,
   }) : super._(
           id: id,
           created: created,
           email: email,
           passwordHash: passwordHash,
+          passwordSalt: passwordSalt,
           verificationCode: verificationCode,
         );
 
@@ -151,14 +166,16 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     Object? id = _Undefined,
     DateTime? created,
     String? email,
-    String? passwordHash,
+    _i2.ByteData? passwordHash,
+    _i2.ByteData? passwordSalt,
     String? verificationCode,
   }) {
     return EmailAccountRequest(
       id: id is _i1.UuidValue? ? id : this.id,
       created: created ?? this.created,
       email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
+      passwordHash: passwordHash ?? this.passwordHash.clone(),
+      passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
       verificationCode: verificationCode ?? this.verificationCode,
     );
   }
@@ -176,8 +193,12 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       'email',
       this,
     );
-    passwordHash = _i1.ColumnString(
+    passwordHash = _i1.ColumnByteData(
       'passwordHash',
+      this,
+    );
+    passwordSalt = _i1.ColumnByteData(
+      'passwordSalt',
       this,
     );
     verificationCode = _i1.ColumnString(
@@ -195,7 +216,12 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnString email;
 
   /// The hashed password of the user.
-  late final _i1.ColumnString passwordHash;
+  ///
+  /// Obtain in conjunction with [passwordSalt].
+  late final _i1.ColumnByteData passwordHash;
+
+  /// The salt used for creating the [passwordHash].
+  late final _i1.ColumnByteData passwordSalt;
 
   /// The verification code sent to the user.
   late final _i1.ColumnString verificationCode;
@@ -206,6 +232,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
         created,
         email,
         passwordHash,
+        passwordSalt,
         verificationCode,
       ];
 }

@@ -11,27 +11,26 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-/// Database table for tracking failed email sign-ins. Saves IP-address, time,
-/// and email to be prevent brute force attacks.
-abstract class EmailAccountFailedLoginAttempt
+/// Database table for tracking password reset requests attempts.
+abstract class EmailAccountPasswordResetRequestAttempt
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  EmailAccountFailedLoginAttempt._({
+  EmailAccountPasswordResetRequestAttempt._({
     this.id,
     required this.email,
     DateTime? attemptedAt,
     required this.ipAddress,
   }) : attemptedAt = attemptedAt ?? DateTime.now();
 
-  factory EmailAccountFailedLoginAttempt({
+  factory EmailAccountPasswordResetRequestAttempt({
     _i1.UuidValue? id,
     required String email,
     DateTime? attemptedAt,
     required String ipAddress,
-  }) = _EmailAccountFailedLoginAttemptImpl;
+  }) = _EmailAccountPasswordResetRequestAttemptImpl;
 
-  factory EmailAccountFailedLoginAttempt.fromJson(
+  factory EmailAccountPasswordResetRequestAttempt.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return EmailAccountFailedLoginAttempt(
+    return EmailAccountPasswordResetRequestAttempt(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
@@ -42,19 +41,19 @@ abstract class EmailAccountFailedLoginAttempt
     );
   }
 
-  static final t = EmailAccountFailedLoginAttemptTable();
+  static final t = EmailAccountPasswordResetRequestAttemptTable();
 
-  static const db = EmailAccountFailedLoginAttemptRepository._();
+  static const db = EmailAccountPasswordResetRequestAttemptRepository._();
 
   @override
   _i1.UuidValue? id;
 
-  /// Email attempting to sign in with.
+  /// Email the reset was attempted for.
   ///
   /// Stored in lower-case.
   String email;
 
-  /// The time of the sign in attempt.
+  /// The time of the reset attempt.
   DateTime attemptedAt;
 
   /// The IP address of the sign in attempt.
@@ -63,10 +62,10 @@ abstract class EmailAccountFailedLoginAttempt
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
-  /// Returns a shallow copy of this [EmailAccountFailedLoginAttempt]
+  /// Returns a shallow copy of this [EmailAccountPasswordResetRequestAttempt]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAccountFailedLoginAttempt copyWith({
+  EmailAccountPasswordResetRequestAttempt copyWith({
     _i1.UuidValue? id,
     String? email,
     DateTime? attemptedAt,
@@ -87,26 +86,28 @@ abstract class EmailAccountFailedLoginAttempt
     return {if (id != null) 'id': id?.toJson()};
   }
 
-  static EmailAccountFailedLoginAttemptInclude include() {
-    return EmailAccountFailedLoginAttemptInclude._();
+  static EmailAccountPasswordResetRequestAttemptInclude include() {
+    return EmailAccountPasswordResetRequestAttemptInclude._();
   }
 
-  static EmailAccountFailedLoginAttemptIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>? where,
+  static EmailAccountPasswordResetRequestAttemptIncludeList includeList({
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountFailedLoginAttemptTable>? orderBy,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestAttemptTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountFailedLoginAttemptTable>? orderByList,
-    EmailAccountFailedLoginAttemptInclude? include,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        orderByList,
+    EmailAccountPasswordResetRequestAttemptInclude? include,
   }) {
-    return EmailAccountFailedLoginAttemptIncludeList._(
+    return EmailAccountPasswordResetRequestAttemptIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(EmailAccountFailedLoginAttempt.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequestAttempt.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(EmailAccountFailedLoginAttempt.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequestAttempt.t),
       include: include,
     );
   }
@@ -119,9 +120,9 @@ abstract class EmailAccountFailedLoginAttempt
 
 class _Undefined {}
 
-class _EmailAccountFailedLoginAttemptImpl
-    extends EmailAccountFailedLoginAttempt {
-  _EmailAccountFailedLoginAttemptImpl({
+class _EmailAccountPasswordResetRequestAttemptImpl
+    extends EmailAccountPasswordResetRequestAttempt {
+  _EmailAccountPasswordResetRequestAttemptImpl({
     _i1.UuidValue? id,
     required String email,
     DateTime? attemptedAt,
@@ -133,17 +134,17 @@ class _EmailAccountFailedLoginAttemptImpl
           ipAddress: ipAddress,
         );
 
-  /// Returns a shallow copy of this [EmailAccountFailedLoginAttempt]
+  /// Returns a shallow copy of this [EmailAccountPasswordResetRequestAttempt]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailAccountFailedLoginAttempt copyWith({
+  EmailAccountPasswordResetRequestAttempt copyWith({
     Object? id = _Undefined,
     String? email,
     DateTime? attemptedAt,
     String? ipAddress,
   }) {
-    return EmailAccountFailedLoginAttempt(
+    return EmailAccountPasswordResetRequestAttempt(
       id: id is _i1.UuidValue? ? id : this.id,
       email: email ?? this.email,
       attemptedAt: attemptedAt ?? this.attemptedAt,
@@ -152,9 +153,12 @@ class _EmailAccountFailedLoginAttemptImpl
   }
 }
 
-class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
-  EmailAccountFailedLoginAttemptTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_email_account_failed_login_attempt') {
+class EmailAccountPasswordResetRequestAttemptTable
+    extends _i1.Table<_i1.UuidValue?> {
+  EmailAccountPasswordResetRequestAttemptTable({super.tableRelation})
+      : super(
+            tableName:
+                'serverpod_auth_email_account_pw_reset_request_attempt') {
     email = _i1.ColumnString(
       'email',
       this,
@@ -169,12 +173,12 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
-  /// Email attempting to sign in with.
+  /// Email the reset was attempted for.
   ///
   /// Stored in lower-case.
   late final _i1.ColumnString email;
 
-  /// The time of the sign in attempt.
+  /// The time of the reset attempt.
   late final _i1.ColumnDateTime attemptedAt;
 
   /// The IP address of the sign in attempt.
@@ -189,19 +193,22 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
       ];
 }
 
-class EmailAccountFailedLoginAttemptInclude extends _i1.IncludeObject {
-  EmailAccountFailedLoginAttemptInclude._();
+class EmailAccountPasswordResetRequestAttemptInclude extends _i1.IncludeObject {
+  EmailAccountPasswordResetRequestAttemptInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountFailedLoginAttempt.t;
+  _i1.Table<_i1.UuidValue?> get table =>
+      EmailAccountPasswordResetRequestAttempt.t;
 }
 
-class EmailAccountFailedLoginAttemptIncludeList extends _i1.IncludeList {
-  EmailAccountFailedLoginAttemptIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>? where,
+class EmailAccountPasswordResetRequestAttemptIncludeList
+    extends _i1.IncludeList {
+  EmailAccountPasswordResetRequestAttemptIncludeList._({
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -209,20 +216,21 @@ class EmailAccountFailedLoginAttemptIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(EmailAccountFailedLoginAttempt.t);
+    super.where = where?.call(EmailAccountPasswordResetRequestAttempt.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountFailedLoginAttempt.t;
+  _i1.Table<_i1.UuidValue?> get table =>
+      EmailAccountPasswordResetRequestAttempt.t;
 }
 
-class EmailAccountFailedLoginAttemptRepository {
-  const EmailAccountFailedLoginAttemptRepository._();
+class EmailAccountPasswordResetRequestAttemptRepository {
+  const EmailAccountPasswordResetRequestAttemptRepository._();
 
-  /// Returns a list of [EmailAccountFailedLoginAttempt]s matching the given query parameters.
+  /// Returns a list of [EmailAccountPasswordResetRequestAttempt]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -244,20 +252,22 @@ class EmailAccountFailedLoginAttemptRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<EmailAccountFailedLoginAttempt>> find(
+  Future<List<EmailAccountPasswordResetRequestAttempt>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>? where,
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountFailedLoginAttemptTable>? orderBy,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestAttemptTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountFailedLoginAttemptTable>? orderByList,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailAccountFailedLoginAttempt>(
-      where: where?.call(EmailAccountFailedLoginAttempt.t),
-      orderBy: orderBy?.call(EmailAccountFailedLoginAttempt.t),
-      orderByList: orderByList?.call(EmailAccountFailedLoginAttempt.t),
+    return session.db.find<EmailAccountPasswordResetRequestAttempt>(
+      where: where?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequestAttempt.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -265,7 +275,7 @@ class EmailAccountFailedLoginAttemptRepository {
     );
   }
 
-  /// Returns the first matching [EmailAccountFailedLoginAttempt] matching the given query parameters.
+  /// Returns the first matching [EmailAccountPasswordResetRequestAttempt] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -282,137 +292,140 @@ class EmailAccountFailedLoginAttemptRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<EmailAccountFailedLoginAttempt?> findFirstRow(
+  Future<EmailAccountPasswordResetRequestAttempt?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>? where,
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        where,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountFailedLoginAttemptTable>? orderBy,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestAttemptTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountFailedLoginAttemptTable>? orderByList,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailAccountFailedLoginAttempt>(
-      where: where?.call(EmailAccountFailedLoginAttempt.t),
-      orderBy: orderBy?.call(EmailAccountFailedLoginAttempt.t),
-      orderByList: orderByList?.call(EmailAccountFailedLoginAttempt.t),
+    return session.db.findFirstRow<EmailAccountPasswordResetRequestAttempt>(
+      where: where?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequestAttempt.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [EmailAccountFailedLoginAttempt] by its [id] or null if no such row exists.
-  Future<EmailAccountFailedLoginAttempt?> findById(
+  /// Finds a single [EmailAccountPasswordResetRequestAttempt] by its [id] or null if no such row exists.
+  Future<EmailAccountPasswordResetRequestAttempt?> findById(
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAccountFailedLoginAttempt>(
+    return session.db.findById<EmailAccountPasswordResetRequestAttempt>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [EmailAccountFailedLoginAttempt]s in the list and returns the inserted rows.
+  /// Inserts all [EmailAccountPasswordResetRequestAttempt]s in the list and returns the inserted rows.
   ///
-  /// The returned [EmailAccountFailedLoginAttempt]s will have their `id` fields set.
+  /// The returned [EmailAccountPasswordResetRequestAttempt]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<EmailAccountFailedLoginAttempt>> insert(
+  Future<List<EmailAccountPasswordResetRequestAttempt>> insert(
     _i1.Session session,
-    List<EmailAccountFailedLoginAttempt> rows, {
+    List<EmailAccountPasswordResetRequestAttempt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAccountFailedLoginAttempt>(
+    return session.db.insert<EmailAccountPasswordResetRequestAttempt>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [EmailAccountFailedLoginAttempt] and returns the inserted row.
+  /// Inserts a single [EmailAccountPasswordResetRequestAttempt] and returns the inserted row.
   ///
-  /// The returned [EmailAccountFailedLoginAttempt] will have its `id` field set.
-  Future<EmailAccountFailedLoginAttempt> insertRow(
+  /// The returned [EmailAccountPasswordResetRequestAttempt] will have its `id` field set.
+  Future<EmailAccountPasswordResetRequestAttempt> insertRow(
     _i1.Session session,
-    EmailAccountFailedLoginAttempt row, {
+    EmailAccountPasswordResetRequestAttempt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAccountFailedLoginAttempt>(
+    return session.db.insertRow<EmailAccountPasswordResetRequestAttempt>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountFailedLoginAttempt]s in the list and returns the updated rows. If
+  /// Updates all [EmailAccountPasswordResetRequestAttempt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<EmailAccountFailedLoginAttempt>> update(
+  Future<List<EmailAccountPasswordResetRequestAttempt>> update(
     _i1.Session session,
-    List<EmailAccountFailedLoginAttempt> rows, {
-    _i1.ColumnSelections<EmailAccountFailedLoginAttemptTable>? columns,
+    List<EmailAccountPasswordResetRequestAttempt> rows, {
+    _i1.ColumnSelections<EmailAccountPasswordResetRequestAttemptTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailAccountFailedLoginAttempt>(
+    return session.db.update<EmailAccountPasswordResetRequestAttempt>(
       rows,
-      columns: columns?.call(EmailAccountFailedLoginAttempt.t),
+      columns: columns?.call(EmailAccountPasswordResetRequestAttempt.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [EmailAccountFailedLoginAttempt]. The row needs to have its id set.
+  /// Updates a single [EmailAccountPasswordResetRequestAttempt]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<EmailAccountFailedLoginAttempt> updateRow(
+  Future<EmailAccountPasswordResetRequestAttempt> updateRow(
     _i1.Session session,
-    EmailAccountFailedLoginAttempt row, {
-    _i1.ColumnSelections<EmailAccountFailedLoginAttemptTable>? columns,
+    EmailAccountPasswordResetRequestAttempt row, {
+    _i1.ColumnSelections<EmailAccountPasswordResetRequestAttemptTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailAccountFailedLoginAttempt>(
+    return session.db.updateRow<EmailAccountPasswordResetRequestAttempt>(
       row,
-      columns: columns?.call(EmailAccountFailedLoginAttempt.t),
+      columns: columns?.call(EmailAccountPasswordResetRequestAttempt.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [EmailAccountFailedLoginAttempt]s in the list and returns the deleted rows.
+  /// Deletes all [EmailAccountPasswordResetRequestAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<EmailAccountFailedLoginAttempt>> delete(
+  Future<List<EmailAccountPasswordResetRequestAttempt>> delete(
     _i1.Session session,
-    List<EmailAccountFailedLoginAttempt> rows, {
+    List<EmailAccountPasswordResetRequestAttempt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAccountFailedLoginAttempt>(
+    return session.db.delete<EmailAccountPasswordResetRequestAttempt>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [EmailAccountFailedLoginAttempt].
-  Future<EmailAccountFailedLoginAttempt> deleteRow(
+  /// Deletes a single [EmailAccountPasswordResetRequestAttempt].
+  Future<EmailAccountPasswordResetRequestAttempt> deleteRow(
     _i1.Session session,
-    EmailAccountFailedLoginAttempt row, {
+    EmailAccountPasswordResetRequestAttempt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAccountFailedLoginAttempt>(
+    return session.db.deleteRow<EmailAccountPasswordResetRequestAttempt>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<EmailAccountFailedLoginAttempt>> deleteWhere(
+  Future<List<EmailAccountPasswordResetRequestAttempt>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>
+    required _i1
+        .WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailAccountFailedLoginAttempt>(
-      where: where(EmailAccountFailedLoginAttempt.t),
+    return session.db.deleteWhere<EmailAccountPasswordResetRequestAttempt>(
+      where: where(EmailAccountPasswordResetRequestAttempt.t),
       transaction: transaction,
     );
   }
@@ -421,12 +434,13 @@ class EmailAccountFailedLoginAttemptRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>? where,
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailAccountFailedLoginAttempt>(
-      where: where?.call(EmailAccountFailedLoginAttempt.t),
+    return session.db.count<EmailAccountPasswordResetRequestAttempt>(
+      where: where?.call(EmailAccountPasswordResetRequestAttempt.t),
       limit: limit,
       transaction: transaction,
     );

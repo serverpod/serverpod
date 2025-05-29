@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i2;
+import 'dart:typed_data' as _i3;
 
 /// A fully configured email account to be used for logins.
 abstract class EmailAccount
@@ -25,6 +26,7 @@ abstract class EmailAccount
     DateTime? created,
     required this.email,
     required this.passwordHash,
+    required this.passwordSalt,
   }) : created = created ?? DateTime.now();
 
   factory EmailAccount({
@@ -33,7 +35,8 @@ abstract class EmailAccount
     _i2.AuthUser? authUser,
     DateTime? created,
     required String email,
-    required String passwordHash,
+    required _i3.ByteData passwordHash,
+    required _i3.ByteData passwordSalt,
   }) = _EmailAccountImpl;
 
   factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -49,7 +52,10 @@ abstract class EmailAccount
               (jsonSerialization['authUser'] as Map<String, dynamic>)),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
-      passwordHash: jsonSerialization['passwordHash'] as String,
+      passwordHash:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
+      passwordSalt:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
     );
   }
 
@@ -74,7 +80,12 @@ abstract class EmailAccount
   String email;
 
   /// The hashed password of the user.
-  String passwordHash;
+  ///
+  /// Obtain in conjunction with [passwordSalt].
+  _i3.ByteData passwordHash;
+
+  /// The salt used for creating the [passwordHash].
+  _i3.ByteData passwordSalt;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -88,7 +99,8 @@ abstract class EmailAccount
     _i2.AuthUser? authUser,
     DateTime? created,
     String? email,
-    String? passwordHash,
+    _i3.ByteData? passwordHash,
+    _i3.ByteData? passwordSalt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,7 +110,8 @@ abstract class EmailAccount
       if (authUser != null) 'authUser': authUser?.toJson(),
       'created': created.toJson(),
       'email': email,
-      'passwordHash': passwordHash,
+      'passwordHash': passwordHash.toJson(),
+      'passwordSalt': passwordSalt.toJson(),
     };
   }
 
@@ -146,7 +159,8 @@ class _EmailAccountImpl extends EmailAccount {
     _i2.AuthUser? authUser,
     DateTime? created,
     required String email,
-    required String passwordHash,
+    required _i3.ByteData passwordHash,
+    required _i3.ByteData passwordSalt,
   }) : super._(
           id: id,
           authUserId: authUserId,
@@ -154,6 +168,7 @@ class _EmailAccountImpl extends EmailAccount {
           created: created,
           email: email,
           passwordHash: passwordHash,
+          passwordSalt: passwordSalt,
         );
 
   /// Returns a shallow copy of this [EmailAccount]
@@ -166,7 +181,8 @@ class _EmailAccountImpl extends EmailAccount {
     Object? authUser = _Undefined,
     DateTime? created,
     String? email,
-    String? passwordHash,
+    _i3.ByteData? passwordHash,
+    _i3.ByteData? passwordSalt,
   }) {
     return EmailAccount(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -175,7 +191,8 @@ class _EmailAccountImpl extends EmailAccount {
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       created: created ?? this.created,
       email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
+      passwordHash: passwordHash ?? this.passwordHash.clone(),
+      passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
     );
   }
 }
@@ -195,8 +212,12 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
       'email',
       this,
     );
-    passwordHash = _i1.ColumnString(
+    passwordHash = _i1.ColumnByteData(
       'passwordHash',
+      this,
+    );
+    passwordSalt = _i1.ColumnByteData(
+      'passwordSalt',
       this,
     );
   }
@@ -215,7 +236,12 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnString email;
 
   /// The hashed password of the user.
-  late final _i1.ColumnString passwordHash;
+  ///
+  /// Obtain in conjunction with [passwordSalt].
+  late final _i1.ColumnByteData passwordHash;
+
+  /// The salt used for creating the [passwordHash].
+  late final _i1.ColumnByteData passwordSalt;
 
   _i2.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
@@ -237,6 +263,7 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
         created,
         email,
         passwordHash,
+        passwordSalt,
       ];
 
   @override

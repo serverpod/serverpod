@@ -35,9 +35,15 @@
           },
           {
             "name": "passwordHash",
-            "columnType": 0,
+            "columnType": 5,
             "isNullable": false,
-            "dartType": "String"
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "passwordSalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
           }
         ],
         "foreignKeys": [
@@ -94,10 +100,10 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 6,
+            "columnType": 7,
             "isNullable": false,
-            "columnDefault": "nextval('serverpod_auth_email_account_failed_login_attempt_id_seq'::regclass)",
-            "dartType": "int?"
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
           },
           {
             "name": "email",
@@ -170,16 +176,10 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 6,
+            "columnType": 7,
             "isNullable": false,
-            "columnDefault": "nextval('serverpod_auth_email_account_password_reset_attempt_id_seq'::regclass)",
-            "dartType": "int?"
-          },
-          {
-            "name": "email",
-            "columnType": 0,
-            "isNullable": false,
-            "dartType": "String"
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
           },
           {
             "name": "attemptedAt",
@@ -192,9 +192,29 @@
             "columnType": 0,
             "isNullable": false,
             "dartType": "String"
+          },
+          {
+            "name": "passwordResetRequestId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
           }
         ],
-        "foreignKeys": [],
+        "foreignKeys": [
+          {
+            "constraintName": "serverpod_auth_email_account_password_reset_attempt_fk_0",
+            "columns": [
+              "passwordResetRequestId"
+            ],
+            "referenceTable": "serverpod_auth_email_account_password_reset_request",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
         "indexes": [
           {
             "indexName": "serverpod_auth_email_account_password_reset_attempt_pkey",
@@ -209,19 +229,7 @@
             "isPrimary": true
           },
           {
-            "indexName": "serverpod_auth_email_account_password_reset_attempt_email",
-            "elements": [
-              {
-                "type": 0,
-                "definition": "email"
-              }
-            ],
-            "type": "btree",
-            "isUnique": false,
-            "isPrimary": false
-          },
-          {
-            "indexName": "serverpod_auth_email_account_password_reset_attempt_ip_address",
+            "indexName": "serverpod_auth_email_account_password_reset_attempt_ip",
             "elements": [
               {
                 "type": 0,
@@ -264,7 +272,7 @@
             "dartType": "UuidValue?"
           },
           {
-            "name": "authenticationId",
+            "name": "emailAccountId",
             "columnType": 7,
             "isNullable": false,
             "dartType": "UuidValue"
@@ -287,7 +295,7 @@
           {
             "constraintName": "serverpod_auth_email_account_password_reset_request_fk_0",
             "columns": [
-              "authenticationId"
+              "emailAccountId"
             ],
             "referenceTable": "serverpod_auth_email_account",
             "referenceTableSchema": "public",
@@ -310,6 +318,94 @@
             "type": "btree",
             "isUnique": true,
             "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "serverpod_auth_email_account_pw_reset_request_attempt",
+        "dartName": "EmailAccountPasswordResetRequestAttempt",
+        "module": "serverpod_auth_email_account",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "email",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "attemptedAt",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          },
+          {
+            "name": "ipAddress",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_email_account_pw_reset_request_attempt_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "serverpod_auth_email_account_pw_reset_request_attempt_email",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "email"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "serverpod_auth_email_account_pw_reset_request_attempt_ip",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "ipAddress"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "serverpod_auth_email_account_pw_reset_request_attempt_at",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "attemptedAt"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
           }
         ],
         "managed": true
@@ -345,9 +441,15 @@
           },
           {
             "name": "passwordHash",
-            "columnType": 0,
+            "columnType": 5,
             "isNullable": false,
-            "dartType": "String"
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "passwordSalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
           },
           {
             "name": "verificationCode",

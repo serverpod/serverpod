@@ -8,34 +8,48 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'email_account_password_reset_request.dart' as _i2;
 
 /// Database table for tracking password reset attempts.
+/// A new entry will be created whether the user tries to reset the password, but provides the wrong `verificationCode`.
 abstract class EmailAccountPasswordResetAttempt
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetAttempt._({
     this.id,
-    required this.email,
     DateTime? attemptedAt,
     required this.ipAddress,
+    required this.passwordResetRequestId,
+    this.passwordResetRequest,
   }) : attemptedAt = attemptedAt ?? DateTime.now();
 
   factory EmailAccountPasswordResetAttempt({
-    int? id,
-    required String email,
+    _i1.UuidValue? id,
     DateTime? attemptedAt,
     required String ipAddress,
+    required _i1.UuidValue passwordResetRequestId,
+    _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
   }) = _EmailAccountPasswordResetAttemptImpl;
 
   factory EmailAccountPasswordResetAttempt.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountPasswordResetAttempt(
-      id: jsonSerialization['id'] as int?,
-      email: jsonSerialization['email'] as String,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       attemptedAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attemptedAt']),
       ipAddress: jsonSerialization['ipAddress'] as String,
+      passwordResetRequestId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['passwordResetRequestId']),
+      passwordResetRequest: jsonSerialization['passwordResetRequest'] == null
+          ? null
+          : _i2.EmailAccountPasswordResetRequest.fromJson(
+              (jsonSerialization['passwordResetRequest']
+                  as Map<String, dynamic>)),
     );
   }
 
@@ -44,12 +58,7 @@ abstract class EmailAccountPasswordResetAttempt
   static const db = EmailAccountPasswordResetAttemptRepository._();
 
   @override
-  int? id;
-
-  /// Email the reset was attempted for.
-  ///
-  /// Stored in lower-case.
-  String email;
+  _i1.UuidValue? id;
 
   /// The time of the reset attempt.
   DateTime attemptedAt;
@@ -57,35 +66,44 @@ abstract class EmailAccountPasswordResetAttempt
   /// The IP address of the sign in attempt.
   String ipAddress;
 
+  _i1.UuidValue passwordResetRequestId;
+
+  _i2.EmailAccountPasswordResetRequest? passwordResetRequest;
+
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetAttempt]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountPasswordResetAttempt copyWith({
-    int? id,
-    String? email,
+    _i1.UuidValue? id,
     DateTime? attemptedAt,
     String? ipAddress,
+    _i1.UuidValue? passwordResetRequestId,
+    _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
-      'email': email,
+      if (id != null) 'id': id?.toJson(),
       'attemptedAt': attemptedAt.toJson(),
       'ipAddress': ipAddress,
+      'passwordResetRequestId': passwordResetRequestId.toJson(),
+      if (passwordResetRequest != null)
+        'passwordResetRequest': passwordResetRequest?.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id};
+    return {if (id != null) 'id': id?.toJson()};
   }
 
-  static EmailAccountPasswordResetAttemptInclude include() {
-    return EmailAccountPasswordResetAttemptInclude._();
+  static EmailAccountPasswordResetAttemptInclude include(
+      {_i2.EmailAccountPasswordResetRequestInclude? passwordResetRequest}) {
+    return EmailAccountPasswordResetAttemptInclude._(
+        passwordResetRequest: passwordResetRequest);
   }
 
   static EmailAccountPasswordResetAttemptIncludeList includeList({
@@ -119,15 +137,17 @@ class _Undefined {}
 class _EmailAccountPasswordResetAttemptImpl
     extends EmailAccountPasswordResetAttempt {
   _EmailAccountPasswordResetAttemptImpl({
-    int? id,
-    required String email,
+    _i1.UuidValue? id,
     DateTime? attemptedAt,
     required String ipAddress,
+    required _i1.UuidValue passwordResetRequestId,
+    _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
   }) : super._(
           id: id,
-          email: email,
           attemptedAt: attemptedAt,
           ipAddress: ipAddress,
+          passwordResetRequestId: passwordResetRequestId,
+          passwordResetRequest: passwordResetRequest,
         );
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetAttempt]
@@ -136,27 +156,29 @@ class _EmailAccountPasswordResetAttemptImpl
   @override
   EmailAccountPasswordResetAttempt copyWith({
     Object? id = _Undefined,
-    String? email,
     DateTime? attemptedAt,
     String? ipAddress,
+    _i1.UuidValue? passwordResetRequestId,
+    Object? passwordResetRequest = _Undefined,
   }) {
     return EmailAccountPasswordResetAttempt(
-      id: id is int? ? id : this.id,
-      email: email ?? this.email,
+      id: id is _i1.UuidValue? ? id : this.id,
       attemptedAt: attemptedAt ?? this.attemptedAt,
       ipAddress: ipAddress ?? this.ipAddress,
+      passwordResetRequestId:
+          passwordResetRequestId ?? this.passwordResetRequestId,
+      passwordResetRequest:
+          passwordResetRequest is _i2.EmailAccountPasswordResetRequest?
+              ? passwordResetRequest
+              : this.passwordResetRequest?.copyWith(),
     );
   }
 }
 
-class EmailAccountPasswordResetAttemptTable extends _i1.Table<int?> {
+class EmailAccountPasswordResetAttemptTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetAttemptTable({super.tableRelation})
       : super(
             tableName: 'serverpod_auth_email_account_password_reset_attempt') {
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
     attemptedAt = _i1.ColumnDateTime(
       'attemptedAt',
       this,
@@ -165,12 +187,11 @@ class EmailAccountPasswordResetAttemptTable extends _i1.Table<int?> {
       'ipAddress',
       this,
     );
+    passwordResetRequestId = _i1.ColumnUuid(
+      'passwordResetRequestId',
+      this,
+    );
   }
-
-  /// Email the reset was attempted for.
-  ///
-  /// Stored in lower-case.
-  late final _i1.ColumnString email;
 
   /// The time of the reset attempt.
   late final _i1.ColumnDateTime attemptedAt;
@@ -178,23 +199,55 @@ class EmailAccountPasswordResetAttemptTable extends _i1.Table<int?> {
   /// The IP address of the sign in attempt.
   late final _i1.ColumnString ipAddress;
 
+  late final _i1.ColumnUuid passwordResetRequestId;
+
+  _i2.EmailAccountPasswordResetRequestTable? _passwordResetRequest;
+
+  _i2.EmailAccountPasswordResetRequestTable get passwordResetRequest {
+    if (_passwordResetRequest != null) return _passwordResetRequest!;
+    _passwordResetRequest = _i1.createRelationTable(
+      relationFieldName: 'passwordResetRequest',
+      field: EmailAccountPasswordResetAttempt.t.passwordResetRequestId,
+      foreignField: _i2.EmailAccountPasswordResetRequest.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.EmailAccountPasswordResetRequestTable(
+              tableRelation: foreignTableRelation),
+    );
+    return _passwordResetRequest!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
-        email,
         attemptedAt,
         ipAddress,
+        passwordResetRequestId,
       ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'passwordResetRequest') {
+      return passwordResetRequest;
+    }
+    return null;
+  }
 }
 
 class EmailAccountPasswordResetAttemptInclude extends _i1.IncludeObject {
-  EmailAccountPasswordResetAttemptInclude._();
+  EmailAccountPasswordResetAttemptInclude._(
+      {_i2.EmailAccountPasswordResetRequestInclude? passwordResetRequest}) {
+    _passwordResetRequest = passwordResetRequest;
+  }
+
+  _i2.EmailAccountPasswordResetRequestInclude? _passwordResetRequest;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes =>
+      {'passwordResetRequest': _passwordResetRequest};
 
   @override
-  _i1.Table<int?> get table => EmailAccountPasswordResetAttempt.t;
+  _i1.Table<_i1.UuidValue?> get table => EmailAccountPasswordResetAttempt.t;
 }
 
 class EmailAccountPasswordResetAttemptIncludeList extends _i1.IncludeList {
@@ -214,11 +267,14 @@ class EmailAccountPasswordResetAttemptIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmailAccountPasswordResetAttempt.t;
+  _i1.Table<_i1.UuidValue?> get table => EmailAccountPasswordResetAttempt.t;
 }
 
 class EmailAccountPasswordResetAttemptRepository {
   const EmailAccountPasswordResetAttemptRepository._();
+
+  final attachRow =
+      const EmailAccountPasswordResetAttemptAttachRowRepository._();
 
   /// Returns a list of [EmailAccountPasswordResetAttempt]s matching the given query parameters.
   ///
@@ -251,6 +307,7 @@ class EmailAccountPasswordResetAttemptRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetAttemptTable>? orderByList,
     _i1.Transaction? transaction,
+    EmailAccountPasswordResetAttemptInclude? include,
   }) async {
     return session.db.find<EmailAccountPasswordResetAttempt>(
       where: where?.call(EmailAccountPasswordResetAttempt.t),
@@ -260,6 +317,7 @@ class EmailAccountPasswordResetAttemptRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -288,6 +346,7 @@ class EmailAccountPasswordResetAttemptRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetAttemptTable>? orderByList,
     _i1.Transaction? transaction,
+    EmailAccountPasswordResetAttemptInclude? include,
   }) async {
     return session.db.findFirstRow<EmailAccountPasswordResetAttempt>(
       where: where?.call(EmailAccountPasswordResetAttempt.t),
@@ -296,18 +355,21 @@ class EmailAccountPasswordResetAttemptRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
   /// Finds a single [EmailAccountPasswordResetAttempt] by its [id] or null if no such row exists.
   Future<EmailAccountPasswordResetAttempt?> findById(
     _i1.Session session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
+    EmailAccountPasswordResetAttemptInclude? include,
   }) async {
     return session.db.findById<EmailAccountPasswordResetAttempt>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -426,6 +488,34 @@ class EmailAccountPasswordResetAttemptRepository {
     return session.db.count<EmailAccountPasswordResetAttempt>(
       where: where?.call(EmailAccountPasswordResetAttempt.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+}
+
+class EmailAccountPasswordResetAttemptAttachRowRepository {
+  const EmailAccountPasswordResetAttemptAttachRowRepository._();
+
+  /// Creates a relation between the given [EmailAccountPasswordResetAttempt] and [EmailAccountPasswordResetRequest]
+  /// by setting the [EmailAccountPasswordResetAttempt]'s foreign key `passwordResetRequestId` to refer to the [EmailAccountPasswordResetRequest].
+  Future<void> passwordResetRequest(
+    _i1.Session session,
+    EmailAccountPasswordResetAttempt emailAccountPasswordResetAttempt,
+    _i2.EmailAccountPasswordResetRequest passwordResetRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountPasswordResetAttempt.id == null) {
+      throw ArgumentError.notNull('emailAccountPasswordResetAttempt.id');
+    }
+    if (passwordResetRequest.id == null) {
+      throw ArgumentError.notNull('passwordResetRequest.id');
+    }
+
+    var $emailAccountPasswordResetAttempt = emailAccountPasswordResetAttempt
+        .copyWith(passwordResetRequestId: passwordResetRequest.id);
+    await session.db.updateRow<EmailAccountPasswordResetAttempt>(
+      $emailAccountPasswordResetAttempt,
+      columns: [EmailAccountPasswordResetAttempt.t.passwordResetRequestId],
       transaction: transaction,
     );
   }
