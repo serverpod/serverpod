@@ -4,26 +4,30 @@ import 'package:serverpod/serverpod.dart';
 /// Secrets used for authentication tokens.
 @internal
 abstract class AuthenticationTokenSecrets {
-  static String algorithmConfigurationKey = 'serverpod_auth_jwt.algorithm';
+  static const String algorithmConfigurationKey =
+      'serverpod_auth_jwt.algorithm';
 
   /// The configuration key for the private key to sign access tokens with.
-  static String privateKeyConfigurationKey = 'serverpod_auth_jwt.privateKey';
+  static const String privateKeyConfigurationKey =
+      'serverpod_auth_jwt.privateKey';
 
   /// The configuration key for the optional public key (for asymmetric cryptogrpahy) to verify access tokens with.
-  static String publicKeyConfigurationKey = 'serverpod_auth_jwt.publicKey';
+  static const String publicKeyConfigurationKey =
+      'serverpod_auth_jwt.publicKey';
 
   /// Which algorithm to use for the fallback token verification (during key rotation).
-  static String fallbackAlgorithmConfigurationKey =
+  static const String fallbackAlgorithmConfigurationKey =
       'serverpod_auth_jwt.fallbackAlgorithm';
 
   /// The key to be used for the fallback key verification (during token rotation).
   ///
   /// For the `HS512` algorithm, this would be the single secret.
   /// For the `ES512` algorithm, this would be the public key.
-  static String fallbackKeyConfigurationKey = 'serverpod_auth_jwt.fallbackKey';
+  static const String fallbackKeyConfigurationKey =
+      'serverpod_auth_jwt.fallbackKey';
 
   /// The configuration key for the token hash pepper.
-  static String tokenHashPepperConfigurationKey =
+  static const String tokenHashPepperConfigurationKey =
       'serverpod_auth_jwt.tokenHashPepper';
 
   static AuthenticationTokenAlgorithm get algorithm {
