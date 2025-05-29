@@ -41,6 +41,11 @@ class EmailAccountConfig {
   ///  Default is 15 minutes.
   final Duration passwordResetCodeLifetime;
 
+  /// How many attempts are permitted for a single password reset code during the [passwordResetCodeLifetime] window.
+  ///
+  /// Defaults to 3.
+  final int passwordResetCodeAllowedAttempts;
+
   /// Function returning the password rest verification code.
   ///
   /// By default this is a 8 digits alpha-numeric lower-case code.
@@ -112,6 +117,7 @@ class EmailAccountConfig {
     this.registrationVerificationCodeGenerator =
         defaultVerificationCodeGenerator,
     this.passwordResetCodeLifetime = const Duration(minutes: 15),
+    this.passwordResetCodeAllowedAttempts = 3,
     this.passwordResetVerificationCodeGenerator =
         defaultVerificationCodeGenerator,
     this.sendRegistrationVerificationMail,

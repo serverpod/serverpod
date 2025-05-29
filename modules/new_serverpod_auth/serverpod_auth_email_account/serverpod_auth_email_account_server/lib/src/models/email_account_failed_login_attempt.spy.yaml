@@ -4,6 +4,8 @@ class: EmailAccountFailedLoginAttempt
 serverOnly: true
 table: serverpod_auth_email_account_failed_login_attempt
 fields:
+  id: UuidValue?, defaultPersist=random
+
   ### Email attempting to sign in with.
   ###
   ### Stored in lower-case.

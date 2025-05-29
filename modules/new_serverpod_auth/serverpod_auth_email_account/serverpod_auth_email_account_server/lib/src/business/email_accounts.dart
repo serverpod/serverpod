@@ -272,13 +272,13 @@ abstract final class EmailAccounts {
       (final transaction) async {
         email = email.trim().toLowerCase();
 
-        await _logPasswordResetAttempt(
+        await _logPasswordResetRequestAttempt(
           session,
           email,
           transaction: transaction,
         );
 
-        if (await _hasTooManyPasswordResetAttempts(
+        if (await _hasTooManyPasswordResetRequestAttempts(
           session,
           email,
           transaction: transaction,
@@ -303,7 +303,7 @@ abstract final class EmailAccounts {
             await EmailAccountPasswordResetRequest.db.insertRow(
           session,
           EmailAccountPasswordResetRequest(
-            authenticationId: account.id!,
+            emailAccountId: account.id!,
             verificationCode: resetToken,
           ),
           transaction: transaction,
@@ -374,6 +374,15 @@ abstract final class EmailAccounts {
           throw EmailAccountPasswordResetRequestExpiredException();
         }
 
+        await _logPasswordResetAttempt(session,
+            passwordResetRequestId: resetRequest.id!, transaction: transaction);
+
+        if (await _hasTooManyPasswordResetAttempts(session,
+            passwordResetRequestId: resetRequest.id!,
+            transaction: transaction)) {
+          throw 'Too many attempts'; // TODO: Custom exception with max count config exposed
+        }
+
         if (resetRequest.verificationCode != verificationCode) {
           throw EmailAccountPasswordResetRequestUnauthorizedException();
         }
@@ -386,7 +395,7 @@ abstract final class EmailAccounts {
 
         final account = (await EmailAccount.db.findById(
           session,
-          resetRequest.authenticationId,
+          resetRequest.emailAccountId,
           transaction: transaction,
         ))!;
 
@@ -542,14 +551,14 @@ abstract final class EmailAccounts {
     );
   }
 
-  static Future<void> _logPasswordResetAttempt(
+  static Future<void> _logPasswordResetRequestAttempt(
     final Session session,
     final String email, {
     required final Transaction transaction,
   }) async {
-    await EmailAccountPasswordResetAttempt.db.insertRow(
+    await EmailAccountPasswordResetRequestAttempt.db.insertRow(
       session,
-      EmailAccountPasswordResetAttempt(
+      EmailAccountPasswordResetRequestAttempt(
         email: email,
         ipAddress: session.remoteIpAddress,
       ),
@@ -557,7 +566,7 @@ abstract final class EmailAccounts {
     );
   }
 
-  static Future<bool> _hasTooManyPasswordResetAttempts(
+  static Future<bool> _hasTooManyPasswordResetRequestAttempts(
     final Session session,
     final String email, {
     required final Transaction transaction,
@@ -566,7 +575,8 @@ abstract final class EmailAccounts {
       EmailAccountConfig.current.maxPasswordResetAttempts.timeframe,
     );
 
-    final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
+    final recentRequests =
+        await EmailAccountPasswordResetRequestAttempt.db.count(
       session,
       where: (final t) =>
           (t.email.equals(email) |
@@ -577,6 +587,37 @@ abstract final class EmailAccounts {
 
     return recentRequests >
         EmailAccountConfig.current.maxPasswordResetAttempts.maxAttempts;
+  }
+
+  static Future<void> _logPasswordResetAttempt(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final Transaction transaction,
+  }) async {
+    await EmailAccountPasswordResetAttempt.db.insertRow(
+      session,
+      EmailAccountPasswordResetAttempt(
+        ipAddress: session.remoteIpAddress,
+        passwordResetRequestId: passwordResetRequestId,
+      ),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> _hasTooManyPasswordResetAttempts(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final Transaction transaction,
+  }) async {
+    final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
+      session,
+      where: (final t) =>
+          t.passwordResetRequestId.equals(passwordResetRequestId),
+      transaction: transaction,
+    );
+
+    return recentRequests >
+        EmailAccountConfig.current.passwordResetCodeAllowedAttempts;
   }
 }
 
