@@ -1,0 +1,10 @@
+### A greeting message which can be sent to or from the server.
+class: Greeting
+table: greeting
+fields:
+  ### The greeting message.
+  message: String
+  ### The author of the greeting message.
+  author: String
+  ### The time when the message was created.
+  timestamp: DateTime

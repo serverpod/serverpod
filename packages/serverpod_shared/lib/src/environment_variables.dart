@@ -81,6 +81,9 @@ enum ServerpodEnv {
   /// Toggle to enable the redis broker.
   redisEnabled,
 
+  /// Toggle to require SSL for the redis broker.
+  redisRequireSsl,
+
   /// The local port for the api server.
   apiPort,
 
@@ -135,6 +138,9 @@ enum ServerpodEnv {
   /// True if session console logging is enabled.
   sessionConsoleLogEnabled,
 
+  /// The format for the console log.
+  sessionConsoleLogFormat,
+
   /// The id of the server.
   serverId;
 
@@ -152,6 +158,7 @@ enum ServerpodEnv {
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
       (ServerpodEnv.redisEnabled) => 'enabled',
+      (ServerpodEnv.redisRequireSsl) => 'requireSsl',
       (ServerpodEnv.apiPort) => ServerpodServerConfigMap.port,
       (ServerpodEnv.apiPublicHost) => ServerpodServerConfigMap.publicHost,
       (ServerpodEnv.apiPublicPort) => ServerpodServerConfigMap.publicPort,
@@ -173,6 +180,7 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
+      (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
       (ServerpodEnv.serverId) => 'serverId',
     };
   }
@@ -192,6 +200,7 @@ enum ServerpodEnv {
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
       (ServerpodEnv.redisEnabled) => 'SERVERPOD_REDIS_ENABLED',
+      (ServerpodEnv.redisRequireSsl) => 'SERVERPOD_REDIS_REQUIRE_SSL',
       (ServerpodEnv.apiPort) => 'SERVERPOD_API_SERVER_PORT',
       (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_SERVER_PUBLIC_HOST',
       (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_SERVER_PUBLIC_PORT',
@@ -218,6 +227,8 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
+      (ServerpodEnv.sessionConsoleLogFormat) =>
+        'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT',
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
     };
   }

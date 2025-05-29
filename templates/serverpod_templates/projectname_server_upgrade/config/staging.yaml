@@ -50,12 +50,14 @@ redis:
   host: redis.private-staging.examplepod.com
   port: 6379
   #user: # defaults to empty
+  #requireSsl: true # defaults to false
 
 maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 
 sessionLogs:
 # persistentEnabled: true
 # consoleEnabled: true
+# consoleLogFormat: json # Defaults to "json", options are "text" or "json"
 
 # futureCallExecutionEnabled: true # Defaults to true
 

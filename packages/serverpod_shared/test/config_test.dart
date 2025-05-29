@@ -254,6 +254,7 @@ apiServer:
 redis:
   host: localhost
   port: 6379
+  requireSsl: true
 ''';
 
     var config = ServerpodConfig.loadFromMap(
@@ -267,6 +268,7 @@ redis:
     expect(config.redis?.port, 6379);
     expect(config.redis?.password, 'password');
     expect(config.redis?.enabled, isFalse);
+    expect(config.redis?.requireSsl, isTrue);
   });
 
   test(
@@ -641,6 +643,66 @@ redis:
     expect(config.redis?.host, 'localhost');
     expect(config.redis?.port, 6379);
     expect(config.redis?.user, 'default');
+    expect(config.redis?.requireSsl, false);
+  });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a required tls connection when loading from Map then the redis config is created.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_REDIS_HOST': 'localhost',
+        'SERVERPOD_REDIS_PORT': '6379',
+        'SERVERPOD_REDIS_USER': 'default',
+        'SERVERPOD_REDIS_REQUIRE_SSL': 'true',
+      },
+    );
+
+    expect(config.redis?.host, 'localhost');
+    expect(config.redis?.port, 6379);
+    expect(config.redis?.user, 'default');
+    expect(config.redis?.requireSsl, true);
+  });
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis with a invalid value for require ssl when loading from Map then an exception is thrown',
+      () {
+    expect(
+        () => ServerpodConfig.loadFromMap(
+              runMode,
+              serverId,
+              {...passwords, 'redis': 'password'},
+              {
+                'apiServer': {
+                  'port': 8080,
+                  'publicHost': 'localhost',
+                  'publicPort': 8080,
+                  'publicScheme': 'http',
+                },
+              },
+              environment: {
+                'SERVERPOD_REDIS_HOST': 'localhost',
+                'SERVERPOD_REDIS_PORT': '6379',
+                'SERVERPOD_REDIS_USER': 'default',
+                'SERVERPOD_REDIS_REQUIRE_SSL': 'INVALID',
+              },
+            ),
+        throwsA(isA<Exception>().having(
+          (e) => e.toString(),
+          'message',
+          equals(
+              'Exception: Invalid value (INVALID) for SERVERPOD_REDIS_REQUIRE_SSL.'),
+        )));
   });
 
   test(
@@ -670,6 +732,7 @@ redis:
     expect(config.redis?.host, 'localhost');
     expect(config.redis?.port, 6379);
     expect(config.redis?.user, 'default');
+    expect(config.redis?.requireSsl, false);
   });
 
   test(
@@ -937,5 +1000,27 @@ futureCallExecutionEnabled: false
     );
 
     expect(config.futureCallExecutionEnabled, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config instance is created with runMode set to "development" when reading the consoleLogFormat then the consoleLogFormat is set to text',
+      () {
+    var config = ServerpodConfig(
+      runMode: 'development',
+      apiServer: ServerpodConfig.defaultConfig().apiServer,
+    );
+
+    expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
+  });
+
+  test(
+      'Given a Serverpod config instance is created with runMode set to "production" when reading the consoleLogFormat then the consoleLogFormat is set to json',
+      () {
+    var config = ServerpodConfig(
+      runMode: 'production',
+      apiServer: ServerpodConfig.defaultConfig().apiServer,
+    );
+
+    expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
   });
 }

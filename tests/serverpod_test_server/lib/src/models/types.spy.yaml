@@ -11,6 +11,7 @@ fields:
   aUuid: UuidValue?
   aUri: Uri?
   aBigInt: BigInt?
+  aVector: Vector(3)?
   anEnum: TestEnum?
   aStringifiedEnum: TestEnumStringified?
   aList: List<int>?

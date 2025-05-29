@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
@@ -166,6 +167,7 @@ class Restrictions {
       'Client',
       'Endpoints',
       'Protocol',
+      'Vector',
       '_Record',
     };
     if (reservedClassNames.contains(className)) {
@@ -728,6 +730,78 @@ class Restrictions {
     return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
 
+  List<SourceSpanSeverityException> validateIndexUniqueKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "unique" property cannot be used with vector indexes of '
+          'type "${index.type}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexDistanceFunctionKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.distanceFunction}" property can only be used with vector '
+          'indexes of type "${VectorIndexType.values.map((e) => e.name).join(", ")}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexParametersKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.parameters}" property can only be used with vector indexes '
+          'of type "${VectorIndexType.values.map((e) => e.name).join(", ")}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateRelationInterdependencies(
     String parentNodeName,
     dynamic content,
@@ -958,6 +1032,22 @@ class Restrictions {
       ));
     }
 
+    if (fieldType.isVectorType) {
+      if (fieldType.vectorDimension == null) {
+        errors.add(SourceSpanSeverityException(
+          'The vector type must have an integer dimension defined between '
+          'parentheses after the type name (e.g. Vector(512)).',
+          span,
+        ));
+      } else if (fieldType.vectorDimension! < 1) {
+        errors.add(SourceSpanSeverityException(
+          'Invalid vector dimension "${fieldType.vectorDimension}". Vector '
+          'dimension must be an integer number greater than 0.',
+          span,
+        ));
+      }
+    }
+
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
         errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
@@ -1095,7 +1185,164 @@ class Restrictions {
               span,
             ));
 
-    return [...missingFieldErrors, ...duplicateFieldErrors];
+    var hasVectorField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isVectorType)
+        .toSet();
+
+    var vectorErrors = [
+      if (hasVectorField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing vector and non-vector fields in the same index is not allowed.',
+          span,
+        ),
+      if (hasVectorField.any((e) => e) && indexFields.length > 1)
+        SourceSpanSeverityException(
+          'Only one vector field is allowed in an index.',
+          span,
+        ),
+    ];
+
+    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
+  }
+
+  List<SourceSpanSeverityException> validateIndexDistanceFunctionValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content == null) return [];
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.distanceFunction}" property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var field = definition.findField(
+      definition.indexes
+          .firstWhere((i) => i.name == parentNodeName)
+          .fields
+          .first,
+    );
+    if (field == null) return [];
+
+    var validFunctionsPerClassName = {
+      'Vector': {
+        VectorDistanceFunction.l2,
+        VectorDistanceFunction.innerProduct,
+        VectorDistanceFunction.cosine,
+        VectorDistanceFunction.l1,
+      },
+    };
+
+    var validFunctions =
+        validFunctionsPerClassName[field.type.className]?.map((e) => e.name);
+    if (validFunctions != null && !validFunctions.contains(content)) {
+      return [
+        SourceSpanSeverityException(
+          'Invalid distance function "$content". Allowed values are: '
+          '"${validFunctions.join('", "')}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexParametersValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    if (content is! YamlMap) {
+      return [
+        SourceSpanSeverityException(
+          'The "parameters" property must be a map.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+    if (!index.isVectorIndex) return [];
+
+    Map<String, Set<String>> allowedParamsByType = {
+      'hnsw': {'m', 'ef_construction'},
+      'ivfflat': {'lists'},
+    };
+
+    Map<String, Type> parameterTypes = {
+      'm': int,
+      'ef_construction': int,
+      'lists': int,
+    };
+
+    var allowedParams = allowedParamsByType[index.type] ?? <String>{};
+    var unknownKeys = content.keys.toSet().difference(allowedParams);
+    if (unknownKeys.isNotEmpty) {
+      errors.add(SourceSpanSeverityException(
+        'Unknown parameters for ${index.type} index: "${unknownKeys.join('", "')}". '
+        'Allowed parameters are: "${allowedParams.join('", "')}".',
+        span,
+      ));
+    }
+
+    for (var key in content.keys) {
+      var value = content[key];
+      if (allowedParams.contains(key) &&
+          parameterTypes.containsKey(key) &&
+          value != null &&
+          value.runtimeType != parameterTypes[key]) {
+        errors.add(SourceSpanSeverityException(
+          'The "$key" parameter must be a '
+          '${parameterTypes[key]!.toString().toLowerCase()}.',
+          span,
+        ));
+      }
+    }
+
+    // If either 'm' or 'ef_construction' parameters are present, validate the
+    // HNSW index constraint that ef_construction >= 2 * m.
+    if (index.type == 'hnsw' &&
+        content['m'] is int? &&
+        content['ef_construction'] is int?) {
+      var m = content['m'] as int? ?? 16;
+      var efConstruction = content['ef_construction'] as int? ?? 64;
+
+      if (efConstruction < 2 * m) {
+        String suggestion;
+        if (!content.containsKey('m')) {
+          suggestion = 'Set "ef_construction" >= ${2 * m} or declare "m" with '
+              'a value <= ${efConstruction ~/ 2}';
+        } else if (!content.containsKey('ef_construction')) {
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or declare '
+              '"ef_construction" with a value >= ${2 * m}';
+        } else {
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or increase '
+              '"ef_construction" to a value >= ${2 * m}';
+        }
+        errors.add(SourceSpanSeverityException(
+          'The "ef_construction" parameter must be greater than or equal to '
+          '2 * m. $suggestion.',
+          span,
+        ));
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateIndexType(
@@ -1104,6 +1351,16 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var validIndexTypes = {'btree', 'hash', 'gin', 'gist', 'spgist', 'brin'};
+
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition) {
+      var indexFields = definition.fieldsIncludingInherited.where(
+        (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
+      );
+      if (indexFields.any((e) => e.type.isVectorType)) {
+        validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
+      }
+    }
 
     if (content is! String || !validIndexTypes.contains(content)) {
       return [
@@ -1506,6 +1763,7 @@ class Restrictions {
     'Uri',
     'BigInt',
     'ByteData',
+    'Vector',
     'List',
     'Map',
     'Set',

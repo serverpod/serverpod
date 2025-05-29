@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// A function that returns a [Column] for a [Table].
@@ -318,6 +319,36 @@ class ColumnCount extends _ValueOperatorColumn<int>
   Expression _encodeValueForQuery(int value) => Expression(value);
 }
 
+/// A [Column] holding a [Vector] from pgvector.
+class ColumnVector extends _ValueOperatorColumn<Vector>
+    with _ColumnDefaultOperations<Vector>, _VectorColumnDefaultOperations {
+  /// The dimension of the vector (number of elements).
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVector(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Vector value) => EscapedExpression(value);
+}
+
+/// A [Column] holding the result of a [Vector] distance operation.
+class ColumnVectorDistance extends ColumnDouble {
+  final VectorDistanceExpression _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVectorDistance(this._expression)
+      : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -472,6 +503,45 @@ mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
         this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+  }
+}
+
+/// Mixin providing vector-specific operations for [ColumnVector].
+mixin _VectorColumnDefaultOperations on _ValueOperatorColumn<Vector> {
+  /// Computes the L2 (Euclidean) distance between this vector column and another vector.
+  ColumnVectorDistance distanceL2(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.l2,
+    ));
+  }
+
+  /// Computes the inner product distance between this vector column and another vector.
+  ColumnVectorDistance distanceInnerProduct(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.innerProduct,
+    ));
+  }
+
+  /// Computes the cosine distance between this vector column and another vector.
+  ColumnVectorDistance distanceCosine(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.cosine,
+    ));
+  }
+
+  /// Computes the L1 (Manhattan) distance between this vector column and another vector.
+  ColumnVectorDistance distanceL1(Vector other) {
+    return ColumnVectorDistance(VectorDistanceExpression(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.l1,
+    ));
   }
 }
 
@@ -751,6 +821,33 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String get operator => 'NOT IN';
+}
+
+/// Vector distance expression for use with pgvector.
+class VectorDistanceExpression extends _TwoPartColumnExpression<Vector> {
+  /// The vector distance operator to calculate.
+  final VectorDistanceFunction distanceOperator;
+
+  /// Creates a new [VectorDistanceExpression].
+  VectorDistanceExpression(super.column, super.other, this.distanceOperator);
+
+  @override
+  String get operator {
+    switch (distanceOperator) {
+      case VectorDistanceFunction.l2:
+        return '<->';
+      case VectorDistanceFunction.innerProduct:
+        return '<#>';
+      case VectorDistanceFunction.cosine:
+        return '<=>';
+      case VectorDistanceFunction.l1:
+        return '<+>';
+      case VectorDistanceFunction.hamming:
+        return '<~>';
+      case VectorDistanceFunction.jaccard:
+        return '<%>';
+    }
+  }
 }
 
 /// An extension on iterable for Id columns.

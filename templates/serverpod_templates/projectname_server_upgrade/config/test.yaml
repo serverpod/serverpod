@@ -40,10 +40,13 @@ redis:
   enabled: false
   host: localhost
   port: 9091
+  #user: # defaults to empty
+  #requireSsl: true # defaults to false
 
 sessionLogs:
   persistentEnabled: true
   consoleEnabled: true
+# consoleLogFormat: json # Defaults to "json", options are "text" or "json"
 
 # futureCallExecutionEnabled: true # Defaults to true
 

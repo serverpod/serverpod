@@ -146,4 +146,75 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a Vector object, when serializing to JSON returns a List<double> representation.',
+    () {
+      Vector vector = const Vector([1.0, 2.0, 3.0]);
+
+      expect(vector.toJson(), isA<List<double>>());
+      expect(vector.toJson(), [1.0, 2.0, 3.0]);
+    },
+  );
+
+  test(
+    'Given a string representing a List<double>, when deserialized to a Vector using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    () {
+      String listAsString = '[1.0, 2.0, 3.0]';
+      Vector vector = VectorJsonExtension.fromJson(listAsString);
+
+      expect(vector.toJson(), [1.0, 2.0, 3.0]);
+    },
+  );
+
+  test(
+    'Given a List<double>, when deserialized to a Vector and then serialized back to a List<double>, then it matches the original list.',
+    () {
+      List<double> value = [1.0, 2.0, 3.0];
+      Vector vector = VectorJsonExtension.fromJson(value);
+
+      expect(vector.toJson(), value);
+    },
+  );
+
+  test(
+    'Given a Uint8List representing a Vector, when deserialized using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    () {
+      Vector originalVector = const Vector([1.0, 2.0, 3.0]);
+      Vector vector = VectorJsonExtension.fromJson(originalVector.toBinary());
+
+      expect(vector.toJson(), originalVector.toJson());
+    },
+  );
+
+  test(
+    'Given a String representation of a Vector, when deserialized using VectorJsonExtension.fromJson, then it creates a valid Vector.',
+    () {
+      Vector originalVector = const Vector([1.0, 2.0, 3.0]);
+      Vector vector = VectorJsonExtension.fromJson(originalVector.toString());
+
+      expect(originalVector.toString(), '[1.0, 2.0, 3.0]');
+      expect(vector.toJson(), originalVector.toJson());
+    },
+  );
+
+  test(
+    'Given a Vector object, when passed to VectorJsonExtension.fromJson, then it remains unchanged.',
+    () {
+      Vector value = const Vector([1.0, 2.0, 3.0]);
+      Vector vector = VectorJsonExtension.fromJson(value);
+
+      expect(vector, value);
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a Vector using VectorJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException.',
+    () {
+      expect(
+        () => VectorJsonExtension.fromJson(123),
+        throwsA(isA<DeserializationTypeNotFoundException>()),
+      );
+    },
+  );
 }

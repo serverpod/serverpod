@@ -9,6 +9,8 @@ typedef Convert<T> = T Function(String value);
 
 const int _defaultMaxRequestSize = 524288;
 
+const String _developmentRunMode = 'development';
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -39,7 +41,7 @@ class ServerpodConfig {
   late final String? serviceSecret;
 
   /// Configuration for Session logs.
-  final SessionLogConfig? sessionLogs;
+  final SessionLogConfig sessionLogs;
 
   /// The timeout for the diagnostic event handlers.
   /// Default is 30 seconds.
@@ -54,7 +56,7 @@ class ServerpodConfig {
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
-    this.runMode = 'development',
+    this.runMode = _developmentRunMode,
     this.serverId = 'default',
     this.maxRequestSize = 524288,
     this.insightsServer,
@@ -67,9 +69,9 @@ class ServerpodConfig {
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
   }) : sessionLogs = sessionLogs ??
-            SessionLogConfig(
-              persistentEnabled: database != null,
-              consoleEnabled: database == null,
+            SessionLogConfig.buildDefault(
+              databaseEnabled: database != null,
+              runMode: runMode,
             ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
@@ -242,7 +244,7 @@ class ServerpodConfig {
 
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
-    if (sessionLogs != null) str += sessionLogs.toString();
+    str += sessionLogs.toString();
     str += futureCall.toString();
     str += 'future call execution enabled: $futureCallExecutionEnabled\n';
 
@@ -409,6 +411,9 @@ class RedisConfig {
   /// Redis password (optional, but recommended).
   final String? password;
 
+  /// True if Redis requires an SSL connection.
+  final bool requireSsl;
+
   /// Creates a new [RedisConfig].
   RedisConfig({
     required this.enabled,
@@ -416,6 +421,7 @@ class RedisConfig {
     required this.port,
     this.user,
     this.password,
+    this.requireSsl = false,
   });
 
   factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
@@ -434,6 +440,7 @@ class RedisConfig {
       port: redisSetup[ServerpodEnv.redisPort.configKey],
       user: redisSetup[ServerpodEnv.redisUser.configKey],
       password: passwords[ServerpodPassword.redisPassword.configKey],
+      requireSsl: redisSetup[ServerpodEnv.redisRequireSsl.configKey] ?? false,
     );
   }
 
@@ -448,6 +455,7 @@ class RedisConfig {
     if (password != null) {
       str += 'redis pass: ********\n';
     }
+    str += 'redis require SSL: $requireSsl\n';
     return str;
   }
 }
@@ -517,6 +525,32 @@ class FutureCallConfig {
   }
 }
 
+/// Valid values for console log format.
+enum ConsoleLogFormat {
+  /// JSON format.
+  json,
+
+  /// Human-readable text format.
+  text;
+
+  /// Returns a list of all enum names.
+  static final List<String> allEnumNames =
+      ConsoleLogFormat.values.map((e) => e.name).toList();
+
+  /// Default format for console logging.
+  static const defaultFormat = ConsoleLogFormat.json;
+
+  /// Parses a string into a [ConsoleLogFormat].
+  static ConsoleLogFormat parse(String value) {
+    return ConsoleLogFormat.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => throw ArgumentError(
+        'Invalid console log format: "$value". Valid values are: ${allEnumNames.join(', ')}',
+      ),
+    );
+  }
+}
+
 /// Configuration for session logging.
 class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
@@ -525,25 +559,43 @@ class SessionLogConfig {
   /// True if console logging should be enabled.
   final bool consoleEnabled;
 
+  /// The format for the console log.
+  final ConsoleLogFormat consoleLogFormat;
+
   /// Creates a new [SessionLogConfig].
   SessionLogConfig({
     required this.persistentEnabled,
     required this.consoleEnabled,
-  });
+    ConsoleLogFormat? consoleLogFormat,
+  }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
+
+  /// Creates a new default [SessionLogConfig] based on the run mode and
+  /// whether the database is enabled.
+  factory SessionLogConfig.buildDefault({
+    required bool databaseEnabled,
+    required String runMode,
+  }) {
+    return SessionLogConfig(
+      persistentEnabled: databaseEnabled,
+      consoleEnabled: !databaseEnabled || runMode == _developmentRunMode,
+      consoleLogFormat: runMode == _developmentRunMode
+          ? ConsoleLogFormat.text
+          : ConsoleLogFormat.defaultFormat,
+    );
+  }
 
   factory SessionLogConfig._fromJson(
     Map sessionLogConfigJson,
     String name, {
     required bool databaseEnabled,
   }) {
-    _validateJsonConfig(
-      {
-        ServerpodEnv.sessionPersistentLogEnabled.configKey: bool,
-        ServerpodEnv.sessionConsoleLogEnabled.configKey: bool,
-      },
-      sessionLogConfigJson,
-      name,
-    );
+    var configuredLogFormat =
+        sessionLogConfigJson[ServerpodEnv.sessionConsoleLogFormat.configKey];
+
+    ConsoleLogFormat logFormat = ConsoleLogFormat.defaultFormat;
+    if (configuredLogFormat != null) {
+      logFormat = ConsoleLogFormat.parse(configuredLogFormat);
+    }
 
     return SessionLogConfig(
       persistentEnabled: sessionLogConfigJson[
@@ -552,6 +604,7 @@ class SessionLogConfig {
       consoleEnabled: sessionLogConfigJson[
               ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
           false,
+      consoleLogFormat: logFormat,
     );
   }
 
@@ -634,6 +687,7 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.redisPort, int.parse),
     (ServerpodEnv.redisUser, null),
     (ServerpodEnv.redisEnabled, bool.parse),
+    (ServerpodEnv.redisRequireSsl, bool.parse),
   ]);
 }
 
@@ -644,6 +698,7 @@ Map? _buildSessionLogsConfigMap(
   return _buildConfigMap(logsConfig, environment, [
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
+    (ServerpodEnv.sessionConsoleLogFormat, null),
   ]);
 }
 
