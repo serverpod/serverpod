@@ -3,7 +3,7 @@ import 'package:serverpod/serverpod.dart';
 /// Secrets used for email authentication.
 abstract class EmailAccountSecrets {
   /// The configuration key for the password hash pepper.
-  static String passwordHashPepperConfigurationKey =
+  static const String passwordHashPepperConfigurationKey =
       'serverpod_auth_email_account.passwordHashPepper';
 
   /// The pepper used for hashing passwords.
