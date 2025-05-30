@@ -125,25 +125,13 @@ jobs:
       matrix:
         flutter-version: ['3.19.0', '3.29.0']
         os: [windows-latest, ubuntu-latest]
-        path:
-          [
-            'tools/serverpod_cli',
-            'packages/serverpod',
-            'packages/serverpod_client',
-            'packages/serverpod_shared',
-            'packages/serverpod_serialization',
-            'tests/serverpod_test_client',
-            'tests/serverpod_test_server',
-            'modules/serverpod_auth/serverpod_auth_server',
-          ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run unit tests
-        run: dart test
-        working-directory: ${{ matrix.path }}
+        run: bash util/run_tests_unit
 
   unit_web_tests:
     name: Unit tests Web
