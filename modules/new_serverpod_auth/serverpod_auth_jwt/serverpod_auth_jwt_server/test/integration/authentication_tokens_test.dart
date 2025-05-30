@@ -195,6 +195,20 @@ void main() {
     });
 
     test(
+        'when calling the authentication handler after the expiration time has elapsed, then it returns `null`.',
+        () async {
+      final authInfo = await withClock(
+        Clock.fixed(DateTime.now().add(const Duration(minutes: 11))),
+        () => AuthenticationTokens.authenticationHandler(
+          session,
+          tokenPair.accessToken,
+        ),
+      );
+
+      expect(authInfo, isNull);
+    });
+
+    test(
         'when calling the authentication handler after the secret key has been changed, then it returns `null`.',
         () async {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'test 12345';
