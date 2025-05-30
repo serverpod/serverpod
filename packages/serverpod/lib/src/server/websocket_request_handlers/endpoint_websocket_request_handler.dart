@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:web_socket/web_socket.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to an endpoint. It is not intended to be used directly by the user.
@@ -17,15 +18,15 @@ abstract class EndpointWebsocketRequestHandler {
   /// handles control messages such as 'ping' and 'auth'.
   static Future<void> handleWebsocket(
     Server server,
-    WebSocket webSocket,
-    HttpRequest request,
+    RelicWebSocket webSocket,
+    Request request,
     void Function() onClosed,
   ) async {
     try {
       var session = StreamingSession(
         server: server,
-        uri: request.uri,
-        httpRequest: request,
+        uri: request.requestedUri,
+        request: request,
         webSocket: webSocket,
       );
 
@@ -45,7 +46,13 @@ abstract class EndpointWebsocketRequestHandler {
       StackTrace? stackTrace;
 
       try {
-        await for (String jsonData in webSocket) {
+        await for (final event in webSocket.events) {
+          if (event is CloseReceived) break;
+          var jsonData = switch (event) {
+            TextDataReceived() => event.text,
+            BinaryDataReceived() => utf8.decode(event.data),
+            CloseReceived() => '' // cannot happen
+          };
           var data = jsonDecode(jsonData) as Map;
 
           // Handle control commands.
@@ -54,7 +61,7 @@ abstract class EndpointWebsocketRequestHandler {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket.add(
+              webSocket.trySendText(
                 SerializationManager.encodeForProtocol(
                   {'command': 'pong'},
                 ),
@@ -137,7 +144,7 @@ abstract class EndpointWebsocketRequestHandler {
       }
       await session.close(error: error, stackTrace: stackTrace);
     } catch (e, s) {
-      _reportException(server, e, s, httpRequest: request);
+      _reportException(server, e, s, request: request);
       return;
     } finally {
       onClosed();
@@ -192,7 +199,7 @@ abstract class EndpointWebsocketRequestHandler {
     StackTrace stackTrace, {
     OriginSpace space = OriginSpace.framework,
     String? message,
-    HttpRequest? httpRequest,
+    Request? request,
     StreamingSession? session,
   }) {
     var now = DateTime.now().toUtc();
@@ -203,10 +210,10 @@ abstract class EndpointWebsocketRequestHandler {
     stderr.writeln('$stackTrace');
 
     var context = session != null
-        ? contextFromSession(session, requestInfo: httpRequest?.toRequestInfo())
-        : httpRequest != null
+        ? contextFromSession(session, requestInfo: request?.toRequestInfo())
+        : request != null
             ? contextFromRequest(
-                server, httpRequest.toRequestInfo(), OperationType.stream)
+                server, request.toRequestInfo(), OperationType.stream)
             : contextFromServer(server);
 
     server.serverpod.internalSubmitEvent(

@@ -16,6 +16,16 @@ dependencies:
   http: '>=1.0.0 <2.0.0'
   meta: ^1.11.0
   web_socket_channel: '>=2.4.0 <4.0.0'
+  web_socket: ^1.0.0
+  web_socket_channel: '>=2.4.0 <4.0.0'
+
+dev_dependencies:
+  relic:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: serverpod-integration
+  web_socket: ^1.0.0
+  web_socket_channel: '>=2.4.0 <4.0.0'
 
 dev_dependencies:
   serverpod_lints: 2.8.0

@@ -135,7 +135,7 @@ abstract class Session implements DatabaseAccessor {
     UuidValue? sessionId,
     required this.server,
     String? authenticationKey,
-    HttpRequest? httpRequest,
+    Request? request,
     WebSocket? webSocket,
     required this.enableLogging,
     required this.endpoint,
@@ -324,8 +324,8 @@ class MethodCallSession extends Session {
   @Deprecated('Use endpoint instead')
   String get endpointName => endpoint;
 
-  /// The [HttpRequest] associated with the call.
-  final HttpRequest httpRequest;
+  /// The [Request] associated with the call.
+  final Request request;
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession({
@@ -333,7 +333,7 @@ class MethodCallSession extends Session {
     required this.uri,
     required this.body,
     required String path,
-    required this.httpRequest,
+    required this.request,
     required super.endpoint,
     required String method,
     required this.queryParameters,
@@ -391,11 +391,11 @@ class StreamingSession extends Session {
   /// Query parameters of the server call.
   late final Map<String, String> queryParameters;
 
-  /// The [HttpRequest] associated with the call.
-  final HttpRequest httpRequest;
+  /// The [Request] associated with the call.
+  final Request request;
 
   /// The underlying web socket that handles communication with the server.
-  final WebSocket webSocket;
+  final RelicWebSocket webSocket;
 
   /// Set if there is an open session log.
   int? sessionLogId;
@@ -416,7 +416,7 @@ class StreamingSession extends Session {
   StreamingSession({
     required super.server,
     required this.uri,
-    required this.httpRequest,
+    required this.request,
     required this.webSocket,
     super.endpoint = 'StreamingSession',
     super.enableLogging = true,

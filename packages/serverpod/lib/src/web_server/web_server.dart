@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 import 'package:relic/io_adapter.dart';
-import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
@@ -195,8 +192,8 @@ class WebServer {
     var context = session != null
         ? contextFromSession(session, requestInfo: request.toRequestInfo())
         : request != null
-            ? contextFromRequest(
-                serverpod.server, request.toRequestInfo(), OperationType.web)
+            ? contextFromRequest(serverpod.server, request.toRequestInfo(),
+                OperationType.web) // request is not null here
             : contextFromServer(serverpod.server);
 
     serverpod.internalSubmitEvent(
@@ -249,7 +246,7 @@ enum RouteMethod {
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
-/// [HttpRequest] object. You override [Route], or more likely it's subclass
+/// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
 abstract class Route {
   /// The method this route will respond to, i.e. HTTP get or post.
@@ -327,22 +324,6 @@ extension type ServerpodRouter._(Router<Route> _router) {
 }
 
 // Temporary helper method
-extension on String {
-  Method toMethod() => switch (this.toLowerCase()) {
-        'get' => Method.get,
-        'head' => Method.head,
-        'post' => Method.post,
-        'put' => Method.put,
-        'delete' => Method.delete,
-        'patch' => Method.patch,
-        'options' => Method.options,
-        'trace' => Method.trace,
-        'connect' => Method.connect,
-        _ => throw UnsupportedError,
-      };
-}
-
-// Temporary helper method
 extension on RouteMethod {
   Method toMethod() => switch (this) {
         RouteMethod.get => Method.get,
@@ -364,8 +345,4 @@ extension on RequestMethod {
         RequestMethod.connect => Method.connect,
         _ => throw UnimplementedError(),
       };
-}
-
-extension on Request? {
-  RequestInfo toRequestInfo() => RequestInfo.empty; // TODO
 }
