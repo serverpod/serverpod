@@ -9,12 +9,12 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 
 @internal
 abstract class JwtUtil {
-    /// Creates a new JWT for the given refresh token.
-    /// 
-    /// The auth user ID is set as `subject`.
-    /// The refresh token's ID for which this access token is generated is set as `jwtId`.
-    /// If scopes are present on the fresh token configuration, they will be set on a claim named "dev.serverpod.scopeNames".
-    /// Any extra claims configured with the refresh token will be added as top-level claims.
+  /// Creates a new JWT for the given refresh token.
+  ///
+  /// The auth user ID is set as `subject`.
+  /// The refresh token's ID for which this access token is generated is set as `jwtId`.
+  /// If scopes are present on the fresh token configuration, they will be set on a claim named "dev.serverpod.scopeNames".
+  /// Any extra claims configured with the refresh token will be added as top-level claims.
   static String createJwt(final RefreshToken refreshToken) {
     final extraClaims = refreshToken.extraClaims != null
         ? jsonDecode(refreshToken.extraClaims!) as Map
