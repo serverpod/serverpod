@@ -162,6 +162,7 @@ jobs:
           dart test
           --platform=${{ matrix.platform }}
           --compiler=${{ matrix.compiler }}
+          --reporter=failures-only
         working-directory: packages/serverpod_client
 
   flutter_unit_tests:
@@ -225,7 +226,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run integration tests
-        run: dart test test_integration
+        run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   module_integration_tests:
@@ -254,7 +255,7 @@ jobs:
           ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
         working-directory: tests/docker/tests_integration
       - name: Run integration tests
-        run: dart test -t integration
+        run: dart test -t integration --reporter=failures-only
         working-directory: ${{ matrix.module }}
       - name: Stop containers
         if: always()
@@ -314,7 +315,7 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test --concurrency=1
+        run: dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
@@ -355,8 +356,8 @@ jobs:
           ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
 
           colima start
-      - name: Run unit tests
-        run: dart test --concurrency=1
+      - name: Run unit tests 
+        run: dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   integration_test_flutter:
