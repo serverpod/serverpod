@@ -8,7 +8,7 @@ import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 @internal
 abstract final class RefreshTokenString {
   /// Prefix for refresh tokens
-  /// "sajrt" being an abbreviation of "serverpod_auth_jwt RefrestToken"
+  /// "sajrt" being an abbreviation of "serverpod_auth_jwt Refresh Token"
   static const _refreshTokenPrefix = 'sajrt';
 
   /// Returns the external refresh token string

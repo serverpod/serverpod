@@ -120,6 +120,7 @@ void main() {
         setUp(() {
           AuthenticationTokenSecrets.privateKeyTestOverride = 'another key';
 
+          // Only needed to not request the configuration from Serverpod, which does not work outside of `withServerpod` in tests
           AuthenticationTokenSecrets.fallbackAlgorithmTestOverride =
               AuthenticationTokenSecrets.algorithmHS512;
           AuthenticationTokenSecrets.fallbackKeyTestOverride =

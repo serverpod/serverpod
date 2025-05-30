@@ -28,7 +28,7 @@ void main() {
     });
 
     test(
-        'when calling the authentication handler with an non-JWT String, then it returns `null``.',
+        'when calling the authentication handler with an non-JWT String, then it returns `null`.',
         () async {
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
@@ -39,7 +39,7 @@ void main() {
     });
 
     test(
-        'when calling the authentication handler with an invalid JWT String, then it returns `null``.',
+        'when calling the authentication handler with an invalid JWT String, then it returns `null`.',
         () async {
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
