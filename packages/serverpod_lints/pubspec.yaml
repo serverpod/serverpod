@@ -10,5 +10,5 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  flutter_lints: '>=3.0.0 <6.0.0'
+  flutter_lints: '>=3.0.0 <7.0.0'
   lints: '>=3.0.0 <7.0.0'

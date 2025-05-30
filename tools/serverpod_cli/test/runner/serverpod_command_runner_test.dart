@@ -23,7 +23,7 @@ class MockAnalytics implements Analytics {
 }
 
 class MockCommand extends Command {
-  static String commandName = 'mock-command';
+  static const String commandName = 'mock-command';
   List<String> trackedOptions = [];
   int numberOfRuns = 0;
 

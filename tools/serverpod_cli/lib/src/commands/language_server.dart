@@ -16,7 +16,7 @@ enum LanguageServerOption<V> implements OptionDefinition<V> {
 }
 
 class LanguageServerCommand extends ServerpodCommand<LanguageServerOption> {
-  static String commandName = 'language-server';
+  static const String commandName = 'language-server';
 
   @override
   final name = commandName;

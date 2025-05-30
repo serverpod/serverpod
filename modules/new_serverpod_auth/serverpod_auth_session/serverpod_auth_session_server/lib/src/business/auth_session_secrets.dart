@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 /// Secrets used for sessions.
 abstract class AuthSessionSecrets {
   /// The configuration key for the session key pepper entry.
-  static String sessionKeyHashPepperConfigurationKey =
+  static const String sessionKeyHashPepperConfigurationKey =
       'serverpod_auth_session.sessionKeyHashPepper';
 
   /// The pepper used for hashing authentication session keys.
