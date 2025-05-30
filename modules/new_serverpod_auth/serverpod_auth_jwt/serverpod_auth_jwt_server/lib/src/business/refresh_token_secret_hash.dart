@@ -27,7 +27,7 @@ abstract final class RefreshTokenSecretHash {
       Argon2Parameters.ARGON2_id,
       salt,
       desiredKeyLength: 256,
-      secret: utf8.encode(AuthenticationTokenSecrets.tokenHashPepper),
+      secret: utf8.encode(AuthenticationTokenSecrets.refreshTokenHashPepper),
     );
 
     final generator = Argon2BytesGenerator()..init(parameters);

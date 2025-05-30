@@ -167,7 +167,7 @@ void main() {
 
     tearDown(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = null;
-      AuthenticationTokenSecrets.tokenHashPepperTestOverride = null;
+      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride = null;
     });
 
     test(
@@ -313,7 +313,8 @@ void main() {
     test(
         'when changing the configured pepper, then attempting to rotate the token throws an error.',
         () async {
-      AuthenticationTokenSecrets.tokenHashPepperTestOverride = 'another pepper';
+      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride =
+          'another pepper';
 
       await expectLater(
         () => AuthenticationTokens.rotateRefreshToken(

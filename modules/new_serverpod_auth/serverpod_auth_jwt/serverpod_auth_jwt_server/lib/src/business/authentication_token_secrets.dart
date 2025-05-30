@@ -26,9 +26,9 @@ abstract class AuthenticationTokenSecrets {
   static const String fallbackKeyConfigurationKey =
       'serverpod_auth_jwt.fallbackKey';
 
-  /// The configuration key for the token hash pepper.
-  static const String tokenHashPepperConfigurationKey =
-      'serverpod_auth_jwt.tokenHashPepper';
+  /// The configuration key for the refresh token hash pepper.
+  static const String refreshTokenHashPepperConfigurationKey =
+      'serverpod_auth_jwt.refreshTokenHashPepper';
 
   static AuthenticationTokenAlgorithm get algorithm {
     final algorithm = algorithmTestOverride ??
@@ -109,17 +109,14 @@ abstract class AuthenticationTokenSecrets {
     }
   }
 
-  /// The pepper used for hashing tokens.
-  ///
-  /// This influences the stored password, so it must not be changed for a given deployment,
-  /// as otherwise all passwords become invalid.
-  static String get tokenHashPepper {
-    final pepper = tokenHashPepperTestOverride ??
-        Serverpod.instance.getPassword(tokenHashPepperConfigurationKey);
+  /// The pepper used for hashing refresh tokens.
+  static String get refreshTokenHashPepper {
+    final pepper = refreshTokenHashPepperTestOverride ??
+        Serverpod.instance.getPassword(refreshTokenHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
       throw Exception(
-        'Password "$tokenHashPepperConfigurationKey" is not set',
+        'Password "$refreshTokenHashPepperConfigurationKey" is not set',
       );
     }
 
@@ -137,7 +134,7 @@ abstract class AuthenticationTokenSecrets {
   static String? publicKeyTestOverride;
 
   @visibleForTesting
-  static String? tokenHashPepperTestOverride;
+  static String? refreshTokenHashPepperTestOverride;
 
   @visibleForTesting
   static String? fallbackAlgorithmTestOverride;
