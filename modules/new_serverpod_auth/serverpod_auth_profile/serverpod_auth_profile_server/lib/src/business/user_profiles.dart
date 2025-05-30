@@ -197,21 +197,23 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
 
-        for (final image in images) {
-          try {
-            await session.storage.deleteFile(
-              storageId: image.storageId,
-              path: image.path,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to delete user image from storage',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
+        transaction.addPostCommitListener(() async {
+          for (final image in images) {
+            try {
+              await session.storage.deleteFile(
+                storageId: image.storageId,
+                path: image.path,
+              );
+            } catch (e, stackTrace) {
+              session.log(
+                'Failed to delete user image from storage',
+                level: LogLevel.error,
+                exception: e,
+                stackTrace: stackTrace,
+              );
+            }
           }
-        }
+        });
       },
     );
   }
