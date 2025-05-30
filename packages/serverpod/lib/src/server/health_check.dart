@@ -69,7 +69,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     }
   }
 
-  var connectionsInfo = pod.server.httpServer.connectionsInfo();
+  // RelicServer doesn\'t have connectionsInfo() like dart:io.HttpServer.
+  // Using placeholders for now.
+  // TODO: Investigate if RelicServer offers alternative connection metrics.
 
   return ServerHealthResult(
     metrics: [
@@ -105,9 +107,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       ServerHealthConnectionInfo(
         serverId: pod.serverId,
         timestamp: timestamp,
-        active: connectionsInfo.active,
-        closing: connectionsInfo.closing,
-        idle: connectionsInfo.idle,
+        active: 0, // Placeholder, was: connectionsInfo.active
+        closing: 0, // Placeholder, was: connectionsInfo.closing
+        idle: 0, // Placeholder, was: connectionsInfo.idle
         granularity: 1,
       )
     ],

@@ -1,4 +1,3 @@
-import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../widgets/simple_page.dart';

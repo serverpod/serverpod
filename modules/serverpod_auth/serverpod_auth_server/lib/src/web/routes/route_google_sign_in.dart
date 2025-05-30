@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/web/widgets/google_sign_in_redirect_page_widget.dart';
 

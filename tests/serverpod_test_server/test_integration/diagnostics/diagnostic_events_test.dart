@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
-import 'package:relic/relic.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';

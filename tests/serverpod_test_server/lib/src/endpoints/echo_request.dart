@@ -17,6 +17,7 @@ class EchoRequestEndpoint extends Endpoint {
   Future<List<String>?> echoHttpHeader(
       Session session, String headerName) async {
     var ms = session as MethodCallSession;
-    return ms.httpRequest.headers[headerName];
+    Iterable<String>? headerValue = ms.request.headers[headerName];
+    return headerValue?.toList();
   }
 }

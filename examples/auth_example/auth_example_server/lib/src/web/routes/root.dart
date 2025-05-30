@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:auth_example_server/src/web/widgets/default_page_widget.dart';
 import 'package:serverpod/serverpod.dart';
 
