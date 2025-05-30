@@ -2,6 +2,7 @@
 // Until then it needs to cause the analyzer to report an issue,
 // in order to avoid a bug in the Dart analyzer.
 // See: https://github.com/serverpod/serverpod/pull/2900
+// ignore: unnecessary_library_name
 library serverpod;
 
 // Annotations
