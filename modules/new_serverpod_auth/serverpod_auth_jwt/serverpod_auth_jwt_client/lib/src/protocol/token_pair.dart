@@ -30,7 +30,7 @@ abstract class TokenPair implements _i1.SerializableModel {
     );
   }
 
-  /// The refresh token to be used to create new access tokens and roate itself.
+  /// The refresh token to be used to create new access tokens and rotate itself.
   ///
   /// The client should handle this as an opaque string.
   String refreshToken;

@@ -81,21 +81,21 @@ abstract class RefreshToken
 
   _i1.UuidValue authUserId;
 
-  /// The [AuthUser] this profile belongs to.
+  /// The [AuthUser] this refresh token belongs to.
   _i2.AuthUser? authUser;
 
   /// The scopes given to this session.
   ///
-  /// These will also be added to each access token as a claim named "scopeNames".
+  /// These will also be added to each access token (JWT) created from this refresh token as a claim named "dev.serverpod.scopeNames".
   Set<String> scopeNames;
 
   /// Extra claims to be added to each access token created for this refresh token.
   ///
-  /// This is a `Map<String, dynamic>` where each entry uses the key as the claim name.
-  /// The value must be convertible to JSON.
+  /// This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
+  /// The values must be JSON-encodable.
   ///
   /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
-  /// or the above mentioned claim "scopeNames".
+  /// or the above-mentioned claim for [scopeNames].
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
   String? extraClaims;
@@ -105,8 +105,8 @@ abstract class RefreshToken
   /// Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
   /// but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
   /// may have been leaked at that point).
-  /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
-  /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
+  /// Since the refresh token's `id` is also part of the JWT access tokens for reference, we have to have this second
+  /// part in here, ensuring that no one with just a (potentially expired) JWT can invalidate the refresh token.
   ///
   /// Per default uses 16 bytes of random data.
   _i3.ByteData fixedSecret;
@@ -299,21 +299,21 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
 
   late final _i1.ColumnUuid authUserId;
 
-  /// The [AuthUser] this profile belongs to.
+  /// The [AuthUser] this refresh token belongs to.
   _i2.AuthUserTable? _authUser;
 
   /// The scopes given to this session.
   ///
-  /// These will also be added to each access token as a claim named "scopeNames".
+  /// These will also be added to each access token (JWT) created from this refresh token as a claim named "dev.serverpod.scopeNames".
   late final _i1.ColumnSerializable scopeNames;
 
   /// Extra claims to be added to each access token created for this refresh token.
   ///
-  /// This is a `Map<String, dynamic>` where each entry uses the key as the claim name.
-  /// The value must be convertible to JSON.
+  /// This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
+  /// The values must be JSON-encodable.
   ///
   /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
-  /// or the above mentioned claim "scopeNames".
+  /// or the above-mentioned claim for [scopeNames].
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
   late final _i1.ColumnString extraClaims;
@@ -323,8 +323,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
   /// but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
   /// may have been leaked at that point).
-  /// The the pure `id` is also part of the JWT access token for reference, we have to have this second
-  /// part in here, ensuring that no-one with just a captured JWT can invalidate the refresh token.
+  /// Since the refresh token's `id` is also part of the JWT access tokens for reference, we have to have this second
+  /// part in here, ensuring that no one with just a (potentially expired) JWT can invalidate the refresh token.
   ///
   /// Per default uses 16 bytes of random data.
   late final _i1.ColumnByteData fixedSecret;
