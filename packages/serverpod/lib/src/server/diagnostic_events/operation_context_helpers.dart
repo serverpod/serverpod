@@ -1,8 +1,6 @@
 /// These helpers are for internal framework use only.
 library;
 
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -24,14 +22,12 @@ class RequestInfo {
   static final empty = RequestInfo(ConnectionInfo.empty(), Uri());
 }
 
-extension HttpRequestEx on HttpRequest? {
+extension RequestEx on Request? {
   RequestInfo toRequestInfo() {
-    final self = this;
-    if (self == null) return RequestInfo.empty;
-    return RequestInfo(
-      self.connectionInfo?.toConnectionInfo() ?? ConnectionInfo.empty(),
-      self.uri,
-    );
+    // TODO: Determine how to get ConnectionInfo from relic.Request if possible.
+    // For now, returning empty as per the previous TODO in web_server.dart
+    // and because relic.Request does not seem to expose .connectionInfo directly.
+    return RequestInfo.empty;
   }
 }
 
@@ -55,7 +51,7 @@ ClientCallOpContext contextFromRequest(
 }
 
 /// Creates a new [OperationEventContext] given a [Session]
-/// and an [HttpRequest] if available.
+/// and an [Request] if available.
 OperationEventContext contextFromSession(
   Session session, {
   RequestInfo? requestInfo,
@@ -122,8 +118,13 @@ MethodCallOpContext _fromMethodCall(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(session.httpRequest.connectionInfo),
-      uri: session.uri,
+      // session.request is now relic.Request.
+      // toRequestInfo() extension method returns RequestInfo, which has connectionInfo.
+      // Currently, toRequestInfo() for relic.Request returns RequestInfo.empty(),
+      // so this will result in ConnectionInfo.empty().
+      connectionInfo: session.request.toRequestInfo().connectionInfo,
+      uri: session
+          .uri, // MethodCallSession has its own uri field, which is used here.
       endpoint: session.endpoint,
       methodName: session.method,
     );
@@ -154,13 +155,13 @@ StreamOpContext _fromStreaming(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: session.httpRequest.connectionInfo?.toConnectionInfo() ??
-          ConnectionInfo.empty(),
-      uri: session.httpRequest.uri,
+      // session.request is now relic.Request.
+      // toRequestInfo() extension method returns RequestInfo, which has connectionInfo.
+      // Currently, toRequestInfo() for relic.Request returns RequestInfo.empty(),
+      // so this will result in ConnectionInfo.empty().
+      connectionInfo: session.request.toRequestInfo().connectionInfo,
+      uri: session.request.requestedUri, // Use requestedUri from relic.Request
       endpoint: session.endpoint,
       methodName: '-',
       streamConnectionId: null,
     );
-
-ConnectionInfo _safeHttpToConnInfo(HttpConnectionInfo? connectionInfo) =>
-    connectionInfo?.toConnectionInfo() ?? ConnectionInfo.empty();

@@ -7,7 +7,7 @@ import '../module_util.dart';
 // import '../generated/protocol.dart';
 
 class ModuleEndpoint extends Endpoint {
-  Future<String> hello(Session session, String name) async {
+  Future<String> hello(final Session session, final String name) async {
     return ModuleUtil.buildGreeting(name);
   }
 }

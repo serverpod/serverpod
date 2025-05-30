@@ -1,5 +1,5 @@
-import 'package:test/test.dart';
 import 'package:serverpod_auth_api_tokens_server/src/module_util.dart';
+import 'package:test/test.dart';
 
 void main() {
   test(
