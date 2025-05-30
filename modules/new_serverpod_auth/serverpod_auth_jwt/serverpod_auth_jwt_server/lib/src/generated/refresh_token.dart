@@ -119,7 +119,7 @@ abstract class RefreshToken
   /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
   _i3.ByteData rotatingSecretHash;
 
-  /// The salt used for comuting the [rotatingSecretHash].
+  /// The salt used for computing the [rotatingSecretHash].
   ///
   /// Per default uses 16 bytes of random data.
   _i3.ByteData rotatingSecretSalt;
@@ -337,7 +337,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
   late final _i1.ColumnByteData rotatingSecretHash;
 
-  /// The salt used for comuting the [rotatingSecretHash].
+  /// The salt used for computing the [rotatingSecretHash].
   ///
   /// Per default uses 16 bytes of random data.
   late final _i1.ColumnByteData rotatingSecretSalt;
