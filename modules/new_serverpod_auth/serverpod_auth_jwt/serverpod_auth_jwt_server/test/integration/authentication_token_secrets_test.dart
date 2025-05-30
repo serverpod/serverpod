@@ -70,7 +70,7 @@ void main() {
     );
   });
 
-  withServerpod('Given just both a private and public key for ES512,',
+  withServerpod('Given both a private and public key for ES512,',
       (final sessionBuilder, final endpoints) {
     setUpAll(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'private key value';

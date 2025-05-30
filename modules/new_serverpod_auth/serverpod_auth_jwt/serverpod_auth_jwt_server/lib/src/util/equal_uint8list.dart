@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-/// Checks whethere the 2 given lists contain the same data.
+/// Checks whether the 2 given lists contain the same data.
 bool uint8ListAreEqual(final Uint8List a, final Uint8List b) {
   if (a.length != b.length) {
     return false;

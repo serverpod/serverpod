@@ -27,7 +27,7 @@ abstract final class AuthenticationTokens {
   /// In case the session token looks like a JWT, but is not valid a debug-level
   /// log entry is written.
   ///
-  /// Returns `null` in any case where not valid authentication could be derived from the input.
+  /// Returns `null` in any case where no valid authentication could be derived from the input.
   static Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String jwtAccessToken,
@@ -53,7 +53,7 @@ abstract final class AuthenticationTokens {
     }
   }
 
-  /// Creates a new token pair for a given auth user.
+  /// Creates a new token pair for the given auth user.
   ///
   /// This is akin to creating a new session, and should be used after a successful login or registration.
   static Future<TokenPair> createTokens(
@@ -64,9 +64,9 @@ abstract final class AuthenticationTokens {
     /// Extra claims to be added to the JWT.
     ///
     /// These are added on the top level of the paylaod, so be sure not to conflict with the [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1),
-    /// as those will just overwrite any custom claims given here.
+    /// as those will always overwrite any custom claims given here.
     ///
-    /// Since these claims will be embedded in every access token (also across rotations), one should be mindful about there length and total size.
+    /// These claims will be embedded in every access token (also across rotations) and then sent along with any request. This should be taken into account with regard to the total size of the added claims.
     final Map<String, dynamic>? extraClaims,
     final Transaction? transaction,
   }) async {
@@ -95,9 +95,10 @@ abstract final class AuthenticationTokens {
     );
   }
 
-  /// Returns a new refresh & access token pair.
+  /// Returns a new refresh / access token pair.
   ///
   /// This invalidates the previous refresh token.
+  /// Previously created access tokens for this refresh token will continue to work until they expire.
   static Future<TokenPair> rotateRefreshToken(
     final Session session, {
     required final String refreshToken,
@@ -131,6 +132,8 @@ abstract final class AuthenticationTokens {
           Uint8List.sublistView(refreshTokenRow.fixedSecret),
           refreshTokenData.fixedSecret,
         )) {
+      // If the `fixedSecret` does not match, we do not delete the refresh token.
+      // (Since the `id` is encoded on every access token and thus might be known to 3rd parties or leak, even after the access token itself has expired.)
       throw RefreshTokenNotFoundException();
     }
 
@@ -182,7 +185,7 @@ abstract final class AuthenticationTokens {
 
   /// Removes all refresh tokens for the given [authUserId].
   ///
-  /// Active access tokens will still continue to work until the expiry time is reached.
+  /// Active access tokens will continue to work until their expiration time is reached.
   static Future<void> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
