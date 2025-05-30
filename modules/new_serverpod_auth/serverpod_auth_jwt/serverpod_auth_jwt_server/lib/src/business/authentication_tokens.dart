@@ -70,7 +70,7 @@ abstract final class AuthenticationTokens {
     final Map<String, dynamic>? extraClaims,
     final Transaction? transaction,
   }) async {
-    final secret = _generateRefreshTokenSecret();
+    final secret = _generateRefreshTokenRotatingSecret();
     final newHash = RefreshTokenSecretHash.createHash(secret: secret);
 
     final refreshToken = await RefreshToken.db.insertRow(
@@ -161,7 +161,7 @@ abstract final class AuthenticationTokens {
       throw RefreshTokenInvalidSecretException();
     }
 
-    final newSecret = _generateRefreshTokenSecret();
+    final newSecret = _generateRefreshTokenRotatingSecret();
     final newHash = RefreshTokenSecretHash.createHash(secret: newSecret);
 
     refreshTokenRow = await RefreshToken.db.updateRow(
@@ -242,7 +242,7 @@ abstract final class AuthenticationTokens {
     );
   }
 
-  static Uint8List _generateRefreshTokenSecret() {
+  static Uint8List _generateRefreshTokenRotatingSecret() {
     return generateRandomBytes(
       AuthenticationTokens.config.refreshTokenRotatingSecretLength,
     );
