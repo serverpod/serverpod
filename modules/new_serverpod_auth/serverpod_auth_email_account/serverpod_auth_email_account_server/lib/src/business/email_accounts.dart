@@ -432,7 +432,8 @@ abstract final class EmailAccounts {
         await EmailAccountFailedLoginAttempt.db.count(
       session,
       where: (final t) =>
-          t.email.equals(email) &
+          (t.email.equals(email) |
+              t.ipAddress.equals(session.remoteIpAddress)) &
           (t.attemptedAt >
               DateTime.now().subtract(
                   EmailAccountConfig.current.emailSignInFailureResetTime)),
