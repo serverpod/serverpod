@@ -1,0 +1,10 @@
+### A pair of refresh and access tokens, in their external format.
+class: TokenPair
+fields:
+  ### The refresh token to be used to create new access tokens and rotate itself.
+  ###
+  ### The client should handle this as an opaque string.
+  refreshToken: String
+
+  ### The latest access token, encoded as a JWT.
+  accessToken: String
