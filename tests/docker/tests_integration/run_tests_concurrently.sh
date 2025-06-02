@@ -24,4 +24,4 @@ echo "### Running tests"
 # Have to set INTEGRATION_TEST_SERVERPOD_MODE to 'test' to use the `test.yaml` config file. 
 # This avoids conflicting server ports in the test files that boots up the server outside
 # of a test group.
-INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration 
+INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration --reporter=failures-only

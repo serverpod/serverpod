@@ -25,4 +25,4 @@ echo ""
 echo "### Running integration tests"
 cd tests/serverpod_test_server
 dart pub get
-dart test test_e2e_migrations --concurrency=1
+dart test test_e2e_migrations --concurrency=1 --reporter=failures-only
