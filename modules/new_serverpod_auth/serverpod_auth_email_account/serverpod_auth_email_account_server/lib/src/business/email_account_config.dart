@@ -36,6 +36,11 @@ class EmailAccountConfig {
   /// By default this is a 8 digits alpha-numeric lower-case code.
   final String Function() registrationVerificationCodeGenerator;
 
+  /// How many attempts are permitted for a email verification code during the [registrationVerificationCodeLifetime] window.
+  ///
+  /// Defaults to 3.
+  final int registrationVerificationAllowedAttempts;
+
   /// The time for password resets to be valid.
   ///
   ///  Default is 15 minutes.
@@ -113,6 +118,7 @@ class EmailAccountConfig {
   /// Set [current] to apply this configuration.
   EmailAccountConfig({
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
+    this.registrationVerificationAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
         defaultVerificationCodeGenerator,
     this.passwordResetCodeLifetime = const Duration(minutes: 15),

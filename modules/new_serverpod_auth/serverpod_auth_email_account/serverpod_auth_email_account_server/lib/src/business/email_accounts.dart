@@ -225,8 +225,27 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestNotFoundException();
         }
 
+        // TODO: check, like we do for password reset
+
         if (request.isExpired) {
+          await EmailAccountRequest.db.deleteRow(
+            session,
+            request,
+            transaction: transaction,
+          );
+
           throw EmailAccountRequestExpiredException();
+        }
+
+        await _logEmailAccountCompletionAttempt(
+          session,
+          emailAccountRequestId: request.id!,
+          transaction: transaction,
+        );
+
+        if (await _hasTooManyEmailAccountCompletionAttempt(session,
+            emailAccountRequestId: request.id!, transaction: transaction)) {
+          throw EmailAccountRequestTooManyAttemptsException();
         }
 
         if (request.verificationCode != verificationCode) {
@@ -282,7 +301,7 @@ abstract final class EmailAccounts {
           email,
           transaction: transaction,
         )) {
-          throw Exception('Too many password reset requests in the last hour.');
+          throw EmailAccountPasswordResetRequestTooManyAttemptsException();
         }
 
         final account = await EmailAccount.db.findFirstRow(
@@ -370,6 +389,12 @@ abstract final class EmailAccounts {
         }
 
         if (resetRequest.isExpired) {
+          await EmailAccountPasswordResetRequest.db.deleteRow(
+            session,
+            resetRequest,
+            transaction: transaction,
+          );
+
           throw EmailAccountPasswordResetRequestExpiredException();
         }
 
@@ -387,7 +412,7 @@ abstract final class EmailAccounts {
         if (await _hasTooManyPasswordResetAttempts(session,
             passwordResetRequestId: resetRequest.id!,
             transaction: transaction)) {
-          throw 'Too many attempts'; // TODO: Custom exception with max count config exposed
+          throw EmailAccountPasswordResetTooManyAttemptsException();
         }
 
         if (resetRequest.verificationCode != verificationCode) {
@@ -626,6 +651,36 @@ abstract final class EmailAccounts {
 
     return recentRequests >
         EmailAccountConfig.current.passwordResetCodeAllowedAttempts;
+  }
+
+  static Future<void> _logEmailAccountCompletionAttempt(
+    final Session session, {
+    required final UuidValue emailAccountRequestId,
+    required final Transaction transaction,
+  }) async {
+    await EmailAccountRequestCompletionAttempt.db.insertRow(
+      session,
+      EmailAccountRequestCompletionAttempt(
+        ipAddress: session.remoteIpAddress,
+        emailAccountRequestId: emailAccountRequestId,
+      ),
+      transaction: transaction,
+    );
+  }
+
+  static Future<bool> _hasTooManyEmailAccountCompletionAttempt(
+    final Session session, {
+    required final UuidValue emailAccountRequestId,
+    required final Transaction transaction,
+  }) async {
+    final recentRequests = await EmailAccountRequestCompletionAttempt.db.count(
+      session,
+      where: (final t) => t.emailAccountRequestId.equals(emailAccountRequestId),
+      transaction: transaction,
+    );
+
+    return recentRequests >
+        EmailAccountConfig.current.registrationVerificationAllowedAttempts;
   }
 }
 
