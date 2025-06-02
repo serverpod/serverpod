@@ -35,14 +35,6 @@ void main() {
       AuthenticationTokenSecrets.privateKeyTestOverride = null;
     });
 
-    test('when requesting a new token pair, then one is returned.', () async {
-      await AuthenticationTokens.createTokens(
-        session,
-        authUserId: authUserId,
-        scopes: {},
-      );
-    });
-
     test(
         'when requesting a new token pair with scopes, then those are visible on the initial access token.',
         () async {
