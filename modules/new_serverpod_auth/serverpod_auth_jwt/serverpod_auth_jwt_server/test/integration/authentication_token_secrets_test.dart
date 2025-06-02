@@ -55,6 +55,27 @@ void main() {
     );
   });
 
+  withServerpod('Given a private key and the algorithm set to HS512,',
+      (final sessionBuilder, final endpoints) {
+    setUpAll(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = 'secret-key-for-jwt';
+      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
+    });
+
+    test(
+      'when the current `algorithm` is read, then it uses HS512 for the given key.',
+      () {
+        final algorithm = AuthenticationTokenSecrets.algorithm;
+
+        expect(
+          algorithm,
+          isA<HmacSha512AuthenticationTokenAlgorithm>()
+              .having((a) => a.key, 'key', 'secret-key-for-jwt'),
+        );
+      },
+    );
+  });
+
   withServerpod('Given just a private key when using ES512,',
       (final sessionBuilder, final endpoints) {
     setUpAll(() {
