@@ -7,6 +7,7 @@ class NullStdOut implements Stdout {
   Encoding encoding = utf8;
 
   /// Line terminator used.
+  @override
   String lineTerminator = '\n';
 
   @override

@@ -5,6 +5,9 @@ linter:
     # Temporary disable the following so that each can be fixed one by one.
     avoid_escaping_inner_quotes: false
     directives_ordering: false
+    # This rule causes a CI crash with Dart 3.5.x (e.g. https://github.com/serverpod/serverpod/actions/runs/15344355134/job/43177255668?pr=3594)
+    # so disabled for now, as it's not critical for the server package anyway
+    invalid_runtime_check_with_js_interop_types: false
     prefer_final_in_for_each: false
     prefer_final_locals: false
     prefer_final_parameters: false
