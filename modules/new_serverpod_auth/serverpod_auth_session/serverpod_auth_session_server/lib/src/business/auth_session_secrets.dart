@@ -16,8 +16,9 @@ abstract class AuthSessionSecrets {
         Serverpod.instance.getPassword(sessionKeyHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
-      throw Exception(
-        'Password "${AuthSessionSecrets.sessionKeyHashPepperConfigurationKey}" is not set',
+      throw ArgumentError(
+        'No "pepper" was configured in the authentication session passwords.',
+        sessionKeyHashPepperConfigurationKey,
       );
     }
 

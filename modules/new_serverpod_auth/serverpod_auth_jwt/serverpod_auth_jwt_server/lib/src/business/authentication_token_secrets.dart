@@ -115,8 +115,9 @@ abstract class AuthenticationTokenSecrets {
         Serverpod.instance.getPassword(refreshTokenHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
-      throw Exception(
-        'Password "$refreshTokenHashPepperConfigurationKey" is not set',
+      throw ArgumentError(
+        'No "pepper" was configured in the authentication token passwords.',
+        refreshTokenHashPepperConfigurationKey,
       );
     }
 
