@@ -54,39 +54,7 @@ abstract class JwtUtil {
   ///
   /// Throws in case of any validation failures (e.g. invalid signature or changed issuer, etc.) and in any case when parsing the expected contained data fails.
   static VerifiedJwtData verifyJwt(final String accessToken) {
-    final key = switch (AuthenticationTokenSecrets.algorithm) {
-      HmacSha512AuthenticationTokenAlgorithm(:final key) => SecretKey(key),
-      EcdsaSha512AuthenticationTokenAlgorithm(:final publicKey) =>
-        ECPublicKey(publicKey),
-    };
-
-    JWT jwt;
-    try {
-      jwt = JWT.verify(
-        accessToken,
-        key,
-        issuer: _issuer,
-      );
-    } catch (_) {
-      final fallbackAlgorithm =
-          AuthenticationTokenSecrets.fallbackVerificationAlgorithm;
-      if (fallbackAlgorithm == null) {
-        rethrow;
-      }
-
-      final key = switch (fallbackAlgorithm) {
-        HmacSha512FallbackAuthenticationTokenAlgorithm(:final key) =>
-          SecretKey(key),
-        EcdsaSha512FallbackAuthenticationTokenAlgorithm(:final publicKey) =>
-          ECPublicKey(publicKey),
-      };
-
-      jwt = JWT.verify(
-        accessToken,
-        key,
-        issuer: _issuer,
-      );
-    }
+    final jwt = _verifyJwt(accessToken);
 
     final UuidValue refreshTokenId;
     try {
@@ -139,6 +107,45 @@ abstract class JwtUtil {
       scopes: scopes,
       extraClaims: extraClaims,
     );
+  }
+
+  /// Verifies the JWT's signature and returns its data.
+  ///
+  /// If reading with the primary algorithm fails, the fallback (if configured) is tried.
+  /// In case neither of the keys work, and error is thrown.
+  static JWT _verifyJwt(final String accessToken) {
+    try {
+      final key = switch (AuthenticationTokenSecrets.algorithm) {
+        HmacSha512AuthenticationTokenAlgorithm(:final key) => SecretKey(key),
+        EcdsaSha512AuthenticationTokenAlgorithm(:final publicKey) =>
+          ECPublicKey(publicKey),
+      };
+
+      return JWT.verify(
+        accessToken,
+        key,
+        issuer: _issuer,
+      );
+    } catch (_) {
+      final fallbackAlgorithm =
+          AuthenticationTokenSecrets.fallbackVerificationAlgorithm;
+      if (fallbackAlgorithm == null) {
+        rethrow;
+      }
+
+      final key = switch (fallbackAlgorithm) {
+        HmacSha512FallbackAuthenticationTokenAlgorithm(:final key) =>
+          SecretKey(key),
+        EcdsaSha512FallbackAuthenticationTokenAlgorithm(:final publicKey) =>
+          ECPublicKey(publicKey),
+      };
+
+      return JWT.verify(
+        accessToken,
+        key,
+        issuer: _issuer,
+      );
+    }
   }
 
   static String? get _issuer => AuthenticationTokens.config.issuer;
