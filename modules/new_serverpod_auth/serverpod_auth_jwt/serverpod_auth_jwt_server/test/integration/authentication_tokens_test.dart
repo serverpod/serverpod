@@ -373,4 +373,61 @@ void main() {
       );
     });
   });
+
+  withServerpod('Given an initial `TokenPair` and its refreshed successor,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late TokenPair initialTokenPair;
+    late TokenPair refreshedTokenPair;
+
+    setUp(() async {
+      AuthenticationTokenSecrets.privateKeyTestOverride =
+          'test-private-key-for-HS512';
+
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+
+      initialTokenPair = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUser.id!,
+        scopes: {},
+      );
+
+      refreshedTokenPair = await AuthenticationTokens.rotateRefreshToken(
+        session,
+        refreshToken: initialTokenPair.refreshToken,
+      );
+    });
+
+    tearDown(() {
+      AuthenticationTokenSecrets.privateKeyTestOverride = null;
+      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride = null;
+    });
+
+    test(
+        'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
+        () async {
+      await expectLater(
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: initialTokenPair.refreshToken,
+        ),
+        throwsA(isA<RefreshTokenInvalidSecretException>()),
+      );
+
+      await expectLater(
+        () => AuthenticationTokens.rotateRefreshToken(
+          session,
+          refreshToken: refreshedTokenPair.refreshToken,
+        ),
+        throwsA(isA<RefreshTokenNotFoundException>()),
+      );
+    });
+  });
 }
