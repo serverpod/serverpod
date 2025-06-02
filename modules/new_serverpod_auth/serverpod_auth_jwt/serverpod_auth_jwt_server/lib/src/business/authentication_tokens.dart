@@ -71,7 +71,7 @@ abstract final class AuthenticationTokens {
     final Transaction? transaction,
   }) async {
     final secret = _generateRefreshTokenRotatingSecret();
-    final newHash = RefreshTokenSecretHash.createHash(secret: secret);
+    final newHash = await RefreshTokenSecretHash.createHash(secret: secret);
 
     final refreshToken = await RefreshToken.db.insertRow(
       session,
@@ -147,7 +147,7 @@ abstract final class AuthenticationTokens {
       throw RefreshTokenExpiredException();
     }
 
-    if (!RefreshTokenSecretHash.validateHash(
+    if (!await RefreshTokenSecretHash.validateHash(
       secret: refreshTokenData.rotatingSecret,
       hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
       salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
@@ -162,7 +162,7 @@ abstract final class AuthenticationTokens {
     }
 
     final newSecret = _generateRefreshTokenRotatingSecret();
-    final newHash = RefreshTokenSecretHash.createHash(secret: newSecret);
+    final newHash = await RefreshTokenSecretHash.createHash(secret: newSecret);
 
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
