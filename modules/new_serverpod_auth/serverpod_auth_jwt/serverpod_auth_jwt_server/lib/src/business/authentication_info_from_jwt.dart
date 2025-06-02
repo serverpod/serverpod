@@ -28,9 +28,9 @@ extension AuthenticationInfoFromJwt on AuthenticationInfo {
 extension AuthenticationInfoJwt on AuthenticationInfo {
   /// Get the extra claims associated with this authentication info.
   ///
-  /// Assumes that it was created by the `serverpod_auth_jwt` module,
-  /// else it'll throw because no extra claims exist.
-  Map<String, dynamic> get extraClaims {
-    return _extraClaims[this]!;
+  /// If the [AuthenticationInfo] was not created by the `serverpod_auth_jwt` module,
+  /// this returns null.
+  Map<String, dynamic>? get extraClaims {
+    return _extraClaims[this];
   }
 }
