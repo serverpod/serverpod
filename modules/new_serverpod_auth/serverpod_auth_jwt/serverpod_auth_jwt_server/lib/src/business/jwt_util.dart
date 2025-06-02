@@ -88,17 +88,43 @@ abstract class JwtUtil {
       );
     }
 
-    final refreshTokenId = UuidValue.fromString(jwt.jwtId!);
-    final authUserId = UuidValue.fromString(jwt.subject!);
+    final UuidValue refreshTokenId;
+    try {
+      refreshTokenId = UuidValue.fromString(jwt.jwtId!);
+    } catch (e) {
+      throw ArgumentError(
+        'The refresh token ID could not be read from the JWT\'s `id` claim: "${jwt.jwtId}"',
+        'accessToken',
+      );
+    }
 
-    final scopeNamesClaim = (jwt.payload as Map)[_serverpodScopeNamesClaimKey];
-    final scopeNames = scopeNamesClaim != null
-        ? (scopeNamesClaim as List).cast<String>()
-        : const <String>[];
+    final UuidValue authUserId;
+    try {
+      authUserId = UuidValue.fromString(jwt.subject!);
+    } catch (e) {
+      throw ArgumentError(
+        'The auth user ID could not be read from the JWT\'s `subject` claim: "${jwt.subject}"',
+        'accessToken',
+      );
+    }
 
-    final scopes = {
-      for (final scopeName in scopeNames) Scope(scopeName),
-    };
+    final Set<Scope> scopes;
+    try {
+      final scopeNamesClaim =
+          (jwt.payload as Map)[_serverpodScopeNamesClaimKey];
+      final scopeNames = scopeNamesClaim != null
+          ? (scopeNamesClaim as List).cast<String>()
+          : const <String>[];
+
+      scopes = {
+        for (final scopeName in scopeNames) Scope(scopeName),
+      };
+    } catch (e) {
+      throw ArgumentError(
+        'The scopes could not be read from the JWT\'s `$_serverpodScopeNamesClaimKey` claim.',
+        'accessToken',
+      );
+    }
 
     final allClaims = (jwt.payload as Map).cast<String, dynamic>();
     final extraClaims = Map.fromEntries(
