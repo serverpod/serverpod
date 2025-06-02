@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'email_account_password_reset_request.dart' as _i2;
 
 /// Database table for tracking password reset attempts.
-/// A new entry will be created whether the user tries to reset the password, but provides the wrong `verificationCode`.
+/// A new entry will be created whenever the user tries to complete the password reset.
 abstract class EmailAccountPasswordResetAttempt
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetAttempt._({

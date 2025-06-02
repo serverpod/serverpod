@@ -491,6 +491,96 @@
     {
       "type": "createTable",
       "createTable": {
+        "name": "serverpod_auth_email_account_request_completion_attempt",
+        "dartName": "EmailAccountRequestCompletionAttempt",
+        "module": "serverpod_auth_email_account",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "attemptedAt",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          },
+          {
+            "name": "ipAddress",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "emailAccountRequestId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "serverpod_auth_email_account_request_completion_attempt_fk_0",
+            "columns": [
+              "emailAccountRequestId"
+            ],
+            "referenceTable": "serverpod_auth_email_account_request",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_email_account_request_completion_attempt_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "serverpod_auth_email_account_request_completion_attempt_ip",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "ipAddress"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "serverpod_auth_email_account_request_completion_attempt_at",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "attemptedAt"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
         "name": "serverpod_cloud_storage",
         "dartName": "CloudStorageEntry",
         "module": "serverpod",
