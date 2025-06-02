@@ -53,7 +53,7 @@ abstract final class EmailAccounts {
           );
         }
 
-        if (!PasswordHash.validateHash(
+        if (!await PasswordHash.validateHash(
           password: password,
           hash: Uint8List.sublistView(account.passwordHash),
           salt: Uint8List.sublistView(account.passwordSalt),
@@ -142,7 +142,7 @@ abstract final class EmailAccounts {
           }
         }
 
-        final passwordHash = PasswordHash.createHash(password: password);
+        final passwordHash = await PasswordHash.createHash(password: password);
 
         final emailAccountRequest = await EmailAccountRequest.db.insertRow(
           session,
@@ -406,7 +406,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         ))!;
 
-        final newPasswordHash = PasswordHash.createHash(
+        final newPasswordHash = await PasswordHash.createHash(
           password: newPassword,
         );
 
@@ -479,7 +479,7 @@ abstract final class EmailAccounts {
       return null;
     }
 
-    final passwordHash = PasswordHash.createHash(
+    final passwordHash = await PasswordHash.createHash(
       password: password,
     );
 

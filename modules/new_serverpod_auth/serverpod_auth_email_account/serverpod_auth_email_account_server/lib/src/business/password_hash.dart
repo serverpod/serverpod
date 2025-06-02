@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -16,7 +17,7 @@ abstract final class PasswordHash {
   /// Create the password hash for the given [password] pair.
   ///
   /// Applies a random salt, which must be stored with the hash to validate it later.
-  static ({Uint8List hash, Uint8List salt}) createHash({
+  static Future<({Uint8List hash, Uint8List salt})> createHash({
     required final String password,
     @protected Uint8List? salt,
   }) {
@@ -24,29 +25,45 @@ abstract final class PasswordHash {
       EmailAccountConfig.current.passwordHashSaltLength,
     );
 
-    final parameters = Argon2Parameters(
-      Argon2Parameters.ARGON2_id,
-      salt,
-      desiredKeyLength: 256,
-      secret: utf8.encode(EmailAccountSecrets.passwordHashPepper),
+    final pepper = utf8.encode(EmailAccountSecrets.passwordHashPepper);
+
+    return _createHash(
+      password: password,
+      salt: salt,
+      pepper: pepper,
     );
+  }
 
-    final generator = Argon2BytesGenerator()..init(parameters);
+  static Future<({Uint8List hash, Uint8List salt})> _createHash({
+    required final String password,
+    required final Uint8List salt,
+    required final Uint8List pepper,
+  }) {
+    return Isolate.run(() {
+      final parameters = Argon2Parameters(
+        Argon2Parameters.ARGON2_id,
+        salt,
+        desiredKeyLength: 256,
+        secret: pepper,
+      );
 
-    final hashBytes = generator.process(utf8.encode(password));
+      final generator = Argon2BytesGenerator()..init(parameters);
 
-    return (hash: hashBytes, salt: salt);
+      final hashBytes = generator.process(utf8.encode(password));
+
+      return (hash: hashBytes, salt: salt);
+    });
   }
 
   /// Verify whether the [hash] / [salt] pair is valid for the given [password].
-  static bool validateHash({
+  static Future<bool> validateHash({
     required final String password,
     required final Uint8List hash,
     required final Uint8List salt,
-  }) {
+  }) async {
     return uint8ListAreEqual(
       hash,
-      createHash(password: password, salt: salt).hash,
+      (await createHash(password: password, salt: salt)).hash,
     );
   }
 }
@@ -55,7 +72,7 @@ abstract final class PasswordHash {
 
 final Random _random = Random.secure();
 
-/// Generates a secure random =bytes of the specified length.
+/// Generates a list of secure random bytes of the specified length.
 Uint8List generateRandomBytes(final int length) {
   return Uint8List.fromList(
     List<int>.generate(length, (final int i) => _random.nextInt(256)),
