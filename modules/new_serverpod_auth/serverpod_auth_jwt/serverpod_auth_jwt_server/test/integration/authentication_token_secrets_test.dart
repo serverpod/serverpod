@@ -30,8 +30,8 @@ void main() {
 
         expect(
           algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithm>()
-              .having((a) => a.key, 'key', 'secret-key-for-jwt'),
+          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>()
+              .having((final a) => a.key, 'key', 'secret-key-for-jwt'),
         );
       },
     );
@@ -69,8 +69,8 @@ void main() {
 
         expect(
           algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithm>()
-              .having((a) => a.key, 'key', 'secret-key-for-jwt'),
+          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>()
+              .having((final a) => a.key, 'key', 'secret-key-for-jwt'),
         );
       },
     );
@@ -80,8 +80,7 @@ void main() {
       (final sessionBuilder, final endpoints) {
     setUpAll(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'private key value';
-      AuthenticationTokenSecrets.algorithmTestOverride =
-          AuthenticationTokenSecrets.algorithmES512;
+      AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
     });
 
     test(
@@ -100,8 +99,7 @@ void main() {
     setUpAll(() {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'private key value';
       AuthenticationTokenSecrets.publicKeyTestOverride = 'public key value';
-      AuthenticationTokenSecrets.algorithmTestOverride =
-          AuthenticationTokenSecrets.algorithmES512;
+      AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
     });
 
     test(
@@ -111,7 +109,7 @@ void main() {
 
         expect(
           algorithm,
-          isA<EcdsaSha512AuthenticationTokenAlgorithm>()
+          isA<EcdsaSha512AuthenticationTokenAlgorithmConfiguration>()
               .having(
                 (final a) => a.privateKey,
                 'privateKey',

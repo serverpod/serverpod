@@ -33,14 +33,12 @@ abstract class JwtUtil {
 
     final (JWTKey key, JWTAlgorithm algorithm) =
         switch (AuthenticationTokenSecrets.algorithm) {
-      HmacSha512AuthenticationTokenAlgorithm(:final key) => (
+      HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
           SecretKey(key),
           JWTAlgorithm.HS512
         ),
-      EcdsaSha512AuthenticationTokenAlgorithm(:final privateKey) => (
-          ECPrivateKey(privateKey),
-          JWTAlgorithm.ES512
-        )
+      EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
+        (ECPrivateKey(privateKey), JWTAlgorithm.ES512)
     };
 
     return jwt.sign(
@@ -89,7 +87,7 @@ abstract class JwtUtil {
       };
     } catch (e) {
       throw ArgumentError(
-        'The scopes could not be read from the JWT\'s `$_serverpodScopeNamesClaimKey` claim.',
+        "The scopes could not be read from the JWT's `$_serverpodScopeNamesClaimKey` claim.",
         'accessToken',
       );
     }
@@ -116,8 +114,11 @@ abstract class JwtUtil {
   static JWT _verifyJwt(final String accessToken) {
     try {
       final key = switch (AuthenticationTokenSecrets.algorithm) {
-        HmacSha512AuthenticationTokenAlgorithm(:final key) => SecretKey(key),
-        EcdsaSha512AuthenticationTokenAlgorithm(:final publicKey) =>
+        HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) =>
+          SecretKey(key),
+        EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
+          :final publicKey
+        ) =>
           ECPublicKey(publicKey),
       };
 
@@ -134,9 +135,13 @@ abstract class JwtUtil {
       }
 
       final key = switch (fallbackAlgorithm) {
-        HmacSha512FallbackAuthenticationTokenAlgorithm(:final key) =>
+        HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+          :final key
+        ) =>
           SecretKey(key),
-        EcdsaSha512FallbackAuthenticationTokenAlgorithm(:final publicKey) =>
+        EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+          :final publicKey
+        ) =>
           ECPublicKey(publicKey),
       };
 

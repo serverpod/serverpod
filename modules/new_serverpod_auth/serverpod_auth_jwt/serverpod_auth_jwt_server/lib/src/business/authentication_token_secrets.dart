@@ -30,9 +30,12 @@ abstract class AuthenticationTokenSecrets {
   static const String refreshTokenHashPepperConfigurationKey =
       'serverpod_auth_jwt.refreshTokenHashPepper';
 
-  static AuthenticationTokenAlgorithm get algorithm {
-    final algorithm = algorithmTestOverride ??
+  static AuthenticationTokenAlgorithmConfiguration get algorithm {
+    final algorithmConfiguration = algorithmTestOverride ??
         Serverpod.instance.getPassword(algorithmConfigurationKey);
+    final algorithm = algorithmConfiguration == null
+        ? AuthenticationTokenAlgorithm.hmacSha512
+        : AuthenticationTokenAlgorithm.parseAlgorithm(algorithmConfiguration);
 
     final privateKey = privateKeyTestOverride ??
         Serverpod.instance.getPassword(privateKeyConfigurationKey);
@@ -48,10 +51,12 @@ abstract class AuthenticationTokenSecrets {
     }
 
     switch (algorithm) {
-      case null || algorithmHS512:
-        return HmacSha512AuthenticationTokenAlgorithm(key: privateKey);
+      case AuthenticationTokenAlgorithm.hmacSha512:
+        return HmacSha512AuthenticationTokenAlgorithmConfiguration(
+          key: privateKey,
+        );
 
-      case algorithmES512:
+      case AuthenticationTokenAlgorithm.ecdsaSha512:
         if (publicKey == null || publicKey.isEmpty) {
           throw ArgumentError(
             'No valid public key was set',
@@ -59,7 +64,7 @@ abstract class AuthenticationTokenSecrets {
           );
         }
 
-        return EcdsaSha512AuthenticationTokenAlgorithm(
+        return EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
           privateKey: privateKey,
           publicKey: publicKey,
         );
@@ -73,17 +78,21 @@ abstract class AuthenticationTokenSecrets {
   }
 
   /// The fallback algorithm to be used for verifications during key rotations.
-  static FallbackAuthenticationTokenAlgorithm?
+  static FallbackAuthenticationTokenAlgorithmConfiguration?
       get fallbackVerificationAlgorithm {
-    final algorithm = fallbackAlgorithmTestOverride ??
+    final algorithmConfiguration = fallbackAlgorithmTestOverride ??
         Serverpod.instance.getPassword(fallbackAlgorithmConfigurationKey);
 
     final key = fallbackKeyTestOverride ??
         Serverpod.instance.getPassword(fallbackKeyConfigurationKey);
 
-    if (algorithm == null && key == null) {
+    if (algorithmConfiguration == null && key == null) {
       return null;
     }
+
+    final algorithm = algorithmConfiguration == null
+        ? AuthenticationTokenAlgorithm.hmacSha512
+        : AuthenticationTokenAlgorithm.parseAlgorithm(algorithmConfiguration);
 
     if (key == null || key.isEmpty) {
       throw ArgumentError(
@@ -93,11 +102,12 @@ abstract class AuthenticationTokenSecrets {
     }
 
     switch (algorithm) {
-      case null || algorithmHS512:
-        return HmacSha512FallbackAuthenticationTokenAlgorithm(key: key);
+      case AuthenticationTokenAlgorithm.hmacSha512:
+        return HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+            key: key);
 
-      case algorithmES512:
-        return EcdsaSha512FallbackAuthenticationTokenAlgorithm(
+      case AuthenticationTokenAlgorithm.ecdsaSha512:
+        return EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
           publicKey: key,
         );
 
@@ -142,56 +152,78 @@ abstract class AuthenticationTokenSecrets {
 
   @visibleForTesting
   static String? fallbackKeyTestOverride;
+}
 
+/// The algorithm used to sign an verify the JWT tokens.
+@internal
+enum AuthenticationTokenAlgorithm {
   /// HMAC using SHA-512 hash algorithm
-  static const algorithmHS512 = 'HS512';
+  hmacSha512('HS512'),
 
   /// ECDSA using P-512 curve and SHA-512 hash algorithm
-  static const algorithmES512 = 'ES512';
+  ecdsaSha512('ES512');
+
+  const AuthenticationTokenAlgorithm(this.configurationKey);
+
+  final String configurationKey;
+
+  static AuthenticationTokenAlgorithm parseAlgorithm(final String key) {
+    return AuthenticationTokenAlgorithm.values.singleWhere(
+      (final a) => a.configurationKey == key,
+      orElse: () => throw ArgumentError.value(
+        key,
+        'key',
+        'No authentication algorithm found for the given configuration key',
+      ),
+    );
+  }
 }
 
 @internal
-sealed class AuthenticationTokenAlgorithm {}
+sealed class AuthenticationTokenAlgorithmConfiguration {}
 
 @internal
-class HmacSha512AuthenticationTokenAlgorithm
-    implements AuthenticationTokenAlgorithm {
+class HmacSha512AuthenticationTokenAlgorithmConfiguration
+    implements AuthenticationTokenAlgorithmConfiguration {
   final String key;
 
-  const HmacSha512AuthenticationTokenAlgorithm({required this.key});
+  const HmacSha512AuthenticationTokenAlgorithmConfiguration({
+    required this.key,
+  });
 }
 
 /// Elliptic Curve Digital Signature Algorithm
 @internal
-class EcdsaSha512AuthenticationTokenAlgorithm
-    implements AuthenticationTokenAlgorithm {
+class EcdsaSha512AuthenticationTokenAlgorithmConfiguration
+    implements AuthenticationTokenAlgorithmConfiguration {
   final String privateKey;
 
   final String publicKey;
 
-  EcdsaSha512AuthenticationTokenAlgorithm({
+  EcdsaSha512AuthenticationTokenAlgorithmConfiguration({
     required this.privateKey,
     required this.publicKey,
   });
 }
 
 @internal
-sealed class FallbackAuthenticationTokenAlgorithm {}
+sealed class FallbackAuthenticationTokenAlgorithmConfiguration {}
 
 @internal
-class HmacSha512FallbackAuthenticationTokenAlgorithm
-    implements FallbackAuthenticationTokenAlgorithm {
+class HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration
+    implements FallbackAuthenticationTokenAlgorithmConfiguration {
   final String key;
 
-  const HmacSha512FallbackAuthenticationTokenAlgorithm({required this.key});
+  const HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+      {required this.key});
 }
 
 @internal
-class EcdsaSha512FallbackAuthenticationTokenAlgorithm
-    implements FallbackAuthenticationTokenAlgorithm {
+class EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration
+    implements FallbackAuthenticationTokenAlgorithmConfiguration {
   final String publicKey;
 
-  EcdsaSha512FallbackAuthenticationTokenAlgorithm({
+  EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration({
     required this.publicKey,
   });
 }

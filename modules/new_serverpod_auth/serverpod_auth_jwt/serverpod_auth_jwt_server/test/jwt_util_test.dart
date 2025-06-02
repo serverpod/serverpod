@@ -121,8 +121,7 @@ void main() {
           AuthenticationTokenSecrets.privateKeyTestOverride = 'another key';
 
           // Only needed to not request the configuration from Serverpod, which does not work outside of `withServerpod` in tests
-          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride =
-              AuthenticationTokenSecrets.algorithmHS512;
+          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = 'HS512';
           AuthenticationTokenSecrets.fallbackKeyTestOverride =
               'no fallback either';
         });
@@ -146,8 +145,7 @@ void main() {
           );
 
           // Only needed to not request the configuration from Serverpod, which does not work outside of `withServerpod` in tests
-          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride =
-              AuthenticationTokenSecrets.algorithmHS512;
+          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = 'HS512';
           AuthenticationTokenSecrets.fallbackKeyTestOverride = 'test';
         });
 
@@ -300,8 +298,7 @@ void main() {
         () {
       AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
       AuthenticationTokenSecrets.publicKeyTestOverride = '';
-      AuthenticationTokenSecrets.algorithmTestOverride =
-          AuthenticationTokenSecrets.algorithmHS512;
+      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
 
       AuthenticationTokenSecrets.fallbackKeyTestOverride = '';
       AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = '';
@@ -322,8 +319,7 @@ void main() {
 
       AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
       AuthenticationTokenSecrets.publicKeyTestOverride = '';
-      AuthenticationTokenSecrets.algorithmTestOverride =
-          AuthenticationTokenSecrets.algorithmHS512;
+      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
 
       final result = JwtUtil.verifyJwt(jwt);
 
@@ -349,15 +345,13 @@ extension _AuthenticationTokenSecretsUtil on AuthenticationTokenSecrets {
     AuthenticationTokenSecrets.privateKeyTestOverride =
         'test-private-key-for-HS512';
     AuthenticationTokenSecrets.publicKeyTestOverride = '';
-    AuthenticationTokenSecrets.algorithmTestOverride =
-        AuthenticationTokenSecrets.algorithmHS512;
+    AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
   }
 
   static void configureEs512Signing() {
     AuthenticationTokenSecrets.privateKeyTestOverride = _testPrivateKey;
     AuthenticationTokenSecrets.publicKeyTestOverride = _testPublicKey;
-    AuthenticationTokenSecrets.algorithmTestOverride =
-        AuthenticationTokenSecrets.algorithmES512;
+    AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
   }
 
   static void clearSigning() {
