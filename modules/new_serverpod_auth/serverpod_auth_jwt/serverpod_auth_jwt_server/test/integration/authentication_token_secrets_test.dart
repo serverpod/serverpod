@@ -24,11 +24,15 @@ void main() {
     });
 
     test(
-      'when the current `algorithm` is read, then it uses HS512.',
+      'when the current `algorithm` is read, then it uses HS512 for the given key.',
       () {
         final algorithm = AuthenticationTokenSecrets.algorithm;
 
-        expect(algorithm, isA<HmacSha512AuthenticationTokenAlgorithm>());
+        expect(
+          algorithm,
+          isA<HmacSha512AuthenticationTokenAlgorithm>()
+              .having((a) => a.key, 'key', 'secret-key-for-jwt'),
+        );
       },
     );
   });
