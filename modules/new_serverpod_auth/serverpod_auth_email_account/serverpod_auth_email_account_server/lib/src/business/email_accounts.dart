@@ -7,6 +7,9 @@ import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart'
 
 /// Email account management functions.
 abstract final class EmailAccounts {
+  /// The currently active email accounts configuration.
+  static EmailAccountConfig config = EmailAccountConfig();
+
   /// Returns the [AuthUser]'s ID upon successful login.
   ///
   /// Throws [EmailAccountLoginException] for expected error cases.
@@ -95,7 +98,7 @@ abstract final class EmailAccounts {
     required final String password,
     final Transaction? transaction,
   }) async {
-    if (!EmailAccountConfig.current.passwordValidationFunction(password)) {
+    if (!EmailAccounts.config.passwordValidationFunction(password)) {
       throw EmailAccountPasswordPolicyViolationException();
     }
 
@@ -118,7 +121,7 @@ abstract final class EmailAccounts {
         }
 
         final verificationCode =
-            EmailAccountConfig.current.registrationVerificationCodeGenerator();
+            EmailAccounts.config.registrationVerificationCodeGenerator();
 
         final pendingAccountRequest = await EmailAccountRequest.db.findFirstRow(
           session,
@@ -127,7 +130,7 @@ abstract final class EmailAccounts {
         );
         if (pendingAccountRequest != null) {
           if (pendingAccountRequest.created.isBefore(DateTime.now().subtract(
-            EmailAccountConfig.current.registrationVerificationCodeLifetime,
+            EmailAccounts.config.registrationVerificationCodeLifetime,
           ))) {
             await EmailAccountRequest.db.deleteRow(
               session,
@@ -155,7 +158,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        EmailAccountConfig.current.sendRegistrationVerificationMail?.call(
+        EmailAccounts.config.sendRegistrationVerificationMail?.call(
           session,
           email: email,
           accountRequestId: emailAccountRequest.id!,
@@ -235,7 +238,7 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestExpiredException();
         }
 
-        if (await _hasTooManyEmailAccountCompletionAttempt(
+        if (await _hasTooManyEmailAccountCompletionAttempts(
           session,
           emailAccountRequestId: request.id!,
         )) {
@@ -302,7 +305,7 @@ abstract final class EmailAccounts {
         }
 
         final resetToken =
-            EmailAccountConfig.current.passwordResetVerificationCodeGenerator();
+            EmailAccounts.config.passwordResetVerificationCodeGenerator();
 
         final resetRequest =
             await EmailAccountPasswordResetRequest.db.insertRow(
@@ -314,7 +317,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        EmailAccountConfig.current.sendPasswordResetMail?.call(
+        EmailAccounts.config.sendPasswordResetMail?.call(
           session,
           email: email,
           passwordResetRequestId: resetRequest.id!,
@@ -385,8 +388,7 @@ abstract final class EmailAccounts {
           throw EmailAccountPasswordResetRequestExpiredException();
         }
 
-        if (!EmailAccountConfig.current
-            .passwordValidationFunction(newPassword)) {
+        if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
           throw EmailAccountPasswordPolicyViolationException();
         }
 
@@ -442,12 +444,12 @@ abstract final class EmailAccounts {
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
           (t.attemptedAt >
-              DateTime.now().subtract(
-                  EmailAccountConfig.current.emailSignInFailureResetTime)),
+              DateTime.now()
+                  .subtract(EmailAccounts.config.emailSignInFailureResetTime)),
     );
 
     return failedLoginAttemptCount >=
-        EmailAccountConfig.current.maxAllowedEmailSignInAttempts;
+        EmailAccounts.config.maxAllowedEmailSignInAttempts;
   }
 
   static Future<void> _logFailedSignIn(
@@ -473,7 +475,7 @@ abstract final class EmailAccounts {
     required final String password,
     required final Transaction transaction,
   }) async {
-    final importFunc = EmailAccountConfig.current.existingUserImportFunction;
+    final importFunc = EmailAccounts.config.existingUserImportFunction;
 
     if (importFunc == null) {
       return null;
@@ -514,7 +516,7 @@ abstract final class EmailAccounts {
     final Session session, {
     Duration? olderThan,
   }) async {
-    olderThan ??= EmailAccountConfig.current.emailSignInFailureResetTime;
+    olderThan ??= EmailAccounts.config.emailSignInFailureResetTime;
 
     final removeBefore = DateTime.now().subtract(olderThan);
 
@@ -532,7 +534,7 @@ abstract final class EmailAccounts {
     final Session session, {
     Duration? olderThan,
   }) async {
-    olderThan ??= EmailAccountConfig.current.maxPasswordResetAttempts.timeframe;
+    olderThan ??= EmailAccounts.config.maxPasswordResetAttempts.timeframe;
 
     final removeBefore = DateTime.now().subtract(olderThan);
 
@@ -547,7 +549,7 @@ abstract final class EmailAccounts {
     final Session session,
   ) async {
     final lastValidDateTime = DateTime.now().subtract(
-      EmailAccountConfig.current.passwordResetCodeLifetime,
+      EmailAccounts.config.passwordResetCodeLifetime,
     );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
@@ -561,7 +563,7 @@ abstract final class EmailAccounts {
     final Session session,
   ) async {
     final lastValidDateTime = DateTime.now().subtract(
-      EmailAccountConfig.current.registrationVerificationCodeLifetime,
+      EmailAccounts.config.registrationVerificationCodeLifetime,
     );
 
     await EmailAccountRequest.db.deleteWhere(
@@ -586,7 +588,7 @@ abstract final class EmailAccounts {
       );
 
       final oldestRelevantAttemptTimestamp = DateTime.now().subtract(
-        EmailAccountConfig.current.maxPasswordResetAttempts.timeframe,
+        EmailAccounts.config.maxPasswordResetAttempts.timeframe,
       );
 
       final recentRequests =
@@ -600,7 +602,7 @@ abstract final class EmailAccounts {
       );
 
       return recentRequests >
-          EmailAccountConfig.current.maxPasswordResetAttempts.maxAttempts;
+          EmailAccounts.config.maxPasswordResetAttempts.maxAttempts;
     });
   }
 
@@ -628,12 +630,12 @@ abstract final class EmailAccounts {
         );
 
         return recentAttempts >
-            EmailAccountConfig.current.passwordResetCodeAllowedAttempts;
+            EmailAccounts.config.passwordResetCodeAllowedAttempts;
       },
     );
   }
 
-  static Future<bool> _hasTooManyEmailAccountCompletionAttempt(
+  static Future<bool> _hasTooManyEmailAccountCompletionAttempts(
     final Session session, {
     required final UuidValue emailAccountRequestId,
   }) async {
@@ -657,7 +659,7 @@ abstract final class EmailAccounts {
       );
 
       return recentRequests >
-          EmailAccountConfig.current.registrationVerificationAllowedAttempts;
+          EmailAccounts.config.registrationVerificationAllowedAttempts;
     });
   }
 }
@@ -707,7 +709,7 @@ enum PasswordResetResult {
 extension on EmailAccountRequest {
   bool get isExpired {
     final oldestValidRegistrationTime = DateTime.now().subtract(
-      EmailAccountConfig.current.registrationVerificationCodeLifetime,
+      EmailAccounts.config.registrationVerificationCodeLifetime,
     );
 
     return created.isBefore(oldestValidRegistrationTime);
@@ -717,7 +719,7 @@ extension on EmailAccountRequest {
 extension on EmailAccountPasswordResetRequest {
   bool get isExpired {
     final oldestValidResetDate = DateTime.now().subtract(
-      EmailAccountConfig.current.passwordResetCodeLifetime,
+      EmailAccounts.config.passwordResetCodeLifetime,
     );
 
     return created.isBefore(oldestValidResetDate);

@@ -22,7 +22,7 @@ abstract final class PasswordHash {
     @protected Uint8List? salt,
   }) {
     salt ??= generateRandomBytes(
-      EmailAccountConfig.current.passwordHashSaltLength,
+      EmailAccounts.config.passwordHashSaltLength,
     );
 
     final pepper = utf8.encode(EmailAccountSecrets.passwordHashPepper);

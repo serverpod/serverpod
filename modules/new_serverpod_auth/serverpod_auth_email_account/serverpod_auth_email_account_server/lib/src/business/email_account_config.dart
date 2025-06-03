@@ -23,9 +23,6 @@ typedef PasswordValidationFunction = bool Function(
 
 /// Configuration options for the email account module.
 class EmailAccountConfig {
-  /// The currently active configuration.
-  static EmailAccountConfig current = EmailAccountConfig();
-
   /// The time for initial registration email verication link to be valid.
   ///
   ///  Default is 15 minutes.
