@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
+import 'package:serverpod_auth_email_account_server/src/business/email_accounts_admin.dart';
 import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 
@@ -9,6 +10,9 @@ import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart'
 abstract final class EmailAccounts {
   /// The currently active email accounts configuration.
   static EmailAccountConfig config = EmailAccountConfig();
+
+  /// Collection of admin-related functions.
+  static final admin = EmailAccountsAdmin();
 
   /// Returns the [AuthUser]'s ID upon successful login.
   ///
@@ -524,52 +528,6 @@ abstract final class EmailAccounts {
     await EmailAccountFailedLoginAttempt.db.deleteWhere(
       session,
       where: (final t) => t.attemptedAt < removeBefore,
-    );
-  }
-
-  /// Cleans up the log of failed password reset attempts older than [olderThan].
-  ///
-  /// If [olderThan] is `null`, this will remove all attempts outside the time window that
-  /// is checked upon password reset requets, as configured in [EmailAccountConfig.maxPasswordResetAttempts].
-  static Future<void> deletePasswordResetAttempts(
-    final Session session, {
-    Duration? olderThan,
-  }) async {
-    olderThan ??= EmailAccounts.config.maxPasswordResetAttempts.timeframe;
-
-    final removeBefore = DateTime.now().subtract(olderThan);
-
-    await EmailAccountPasswordResetAttempt.db.deleteWhere(
-      session,
-      where: (final t) => t.attemptedAt < removeBefore,
-    );
-  }
-
-  /// Cleans up expired password reset attempts.
-  static Future<void> deleteExpiredPasswordResetRequests(
-    final Session session,
-  ) async {
-    final lastValidDateTime = DateTime.now().subtract(
-      EmailAccounts.config.passwordResetVerificationCodeLifetime,
-    );
-
-    await EmailAccountPasswordResetRequest.db.deleteWhere(
-      session,
-      where: (final t) => t.created < lastValidDateTime,
-    );
-  }
-
-  /// Cleans up expired account creation requests.
-  static Future<void> deleteExpiredAccountCreations(
-    final Session session,
-  ) async {
-    final lastValidDateTime = DateTime.now().subtract(
-      EmailAccounts.config.registrationVerificationCodeLifetime,
-    );
-
-    await EmailAccountRequest.db.deleteWhere(
-      session,
-      where: (final t) => t.created < lastValidDateTime,
     );
   }
 
