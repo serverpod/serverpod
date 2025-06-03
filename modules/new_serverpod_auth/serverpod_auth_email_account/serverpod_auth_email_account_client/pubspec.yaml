@@ -2,7 +2,7 @@ name: serverpod_auth_email_account_client
 description: Serverpod email authentication core client module.
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
   serverpod_auth_user_client: 2.7.0
