@@ -14,4 +14,4 @@ echo ""
 echo "### Running e2e tests"
 cd tests/serverpod_test_server
 echo "dart test test_e2e --concurrency=1 -p $param"
-xvfb-run -a dart test test_e2e --concurrency=1 -p $param
+xvfb-run -a dart test test_e2e --concurrency=1 -p $param --reporter=failures-only
