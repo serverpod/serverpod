@@ -25,17 +25,17 @@ abstract final class EmailAccounts {
       (final transaction) async {
         email = email.trim().toLowerCase();
 
-        var account = await EmailAccount.db.findFirstRow(
-          session,
-          where: (final t) => t.email.equals(email),
-          transaction: transaction,
-        );
-
         if (await _hasTooManyFailedSignIns(session, email)) {
           throw EmailAccountLoginException(
             reason: EmailAccountLoginFailureReason.tooManyAttempts,
           );
         }
+
+        var account = await EmailAccount.db.findFirstRow(
+          session,
+          where: (final t) => t.email.equals(email),
+          transaction: transaction,
+        );
 
         try {
           account ??= await _importExistingUser(
@@ -158,7 +158,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        EmailAccounts.config.sendRegistrationVerificationMail?.call(
+        EmailAccounts.config.sendRegistrationVerificationCode?.call(
           session,
           email: email,
           accountRequestId: emailAccountRequest.id!,
@@ -317,7 +317,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        EmailAccounts.config.sendPasswordResetMail?.call(
+        EmailAccounts.config.sendPasswordResetVerificationCode?.call(
           session,
           email: email,
           passwordResetRequestId: resetRequest.id!,
@@ -437,19 +437,20 @@ abstract final class EmailAccounts {
     final Session session,
     final String email,
   ) async {
+    final oldestRelevantAttempt = DateTime.now()
+        .subtract(EmailAccounts.config.failedLoginRateLimit.timeframe);
+
     final failedLoginAttemptCount =
         await EmailAccountFailedLoginAttempt.db.count(
       session,
       where: (final t) =>
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
-          (t.attemptedAt >
-              DateTime.now()
-                  .subtract(EmailAccounts.config.emailSignInFailureResetTime)),
+          (t.attemptedAt > oldestRelevantAttempt),
     );
 
     return failedLoginAttemptCount >=
-        EmailAccounts.config.maxAllowedEmailSignInAttempts;
+        EmailAccounts.config.failedLoginRateLimit.maxAttempts;
   }
 
   static Future<void> _logFailedSignIn(
@@ -516,7 +517,7 @@ abstract final class EmailAccounts {
     final Session session, {
     Duration? olderThan,
   }) async {
-    olderThan ??= EmailAccounts.config.emailSignInFailureResetTime;
+    olderThan ??= EmailAccounts.config.failedLoginRateLimit.timeframe;
 
     final removeBefore = DateTime.now().subtract(olderThan);
 
@@ -549,7 +550,7 @@ abstract final class EmailAccounts {
     final Session session,
   ) async {
     final lastValidDateTime = DateTime.now().subtract(
-      EmailAccounts.config.passwordResetCodeLifetime,
+      EmailAccounts.config.passwordResetVerificationCodeLifetime,
     );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
@@ -630,7 +631,7 @@ abstract final class EmailAccounts {
         );
 
         return recentAttempts >
-            EmailAccounts.config.passwordResetCodeAllowedAttempts;
+            EmailAccounts.config.passwordResetVerificationCodeAllowedAttempts;
       },
     );
   }
@@ -659,7 +660,7 @@ abstract final class EmailAccounts {
       );
 
       return recentRequests >
-          EmailAccounts.config.registrationVerificationAllowedAttempts;
+          EmailAccounts.config.registrationVerificationCodeAllowedAttempts;
     });
   }
 }
@@ -719,7 +720,7 @@ extension on EmailAccountRequest {
 extension on EmailAccountPasswordResetRequest {
   bool get isExpired {
     final oldestValidResetDate = DateTime.now().subtract(
-      EmailAccounts.config.passwordResetCodeLifetime,
+      EmailAccounts.config.passwordResetVerificationCodeLifetime,
     );
 
     return created.isBefore(oldestValidResetDate);

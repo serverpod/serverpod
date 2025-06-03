@@ -42,7 +42,7 @@ void main() {
         UuidValue? receivedAccountRequestId;
         String? receivedVerificationCode;
         EmailAccounts.config = EmailAccountConfig(
-          sendRegistrationVerificationMail: (
+          sendRegistrationVerificationCode: (
             final session, {
             required final email,
             required final accountRequestId,
@@ -93,7 +93,7 @@ void main() {
         session = sessionBuilder.build();
 
         EmailAccounts.config = EmailAccountConfig(
-          sendRegistrationVerificationMail: (
+          sendRegistrationVerificationCode: (
             final session, {
             required final email,
             required final accountRequestId,
@@ -263,7 +263,10 @@ void main() {
           'when logging in with an invalid password, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
           () async {
         EmailAccounts.config = EmailAccountConfig(
-          maxAllowedEmailSignInAttempts: 1,
+          failedLoginRateLimit: (
+            maxAttempts: 1,
+            timeframe: const Duration(hours: 1),
+          ),
         );
 
         await expectLater(
@@ -325,7 +328,7 @@ void main() {
         UuidValue? receivedPasswordResetRequestId;
         String? receivedVerificationCode;
         EmailAccounts.config = EmailAccountConfig(
-          sendPasswordResetMail: (
+          sendPasswordResetVerificationCode: (
             final session, {
             required final email,
             required final passwordResetRequestId,
@@ -451,7 +454,7 @@ void main() {
           'when changing the password with an incorrect verification code, then it fails with different errors for "wrong code" and "allowed attempts exhausted".',
           () async {
         EmailAccounts.config = EmailAccountConfig(
-          passwordResetCodeAllowedAttempts: 1,
+          passwordResetVerificationCodeAllowedAttempts: 1,
         );
 
         await expectLater(
@@ -558,7 +561,7 @@ Future<
   late UuidValue pendingAccountRequestId;
   late String pendingAccountVerificationCode;
   EmailAccounts.config = EmailAccountConfig(
-    sendRegistrationVerificationMail: (
+    sendRegistrationVerificationCode: (
       final session, {
       required final email,
       required final accountRequestId,
@@ -600,7 +603,7 @@ Future<(UuidValue paswordResetRequestId, String verificationCode)>
   late UuidValue pendingPasswordResetRequestId;
   late String pendingPasswordResetVerificationCode;
   EmailAccounts.config = EmailAccountConfig(
-    sendPasswordResetMail: (
+    sendPasswordResetVerificationCode: (
       final session, {
       required final email,
       required final passwordResetRequestId,
@@ -630,7 +633,7 @@ Future<void> _resetPassword(
   late UuidValue pendingPasswordResetRequestId;
   late String pendingPasswordResetVerificationCode;
   EmailAccounts.config = EmailAccountConfig(
-    sendPasswordResetMail: (
+    sendPasswordResetVerificationCode: (
       final session, {
       required final email,
       required final passwordResetRequestId,
