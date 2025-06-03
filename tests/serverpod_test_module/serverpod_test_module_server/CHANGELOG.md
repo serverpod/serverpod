@@ -1,3 +1,10 @@
+## 2.8.0
+- feat: Adds `DatabaseUtils` with support for executing code blocks in transactions or savepoints.
+- feat: Adds support for `Vector` type, with database `HNSW` and `IVFFLAT` indexing, in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for SSL connections with Redis. ([@remonh87](https://github.com/remonh87))
+- fix: Fixes an issue where configured `user` would not be used when connecting to Redis. ([@remonh87](https://github.com/remonh87))
+- fix: Improves error message when failing to connect to database during startup.
+
 ## 2.7.0
 - feat: Adds support for storing `String`-representable user id in `AuthenticationInfo`.
 - feat: Adds support for `UUIDv7` as a default value in models.
