@@ -225,8 +225,6 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestNotFoundException();
         }
 
-        // TODO: check, like we do for password reset
-
         if (request.isExpired) {
           await EmailAccountRequest.db.deleteRow(
             session,
@@ -237,14 +235,10 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestExpiredException();
         }
 
-        await _logEmailAccountCompletionAttempt(
+        if (await _hasTooManyEmailAccountCompletionAttempt(
           session,
           emailAccountRequestId: request.id!,
-          transaction: transaction,
-        );
-
-        if (await _hasTooManyEmailAccountCompletionAttempt(session,
-            emailAccountRequestId: request.id!, transaction: transaction)) {
+        )) {
           throw EmailAccountRequestTooManyAttemptsException();
         }
 
@@ -290,16 +284,9 @@ abstract final class EmailAccounts {
       (final transaction) async {
         email = email.trim().toLowerCase();
 
-        await _logPasswordResetRequestAttempt(
-          session,
-          email,
-          transaction: transaction,
-        );
-
         if (await _hasTooManyPasswordResetRequestAttempts(
           session,
-          email,
-          transaction: transaction,
+          email: email,
         )) {
           throw EmailAccountPasswordResetRequestTooManyAttemptsException();
         }
@@ -403,15 +390,10 @@ abstract final class EmailAccounts {
           throw EmailAccountPasswordPolicyViolationException();
         }
 
-        await _logPasswordResetAttempt(
+        if (await _hasTooManyPasswordResetAttempts(
           session,
           passwordResetRequestId: resetRequest.id!,
-          transaction: transaction,
-        );
-
-        if (await _hasTooManyPasswordResetAttempts(session,
-            passwordResetRequestId: resetRequest.id!,
-            transaction: transaction)) {
+        )) {
           throw EmailAccountPasswordResetTooManyAttemptsException();
         }
 
@@ -472,13 +454,17 @@ abstract final class EmailAccounts {
     final Session session,
     final String email,
   ) async {
-    await EmailAccountFailedLoginAttempt.db.insertRow(
-      session,
-      EmailAccountFailedLoginAttempt(
-        email: email,
-        ipAddress: session.remoteIpAddress,
-      ),
-    );
+    // NOTE: The failed attempt logging runs in a separate transaction, so that it is never rolled back with the parent transaction.
+    await session.db.transaction((final transaction) async {
+      await EmailAccountFailedLoginAttempt.db.insertRow(
+        session,
+        EmailAccountFailedLoginAttempt(
+          email: email,
+          ipAddress: session.remoteIpAddress,
+        ),
+        transaction: transaction,
+      );
+    });
   }
 
   static Future<EmailAccount?> _importExistingUser(
@@ -584,103 +570,95 @@ abstract final class EmailAccounts {
     );
   }
 
-  static Future<void> _logPasswordResetRequestAttempt(
-    final Session session,
-    final String email, {
-    required final Transaction transaction,
-  }) async {
-    await EmailAccountPasswordResetRequestAttempt.db.insertRow(
-      session,
-      EmailAccountPasswordResetRequestAttempt(
-        email: email,
-        ipAddress: session.remoteIpAddress,
-      ),
-      transaction: transaction,
-    );
-  }
-
   static Future<bool> _hasTooManyPasswordResetRequestAttempts(
-    final Session session,
-    final String email, {
-    required final Transaction transaction,
-  }) async {
-    final oldestRelevantAttemptTimestamp = DateTime.now().subtract(
-      EmailAccountConfig.current.maxPasswordResetAttempts.timeframe,
-    );
-
-    final recentRequests =
-        await EmailAccountPasswordResetRequestAttempt.db.count(
-      session,
-      where: (final t) =>
-          (t.email.equals(email) |
-              t.ipAddress.equals(session.remoteIpAddress)) &
-          (t.attemptedAt > oldestRelevantAttemptTimestamp),
-      transaction: transaction,
-    );
-
-    return recentRequests >
-        EmailAccountConfig.current.maxPasswordResetAttempts.maxAttempts;
-  }
-
-  static Future<void> _logPasswordResetAttempt(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final Transaction transaction,
+    required final String email,
   }) async {
-    await EmailAccountPasswordResetAttempt.db.insertRow(
-      session,
-      EmailAccountPasswordResetAttempt(
-        ipAddress: session.remoteIpAddress,
-        passwordResetRequestId: passwordResetRequestId,
-      ),
-      transaction: transaction,
-    );
+    // NOTE: The attempt counting runs in a separate transaction, so that it is never rolled back with the parent transaction.
+    return session.db.transaction((final transaction) async {
+      await EmailAccountPasswordResetRequestAttempt.db.insertRow(
+        session,
+        EmailAccountPasswordResetRequestAttempt(
+          email: email,
+          ipAddress: session.remoteIpAddress,
+        ),
+        transaction: transaction,
+      );
+
+      final oldestRelevantAttemptTimestamp = DateTime.now().subtract(
+        EmailAccountConfig.current.maxPasswordResetAttempts.timeframe,
+      );
+
+      final recentRequests =
+          await EmailAccountPasswordResetRequestAttempt.db.count(
+        session,
+        where: (final t) =>
+            (t.email.equals(email) |
+                t.ipAddress.equals(session.remoteIpAddress)) &
+            (t.attemptedAt > oldestRelevantAttemptTimestamp),
+        transaction: transaction,
+      );
+
+      return recentRequests >
+          EmailAccountConfig.current.maxPasswordResetAttempts.maxAttempts;
+    });
   }
 
   static Future<bool> _hasTooManyPasswordResetAttempts(
     final Session session, {
     required final UuidValue passwordResetRequestId,
-    required final Transaction transaction,
   }) async {
-    final recentRequests = await EmailAccountPasswordResetAttempt.db.count(
-      session,
-      where: (final t) =>
-          t.passwordResetRequestId.equals(passwordResetRequestId),
-      transaction: transaction,
-    );
+    // NOTE: The attempt counting runs in a separate transaction, so that it is never rolled back with the parent transaction.
+    return session.db.transaction(
+      (final transaction) async {
+        await EmailAccountPasswordResetAttempt.db.insertRow(
+          session,
+          EmailAccountPasswordResetAttempt(
+            ipAddress: session.remoteIpAddress,
+            passwordResetRequestId: passwordResetRequestId,
+          ),
+          transaction: transaction,
+        );
 
-    return recentRequests >
-        EmailAccountConfig.current.passwordResetCodeAllowedAttempts;
-  }
+        final recentAttempts = await EmailAccountPasswordResetAttempt.db.count(
+          session,
+          where: (final t) =>
+              t.passwordResetRequestId.equals(passwordResetRequestId),
+          transaction: transaction,
+        );
 
-  static Future<void> _logEmailAccountCompletionAttempt(
-    final Session session, {
-    required final UuidValue emailAccountRequestId,
-    required final Transaction transaction,
-  }) async {
-    await EmailAccountRequestCompletionAttempt.db.insertRow(
-      session,
-      EmailAccountRequestCompletionAttempt(
-        ipAddress: session.remoteIpAddress,
-        emailAccountRequestId: emailAccountRequestId,
-      ),
-      transaction: transaction,
+        return recentAttempts >
+            EmailAccountConfig.current.passwordResetCodeAllowedAttempts;
+      },
     );
   }
 
   static Future<bool> _hasTooManyEmailAccountCompletionAttempt(
     final Session session, {
     required final UuidValue emailAccountRequestId,
-    required final Transaction transaction,
   }) async {
-    final recentRequests = await EmailAccountRequestCompletionAttempt.db.count(
-      session,
-      where: (final t) => t.emailAccountRequestId.equals(emailAccountRequestId),
-      transaction: transaction,
-    );
+    // NOTE: The attempt counting runs in a separate transaction, so that it is never rolled back with the parent transaction.
+    return session.db.transaction((final transaction) async {
+      await EmailAccountRequestCompletionAttempt.db.insertRow(
+        session,
+        EmailAccountRequestCompletionAttempt(
+          ipAddress: session.remoteIpAddress,
+          emailAccountRequestId: emailAccountRequestId,
+        ),
+        transaction: transaction,
+      );
 
-    return recentRequests >
-        EmailAccountConfig.current.registrationVerificationAllowedAttempts;
+      final recentRequests =
+          await EmailAccountRequestCompletionAttempt.db.count(
+        session,
+        where: (final t) =>
+            t.emailAccountRequestId.equals(emailAccountRequestId),
+        transaction: transaction,
+      );
+
+      return recentRequests >
+          EmailAccountConfig.current.registrationVerificationAllowedAttempts;
+    });
   }
 }
 
