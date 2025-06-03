@@ -31,7 +31,7 @@ void main() {
         expect(
           algorithm,
           isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>()
-              .having((final a) => a.key, 'key', 'secret-key-for-jwt'),
+              .having((final a) => a.key.key, 'key', 'secret-key-for-jwt'),
         );
       },
     );
@@ -69,8 +69,11 @@ void main() {
 
         expect(
           algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>()
-              .having((final a) => a.key, 'key', 'secret-key-for-jwt'),
+          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>().having(
+            (final a) => a.key.key,
+            'key',
+            'secret-key-for-jwt',
+          ),
         );
       },
     );
@@ -97,8 +100,8 @@ void main() {
   withServerpod('Given both a private and public key for ES512,',
       (final sessionBuilder, final endpoints) {
     setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'private key value';
-      AuthenticationTokenSecrets.publicKeyTestOverride = 'public key value';
+      AuthenticationTokenSecrets.privateKeyTestOverride = _testPrivateKey;
+      AuthenticationTokenSecrets.publicKeyTestOverride = _testPublicKey;
       AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
     });
 
@@ -109,19 +112,20 @@ void main() {
 
         expect(
           algorithm,
-          isA<EcdsaSha512AuthenticationTokenAlgorithmConfiguration>()
-              .having(
-                (final a) => a.privateKey,
-                'privateKey',
-                'private key value',
-              )
-              .having(
-                (final a) => a.publicKey,
-                'publicKey',
-                'public key value',
-              ),
+          isA<EcdsaSha512AuthenticationTokenAlgorithmConfiguration>(),
         );
       },
     );
   });
 }
+
+const _testPrivateKey = '''-----BEGIN EC PRIVATE KEY-----
+MHQCAQEEINCRiJnNDnzfo2So2tWY4AIuzeC2ZBp/hmMDcZz3Fh45oAcGBSuBBAAK
+oUQDQgAE0aELkvG/Xeo5y6o0WXRAjlediLptGz7Q8zjDmpGFXkKBYZ6IiL7JJ2Tk
+cHzd83bmeUeGX33RGTYFPXs5t/VBnw==
+-----END EC PRIVATE KEY-----''';
+
+const _testPublicKey = '''-----BEGIN PUBLIC KEY-----
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE0aELkvG/Xeo5y6o0WXRAjlediLptGz7Q
+8zjDmpGFXkKBYZ6IiL7JJ2TkcHzd83bmeUeGX33RGTYFPXs5t/VBnw==
+-----END PUBLIC KEY-----''';

@@ -34,11 +34,11 @@ abstract class JwtUtil {
     final (JWTKey key, JWTAlgorithm algorithm) =
         switch (AuthenticationTokenSecrets.algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
-          SecretKey(key),
+          key,
           JWTAlgorithm.HS512
         ),
       EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
-        (ECPrivateKey(privateKey), JWTAlgorithm.ES512)
+        (privateKey, JWTAlgorithm.ES512)
     };
 
     return jwt.sign(
@@ -114,12 +114,11 @@ abstract class JwtUtil {
   static JWT _verifyJwt(final String accessToken) {
     try {
       final key = switch (AuthenticationTokenSecrets.algorithm) {
-        HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) =>
-          SecretKey(key),
+        HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => key,
         EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
           :final publicKey
         ) =>
-          ECPublicKey(publicKey),
+          publicKey,
       };
 
       return JWT.verify(
@@ -138,11 +137,11 @@ abstract class JwtUtil {
         HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
           :final key
         ) =>
-          SecretKey(key),
+          key,
         EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
           :final publicKey
         ) =>
-          ECPublicKey(publicKey),
+          publicKey,
       };
 
       return JWT.verify(

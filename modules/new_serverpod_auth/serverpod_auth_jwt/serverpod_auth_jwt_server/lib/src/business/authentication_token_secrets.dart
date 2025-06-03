@@ -1,3 +1,4 @@
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -53,7 +54,7 @@ abstract class AuthenticationTokenSecrets {
     switch (algorithm) {
       case AuthenticationTokenAlgorithm.hmacSha512:
         return HmacSha512AuthenticationTokenAlgorithmConfiguration(
-          key: privateKey,
+          key: SecretKey(privateKey),
         );
 
       case AuthenticationTokenAlgorithm.ecdsaSha512:
@@ -65,8 +66,8 @@ abstract class AuthenticationTokenSecrets {
         }
 
         return EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
-          privateKey: privateKey,
-          publicKey: publicKey,
+          privateKey: ECPrivateKey(privateKey),
+          publicKey: ECPublicKey(publicKey),
         );
 
       default:
@@ -104,11 +105,12 @@ abstract class AuthenticationTokenSecrets {
     switch (algorithm) {
       case AuthenticationTokenAlgorithm.hmacSha512:
         return HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-            key: key);
+          key: SecretKey(key),
+        );
 
       case AuthenticationTokenAlgorithm.ecdsaSha512:
         return EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-          publicKey: key,
+          publicKey: ECPublicKey(key),
         );
 
       default:
@@ -185,7 +187,7 @@ sealed class AuthenticationTokenAlgorithmConfiguration {}
 @internal
 class HmacSha512AuthenticationTokenAlgorithmConfiguration
     implements AuthenticationTokenAlgorithmConfiguration {
-  final String key;
+  final SecretKey key;
 
   const HmacSha512AuthenticationTokenAlgorithmConfiguration({
     required this.key,
@@ -196,9 +198,9 @@ class HmacSha512AuthenticationTokenAlgorithmConfiguration
 @internal
 class EcdsaSha512AuthenticationTokenAlgorithmConfiguration
     implements AuthenticationTokenAlgorithmConfiguration {
-  final String privateKey;
+  final ECPrivateKey privateKey;
 
-  final String publicKey;
+  final ECPublicKey publicKey;
 
   EcdsaSha512AuthenticationTokenAlgorithmConfiguration({
     required this.privateKey,
@@ -212,16 +214,17 @@ sealed class FallbackAuthenticationTokenAlgorithmConfiguration {}
 @internal
 class HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration
     implements FallbackAuthenticationTokenAlgorithmConfiguration {
-  final String key;
+  final SecretKey key;
 
-  const HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-      {required this.key});
+  const HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration({
+    required this.key,
+  });
 }
 
 @internal
 class EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration
     implements FallbackAuthenticationTokenAlgorithmConfiguration {
-  final String publicKey;
+  final ECPublicKey publicKey;
 
   EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration({
     required this.publicKey,
