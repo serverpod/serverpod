@@ -190,7 +190,7 @@ class Users {
     );
   }
 
-  /// Unblocks a user so that they can log in again, and invalidates the cache 
+  /// Unblocks a user so that they can log in again, and invalidates the cache
   /// for the user so that they can be blocked again
   static Future<void> unblockUser(
     Session session,
