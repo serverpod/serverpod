@@ -259,8 +259,8 @@ class TextStdOutLogWriter extends LogWriter {
     }
     if (formatted.contains('.')) {
       formatted = formatted
-          .replaceFirst(RegExp(r'0+\$'), '')
-          .replaceFirst(RegExp(r'\.\$'), '');
+          .replaceFirst(RegExp(r'0+$'), '')
+          .replaceFirst(RegExp(r'\.$'), '');
     }
     return '$formatted$suffix';
   }
