@@ -73,6 +73,7 @@ class JwtUtil {
   /// Verifies and decodes the JWT access token.
   ///
   /// Throws in case of any validation failures (e.g. invalid signature or changed issuer, etc.) and in any case when parsing the expected contained data fails.
+  /// In practice, when this is used via [AuthenticationTokens.authenticationHandler], these errors will all be caught and a `null` `AuthenticationInfo?` will be returned instead.
   VerifiedJwtData verifyJwt(final String accessToken) {
     final jwt = _verifyJwt(accessToken);
 
