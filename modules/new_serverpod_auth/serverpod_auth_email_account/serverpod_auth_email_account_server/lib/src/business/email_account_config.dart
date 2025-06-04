@@ -2,20 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/src/util/registration_password_policy.dart';
 import 'package:serverpod_auth_email_account_server/src/util/verification_code_generator.dart';
 
-/// Import function to use an older email based authentication system.
-///
-/// Returns an [AuthUser] id in case the email/password combination was valid in the old system.
-/// Returns `null` if the email is not used in the old system.
-/// Throws in case the email/password combination is not valid or the user is blocked.
-///
-/// Assumes that the email has been validated in the old system.
-typedef ExistingEmailUserImportFunction = Future<UuidValue?> Function(
-  Session session, {
-  required String email,
-  required String password,
-  required Transaction transaction,
-});
-
 /// Function to be called to check whether a password matches the requirements during registration.
 typedef PasswordValidationFunction = bool Function(
   String password,
@@ -91,12 +77,6 @@ class EmailAccountConfig {
   final SendPasswordResetVerificationCodeFunction?
       sendPasswordResetVerificationCode;
 
-  /// Existing email account import function.
-  ///
-  /// If a username / password can be not found in the current system,
-  /// an import using this function is attempted.
-  final ExistingEmailUserImportFunction? existingUserImportFunction;
-
   /// Function to check passwords against a policy during registration and password change.
   ///
   /// If the rules are changed after a password has been set, subsequent logins with
@@ -129,7 +109,6 @@ class EmailAccountConfig {
         defaultVerificationCodeGenerator,
     this.sendRegistrationVerificationCode,
     this.sendPasswordResetVerificationCode,
-    this.existingUserImportFunction,
     this.failedLoginRateLimit = (
       maxAttempts: 5,
       timeframe: const Duration(minutes: 5),

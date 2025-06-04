@@ -35,24 +35,11 @@ abstract final class EmailAccounts {
           );
         }
 
-        var account = await EmailAccount.db.findFirstRow(
+        final account = await EmailAccount.db.findFirstRow(
           session,
           where: (final t) => t.email.equals(email),
           transaction: transaction,
         );
-
-        try {
-          account ??= await _importExistingUser(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          );
-        } catch (_) {
-          await _logFailedSignIn(session, email);
-
-          rethrow;
-        }
 
         if (account == null) {
           throw EmailAccountLoginException(
@@ -472,45 +459,6 @@ abstract final class EmailAccounts {
         transaction: transaction,
       );
     });
-  }
-
-  static Future<EmailAccount?> _importExistingUser(
-    final Session session, {
-    required final String email,
-    required final String password,
-    required final Transaction transaction,
-  }) async {
-    final importFunc = EmailAccounts.config.existingUserImportFunction;
-
-    if (importFunc == null) {
-      return null;
-    }
-
-    final userId = await importFunc(
-      session,
-      email: email,
-      password: password,
-      transaction: transaction,
-    );
-
-    if (userId == null) {
-      return null;
-    }
-
-    final passwordHash = await PasswordHash.createHash(
-      password: password,
-    );
-
-    return await EmailAccount.db.insertRow(
-      session,
-      EmailAccount(
-        authUserId: userId,
-        email: email,
-        passwordHash: ByteData.sublistView(passwordHash.hash),
-        passwordSalt: ByteData.sublistView(passwordHash.salt),
-      ),
-      transaction: transaction,
-    );
   }
 
   /// Cleans up the log of failed login attempts older than [olderThan].
