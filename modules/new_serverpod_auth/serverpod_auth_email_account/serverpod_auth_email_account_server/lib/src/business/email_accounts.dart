@@ -223,7 +223,7 @@ abstract final class EmailAccounts {
           await EmailAccountRequest.db.deleteRow(
             session,
             request,
-            transaction: transaction,
+            // passing no transaction, so this will not be rolled back
           );
 
           throw EmailAccountRequestExpiredException();
@@ -233,6 +233,12 @@ abstract final class EmailAccounts {
           session,
           emailAccountRequestId: request.id!,
         )) {
+          await EmailAccountRequest.db.deleteRow(
+            session,
+            request,
+            // passing no transaction, so this will not be rolled back
+          );
+
           throw EmailAccountRequestTooManyAttemptsException();
         }
 
@@ -373,7 +379,7 @@ abstract final class EmailAccounts {
           await EmailAccountPasswordResetRequest.db.deleteRow(
             session,
             resetRequest,
-            transaction: transaction,
+            // passing no transaction, so this will not be rolled back
           );
 
           throw EmailAccountPasswordResetRequestExpiredException();
@@ -387,6 +393,12 @@ abstract final class EmailAccounts {
           session,
           passwordResetRequestId: resetRequest.id!,
         )) {
+          await EmailAccountPasswordResetRequest.db.deleteRow(
+            session,
+            resetRequest,
+            // passing no transaction, so this will not be rolled back
+          );
+
           throw EmailAccountPasswordResetTooManyAttemptsException();
         }
 
