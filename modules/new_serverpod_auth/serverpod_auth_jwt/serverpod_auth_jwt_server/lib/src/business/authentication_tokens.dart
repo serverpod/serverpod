@@ -8,7 +8,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_info_from_jwt.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
-import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens_admin.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_string.dart';
@@ -201,7 +200,6 @@ abstract final class AuthenticationTokens {
 
     if (auths.isEmpty) return;
 
-    // Notify clients about the revoked authentication for the user
     await session.messages.authenticationRevoked(
       authUserId,
       RevokedAuthenticationUser(),
