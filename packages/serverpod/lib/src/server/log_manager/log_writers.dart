@@ -235,6 +235,9 @@ class TextStdOutLogWriter extends LogWriter {
     if (milliseconds == null) return 'n/a';
     var micros = (milliseconds * Duration.microsecondsPerMillisecond).round();
     if (micros < 1000) {
+      // Ignore required because dart does not understand that "µ" is a valid
+      // character in a string.
+      // ignore: unnecessary_brace_in_string_interps
       return '${micros}µs';
     }
     if (micros < Duration.microsecondsPerSecond) {
