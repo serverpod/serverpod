@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:test/test.dart';
-import '../../test/integration/test_tools/serverpod_test_tools.dart';
+import 'integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
   var userId = 1;
