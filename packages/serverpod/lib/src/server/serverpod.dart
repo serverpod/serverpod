@@ -16,6 +16,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/task.dart';
 import 'package:serverpod/src/server/task_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -156,14 +157,15 @@ class Serverpod {
 
   /// Provides access to the task manager.
   ///
-  /// The task manager is responsible for executing tasks in a specific order.
+  /// The task manager is responsible for executing tasks concurrently.
   /// In this case, it's used to manage server shutdown tasks, ensuring that all
-  /// resources are properly released and services are stopped in the correct order.
-  /// You can use this to add custom tasks using [TaskManager.addTask],
-  /// [TaskManager.addTaskBefore], or [TaskManager.addTaskAfter].
-  TaskManager get shutdownTaskManager => _shutdownTaskManager;
+  /// resources are properly released and services are stopped.
+  /// You can use this to add custom tasks using [TaskManager.addTask].
+  TaskManager get shutdownTaskManager => _externalShutdownTaskManager;
 
-  late TaskManager _shutdownTaskManager;
+  final TaskManager _externalShutdownTaskManager = TaskManager();
+
+  late TaskManager _internalShutdownTaskManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -216,49 +218,65 @@ class Serverpod {
   /// This method is called during server startup and sets up the task manager
   /// with all the necessary tasks to properly shut down the server.
   /// It registers tasks for closing sessions, stopping services, and releasing
-  /// resources in the appropriate order. The tasks are executed when [shutdown]
+  /// resources. The tasks are executed concurrently when [shutdown]
   /// is called.
   void _initializeShutdownTaskManager() {
-    _shutdownTaskManager = TaskManager(_reportException);
+    _internalShutdownTaskManager = TaskManager();
 
-    _shutdownTaskManager.addTask(
-      'Test Auditor',
-      _shutdownTestAuditor,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Test Auditor',
+        _shutdownTestAuditor,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Internal Session',
-      _internalSession.close,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Internal Session',
+        _internalSession.close,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Redis Controller',
-      redisController?.stop,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Redis Controller',
+        redisController?.stop,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Server',
-      server.shutdown,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Server',
+        server.shutdown,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Web Server',
-      _webServer?.stop,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Web Server',
+        _webServer?.stop,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Service Server',
-      _serviceServer?.shutdown,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Service Server',
+        _serviceServer?.shutdown,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Future Call Manager',
-      _futureCallManager?.stop,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Future Call Manager',
+        _futureCallManager?.stop,
+      ),
     );
 
-    _shutdownTaskManager.addTask(
-      'Health Check Manager',
-      _healthCheckManager?.stop,
+    _internalShutdownTaskManager.addTask(
+      Task(
+        'Health Check Manager',
+        _healthCheckManager?.stop,
+      ),
     );
   }
 
@@ -952,7 +970,21 @@ class Serverpod {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
-    Object? shutdownError = await _shutdownTaskManager.handleTasks();
+    Object? shutdownError;
+
+    await _externalShutdownTaskManager.handleTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(error, stack, message: 'Error in internal task "$id"');
+      },
+    );
+
+    await _internalShutdownTaskManager.handleTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(error, stack, message: 'Error in internal task "$id"');
+      },
+    );
 
     // This needs to be closed last as it is used by the other services.
     try {
@@ -975,7 +1007,7 @@ class Serverpod {
     }
 
     if (shutdownError != null) {
-      throw shutdownError;
+      throw shutdownError!;
     }
   }
 

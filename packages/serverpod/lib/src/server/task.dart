@@ -8,10 +8,7 @@ class Task<T> {
   ///
   /// The [id] is used for identification and logging purposes.
   /// The [callback] is the function that will be executed when the task is run.
-  Task({
-    required this.id,
-    required this.callback,
-  });
+  Task(this.id, this.callback);
 
   /// The identifier for this task.
   ///
