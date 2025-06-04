@@ -1,7 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
-import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -14,7 +13,7 @@ void main() {
     late Session session;
 
     setUpAll(() {
-      AuthenticationTokensTestHelper.secretsTestOverride =
+      AuthenticationTokens.secretsTestOverride =
           AuthenticationTokenSecretsMock()..setHs512Algorithm();
     });
 
@@ -23,7 +22,7 @@ void main() {
     });
 
     tearDownAll(() {
-      AuthenticationTokensTestHelper.secretsTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -65,7 +64,7 @@ void main() {
       secrets = AuthenticationTokenSecretsMock()
         ..setHs512Algorithm()
         ..refreshTokenHashPepper = 'some pepper 123';
-      AuthenticationTokensTestHelper.secretsTestOverride = secrets;
+      AuthenticationTokens.secretsTestOverride = secrets;
 
       session = sessionBuilder.build();
 
@@ -85,7 +84,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokensTestHelper.secretsTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -152,7 +151,7 @@ void main() {
     late TokenPair tokenPair;
 
     setUp(() async {
-      AuthenticationTokensTestHelper.secretsTestOverride =
+      AuthenticationTokens.secretsTestOverride =
           AuthenticationTokenSecretsMock()
             ..setHs512Algorithm()
             ..refreshTokenHashPepper = 'some pepper 123';
@@ -175,7 +174,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokensTestHelper.secretsTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(

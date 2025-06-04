@@ -252,9 +252,10 @@ abstract final class AuthenticationTokens {
   static final __secrets = AuthenticationTokenSecrets();
 
   /// Secrets to the used for testing. Also affects the internally used [JwtUtil] and [RefreshTokenSecretHash]
-  static AuthenticationTokenSecrets? _secretsTestOverride;
+  @visibleForTesting
+  static AuthenticationTokenSecrets? secretsTestOverride;
   static AuthenticationTokenSecrets get _secrets =>
-      _secretsTestOverride ?? __secrets;
+      secretsTestOverride ?? __secrets;
 
   static JwtUtil get _jwtUtil => JwtUtil(secrets: _secrets);
 
@@ -275,14 +276,5 @@ extension on RefreshToken {
         .subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
-  }
-}
-
-@internal
-@visibleForTesting
-extension AuthenticationTokensTestHelper on AuthenticationTokens {
-  /// Secrets to the used for testing. Also affects the internally used [JwtUtil] and [RefreshTokenSecretHash]
-  static set secretsTestOverride(final AuthenticationTokenSecrets? secrets) {
-    AuthenticationTokens._secretsTestOverride = secrets;
   }
 }
