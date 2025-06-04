@@ -115,6 +115,8 @@ void main() {
       });
 
       tearDown(() async {
+        EmailAccounts.config = EmailAccountConfig();
+
         await _cleanUpdatabaseEntities(session);
       });
 
@@ -191,6 +193,49 @@ void main() {
         );
 
         expect(result.email, email.toLowerCase());
+      });
+
+      test(
+          'when trying to create an account from the request with an invalid verification code, then fails with the correct error for each try.',
+          () async {
+        EmailAccounts.config = EmailAccountConfig(
+          registrationVerificationCodeAllowedAttempts: 1,
+        );
+
+        final authUser = await AuthUser.db.insertRow(
+          session,
+          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+        );
+
+        await expectLater(
+          () => EmailAccounts.completeAccountCreation(
+            session,
+            authUserId: authUser.id!,
+            accountRequestId: pendingAccountRequestId,
+            verificationCode: 'wrong code',
+          ),
+          throwsA(isA<EmailAccountRequestUnauthorizedException>()),
+        );
+
+        await expectLater(
+          () => EmailAccounts.completeAccountCreation(
+            session,
+            authUserId: authUser.id!,
+            accountRequestId: pendingAccountRequestId,
+            verificationCode: 'wrong code',
+          ),
+          throwsA(isA<EmailAccountRequestTooManyAttemptsException>()),
+        );
+
+        await expectLater(
+          () => EmailAccounts.completeAccountCreation(
+            session,
+            authUserId: authUser.id!,
+            accountRequestId: pendingAccountRequestId,
+            verificationCode: 'wrong code',
+          ),
+          throwsA(isA<EmailAccountRequestNotFoundException>()),
+        );
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
@@ -451,7 +496,7 @@ void main() {
       });
 
       test(
-          'when changing the password with an incorrect verification code, then it fails with different errors for "wrong code" and "allowed attempts exhausted".',
+          'when changing the password with an incorrect verification code, then it fails with different errors for "wrong code" and "allowed attempts exhausted" and from then on with "not found".',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           passwordResetVerificationCodeAllowedAttempts: 1,
@@ -475,6 +520,16 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetTooManyAttemptsException>()),
+        );
+
+        await expectLater(
+          () => EmailAccounts.completePasswordReset(
+            session,
+            passwordResetRequestId: paswordResetRequestId,
+            verificationCode: 'wrong',
+            newPassword: '1234asdf!!!',
+          ),
+          throwsA(isA<EmailAccountPasswordResetRequestNotFoundException>()),
         );
       });
     },
