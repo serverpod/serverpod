@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
+import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
@@ -19,7 +20,7 @@ void main() {
       ..refreshTokenHashPepper = 'pepper123';
 
     setUpAll(() {
-      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
+      AuthenticationTokensTestHelper.secretsTestOverride = secretsWithHmac;
     });
 
     setUp(() async {
@@ -34,7 +35,7 @@ void main() {
     });
 
     tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
+      AuthenticationTokensTestHelper.secretsTestOverride = null;
     });
 
     test(
@@ -99,7 +100,7 @@ void main() {
       secrets = AuthenticationTokenSecretsMock()
         ..setHs512Algorithm()
         ..refreshTokenHashPepper = 'pepper123';
-      AuthenticationTokens.secretsTestOverride = secrets;
+      AuthenticationTokensTestHelper.secretsTestOverride = secrets;
 
       session = sessionBuilder.build();
 
@@ -119,7 +120,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokens.secretsTestOverride = null;
+      AuthenticationTokensTestHelper.secretsTestOverride = null;
     });
 
     test(
@@ -242,7 +243,7 @@ void main() {
     late TokenPair refreshedTokenPair;
 
     setUp(() async {
-      AuthenticationTokens.secretsTestOverride =
+      AuthenticationTokensTestHelper.secretsTestOverride =
           AuthenticationTokenSecretsMock()
             ..setHs512Algorithm()
             ..refreshTokenHashPepper = 'pepper123';
@@ -267,7 +268,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokens.secretsTestOverride = null;
+      AuthenticationTokensTestHelper.secretsTestOverride = null;
     });
 
     test(
