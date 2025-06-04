@@ -5,33 +5,48 @@ import 'package:serverpod/serverpod.dart';
 /// Secrets used for authentication tokens.
 @internal
 class AuthenticationTokenSecrets {
-  AuthenticationTokenSecrets()
-      : algorithm = _algorithmFromConfig(),
+  AuthenticationTokenSecrets({
+    @visibleForTesting final ConfigurationValueReader? getPassword,
+  })  : algorithm = _algorithmFromConfig(
+          getPassword ?? Serverpod.instance.getPassword,
+        ),
         fallbackVerificationAlgorithm =
-            _fallbackVerificationAlgorithmFromConfig(),
-        refreshTokenHashPepper = _refreshTokenHashPepper;
+            _fallbackVerificationAlgorithmFromConfig(
+          getPassword ?? Serverpod.instance.getPassword,
+        ),
+        refreshTokenHashPepper = _refreshTokenHashPepper(
+          getPassword ?? Serverpod.instance.getPassword,
+        );
 
+  /// The primary algorithm to use.
+  ///
+  /// Supported options are `HS512` and `ES512`.
   static const String algorithmConfigurationKey =
       'serverpod_auth_jwt.algorithm';
 
-  /// The configuration key for the private key to sign access tokens with.
+  /// The configuration key for the secret key (for symmetric cryptography) to sign access and verify tokens with.
+  static const String secretKeyConfigurationKey =
+      'serverpod_auth_jwt.secretKey';
+
+  /// The configuration key for the private key (for asymmetric cryptography) to sign access tokens with.
   static const String privateKeyConfigurationKey =
       'serverpod_auth_jwt.privateKey';
 
-  /// The configuration key for the optional public key (for asymmetric cryptogrpahy) to verify access tokens with.
+  /// The configuration key for the public key (for asymmetric cryptography) to verify access tokens with.
   static const String publicKeyConfigurationKey =
       'serverpod_auth_jwt.publicKey';
 
   /// Which algorithm to use for the fallback token verification (during key rotation).
   static const String fallbackAlgorithmConfigurationKey =
-      'serverpod_auth_jwt.fallbackAlgorithm';
+      'serverpod_auth_jwt.fallback.algorithm';
 
-  /// The key to be used for the fallback key verification (during token rotation).
-  ///
-  /// For the `HS512` algorithm, this would be the single secret.
-  /// For the `ES512` algorithm, this would be the public key.
-  static const String fallbackKeyConfigurationKey =
-      'serverpod_auth_jwt.fallbackKey';
+  /// The public key fallback to be used to verify access tokens with.
+  static const String fallbackPublicKeyConfigurationKey =
+      'serverpod_auth_jwt.fallback.publicKey';
+
+  /// The configuration key for the fallback secret key to verify access tokens with.
+  static const String fallbackSecretKeyConfigurationKey =
+      'serverpod_auth_jwt.fallback.secretKey';
 
   /// The configuration key for the refresh token hash pepper.
   static const String refreshTokenHashPepperConfigurationKey =
@@ -42,36 +57,50 @@ class AuthenticationTokenSecrets {
   final FallbackAuthenticationTokenAlgorithmConfiguration?
       fallbackVerificationAlgorithm;
 
-  static AuthenticationTokenAlgorithmConfiguration _algorithmFromConfig() {
-    final algorithmConfiguration = algorithmTestOverride ??
-        Serverpod.instance.getPassword(algorithmConfigurationKey);
-    final algorithm = algorithmConfiguration == null
-        ? AuthenticationTokenAlgorithm.hmacSha512
-        : AuthenticationTokenAlgorithm.parseAlgorithm(algorithmConfiguration);
-
-    final privateKey = privateKeyTestOverride ??
-        Serverpod.instance.getPassword(privateKeyConfigurationKey);
-
-    final publicKey = publicKeyTestOverride ??
-        Serverpod.instance.getPassword(publicKeyConfigurationKey);
-
-    if (privateKey == null || privateKey.isEmpty) {
+  static AuthenticationTokenAlgorithmConfiguration _algorithmFromConfig(
+    final ConfigurationValueReader getPassword,
+  ) {
+    final algorithmConfiguration = getPassword(algorithmConfigurationKey);
+    if (algorithmConfiguration == null) {
       throw ArgumentError(
-        'No valid private key was set',
-        privateKeyConfigurationKey,
+        'No primary authentication token algorithm was specified in passwords.',
+        algorithmConfigurationKey,
       );
     }
 
+    final algorithm =
+        AuthenticationTokenAlgorithm.parseAlgorithm(algorithmConfiguration);
+
     switch (algorithm) {
       case AuthenticationTokenAlgorithm.hmacSha512:
+        final secretKey = getPassword(secretKeyConfigurationKey);
+
+        if (secretKey == null || secretKey.isEmpty) {
+          throw ArgumentError(
+            'No valid secret key was set in passwords',
+            secretKeyConfigurationKey,
+          );
+        }
+
         return HmacSha512AuthenticationTokenAlgorithmConfiguration(
-          key: SecretKey(privateKey),
+          key: SecretKey(secretKey),
         );
 
       case AuthenticationTokenAlgorithm.ecdsaSha512:
+        final privateKey = getPassword(privateKeyConfigurationKey);
+
+        if (privateKey == null || privateKey.isEmpty) {
+          throw ArgumentError(
+            'No valid private key was set in passwords',
+            privateKeyConfigurationKey,
+          );
+        }
+
+        final publicKey = getPassword(publicKeyConfigurationKey);
+
         if (publicKey == null || publicKey.isEmpty) {
           throw ArgumentError(
-            'No valid public key was set',
+            'No valid public key was set in passwords',
             publicKeyConfigurationKey,
           );
         }
@@ -80,54 +109,52 @@ class AuthenticationTokenSecrets {
           privateKey: ECPrivateKey(privateKey),
           publicKey: ECPublicKey(publicKey),
         );
-
-      default:
-        throw ArgumentError(
-          '"$algorithm" is not a valid configuration option',
-          algorithmConfigurationKey,
-        );
     }
   }
 
   /// The fallback algorithm to be used for verifications during key rotations.
   static FallbackAuthenticationTokenAlgorithmConfiguration?
-      _fallbackVerificationAlgorithmFromConfig() {
-    final algorithmConfiguration = fallbackAlgorithmTestOverride ??
-        Serverpod.instance.getPassword(fallbackAlgorithmConfigurationKey);
+      _fallbackVerificationAlgorithmFromConfig(
+    final ConfigurationValueReader getPassword,
+  ) {
+    final algorithmConfiguration =
+        getPassword(fallbackAlgorithmConfigurationKey);
 
-    final key = fallbackKeyTestOverride ??
-        Serverpod.instance.getPassword(fallbackKeyConfigurationKey);
-
-    if (algorithmConfiguration == null && key == null) {
+    if (algorithmConfiguration == null || algorithmConfiguration.isEmpty) {
       return null;
     }
 
-    final algorithm = algorithmConfiguration == null
-        ? AuthenticationTokenAlgorithm.hmacSha512
-        : AuthenticationTokenAlgorithm.parseAlgorithm(algorithmConfiguration);
-
-    if (key == null || key.isEmpty) {
-      throw ArgumentError(
-        'No valid key was set',
-        fallbackKeyConfigurationKey,
-      );
-    }
+    final algorithm = AuthenticationTokenAlgorithm.parseAlgorithm(
+      algorithmConfiguration,
+    );
 
     switch (algorithm) {
       case AuthenticationTokenAlgorithm.hmacSha512:
+        final secretKey = getPassword(fallbackSecretKeyConfigurationKey);
+
+        if (secretKey == null || secretKey.isEmpty) {
+          throw ArgumentError(
+            'No valid fallback secret key was set in passwords',
+            fallbackPublicKeyConfigurationKey,
+          );
+        }
+
         return HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-          key: SecretKey(key),
+          key: SecretKey(secretKey),
         );
 
       case AuthenticationTokenAlgorithm.ecdsaSha512:
-        return EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-          publicKey: ECPublicKey(key),
-        );
+        final publicKey = getPassword(fallbackPublicKeyConfigurationKey);
 
-      default:
-        throw ArgumentError(
-          '"$algorithm" is not a valid configuration option',
-          fallbackAlgorithmConfigurationKey,
+        if (publicKey == null || publicKey.isEmpty) {
+          throw ArgumentError(
+            'No valid fallback public key was set in passwords',
+            fallbackPublicKeyConfigurationKey,
+          );
+        }
+
+        return EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+          publicKey: ECPublicKey(publicKey),
         );
     }
   }
@@ -135,39 +162,24 @@ class AuthenticationTokenSecrets {
   /// The pepper used for hashing refresh tokens.
   final String refreshTokenHashPepper;
 
-  static String get _refreshTokenHashPepper {
-    final pepper = refreshTokenHashPepperTestOverride ??
-        Serverpod.instance.getPassword(refreshTokenHashPepperConfigurationKey);
+  static String _refreshTokenHashPepper(
+    final ConfigurationValueReader getPassword,
+  ) {
+    final pepper = getPassword(refreshTokenHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
       throw ArgumentError(
-        'No "pepper" was configured in the authentication token passwords.',
+        'No pepper was set in the authentication token passwords.',
         refreshTokenHashPepperConfigurationKey,
       );
     }
 
     return pepper;
   }
-
-  @visibleForTesting
-  static String? algorithmTestOverride;
-
-  /// Private key override for testing, to be returned for [privateKey].
-  @visibleForTesting
-  static String? privateKeyTestOverride;
-
-  @visibleForTesting
-  static String? publicKeyTestOverride;
-
-  @visibleForTesting
-  static String? refreshTokenHashPepperTestOverride;
-
-  @visibleForTesting
-  static String? fallbackAlgorithmTestOverride;
-
-  @visibleForTesting
-  static String? fallbackKeyTestOverride;
 }
+
+/// Getter for a password configuration value.
+typedef ConfigurationValueReader = String? Function(String key);
 
 /// The algorithm used to sign an verify the JWT tokens.
 @internal

@@ -1,125 +1,232 @@
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
 import 'package:test/test.dart';
 
-import 'test_tools/serverpod_test_tools.dart';
-
 void main() {
-  withServerpod('Given no configuration,',
-      (final sessionBuilder, final endpoints) {
-    test(
-      'when the class is created, then an error is thrown.',
-      () {
-        expect(
-          () => AuthenticationTokenSecrets(),
-          throwsArgumentError,
-        );
-      },
-    );
-  });
+  const baseConfiguration = {
+    AuthenticationTokenSecrets.refreshTokenHashPepperConfigurationKey:
+        'some pepper',
+  };
 
-  withServerpod('Given just a private key,',
-      (final sessionBuilder, final endpoints) {
-    setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'secret-key-for-jwt';
-    });
+// #region HS512
 
-    test(
-      'when the current `algorithm` is read, then it uses HS512 for the given key.',
-      () {
-        final algorithm = AuthenticationTokenSecrets().algorithm;
+  test(
+    'Given no configuration, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(getPassword: (final _) => null),
+        throwsArgumentError,
+      );
+    },
+  );
 
-        expect(
-          algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>().having(
-            (final a) => a.key.key,
-            'key',
-            'secret-key-for-jwt',
-          ),
-        );
-      },
-    );
-  });
+  test(
+    'Given just a secret key, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.secretKeyConfigurationKey:
+                'some secret key',
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
-  withServerpod('Given just a private key and an invalid algorithm config,',
-      (final sessionBuilder, final endpoints) {
-    setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'secret-key-for-jwt';
-      AuthenticationTokenSecrets.algorithmTestOverride = '🤷🏻‍♂️';
-    });
+  test(
+    'Given just the HS512 algorithm, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.algorithmConfigurationKey: 'HS512',
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
-    test(
-      'when the current `algorithm` is read, then an error is thrown.',
-      () {
-        expect(
-          () => AuthenticationTokenSecrets().algorithm,
-          throwsArgumentError,
-        );
-      },
-    );
-  });
+  test(
+    'Given the HS512 algorithm and a secret key, when a `AuthenticationTokenSecrets` instance is created, then it uses HS512 for the given key.',
+    () {
+      final algorithm = AuthenticationTokenSecrets(
+        getPassword: (final key) => {
+          ...baseConfiguration,
+          AuthenticationTokenSecrets.algorithmConfigurationKey: 'HS512',
+          AuthenticationTokenSecrets.secretKeyConfigurationKey:
+              'secret-key-for-jwt',
+        }[key],
+      ).algorithm;
 
-  withServerpod('Given a private key and the algorithm set to HS512,',
-      (final sessionBuilder, final endpoints) {
-    setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'secret-key-for-jwt';
-      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
-    });
+      expect(
+        algorithm,
+        isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>().having(
+          (final a) => a.key.key,
+          'key',
+          'secret-key-for-jwt',
+        ),
+      );
+    },
+  );
 
-    test(
-      'when the current `algorithm` is read, then it uses HS512 for the given key.',
-      () {
-        final algorithm = AuthenticationTokenSecrets().algorithm;
+  test(
+    'Given the HS512 algorithm and a secret key as the fallback algorithm, when a `AuthenticationTokenSecrets` instance is created, then it uses HS512 for the given key as the fallback.',
+    () {
+      final algorithm = AuthenticationTokenSecrets(
+        getPassword: (final key) => {
+          ...baseConfiguration,
+          AuthenticationTokenSecrets.algorithmConfigurationKey: 'ES512',
+          AuthenticationTokenSecrets.privateKeyConfigurationKey:
+              _testPrivateKey,
+          AuthenticationTokenSecrets.publicKeyConfigurationKey: _testPublicKey,
+          AuthenticationTokenSecrets.fallbackAlgorithmConfigurationKey: 'HS512',
+          AuthenticationTokenSecrets.fallbackSecretKeyConfigurationKey:
+              'secret-key-for-jwt',
+        }[key],
+      ).fallbackVerificationAlgorithm;
 
-        expect(
-          algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>().having(
-            (final a) => a.key.key,
-            'key',
-            'secret-key-for-jwt',
-          ),
-        );
-      },
-    );
-  });
+      expect(
+        algorithm,
+        isA<HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration>()
+            .having(
+          (final a) => a.key.key,
+          'key',
+          'secret-key-for-jwt',
+        ),
+      );
+    },
+  );
 
-  withServerpod('Given just a private key when using ES512,',
-      (final sessionBuilder, final endpoints) {
-    setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'private key value';
-      AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
-    });
+// #endregion
 
-    test(
-      'when the current `algorithm` is read, then an error is thrown.',
-      () {
-        expect(
-          () => AuthenticationTokenSecrets().algorithm,
-          throwsArgumentError,
-        );
-      },
-    );
-  });
+// #region ES512
 
-  withServerpod('Given both a private and public key for ES512,',
-      (final sessionBuilder, final endpoints) {
-    setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = _testPrivateKey;
-      AuthenticationTokenSecrets.publicKeyTestOverride = _testPublicKey;
-      AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
-    });
+  test(
+    'Given just a private key, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.privateKeyConfigurationKey:
+                _testPrivateKey
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
-    test(
-      'when the current `algorithm` is read, then a configuration for asymmetric crypto is returned.',
-      () {
-        final algorithm = AuthenticationTokenSecrets().algorithm;
+  test(
+    'Given just a public key, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.publicKeyConfigurationKey: _testPublicKey
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
-        expect(
-          algorithm,
-          isA<EcdsaSha512AuthenticationTokenAlgorithmConfiguration>(),
-        );
-      },
-    );
-  });
+  test(
+    'Given just the ES512 algorithm, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.algorithmConfigurationKey: 'ES512',
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
+
+  test(
+    'Given just the ES512 algorithm and a private key, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.algorithmConfigurationKey: 'ES512',
+            AuthenticationTokenSecrets.privateKeyConfigurationKey:
+                _testPrivateKey
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
+
+  test(
+    'Given just the ES512 algorithm and a public key, when a `AuthenticationTokenSecrets` instance is created, then an error is thrown.',
+    () {
+      expect(
+        () => AuthenticationTokenSecrets(
+          getPassword: (final key) => {
+            ...baseConfiguration,
+            AuthenticationTokenSecrets.algorithmConfigurationKey: 'ES512',
+            AuthenticationTokenSecrets.publicKeyConfigurationKey: _testPublicKey
+          }[key],
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
+
+  test(
+    'Given the ES512 algorithm and both a private and public key, when a `AuthenticationTokenSecrets` instance is created, then it is available as the primary algorithm.',
+    () {
+      final algorithm = AuthenticationTokenSecrets(
+        getPassword: (final key) => {
+          ...baseConfiguration,
+          AuthenticationTokenSecrets.algorithmConfigurationKey: 'ES512',
+          AuthenticationTokenSecrets.privateKeyConfigurationKey:
+              _testPrivateKey,
+          AuthenticationTokenSecrets.publicKeyConfigurationKey: _testPublicKey
+        }[key],
+      ).algorithm;
+
+      expect(
+        algorithm,
+        isA<EcdsaSha512AuthenticationTokenAlgorithmConfiguration>(),
+      );
+    },
+  );
+
+  test(
+    'Given the ES512 algorithm and a public key as fallback, when a `AuthenticationTokenSecrets` instance is created, then it is available as the fallback algorithm',
+    () {
+      final algorithm = AuthenticationTokenSecrets(
+        getPassword: (final key) => {
+          ...baseConfiguration,
+          AuthenticationTokenSecrets.algorithmConfigurationKey: 'HS512',
+          AuthenticationTokenSecrets.secretKeyConfigurationKey:
+              'secret-key-for-jwt',
+          AuthenticationTokenSecrets.fallbackAlgorithmConfigurationKey: 'ES512',
+          AuthenticationTokenSecrets.fallbackPublicKeyConfigurationKey:
+              _testPublicKey
+        }[key],
+      ).fallbackVerificationAlgorithm;
+
+      expect(
+        algorithm,
+        isA<EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration>(),
+      );
+    },
+  );
+
+// #endregion
 }
 
 const _testPrivateKey = '''-----BEGIN EC PRIVATE KEY-----
