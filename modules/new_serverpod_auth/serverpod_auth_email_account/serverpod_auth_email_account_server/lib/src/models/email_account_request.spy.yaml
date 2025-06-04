@@ -19,14 +19,17 @@ fields:
 
   ### The hashed password of the user.
   ###
-  ### Obtain in conjunction with [passwordSalt].
+  ### Obtained in conjunction with [passwordSalt].
   passwordHash: ByteData
 
   ### The salt used for creating the [passwordHash].
   passwordSalt: ByteData
 
-  ### The verification code sent to the user.
-  verificationCode: String
+  ### The hash of the verification code sent to the user.
+  verificationCodeHash: ByteData
+
+  ### The salt used to compute the [verificationCodeHash].
+  verificationCodeSalt: ByteData
 
 indexes:
   serverpod_auth_email_account_request_email:

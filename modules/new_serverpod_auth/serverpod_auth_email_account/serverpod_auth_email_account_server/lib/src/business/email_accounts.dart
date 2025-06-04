@@ -47,10 +47,10 @@ abstract final class EmailAccounts {
           );
         }
 
-        if (!await PasswordHash.validateHash(
-          password: password,
-          hash: Uint8List.sublistView(account.passwordHash),
-          salt: Uint8List.sublistView(account.passwordSalt),
+        if (!await EmailAccountSecretHash.validateHash(
+          value: password,
+          hash: account.passwordHash.asUint8List,
+          salt: account.passwordSalt.asUint8List,
         )) {
           await _logFailedSignIn(session, email);
 
@@ -136,15 +136,20 @@ abstract final class EmailAccounts {
           }
         }
 
-        final passwordHash = await PasswordHash.createHash(password: password);
+        final passwordHash =
+            await EmailAccountSecretHash.createHash(value: password);
+        final verificationCodeHash = await EmailAccountSecretHash.createHash(
+          value: verificationCode,
+        );
 
         final emailAccountRequest = await EmailAccountRequest.db.insertRow(
           session,
           EmailAccountRequest(
             email: email,
-            passwordHash: ByteData.sublistView(passwordHash.hash),
-            passwordSalt: ByteData.sublistView(passwordHash.salt),
-            verificationCode: verificationCode,
+            passwordHash: passwordHash.hash.asByteData,
+            passwordSalt: passwordHash.salt.asByteData,
+            verificationCodeHash: verificationCodeHash.hash.asByteData,
+            verificationCodeSalt: verificationCodeHash.salt.asByteData,
           ),
           transaction: transaction,
         );
@@ -181,7 +186,11 @@ abstract final class EmailAccounts {
 
     if (request == null ||
         request.isExpired ||
-        request.verificationCode != verificationCode) {
+        !await EmailAccountSecretHash.validateHash(
+          value: verificationCode,
+          hash: request.verificationCodeHash.asUint8List,
+          salt: request.verificationCodeSalt.asUint8List,
+        )) {
       return null;
     }
 
@@ -242,7 +251,11 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestTooManyAttemptsException();
         }
 
-        if (request.verificationCode != verificationCode) {
+        if (!await EmailAccountSecretHash.validateHash(
+          value: verificationCode,
+          hash: request.verificationCodeHash.asUint8List,
+          salt: request.verificationCodeSalt.asUint8List,
+        )) {
           throw EmailAccountRequestUnauthorizedException();
         }
 
@@ -301,15 +314,20 @@ abstract final class EmailAccounts {
           return PasswordResetResult.emailDoesNotExist;
         }
 
-        final resetToken =
+        final verificationCode =
             EmailAccounts.config.passwordResetVerificationCodeGenerator();
+
+        final verificationCodeHash = await EmailAccountSecretHash.createHash(
+          value: verificationCode,
+        );
 
         final resetRequest =
             await EmailAccountPasswordResetRequest.db.insertRow(
           session,
           EmailAccountPasswordResetRequest(
             emailAccountId: account.id!,
-            verificationCode: resetToken,
+            verificationCodeHash: verificationCodeHash.hash.asByteData,
+            verificationCodeSalt: verificationCodeHash.salt.asByteData,
           ),
           transaction: transaction,
         );
@@ -318,7 +336,7 @@ abstract final class EmailAccounts {
           session,
           email: email,
           passwordResetRequestId: resetRequest.id!,
-          verificationCode: resetToken,
+          verificationCode: verificationCode,
           transaction: transaction,
         );
 
@@ -342,7 +360,11 @@ abstract final class EmailAccounts {
 
     if (request == null ||
         request.isExpired ||
-        request.verificationCode != verificationCode) {
+        !await EmailAccountSecretHash.validateHash(
+          value: verificationCode,
+          hash: request.verificationCodeHash.asUint8List,
+          salt: request.verificationCodeSalt.asUint8List,
+        )) {
       return false;
     }
 
@@ -402,7 +424,11 @@ abstract final class EmailAccounts {
           throw EmailAccountPasswordResetTooManyAttemptsException();
         }
 
-        if (resetRequest.verificationCode != verificationCode) {
+        if (!await EmailAccountSecretHash.validateHash(
+          value: verificationCode,
+          hash: resetRequest.verificationCodeHash.asUint8List,
+          salt: resetRequest.verificationCodeSalt.asUint8List,
+        )) {
           throw EmailAccountPasswordResetRequestUnauthorizedException();
         }
 
@@ -418,8 +444,8 @@ abstract final class EmailAccounts {
           transaction: transaction,
         ))!;
 
-        final newPasswordHash = await PasswordHash.createHash(
-          password: newPassword,
+        final newPasswordHash = await EmailAccountSecretHash.createHash(
+          value: newPassword,
         );
 
         await EmailAccount.db.updateRow(
@@ -642,5 +668,17 @@ extension on EmailAccountPasswordResetRequest {
     );
 
     return created.isBefore(oldestValidResetDate);
+  }
+}
+
+extension on Uint8List {
+  ByteData get asByteData {
+    return ByteData.sublistView(this);
+  }
+}
+
+extension on ByteData {
+  Uint8List get asUint8List {
+    return Uint8List.sublistView(this);
   }
 }

@@ -9,16 +9,16 @@ import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/email_account_secrets.dart';
 
-/// Class for handling password hashing.
+/// Class for handling password and verification code hashing in the email account module.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
-abstract final class PasswordHash {
-  /// Create the password hash for the given [password] pair.
+abstract final class EmailAccountSecretHash {
+  /// Create the hash for the given [value].
   ///
   /// Applies a random salt, which must be stored with the hash to validate it later.
   static Future<({Uint8List hash, Uint8List salt})> createHash({
-    required final String password,
+    required final String value,
     @protected Uint8List? salt,
   }) {
     salt ??= generateRandomBytes(
@@ -28,14 +28,14 @@ abstract final class PasswordHash {
     final pepper = utf8.encode(EmailAccountSecrets.passwordHashPepper);
 
     return _createHash(
-      password: password,
+      secret: value,
       salt: salt,
       pepper: pepper,
     );
   }
 
   static Future<({Uint8List hash, Uint8List salt})> _createHash({
-    required final String password,
+    required final String secret,
     required final Uint8List salt,
     required final Uint8List pepper,
   }) {
@@ -49,21 +49,21 @@ abstract final class PasswordHash {
 
       final generator = Argon2BytesGenerator()..init(parameters);
 
-      final hashBytes = generator.process(utf8.encode(password));
+      final hashBytes = generator.process(utf8.encode(secret));
 
       return (hash: hashBytes, salt: salt);
     });
   }
 
-  /// Verify whether the [hash] / [salt] pair is valid for the given [password].
+  /// Verify whether the [hash] / [salt] pair is valid for the given [value].
   static Future<bool> validateHash({
-    required final String password,
+    required final String value,
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
     return uint8ListAreEqual(
       hash,
-      (await createHash(password: password, salt: salt)).hash,
+      (await createHash(value: value, salt: salt)).hash,
     );
   }
 }

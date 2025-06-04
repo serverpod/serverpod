@@ -18,7 +18,7 @@ fields:
 
   ### The hashed password of the user.
   ###
-  ### Obtain in conjunction with [passwordSalt].
+  ### Obtained in conjunction with [passwordSalt].
   passwordHash: ByteData
 
   ### The salt used for creating the [passwordHash].
