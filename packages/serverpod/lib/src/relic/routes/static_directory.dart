@@ -101,7 +101,7 @@ class RouteStaticDirectory extends Route {
       var extension = p.extension(path);
 
       var baseParts = base.split('@');
-      if (baseParts.last.startsWith('v')) {
+      if (baseParts.length > 1 && baseParts.last.startsWith('v')) {
         baseParts.removeLast();
       }
       base = baseParts.join('@');
