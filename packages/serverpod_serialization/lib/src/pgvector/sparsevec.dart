@@ -36,10 +36,14 @@ class SparseVector {
   /// Map keys are indices and values are the vector values at those positions.
   /// The [dimensions] parameter specifies the total vector length.
   factory SparseVector.fromMap(Map<int, double> map, int dimensions) {
+    if (map[0] != null) {
+      throw ArgumentError('SparseVector map is 1-indexed, but 0 was used.');
+    }
+
     var elements = map.entries.where((v) => v.value != 0).toList();
     elements.sort((a, b) => a.key.compareTo(b.key));
 
-    var indices = elements.map((v) => v.key).toList();
+    var indices = elements.map((v) => v.key - 1).toList();
     var values = elements.map((v) => v.value).toList();
 
     return SparseVector._(dimensions, indices, values);
@@ -105,6 +109,21 @@ class SparseVector {
       for (var i = 0; i < indices.length; i++) '${indices[i] + 1}:${values[i]}'
     ].join(',');
     return '{$elements}/$dimensions';
+  }
+
+  /// Creates a [SparseVector] from a string representation.
+  static SparseVector fromString(String value) {
+    if (value.isEmpty || !(value.startsWith('{') && value.contains('}/'))) {
+      throw FormatException('Invalid sparse vector string: $value');
+    }
+    final parts = value.split('/');
+    final mapStr = parts.first.substring(1, parts.first.length - 1);
+    final map = <int, double>{
+      if (mapStr.isNotEmpty)
+        for (var v in mapStr.split(',').map((e) => e.split(':')))
+          int.parse(v.first): double.parse(v.last)
+    };
+    return SparseVector.fromMap(map, int.parse(parts.last));
   }
 
   @override
