@@ -69,23 +69,17 @@ void main() {
     });
 
     test(
-        'when requesting a new token pair with extra claims that conflict with registered claims, then the registered claims will overwrite the given ones.',
+        'when requesting a new token pair with extra claims that conflict with registered claims, then it will throw.',
         () async {
-      final tokenPair = await withClock(
-        Clock.fixed(DateTime.utc(1970)),
+      expect(
         () => AuthenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
           extraClaims: {'exp': 123, 'custom': 'hello'},
         ),
+        throwsArgumentError,
       );
-
-      final decodedToken = JWT.decode(tokenPair.accessToken);
-
-      // expiration still set to default time of 10 minutes
-      expect((decodedToken.payload as Map)['exp'], 600);
-      expect((decodedToken.payload as Map)['custom'], 'hello');
     });
   });
 
