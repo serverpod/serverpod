@@ -36,7 +36,43 @@ void main() {
       });
     });
 
-    group('a JWT tokend for a plain refresh token,', () {
+    group('a refresh token containing a reserved claim,', () {
+      late RefreshToken refreshToken;
+      setUp(() {
+        refreshToken = _createRefreshToken().copyWith(
+          extraClaims: jsonEncode({'iss': 'foo'}),
+        );
+      });
+
+      test(
+          'when a JWT is requested for the refresh token, then it throws an error.',
+          () {
+        expect(
+          () => jwtUtil.createJwt(refreshToken),
+          throwsArgumentError,
+        );
+      });
+    });
+
+    group('a refresh token containing a claim in the Serverpod namespace,', () {
+      late RefreshToken refreshToken;
+      setUp(() {
+        refreshToken = _createRefreshToken().copyWith(
+          extraClaims: jsonEncode({'dev.serverpod.x': 'foo'}),
+        );
+      });
+
+      test(
+          'when a JWT is requested for the refresh token, then it throws an error.',
+          () {
+        expect(
+          () => jwtUtil.createJwt(refreshToken),
+          throwsArgumentError,
+        );
+      });
+    });
+
+    group('a JWT token for a plain refresh token,', () {
       late RefreshToken refreshToken;
       late String jwt;
 

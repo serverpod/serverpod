@@ -23,8 +23,25 @@ class JwtUtil {
   /// Any extra claims configured with the refresh token will be added as top-level claims.
   String createJwt(final RefreshToken refreshToken) {
     final extraClaims = refreshToken.extraClaims != null
-        ? jsonDecode(refreshToken.extraClaims!) as Map
+        ? (jsonDecode(refreshToken.extraClaims!) as Map).cast<String, dynamic>()
         : null;
+
+    if (extraClaims != null) {
+      for (final key in extraClaims.keys) {
+        if (key.startsWith(_serverpodClaimPrefix)) {
+          throw ArgumentError(
+            'The refresh token contains `extraClaims` in the Serverpod name space: "$key" must not start with "$_serverpodClaimPrefix".',
+            'refreshToken',
+          );
+        }
+        if (_registeredClaims.contains(key)) {
+          throw ArgumentError(
+            'The refresh token contains `extraClaims` for the registered claim "$key".',
+            'refreshToken',
+          );
+        }
+      }
+    }
 
     final jwt = JWT(
       {
@@ -150,7 +167,9 @@ class JwtUtil {
     'jti',
   };
 
-  static const _serverpodScopeNamesClaimKey = 'dev.serverpod.scopeNames';
+  static const _serverpodClaimPrefix = 'dev.serverpod.';
+  static const _serverpodScopeNamesClaimKey =
+      '${_serverpodClaimPrefix}scopeNames';
 }
 
 /// The data successfully verified and extracted from a JWT token.
