@@ -25,3 +25,9 @@ values:
   - unknown
   ### Dart type: [Vector]
   - vector
+  ### Dart type: [HalfVector]
+  - halfvec
+  ### Dart type: [SparseVector]
+  - sparsevec
+  ### Dart type: [Bit]
+  - bit
