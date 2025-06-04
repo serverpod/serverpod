@@ -137,7 +137,7 @@ class JwtUtil {
     try {
       return JWT.verify(
         accessToken,
-        _secrets.algorithm.jwtKey,
+        _secrets.algorithm.verificationKey,
         issuer: _issuer,
       );
     } catch (_) {
@@ -148,7 +148,7 @@ class JwtUtil {
 
       return JWT.verify(
         accessToken,
-        fallbackAlgorithm.jwtKey,
+        fallbackAlgorithm.verificationKey,
         issuer: _issuer,
       );
     }
@@ -181,7 +181,7 @@ typedef VerifiedJwtData = ({
 });
 
 extension on AuthenticationTokenAlgorithmConfiguration {
-  JWTKey get jwtKey {
+  JWTKey get verificationKey {
     return switch (this) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => key,
       EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final publicKey) =>
@@ -191,7 +191,7 @@ extension on AuthenticationTokenAlgorithmConfiguration {
 }
 
 extension on FallbackAuthenticationTokenAlgorithmConfiguration {
-  JWTKey get jwtKey {
+  JWTKey get verificationKey {
     return switch (this) {
       HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(:final key) =>
         key,
