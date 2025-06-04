@@ -25,7 +25,8 @@ abstract class EmailAccountRequest
     required this.email,
     required this.passwordHash,
     required this.passwordSalt,
-    required this.verificationCode,
+    required this.verificationCodeHash,
+    required this.verificationCodeSalt,
   }) : created = created ?? DateTime.now();
 
   factory EmailAccountRequest({
@@ -34,7 +35,8 @@ abstract class EmailAccountRequest
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
-    required String verificationCode,
+    required _i2.ByteData verificationCodeHash,
+    required _i2.ByteData verificationCodeSalt,
   }) = _EmailAccountRequestImpl;
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -48,7 +50,10 @@ abstract class EmailAccountRequest
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
       passwordSalt:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
-      verificationCode: jsonSerialization['verificationCode'] as String,
+      verificationCodeHash: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['verificationCodeHash']),
+      verificationCodeSalt: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['verificationCodeSalt']),
     );
   }
 
@@ -69,14 +74,17 @@ abstract class EmailAccountRequest
 
   /// The hashed password of the user.
   ///
-  /// Obtain in conjunction with [passwordSalt].
+  /// Obtained in conjunction with [passwordSalt].
   _i2.ByteData passwordHash;
 
   /// The salt used for creating the [passwordHash].
   _i2.ByteData passwordSalt;
 
-  /// The verification code sent to the user.
-  String verificationCode;
+  /// The hash of the verification code sent to the user.
+  _i2.ByteData verificationCodeHash;
+
+  /// The salt used to compute the [verificationCodeHash].
+  _i2.ByteData verificationCodeSalt;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -90,7 +98,8 @@ abstract class EmailAccountRequest
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
-    String? verificationCode,
+    _i2.ByteData? verificationCodeHash,
+    _i2.ByteData? verificationCodeSalt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +109,8 @@ abstract class EmailAccountRequest
       'email': email,
       'passwordHash': passwordHash.toJson(),
       'passwordSalt': passwordSalt.toJson(),
-      'verificationCode': verificationCode,
+      'verificationCodeHash': verificationCodeHash.toJson(),
+      'verificationCodeSalt': verificationCodeSalt.toJson(),
     };
   }
 
@@ -148,14 +158,16 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
-    required String verificationCode,
+    required _i2.ByteData verificationCodeHash,
+    required _i2.ByteData verificationCodeSalt,
   }) : super._(
           id: id,
           created: created,
           email: email,
           passwordHash: passwordHash,
           passwordSalt: passwordSalt,
-          verificationCode: verificationCode,
+          verificationCodeHash: verificationCodeHash,
+          verificationCodeSalt: verificationCodeSalt,
         );
 
   /// Returns a shallow copy of this [EmailAccountRequest]
@@ -168,7 +180,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
-    String? verificationCode,
+    _i2.ByteData? verificationCodeHash,
+    _i2.ByteData? verificationCodeSalt,
   }) {
     return EmailAccountRequest(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -176,7 +189,10 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash.clone(),
       passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
-      verificationCode: verificationCode ?? this.verificationCode,
+      verificationCodeHash:
+          verificationCodeHash ?? this.verificationCodeHash.clone(),
+      verificationCodeSalt:
+          verificationCodeSalt ?? this.verificationCodeSalt.clone(),
     );
   }
 }
@@ -201,8 +217,12 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       'passwordSalt',
       this,
     );
-    verificationCode = _i1.ColumnString(
-      'verificationCode',
+    verificationCodeHash = _i1.ColumnByteData(
+      'verificationCodeHash',
+      this,
+    );
+    verificationCodeSalt = _i1.ColumnByteData(
+      'verificationCodeSalt',
       this,
     );
   }
@@ -217,14 +237,17 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
 
   /// The hashed password of the user.
   ///
-  /// Obtain in conjunction with [passwordSalt].
+  /// Obtained in conjunction with [passwordSalt].
   late final _i1.ColumnByteData passwordHash;
 
   /// The salt used for creating the [passwordHash].
   late final _i1.ColumnByteData passwordSalt;
 
-  /// The verification code sent to the user.
-  late final _i1.ColumnString verificationCode;
+  /// The hash of the verification code sent to the user.
+  late final _i1.ColumnByteData verificationCodeHash;
+
+  /// The salt used to compute the [verificationCodeHash].
+  late final _i1.ColumnByteData verificationCodeSalt;
 
   @override
   List<_i1.Column> get columns => [
@@ -233,7 +256,8 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
         email,
         passwordHash,
         passwordSalt,
-        verificationCode,
+        verificationCodeHash,
+        verificationCodeSalt,
       ];
 }
 

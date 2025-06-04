@@ -81,7 +81,7 @@ abstract class EmailAccount
 
   /// The hashed password of the user.
   ///
-  /// Obtain in conjunction with [passwordSalt].
+  /// Obtained in conjunction with [passwordSalt].
   _i3.ByteData passwordHash;
 
   /// The salt used for creating the [passwordHash].
@@ -237,7 +237,7 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   /// The hashed password of the user.
   ///
-  /// Obtain in conjunction with [passwordSalt].
+  /// Obtained in conjunction with [passwordSalt].
   late final _i1.ColumnByteData passwordHash;
 
   /// The salt used for creating the [passwordHash].

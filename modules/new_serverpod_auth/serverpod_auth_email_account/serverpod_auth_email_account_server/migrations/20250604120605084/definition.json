@@ -275,10 +275,16 @@
           "dartType": "DateTime"
         },
         {
-          "name": "verificationCode",
-          "columnType": 0,
+          "name": "verificationCodeHash",
+          "columnType": 5,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "verificationCodeSalt",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
         }
       ],
       "foreignKeys": [
@@ -436,10 +442,16 @@
           "dartType": "dart:typed_data:ByteData"
         },
         {
-          "name": "verificationCode",
-          "columnType": 0,
+          "name": "verificationCodeHash",
+          "columnType": 5,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "verificationCodeSalt",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
         }
       ],
       "foreignKeys": [],
@@ -1748,7 +1760,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_email_account",
-      "version": "20250602102257482"
+      "version": "20250604120605084"
     },
     {
       "module": "serverpod",
