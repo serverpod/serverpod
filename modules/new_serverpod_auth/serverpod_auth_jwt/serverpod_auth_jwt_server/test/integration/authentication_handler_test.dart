@@ -1,10 +1,10 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
-import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
+import '../utils/authentication_token_secrets_mock.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -13,8 +13,8 @@ void main() {
     late Session session;
 
     setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()..setHs512Algorithm();
     });
 
     setUp(() async {
@@ -22,7 +22,7 @@ void main() {
     });
 
     tearDownAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -55,13 +55,16 @@ void main() {
     final endpoints,
   ) {
     const String scopeName = 'test scope';
+    late AuthenticationTokenSecretsMock secrets;
     late Session session;
     late UuidValue authUserId;
     late TokenPair tokenPair;
 
     setUp(() async {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      secrets = AuthenticationTokenSecretsMock()
+        ..setHs512Algorithm()
+        ..refreshTokenHashPepper = 'some pepper 123';
+      AuthenticationTokens.secretsTestOverride = secrets;
 
       session = sessionBuilder.build();
 
@@ -81,8 +84,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = null;
-      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -126,7 +128,7 @@ void main() {
     test(
         'when calling the authentication handler after the secret key has been changed, then it returns `null`.',
         () async {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'test 12345';
+      secrets.setHs512Algorithm(secretKeyOverride: 'test 12345');
 
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
@@ -149,8 +151,10 @@ void main() {
     late TokenPair tokenPair;
 
     setUp(() async {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'some pepper 123';
 
       session = sessionBuilder.build();
 
@@ -170,8 +174,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = null;
-      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(

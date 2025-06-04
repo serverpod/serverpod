@@ -4,8 +4,8 @@ import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 
 /// Collection of admin functions for managing authentication tokens.
-@internal
 final class AuthenticationTokensAdmin {
+  /// Creates a new admin helper class instance.
   @internal
   AuthenticationTokensAdmin();
 

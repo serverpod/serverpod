@@ -9,14 +9,16 @@ import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 import 'package:test/test.dart';
 
+import 'utils/authentication_token_secrets_mock.dart';
+
 void main() {
   group('Given a valid HS512 configuration and', () {
-    setUp(() {
-      _AuthenticationTokenSecretsUtil.configureHs512Signing();
-    });
+    late AuthenticationTokenSecretsMock secrets;
+    late JwtUtil jwtUtil;
 
-    tearDown(() {
-      _AuthenticationTokenSecretsUtil.clearSigning();
+    setUp(() {
+      secrets = AuthenticationTokenSecretsMock()..setHs512Algorithm();
+      jwtUtil = JwtUtil(secrets: secrets);
     });
 
     group('a plain refresh token,', () {
@@ -28,7 +30,7 @@ void main() {
       test('when a JWT is requested for the refresh token, then it succeeds.',
           () {
         expect(
-          JwtUtil.createJwt(refreshToken),
+          jwtUtil.createJwt(refreshToken),
           isNotEmpty,
         );
       });
@@ -40,24 +42,24 @@ void main() {
 
       setUp(() {
         refreshToken = _createRefreshToken();
-        jwt = JwtUtil.createJwt(refreshToken);
+        jwt = jwtUtil.createJwt(refreshToken);
       });
 
       test('when the JWT is verified, then it returns successfully.', () {
-        expect(JwtUtil.verifyJwt(jwt), isNotNull);
+        expect(jwtUtil.verifyJwt(jwt), isNotNull);
       });
 
       test(
           'when the JWT is inspected, then its `refreshTokenId` matches the refresh token.',
           () {
-        final tokenData = JwtUtil.verifyJwt(jwt);
+        final tokenData = jwtUtil.verifyJwt(jwt);
         expect(tokenData.refreshTokenId, refreshToken.id);
       });
 
       test(
           'when the JWT is inspected, then its `authUserId` matches the refresh token.',
           () {
-        final tokenData = JwtUtil.verifyJwt(jwt);
+        final tokenData = jwtUtil.verifyJwt(jwt);
         expect(tokenData.authUserId, refreshToken.authUserId);
       });
 
@@ -108,7 +110,7 @@ void main() {
       });
 
       test('when the JWT is inspected, then its `extraClaims` are empty.', () {
-        final tokenData = JwtUtil.verifyJwt(jwt);
+        final tokenData = jwtUtil.verifyJwt(jwt);
 
         expect(
           tokenData.extraClaims,
@@ -118,21 +120,15 @@ void main() {
 
       group('when the HMAC key is changed,', () {
         setUp(() {
-          AuthenticationTokenSecrets.privateKeyTestOverride = 'another key';
-
-          // Only needed to not request the configuration from Serverpod, which does not work outside of `withServerpod` in tests
-          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = 'HS512';
-          AuthenticationTokenSecrets.fallbackKeyTestOverride =
-              'no fallback either';
-        });
-
-        tearDown(() {
-          _AuthenticationTokenSecretsUtil.configureHs512Signing();
+          secrets.algorithm =
+              HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('another key'),
+          );
         });
 
         test('then reading the previously created token will fail.', () {
           expect(
-            () => JwtUtil.verifyJwt(jwt),
+            () => jwtUtil.verifyJwt(jwt),
             throwsA(isA<Exception>()),
           );
         });
@@ -143,20 +139,15 @@ void main() {
           AuthenticationTokens.config = AuthenticationTokenConfig(
             issuer: 'some issuer',
           );
-
-          // Only needed to not request the configuration from Serverpod, which does not work outside of `withServerpod` in tests
-          AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = 'HS512';
-          AuthenticationTokenSecrets.fallbackKeyTestOverride = 'test';
         });
 
         tearDown(() {
           AuthenticationTokens.config = AuthenticationTokenConfig();
-          _AuthenticationTokenSecretsUtil.configureHs512Signing();
         });
 
         test('then validating the previous token will fail.', () {
           expect(
-            () => JwtUtil.verifyJwt(jwt),
+            () => jwtUtil.verifyJwt(jwt),
             throwsA(isA<Exception>()),
           );
         });
@@ -170,13 +161,13 @@ void main() {
           refreshToken = _createRefreshToken().copyWith(
             scopeNames: {'a', 'b', 'c'},
           );
-          jwt = JwtUtil.createJwt(refreshToken);
+          jwt = jwtUtil.createJwt(refreshToken);
         });
 
         test(
             'when the JWT data is inspected, then its `scopes` match the refresh token.',
             () {
-          final tokenData = JwtUtil.verifyJwt(jwt);
+          final tokenData = jwtUtil.verifyJwt(jwt);
           expect(
             tokenData.scopes.map((final s) => s.name),
             containsAllInOrder({'a', 'b', 'c'}),
@@ -195,7 +186,7 @@ void main() {
         test(
             'when the JWT data is inspected, then its `extraClaims` are empty.',
             () {
-          final tokenData = JwtUtil.verifyJwt(jwt);
+          final tokenData = jwtUtil.verifyJwt(jwt);
 
           expect(
             tokenData.extraClaims,
@@ -213,13 +204,13 @@ void main() {
           refreshToken = _createRefreshToken().copyWith(
             extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
           );
-          jwt = JwtUtil.createJwt(refreshToken);
+          jwt = jwtUtil.createJwt(refreshToken);
         });
 
         test(
             'when the JWT data is inspected, then its `extraClaims` match the refresh token ones.',
             () {
-          final tokenData = JwtUtil.verifyJwt(jwt);
+          final tokenData = jwtUtil.verifyJwt(jwt);
 
           expect(
             tokenData.extraClaims,
@@ -242,7 +233,7 @@ void main() {
         );
 
         refreshToken = _createRefreshToken();
-        jwt = JwtUtil.createJwt(refreshToken);
+        jwt = jwtUtil.createJwt(refreshToken);
       });
 
       tearDown(() {
@@ -260,24 +251,24 @@ void main() {
 
   group('Given a valid ES512 configuration and JWT from a plain refresh token,',
       () {
+    late AuthenticationTokenSecretsMock secrets;
+    late JwtUtil jwtUtil;
     late RefreshToken refreshToken;
     late String jwt;
 
     setUp(() {
-      _AuthenticationTokenSecretsUtil.configureEs512Signing();
-      refreshToken = _createRefreshToken();
-      jwt = JwtUtil.createJwt(refreshToken);
-    });
+      secrets = AuthenticationTokenSecretsMock()..setEs512Algorithm();
+      jwtUtil = JwtUtil(secrets: secrets);
 
-    tearDown(() {
-      _AuthenticationTokenSecretsUtil.clearSigning();
+      refreshToken = _createRefreshToken();
+      jwt = jwtUtil.createJwt(refreshToken);
     });
 
     test(
       'when a JWT is verified, then its data is returned.',
       () {
         expect(
-          JwtUtil.verifyJwt(jwt),
+          jwtUtil.verifyJwt(jwt),
           isNotNull,
         );
       },
@@ -296,15 +287,10 @@ void main() {
     test(
         'when the configuration is changed to HMAC, then the validation fails.',
         () {
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
-      AuthenticationTokenSecrets.publicKeyTestOverride = '';
-      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
-
-      AuthenticationTokenSecrets.fallbackKeyTestOverride = '';
-      AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = '';
+      secrets.setHs512Algorithm();
 
       expectLater(
-        () => JwtUtil.verifyJwt(jwt),
+        () => jwtUtil.verifyJwt(jwt),
         throwsA(isA<Error>()),
       );
     });
@@ -312,16 +298,15 @@ void main() {
     test(
         'when the configuration is changed to HMAC with the previous public key as a fallback, then the validation succeeds.',
         () {
-      AuthenticationTokenSecrets.fallbackKeyTestOverride =
-          AuthenticationTokenSecrets.publicKeyTestOverride;
-      AuthenticationTokenSecrets.fallbackAlgorithmTestOverride =
-          AuthenticationTokenSecrets.algorithmTestOverride;
+      final currentEs512 = secrets.algorithm
+          as EcdsaSha512AuthenticationTokenAlgorithmConfiguration;
+      secrets.setHs512Algorithm();
+      secrets.fallbackVerificationAlgorithm =
+          EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+        publicKey: currentEs512.publicKey,
+      );
 
-      AuthenticationTokenSecrets.privateKeyTestOverride = 'new hmac key';
-      AuthenticationTokenSecrets.publicKeyTestOverride = '';
-      AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
-
-      final result = JwtUtil.verifyJwt(jwt);
+      final result = jwtUtil.verifyJwt(jwt);
 
       expect(result.authUserId, refreshToken.authUserId);
     });
@@ -339,38 +324,3 @@ RefreshToken _createRefreshToken() {
     rotatingSecretSalt: ByteData(0),
   );
 }
-
-extension _AuthenticationTokenSecretsUtil on AuthenticationTokenSecrets {
-  static void configureHs512Signing() {
-    AuthenticationTokenSecrets.privateKeyTestOverride =
-        'test-private-key-for-HS512';
-    AuthenticationTokenSecrets.publicKeyTestOverride = '';
-    AuthenticationTokenSecrets.algorithmTestOverride = 'HS512';
-  }
-
-  static void configureEs512Signing() {
-    AuthenticationTokenSecrets.privateKeyTestOverride = _testPrivateKey;
-    AuthenticationTokenSecrets.publicKeyTestOverride = _testPublicKey;
-    AuthenticationTokenSecrets.algorithmTestOverride = 'ES512';
-  }
-
-  static void clearSigning() {
-    AuthenticationTokenSecrets.privateKeyTestOverride = null;
-    AuthenticationTokenSecrets.publicKeyTestOverride = null;
-    AuthenticationTokenSecrets.algorithmTestOverride = null;
-
-    AuthenticationTokenSecrets.fallbackAlgorithmTestOverride = null;
-    AuthenticationTokenSecrets.fallbackKeyTestOverride = null;
-  }
-}
-
-const _testPrivateKey = '''-----BEGIN EC PRIVATE KEY-----
-MHQCAQEEINCRiJnNDnzfo2So2tWY4AIuzeC2ZBp/hmMDcZz3Fh45oAcGBSuBBAAK
-oUQDQgAE0aELkvG/Xeo5y6o0WXRAjlediLptGz7Q8zjDmpGFXkKBYZ6IiL7JJ2Tk
-cHzd83bmeUeGX33RGTYFPXs5t/VBnw==
------END EC PRIVATE KEY-----''';
-
-const _testPublicKey = '''-----BEGIN PUBLIC KEY-----
-MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE0aELkvG/Xeo5y6o0WXRAjlediLptGz7Q
-8zjDmpGFXkKBYZ6IiL7JJ2TkcHzd83bmeUeGX33RGTYFPXs5t/VBnw==
------END PUBLIC KEY-----''';

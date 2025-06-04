@@ -4,7 +4,13 @@ import 'package:serverpod/serverpod.dart';
 
 /// Secrets used for authentication tokens.
 @internal
-abstract class AuthenticationTokenSecrets {
+class AuthenticationTokenSecrets {
+  AuthenticationTokenSecrets()
+      : algorithm = _algorithmFromConfig(),
+        fallbackVerificationAlgorithm =
+            _fallbackVerificationAlgorithmFromConfig(),
+        refreshTokenHashPepper = _refreshTokenHashPepper;
+
   static const String algorithmConfigurationKey =
       'serverpod_auth_jwt.algorithm';
 
@@ -31,7 +37,12 @@ abstract class AuthenticationTokenSecrets {
   static const String refreshTokenHashPepperConfigurationKey =
       'serverpod_auth_jwt.refreshTokenHashPepper';
 
-  static AuthenticationTokenAlgorithmConfiguration get algorithm {
+  final AuthenticationTokenAlgorithmConfiguration algorithm;
+
+  final FallbackAuthenticationTokenAlgorithmConfiguration?
+      fallbackVerificationAlgorithm;
+
+  static AuthenticationTokenAlgorithmConfiguration _algorithmFromConfig() {
     final algorithmConfiguration = algorithmTestOverride ??
         Serverpod.instance.getPassword(algorithmConfigurationKey);
     final algorithm = algorithmConfiguration == null
@@ -80,7 +91,7 @@ abstract class AuthenticationTokenSecrets {
 
   /// The fallback algorithm to be used for verifications during key rotations.
   static FallbackAuthenticationTokenAlgorithmConfiguration?
-      get fallbackVerificationAlgorithm {
+      _fallbackVerificationAlgorithmFromConfig() {
     final algorithmConfiguration = fallbackAlgorithmTestOverride ??
         Serverpod.instance.getPassword(fallbackAlgorithmConfigurationKey);
 
@@ -122,7 +133,9 @@ abstract class AuthenticationTokenSecrets {
   }
 
   /// The pepper used for hashing refresh tokens.
-  static String get refreshTokenHashPepper {
+  final String refreshTokenHashPepper;
+
+  static String get _refreshTokenHashPepper {
     final pepper = refreshTokenHashPepperTestOverride ??
         Serverpod.instance.getPassword(refreshTokenHashPepperConfigurationKey);
 

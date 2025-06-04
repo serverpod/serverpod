@@ -15,9 +15,15 @@ import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
 @internal
-abstract final class RefreshTokenSecretHash {
+final class RefreshTokenSecretHash {
+  RefreshTokenSecretHash({
+    required final AuthenticationTokenSecrets secrets,
+  }) : _secrets = secrets;
+
+  final AuthenticationTokenSecrets _secrets;
+
   /// Create the hash for the given refresh token secret.
-  static Future<({Uint8List hash, Uint8List salt})> createHash({
+  Future<({Uint8List hash, Uint8List salt})> createHash({
     required final Uint8List secret,
     @protected Uint8List? salt,
   }) {
@@ -25,13 +31,12 @@ abstract final class RefreshTokenSecretHash {
       AuthenticationTokens.config.refreshTokenRotatingSecretSaltLength,
     );
 
-    final pepper =
-        utf8.encode(AuthenticationTokenSecrets.refreshTokenHashPepper);
+    final pepper = utf8.encode(_secrets.refreshTokenHashPepper);
 
     return _createHash(secret: secret, salt: salt, pepper: pepper);
   }
 
-  static Future<({Uint8List hash, Uint8List salt})> _createHash({
+  Future<({Uint8List hash, Uint8List salt})> _createHash({
     required final Uint8List secret,
     required final Uint8List salt,
     required final Uint8List pepper,
@@ -53,7 +58,7 @@ abstract final class RefreshTokenSecretHash {
   }
 
   /// Verify whether the [secret] can be used to compute the given [hash] with the [salt] applied.
-  static Future<bool> validateHash({
+  Future<bool> validateHash({
     required final Uint8List secret,
     required final Uint8List hash,
     required final Uint8List salt,

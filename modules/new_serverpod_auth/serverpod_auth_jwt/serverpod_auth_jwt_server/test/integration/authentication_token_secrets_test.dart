@@ -7,10 +7,10 @@ void main() {
   withServerpod('Given no configuration,',
       (final sessionBuilder, final endpoints) {
     test(
-      'when the current `algorithm` is read, then an error is thrown.',
+      'when the class is created, then an error is thrown.',
       () {
         expect(
-          () => AuthenticationTokenSecrets.algorithm,
+          () => AuthenticationTokenSecrets(),
           throwsArgumentError,
         );
       },
@@ -26,12 +26,15 @@ void main() {
     test(
       'when the current `algorithm` is read, then it uses HS512 for the given key.',
       () {
-        final algorithm = AuthenticationTokenSecrets.algorithm;
+        final algorithm = AuthenticationTokenSecrets().algorithm;
 
         expect(
           algorithm,
-          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>()
-              .having((final a) => a.key.key, 'key', 'secret-key-for-jwt'),
+          isA<HmacSha512AuthenticationTokenAlgorithmConfiguration>().having(
+            (final a) => a.key.key,
+            'key',
+            'secret-key-for-jwt',
+          ),
         );
       },
     );
@@ -48,7 +51,7 @@ void main() {
       'when the current `algorithm` is read, then an error is thrown.',
       () {
         expect(
-          () => AuthenticationTokenSecrets.algorithm,
+          () => AuthenticationTokenSecrets().algorithm,
           throwsArgumentError,
         );
       },
@@ -65,7 +68,7 @@ void main() {
     test(
       'when the current `algorithm` is read, then it uses HS512 for the given key.',
       () {
-        final algorithm = AuthenticationTokenSecrets.algorithm;
+        final algorithm = AuthenticationTokenSecrets().algorithm;
 
         expect(
           algorithm,
@@ -90,7 +93,7 @@ void main() {
       'when the current `algorithm` is read, then an error is thrown.',
       () {
         expect(
-          () => AuthenticationTokenSecrets.algorithm,
+          () => AuthenticationTokenSecrets().algorithm,
           throwsArgumentError,
         );
       },
@@ -108,7 +111,7 @@ void main() {
     test(
       'when the current `algorithm` is read, then a configuration for asymmetric crypto is returned.',
       () {
-        final algorithm = AuthenticationTokenSecrets.algorithm;
+        final algorithm = AuthenticationTokenSecrets().algorithm;
 
         expect(
           algorithm,

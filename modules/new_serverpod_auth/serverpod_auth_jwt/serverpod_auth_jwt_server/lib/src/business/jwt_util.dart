@@ -8,14 +8,20 @@ import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secr
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
 
 @internal
-abstract class JwtUtil {
+class JwtUtil {
+  JwtUtil({
+    required final AuthenticationTokenSecrets secrets,
+  }) : _secrets = secrets;
+
+  final AuthenticationTokenSecrets _secrets;
+
   /// Creates a new JWT for the given refresh token.
   ///
   /// The auth user ID is set as `subject`.
   /// The refresh token's ID for which this access token is generated is set as `jwtId`.
   /// If scopes are present on the fresh token configuration, they will be set on a claim named "dev.serverpod.scopeNames".
   /// Any extra claims configured with the refresh token will be added as top-level claims.
-  static String createJwt(final RefreshToken refreshToken) {
+  String createJwt(final RefreshToken refreshToken) {
     final extraClaims = refreshToken.extraClaims != null
         ? jsonDecode(refreshToken.extraClaims!) as Map
         : null;
@@ -31,8 +37,7 @@ abstract class JwtUtil {
       issuer: _issuer,
     );
 
-    final (JWTKey key, JWTAlgorithm algorithm) =
-        switch (AuthenticationTokenSecrets.algorithm) {
+    final (JWTKey key, JWTAlgorithm algorithm) = switch (_secrets.algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
           key,
           JWTAlgorithm.HS512
@@ -51,7 +56,7 @@ abstract class JwtUtil {
   /// Verifies and decodes the JWT access token.
   ///
   /// Throws in case of any validation failures (e.g. invalid signature or changed issuer, etc.) and in any case when parsing the expected contained data fails.
-  static VerifiedJwtData verifyJwt(final String accessToken) {
+  VerifiedJwtData verifyJwt(final String accessToken) {
     final jwt = _verifyJwt(accessToken);
 
     final UuidValue refreshTokenId;
@@ -111,42 +116,22 @@ abstract class JwtUtil {
   ///
   /// If reading with the primary algorithm fails, the fallback (if configured) is tried.
   /// In case neither of the keys work, and error is thrown.
-  static JWT _verifyJwt(final String accessToken) {
+  JWT _verifyJwt(final String accessToken) {
     try {
-      final key = switch (AuthenticationTokenSecrets.algorithm) {
-        HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => key,
-        EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
-          :final publicKey
-        ) =>
-          publicKey,
-      };
-
       return JWT.verify(
         accessToken,
-        key,
+        _secrets.algorithm.jwtKey,
         issuer: _issuer,
       );
     } catch (_) {
-      final fallbackAlgorithm =
-          AuthenticationTokenSecrets.fallbackVerificationAlgorithm;
+      final fallbackAlgorithm = _secrets.fallbackVerificationAlgorithm;
       if (fallbackAlgorithm == null) {
         rethrow;
       }
 
-      final key = switch (fallbackAlgorithm) {
-        HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-          :final key
-        ) =>
-          key,
-        EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-          :final publicKey
-        ) =>
-          publicKey,
-      };
-
       return JWT.verify(
         accessToken,
-        key,
+        fallbackAlgorithm.jwtKey,
         issuer: _issuer,
       );
     }
@@ -175,3 +160,26 @@ typedef VerifiedJwtData = ({
   Set<Scope> scopes,
   Map<String, dynamic> extraClaims,
 });
+
+extension on AuthenticationTokenAlgorithmConfiguration {
+  JWTKey get jwtKey {
+    return switch (this) {
+      HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => key,
+      EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final publicKey) =>
+        publicKey,
+    };
+  }
+}
+
+extension on FallbackAuthenticationTokenAlgorithmConfiguration {
+  JWTKey get jwtKey {
+    return switch (this) {
+      HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(:final key) =>
+        key,
+      EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
+        :final publicKey
+      ) =>
+        publicKey,
+    };
+  }
+}

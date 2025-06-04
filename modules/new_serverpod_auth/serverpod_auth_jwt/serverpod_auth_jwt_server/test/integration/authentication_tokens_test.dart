@@ -7,6 +7,7 @@ import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
+import '../utils/authentication_token_secrets_mock.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -14,10 +15,12 @@ void main() {
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
+    late final secretsWithHmac = AuthenticationTokenSecretsMock()
+      ..setHs512Algorithm()
+      ..refreshTokenHashPepper = 'pepper123';
 
     setUpAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
     });
 
     setUp(() async {
@@ -32,7 +35,7 @@ void main() {
     });
 
     tearDownAll(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -44,7 +47,9 @@ void main() {
         scopes: {const Scope('test')},
       );
 
-      final decodedToken = JwtUtil.verifyJwt(tokenPair.accessToken);
+      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+        tokenPair.accessToken,
+      );
       expect(decodedToken.scopes, hasLength(1));
       expect(decodedToken.scopes.single.name, 'test');
     });
@@ -92,13 +97,16 @@ void main() {
     final endpoints,
   ) {
     const String scopeName = 'test scope';
+    late AuthenticationTokenSecretsMock secrets;
     late Session session;
     late UuidValue authUserId;
     late TokenPair tokenPair;
 
     setUp(() async {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      secrets = AuthenticationTokenSecretsMock()
+        ..setHs512Algorithm()
+        ..refreshTokenHashPepper = 'pepper123';
+      AuthenticationTokens.secretsTestOverride = secrets;
 
       session = sessionBuilder.build();
 
@@ -118,8 +126,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthenticationTokenSecrets.privateKeyTestOverride = null;
-      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride = null;
+      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
@@ -187,8 +194,7 @@ void main() {
     test(
         'when changing the configured pepper, then attempting to rotate the token throws an error.',
         () async {
-      AuthenticationTokenSecrets.refreshTokenHashPepperTestOverride =
-          'another pepper';
+      secrets.refreshTokenHashPepper = 'another pepper';
 
       await expectLater(
         () => AuthenticationTokens.rotateRefreshToken(
@@ -243,8 +249,10 @@ void main() {
     late TokenPair refreshedTokenPair;
 
     setUp(() async {
-      AuthenticationTokenSecrets.privateKeyTestOverride =
-          'test-private-key-for-HS512';
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'pepper123';
 
       session = sessionBuilder.build();
 

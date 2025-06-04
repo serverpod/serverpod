@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_info_from_jwt.dart';
+import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_tokens_admin.dart';
 import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
@@ -33,7 +35,7 @@ abstract final class AuthenticationTokens {
     final String jwtAccessToken,
   ) async {
     try {
-      final tokenData = JwtUtil.verifyJwt(jwtAccessToken);
+      final tokenData = _jwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
     } on JWTUndefinedException catch (_) {
@@ -71,7 +73,7 @@ abstract final class AuthenticationTokens {
     final Transaction? transaction,
   }) async {
     final secret = _generateRefreshTokenRotatingSecret();
-    final newHash = await RefreshTokenSecretHash.createHash(secret: secret);
+    final newHash = await _refreshTokenSecretHash.createHash(secret: secret);
 
     final refreshToken = await RefreshToken.db.insertRow(
       session,
@@ -91,7 +93,7 @@ abstract final class AuthenticationTokens {
         refreshToken: refreshToken,
         rotatingSecret: secret,
       ),
-      accessToken: JwtUtil.createJwt(refreshToken),
+      accessToken: _jwtUtil.createJwt(refreshToken),
     );
   }
 
@@ -147,7 +149,7 @@ abstract final class AuthenticationTokens {
       throw RefreshTokenExpiredException();
     }
 
-    if (!await RefreshTokenSecretHash.validateHash(
+    if (!await _refreshTokenSecretHash.validateHash(
       secret: refreshTokenData.rotatingSecret,
       hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
       salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
@@ -162,7 +164,7 @@ abstract final class AuthenticationTokens {
     }
 
     final newSecret = _generateRefreshTokenRotatingSecret();
-    final newHash = await RefreshTokenSecretHash.createHash(secret: newSecret);
+    final newHash = await _refreshTokenSecretHash.createHash(secret: newSecret);
 
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
@@ -179,7 +181,7 @@ abstract final class AuthenticationTokens {
         refreshToken: refreshTokenRow,
         rotatingSecret: newSecret,
       ),
-      accessToken: JwtUtil.createJwt(refreshTokenRow),
+      accessToken: _jwtUtil.createJwt(refreshTokenRow),
     );
   }
 
@@ -247,6 +249,20 @@ abstract final class AuthenticationTokens {
       AuthenticationTokens.config.refreshTokenRotatingSecretLength,
     );
   }
+
+  /// The secrets configuration.
+  static final __secrets = AuthenticationTokenSecrets();
+
+  /// Secrets to the used for testing. Also affects the internally used [JwtUtil] and [RefreshTokenSecretHash]
+  @visibleForTesting
+  static AuthenticationTokenSecrets? secretsTestOverride;
+  static AuthenticationTokenSecrets get _secrets =>
+      secretsTestOverride ?? __secrets;
+
+  static JwtUtil get _jwtUtil => JwtUtil(secrets: _secrets);
+
+  static RefreshTokenSecretHash get _refreshTokenSecretHash =>
+      RefreshTokenSecretHash(secrets: _secrets);
 }
 
 extension on Set<Scope> {
