@@ -1,16 +1,12 @@
 import 'package:serverpod/database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
-class MockTransaction implements Transaction {
+class MockTransaction extends Fake implements Transaction {
   @override
   Future<void> cancel() async {}
-
-  @override
-  Future<Savepoint> createSavepoint() {
-    throw UnimplementedError();
-  }
 }
 
 void main() async {
