@@ -217,6 +217,21 @@ void main() {
         );
       });
 
+      test('then the server project has a generated protocol file', () {
+        expect(
+          File(path.join(
+            tempPath,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'protocol.yaml',
+          )).existsSync(),
+          isTrue,
+          reason: 'Server generated protocol file does not exist.',
+        );
+      });
+
       test('then the client project folder is created', () {
         expect(
           Directory(path.join(tempPath, clientDir)).existsSync(),
