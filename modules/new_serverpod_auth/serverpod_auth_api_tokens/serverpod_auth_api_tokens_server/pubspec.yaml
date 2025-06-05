@@ -1,5 +1,7 @@
 name: serverpod_auth_api_tokens_server
-description: Starting point for a Serverpod module.
+description: Serverpod authentication API token server module.
+version: 2.8.0
+repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -12,14 +14,16 @@ dev_dependencies:
   test: '^1.24.2'
   serverpod_test: 2.8.0
 
-dependency_overrides: 
-  serverpod: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod 
-  serverpod_serialization: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_serialization 
-  serverpod_shared: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_shared 
-  serverpod_test: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_test 
-  serverpod_lints: 
-    path: /Volumes/CaseSensititve/SourcesCS/serverpod/packages/serverpod_lints 
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_user_server:
+    path: ../../../new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test
