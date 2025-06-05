@@ -41,17 +41,12 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        if (account == null) {
-          throw EmailAccountLoginException(
-            reason: EmailAccountLoginFailureReason.invalidCredentials,
-          );
-        }
-
-        if (!await EmailAccountSecretHash.validateHash(
-          value: password,
-          hash: account.passwordHash.asUint8List,
-          salt: account.passwordSalt.asUint8List,
-        )) {
+        if (account == null ||
+            !await EmailAccountSecretHash.validateHash(
+              value: password,
+              hash: account.passwordHash.asUint8List,
+              salt: account.passwordSalt.asUint8List,
+            )) {
           await _logFailedSignIn(session, email);
 
           throw EmailAccountLoginException(
