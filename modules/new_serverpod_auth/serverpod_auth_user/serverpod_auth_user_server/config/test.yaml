@@ -32,7 +32,7 @@ webServer:
 database:
   host: localhost
   port: 9090
-  name: projectname_test
+  name: serverpod_auth_user_test
   user: postgres
 
 # This is the setup for your Redis test instance.

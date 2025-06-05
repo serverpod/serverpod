@@ -19,7 +19,7 @@ webServer:
 database:
   host: localhost
   port: 9090
-  name: projectname_test
+  name: serverpod_test_module_test
   user: postgres
 
 redis:
