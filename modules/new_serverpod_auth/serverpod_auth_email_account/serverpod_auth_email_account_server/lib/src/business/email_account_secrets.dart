@@ -15,8 +15,9 @@ abstract class EmailAccountSecrets {
         Serverpod.instance.getPassword(passwordHashPepperConfigurationKey);
 
     if (pepper == null || pepper.isEmpty) {
-      throw Exception(
-        'Password "${EmailAccountSecrets.passwordHashPepperConfigurationKey}" is not set',
+      throw ArgumentError(
+        'No valid pepper has been set in the passwords',
+        EmailAccountSecrets.passwordHashPepperConfigurationKey,
       );
     }
 
