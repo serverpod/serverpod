@@ -165,7 +165,6 @@ abstract final class AuthSessions {
 
     if (auths.isEmpty) return;
 
-    // Notify clients about the revoked authentication for the user
     await session.messages.authenticationRevoked(
       authUserId,
       RevokedAuthenticationUser(),
