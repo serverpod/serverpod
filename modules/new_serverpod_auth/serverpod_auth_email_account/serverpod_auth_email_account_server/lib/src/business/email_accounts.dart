@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
+import 'package:serverpod_auth_email_account_server/src/business/email_account_secret_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/business/email_accounts_admin.dart';
-import 'package:serverpod_auth_email_account_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 
 /// Email account management functions.
