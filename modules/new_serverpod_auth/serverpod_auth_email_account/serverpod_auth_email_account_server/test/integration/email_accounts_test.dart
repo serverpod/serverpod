@@ -1,9 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
+import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -19,7 +19,7 @@ void main() {
       tearDown(() async {
         EmailAccounts.config = EmailAccountConfig();
 
-        await _cleanUpdatabaseEntities(session);
+        await cleanUpEmailAccountDatabaseEntities(session);
       });
 
       test(
@@ -117,7 +117,7 @@ void main() {
       tearDown(() async {
         EmailAccounts.config = EmailAccountConfig();
 
-        await _cleanUpdatabaseEntities(session);
+        await cleanUpEmailAccountDatabaseEntities(session);
       });
 
       test(
@@ -180,10 +180,7 @@ void main() {
 
       test('when creating an account from the request, then it succeeds.',
           () async {
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
+        final authUser = await createAuthUser(session);
 
         final result = await EmailAccounts.completeAccountCreation(
           session,
@@ -202,10 +199,7 @@ void main() {
           registrationVerificationCodeAllowedAttempts: 1,
         );
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
+        final authUser = await createAuthUser(session);
 
         await expectLater(
           () => EmailAccounts.completeAccountCreation(
@@ -256,13 +250,10 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
+        final authUser = await createAuthUser(session);
         authUserId = authUser.id!;
 
-        final accountCreationDetails = await _createEmailAccount(
+        final accountCreationDetails = await createVerifiedEmailAccount(
           session,
           authUserId: authUserId,
           email: email,
@@ -278,7 +269,7 @@ void main() {
       tearDown(() async {
         EmailAccounts.config = EmailAccountConfig();
 
-        await _cleanUpdatabaseEntities(session);
+        await cleanUpEmailAccountDatabaseEntities(session);
       });
 
       test('when logging in with the original credentials, then it succeeds.',
@@ -435,27 +426,24 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
+        final authUser = await createAuthUser(session);
         authUserId = authUser.id!;
 
-        await _createEmailAccount(
+        await createVerifiedEmailAccount(
           session,
           authUserId: authUserId,
           email: email,
           password: password,
         );
 
-        (paswordResetRequestId, verificationCode) = await _requestPasswordReset(
+        (paswordResetRequestId, verificationCode) = await requestPasswordReset(
           session,
           email: email,
         );
       });
 
       tearDown(() async {
-        await _cleanUpdatabaseEntities(session);
+        await cleanUpEmailAccountDatabaseEntities(session);
       });
 
       test(
@@ -548,20 +536,17 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
+        final authUser = await createAuthUser(session);
         authUserId = authUser.id!;
 
-        await _createEmailAccount(
+        await createVerifiedEmailAccount(
           session,
           authUserId: authUserId,
           email: email,
           password: oldPassword,
         );
 
-        await _resetPassword(
+        await resetPassword(
           session,
           email: email,
           newPassword: newPassword,
@@ -569,7 +554,7 @@ void main() {
       });
 
       tearDown(() async {
-        await _cleanUpdatabaseEntities(session);
+        await cleanUpEmailAccountDatabaseEntities(session);
       });
 
       test('when using the new credentials for the login, then it succeeds.',
@@ -599,150 +584,5 @@ void main() {
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
-  );
-}
-
-Future<
-    ({
-      UuidValue accountRequestId,
-      String verificationCode,
-      UuidValue emailAccountId,
-    })> _createEmailAccount(
-  final Session session, {
-  required final UuidValue authUserId,
-  required final String email,
-  required final String password,
-}) async {
-  late UuidValue pendingAccountRequestId;
-  late String pendingAccountVerificationCode;
-  EmailAccounts.config = EmailAccountConfig(
-    sendRegistrationVerificationCode: (
-      final session, {
-      required final email,
-      required final accountRequestId,
-      required final verificationCode,
-      required final transaction,
-    }) {
-      pendingAccountRequestId = accountRequestId;
-      pendingAccountVerificationCode = verificationCode;
-    },
-  );
-
-  await EmailAccounts.startAccountCreation(
-    session,
-    email: email,
-    password: password,
-  );
-
-  final creationResult = await EmailAccounts.completeAccountCreation(
-    session,
-    authUserId: authUserId,
-    accountRequestId: pendingAccountRequestId,
-    verificationCode: pendingAccountVerificationCode,
-  );
-
-  EmailAccounts.config = EmailAccountConfig();
-
-  return (
-    accountRequestId: pendingAccountRequestId,
-    verificationCode: pendingAccountVerificationCode,
-    emailAccountId: creationResult.emailAccountId,
-  );
-}
-
-Future<(UuidValue paswordResetRequestId, String verificationCode)>
-    _requestPasswordReset(
-  final Session session, {
-  required final String email,
-}) async {
-  late UuidValue pendingPasswordResetRequestId;
-  late String pendingPasswordResetVerificationCode;
-  EmailAccounts.config = EmailAccountConfig(
-    sendPasswordResetVerificationCode: (
-      final session, {
-      required final email,
-      required final passwordResetRequestId,
-      required final transaction,
-      required final verificationCode,
-    }) {
-      pendingPasswordResetRequestId = passwordResetRequestId;
-      pendingPasswordResetVerificationCode = verificationCode;
-    },
-  );
-
-  await EmailAccounts.startPasswordReset(
-    session,
-    email: email,
-  );
-
-  EmailAccounts.config = EmailAccountConfig();
-
-  return (pendingPasswordResetRequestId, pendingPasswordResetVerificationCode);
-}
-
-Future<void> _resetPassword(
-  final Session session, {
-  required final String email,
-  required final String newPassword,
-}) async {
-  late UuidValue pendingPasswordResetRequestId;
-  late String pendingPasswordResetVerificationCode;
-  EmailAccounts.config = EmailAccountConfig(
-    sendPasswordResetVerificationCode: (
-      final session, {
-      required final email,
-      required final passwordResetRequestId,
-      required final transaction,
-      required final verificationCode,
-    }) {
-      pendingPasswordResetRequestId = passwordResetRequestId;
-      pendingPasswordResetVerificationCode = verificationCode;
-    },
-  );
-
-  await EmailAccounts.startPasswordReset(
-    session,
-    email: email,
-  );
-
-  EmailAccounts.config = EmailAccountConfig();
-
-  await EmailAccounts.completePasswordReset(
-    session,
-    passwordResetRequestId: pendingPasswordResetRequestId,
-    verificationCode: pendingPasswordResetVerificationCode,
-    newPassword: newPassword,
-  );
-}
-
-Future<void> _cleanUpdatabaseEntities(final Session session) async {
-  await AuthUser.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
-
-  await EmailAccountRequest.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
-
-  await EmailAccountFailedLoginAttempt.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetAttempt.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
-
-  await EmailAccountRequestCompletionAttempt.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
   );
 }

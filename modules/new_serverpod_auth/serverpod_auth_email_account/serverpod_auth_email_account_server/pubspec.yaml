@@ -10,6 +10,7 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
+  clock: ^1.1.1
   email_validator: '>=2.1.17 <4.0.0'
   meta: ^1.11.0
   pointycastle: ^3.7.4

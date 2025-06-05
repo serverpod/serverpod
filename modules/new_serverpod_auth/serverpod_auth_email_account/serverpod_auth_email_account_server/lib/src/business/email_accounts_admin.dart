@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
@@ -15,7 +16,7 @@ final class EmailAccountsAdmin {
   }) async {
     olderThan ??= EmailAccounts.config.maxPasswordResetAttempts.timeframe;
 
-    final removeBefore = DateTime.now().subtract(olderThan);
+    final removeBefore = clock.now().subtract(olderThan);
 
     await EmailAccountPasswordResetAttempt.db.deleteWhere(
       session,
@@ -27,9 +28,9 @@ final class EmailAccountsAdmin {
   Future<void> deleteExpiredPasswordResetRequests(
     final Session session,
   ) async {
-    final lastValidDateTime = DateTime.now().subtract(
-      EmailAccounts.config.passwordResetVerificationCodeLifetime,
-    );
+    final lastValidDateTime = clock.now().subtract(
+          EmailAccounts.config.passwordResetVerificationCodeLifetime,
+        );
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
@@ -41,9 +42,9 @@ final class EmailAccountsAdmin {
   Future<void> deleteExpiredAccountCreations(
     final Session session,
   ) async {
-    final lastValidDateTime = DateTime.now().subtract(
-      EmailAccounts.config.registrationVerificationCodeLifetime,
-    );
+    final lastValidDateTime = clock.now().subtract(
+          EmailAccounts.config.registrationVerificationCodeLifetime,
+        );
 
     await EmailAccountRequest.db.deleteWhere(
       session,
