@@ -93,6 +93,10 @@ echo "\nserverpod_auth_jwt_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server
 dart $CLI generate --no-analytics --experimental-features=all
 
+echo "\nserverpod_auth_api_tokens_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server
+dart $CLI generate --no-analytics --experimental-features=all
+
 # Chat module
 
 echo "\nserverpod_chat_server"
