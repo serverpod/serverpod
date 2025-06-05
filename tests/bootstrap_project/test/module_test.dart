@@ -27,7 +27,7 @@ void main() {
 
   tearDownAll(() async {
     try {
-      Directory(tempDirName).deleteSync(recursive: true);
+      Directory(tempPath).deleteSync(recursive: true);
     } catch (e) {}
   });
 
