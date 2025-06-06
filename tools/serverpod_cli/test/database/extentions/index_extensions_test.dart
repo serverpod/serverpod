@@ -211,4 +211,44 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
   });
+
+  group('Given vector index column types', () {
+    test(
+        'when comparing vector indexes with different column vector types then mismatch is found.',
+        () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('vector_idx')
+          .withType('hnsw')
+          .withVectorDistanceFunction(VectorDistanceFunction.cosine)
+          .withVectorColumnType(ColumnType.vector)
+          .withElements([
+        IndexElementDefinition(
+            definition: 'vector_col', type: IndexElementDefinitionType.column)
+      ]).build();
+
+      var index2 = index1.copyWith(
+        vectorColumnType: ColumnType.halfvec,
+      );
+
+      expect(index1.like(index2), isFalse);
+    });
+
+    test(
+        'when comparing vector indexes with same column vector types then no mismatch is found.',
+        () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('vector_idx')
+          .withType('hnsw')
+          .withVectorDistanceFunction(VectorDistanceFunction.cosine)
+          .withVectorColumnType(ColumnType.vector)
+          .withElements([
+        IndexElementDefinition(
+            definition: 'vector_col', type: IndexElementDefinitionType.column)
+      ]).build();
+
+      var index2 = index1.copyWith();
+
+      expect(index1.like(index2), isTrue);
+    });
+  });
 }

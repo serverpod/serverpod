@@ -573,4 +573,34 @@ void main() {
       expect(type.vectorDimension, 512);
     },
   );
+
+  test(
+    'Given a field type of a half vector when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('HalfVector(256)', extraClasses: []);
+      expect(type.className, 'HalfVector');
+      expect(type.nullable, isFalse);
+      expect(type.vectorDimension, 256);
+    },
+  );
+
+  test(
+    'Given a field type of a sparse vector when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('SparseVector(1024)?', extraClasses: []);
+      expect(type.className, 'SparseVector');
+      expect(type.nullable, isTrue);
+      expect(type.vectorDimension, 1024);
+    },
+  );
+
+  test(
+    'Given a field type of a bit vector when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Bit(64)', extraClasses: []);
+      expect(type.className, 'Bit');
+      expect(type.nullable, isFalse);
+      expect(type.vectorDimension, 64);
+    },
+  );
 }

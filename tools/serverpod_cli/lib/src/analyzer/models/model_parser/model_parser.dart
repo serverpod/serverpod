@@ -595,7 +595,8 @@ class ModelParser {
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
-      var distanceFunction = _parseDistanceFunction(nodeDocument, type);
+      var distanceFunction =
+          _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
       var parameters = _parseParametersKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
@@ -652,13 +653,16 @@ class ModelParser {
   static VectorDistanceFunction? _parseDistanceFunction(
     YamlMap documentContents,
     String indexType,
+    Iterable<SerializableModelFieldDefinition> indexFieldsTypes,
   ) {
     var node = documentContents.nodes[Keyword.distanceFunction];
     var nodeValue = node?.value;
 
     if (nodeValue is! String) {
       return VectorIndexType.values.any((e) => e.name == indexType)
-          ? VectorDistanceFunction.l2
+          ? (indexFieldsTypes.any((field) => field.type.className == 'Bit')
+              ? VectorDistanceFunction.hamming
+              : VectorDistanceFunction.l2)
           : null;
     }
 

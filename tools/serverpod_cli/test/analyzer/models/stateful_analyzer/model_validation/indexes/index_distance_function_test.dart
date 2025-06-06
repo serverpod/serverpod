@@ -160,6 +160,261 @@ void main() {
   });
 
   test(
+      'Given a class with a vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          table: example
+          fields:
+            embedding: Vector(1536)
+          indexes:
+            example_index:
+              fields: embedding
+              type: hnsw
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'l2');
+  });
+
+  test(
+      'Given a class with a half vector field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: cosine
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'cosine');
+  });
+
+  test(
+      'Given a class with a half vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'l2');
+  });
+
+  test(
+      'Given a class with a sparse vector field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: cosine
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'cosine');
+  });
+
+  test(
+      'Given a class with a sparse vector field and hnsw index without distance function, then return a definition where distanceFunction defaults to l2.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'l2');
+  });
+
+  test(
+      'Given a class with a bit field and hnsw index with valid distance function, then return a definition where distanceFunction is correctly set.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: Bit(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: jaccard
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'jaccard');
+  });
+
+  test(
+      'Given a class with a bit field and hnsw index without distance function, then return a definition where distanceFunction defaults to hamming.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: Bit(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but errors were collected.',
+    );
+
+    var definition = definitions.first as ModelClassDefinition;
+    var distanceFunction = definition.indexes.first.vectorDistanceFunction;
+
+    expect(distanceFunction, isNotNull);
+    expect(distanceFunction!.name, 'hamming');
+  });
+
+  test(
       'Given a class with a vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
       () {
     var models = [
@@ -194,6 +449,158 @@ void main() {
       error.message,
       'Invalid distance function "jaccard". Allowed values are: '
       '"l2", "innerProduct", "cosine", "l1".',
+    );
+  });
+
+  test(
+      'Given a class with a half vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: jaccard
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Invalid distance function "jaccard". Allowed values are: '
+      '"l2", "innerProduct", "cosine", "l1".',
+    );
+  });
+
+  test(
+      'Given a class with a half vector field and ivfflat index with l1 distance function, then collect an error about invalid distance function.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: ivfflat
+            distanceFunction: l1
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Invalid distance function "l1". Allowed values are: '
+      '"l2", "innerProduct", "cosine".',
+    );
+  });
+
+  test(
+      'Given a class with a sparse vector field and index with jaccard distance function (binary only), then collect an error about invalid distance function.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: jaccard
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Invalid distance function "jaccard". Allowed values are: '
+      '"l2", "innerProduct", "cosine", "l1".',
+    );
+  });
+
+  test(
+      'Given a class with a bit field and index with l2 distance function (not allowed for binary), then collect an error about invalid distance function.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: Bit(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: hnsw
+            distanceFunction: l2
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Invalid distance function "l2". Allowed values are: '
+      '"jaccard", "hamming".',
     );
   });
 }
