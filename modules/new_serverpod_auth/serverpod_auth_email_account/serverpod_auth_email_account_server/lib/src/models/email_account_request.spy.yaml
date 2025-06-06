@@ -31,6 +31,11 @@ fields:
   ### The salt used to compute the [verificationCodeHash].
   verificationCodeSalt: ByteData
 
+  ### Time at which the email address has been verified, or `null` if it did not happen yet.
+  ###
+  ### The requets can only be turned into an account if this is non-`null`.
+  verifiedAt: DateTime?
+
 indexes:
   serverpod_auth_email_account_request_email:
     fields: email

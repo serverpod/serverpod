@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
@@ -161,50 +162,50 @@ void main() {
           verificationCode: pendingAccountVerificationCode,
         );
 
-        expect(result, isNotNull);
-        expect(result?.emailAccountRequestId, pendingAccountRequestId);
-        expect(result?.email, email.toLowerCase());
-      });
-
-      test(
-          'when verifying the account request with an incorrect code, then it returns `null`.',
-          () async {
-        final result = await EmailAccounts.verifyAccountCreation(
-          session,
-          accountRequestId: pendingAccountRequestId,
-          verificationCode: 'some invalid code',
-        );
-
-        expect(result, isNull);
-      });
-
-      test('when creating an account from the request, then it succeeds.',
-          () async {
-        final authUser = await createAuthUser(session);
-
-        final result = await EmailAccounts.completeAccountCreation(
-          session,
-          authUserId: authUser.id!,
-          accountRequestId: pendingAccountRequestId,
-          verificationCode: pendingAccountVerificationCode,
-        );
-
+        expect(result.emailAccountRequestId, pendingAccountRequestId);
         expect(result.email, email.toLowerCase());
       });
 
       test(
-          'when trying to create an account from the request with an invalid verification code, then fails with the correct error for each try.',
+          'when verifying the account request with an incorrect code, then it throw a `EmailAccountRequestUnauthorizedException`.',
+          () async {
+        await expectLater(
+          () => EmailAccounts.verifyAccountCreation(
+            session,
+            accountRequestId: pendingAccountRequestId,
+            verificationCode: 'some invalid code',
+          ),
+          throwsA(isA<EmailAccountRequestUnauthorizedException>()),
+        );
+      });
+
+      test(
+          'when verifying the account request after it has expired, then it throw a `EmailAccountRequestExpiredException`.',
+          () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => EmailAccounts.verifyAccountCreation(
+              session,
+              accountRequestId: pendingAccountRequestId,
+              verificationCode: pendingAccountVerificationCode,
+            ),
+          ),
+          throwsA(isA<EmailAccountRequestExpiredException>()),
+        );
+      });
+
+      test(
+          'when verifying the account request with an invalid verification code, then fails with the correct error for each try.',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           registrationVerificationCodeAllowedAttempts: 1,
         );
 
-        final authUser = await createAuthUser(session);
-
         await expectLater(
-          () => EmailAccounts.completeAccountCreation(
+          () => EmailAccounts.verifyAccountCreation(
             session,
-            authUserId: authUser.id!,
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
@@ -212,9 +213,8 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.completeAccountCreation(
+          () => EmailAccounts.verifyAccountCreation(
             session,
-            authUserId: authUser.id!,
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
@@ -222,14 +222,88 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.completeAccountCreation(
+          () => EmailAccounts.verifyAccountCreation(
             session,
-            authUserId: authUser.id!,
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestNotFoundException>()),
         );
+      });
+
+      test(
+          'when creating an account from the unverified request, then it fails.',
+          () async {
+        final authUser = await createAuthUser(session);
+
+        await expectLater(
+          () => EmailAccounts.completeAccountCreation(
+            session,
+            authUserId: authUser.id!,
+            accountRequestId: pendingAccountRequestId,
+          ),
+          throwsA(isA<EmailAccountRequestNotVerifiedException>()),
+        );
+      });
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
+
+  withServerpod(
+    'Given a verified email account request,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'Test1@serverpod.dev';
+      late Session session;
+      late UuidValue pendingAccountRequestId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        late final String pendingAccountVerificationCode;
+        EmailAccounts.config = EmailAccountConfig(
+          sendRegistrationVerificationCode: (
+            final session, {
+            required final email,
+            required final accountRequestId,
+            required final verificationCode,
+            required final transaction,
+          }) {
+            pendingAccountRequestId = accountRequestId;
+            pendingAccountVerificationCode = verificationCode;
+          },
+        );
+
+        await EmailAccounts.startAccountCreation(
+          session,
+          email: email,
+          password: 'Abc1234!',
+        );
+
+        await EmailAccounts.verifyAccountCreation(
+          session,
+          accountRequestId: pendingAccountRequestId,
+          verificationCode: pendingAccountVerificationCode,
+        );
+
+        EmailAccounts.config = EmailAccountConfig();
+      });
+
+      tearDown(() async {
+        await cleanUpEmailAccountDatabaseEntities(session);
+      });
+
+      test(
+          'when creating an account from the verified request, then it succeeds.',
+          () async {
+        final authUser = await createAuthUser(session);
+
+        final result = await EmailAccounts.completeAccountCreation(
+          session,
+          authUserId: authUser.id!,
+          accountRequestId: pendingAccountRequestId,
+        );
+
+        expect(result.email, email.toLowerCase());
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
@@ -348,9 +422,8 @@ void main() {
           'when attempting to create the account again with same account request data, then it fails.',
           () async {
         await expectLater(
-          () => EmailAccounts.completeAccountCreation(
+          () => EmailAccounts.verifyAccountCreation(
             session,
-            authUserId: authUserId,
             accountRequestId: accountCreationParameters.accountRequestId,
             verificationCode: accountCreationParameters.verificationCode,
           ),

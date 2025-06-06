@@ -42,11 +42,16 @@ Future<
     password: password,
   );
 
+  await EmailAccounts.verifyAccountCreation(
+    session,
+    accountRequestId: pendingAccountRequestId,
+    verificationCode: pendingAccountVerificationCode,
+  );
+
   final creationResult = await EmailAccounts.completeAccountCreation(
     session,
     authUserId: authUserId,
     accountRequestId: pendingAccountRequestId,
-    verificationCode: pendingAccountVerificationCode,
   );
 
   EmailAccounts.config = EmailAccountConfig();

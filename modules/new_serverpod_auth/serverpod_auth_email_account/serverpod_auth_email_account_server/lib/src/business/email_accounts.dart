@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/email_account_secret_hash.dart';
@@ -115,9 +116,9 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
         if (pendingAccountRequest != null) {
-          if (pendingAccountRequest.created.isBefore(DateTime.now().subtract(
-            EmailAccounts.config.registrationVerificationCodeLifetime,
-          ))) {
+          if (pendingAccountRequest.created.isBefore(clock.now().subtract(
+                EmailAccounts.config.registrationVerificationCodeLifetime,
+              ))) {
             await EmailAccountRequest.db.deleteRow(
               session,
               pendingAccountRequest,
@@ -165,29 +166,67 @@ abstract final class EmailAccounts {
     );
   }
 
-  /// Returns the account request creation ID if the request is valid.
+  /// Checks whether the verification code matches the pending account creation request.
   ///
-  /// If this returns a value, this means `createAccount` will succeed.
-  static Future<({UuidValue emailAccountRequestId, String email})?>
+  /// If this returns successfully, this means `createAccount` can be called.
+  ///
+  /// Throws an [EmailAccountRequestNotFoundException] in case the [accountRequestId] does not point to an existing request.
+  /// Throws an [EmailAccountRequestExpiredException] in case the request's validation window has elapsed.
+  /// Throws [EmailAccountRequestUnauthorizedException] in case the [verificationCode] is not valid.
+  ///
+  static Future<({UuidValue emailAccountRequestId, String email})>
       verifyAccountCreation(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
+    final Transaction? transaction,
   }) async {
     final request = await EmailAccountRequest.db.findById(
       session,
       accountRequestId,
+      transaction: transaction,
     );
 
-    if (request == null ||
-        request.isExpired ||
-        !await EmailAccountSecretHash.validateHash(
-          value: verificationCode,
-          hash: request.verificationCodeHash.asUint8List,
-          salt: request.verificationCodeSalt.asUint8List,
-        )) {
-      return null;
+    if (request == null) {
+      throw EmailAccountRequestNotFoundException();
     }
+
+    if (request.isExpired) {
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        request,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailAccountRequestExpiredException();
+    }
+
+    if (await _hasTooManyEmailAccountCompletionAttempts(
+      session,
+      emailAccountRequestId: request.id!,
+    )) {
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        request,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailAccountRequestTooManyAttemptsException();
+    }
+
+    if (!await EmailAccountSecretHash.validateHash(
+      value: verificationCode,
+      hash: request.verificationCodeHash.asUint8List,
+      salt: request.verificationCodeSalt.asUint8List,
+    )) {
+      throw EmailAccountRequestUnauthorizedException();
+    }
+
+    await EmailAccountRequest.db.updateRow(
+      session,
+      request.copyWith(verifiedAt: clock.now()),
+      transaction: transaction,
+    );
 
     return (emailAccountRequestId: request.id!, email: request.email);
   }
@@ -197,13 +236,11 @@ abstract final class EmailAccounts {
   /// Returns the `ID` of the new email authentication, and the email address used during registration.
   ///
   /// Throws an [EmailAccountRequestNotFoundException] in case the [accountRequestId] does not point to an existing request.
-  /// Throws an [EmailAccountRequestExpiredException] in case the request's validation window has elapsed.
-  /// /// Throws [EmailAccountRequestUnauthorizedException] in case the [verificationCode] is not valid.
+  /// Throws an [EmailAccountRequestNotVerifiedException] in case the request has not been verified via [verifyAccountCreation].
   static Future<({UuidValue emailAccountId, String email})>
       completeAccountCreation(
     final Session session, {
     required final UuidValue accountRequestId,
-    required final String verificationCode,
 
     /// Authentication user ID this account should be linked up with
     required final UuidValue authUserId,
@@ -223,35 +260,8 @@ abstract final class EmailAccounts {
           throw EmailAccountRequestNotFoundException();
         }
 
-        if (request.isExpired) {
-          await EmailAccountRequest.db.deleteRow(
-            session,
-            request,
-            // passing no transaction, so this will not be rolled back
-          );
-
-          throw EmailAccountRequestExpiredException();
-        }
-
-        if (await _hasTooManyEmailAccountCompletionAttempts(
-          session,
-          emailAccountRequestId: request.id!,
-        )) {
-          await EmailAccountRequest.db.deleteRow(
-            session,
-            request,
-            // passing no transaction, so this will not be rolled back
-          );
-
-          throw EmailAccountRequestTooManyAttemptsException();
-        }
-
-        if (!await EmailAccountSecretHash.validateHash(
-          value: verificationCode,
-          hash: request.verificationCodeHash.asUint8List,
-          salt: request.verificationCodeSalt.asUint8List,
-        )) {
-          throw EmailAccountRequestUnauthorizedException();
+        if (request.verifiedAt == null) {
+          throw EmailAccountRequestNotVerifiedException();
         }
 
         await EmailAccountRequest.db.deleteRow(
@@ -461,7 +471,8 @@ abstract final class EmailAccounts {
     final Session session,
     final String email,
   ) async {
-    final oldestRelevantAttempt = DateTime.now()
+    final oldestRelevantAttempt = clock
+        .now()
         .subtract(EmailAccounts.config.failedLoginRateLimit.timeframe);
 
     final failedLoginAttemptCount =
@@ -504,7 +515,7 @@ abstract final class EmailAccounts {
   }) async {
     olderThan ??= EmailAccounts.config.failedLoginRateLimit.timeframe;
 
-    final removeBefore = DateTime.now().subtract(olderThan);
+    final removeBefore = clock.now().subtract(olderThan);
 
     await EmailAccountFailedLoginAttempt.db.deleteWhere(
       session,
@@ -527,9 +538,9 @@ abstract final class EmailAccounts {
         transaction: transaction,
       );
 
-      final oldestRelevantAttemptTimestamp = DateTime.now().subtract(
-        EmailAccounts.config.maxPasswordResetAttempts.timeframe,
-      );
+      final oldestRelevantAttemptTimestamp = clock.now().subtract(
+            EmailAccounts.config.maxPasswordResetAttempts.timeframe,
+          );
 
       final recentRequests =
           await EmailAccountPasswordResetRequestAttempt.db.count(
@@ -648,21 +659,19 @@ enum PasswordResetResult {
 
 extension on EmailAccountRequest {
   bool get isExpired {
-    final oldestValidRegistrationTime = DateTime.now().subtract(
-      EmailAccounts.config.registrationVerificationCodeLifetime,
-    );
+    final requestExpiresAt =
+        created.add(EmailAccounts.config.registrationVerificationCodeLifetime);
 
-    return created.isBefore(oldestValidRegistrationTime);
+    return requestExpiresAt.isBefore(clock.now());
   }
 }
 
 extension on EmailAccountPasswordResetRequest {
   bool get isExpired {
-    final oldestValidResetDate = DateTime.now().subtract(
-      EmailAccounts.config.passwordResetVerificationCodeLifetime,
-    );
+    final resetExpiresAt =
+        created.add(EmailAccounts.config.passwordResetVerificationCodeLifetime);
 
-    return created.isBefore(oldestValidResetDate);
+    return resetExpiresAt.isBefore(clock.now());
   }
 }
 
