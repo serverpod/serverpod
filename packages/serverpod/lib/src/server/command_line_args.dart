@@ -135,7 +135,6 @@ class CommandLineArgs {
       _loggingMode = switch (results['logging']) {
         'normal' => ServerpodLoggingMode.normal,
         'verbose' => ServerpodLoggingMode.verbose,
-        null => null,
         _ => null,
       };
 
