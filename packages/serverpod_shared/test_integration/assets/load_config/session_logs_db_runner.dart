@@ -9,6 +9,7 @@ void main() {
   var config = ServerpodConfig.load(
     'session_logs_db_development',
     'default',
+    true,
     passwords,
   );
   stdout.write(config.toString());

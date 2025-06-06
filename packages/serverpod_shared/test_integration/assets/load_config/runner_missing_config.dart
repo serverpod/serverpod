@@ -8,6 +8,7 @@ void main() {
     'serviceSecret': 'secret',
   };
 
-  var config = ServerpodConfig.load('doesNotExists', 'default', passwords);
+  var config =
+      ServerpodConfig.load('doesNotExists', 'default', true, passwords);
   stdout.write(config.toString());
 }
