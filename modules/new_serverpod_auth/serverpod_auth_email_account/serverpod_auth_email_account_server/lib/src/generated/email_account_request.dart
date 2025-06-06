@@ -27,6 +27,7 @@ abstract class EmailAccountRequest
     required this.passwordSalt,
     required this.verificationCodeHash,
     required this.verificationCodeSalt,
+    this.verifiedAt,
   }) : created = created ?? DateTime.now();
 
   factory EmailAccountRequest({
@@ -37,6 +38,7 @@ abstract class EmailAccountRequest
     required _i2.ByteData passwordSalt,
     required _i2.ByteData verificationCodeHash,
     required _i2.ByteData verificationCodeSalt,
+    DateTime? verifiedAt,
   }) = _EmailAccountRequestImpl;
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -54,6 +56,9 @@ abstract class EmailAccountRequest
           jsonSerialization['verificationCodeHash']),
       verificationCodeSalt: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['verificationCodeSalt']),
+      verifiedAt: jsonSerialization['verifiedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['verifiedAt']),
     );
   }
 
@@ -86,6 +91,11 @@ abstract class EmailAccountRequest
   /// The salt used to compute the [verificationCodeHash].
   _i2.ByteData verificationCodeSalt;
 
+  /// Time at which the email address has been verified, or `null` if it did not happen yet.
+  ///
+  /// The requets can only be turned into an account if this is non-`null`.
+  DateTime? verifiedAt;
+
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
@@ -100,6 +110,7 @@ abstract class EmailAccountRequest
     _i2.ByteData? passwordSalt,
     _i2.ByteData? verificationCodeHash,
     _i2.ByteData? verificationCodeSalt,
+    DateTime? verifiedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -111,6 +122,7 @@ abstract class EmailAccountRequest
       'passwordSalt': passwordSalt.toJson(),
       'verificationCodeHash': verificationCodeHash.toJson(),
       'verificationCodeSalt': verificationCodeSalt.toJson(),
+      if (verifiedAt != null) 'verifiedAt': verifiedAt?.toJson(),
     };
   }
 
@@ -160,6 +172,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     required _i2.ByteData passwordSalt,
     required _i2.ByteData verificationCodeHash,
     required _i2.ByteData verificationCodeSalt,
+    DateTime? verifiedAt,
   }) : super._(
           id: id,
           created: created,
@@ -168,6 +181,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
           passwordSalt: passwordSalt,
           verificationCodeHash: verificationCodeHash,
           verificationCodeSalt: verificationCodeSalt,
+          verifiedAt: verifiedAt,
         );
 
   /// Returns a shallow copy of this [EmailAccountRequest]
@@ -182,6 +196,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     _i2.ByteData? passwordSalt,
     _i2.ByteData? verificationCodeHash,
     _i2.ByteData? verificationCodeSalt,
+    Object? verifiedAt = _Undefined,
   }) {
     return EmailAccountRequest(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -193,6 +208,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
           verificationCodeHash ?? this.verificationCodeHash.clone(),
       verificationCodeSalt:
           verificationCodeSalt ?? this.verificationCodeSalt.clone(),
+      verifiedAt: verifiedAt is DateTime? ? verifiedAt : this.verifiedAt,
     );
   }
 }
@@ -225,6 +241,10 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       'verificationCodeSalt',
       this,
     );
+    verifiedAt = _i1.ColumnDateTime(
+      'verifiedAt',
+      this,
+    );
   }
 
   /// The time when this authentication was created.
@@ -249,6 +269,11 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// The salt used to compute the [verificationCodeHash].
   late final _i1.ColumnByteData verificationCodeSalt;
 
+  /// Time at which the email address has been verified, or `null` if it did not happen yet.
+  ///
+  /// The requets can only be turned into an account if this is non-`null`.
+  late final _i1.ColumnDateTime verifiedAt;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -258,6 +283,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
         passwordSalt,
         verificationCodeHash,
         verificationCodeSalt,
+        verifiedAt,
       ];
 }
 

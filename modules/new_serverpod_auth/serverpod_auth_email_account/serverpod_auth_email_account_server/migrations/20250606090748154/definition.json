@@ -452,6 +452,12 @@
           "columnType": 5,
           "isNullable": false,
           "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "verifiedAt",
+          "columnType": 4,
+          "isNullable": true,
+          "dartType": "DateTime?"
         }
       ],
       "foreignKeys": [],
@@ -1760,7 +1766,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_email_account",
-      "version": "20250604120605084"
+      "version": "20250606090748154"
     },
     {
       "module": "serverpod",

@@ -468,6 +468,12 @@
             "columnType": 5,
             "isNullable": false,
             "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "verifiedAt",
+            "columnType": 4,
+            "isNullable": true,
+            "dartType": "DateTime?"
           }
         ],
         "foreignKeys": [],

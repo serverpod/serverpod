@@ -79,7 +79,8 @@ CREATE TABLE "serverpod_auth_email_account_request" (
     "passwordHash" bytea NOT NULL,
     "passwordSalt" bytea NOT NULL,
     "verificationCodeHash" bytea NOT NULL,
-    "verificationCodeSalt" bytea NOT NULL
+    "verificationCodeSalt" bytea NOT NULL,
+    "verifiedAt" timestamp without time zone
 );
 
 -- Indexes
@@ -390,9 +391,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_email_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_email_account', '20250604120605084', now())
+    VALUES ('serverpod_auth_email_account', '20250606090748154', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250604120605084', "timestamp" = now();
+    DO UPDATE SET "version" = '20250606090748154', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
