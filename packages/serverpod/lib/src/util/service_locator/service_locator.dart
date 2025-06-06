@@ -7,7 +7,7 @@ abstract interface class ServiceLocator {
   /// Throws [ServiceNotFoundException] if the service is not found.
   /// @param T The type of the service to locate.
   /// @return The service of type [T] if found.
-  T locate<T>({String? key = null});
+  T locate<T>({String? key});
 }
 
 /// A concrete implementation of [ServiceLocator] that holds services in memory.
@@ -19,7 +19,7 @@ class ServiceHolder implements ServiceLocator {
 
   /// Creates a new [ServiceHolder] with an optional parent service locator.
   ServiceHolder({ServiceLocator parent = const StubServiceLocator()})
-    : _parent = parent;
+      : _parent = parent;
 
   /// Walk up the service locator hierarchy to find a service by type.
   @override
@@ -105,7 +105,7 @@ class StubServiceLocator implements ServiceLocator {
   const StubServiceLocator();
 
   @override
-  T locate<T>({String? key = null}) {
+  T locate<T>({String? key}) {
     throw ServiceNotFoundException(T);
   }
 }
