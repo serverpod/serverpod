@@ -520,30 +520,6 @@ void main() {
       });
 
       test(
-          'when verifying the password reset with the correct code, then it succeeds.',
-          () async {
-        final result = await EmailAccounts.verifyPasswordReset(
-          session,
-          passwordResetRequestId: paswordResetRequestId,
-          verificationCode: verificationCode,
-        );
-
-        expect(result, isTrue);
-      });
-
-      test(
-          'when verifying the password reset with an incorrect code, then it fails.',
-          () async {
-        final result = await EmailAccounts.verifyPasswordReset(
-          session,
-          passwordResetRequestId: paswordResetRequestId,
-          verificationCode: 'asdf1234',
-        );
-
-        expect(result, isFalse);
-      });
-
-      test(
           'when changing the password with the correct verification code, then it returns the auth user ID.',
           () async {
         final result = await EmailAccounts.completePasswordReset(

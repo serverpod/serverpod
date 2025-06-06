@@ -350,32 +350,6 @@ abstract final class EmailAccounts {
     );
   }
 
-  /// Returns whether the password reset request is still valid.
-  ///
-  /// If this returns a value, this means `completePasswordReset` will succeed.
-  static Future<bool> verifyPasswordReset(
-    final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
-  }) async {
-    final request = await EmailAccountPasswordResetRequest.db.findById(
-      session,
-      passwordResetRequestId,
-    );
-
-    if (request == null ||
-        request.isExpired ||
-        !await EmailAccountSecretHash.validateHash(
-          value: verificationCode,
-          hash: request.verificationCodeHash.asUint8List,
-          salt: request.verificationCodeSalt.asUint8List,
-        )) {
-      return false;
-    }
-
-    return true;
-  }
-
   /// Returns the auth user ID for the successfully changed password
   ///
   /// Throws [EmailAccountPasswordResetRequestNotFoundException] in case no reset request could be found for [passwordResetRequestId].
