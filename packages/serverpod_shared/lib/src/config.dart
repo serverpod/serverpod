@@ -100,11 +100,13 @@ class ServerpodConfig {
   factory ServerpodConfig.loadFromMap(
     String runMode,
     String serverId,
+    bool isServerIdDefault,
     Map<String, String> passwords,
     Map configMap, {
     Map<String, String> environment = const {},
   }) {
-    serverId = _readServerId(configMap, environment, serverId);
+    serverId =
+        _readServerId(configMap, environment, serverId, isServerIdDefault);
 
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
@@ -200,6 +202,7 @@ class ServerpodConfig {
   factory ServerpodConfig.load(
     String runMode,
     String serverId,
+    bool isServerIdDefault,
     Map<String, String> passwords,
   ) {
     dynamic doc = {};
@@ -213,6 +216,7 @@ class ServerpodConfig {
       return ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        isServerIdDefault,
         passwords,
         doc,
         environment: Platform.environment,
@@ -766,10 +770,20 @@ String _readServerId(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
   String serverIdFromCommandLineArg,
+  bool isServerIdDefault,
 ) {
-  if (serverIdFromCommandLineArg != 'default') {
+  if (!isServerIdDefault) {
     return serverIdFromCommandLineArg;
   }
+  // Ideally we should not check the environment variable here since
+  // the idea is that we already augmented the command line arguments with
+  // the environment variables. But this class may be used in a context where
+  // the command line arguments are not available, so we need to check the
+  // environment variables here.
+  // We should remove this check in the future once we have a better way to
+  // handle the command line arguments within this class or a ConfigManager class
+  // which would be responsible for loading the configuration from the environment,
+  // the command line arguments and the configuration file.
   var serverId = environment[ServerpodEnv.serverId.envVariable] ??
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';

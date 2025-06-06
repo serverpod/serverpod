@@ -24,6 +24,7 @@ apiServer:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -56,6 +57,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -72,6 +74,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         {
           'apiServer': {
@@ -104,6 +107,7 @@ futureCall:
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
+          true,
           passwords,
           {
             'apiServer': {
@@ -135,6 +139,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         {
           'apiServer': {
@@ -175,6 +180,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -203,6 +209,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -234,6 +241,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -259,6 +267,7 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -278,6 +287,7 @@ futureCall:
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
+          true,
           passwords,
           {
             'apiServer': {

@@ -25,6 +25,7 @@ apiServer:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -52,6 +53,7 @@ apiServer:
       var config = ServerpodConfig.loadFromMap(
         productionRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -84,6 +86,7 @@ database:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -116,6 +119,7 @@ database:
       var config = ServerpodConfig.loadFromMap(
         productionRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -146,6 +150,7 @@ sessionLogs:
         () => ServerpodConfig.loadFromMap(
           developmentRunMode,
           serverId,
+          true,
           passwords,
           loadYaml(serverpodConfig),
           environment: {},
@@ -178,6 +183,7 @@ sessionLogs:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
         environment: {},
@@ -208,6 +214,7 @@ sessionLogs:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -232,6 +239,7 @@ sessionLogs:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -263,6 +271,7 @@ sessionLogs:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -279,6 +288,7 @@ sessionLogs:
       var config = ServerpodConfig.loadFromMap(
         developmentRunMode,
         serverId,
+        true,
         passwords,
         {
           'apiServer': {
@@ -336,6 +346,7 @@ sessionLogs:
         () => ServerpodConfig.loadFromMap(
           developmentRunMode,
           serverId,
+          true,
           passwords,
           loadYaml(serverpodConfig),
         ),

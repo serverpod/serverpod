@@ -5,6 +5,7 @@ void main() {
   var config = ServerpodConfig.load(
     'session_logs_no_db_development',
     'default',
+    true,
     {},
   );
   stdout.write(config.toString());

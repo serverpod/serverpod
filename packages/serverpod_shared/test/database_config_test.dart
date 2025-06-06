@@ -25,6 +25,7 @@ apiServer:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      false,
       passwords,
       loadYaml(serverpodConfig),
     );
@@ -52,6 +53,7 @@ database:
       () => ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         passwords,
         loadYaml(serverpodConfig),
       ),
@@ -82,6 +84,7 @@ database:
       () => ServerpodConfig.loadFromMap(
         runMode,
         serverId,
+        true,
         {...passwords, 'database': 'password'},
         loadYaml(serverpodConfig),
       ),
@@ -113,6 +116,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
     );
@@ -133,6 +137,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -162,6 +167,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -193,6 +199,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -228,6 +235,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -255,6 +263,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -282,6 +291,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       {
         'apiServer': {
@@ -324,6 +334,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
     );
@@ -351,6 +362,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
       environment: {
@@ -381,6 +393,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
     );
@@ -410,6 +423,7 @@ database:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
+      true,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
       environment: {

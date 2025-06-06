@@ -6,7 +6,8 @@ class ConfigInfo {
   late ServerpodConfig config;
   ConfigInfo(String runMode, {this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords();
-    config = ServerpodConfig.load(runMode, serverId ?? 'undefined', passwords);
+    config = ServerpodConfig.load(
+        runMode, serverId ?? 'undefined', false, passwords);
   }
 
   Client createServiceClient() {
