@@ -7,14 +7,7 @@ abstract interface class ServiceLocator {
   /// Throws [ServiceNotFoundException] if the service is not found.
   /// @param T The type of the service to locate.
   /// @return The service of type [T] if found.
-  T locateType<T>();
-
-  /// Locates a service by its unique key.
-  /// Throws [ServiceKeyNotFoundException] if the key is not found.
-  /// Throws [ServiceNotFoundException] if the type does not match the found service.
-  /// @param key The unique key for the service.
-  /// @return The service of type [T] associated with the key.
-  T locateKey<T>(String key);
+  T locate<T>({String? key = null});
 }
 
 /// A concrete implementation of [ServiceLocator] that holds services in memory.
@@ -25,22 +18,30 @@ class ServiceHolder implements ServiceLocator {
   final Map<String, dynamic> _keyedServices = {};
 
   /// Creates a new [ServiceHolder] with an optional parent service locator.
-  ServiceHolder({ServiceLocator parent = const StubServiceLocator()}) : _parent = parent;
+  ServiceHolder({ServiceLocator parent = const StubServiceLocator()})
+    : _parent = parent;
 
   /// Walk up the service locator hierarchy to find a service by type.
   @override
-  T locateType<T>() {
-    T result = _services.containsKey(T) ? _services[T] as T : _parent.locateType<T>();
+  T locate<T>({String? key}) {
+    if (key != null) {
+      return _locateKey<T>(key);
+    }
+    // If no key is provided, locate the service by type.
+    T result = _services.containsKey(T)
+        ? _services[T] as T
+        : _parent.locate<T>(key: key);
     return result;
   }
 
   /// Walk up the service locator hierarchy to find a service by key.
   /// Throws [ServiceKeyNotFoundException] if the key is not found.
   /// Throws [ServiceNotFoundException] if the type does not match the found service.
-  @override
-  T locateKey<T>(String key) {
-    var result = _keyedServices.containsKey(key) ? _keyedServices[key] : _parent.locateKey<T>(key);
-    if(result.runtimeType != T) {
+  T _locateKey<T>(String key) {
+    var result = _keyedServices.containsKey(key)
+        ? _keyedServices[key]
+        : _parent.locate<T>(key: key);
+    if (result.runtimeType != T) {
       throw ServiceNotFoundException(T);
     }
 
@@ -90,10 +91,7 @@ class WrappingServiceLocator implements ServiceLocator {
   WrappingServiceLocator(this._serviceLocator);
 
   @override
-  T locateType<T>() => _serviceLocator.locateType<T>();
-
-  @override
-  T locateKey<T>(String key) => _serviceLocator.locateKey<T>(key);
+  T locate<T>({String? key}) => _serviceLocator.locate<T>(key: key);
 }
 
 /// Always fail implementation of [ServiceLocator].
@@ -103,17 +101,11 @@ class WrappingServiceLocator implements ServiceLocator {
 /// It might not be the most efficient implementation, but it is simple and effective,
 /// and should be good enough for most use cases.
 class StubServiceLocator implements ServiceLocator {
-
   /// Creates a new [StubServiceLocator] that always throws exceptions.
   const StubServiceLocator();
 
   @override
-  T locateType<T>() {
+  T locate<T>({String? key = null}) {
     throw ServiceNotFoundException(T);
-  }
-
-  @override
-  T locateKey<T>(String key) {
-    throw ServiceKeyNotFoundException(key, T);
   }
 }
