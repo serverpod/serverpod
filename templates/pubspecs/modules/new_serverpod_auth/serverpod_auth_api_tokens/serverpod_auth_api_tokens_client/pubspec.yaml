@@ -6,6 +6,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  serverpod_auth_user_client: SERVERPOD_VERSION
   serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides:
