@@ -22,10 +22,6 @@ void main() {
       );
     });
 
-    tearDown(() async {
-      await cleanUpEmailAccountDatabaseEntities(session);
-    });
-
     test(
         'when `deleteExpiredAccountCreations` is called before the verification period has elapsed, then all non-expired pending request are kept.',
         () async {
