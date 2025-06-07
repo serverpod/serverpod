@@ -106,6 +106,8 @@ class StubServiceLocator implements ServiceLocator {
 
   @override
   T locate<T>({String? key}) {
-    throw ServiceNotFoundException(T);
+    throw key == null
+        ? ServiceNotFoundException(T)
+        : ServiceKeyNotFoundException(T, key);
   }
 }

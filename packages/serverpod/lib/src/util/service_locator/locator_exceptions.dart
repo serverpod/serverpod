@@ -13,19 +13,23 @@ class ServiceNotFoundException implements Exception {
 
 /// Exception thrown when lookup by key fails
 class ServiceKeyNotFoundException implements Exception {
+  /// The [Type] the lookup failed for
+  final Type type;
+
   /// The key the lookup failed for
   final String key;
 
   /// Create a new instance for a failed lookup by key
-  ServiceKeyNotFoundException(this.key);
+  ServiceKeyNotFoundException(this.type, this.key);
 
   @override
   String toString() =>
-      'ServiceKeyNotFoundException: No service found for key $key';
+      'ServiceKeyNotFoundException: No service found for key $key of type $type';
 }
 
 /// Exception thrown when trying to register a service that is already registered
 class ServiceAlreadyRegisteredException implements Exception {
+  /// The type of the service that is already registered
   final Type type;
 
   /// Create a new instance for a service that is already registered
