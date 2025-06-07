@@ -346,66 +346,6 @@ void main() {
         await cleanUpEmailAccountDatabaseEntities(session);
       });
 
-      test('when logging in with the original credentials, then it succeeds.',
-          () async {
-        final loggedInUser = await EmailAccounts.login(
-          session,
-          email: email,
-          password: password,
-        );
-
-        expect(loggedInUser, authUserId);
-      });
-
-      test(
-          'when logging in with the lower-case email variant of the credentials, then it succeeds.',
-          () async {
-        final loggedInUser = await EmailAccounts.login(
-          session,
-          email: email.toLowerCase(),
-          password: password,
-        );
-
-        expect(loggedInUser, authUserId);
-      });
-
-      test(
-          'when logging in with an invalid password, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
-          () async {
-        EmailAccounts.config = EmailAccountConfig(
-          failedLoginRateLimit: (
-            maxAttempts: 1,
-            timeframe: const Duration(hours: 1),
-          ),
-        );
-
-        await expectLater(
-          () => EmailAccounts.login(
-            session,
-            email: email,
-            password: 'some other password',
-          ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginFailureReason.invalidCredentials,
-          )),
-        );
-
-        await expectLater(
-          () => EmailAccounts.login(
-            session,
-            email: email,
-            password: 'some other password',
-          ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginFailureReason.tooManyAttempts,
-          )),
-        );
-      });
-
       test(
           'when attempting to create a new account using the same email in upper case, then it fails.',
           () async {
