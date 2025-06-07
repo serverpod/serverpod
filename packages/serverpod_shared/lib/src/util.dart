@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:super_string/super_string.dart';
@@ -13,6 +14,28 @@ final Random _random = Random.secure();
 String generateRandomString([int length = 32]) {
   var values = List<int>.generate(length, (int i) => _random.nextInt(256));
   return base64Url.encode(values).substring(0, length);
+}
+
+/// Generates a list of secure random bytes of the specified length.
+Uint8List generateRandomBytes(final int length) {
+  return Uint8List.fromList(
+    List<int>.generate(length, (final int i) => _random.nextInt(256)),
+  );
+}
+
+/// Checks whether the 2 given lists contain the same data.
+bool uint8ListAreEqual(final Uint8List a, final Uint8List b) {
+  if (a.length != b.length) {
+    return false;
+  }
+
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /// Splits at spaces and joins to lowerCamelCase.

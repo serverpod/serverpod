@@ -7,8 +7,7 @@ import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/business/authentication_token_secrets.dart';
-import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
-import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Class for hashing and verifying a refresh token's rotating secret.
 ///
