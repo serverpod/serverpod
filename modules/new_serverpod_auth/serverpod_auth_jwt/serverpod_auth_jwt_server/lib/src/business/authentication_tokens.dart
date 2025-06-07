@@ -12,8 +12,7 @@ import 'package:serverpod_auth_jwt_server/src/business/jwt_util.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_secret_hash.dart';
 import 'package:serverpod_auth_jwt_server/src/business/refresh_token_string.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
-import 'package:serverpod_auth_jwt_server/src/util/equal_uint8list.dart';
-import 'package:serverpod_auth_jwt_server/src/util/random_bytes.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
 abstract final class AuthenticationTokens {
