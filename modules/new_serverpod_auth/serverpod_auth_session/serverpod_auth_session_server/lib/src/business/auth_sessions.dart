@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -51,7 +51,7 @@ abstract final class AuthSessions {
 
       return null;
     }
-    final secret = parts[2];
+    final secret = base64Decode(parts[2]);
 
     final authSession = await AuthSession.db.findById(
       session,
@@ -82,12 +82,11 @@ abstract final class AuthSessions {
       return null;
     }
 
-    final sessionKeyHash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
-    );
-
-    if (sessionKeyHash != authSession.sessionKeyHash) {
+    if (!validateSessionKeyHash(
+      secret: secret,
+      hash: Uint8List.sublistView(authSession.sessionKeyHash),
+      salt: Uint8List.sublistView(authSession.sessionKeySalt),
+    )) {
       session.log(
         'Provided `secret` did not result in correct session key hash.',
         level: LogLevel.debug,
@@ -123,10 +122,11 @@ abstract final class AuthSessions {
     required final String method,
     required final Set<Scope> scopes,
   }) async {
-    final secret = generateRandomString();
-    final hash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
+    final secret = generateRandomBytes(
+      AuthSessionConfig.current.sessionKeySecretLength,
+    );
+    final hash = createSessionKeyHash(
+      secret: secret,
     );
 
     final scopeNames = <String>{
@@ -139,7 +139,8 @@ abstract final class AuthSessions {
       AuthSession(
         authUserId: authUserId,
         scopeNames: scopeNames,
-        sessionKeyHash: hash,
+        sessionKeyHash: ByteData.sublistView(hash.hash),
+        sessionKeySalt: ByteData.sublistView(hash.salt),
         method: method,
       ),
     );
@@ -206,8 +207,8 @@ abstract final class AuthSessions {
 
   static String _buildSessionKey({
     required final UuidValue authSessionId,
-    required final String secret,
+    required final Uint8List secret,
   }) {
-    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:$secret';
+    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:${base64Encode(secret)}';
   }
 }

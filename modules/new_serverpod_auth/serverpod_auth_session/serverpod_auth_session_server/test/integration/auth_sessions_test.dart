@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
@@ -163,7 +166,7 @@ void main() {
           );
 
           final parts = sessionSecret.split(':');
-          parts[2] = 'not-the-secret';
+          parts[2] = base64Encode(utf8.encode('not-the-secret'));
           final invalidSessionSecret = parts.join(':');
 
           final authInfo = await AuthSessions.authenticationHandler(
@@ -349,22 +352,23 @@ void main() {
           orderDescending: true,
         );
 
-        final secret = sessionKey.split(':')[2];
+        final secret = base64Decode(sessionKey.split(':')[2]);
 
         expect(
-          authSession!.sessionKeyHash,
-          hashSessionKey(
-            secret,
-            pepper: AuthSessionSecrets.sessionKeyHashPepper,
-          ),
+          Uint8List.sublistView(authSession!.sessionKeyHash),
+          createSessionKeyHash(
+            secret: secret,
+          ).hash,
         );
+
+        AuthSessionSecrets.sessionKeyHashPepperTestOverride =
+            'test_pepper_override_1';
         expect(
           authSession.sessionKeyHash,
           isNot(
-            hashSessionKey(
-              secret,
-              pepper: 'some other pepper value',
-            ),
+            createSessionKeyHash(
+              secret: secret,
+            ).hash,
           ),
         );
       }
@@ -386,14 +390,13 @@ void main() {
           orderDescending: true,
         );
 
-        final secret = sessionKey.split(':')[2];
+        final secret = base64Decode(sessionKey.split(':')[2]);
 
         expect(
-          authSession!.sessionKeyHash,
-          hashSessionKey(
-            secret,
-            pepper: AuthSessionSecrets.sessionKeyHashPepper,
-          ),
+          Uint8List.sublistView(authSession!.sessionKeyHash),
+          createSessionKeyHash(
+            secret: secret,
+          ).hash,
         );
       }
     });
