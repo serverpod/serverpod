@@ -58,9 +58,15 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'sessionKeyHash',
-          columnType: _i2.ColumnType.text,
+          columnType: _i2.ColumnType.bytea,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'dart:typed_data:ByteData',
+        ),
+        _i2.ColumnDefinition(
+          name: 'sessionKeySalt',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
         ),
         _i2.ColumnDefinition(
           name: 'method',
