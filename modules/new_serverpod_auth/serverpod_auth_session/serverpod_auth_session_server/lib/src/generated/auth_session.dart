@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i2;
+import 'dart:typed_data' as _i3;
 
 abstract class AuthSession
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -24,6 +25,7 @@ abstract class AuthSession
     DateTime? created,
     required this.scopeNames,
     required this.sessionKeyHash,
+    required this.sessionKeySalt,
     required this.method,
   }) : created = created ?? DateTime.now();
 
@@ -33,7 +35,8 @@ abstract class AuthSession
     _i2.AuthUser? authUser,
     DateTime? created,
     required Set<String> scopeNames,
-    required String sessionKeyHash,
+    required _i3.ByteData sessionKeyHash,
+    required _i3.ByteData sessionKeySalt,
     required String method,
   }) = _AuthSessionImpl;
 
@@ -52,7 +55,10 @@ abstract class AuthSession
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
-      sessionKeyHash: jsonSerialization['sessionKeyHash'] as String,
+      sessionKeyHash: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['sessionKeyHash']),
+      sessionKeySalt: _i1.ByteDataJsonExtension.fromJson(
+          jsonSerialization['sessionKeySalt']),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -78,7 +84,12 @@ abstract class AuthSession
   /// Hashed version of the session key.
   ///
   /// The clients authentication header will be compared against this to check the validity of the session.
-  String sessionKeyHash;
+  _i3.ByteData sessionKeyHash;
+
+  /// The salt used for computing the [sessionKeyHash].
+  ///
+  /// Per default uses 16 bytes of random data.
+  _i3.ByteData sessionKeySalt;
 
   /// The method of signing in this key was generated through.
   ///
@@ -97,7 +108,8 @@ abstract class AuthSession
     _i2.AuthUser? authUser,
     DateTime? created,
     Set<String>? scopeNames,
-    String? sessionKeyHash,
+    _i3.ByteData? sessionKeyHash,
+    _i3.ByteData? sessionKeySalt,
     String? method,
   });
   @override
@@ -108,7 +120,8 @@ abstract class AuthSession
       if (authUser != null) 'authUser': authUser?.toJson(),
       'created': created.toJson(),
       'scopeNames': scopeNames.toJson(),
-      'sessionKeyHash': sessionKeyHash,
+      'sessionKeyHash': sessionKeyHash.toJson(),
+      'sessionKeySalt': sessionKeySalt.toJson(),
       'method': method,
     };
   }
@@ -157,7 +170,8 @@ class _AuthSessionImpl extends AuthSession {
     _i2.AuthUser? authUser,
     DateTime? created,
     required Set<String> scopeNames,
-    required String sessionKeyHash,
+    required _i3.ByteData sessionKeyHash,
+    required _i3.ByteData sessionKeySalt,
     required String method,
   }) : super._(
           id: id,
@@ -166,6 +180,7 @@ class _AuthSessionImpl extends AuthSession {
           created: created,
           scopeNames: scopeNames,
           sessionKeyHash: sessionKeyHash,
+          sessionKeySalt: sessionKeySalt,
           method: method,
         );
 
@@ -179,7 +194,8 @@ class _AuthSessionImpl extends AuthSession {
     Object? authUser = _Undefined,
     DateTime? created,
     Set<String>? scopeNames,
-    String? sessionKeyHash,
+    _i3.ByteData? sessionKeyHash,
+    _i3.ByteData? sessionKeySalt,
     String? method,
   }) {
     return AuthSession(
@@ -189,7 +205,8 @@ class _AuthSessionImpl extends AuthSession {
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       created: created ?? this.created,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash,
+      sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash.clone(),
+      sessionKeySalt: sessionKeySalt ?? this.sessionKeySalt.clone(),
       method: method ?? this.method,
     );
   }
@@ -211,8 +228,12 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
       'scopeNames',
       this,
     );
-    sessionKeyHash = _i1.ColumnString(
+    sessionKeyHash = _i1.ColumnByteData(
       'sessionKeyHash',
+      this,
+    );
+    sessionKeySalt = _i1.ColumnByteData(
+      'sessionKeySalt',
       this,
     );
     method = _i1.ColumnString(
@@ -235,7 +256,12 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   /// Hashed version of the session key.
   ///
   /// The clients authentication header will be compared against this to check the validity of the session.
-  late final _i1.ColumnString sessionKeyHash;
+  late final _i1.ColumnByteData sessionKeyHash;
+
+  /// The salt used for computing the [sessionKeyHash].
+  ///
+  /// Per default uses 16 bytes of random data.
+  late final _i1.ColumnByteData sessionKeySalt;
 
   /// The method of signing in this key was generated through.
   ///
@@ -262,6 +288,7 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
         created,
         scopeNames,
         sessionKeyHash,
+        sessionKeySalt,
         method,
       ];
 

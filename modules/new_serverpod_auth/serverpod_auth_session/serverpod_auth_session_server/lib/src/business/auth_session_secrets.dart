@@ -22,6 +22,13 @@ abstract class AuthSessionSecrets {
       );
     }
 
+    if (pepper.length < 10) {
+      throw ArgumentError(
+        'Given "pepper" is too short. Use at least 10 random characters.',
+        sessionKeyHashPepperConfigurationKey,
+      );
+    }
+
     return pepper;
   }
 
