@@ -249,9 +249,9 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogFormat) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT',
-      (ServerpodEnv.runMode) => 'SERVERPOD_MODE',
-      (ServerpodEnv.role) => 'SERVERPOD_ROLE',
-      (ServerpodEnv.loggingMode) => 'SERVERPOD_LOGGING',
+      (ServerpodEnv.runMode) => 'SERVERPOD_RUN_MODE',
+      (ServerpodEnv.role) => 'SERVERPOD_SERVER_ROLE',
+      (ServerpodEnv.loggingMode) => 'SERVERPOD_LOGGING_MODE',
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
