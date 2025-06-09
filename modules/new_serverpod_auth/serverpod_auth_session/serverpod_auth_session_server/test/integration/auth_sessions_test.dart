@@ -13,135 +13,185 @@ import 'package:test/test.dart';
 import '../../test/integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
+  withServerpod('Given a plain auth session,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late String sessionSecret;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      authUserId = await _createAuthUser(session);
+      sessionSecret = await AuthSessions.createSession(
+        session,
+        authUserId: authUserId,
+        method: 'test',
+        scopes: const {},
+      );
+    });
+
+    test(
+      'when resolving that session through the `authenticationHandler`, then the auth user ID is available on the auth info.',
+      () async {
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          sessionSecret,
+        );
+
+        expect(authInfo?.userIdentifier, authUserId.toString());
+        expect(authInfo?.userUuid, authUserId);
+      },
+    );
+
+    test(
+      'when resolving that session through the `authenticationHandler`, then it has no scopes.',
+      () async {
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          sessionSecret,
+        );
+
+        expect(authInfo?.scopes, isEmpty);
+      },
+    );
+
+    test(
+      'when revoking a session for a user, then a message for it is broadcast.',
+      () async {
+        final authInfoABeforeRevocation =
+            await AuthSessions.authenticationHandler(
+          session,
+          sessionSecret,
+        );
+
+        final channelName =
+            MessageCentralServerpodChannels.revokedAuthentication(
+          authInfoABeforeRevocation!.userIdentifier,
+        );
+
+        final revocationMessages = <SerializableModel>[];
+        session.messages.addListener(
+          channelName,
+          revocationMessages.add,
+        );
+
+        await AuthSessions.destroySession(
+          session,
+          authSessionId: authInfoABeforeRevocation.authSessionId,
+        );
+
+        session.messages.removeListener(
+          channelName,
+          revocationMessages.add,
+        );
+
+        expect(revocationMessages, [
+          isA<RevokedAuthenticationAuthId>().having(
+            (final m) => m.authId,
+            'authId',
+            authInfoABeforeRevocation.authId!,
+          ),
+        ]);
+      },
+    );
+
+    test(
+      'when revoking all session for a user, then a message for it is broadcast.',
+      () async {
+        final channelName =
+            MessageCentralServerpodChannels.revokedAuthentication(authUserId);
+
+        final revocationMessages = <SerializableModel>[];
+        session.messages.addListener(
+          channelName,
+          revocationMessages.add,
+        );
+
+        await AuthSessions.destroyAllSessions(
+          session,
+          authUserId: authUserId,
+        );
+
+        session.messages.removeListener(
+          channelName,
+          revocationMessages.add,
+        );
+
+        expect(revocationMessages, [isA<RevokedAuthenticationUser>()]);
+      },
+    );
+
+    test(
+      'when sending an invalid session key which does not contain the correct secret, then `null` is returned.',
+      () async {
+        final parts = sessionSecret.split(':');
+        parts[2] = base64Encode(utf8.encode('not-the-secret'));
+        final invalidSessionSecret = parts.join(':');
+
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          invalidSessionSecret,
+        );
+
+        expect(authInfo, isNull);
+      },
+    );
+
+    test(
+      'when sending an invalid session key which does not contain a known session entry ID, then `null` is returned.`',
+      () async {
+        final parts = sessionSecret.split(':');
+        parts[1] = 'm6XDpRhOTWKfSbkTLC5oRA=='; // abse64 encoded UUID
+        final invalidSessionSecret = parts.join(':');
+
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          invalidSessionSecret,
+        );
+
+        expect(authInfo, isNull);
+      },
+    );
+  });
+
+  withServerpod('Given an auth session with scopes,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late String sessionSecret;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      authUserId = await _createAuthUser(session);
+      sessionSecret = await AuthSessions.createSession(
+        session,
+        authUserId: authUserId,
+        method: 'test',
+        scopes: {Scope.admin},
+      );
+    });
+
+    test(
+      'when resolving that session through the `authenticationHandler`, then it has the original scopes.',
+      () async {
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          sessionSecret,
+        );
+
+        expect(authInfo?.scopes, {Scope.admin});
+      },
+    );
+  });
+
   withServerpod(
-    'Given the `AuthSessions` implementation,',
+    'Given no auth sessions,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late UuidValue authUserId;
 
       setUp(() async {
         session = sessionBuilder.build();
-        authUserId = await _createAuthUser(session);
       });
-
-      test(
-        'when creating a session for a user, then the authentication handler resolves the returned secret correctly back to the user ID.',
-        () async {
-          final sessionSecret = await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: const {},
-          );
-
-          final authInfo = await AuthSessions.authenticationHandler(
-            session,
-            sessionSecret,
-          );
-
-          expect(authInfo?.userUuid, authUserId);
-        },
-      );
-
-      test(
-        'when creating a session for a user with custom scopes, then the authentication handler returns those scopes.',
-        () async {
-          final sessionSecret = await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: {Scope.admin},
-          );
-
-          final authInfo = await AuthSessions.authenticationHandler(
-            session,
-            sessionSecret,
-          );
-
-          expect(authInfo?.scopes, {Scope.admin});
-        },
-      );
-
-      test(
-        'when revoking a session for a user, then a message for it is broadcast.',
-        () async {
-          final sessionSecretA = await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: const {},
-          );
-
-          final authInfoABeforeRevocation =
-              await AuthSessions.authenticationHandler(
-            session,
-            sessionSecretA,
-          );
-
-          final channelName =
-              MessageCentralServerpodChannels.revokedAuthentication(
-            authInfoABeforeRevocation!.userIdentifier,
-          );
-
-          final revocationMessages = <SerializableModel>[];
-          session.messages.addListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          await AuthSessions.destroySession(
-            session,
-            authSessionId: authInfoABeforeRevocation.authSessionId,
-          );
-
-          session.messages.removeListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          expect(revocationMessages, [
-            isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
-              'authId',
-              authInfoABeforeRevocation.authId!,
-            ),
-          ]);
-        },
-      );
-
-      test(
-        'when revoking all session for a user, then a message for it is broadcast.',
-        () async {
-          // ignore: unused_result
-          await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: const {},
-          );
-
-          final channelName =
-              MessageCentralServerpodChannels.revokedAuthentication(authUserId);
-
-          final revocationMessages = <SerializableModel>[];
-          session.messages.addListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          await AuthSessions.destroyAllSessions(
-            session,
-            authUserId: authUserId,
-          );
-
-          session.messages.removeListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          expect(revocationMessages, [isA<RevokedAuthenticationUser>()]);
-        },
-      );
 
       test(
         "when sending an invalid session key which has the module's prefix, then `null` is returned.",
@@ -149,52 +199,6 @@ void main() {
           final authInfo = await AuthSessions.authenticationHandler(
             session,
             'sas:xx',
-          );
-
-          expect(authInfo, isNull);
-        },
-      );
-
-      test(
-        'when sending an invalid session key which does not contain the correct secret, then `null` is returned.',
-        () async {
-          final sessionSecret = await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: const {},
-          );
-
-          final parts = sessionSecret.split(':');
-          parts[2] = base64Encode(utf8.encode('not-the-secret'));
-          final invalidSessionSecret = parts.join(':');
-
-          final authInfo = await AuthSessions.authenticationHandler(
-            session,
-            invalidSessionSecret,
-          );
-
-          expect(authInfo, isNull);
-        },
-      );
-
-      test(
-        'when sending an invalid session key which does not contain a known session entry ID, then `null` is returned.`',
-        () async {
-          final sessionSecret = await AuthSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            scopes: const {},
-          );
-
-          final parts = sessionSecret.split(':');
-          parts[1] = 'm6XDpRhOTWKfSbkTLC5oRA=='; // abse64 encoded UUID
-          final invalidSessionSecret = parts.join(':');
-
-          final authInfo = await AuthSessions.authenticationHandler(
-            session,
-            invalidSessionSecret,
           );
 
           expect(authInfo, isNull);
@@ -280,7 +284,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an active user session for an existing user,',
+  withServerpod('Given an active auth session for a user,',
       (final sessionBuilder, final endpoints) {
     late final Session session;
     late final UuidValue authUserId;
@@ -307,8 +311,9 @@ void main() {
 
       expect(authInfoBeforeChange, isNotNull);
 
-      AuthSessions.secretsTestOverride =
-          AuthSessionSecrets(sessionKeyHashPepper: 'new pepper 123');
+      AuthSessions.secretsTestOverride = AuthSessionSecrets(
+        sessionKeyHashPepper: 'new pepper 123',
+      );
 
       final authInfoAfterChange = await AuthSessions.authenticationHandler(
         session,
