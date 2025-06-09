@@ -13,6 +13,7 @@ final class EmailAccountsAdmin {
   Future<void> deletePasswordResetAttempts(
     final Session session, {
     Duration? olderThan,
+    final Transaction? transaction,
   }) async {
     olderThan ??= EmailAccounts.config.maxPasswordResetAttempts.timeframe;
 
@@ -21,13 +22,15 @@ final class EmailAccountsAdmin {
     await EmailAccountPasswordResetAttempt.db.deleteWhere(
       session,
       where: (final t) => t.attemptedAt < removeBefore,
+      transaction: transaction,
     );
   }
 
   /// Cleans up expired password reset attempts.
   Future<void> deleteExpiredPasswordResetRequests(
-    final Session session,
-  ) async {
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
     final lastValidDateTime = clock.now().subtract(
           EmailAccounts.config.passwordResetVerificationCodeLifetime,
         );
@@ -35,13 +38,15 @@ final class EmailAccountsAdmin {
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
       where: (final t) => t.created < lastValidDateTime,
+      transaction: transaction,
     );
   }
 
   /// Cleans up expired account creation requests.
   Future<void> deleteExpiredAccountCreations(
-    final Session session,
-  ) async {
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
     final lastValidDateTime = clock.now().subtract(
           EmailAccounts.config.registrationVerificationCodeLifetime,
         );
@@ -49,6 +54,7 @@ final class EmailAccountsAdmin {
     await EmailAccountRequest.db.deleteWhere(
       session,
       where: (final t) => t.created < lastValidDateTime,
+      transaction: transaction,
     );
   }
 
@@ -59,6 +65,7 @@ final class EmailAccountsAdmin {
   static Future<void> deleteFailedLoginAttempts(
     final Session session, {
     Duration? olderThan,
+    final Transaction? transaction,
   }) async {
     olderThan ??= EmailAccounts.config.failedLoginRateLimit.timeframe;
 
@@ -67,6 +74,7 @@ final class EmailAccountsAdmin {
     await EmailAccountFailedLoginAttempt.db.deleteWhere(
       session,
       where: (final t) => t.attemptedAt < removeBefore,
+      transaction: transaction,
     );
   }
 }
