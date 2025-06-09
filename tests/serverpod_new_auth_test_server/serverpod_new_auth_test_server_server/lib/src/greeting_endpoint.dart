@@ -1,5 +1,6 @@
-import 'generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+
+import 'generated/protocol.dart';
 
 // This is an example endpoint of your server. It's best practice to use the
 // `Endpoint` ending of the class name, but it will be removed when accessing
@@ -22,7 +23,7 @@ class GreetingEndpoint extends Endpoint {
   // read more in the [docs](https://docs.serverpod.dev/concepts/working-with-endpoints).
 
   /// Returns a personalized greeting message: "Hello {name}".
-  Future<Greeting> hello(Session session, String name) async {
+  Future<Greeting> hello(final Session session, final String name) async {
     return Greeting(
       message: 'Hello $name',
       author: 'Serverpod',

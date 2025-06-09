@@ -1,5 +1,4 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 publish_to: none
 
@@ -7,10 +6,10 @@ name: serverpod_new_auth_test_server_client
 description: Starting point for a Serverpod client.
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: 2.8.0
+  serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:

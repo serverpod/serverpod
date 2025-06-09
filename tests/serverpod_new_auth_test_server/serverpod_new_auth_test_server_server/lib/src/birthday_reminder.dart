@@ -1,5 +1,5 @@
-import 'package:serverpod_new_auth_test_server_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_new_auth_test_server_server/src/generated/protocol.dart';
 
 /// This is a simple example of a future call that logs a birthday reminder.
 ///
@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 /// an email or a push notification to the user.
 class BirthdayReminder extends FutureCall<Greeting> {
   @override
-  Future<void> invoke(Session session, Greeting? object) async {
+  Future<void> invoke(final Session session, final Greeting? object) async {
     // This is where you would implement the logic to send a birthday reminder.
     // For example, you could send an email or a notification to the user.
     // You can access the user information from the `object` parameter if needed.

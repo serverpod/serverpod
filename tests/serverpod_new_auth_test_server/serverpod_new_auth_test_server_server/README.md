@@ -1,15 +1,9 @@
-# serverpod_new_auth_test_server_server
+![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-header.webp)
 
-This is the starting point for your Serverpod server.
+# Serverpod
+This package is a core part of Serverpod. For documentation, visit: [https://docs.serverpod.dev](https://docs.serverpod.dev).
 
-To run your server, you first need to start Postgres and Redis. It's easiest to do with Docker.
+## What is Serverpod?
+Serverpod is an open-source, scalable app server, written in Dart for the Flutter community. Check it out!
 
-    docker compose up --build --detach
-
-Then you can start the Serverpod server.
-
-    dart bin/main.dart
-
-When you are finished, you can shut down Serverpod with `Ctrl-C`, then stop Postgres and Redis.
-
-    docker compose stop
+[Serverpod.dev](https://serverpod.dev)
