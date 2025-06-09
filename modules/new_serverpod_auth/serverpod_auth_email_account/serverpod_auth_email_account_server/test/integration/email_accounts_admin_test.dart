@@ -23,8 +23,8 @@ void main() {
     });
 
     test(
-        'when `deleteExpiredAccountCreations` is called before the verification period has elapsed, then all non-expired pending request are kept.',
-        () async {
+        'when `deleteExpiredAccountCreations` is called before the verification period has elapsed, '
+        'then the account request is preserved.', () async {
       await EmailAccounts.admin.deleteExpiredAccountCreations(session);
 
       expect(
@@ -34,8 +34,8 @@ void main() {
     });
 
     test(
-        'when `deleteExpiredAccountCreations` is called after the verification period has elapsed, then all expired pending request are deleted.',
-        () async {
+        'when `deleteExpiredAccountCreations` is called after the verification period has elapsed, '
+        'then the account request is deleted.', () async {
       await withClock(
         Clock.fixed(DateTime.now()
             .add(EmailAccounts.config.registrationVerificationCodeLifetime)),
