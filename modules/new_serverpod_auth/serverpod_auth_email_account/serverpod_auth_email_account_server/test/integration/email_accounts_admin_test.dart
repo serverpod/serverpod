@@ -50,7 +50,7 @@ void main() {
   });
 
   withServerpod(
-    'Given an existing account with a pending password reset,',
+    'Given an existing account with a pending password reset request,',
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       late Session session;
@@ -74,7 +74,7 @@ void main() {
       });
 
       test(
-          'when `deleteExpiredPasswordResetRequests` is called before the verification period has elapsed, then all non-expired pending request are kept.',
+          'when `deleteExpiredPasswordResetRequests` is called before the verification period has elapsed, then the password reset is kept.',
           () async {
         await EmailAccounts.admin.deleteExpiredPasswordResetRequests(session);
 
@@ -85,7 +85,7 @@ void main() {
       });
 
       test(
-          'when `deleteExpiredPasswordResetRequests` is called after the verification period has elapsed, then all expired pending request are deleted.',
+          'when `deleteExpiredPasswordResetRequests` is called after the verification period has elapsed, then the password reset is deleted.',
           () async {
         await withClock(
           Clock.fixed(DateTime.now()
@@ -138,7 +138,7 @@ void main() {
       });
 
       test(
-          'when `deletePasswordResetAttempts` is called before the verification period has elapsed, then all non-expired pending request are kept.',
+          'when `deletePasswordResetAttempts` is called before the verification period has elapsed, then the password reset attempt is kept.',
           () async {
         await EmailAccounts.admin.deletePasswordResetAttempts(session);
 
@@ -149,7 +149,7 @@ void main() {
       });
 
       test(
-          'when `deletePasswordResetAttempts` is called after the verification period has elapsed, then all expired pending request are deleted.',
+          'when `deletePasswordResetAttempts` is called after the verification period has elapsed, then the password reset attempt is deleted.',
           () async {
         await withClock(
           Clock.fixed(DateTime.now()
