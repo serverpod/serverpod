@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_test/src/io_overrides.dart';
 import 'package:serverpod_test/src/test_database_proxy.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';

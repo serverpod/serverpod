@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 
 /// The configuration sections for the serverpod configuration file.
