@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
-import 'package:serverpod_auth_session_server/src/generated/auth_session.dart';
-import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -17,12 +14,12 @@ void main() {
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-    late String sessionSecret;
+    late String sessionKey;
 
     setUp(() async {
       session = sessionBuilder.build();
       authUserId = await _createAuthUser(session);
-      sessionSecret = await AuthSessions.createSession(
+      sessionKey = await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         method: 'test',
@@ -30,12 +27,16 @@ void main() {
       );
     });
 
+    tearDown(() {
+      AuthSessions.secretsTestOverride = null;
+    });
+
     test(
       'when resolving that session through the `authenticationHandler`, then the auth user ID is available on the auth info.',
       () async {
         final authInfo = await AuthSessions.authenticationHandler(
           session,
-          sessionSecret,
+          sessionKey,
         );
 
         expect(authInfo?.userIdentifier, authUserId.toString());
@@ -48,7 +49,7 @@ void main() {
       () async {
         final authInfo = await AuthSessions.authenticationHandler(
           session,
-          sessionSecret,
+          sessionKey,
         );
 
         expect(authInfo?.scopes, isEmpty);
@@ -61,7 +62,7 @@ void main() {
         final authInfoABeforeRevocation =
             await AuthSessions.authenticationHandler(
           session,
-          sessionSecret,
+          sessionKey,
         );
 
         final channelName =
@@ -124,13 +125,13 @@ void main() {
     test(
       'when sending an invalid session key which does not contain the correct secret, then `null` is returned.',
       () async {
-        final parts = sessionSecret.split(':');
+        final parts = sessionKey.split(':');
         parts[2] = base64Encode(utf8.encode('not-the-secret'));
-        final invalidSessionSecret = parts.join(':');
+        final invalidSessionKey = parts.join(':');
 
         final authInfo = await AuthSessions.authenticationHandler(
           session,
-          invalidSessionSecret,
+          invalidSessionKey,
         );
 
         expect(authInfo, isNull);
@@ -140,30 +141,52 @@ void main() {
     test(
       'when sending an invalid session key which does not contain a known session entry ID, then `null` is returned.`',
       () async {
-        final parts = sessionSecret.split(':');
+        final parts = sessionKey.split(':');
         parts[1] = 'm6XDpRhOTWKfSbkTLC5oRA=='; // abse64 encoded UUID
-        final invalidSessionSecret = parts.join(':');
+        final invalidSessionKey = parts.join(':');
 
         final authInfo = await AuthSessions.authenticationHandler(
           session,
-          invalidSessionSecret,
+          invalidSessionKey,
         );
 
         expect(authInfo, isNull);
       },
     );
+
+    test(
+        "when the session key hash pepper is changed, then the user's session key becomes invalid.",
+        () async {
+      final authInfoBeforeChange = await AuthSessions.authenticationHandler(
+        session,
+        sessionKey,
+      );
+
+      expect(authInfoBeforeChange, isNotNull);
+
+      AuthSessions.secretsTestOverride = AuthSessionSecrets(
+        sessionKeyHashPepper: 'new pepper 123',
+      );
+
+      final authInfoAfterChange = await AuthSessions.authenticationHandler(
+        session,
+        sessionKey,
+      );
+
+      expect(authInfoAfterChange, isNull);
+    });
   });
 
   withServerpod('Given an auth session with scopes,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-    late String sessionSecret;
+    late String sessionKey;
 
     setUp(() async {
       session = sessionBuilder.build();
       authUserId = await _createAuthUser(session);
-      sessionSecret = await AuthSessions.createSession(
+      sessionKey = await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         method: 'test',
@@ -176,7 +199,7 @@ void main() {
       () async {
         final authInfo = await AuthSessions.authenticationHandler(
           session,
-          sessionSecret,
+          sessionKey,
         );
 
         expect(authInfo?.scopes, {Scope.admin});
@@ -212,14 +235,14 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
-      late String sessionSecretA;
-      late String sessionSecretB;
+      late String sessionKey1;
+      late String sessionKey2;
 
       setUp(() async {
         session = sessionBuilder.build();
         authUserId = await _createAuthUser(session);
-        sessionSecretA = await _createAuthSession(session, authUserId);
-        sessionSecretB = await _createAuthSession(session, authUserId);
+        sessionKey1 = await _createAuthSession(session, authUserId);
+        sessionKey2 = await _createAuthSession(session, authUserId);
       });
 
       group(
@@ -229,7 +252,7 @@ void main() {
             final authInfoABeforeRevocation =
                 await AuthSessions.authenticationHandler(
               session,
-              sessionSecretA,
+              sessionKey1,
             );
 
             await AuthSessions.destroySession(
@@ -241,7 +264,7 @@ void main() {
           test('then it is not usable anymore.', () async {
             final authInfoA = await AuthSessions.authenticationHandler(
               session,
-              sessionSecretA,
+              sessionKey1,
             );
 
             expect(authInfoA, isNull);
@@ -250,7 +273,7 @@ void main() {
           test('then the other is still usable.', () async {
             final authInfoB = await AuthSessions.authenticationHandler(
               session,
-              sessionSecretB,
+              sessionKey2,
             );
 
             expect(authInfoB, isNotNull);
@@ -268,14 +291,14 @@ void main() {
 
           final authInfoA = await AuthSessions.authenticationHandler(
             session,
-            sessionSecretA,
+            sessionKey1,
           );
 
           expect(authInfoA, isNull);
 
           final authInfoB = await AuthSessions.authenticationHandler(
             session,
-            sessionSecretB,
+            sessionKey2,
           );
 
           expect(authInfoB, isNull);
