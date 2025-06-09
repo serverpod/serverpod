@@ -1062,7 +1062,7 @@ apiServer:
           },
         },
         environment: {
-          'SERVERPOD_ROLE': 'serverless',
+          'SERVERPOD_SERVER_ROLE': 'serverless',
         },
       );
 
@@ -1083,7 +1083,7 @@ apiServer:
           },
         },
         environment: {
-          'SERVERPOD_ROLE': 'serverless',
+          'SERVERPOD_SERVER_ROLE': 'serverless',
         },
         commandLineArgs: {
           'role': ServerpodRole.maintenance,
@@ -1108,7 +1108,7 @@ apiServer:
             },
           },
           environment: {
-            'SERVERPOD_ROLE': 'invalid_role',
+            'SERVERPOD_SERVER_ROLE': 'invalid_role',
           },
         ),
         throwsA(isA<ArgumentError>().having(
@@ -1141,7 +1141,7 @@ apiServer:
             },
           },
           environment: {
-            'SERVERPOD_ROLE': validRoles[i],
+            'SERVERPOD_SERVER_ROLE': validRoles[i],
           },
         );
 
@@ -1187,7 +1187,7 @@ apiServer:
           },
         },
         environment: {
-          'SERVERPOD_LOGGING': 'verbose',
+          'SERVERPOD_LOGGING_MODE': 'verbose',
         },
       );
 
@@ -1210,7 +1210,7 @@ apiServer:
           },
         },
         environment: {
-          'SERVERPOD_LOGGING': 'verbose',
+          'SERVERPOD_LOGGING_MODE': 'verbose',
         },
         commandLineArgs: {
           'loggingMode': ServerpodLoggingMode.normal,
@@ -1235,7 +1235,7 @@ apiServer:
             },
           },
           environment: {
-            'SERVERPOD_LOGGING': 'invalid_logging',
+            'SERVERPOD_LOGGING_MODE': 'invalid_logging',
           },
         ),
         throwsA(isA<ArgumentError>().having(
@@ -1267,7 +1267,7 @@ apiServer:
             },
           },
           environment: {
-            'SERVERPOD_LOGGING': validLoggingModes[i],
+            'SERVERPOD_LOGGING_MODE': validLoggingModes[i],
           },
         );
 
