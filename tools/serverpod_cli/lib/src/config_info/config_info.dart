@@ -8,8 +8,7 @@ class ConfigInfo {
     var passwords = PasswordManager(runMode: runMode).loadPasswords();
     config = ServerpodConfig.load(
       runMode,
-      serverId ?? 'undefined',
-      false,
+      serverId,
       passwords,
     );
   }

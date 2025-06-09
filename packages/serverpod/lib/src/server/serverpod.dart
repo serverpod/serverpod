@@ -56,10 +56,8 @@ class Serverpod {
     return _instance!;
   }
 
-  late String _runMode;
-
   /// The servers run mode as specified in [ServerpodRunMode].
-  String get runMode => _runMode;
+  String get runMode => config.runMode;
 
   /// The parsed runtime arguments passed to Serverpod at startup.
   late final CommandLineArgs commandLineArgs;
@@ -324,24 +322,26 @@ class Serverpod {
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
 
+    final runMode = _calculateRunMode(commandLineArgs);
+
     stdout.writeln(commandLineArgs.toString());
 
-    _runMode = commandLineArgs.runMode;
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
+    final serverId = _calculateServerId(commandLineArgs);
+
     // Load config
     this.config = config ??
         ServerpodConfig.load(
-          _runMode,
-          commandLineArgs.serverId,
-          commandLineArgs.isServerIdDefault,
+          runMode,
+          serverId,
           _passwords,
+          commandLineArgs: commandLineArgs.toMap(),
         );
 
     logVerbose(this.config.toString());
-    serverId = this.config.serverId;
 
     try {
       _innerInitializeServerpod();
@@ -361,7 +361,7 @@ class Serverpod {
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
-    _updateLogSettings(_defaultRuntimeSettings(_runMode));
+    _updateLogSettings(_defaultRuntimeSettings(runMode));
 
     // Setup database
     var databaseConfiguration = config.database;
@@ -414,7 +414,7 @@ class Serverpod {
       serializationManager: serializationManager,
       databasePoolManager: _databasePoolManager,
       passwords: _passwords,
-      runMode: _runMode,
+      runMode: runMode,
       caches: caches,
       authenticationHandler: authHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
@@ -515,8 +515,7 @@ class Serverpod {
     _databasePoolManager?.start();
 
     if (Features.enableMigrations) {
-      int? maxAttempts =
-          commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+      int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;
       try {
         await _connectToDatabase(
           session: internalSession,
@@ -529,13 +528,12 @@ class Serverpod {
       }
 
       await _applyMigrations(
-        applyRepairMigration: commandLineArgs.applyRepairMigration,
-        applyMigrations: commandLineArgs.applyMigrations,
+        applyRepairMigration: config.applyRepairMigration,
+        applyMigrations: config.applyMigrations,
       );
 
       await _loadRuntimeSettings();
-    } else if (commandLineArgs.applyMigrations ||
-        commandLineArgs.applyRepairMigration) {
+    } else if (config.applyMigrations || config.applyRepairMigration) {
       stderr.writeln(
         'Migrations are disabled in this project, skipping applying migration(s).',
       );
@@ -553,8 +551,8 @@ class Serverpod {
     }
 
     // Start servers.
-    if (commandLineArgs.role == ServerpodRole.monolith ||
-        commandLineArgs.role == ServerpodRole.serverless) {
+    if (config.role == ServerpodRole.monolith ||
+        config.role == ServerpodRole.serverless) {
       var serversStarted = true;
 
       ProcessSignal.sigint.watch().listen(_onInterruptSignal);
@@ -597,11 +595,10 @@ class Serverpod {
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
-    var appliedMigrations = (commandLineArgs.applyMigrations |
-        commandLineArgs.applyRepairMigration);
-    if (commandLineArgs.role == ServerpodRole.monolith ||
-        (commandLineArgs.role == ServerpodRole.maintenance &&
-            !appliedMigrations)) {
+    var appliedMigrations =
+        (config.applyMigrations | config.applyRepairMigration);
+    if (config.role == ServerpodRole.monolith ||
+        (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
       logVerbose('Starting maintenance tasks.');
 
       // Start future calls
@@ -609,7 +606,7 @@ class Serverpod {
       if (!config.futureCallExecutionEnabled) {
         logVerbose('Future call execution is disabled.');
         _completedFutureCalls = true;
-      } else if (commandLineArgs.role == ServerpodRole.maintenance) {
+      } else if (config.role == ServerpodRole.maintenance) {
         unawaited(
           _futureCallManager
               ?.runScheduledFutureCalls()
@@ -626,8 +623,7 @@ class Serverpod {
 
     logVerbose('Serverpod start complete.');
 
-    if (commandLineArgs.role == ServerpodRole.maintenance &&
-        appliedMigrations) {
+    if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
     }
@@ -708,6 +704,25 @@ class Serverpod {
     }
   }
 
+  String _calculateRunMode(CommandLineArgs commandLineArgs) {
+    final runModeFromEnv = Platform.environment['SERVERPOD_RUN_MODE'];
+    if (runModeFromEnv != null) {
+      return switch (runModeFromEnv) {
+        'development' || 'test' || 'staging' || 'production' => runModeFromEnv,
+        _ => throw ArgumentError(
+            'Invalid run mode from environment (SERVERPOD_RUN_MODE): $runModeFromEnv',
+          ),
+      };
+    }
+
+    return commandLineArgs.runMode;
+  }
+
+  String? _calculateServerId(CommandLineArgs commandLineArgs) {
+    if (commandLineArgs.isServerIdDefault) return null;
+    return commandLineArgs.serverId;
+  }
+
   bool _completedHealthChecks = false;
   bool _completedFutureCalls = false;
 
@@ -763,7 +778,7 @@ class Serverpod {
       serializationManager: _internalSerializationManager,
       databasePoolManager: _databasePoolManager,
       passwords: _passwords,
-      runMode: _runMode,
+      runMode: runMode,
       name: 'Insights',
       caches: caches,
       authenticationHandler: serviceAuthenticationHandler,
@@ -952,7 +967,7 @@ class Serverpod {
   /// Logs a message to the console if the logging command line argument is set
   /// to verbose.
   void logVerbose(String message) {
-    if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
+    if (config.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
     }
   }
