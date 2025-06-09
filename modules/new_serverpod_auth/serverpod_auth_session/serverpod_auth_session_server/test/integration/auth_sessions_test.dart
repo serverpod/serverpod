@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
+import 'package:serverpod_auth_session_server/src/generated/auth_session.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
@@ -166,6 +168,31 @@ void main() {
 
       AuthSessions.secretsTestOverride = AuthSessionSecrets(
         sessionKeyHashPepper: 'new pepper 123',
+      );
+
+      final authInfoAfterChange = await AuthSessions.authenticationHandler(
+        session,
+        sessionKey,
+      );
+
+      expect(authInfoAfterChange, isNull);
+    });
+
+    test(
+        "when the session key hash salte is changed in the database, then the user's session key becomes invalid.",
+        () async {
+      final authInfoBeforeChange = await AuthSessions.authenticationHandler(
+        session,
+        sessionKey,
+      );
+
+      expect(authInfoBeforeChange, isNotNull);
+
+      final authSessionRow = (await AuthSession.db.find(session)).single;
+
+      await AuthSession.db.updateRow(
+        session,
+        authSessionRow.copyWith(sessionKeyHash: ByteData(10)),
       );
 
       final authInfoAfterChange = await AuthSessions.authenticationHandler(
