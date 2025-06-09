@@ -21,7 +21,4 @@ class AuthSessionConfig {
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
   });
-
-  /// The current session module configuration.
-  static AuthSessionConfig current = AuthSessionConfig();
 }

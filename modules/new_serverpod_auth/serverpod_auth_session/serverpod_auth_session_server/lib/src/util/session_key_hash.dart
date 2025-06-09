@@ -14,9 +14,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 }) {
   final pepper = utf8.encode(AuthSessionSecrets.sessionKeyHashPepper);
 
-  salt ??= generateRandomBytes(
-    AuthSessionConfig.current.sessionKeyHashSaltLength,
-  );
+  salt ??= generateRandomBytes(AuthSessions.config.sessionKeyHashSaltLength);
 
   if (pepper.length < 10) {
     throw ArgumentError.value(pepper, 'pepper', 'Value is too short');

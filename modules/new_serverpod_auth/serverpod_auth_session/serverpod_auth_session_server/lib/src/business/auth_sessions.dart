@@ -12,6 +12,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 ///
 /// This should be used instead of [AuthSession.db].
 abstract final class AuthSessions {
+  /// The current session module configuration.
+  static AuthSessionConfig config = AuthSessionConfig();
+
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
   /// Only looks at keys created with this package (by checking the prefix),
@@ -67,8 +70,7 @@ abstract final class AuthSessions {
       return null;
     }
 
-    final maximumSessionLifetime =
-        AuthSessionConfig.current.maximumSessionLifetime;
+    final maximumSessionLifetime = config.maximumSessionLifetime;
 
     if (maximumSessionLifetime != null &&
         authSession.created
@@ -122,12 +124,8 @@ abstract final class AuthSessions {
     required final String method,
     required final Set<Scope> scopes,
   }) async {
-    final secret = generateRandomBytes(
-      AuthSessionConfig.current.sessionKeySecretLength,
-    );
-    final hash = createSessionKeyHash(
-      secret: secret,
-    );
+    final secret = generateRandomBytes(config.sessionKeySecretLength);
+    final hash = createSessionKeyHash(secret: secret);
 
     final scopeNames = <String>{
       for (final scope in scopes)
