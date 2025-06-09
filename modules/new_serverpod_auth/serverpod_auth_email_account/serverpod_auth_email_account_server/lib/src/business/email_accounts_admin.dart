@@ -51,4 +51,22 @@ final class EmailAccountsAdmin {
       where: (final t) => t.created < lastValidDateTime,
     );
   }
+
+  /// Cleans up the log of failed login attempts older than [olderThan].
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time window that
+  /// is checked upon login, as configured in [EmailAccountConfig.emailSignInFailureResetTime].
+  static Future<void> deleteFailedLoginAttempts(
+    final Session session, {
+    Duration? olderThan,
+  }) async {
+    olderThan ??= EmailAccounts.config.failedLoginRateLimit.timeframe;
+
+    final removeBefore = clock.now().subtract(olderThan);
+
+    await EmailAccountFailedLoginAttempt.db.deleteWhere(
+      session,
+      where: (final t) => t.attemptedAt < removeBefore,
+    );
+  }
 }
