@@ -8,6 +8,6 @@ void main() {
     'serviceSecret': 'secret',
   };
 
-  var config = ServerpodConfig.load('development', 'default', true, passwords);
+  var config = ServerpodConfig.load('development', 'default', passwords);
   stdout.write(config.toString());
 }

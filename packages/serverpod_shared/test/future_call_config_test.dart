@@ -4,7 +4,9 @@ import 'package:yaml/yaml.dart';
 
 void main() {
   var runMode = 'development';
-  var serverId = 'default';
+  // Setting the serverId to null to test the default value.
+  // ignore: avoid_init_to_null
+  var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
     'database': 'dbpassword'
@@ -24,7 +26,6 @@ apiServer:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -57,7 +58,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -74,7 +74,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         {
           'apiServer': {
@@ -107,7 +106,6 @@ futureCall:
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
-          true,
           passwords,
           {
             'apiServer': {
@@ -139,7 +137,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         {
           'apiServer': {
@@ -180,7 +177,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -209,7 +205,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -241,7 +236,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -267,7 +261,6 @@ futureCall:
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
-        true,
         passwords,
         loadYaml(serverpodConfig),
       );
@@ -287,7 +280,6 @@ futureCall:
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
-          true,
           passwords,
           {
             'apiServer': {
