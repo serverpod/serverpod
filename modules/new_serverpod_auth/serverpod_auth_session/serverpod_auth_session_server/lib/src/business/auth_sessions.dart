@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
+import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -84,7 +86,7 @@ abstract final class AuthSessions {
       return null;
     }
 
-    if (!validateSessionKeyHash(
+    if (!_sessionKeyHash.validateSessionKeyHash(
       secret: secret,
       hash: Uint8List.sublistView(authSession.sessionKeyHash),
       salt: Uint8List.sublistView(authSession.sessionKeySalt),
@@ -125,7 +127,7 @@ abstract final class AuthSessions {
     required final Set<Scope> scopes,
   }) async {
     final secret = generateRandomBytes(config.sessionKeySecretLength);
-    final hash = createSessionKeyHash(secret: secret);
+    final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
     final scopeNames = <String>{
       for (final scope in scopes)
@@ -209,4 +211,15 @@ abstract final class AuthSessions {
   }) {
     return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:${base64Encode(secret)}';
   }
+
+  /// The secrets configuration.
+  static final __secrets = AuthSessionSecrets();
+
+  /// Secrets to the used for testing. Also affects the internally used [AuthSessionKeyHash].
+  @visibleForTesting
+  static AuthSessionSecrets? secretsTestOverride;
+  static AuthSessionSecrets get _secrets => secretsTestOverride ?? __secrets;
+
+  static AuthSessionKeyHash get _sessionKeyHash =>
+      AuthSessionKeyHash(secrets: _secrets);
 }

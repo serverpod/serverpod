@@ -294,7 +294,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthSessionSecrets.sessionKeyHashPepperTestOverride = null;
+      AuthSessions.secretsTestOverride = null;
     });
 
     test(
@@ -307,7 +307,8 @@ void main() {
 
       expect(authInfoBeforeChange, isNotNull);
 
-      AuthSessionSecrets.sessionKeyHashPepperTestOverride = 'new pepper 123';
+      AuthSessions.secretsTestOverride =
+          AuthSessionSecrets(sessionKeyHashPepper: 'new pepper 123');
 
       final authInfoAfterChange = await AuthSessions.authenticationHandler(
         session,
@@ -329,14 +330,15 @@ void main() {
     });
 
     tearDown(() {
-      AuthSessionSecrets.sessionKeyHashPepperTestOverride = null;
+      AuthSessions.secretsTestOverride = null;
     });
 
     test(
         'when the session key is checked, then it can be verified that it was built using `hashSessionKey` with the configured hash read beforehand.',
         () async {
-      AuthSessionSecrets.sessionKeyHashPepperTestOverride =
-          'test_pepper_override_1';
+      AuthSessions.secretsTestOverride = AuthSessionSecrets(
+        sessionKeyHashPepper: 'test_pepper_override_1',
+      );
 
       {
         final sessionKey = await AuthSessions.createSession(
@@ -356,25 +358,32 @@ void main() {
 
         expect(
           Uint8List.sublistView(authSession!.sessionKeyHash),
-          createSessionKeyHash(
-            secret: secret,
-          ).hash,
+          AuthSessionKeyHash(secrets: AuthSessions.secretsTestOverride!)
+              .createSessionKeyHash(
+                secret: secret,
+              )
+              .hash,
         );
 
-        AuthSessionSecrets.sessionKeyHashPepperTestOverride =
-            'test_pepper_override_1';
+        AuthSessions.secretsTestOverride = AuthSessionSecrets(
+          sessionKeyHashPepper: 'test_pepper_override_1',
+        );
+
         expect(
           authSession.sessionKeyHash,
           isNot(
-            createSessionKeyHash(
-              secret: secret,
-            ).hash,
+            AuthSessionKeyHash(secrets: AuthSessions.secretsTestOverride!)
+                .createSessionKeyHash(
+                  secret: secret,
+                )
+                .hash,
           ),
         );
       }
 
-      AuthSessionSecrets.sessionKeyHashPepperTestOverride =
-          'test_pepper_override_2';
+      AuthSessions.secretsTestOverride = AuthSessionSecrets(
+        sessionKeyHashPepper: 'test_pepper_override_2',
+      );
 
       {
         final sessionKey = await AuthSessions.createSession(
@@ -394,9 +403,11 @@ void main() {
 
         expect(
           Uint8List.sublistView(authSession!.sessionKeyHash),
-          createSessionKeyHash(
-            secret: secret,
-          ).hash,
+          AuthSessionKeyHash(secrets: AuthSessions.secretsTestOverride!)
+              .createSessionKeyHash(
+                secret: secret,
+              )
+              .hash,
         );
       }
     });
