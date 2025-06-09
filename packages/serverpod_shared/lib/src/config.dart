@@ -261,6 +261,51 @@ class ServerpodConfig {
     }
   }
 
+  /// Creates a copy of this [ServerpodConfig] with the given fields replaced.
+  /// All fields that are not specified will keep their original values.
+  ServerpodConfig copyWith({
+    ServerConfig? apiServer,
+    String? runMode,
+    String? serverId,
+    ServerpodRole? role,
+    ServerpodLoggingMode? loggingMode,
+    bool? applyMigrations,
+    bool? applyRepairMigration,
+    int? maxRequestSize,
+    ServerConfig? insightsServer,
+    ServerConfig? webServer,
+    DatabaseConfig? database,
+    RedisConfig? redis,
+    String? serviceSecret,
+    SessionLogConfig? sessionLogs,
+    Duration? experimentalDiagnosticHandlerTimeout,
+    FutureCallConfig? futureCall,
+    bool? futureCallExecutionEnabled,
+  }) {
+    return ServerpodConfig(
+      apiServer: apiServer ?? this.apiServer,
+      runMode: runMode ?? this.runMode,
+      serverId: serverId ?? this.serverId,
+      role: role ?? this.role,
+      loggingMode: loggingMode ?? this.loggingMode,
+      applyMigrations: applyMigrations ?? this.applyMigrations,
+      applyRepairMigration: applyRepairMigration ?? this.applyRepairMigration,
+      maxRequestSize: maxRequestSize ?? this.maxRequestSize,
+      insightsServer: insightsServer ?? this.insightsServer,
+      webServer: webServer ?? this.webServer,
+      database: database ?? this.database,
+      redis: redis ?? this.redis,
+      serviceSecret: serviceSecret ?? this.serviceSecret,
+      sessionLogs: sessionLogs ?? this.sessionLogs,
+      experimentalDiagnosticHandlerTimeout:
+          experimentalDiagnosticHandlerTimeout ??
+              this.experimentalDiagnosticHandlerTimeout,
+      futureCall: futureCall ?? this.futureCall,
+      futureCallExecutionEnabled:
+          futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+    );
+  }
+
   /// Checks if a configuration file is available on disk for the given run mode.
   static bool isConfigAvailable(String runMode) {
     return File(_createConfigPath(runMode)).existsSync();

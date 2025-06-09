@@ -333,7 +333,7 @@ class Serverpod {
     final serverId = _calculateServerId(commandLineArgs);
 
     // Load config
-    this.config = config ??
+    this.config = config?.copyWith(runMode: runMode) ??
         ServerpodConfig.load(
           runMode,
           serverId,
