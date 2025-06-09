@@ -35,9 +35,15 @@
         },
         {
           "name": "sessionKeyHash",
-          "columnType": 0,
+          "columnType": 5,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "sessionKeySalt",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
         },
         {
           "name": "method",
@@ -1267,7 +1273,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_session",
-      "version": "20250507151311162"
+      "version": "20250607101155018"
     },
     {
       "module": "serverpod",

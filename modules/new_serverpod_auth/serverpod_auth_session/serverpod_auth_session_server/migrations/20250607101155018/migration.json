@@ -36,9 +36,15 @@
           },
           {
             "name": "sessionKeyHash",
-            "columnType": 0,
+            "columnType": 5,
             "isNullable": false,
-            "dartType": "String"
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "sessionKeySalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
           },
           {
             "name": "method",
