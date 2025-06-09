@@ -1,5 +1,6 @@
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/run_mode.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
