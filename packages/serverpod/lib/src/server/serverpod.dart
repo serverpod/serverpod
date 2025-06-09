@@ -705,16 +705,22 @@ class Serverpod {
   }
 
   String _calculateRunMode(CommandLineArgs commandLineArgs) {
-    final runModeFromEnv = Platform.environment['SERVERPOD_RUN_MODE'];
+    if (!commandLineArgs.isRunModeDefault) {
+      return commandLineArgs.runMode;
+    }
+
+    final runModeFromEnv =
+        Platform.environment[ServerpodEnv.runMode.envVariable];
     if (runModeFromEnv != null) {
       return switch (runModeFromEnv) {
         'development' || 'test' || 'staging' || 'production' => runModeFromEnv,
         _ => throw ArgumentError(
-            'Invalid run mode from environment (SERVERPOD_RUN_MODE): $runModeFromEnv',
+            'Invalid run mode from environment (${ServerpodEnv.runMode.envVariable}): $runModeFromEnv',
           ),
       };
     }
 
+    // Default to development if no run mode is provided.
     return commandLineArgs.runMode;
   }
 
