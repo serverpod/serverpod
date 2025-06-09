@@ -9,7 +9,6 @@ import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
-import 'package:serverpod/src/server/environment_cli_args_augmenter.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
@@ -323,8 +322,7 @@ class Serverpod {
     );
 
     // Read command line arguments.
-    commandLineArgs = EnvironmentCliArgsAugmenter(Platform.environment)
-        .createAugmentedFrom(CommandLineArgs(args));
+    commandLineArgs = CommandLineArgs(args);
 
     stdout.writeln(commandLineArgs.toString());
 
