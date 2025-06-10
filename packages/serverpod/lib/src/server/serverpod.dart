@@ -60,6 +60,7 @@ class Serverpod {
   String get runMode => config.runMode;
 
   /// The parsed runtime arguments passed to Serverpod at startup.
+  @Deprecated('Use config instead.')
   late final CommandLineArgs commandLineArgs;
 
   /// The server configuration, as read from the config/ directory.
@@ -320,16 +321,20 @@ class Serverpod {
     );
 
     // Read command line arguments.
+    // ignore: deprecated_member_use_from_same_package
     commandLineArgs = CommandLineArgs(args);
 
+    // ignore: deprecated_member_use_from_same_package
     final runMode = _calculateRunMode(commandLineArgs);
 
+    // ignore: deprecated_member_use_from_same_package
     stdout.writeln(commandLineArgs.toString());
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
+    // ignore: deprecated_member_use_from_same_package
     final serverId = _calculateServerId(commandLineArgs);
 
     // Load config
@@ -338,6 +343,7 @@ class Serverpod {
           runMode,
           serverId,
           _passwords,
+          // ignore: deprecated_member_use_from_same_package
           commandLineArgs: commandLineArgs.toMap(),
         );
 

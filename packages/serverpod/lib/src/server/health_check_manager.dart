@@ -67,7 +67,7 @@ class HealthCheckManager {
   }
 
   Future<void> _innerPerformHealthCheck() async {
-    if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    if (_pod.config.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
 
@@ -98,9 +98,9 @@ class HealthCheckManager {
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.
-    if (_pod.commandLineArgs.role == ServerpodRole.monolith) {
+    if (_pod.config.role == ServerpodRole.monolith) {
       _scheduleNextCheck();
-    } else if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    } else if (_pod.config.role == ServerpodRole.maintenance) {
       onCompleted();
     }
   }
@@ -385,7 +385,7 @@ class HealthCheckManager {
       space: OriginSpace.framework,
       context: DiagnosticEventContext(
         serverId: _pod.serverId,
-        serverRunMode: _pod.commandLineArgs.role.name,
+        serverRunMode: _pod.config.role.name,
         serverName: '',
       ),
     );
