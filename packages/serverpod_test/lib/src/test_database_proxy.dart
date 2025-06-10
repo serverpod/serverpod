@@ -221,6 +221,20 @@ class TestDatabaseProxy implements Database {
     );
   }
 
+  @override
+  Future<void> setRuntimeParameters(
+    List<RuntimeParameters> parameters, {
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.setRuntimeParameters(
+        parameters,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
   /// This method is not guarded by the test guard and should only be
   /// used by the package internal [TransactionManager].
   Future<int> unsafeExecuteWithoutDatabaseExceptionGuard(

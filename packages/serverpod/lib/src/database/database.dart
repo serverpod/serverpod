@@ -4,6 +4,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
@@ -344,6 +345,21 @@ class Database {
       settings: settings ?? const TransactionSettings(),
       session: _session,
     );
+  }
+
+  /// Sets runtime parameters. If a transaction is provided, the parameters
+  /// are set as local to that transaction. Otherwise, they are set globally.
+  Future<void> setRuntimeParameters(
+    List<RuntimeParameters> parameters, {
+    Transaction? transaction,
+  }) async {
+    for (var option in parameters) {
+      await unsafeExecute(
+        option.build(isLocal: transaction != null),
+        // ignore: invalid_use_of_visible_for_testing_member
+        transaction: transaction ?? _session.transaction,
+      );
+    }
   }
 
   /// Tests the database connection.
