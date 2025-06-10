@@ -327,9 +327,6 @@ class Serverpod {
     // ignore: deprecated_member_use_from_same_package
     final runMode = _calculateRunMode(commandLineArgs);
 
-    // ignore: deprecated_member_use_from_same_package
-    stdout.writeln(commandLineArgs.toString());
-
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
@@ -346,6 +343,9 @@ class Serverpod {
           // ignore: deprecated_member_use_from_same_package
           commandLineArgs: commandLineArgs.toMap(),
         );
+
+    // ignore: deprecated_member_use_from_same_package
+    stdout.writeln(_getCommandLineArgsString());
 
     logVerbose(this.config.toString());
 
@@ -1064,6 +1064,24 @@ class Serverpod {
 
   bool _isValidSecret(String? secret) {
     return secret != null && secret.isNotEmpty && secret.length > 20;
+  }
+
+  String _getCommandLineArgsString() {
+    final ServerpodConfig(
+      :runMode,
+      :serverId,
+      :role,
+      :loggingMode,
+      :applyMigrations,
+      :applyRepairMigration,
+    ) = config;
+
+    return 'runMode: $runMode\n'
+        'serverId: $serverId\n'
+        'role: ${role.name}\n'
+        'loggingMode: ${loggingMode.name}\n'
+        'applyMigrations: $applyMigrations\n'
+        'applyRepairMigration: $applyRepairMigration';
   }
 }
 
