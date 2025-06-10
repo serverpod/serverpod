@@ -14,7 +14,7 @@ class Task<T> {
   ///
   /// Used for identification and logging purposes, especially when errors
   /// occur.
-  String id;
+  Object id;
 
   /// The function to execute when the task is run.
   ///

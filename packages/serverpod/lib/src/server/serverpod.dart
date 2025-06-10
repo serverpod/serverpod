@@ -160,8 +160,8 @@ class Serverpod {
   /// The task manager is responsible for executing tasks concurrently.
   /// In this case, it's used to manage server shutdown tasks, ensuring that all
   /// resources are properly released and services are stopped.
-  /// You can use this to add custom tasks using [TaskManager.addTask].
-  TaskManager get shutdownTaskManager => _externalShutdownTaskManager;
+  /// You can use this to add custom tasks using [shutdownTasks.addTask].
+  TaskManager get shutdownTasks => _externalShutdownTaskManager;
 
   final TaskManager _externalShutdownTaskManager = TaskManager();
 
@@ -975,7 +975,7 @@ class Serverpod {
     await _externalShutdownTaskManager.handleTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
-        _reportException(error, stack, message: 'Error in internal task "$id"');
+        _reportException(error, stack, message: 'Error in task "$id"');
       },
     );
 

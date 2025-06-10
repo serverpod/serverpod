@@ -1,141 +1,129 @@
-import 'package:serverpod/src/server/task_manager.dart';
+import 'package:serverpod/protocol.dart';
+import 'package:serverpod/src/generated/endpoints.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/task.dart';
+import 'package:serverpod/src/server/task_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('TaskManager', () {
-    late TaskManager taskManager;
+    test(
+        'Given a registered task, When handleTasks is called, Then the task is executed',
+        () async {
+      // Given
+      final manager = TaskManager();
+      var called = false;
 
-    setUp(() {
-      taskManager = TaskManager();
+      manager.addTask(Task<void>(
+        'test-task',
+        () async {
+          called = true;
+        },
+      ));
+
+      // When
+      await manager.handleTasks(
+        onTaskError: (_, __, ___) {},
+      );
+
+      // Then
+      expect(called, isTrue);
     });
 
-    group('addTask', () {
-      test('adds a task to the task manager', () {
-        // Arrange
-        var task = Task('test-task', () async => 'result');
+    test(
+        'Given a task that throws, When handleTasks is called, Then other tasks still run',
+        () async {
+      // Given
+      final manager = TaskManager();
+      var executedTaskIds = <Object>[];
 
-        // Act
-        taskManager.addTask(task);
+      manager.addTask(Task<void>('throws', () async {
+        throw Exception('fail');
+      }));
 
-        // Assert - We can't directly access _tasks, so we'll test indirectly
-        // by running the task and checking if it executes
-        var executed = false;
-        taskManager.handleTasks(onTaskError: (error, stack, id) {
-          fail('Task should not fail');
-        }).then((_) {
-          executed = true;
-        });
+      manager.addTask(Task<void>('runs', () async {
+        executedTaskIds.add('runs');
+      }));
 
-        expect(executed, isTrue);
-      });
+      // When
+      await manager.handleTasks(
+        onTaskError: (_, __, id) {
+          executedTaskIds.add(id);
+        },
+      );
 
-      test('replaces a task with the same id', () {
-        // Arrange
-        var task1 = Task('test-task', () async => 'result1');
-        var task2 = Task('test-task', () async => 'result2');
-
-        // Act
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-
-        // Assert - We can't directly access _tasks, so we'll test indirectly
-        // by checking that only the second task is executed
-        var result = '';
-        task1.callback = () async {
-          result = 'result1';
-          return 'result1';
-        };
-        task2.callback = () async {
-          result = 'result2';
-          return 'result2';
-        };
-
-        taskManager.handleTasks(onTaskError: (error, stack, id) {
-          fail('Task should not fail');
-        });
-
-        expect(result, equals('result2'));
-      });
+      // Then
+      expect(executedTaskIds, containsAll(['throws', 'runs']));
     });
 
-    group('removeTask', () {
-      test('throws AssertionError when removing a task that does not exist', () {
-        // Act & Assert
-        expect(() => taskManager.removeTask('non-existent-task'),
-            throwsA(isA<AssertionError>()));
-      });
+    test(
+        'Given a removed task, When handleTasks is called, Then the task is not executed',
+        () async {
+      // Given
+      final manager = TaskManager();
+      var called = false;
 
-      test('removes a task from the task manager', () {
-        // Arrange
-        var task = Task('test-task', () async => 'result');
-        taskManager.addTask(task);
+      manager.addTask(Task<void>('task1', () async {
+        called = true;
+      }));
+      manager.removeTask('task1');
 
-        // Act & Assert
-        // Note: There seems to be a bug in the removeTask method - it always throws
-        // an AssertionError after removing the task. This test will fail until that
-        // bug is fixed.
-        expect(() => taskManager.removeTask('test-task'),
-            throwsA(isA<AssertionError>()));
-      });
+      // When
+      await manager.handleTasks(
+        onTaskError: (_, __, ___) {},
+      );
+
+      // Then
+      expect(called, isFalse);
     });
+  });
 
-    group('handleTasks', () {
-      test('executes all tasks concurrently', () async {
-        // Arrange
-        var task1Executed = false;
-        var task2Executed = false;
-        var task1 = Task('test-task-1', () async {
-          task1Executed = true;
-          return 'result1';
-        });
-        var task2 = Task('test-task-2', () async {
-          task2Executed = true;
-          return 'result2';
-        });
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
+  /// Integration Test
+  test(
+      'Given a shutdown task, When server shuts down, Then the task is executed',
+      () async {
+    // Given
+    final pod = Serverpod([], Protocol(), Endpoints()); // configure as needed
+    bool shutdownCalled = false;
+    bool removedCalled = false;
+    bool removed = false;
+    bool removedAlready = true;
+    Object? exception;
 
-        // Act
-        await taskManager.handleTasks(onTaskError: (error, stack, id) {
-          fail('Task should not fail');
-        });
+    pod.shutdownTasks.addTask(Task(
+      #pass,
+      () async {
+        shutdownCalled = true;
+      },
+    ));
 
-        // Assert
-        expect(task1Executed, isTrue);
-        expect(task2Executed, isTrue);
-      });
+    pod.shutdownTasks.addTask(Task(#remove, () async {
+      removedCalled = true;
+    }));
 
-      test('calls onTaskError when a task throws an exception', () async {
-        // Arrange
-        var errorCaught = false;
-        var task = Task('test-task', () async {
-          throw Exception('Test exception');
-        });
-        taskManager.addTask(task);
+    removed = pod.shutdownTasks.removeTask(#remove);
 
-        // Act
-        await taskManager.handleTasks(onTaskError: (error, stack, id) {
-          errorCaught = true;
-          expect(error, isA<Exception>());
-          expect(id, equals('test-task'));
-        });
+    removedAlready = pod.shutdownTasks.removeTask(#remove);
 
-        // Assert
-        expect(errorCaught, isTrue);
-      });
+    pod.shutdownTasks.addTask(Task(#error, () async {
+      throw Exception('Testing error');
+    }));
 
-      test('skips tasks with null callbacks', () async {
-        // Arrange
-        var task = Task('test-task', null);
-        taskManager.addTask(task);
+    await pod.start();
 
-        // Act & Assert
-        // If the task is not skipped, this would throw an exception
-        await taskManager.handleTasks(onTaskError: (error, stack, id) {
-          fail('Task should be skipped');
-        });
-      });
-    });
+    // When
+    try {
+      await pod.shutdown(exitProcess: false);
+    } catch (e) {
+      exception = e;
+    }
+
+    // Then
+    expect(shutdownCalled, isTrue);
+    expect(removedCalled, isFalse);
+    expect(removedAlready, isFalse);
+    expect(removed, isTrue);
+    expect(exception, isA<Exception>());
+    expect(exception.toString(), contains('Testing error'));
   });
 }

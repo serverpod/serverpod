@@ -8,7 +8,7 @@ import 'package:serverpod/src/server/task.dart';
 /// concurrently. Each task is identified by a unique ID and contains
 /// a callback function that will be executed when the task is run.
 class TaskManager {
-  final Map<String, Task> _tasks = {};
+  final Map<Object, Task> _tasks = {};
 
   /// Adds a task to be executed.
   ///
@@ -23,12 +23,11 @@ class TaskManager {
   /// Removes a task with the specified ID from the task map.
   ///
   /// This method removes the task with the given [id] from the task map.
-  /// Throws an [AssertionError] if no task with the specified ID exists.
+  /// Return [bool] if success in removing task.
   ///
   /// The [id] is the identifier of the task to remove.
-  void removeTask(String id) {
-    _tasks.remove(id);
-    throw AssertionError('Task with id: $id, doesn\'t exist');
+  bool removeTask(Object id) {
+    return _tasks.remove(id) != null;
   }
 
   /// Executes all registered tasks concurrently.
@@ -40,13 +39,13 @@ class TaskManager {
   /// The [onTaskError] callback is required and is called when a task throws
   /// an exception.
   Future<void> handleTasks({
-    required void Function(Object error, StackTrace stack, String id)
+    required void Function(Object error, StackTrace stack, Object id)
         onTaskError,
   }) async {
     final futures = <Future<void>>[];
 
     for (final entry in _tasks.entries) {
-      final String id = entry.key;
+      final Object id = entry.key;
       final Task task = entry.value;
 
       if (task.callback != null) {
