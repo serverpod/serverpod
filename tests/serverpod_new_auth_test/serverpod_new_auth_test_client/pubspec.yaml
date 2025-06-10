@@ -3,7 +3,7 @@
 
 publish_to: none
 
-name: serverpod_new_auth_test_server_client
+name: serverpod_new_auth_test_client
 description: Starting point for a Serverpod client.
 
 environment:

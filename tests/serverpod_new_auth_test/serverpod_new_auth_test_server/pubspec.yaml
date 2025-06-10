@@ -1,19 +1,20 @@
-# TEMPLATE
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
 
 publish_to: none
 
-name: serverpod_new_auth_test_server_server
+name: serverpod_new_auth_test_server
 description: Test server for new Serverpod authentication modules
 
 environment:
-  sdk: DART_VERSION
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod: SERVERPOD_VERSION
+  serverpod: 2.8.0
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: SERVERPOD_VERSION
+  serverpod_test: 2.8.0
   test: '^1.24.2'
 
 dependency_overrides:

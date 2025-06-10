@@ -89,5 +89,5 @@ class Protocol extends _i1.SerializationManagerServer {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'serverpod_new_auth_test_server';
+  String getModuleName() => 'serverpod_new_auth_test';
 }

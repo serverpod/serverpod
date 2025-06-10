@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_new_auth_test_server_server/src/birthday_reminder.dart';
-import 'package:serverpod_new_auth_test_server_server/src/web/routes/root.dart';
+import 'package:serverpod_new_auth_test_server/src/birthday_reminder.dart';
+import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';

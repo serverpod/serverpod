@@ -14,10 +14,10 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:serverpod_new_auth_test_server_server/src/generated/greeting.dart'
+import 'package:serverpod_new_auth_test_server/src/generated/greeting.dart'
     as _i4;
-import 'package:serverpod_new_auth_test_server_server/src/generated/protocol.dart';
-import 'package:serverpod_new_auth_test_server_server/src/generated/endpoints.dart';
+import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart';
+import 'package:serverpod_new_auth_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
 /// Creates a new test group that takes a callback that can be used to write tests.

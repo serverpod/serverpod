@@ -118,6 +118,6 @@ echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
 cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
 dart $CLI generate --no-analytics --experimental-features=all
 
-echo "\nserverpod_new_auth_test_server_server "
-cd $BASE/tests/serverpod_new_auth_test_server/serverpod_new_auth_test_server_server
+echo "\nserverpod_new_auth_test_server "
+cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
 dart $CLI generate --no-analytics --experimental-features=all
