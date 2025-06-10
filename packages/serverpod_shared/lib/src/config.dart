@@ -863,8 +863,15 @@ ServerpodRole _readRole(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  if (commandLineArgs?[CliArgsConstants.role] != null) {
-    return commandLineArgs![CliArgsConstants.role] as ServerpodRole;
+  var commandLineArg = commandLineArgs?[CliArgsConstants.role];
+  if (commandLineArg != null) {
+    if (commandLineArg is! ServerpodRole) {
+      throw ArgumentError(
+        'Invalid type for role: ${commandLineArg.runtimeType}. '
+        'Expected ServerpodRole.',
+      );
+    }
+    return commandLineArg;
   }
 
   final roleFromEnv = environment[ServerpodEnv.role.envVariable];
@@ -886,9 +893,15 @@ ServerpodLoggingMode _readLoggingMode(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  if (commandLineArgs?[CliArgsConstants.loggingMode] != null) {
-    return commandLineArgs![CliArgsConstants.loggingMode]
-        as ServerpodLoggingMode;
+  var commandLineArg = commandLineArgs?[CliArgsConstants.loggingMode];
+  if (commandLineArg != null) {
+    if (commandLineArg is! ServerpodLoggingMode) {
+      throw ArgumentError(
+        'Invalid type for logging mode: ${commandLineArg.runtimeType}. '
+        'Expected ServerpodLoggingMode.',
+      );
+    }
+    return commandLineArg;
   }
 
   final loggingModeFromEnv = environment[ServerpodEnv.loggingMode.envVariable];
@@ -910,8 +923,15 @@ bool _readApplyMigrations(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  if (commandLineArgs?[CliArgsConstants.applyMigrations] != null) {
-    return commandLineArgs![CliArgsConstants.applyMigrations] as bool;
+  var commandLineArg = commandLineArgs?[CliArgsConstants.applyMigrations];
+  if (commandLineArg != null) {
+    if (commandLineArg is! bool) {
+      throw ArgumentError(
+        'Invalid type for apply migrations: ${commandLineArg.runtimeType}. '
+        'Expected bool.',
+      );
+    }
+    return commandLineArg;
   }
 
   final applyMigrationsFromEnv =
@@ -933,8 +953,15 @@ bool _readApplyRepairMigration(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  if (commandLineArgs?[CliArgsConstants.applyRepairMigration] != null) {
-    return commandLineArgs![CliArgsConstants.applyRepairMigration] as bool;
+  var commandLineArg = commandLineArgs?[CliArgsConstants.applyRepairMigration];
+  if (commandLineArg != null) {
+    if (commandLineArg is! bool) {
+      throw ArgumentError(
+        'Invalid type for apply repair migration: ${commandLineArg.runtimeType}. '
+        'Expected bool.',
+      );
+    }
+    return commandLineArg;
   }
 
   final applyRepairMigrationFromEnv =
