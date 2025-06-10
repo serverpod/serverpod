@@ -18,6 +18,8 @@ abstract final class EmailAccounts {
   /// Returns the [AuthUser]'s ID upon successful login.
   ///
   /// Throws [EmailAccountLoginException] for expected error cases.
+  ///
+  /// In case of invalid credentials, the failed login attempt will be logged to the database outside of the [transaction] and can not be rolled back.
   static Future<UuidValue> login(
     final Session session, {
     required String email,
@@ -174,6 +176,7 @@ abstract final class EmailAccounts {
   /// Throws an [EmailAccountRequestExpiredException] in case the request's validation window has elapsed.
   /// Throws [EmailAccountRequestUnauthorizedException] in case the [verificationCode] is not valid.
   ///
+  /// In case of an invalid [verificationCode], the failed attempt will be logged to the database outside of the [transaction] and can not be rolled back.
   static Future<({UuidValue emailAccountRequestId, String email})>
       verifyAccountCreation(
     final Session session, {
@@ -291,6 +294,8 @@ abstract final class EmailAccounts {
   /// The caller may check the returned [PasswordResetResult], but this
   /// should not be exposed to the client, so that this method can not be
   /// misused to check which emails are registered.
+  ///
+  /// Each reset request will be logged to the database outside of the [transaction] and can not be rolled back, so the throttling will always be enforced.
   static Future<PasswordResetResult> startPasswordReset(
     final Session session, {
     required String email,
@@ -355,6 +360,8 @@ abstract final class EmailAccounts {
   /// Throws [EmailAccountPasswordResetRequestNotFoundException] in case no reset request could be found for [passwordResetRequestId].
   /// Throws [EmailAccountPasswordResetRequestExpiredException] in case the reset request has expired.
   /// Throws [EmailAccountPasswordResetRequestUnauthorizedException] in case the [verificationCode] is not valid.
+  ///
+  /// In case of an invalid [verificationCode], the failed password reset completion will be logged to the database outside of the [transaction] and can not be rolled back.
   static Future<UuidValue> completePasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
