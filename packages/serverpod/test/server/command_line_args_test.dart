@@ -4,9 +4,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-      'Given command line arguments with all valid options when parsing then all arguments are parsed correctly',
-      () {
+  group('Given command line arguments with all valid options', () {
     final args = CommandLineArgs([
       '--mode',
       'production',
@@ -20,17 +18,54 @@ void main() {
       '--apply-repair-migration',
     ]);
 
-    expect(args.runMode, equals('production'));
-    expect(args.serverId, equals('test-server'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.verbose));
-    expect(args.role, equals(ServerpodRole.serverless));
-    expect(args.applyMigrations, isTrue);
-    expect(args.applyRepairMigration, isTrue);
+    test('when parsing then all arguments are parsed correctly', () {
+      expect(args.runMode, equals('production'));
+      expect(args.serverId, equals('test-server'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.verbose));
+      expect(args.role, equals(ServerpodRole.serverless));
+      expect(args.applyMigrations, isTrue);
+      expect(args.applyRepairMigration, isTrue);
+    });
+
+    test('when using getRaw method then returns correct raw values', () {
+      expect(
+          args.getRaw<String>(CliArgsConstants.runMode), equals('production'));
+      expect(args.getRaw<String>(CliArgsConstants.serverId),
+          equals('test-server'));
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          equals(ServerpodLoggingMode.verbose));
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
+          equals(ServerpodRole.serverless));
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isTrue);
+    });
+
+    test('when converting to string then all values are formatted correctly',
+        () {
+      final str = args.toString();
+      expect(str, contains('mode: production'));
+      expect(str, contains('role: serverless'));
+      expect(str, contains('logging: verbose'));
+      expect(str, contains('serverId: test-server'));
+      expect(str, contains('applyMigrations: true'));
+      expect(str, contains('applyRepairMigration: true'));
+    });
+
+    test('when correctly casting types then all argument types are correct',
+        () {
+      expect(args.getRaw<String>(CliArgsConstants.runMode), isA<String>());
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isA<String>());
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isA<ServerpodLoggingMode>());
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
+          isA<ServerpodRole>());
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isA<bool>());
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration),
+          isA<bool>());
+    });
   });
 
-  test(
-      'Given command line arguments with abbreviated options when parsing then abbreviated arguments are parsed correctly',
-      () {
+  group('Given command line arguments with abbreviated options', () {
     final args = CommandLineArgs([
       '-m',
       'staging',
@@ -44,100 +79,29 @@ void main() {
       '-A',
     ]);
 
-    expect(args.runMode, equals('staging'));
-    expect(args.serverId, equals('staging-server'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.role, equals(ServerpodRole.maintenance));
-    expect(args.applyMigrations, isTrue);
-    expect(args.applyRepairMigration, isTrue);
+    test('when parsing then abbreviated arguments are parsed correctly', () {
+      expect(args.runMode, equals('staging'));
+      expect(args.serverId, equals('staging-server'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      expect(args.role, equals(ServerpodRole.maintenance));
+      expect(args.applyMigrations, isTrue);
+      expect(args.applyRepairMigration, isTrue);
+    });
   });
 
-  test(
-      'Given no command line arguments when parsing then default values are used',
-      () {
+  group('Given no command line arguments', () {
     final args = CommandLineArgs([]);
 
-    expect(args.runMode, equals(ServerpodRunMode.development));
-    expect(args.serverId, equals('default'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.role, equals(ServerpodRole.monolith));
-    expect(args.applyMigrations, isFalse);
-    expect(args.applyRepairMigration, isFalse);
-  });
+    test('when parsing then default values are used', () {
+      expect(args.runMode, equals(ServerpodRunMode.development));
+      expect(args.serverId, equals('default'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      expect(args.role, equals(ServerpodRole.monolith));
+      expect(args.applyMigrations, isFalse);
+      expect(args.applyRepairMigration, isFalse);
+    });
 
-  test(
-      'Given partially provided command line arguments when parsing then provided arguments are used and defaults for others',
-      () {
-    final args = CommandLineArgs(['--mode', 'test', '--apply-migrations']);
-
-    expect(args.runMode, equals('test'));
-    expect(args.serverId, equals('default'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.role, equals(ServerpodRole.monolith));
-    expect(args.applyMigrations, isTrue);
-    expect(args.applyRepairMigration, isFalse);
-  });
-
-  test(
-      'Given command line arguments with invalid mode when parsing then default mode is used',
-      () {
-    final args = CommandLineArgs(['--mode', 'invalid-mode']);
-
-    expect(args.runMode, equals(ServerpodRunMode.development));
-  });
-
-  test(
-      'Given command line arguments with invalid logging mode when parsing then default logging mode is used',
-      () {
-    final args = CommandLineArgs(['--logging', 'invalid-logging']);
-
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-  });
-
-  test(
-      'Given command line arguments with invalid role when parsing then default role is used',
-      () {
-    final args = CommandLineArgs(['--role', 'invalid-role']);
-
-    expect(args.role, equals(ServerpodRole.monolith));
-  });
-
-  test(
-      'Given completely malformed command line arguments when parsing then all default values are used gracefully',
-      () {
-    final args = CommandLineArgs(['--invalid', '--also-invalid', 'value']);
-
-    expect(args.runMode, equals(ServerpodRunMode.development));
-    expect(args.serverId, equals('default'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.role, equals(ServerpodRole.monolith));
-    expect(args.applyMigrations, isFalse);
-    expect(args.applyRepairMigration, isFalse);
-  });
-
-  test(
-      'Given command line arguments mixing valid and invalid options when parsing then all values fall back to defaults',
-      () {
-    final args = CommandLineArgs([
-      '--mode', 'production', // Valid
-      '--server-id', 'test-server', // Valid
-      '--logging', 'invalid-logging', // Invalid - should trigger catch
-      '--apply-migrations', // Valid
-    ]);
-
-    // All should fall back to defaults because one invalid arg triggers catch
-    expect(args.runMode, equals(ServerpodRunMode.development));
-    expect(args.serverId, equals('default'));
-    expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.role, equals(ServerpodRole.monolith));
-    expect(args.applyMigrations, isFalse);
-    expect(args.applyRepairMigration, isFalse);
-  });
-
-  group('Given CommandLineArgs instance when using getRaw method then', () {
-    test('returns null for all arguments when no arguments provided', () {
-      final args = CommandLineArgs([]);
-
+    test('when using getRaw method then returns null for all arguments', () {
       expect(args.getRaw<String>(CliArgsConstants.runMode), isNull);
       expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
       expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
@@ -147,42 +111,62 @@ void main() {
       expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
     });
 
-    test('returns correct raw values when all arguments provided', () {
-      final args = CommandLineArgs([
-        '--mode',
-        'production',
-        '--server-id',
-        'test-server',
-        '--logging',
-        'verbose',
-        '--role',
-        'serverless',
-        '--apply-migrations',
-        '--apply-repair-migration',
-      ]);
-
-      expect(
-          args.getRaw<String>(CliArgsConstants.runMode), equals('production'));
-      expect(args.getRaw<String>(CliArgsConstants.serverId),
-          equals('test-server'));
-      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
-          equals(ServerpodLoggingMode.verbose));
-      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
-          equals(ServerpodRole.serverless));
-      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
-      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isTrue);
+    test(
+        'when converting to string then default values are formatted correctly',
+        () {
+      final str = args.toString();
+      expect(str, contains('mode: development'));
+      expect(str, contains('role: monolith'));
+      expect(str, contains('logging: normal'));
+      expect(str, contains('serverId: default'));
+      expect(str, contains('applyMigrations: false'));
+      expect(str, contains('applyRepairMigration: false'));
     });
 
-    test(
-        'returns raw values for explicitly provided arguments even when same as defaults',
-        () {
-      final args = CommandLineArgs([
-        '--mode', 'development', // Same as default but explicitly provided
-        '--server-id', 'default', // Same as default but explicitly provided
-        '--logging', 'normal', // Same as default but explicitly provided
-        '--role', 'monolith', // Same as default but explicitly provided
-      ]);
+    test('when using getRaw with invalid key then throws ArgumentError', () {
+      expect(() => args.getRaw<String>('invalid-key'), throwsArgumentError);
+      expect(() => args.getRaw<String>(''), throwsArgumentError);
+      expect(() => args.getRaw<String>('mode'),
+          throwsArgumentError); // Should be CliArgsConstants.runMode
+    });
+  });
 
+  group('Given partially provided command line arguments', () {
+    final args = CommandLineArgs(['--mode', 'test', '--apply-migrations']);
+
+    test(
+        'when parsing then provided arguments are used and defaults for others',
+        () {
+      expect(args.runMode, equals('test'));
+      expect(args.serverId, equals('default'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      expect(args.role, equals(ServerpodRole.monolith));
+      expect(args.applyMigrations, isTrue);
+      expect(args.applyRepairMigration, isFalse);
+    });
+
+    test('when using getRaw method then returns mixed raw values', () {
+      expect(args.getRaw<String>(CliArgsConstants.runMode), equals('test'));
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isNull);
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    });
+  });
+
+  group('Given command line arguments explicitly set to default values', () {
+    final args = CommandLineArgs([
+      '--mode', 'development', // Same as default but explicitly provided
+      '--server-id', 'default', // Same as default but explicitly provided
+      '--logging', 'normal', // Same as default but explicitly provided
+      '--role', 'monolith', // Same as default but explicitly provided
+    ]);
+
+    test(
+        'when using getRaw method then returns raw values for explicitly provided arguments even when same as defaults',
+        () {
       expect(
           args.getRaw<String>(CliArgsConstants.runMode), equals('development'));
       expect(args.getRaw<String>(CliArgsConstants.serverId), equals('default'));
@@ -194,30 +178,66 @@ void main() {
           isNull); // Flags default to false
       expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
     });
+  });
 
-    test('returns mixed raw values when only some arguments provided', () {
-      final args =
-          CommandLineArgs(['--mode', 'production', '--apply-migrations']);
+  group('Given command line arguments with invalid mode', () {
+    final args = CommandLineArgs(['--mode', 'invalid-mode']);
 
-      expect(
-          args.getRaw<String>(CliArgsConstants.runMode), equals('production'));
-      expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
-      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
-          isNull);
-      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role), isNull);
-      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
-      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    test('when parsing then default mode is used', () {
+      expect(args.runMode, equals(ServerpodRunMode.development));
+    });
+  });
+
+  group('Given command line arguments with invalid logging mode', () {
+    final args = CommandLineArgs(['--logging', 'invalid-logging']);
+
+    test('when parsing then default logging mode is used', () {
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+    });
+  });
+
+  group('Given command line arguments with invalid role', () {
+    final args = CommandLineArgs(['--role', 'invalid-role']);
+
+    test('when parsing then default role is used', () {
+      expect(args.role, equals(ServerpodRole.monolith));
+    });
+  });
+
+  group('Given completely malformed command line arguments', () {
+    final args = CommandLineArgs(['--invalid', '--also-invalid', 'value']);
+
+    test('when parsing then all default values are used gracefully', () {
+      expect(args.runMode, equals(ServerpodRunMode.development));
+      expect(args.serverId, equals('default'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      expect(args.role, equals(ServerpodRole.monolith));
+      expect(args.applyMigrations, isFalse);
+      expect(args.applyRepairMigration, isFalse);
+    });
+  });
+
+  group('Given command line arguments mixing valid and invalid options', () {
+    final args = CommandLineArgs([
+      '--mode', 'production', // Valid
+      '--server-id', 'test-server', // Valid
+      '--logging', 'invalid-logging', // Invalid - should trigger catch
+      '--apply-migrations', // Valid
+    ]);
+
+    test('when parsing then all values fall back to defaults', () {
+      // All should fall back to defaults because one invalid arg triggers catch
+      expect(args.runMode, equals(ServerpodRunMode.development));
+      expect(args.serverId, equals('default'));
+      expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
+      expect(args.role, equals(ServerpodRole.monolith));
+      expect(args.applyMigrations, isFalse);
+      expect(args.applyRepairMigration, isFalse);
     });
 
-    test('returns null for all arguments when invalid arguments cause fallback',
+    test(
+        'when using getRaw method then returns null for all arguments due to invalid arguments causing fallback',
         () {
-      final args = CommandLineArgs([
-        '--mode', 'production', // Valid
-        '--server-id', 'test-server', // Valid
-        '--logging', 'invalid-logging', // Invalid - should trigger catch
-        '--apply-migrations', // Valid
-      ]);
-
       // All should be null because invalid arg triggers catch block
       expect(args.getRaw<String>(CliArgsConstants.runMode), isNull);
       expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
@@ -227,45 +247,12 @@ void main() {
       expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isNull);
       expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
     });
-
-    test('throws ArgumentError when invalid key provided', () {
-      final args = CommandLineArgs([]);
-
-      expect(() => args.getRaw<String>('invalid-key'), throwsArgumentError);
-      expect(() => args.getRaw<String>(''), throwsArgumentError);
-      expect(() => args.getRaw<String>('mode'),
-          throwsArgumentError); // Should be CliArgsConstants.runMode
-    });
-
-    test('correctly casts types for all argument types', () {
-      final args = CommandLineArgs([
-        '--mode',
-        'staging',
-        '--server-id',
-        'my-server',
-        '--logging',
-        'verbose',
-        '--role',
-        'maintenance',
-        '--apply-migrations',
-        '--apply-repair-migration',
-      ]);
-
-      // Test correct type casting
-      expect(args.getRaw<String>(CliArgsConstants.runMode), isA<String>());
-      expect(args.getRaw<String>(CliArgsConstants.serverId), isA<String>());
-      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
-          isA<ServerpodLoggingMode>());
-      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
-          isA<ServerpodRole>());
-      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isA<bool>());
-      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration),
-          isA<bool>());
-    });
   });
 
-  group('Given CommandLineArgs instance when using copyWith method then', () {
-    test('copy is created with replaced values', () {
+  group('Given CommandLineArgs instance when using copyWith method', () {
+    test(
+        'when copy is created with replaced values then copy has new values and original is unchanged',
+        () {
       final original = CommandLineArgs(['--mode', 'development']);
       final copy = original.copyWith(
         runMode: 'production',
@@ -288,7 +275,7 @@ void main() {
       expect(original.serverId, equals('default'));
     });
 
-    test('original values are preserved when null passed to copyWith', () {
+    test('when null passed to copyWith then original values are preserved', () {
       final original = CommandLineArgs([
         '--mode',
         'staging',
@@ -311,45 +298,8 @@ void main() {
     });
   });
 
-  group('Given CommandLineArgs instance when converting to string then', () {
-    test('all values are formatted correctly', () {
-      final args = CommandLineArgs([
-        '--mode',
-        'production',
-        '--server-id',
-        'prod-server',
-        '--logging',
-        'verbose',
-        '--role',
-        'serverless',
-        '--apply-migrations',
-        '--apply-repair-migration',
-      ]);
-
-      final str = args.toString();
-      expect(str, contains('mode: production'));
-      expect(str, contains('role: serverless'));
-      expect(str, contains('logging: verbose'));
-      expect(str, contains('serverId: prod-server'));
-      expect(str, contains('applyMigrations: true'));
-      expect(str, contains('applyRepairMigration: true'));
-    });
-
-    test('default values are formatted correctly', () {
-      final args = CommandLineArgs([]);
-
-      final str = args.toString();
-      expect(str, contains('mode: development'));
-      expect(str, contains('role: monolith'));
-      expect(str, contains('logging: normal'));
-      expect(str, contains('serverId: default'));
-      expect(str, contains('applyMigrations: false'));
-      expect(str, contains('applyRepairMigration: false'));
-    });
-  });
-
-  group('Given CommandLineArgs when validating enum values then', () {
-    test('all valid run modes are supported', () {
+  group('Given CommandLineArgs when validating enum values', () {
+    test('when using all valid run modes then all are supported', () {
       final modes = [
         ServerpodRunMode.development,
         ServerpodRunMode.test,
@@ -363,7 +313,7 @@ void main() {
       }
     });
 
-    test('all valid logging modes are supported', () {
+    test('when using all valid logging modes then all are supported', () {
       final args1 = CommandLineArgs(['--logging', 'normal']);
       expect(args1.loggingMode, equals(ServerpodLoggingMode.normal));
 
@@ -371,7 +321,7 @@ void main() {
       expect(args2.loggingMode, equals(ServerpodLoggingMode.verbose));
     });
 
-    test('all valid roles are supported', () {
+    test('when using all valid roles then all are supported', () {
       final args1 = CommandLineArgs(['--role', 'monolith']);
       expect(args1.role, equals(ServerpodRole.monolith));
 
