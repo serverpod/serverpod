@@ -45,6 +45,8 @@ declare -a dart_paths=(
   "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
   "tests/bootstrap_project"
   "tests/serverpod_cli_e2e_test"
+  "tests/serverpod_new_auth_test/serverpod_new_auth_test_client"
+  "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
   "templates/serverpod_templates/projectname_server"
   "templates/serverpod_templates/projectname_client"
   "templates/serverpod_templates/modulename_server"
