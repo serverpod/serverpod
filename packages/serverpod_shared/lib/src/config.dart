@@ -263,6 +263,10 @@ class ServerpodConfig {
 
   /// Creates a copy of this [ServerpodConfig] with the given fields replaced.
   /// All fields that are not specified will keep their original values.
+  ///
+  /// Note that passing null for a field will not remove/nullify that field -
+  /// the original value will be retained. To explicitly set a field to null,
+  /// create a new [ServerpodConfig] instance instead of using copyWith.
   ServerpodConfig copyWith({
     ServerConfig? apiServer,
     String? runMode,
