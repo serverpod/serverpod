@@ -4,6 +4,7 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
+import '../test_tags.dart';
 import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
@@ -100,6 +101,7 @@ void main() {
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
   );
 
   withServerpod(
@@ -164,6 +166,7 @@ void main() {
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
   );
 
   withServerpod(
@@ -213,5 +216,6 @@ void main() {
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
   );
 }
