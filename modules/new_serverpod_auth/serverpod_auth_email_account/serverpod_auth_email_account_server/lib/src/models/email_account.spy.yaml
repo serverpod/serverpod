@@ -1,0 +1,30 @@
+### A fully configured email account to be used for logins.
+class: EmailAccount
+serverOnly: true
+table: serverpod_auth_email_account
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  created: DateTime, defaultModel=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The hashed password of the user.
+  ###
+  ### Obtained in conjunction with [passwordSalt].
+  passwordHash: ByteData
+
+  ### The salt used for creating the [passwordHash].
+  passwordSalt: ByteData
+
+indexes:
+  serverpod_auth_email_account_email:
+    fields: email
+    unique: true
