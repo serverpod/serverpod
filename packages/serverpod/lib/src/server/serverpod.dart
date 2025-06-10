@@ -705,7 +705,7 @@ class Serverpod {
   }
 
   String _calculateRunMode(CommandLineArgs commandLineArgs) {
-    if (!commandLineArgs.isRunModeDefault) {
+    if (commandLineArgs.getRaw<String>(CliArgsConstants.runMode) != null) {
       return commandLineArgs.runMode;
     }
 
@@ -725,8 +725,7 @@ class Serverpod {
   }
 
   String? _calculateServerId(CommandLineArgs commandLineArgs) {
-    if (commandLineArgs.isServerIdDefault) return null;
-    return commandLineArgs.serverId;
+    return commandLineArgs.getRaw<String>(CliArgsConstants.serverId);
   }
 
   bool _completedHealthChecks = false;

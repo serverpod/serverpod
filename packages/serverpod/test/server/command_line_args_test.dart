@@ -84,7 +84,6 @@ void main() {
     final args = CommandLineArgs(['--mode', 'invalid-mode']);
 
     expect(args.runMode, equals(ServerpodRunMode.development));
-    expect(args.isRunModeDefault, isTrue);
   });
 
   test(
@@ -93,7 +92,6 @@ void main() {
     final args = CommandLineArgs(['--logging', 'invalid-logging']);
 
     expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
-    expect(args.isLoggingModeDefault, isTrue);
   });
 
   test(
@@ -102,7 +100,6 @@ void main() {
     final args = CommandLineArgs(['--role', 'invalid-role']);
 
     expect(args.role, equals(ServerpodRole.monolith));
-    expect(args.isRoleDefault, isTrue);
   });
 
   test(
@@ -135,32 +132,49 @@ void main() {
     expect(args.role, equals(ServerpodRole.monolith));
     expect(args.applyMigrations, isFalse);
     expect(args.applyRepairMigration, isFalse);
-
-    // And all should be considered defaults
-    expect(args.isRunModeDefault, isTrue);
-    expect(args.isServerIdDefault, isTrue);
-    expect(args.isLoggingModeDefault, isTrue);
-    expect(args.isRoleDefault, isTrue);
-    expect(args.isApplyMigrationsDefault, isTrue);
-    expect(args.isApplyRepairMigrationDefault, isTrue);
   });
 
-  group('Given CommandLineArgs instance when checking default values then', () {
-    test(
-        'isDefault methods correctly identify default values when no arguments provided',
-        () {
+  group('Given CommandLineArgs instance when using getRaw method then', () {
+    test('returns null for all arguments when no arguments provided', () {
       final args = CommandLineArgs([]);
 
-      expect(args.isRunModeDefault, isTrue);
-      expect(args.isServerIdDefault, isTrue);
-      expect(args.isLoggingModeDefault, isTrue);
-      expect(args.isRoleDefault, isTrue);
-      expect(args.isApplyMigrationsDefault, isTrue);
-      expect(args.isApplyRepairMigrationDefault, isTrue);
+      expect(args.getRaw<String>(CliArgsConstants.runMode), isNull);
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isNull);
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    });
+
+    test('returns correct raw values when all arguments provided', () {
+      final args = CommandLineArgs([
+        '--mode',
+        'production',
+        '--server-id',
+        'test-server',
+        '--logging',
+        'verbose',
+        '--role',
+        'serverless',
+        '--apply-migrations',
+        '--apply-repair-migration',
+      ]);
+
+      expect(
+          args.getRaw<String>(CliArgsConstants.runMode), equals('production'));
+      expect(args.getRaw<String>(CliArgsConstants.serverId),
+          equals('test-server'));
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          equals(ServerpodLoggingMode.verbose));
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
+          equals(ServerpodRole.serverless));
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isTrue);
     });
 
     test(
-        'isDefault methods correctly identify explicitly provided values even when same as defaults',
+        'returns raw values for explicitly provided arguments even when same as defaults',
         () {
       final args = CommandLineArgs([
         '--mode', 'development', // Same as default but explicitly provided
@@ -169,26 +183,84 @@ void main() {
         '--role', 'monolith', // Same as default but explicitly provided
       ]);
 
-      expect(args.isRunModeDefault, isFalse);
-      expect(args.isServerIdDefault, isFalse);
-      expect(args.isLoggingModeDefault, isFalse);
-      expect(args.isRoleDefault, isFalse);
-      expect(args.isApplyMigrationsDefault, isTrue); // Flags default to false
-      expect(args.isApplyRepairMigrationDefault, isTrue);
+      expect(
+          args.getRaw<String>(CliArgsConstants.runMode), equals('development'));
+      expect(args.getRaw<String>(CliArgsConstants.serverId), equals('default'));
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          equals(ServerpodLoggingMode.normal));
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
+          equals(ServerpodRole.monolith));
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations),
+          isNull); // Flags default to false
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
     });
 
-    test(
-        'isDefault methods correctly identify mixed default and explicit values',
-        () {
+    test('returns mixed raw values when only some arguments provided', () {
       final args =
           CommandLineArgs(['--mode', 'production', '--apply-migrations']);
 
-      expect(args.isRunModeDefault, isFalse);
-      expect(args.isServerIdDefault, isTrue);
-      expect(args.isLoggingModeDefault, isTrue);
-      expect(args.isRoleDefault, isTrue);
-      expect(args.isApplyMigrationsDefault, isFalse);
-      expect(args.isApplyRepairMigrationDefault, isTrue);
+      expect(
+          args.getRaw<String>(CliArgsConstants.runMode), equals('production'));
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isNull);
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    });
+
+    test('returns null for all arguments when invalid arguments cause fallback',
+        () {
+      final args = CommandLineArgs([
+        '--mode', 'production', // Valid
+        '--server-id', 'test-server', // Valid
+        '--logging', 'invalid-logging', // Invalid - should trigger catch
+        '--apply-migrations', // Valid
+      ]);
+
+      // All should be null because invalid arg triggers catch block
+      expect(args.getRaw<String>(CliArgsConstants.runMode), isNull);
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isNull);
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isNull);
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isNull);
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    });
+
+    test('throws ArgumentError when invalid key provided', () {
+      final args = CommandLineArgs([]);
+
+      expect(() => args.getRaw<String>('invalid-key'), throwsArgumentError);
+      expect(() => args.getRaw<String>(''), throwsArgumentError);
+      expect(() => args.getRaw<String>('mode'),
+          throwsArgumentError); // Should be CliArgsConstants.runMode
+    });
+
+    test('correctly casts types for all argument types', () {
+      final args = CommandLineArgs([
+        '--mode',
+        'staging',
+        '--server-id',
+        'my-server',
+        '--logging',
+        'verbose',
+        '--role',
+        'maintenance',
+        '--apply-migrations',
+        '--apply-repair-migration',
+      ]);
+
+      // Test correct type casting
+      expect(args.getRaw<String>(CliArgsConstants.runMode), isA<String>());
+      expect(args.getRaw<String>(CliArgsConstants.serverId), isA<String>());
+      expect(args.getRaw<ServerpodLoggingMode>(CliArgsConstants.loggingMode),
+          isA<ServerpodLoggingMode>());
+      expect(args.getRaw<ServerpodRole>(CliArgsConstants.role),
+          isA<ServerpodRole>());
+      expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isA<bool>());
+      expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration),
+          isA<bool>());
     });
   });
 
@@ -288,7 +360,6 @@ void main() {
       for (final mode in modes) {
         final args = CommandLineArgs(['--mode', mode]);
         expect(args.runMode, equals(mode));
-        expect(args.isRunModeDefault, isFalse);
       }
     });
 

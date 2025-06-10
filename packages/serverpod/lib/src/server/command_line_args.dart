@@ -13,9 +13,6 @@ class CommandLineArgs {
   /// [staging], or [production]. Depending on where the server is deployed.
   String get runMode => _runMode ?? ServerpodRunMode.development;
 
-  /// Whether the run mode is using the default value.
-  bool get isRunModeDefault => _runMode == null;
-
   late final ServerpodRole? _role;
 
   /// The main role of the server. By default, Serverpod is running as a
@@ -24,9 +21,6 @@ class CommandLineArgs {
   /// future calls.
   ServerpodRole get role => _role ?? ServerpodRole.monolith;
 
-  /// Whether the role is using the default value.
-  bool get isRoleDefault => _role == null;
-
   late final ServerpodLoggingMode? _loggingMode;
 
   /// The overarching logging mode of the server. This can be set to either
@@ -34,33 +28,21 @@ class CommandLineArgs {
   ServerpodLoggingMode get loggingMode =>
       _loggingMode ?? ServerpodLoggingMode.normal;
 
-  /// Whether the logging mode is using the default value.
-  bool get isLoggingModeDefault => _loggingMode == null;
-
   late final String? _serverId;
 
   /// The id of the server. This is used to identify the server, if you run
   /// multiple servers in a cluster.
   String get serverId => _serverId ?? 'default';
 
-  /// Whether the server id is using the default value.
-  bool get isServerIdDefault => _serverId == null;
-
   late final bool? _applyMigrations;
 
   /// Whether to apply database migrations on startup.
   bool get applyMigrations => _applyMigrations ?? false;
 
-  /// Whether the apply migrations flag is using the default value.
-  bool get isApplyMigrationsDefault => _applyMigrations == null;
-
   late final bool? _applyRepairMigration;
 
   /// Whether to apply database repair migration on startup.
   bool get applyRepairMigration => _applyRepairMigration ?? false;
-
-  /// Whether the apply repair migration flag is using the default value.
-  bool get isApplyRepairMigrationDefault => _applyRepairMigration == null;
 
   /// Parses the command line arguments passed to Serverpod and creates a
   /// [CommandLineArgs] object.
@@ -169,17 +151,33 @@ class CommandLineArgs {
     );
   }
 
+  /// Returns the raw value for a given command line argument key.
+  /// Returns null if the argument was not provided when parsing the command
+  /// line arguments.
+  ///
+  /// The value is cast to type [T]. Throws [ArgumentError] if the key is
+  /// invalid.
+  T? getRaw<T>(String key) {
+    return switch (key) {
+      CliArgsConstants.runMode => _runMode as T?,
+      CliArgsConstants.serverId => _serverId as T?,
+      CliArgsConstants.loggingMode => _loggingMode as T?,
+      CliArgsConstants.role => _role as T?,
+      CliArgsConstants.applyMigrations => _applyMigrations as T?,
+      CliArgsConstants.applyRepairMigration => _applyRepairMigration as T?,
+      _ => throw ArgumentError('Invalid key: $key'),
+    };
+  }
+
   /// Returns a map of the command line arguments.
   Map<String, dynamic> toMap() {
     return {
-      CliArgsConstants.runMode: isRunModeDefault ? null : runMode,
-      CliArgsConstants.serverId: isServerIdDefault ? null : serverId,
-      CliArgsConstants.loggingMode: isLoggingModeDefault ? null : loggingMode,
-      CliArgsConstants.role: isRoleDefault ? null : role,
-      CliArgsConstants.applyMigrations:
-          isApplyMigrationsDefault ? null : applyMigrations,
-      CliArgsConstants.applyRepairMigration:
-          isApplyRepairMigrationDefault ? null : applyRepairMigration,
+      CliArgsConstants.runMode: _runMode,
+      CliArgsConstants.serverId: _serverId,
+      CliArgsConstants.loggingMode: _loggingMode,
+      CliArgsConstants.role: _role,
+      CliArgsConstants.applyMigrations: _applyMigrations,
+      CliArgsConstants.applyRepairMigration: _applyRepairMigration,
     };
   }
 
