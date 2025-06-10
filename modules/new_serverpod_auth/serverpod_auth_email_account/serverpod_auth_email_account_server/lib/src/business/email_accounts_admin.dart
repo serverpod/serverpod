@@ -62,7 +62,7 @@ final class EmailAccountsAdmin {
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time window that
   /// is checked upon login, as configured in [EmailAccountConfig.emailSignInFailureResetTime].
-  static Future<void> deleteFailedLoginAttempts(
+  Future<void> deleteFailedLoginAttempts(
     final Session session, {
     Duration? olderThan,
     final Transaction? transaction,

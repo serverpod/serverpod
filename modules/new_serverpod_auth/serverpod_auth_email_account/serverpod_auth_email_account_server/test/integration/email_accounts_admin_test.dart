@@ -165,4 +165,53 @@ void main() {
     },
     rollbackDatabase: RollbackDatabase.disabled,
   );
+
+  withServerpod(
+    'Given a failed login attempt,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        try {
+          await EmailAccounts.login(session,
+              email: '404@serverpod.dev', password: 'Asdf123ll!');
+        } catch (_) {
+          // error expect due to invalid credentials
+        }
+      });
+
+      tearDown(() async {
+        await cleanUpEmailAccountDatabaseEntities(session);
+      });
+
+      test(
+          'when `deleteFailedLoginAttempts` is called before throttling period has elapsed, then the failed login attempt attempt is kept.',
+          () async {
+        await EmailAccounts.admin.deleteFailedLoginAttempts(session);
+
+        expect(
+          await EmailAccountFailedLoginAttempt.db.count(session),
+          1,
+        );
+      });
+
+      test(
+          'when `deleteFailedLoginAttempts` is called after the throttling period has elapsed, then the failed login attempt is deleted.',
+          () async {
+        await withClock(
+          Clock.fixed(DateTime.now()
+              .add(EmailAccounts.config.failedLoginRateLimit.timeframe)),
+          () => EmailAccounts.admin.deleteFailedLoginAttempts(session),
+        );
+
+        expect(
+          await EmailAccountFailedLoginAttempt.db.count(session),
+          0,
+        );
+      });
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
 }
