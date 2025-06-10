@@ -11,15 +11,13 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   test(
-      'Given a Serverpod config missing api server configuration when loading from Map then exception is thrown.',
+      'Given a Serverpod config missing api server configuration when loading from Map then default api server configuration is used.',
       () {
+    var config = ServerpodConfig.loadFromMap(runMode, serverId, passwords, {});
+    expect(config, isA<ServerpodConfig>());
     expect(
-      () => ServerpodConfig.loadFromMap(runMode, serverId, passwords, {}),
-      throwsA(isA<Exception>().having(
-        (e) => e.toString(),
-        'message',
-        equals('Serverpod API server configuration is missing.'),
-      )),
+      config.apiServer,
+      equals(ServerpodConfig.defaultConfig().apiServer),
     );
   });
 
