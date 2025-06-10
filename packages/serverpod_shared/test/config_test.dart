@@ -1114,7 +1114,8 @@ apiServer:
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid role: invalid_role'),
+          contains(
+              'Invalid SERVERPOD_SERVER_ROLE from environment variable: invalid_role'),
         )),
       );
     });
@@ -1241,7 +1242,8 @@ apiServer:
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid logging mode: invalid_logging'),
+          contains(
+              'Invalid SERVERPOD_LOGGING_MODE from environment variable: invalid_logging'),
         )),
       );
     });
@@ -1433,7 +1435,8 @@ apiServer:
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid apply migrations: invalid_value'),
+          contains(
+              'Invalid SERVERPOD_APPLY_MIGRATIONS from environment variable: invalid_value'),
         )),
       );
     });
@@ -1601,7 +1604,8 @@ apiServer:
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid apply repair migration: invalid_value'),
+          contains(
+              'Invalid SERVERPOD_APPLY_REPAIR_MIGRATION from environment variable: invalid_value'),
         )),
       );
     });

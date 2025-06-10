@@ -852,7 +852,7 @@ String _readServerId(
     return serverIdFromCommandLineArg;
   }
 
-  var serverId = environment[ServerpodEnv.serverId.envVariable] ??
+  final serverId = environment[ServerpodEnv.serverId.envVariable] ??
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
@@ -863,29 +863,42 @@ ServerpodRole _readRole(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  var commandLineArg = commandLineArgs?[CliArgsConstants.role];
+  final commandLineArg = commandLineArgs?[CliArgsConstants.role];
   if (commandLineArg != null) {
     if (commandLineArg is! ServerpodRole) {
       throw ArgumentError(
-        'Invalid type for role: ${commandLineArg.runtimeType}. '
+        'Invalid type for ${CliArgsConstants.role} from command line argument: ${commandLineArg.runtimeType}. '
         'Expected ServerpodRole.',
       );
     }
     return commandLineArg;
   }
 
-  final roleFromEnv = environment[ServerpodEnv.role.envVariable];
-  if (roleFromEnv == null) {
-    return ServerpodRole.monolith;
+  final envVariable = ServerpodEnv.role.envVariable;
+  final roleFromEnv = environment[envVariable];
+  if (roleFromEnv != null) {
+    return ServerpodRole.values.firstWhere(
+      (e) => e.name == roleFromEnv,
+      orElse: () => throw ArgumentError(
+        'Invalid $envVariable from environment variable: $roleFromEnv. '
+        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+      ),
+    );
   }
 
-  return ServerpodRole.values.firstWhere(
-    (e) => e.name == roleFromEnv,
-    orElse: () => throw ArgumentError(
-      'Invalid role: $roleFromEnv. '
-      'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
-    ),
-  );
+  final configKey = ServerpodEnv.role.configKey;
+  final roleFromConfig = configMap[configKey];
+  if (roleFromConfig != null) {
+    return ServerpodRole.values.firstWhere(
+      (e) => e.name == roleFromConfig,
+      orElse: () => throw ArgumentError(
+        'Invalid $configKey from configuration: $roleFromConfig. '
+        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  return ServerpodRole.monolith;
 }
 
 ServerpodLoggingMode _readLoggingMode(
@@ -893,29 +906,43 @@ ServerpodLoggingMode _readLoggingMode(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  var commandLineArg = commandLineArgs?[CliArgsConstants.loggingMode];
+  final commandLineArg = commandLineArgs?[CliArgsConstants.loggingMode];
   if (commandLineArg != null) {
     if (commandLineArg is! ServerpodLoggingMode) {
       throw ArgumentError(
-        'Invalid type for logging mode: ${commandLineArg.runtimeType}. '
+        'Invalid type for ${CliArgsConstants.loggingMode} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
         'Expected ServerpodLoggingMode.',
       );
     }
     return commandLineArg;
   }
 
-  final loggingModeFromEnv = environment[ServerpodEnv.loggingMode.envVariable];
-  if (loggingModeFromEnv == null) {
-    return ServerpodLoggingMode.normal;
+  final envVariable = ServerpodEnv.loggingMode.envVariable;
+  final loggingModeFromEnv = environment[envVariable];
+  if (loggingModeFromEnv != null) {
+    return ServerpodLoggingMode.values.firstWhere(
+      (e) => e.name == loggingModeFromEnv,
+      orElse: () => throw ArgumentError(
+        'Invalid $envVariable from environment variable: $loggingModeFromEnv. '
+        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+      ),
+    );
   }
 
-  return ServerpodLoggingMode.values.firstWhere(
-    (e) => e.name == loggingModeFromEnv,
-    orElse: () => throw ArgumentError(
-      'Invalid logging mode: $loggingModeFromEnv. '
-      'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
-    ),
-  );
+  final configKey = ServerpodEnv.loggingMode.configKey;
+  final loggingModeFromConfig = configMap[configKey];
+  if (loggingModeFromConfig != null) {
+    return ServerpodLoggingMode.values.firstWhere(
+      (e) => e.name == loggingModeFromConfig,
+      orElse: () => throw ArgumentError(
+        'Invalid $configKey from configuration: $loggingModeFromConfig. '
+        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  return ServerpodLoggingMode.normal;
 }
 
 bool _readApplyMigrations(
@@ -923,29 +950,48 @@ bool _readApplyMigrations(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  var commandLineArg = commandLineArgs?[CliArgsConstants.applyMigrations];
+  final commandLineArg = commandLineArgs?[CliArgsConstants.applyMigrations];
   if (commandLineArg != null) {
     if (commandLineArg is! bool) {
       throw ArgumentError(
-        'Invalid type for apply migrations: ${commandLineArg.runtimeType}. '
+        'Invalid type for ${CliArgsConstants.applyMigrations} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
         'Expected bool.',
       );
     }
     return commandLineArg;
   }
 
-  final applyMigrationsFromEnv =
-      environment[ServerpodEnv.applyMigrations.envVariable];
+  final envVariable = ServerpodEnv.applyMigrations.envVariable;
+  final applyMigrationsFromEnv = environment[envVariable];
+  if (applyMigrationsFromEnv != null) {
+    return switch (applyMigrationsFromEnv) {
+      'true' || '1' => true,
+      'false' || '0' => false,
+      _ => throw ArgumentError(
+          'Invalid $envVariable from environment variable: $applyMigrationsFromEnv. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
 
-  return switch (applyMigrationsFromEnv) {
-    'true' || '1' => true,
-    'false' || '0' => false,
-    null => false,
-    _ => throw ArgumentError(
-        'Invalid apply migrations: $applyMigrationsFromEnv. '
-        'Valid values are: true, false',
-      ),
-  };
+  final configKey = ServerpodEnv.applyMigrations.configKey;
+  final applyMigrationsFromConfig = configMap[configKey];
+  if (applyMigrationsFromConfig != null) {
+    if (applyMigrationsFromConfig is bool) {
+      return applyMigrationsFromConfig;
+    }
+    return switch (applyMigrationsFromConfig.toString()) {
+      'true' || '1' => true,
+      'false' || '0' => false,
+      _ => throw ArgumentError(
+          'Invalid $configKey from configuration: $applyMigrationsFromConfig. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  return false;
 }
 
 bool _readApplyRepairMigration(
@@ -953,29 +999,49 @@ bool _readApplyRepairMigration(
   Map<String, String> environment,
   Map<String, dynamic>? commandLineArgs,
 ) {
-  var commandLineArg = commandLineArgs?[CliArgsConstants.applyRepairMigration];
+  final commandLineArg =
+      commandLineArgs?[CliArgsConstants.applyRepairMigration];
   if (commandLineArg != null) {
     if (commandLineArg is! bool) {
       throw ArgumentError(
-        'Invalid type for apply repair migration: ${commandLineArg.runtimeType}. '
+        'Invalid type for ${CliArgsConstants.applyRepairMigration} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
         'Expected bool.',
       );
     }
     return commandLineArg;
   }
 
-  final applyRepairMigrationFromEnv =
-      environment[ServerpodEnv.applyRepairMigration.envVariable];
+  final envVariable = ServerpodEnv.applyRepairMigration.envVariable;
+  final applyRepairMigrationFromEnv = environment[envVariable];
+  if (applyRepairMigrationFromEnv != null) {
+    return switch (applyRepairMigrationFromEnv) {
+      'true' || '1' => true,
+      'false' || '0' => false,
+      _ => throw ArgumentError(
+          'Invalid $envVariable from environment variable: $applyRepairMigrationFromEnv. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
 
-  return switch (applyRepairMigrationFromEnv) {
-    'true' || '1' => true,
-    'false' || '0' => false,
-    null => false,
-    _ => throw ArgumentError(
-        'Invalid apply repair migration: $applyRepairMigrationFromEnv. '
-        'Valid values are: true, false',
-      ),
-  };
+  final configKey = ServerpodEnv.applyRepairMigration.configKey;
+  final applyRepairMigrationFromConfig = configMap[configKey];
+  if (applyRepairMigrationFromConfig != null) {
+    if (applyRepairMigrationFromConfig is bool) {
+      return applyRepairMigrationFromConfig;
+    }
+    return switch (applyRepairMigrationFromConfig.toString()) {
+      'true' || '1' => true,
+      'false' || '0' => false,
+      _ => throw ArgumentError(
+          'Invalid $configKey from configuration: $applyRepairMigrationFromConfig. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  return false;
 }
 
 bool _readIsFutureCallExecutionEnabled(
