@@ -6,7 +6,8 @@ import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given a session,', (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,',
+      (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
 

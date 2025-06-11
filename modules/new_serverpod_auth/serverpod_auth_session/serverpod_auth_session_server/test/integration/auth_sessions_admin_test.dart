@@ -9,7 +9,7 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a session expiring in 1 day,',
+    'Given an auth session expiring in 1 day,',
     (final sessionBuilder, final endpoints) {
       final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
@@ -76,7 +76,7 @@ void main() {
     },
   );
   withServerpod(
-    'Given a session expiring after 10 minutes of inactivity,',
+    'Given an auth session expiring after 10 minutes of inactivity,',
     (final sessionBuilder, final endpoints) {
       const expireAfterUnusedFor = Duration(minutes: 10);
       late Session session;

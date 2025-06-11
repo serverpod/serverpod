@@ -9,7 +9,7 @@ import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given two sessions for a user,',
+  withServerpod('Given an auth sessions for a user,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -29,7 +29,7 @@ void main() {
     });
 
     test(
-      'when revoking a session for a user, then a message for it is broadcast.',
+      'when destroying the auth session, then a message for it is broadcast.',
       () async {
         final authInfoABeforeRevocation =
             await AuthSessions.authenticationHandler(
@@ -69,7 +69,7 @@ void main() {
     );
 
     test(
-      'when revoking all session for a user, then a message for it is broadcast.',
+      'when destroying all auth sessions for a user, then a message for it is broadcast.',
       () async {
         final channelName =
             MessageCentralServerpodChannels.revokedAuthentication(

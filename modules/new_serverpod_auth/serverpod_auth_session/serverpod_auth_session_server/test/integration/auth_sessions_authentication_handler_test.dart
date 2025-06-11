@@ -43,7 +43,8 @@ void main() {
     },
   );
 
-  withServerpod('Given a session,', (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,',
+      (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
     late String sessionKey;
@@ -94,9 +95,28 @@ void main() {
         );
       },
     );
+
+    test(
+      'when calling `authenticationHandler` after the pepper has been changed, then it returns `null`.',
+      () async {
+        AuthSessions.secretsTestOverride = AuthSessionSecrets(
+          sessionKeyHashPepper: 'another pepper',
+        );
+
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          sessionKey,
+        );
+
+        expect(
+          authInfo,
+          isNull,
+        );
+      },
+    );
   });
 
-  withServerpod('Given a session with custom scopes,',
+  withServerpod('Given an auth session with custom scopes,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late String sessionKey;
@@ -131,7 +151,7 @@ void main() {
   });
 
   withServerpod(
-    'Given a session with an expiration date,',
+    'Given an auth session with an expiration date,',
     (final sessionBuilder, final endpoints) {
       final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
@@ -188,29 +208,10 @@ void main() {
           );
         },
       );
-
-      test(
-        'when calling `authenticationHandler` after the pepper has been changed, then it returns `null`.',
-        () async {
-          AuthSessions.secretsTestOverride = AuthSessionSecrets(
-            sessionKeyHashPepper: 'another pepper',
-          );
-
-          final authInfo = await AuthSessions.authenticationHandler(
-            session,
-            sessionKey,
-          );
-
-          expect(
-            authInfo,
-            isNull,
-          );
-        },
-      );
     },
   );
 
-  withServerpod('Given a session which will expire when unused,',
+  withServerpod('Given an auth session which will expire when unused,',
       (final sessionBuilder, final endpoints) {
     const expireAfterUnusedFor = Duration(minutes: 10);
     late Session session;

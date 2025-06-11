@@ -90,7 +90,7 @@ abstract final class AuthSessions {
     if (expireAfterUnusedFor != null &&
         authSession.lastUsed.add(expireAfterUnusedFor).isBefore(clock.now())) {
       session.log(
-        'Got sessoin which expired due to inactivity.',
+        'Got session which expired due to inactivity.',
         level: LogLevel.debug,
       );
 
@@ -144,7 +144,6 @@ abstract final class AuthSessions {
     required final String method,
     required final Set<Scope> scopes,
 
-    ///
     /// Fixed date at which the session expires.
     /// If `null` the session will work until it's deleted or when it's been inactive for [expireAfterUnusedFor].
     final DateTime? expiresAt,
