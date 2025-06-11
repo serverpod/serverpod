@@ -11,6 +11,7 @@ import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/util/service_locator/service_locator.dart';
 
 import '../cache/caches.dart';
 
@@ -45,6 +46,13 @@ abstract class Session implements DatabaseAccessor {
 
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
+
+  /// The [ExperimentalSessionApi] provides access to experimental features of the
+  /// [Session] class.
+  ///
+  /// Note: These features are experimental and may change or be removed in the
+  /// future.
+  late final ExperimentalSessionApi experimental;
 
   late DateTime _startTime;
 
@@ -148,6 +156,7 @@ abstract class Session implements DatabaseAccessor {
 
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
+    experimental = ExperimentalSessionApi(this);
 
     if (Features.enableDatabase) {
       _db = server.createDatabase(this);
@@ -709,3 +718,13 @@ extension SessionInternalMethods on Session {
 /// period of time.
 bool _isLongLived(Session session) =>
     session is StreamingSession || session is MethodStreamSession;
+
+/// An experimental API for the Session class.
+///
+/// Note: These features are experimental and may change or be removed in the
+/// future.
+extension type ExperimentalSessionApi(Session _session) {
+  /// Provides view access to the servers [ServiceLocator].
+  ServiceLocatorView get service =>
+      ServiceLocatorView(_session.serverpod.experimental.service);
+}
