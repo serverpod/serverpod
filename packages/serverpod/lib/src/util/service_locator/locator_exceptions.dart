@@ -1,5 +1,8 @@
+/// Base exception for all service locator related exceptions.
+abstract final class ServiceLocatorException implements Exception {}
+
 /// Exception thrown when a lookup fails due to an invalid type
-class InvalidServiceTypeException implements Exception {
+final class InvalidServiceTypeException extends ServiceLocatorException {
   /// The type that was expected
   final Type expectedType;
 
@@ -15,7 +18,7 @@ class InvalidServiceTypeException implements Exception {
 }
 
 /// Exception thrown when lookup fails
-class ServiceNotFoundException implements Exception {
+final class ServiceNotFoundException extends ServiceLocatorException {
   /// The key the lookup failed for
   final Object key;
 
@@ -28,7 +31,7 @@ class ServiceNotFoundException implements Exception {
 }
 
 /// Exception thrown when trying to register that is already registered
-class ServiceAlreadyRegisteredException implements Exception {
+final class ServiceAlreadyRegisteredException extends ServiceLocatorException {
   /// The key that is already registered
   final Object key;
 
