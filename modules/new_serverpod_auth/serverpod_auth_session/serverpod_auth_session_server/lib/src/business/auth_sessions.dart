@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
@@ -12,6 +14,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 ///
 /// This should be used instead of [AuthSession.db].
 abstract final class AuthSessions {
+  /// The current session module configuration.
+  static AuthSessionConfig config = AuthSessionConfig();
+
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
   /// Only looks at keys created with this package (by checking the prefix),
@@ -51,7 +56,7 @@ abstract final class AuthSessions {
 
       return null;
     }
-    final secret = parts[2];
+    final secret = base64Decode(parts[2]);
 
     final authSession = await AuthSession.db.findById(
       session,
@@ -67,8 +72,7 @@ abstract final class AuthSessions {
       return null;
     }
 
-    final maximumSessionLifetime =
-        AuthSessionConfig.current.maximumSessionLifetime;
+    final maximumSessionLifetime = config.maximumSessionLifetime;
 
     if (maximumSessionLifetime != null &&
         authSession.created
@@ -82,12 +86,11 @@ abstract final class AuthSessions {
       return null;
     }
 
-    final sessionKeyHash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
-    );
-
-    if (sessionKeyHash != authSession.sessionKeyHash) {
+    if (!_sessionKeyHash.validateSessionKeyHash(
+      secret: secret,
+      hash: Uint8List.sublistView(authSession.sessionKeyHash),
+      salt: Uint8List.sublistView(authSession.sessionKeySalt),
+    )) {
       session.log(
         'Provided `secret` did not result in correct session key hash.',
         level: LogLevel.debug,
@@ -123,11 +126,8 @@ abstract final class AuthSessions {
     required final String method,
     required final Set<Scope> scopes,
   }) async {
-    final secret = generateRandomString();
-    final hash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
-    );
+    final secret = generateRandomBytes(config.sessionKeySecretLength);
+    final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
     final scopeNames = <String>{
       for (final scope in scopes)
@@ -139,7 +139,8 @@ abstract final class AuthSessions {
       AuthSession(
         authUserId: authUserId,
         scopeNames: scopeNames,
-        sessionKeyHash: hash,
+        sessionKeyHash: ByteData.sublistView(hash.hash),
+        sessionKeySalt: ByteData.sublistView(hash.salt),
         method: method,
       ),
     );
@@ -206,8 +207,19 @@ abstract final class AuthSessions {
 
   static String _buildSessionKey({
     required final UuidValue authSessionId,
-    required final String secret,
+    required final Uint8List secret,
   }) {
-    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:$secret';
+    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:${base64Encode(secret)}';
   }
+
+  /// The secrets configuration.
+  static final __secrets = AuthSessionSecrets();
+
+  /// Secrets to the used for testing. Also affects the internally used [AuthSessionKeyHash].
+  @visibleForTesting
+  static AuthSessionSecrets? secretsTestOverride;
+  static AuthSessionSecrets get _secrets => secretsTestOverride ?? __secrets;
+
+  static AuthSessionKeyHash get _sessionKeyHash =>
+      AuthSessionKeyHash(secrets: _secrets);
 }

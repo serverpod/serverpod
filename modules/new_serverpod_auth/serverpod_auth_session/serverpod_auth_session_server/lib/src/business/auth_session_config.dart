@@ -5,11 +5,20 @@ class AuthSessionConfig {
   /// Default to `null` (inifinite length), meaning sessions never expire implicitly.
   final Duration? maximumSessionLifetime;
 
+  /// Length of the session key secret (which is only stored on the client).
+  ///
+  /// Defaults to 32 bytes.
+  final int sessionKeySecretLength;
+
+  /// Length of the salt used for the session key hash.
+  ///
+  /// Defaults to 16 bytes.
+  final int sessionKeyHashSaltLength;
+
   /// Create a new user session configuration.
   AuthSessionConfig({
     this.maximumSessionLifetime,
+    this.sessionKeySecretLength = 32,
+    this.sessionKeyHashSaltLength = 16,
   });
-
-  /// The current session module configuration.
-  static AuthSessionConfig current = AuthSessionConfig();
 }

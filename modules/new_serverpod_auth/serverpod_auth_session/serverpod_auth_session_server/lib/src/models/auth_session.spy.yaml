@@ -16,7 +16,12 @@ fields:
   ### Hashed version of the session key.
   ###
   ### The clients authentication header will be compared against this to check the validity of the session.
-  sessionKeyHash: String
+  sessionKeyHash: ByteData
+
+  ### The salt used for computing the [sessionKeyHash].
+  ###
+  ### Per default uses 16 bytes of random data.
+  sessionKeySalt: ByteData
 
   ### The method of signing in this key was generated through.
   ###

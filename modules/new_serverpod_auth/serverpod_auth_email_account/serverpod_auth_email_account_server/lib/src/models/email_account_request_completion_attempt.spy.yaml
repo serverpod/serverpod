@@ -1,0 +1,22 @@
+### Database table for tracking email account completion requests.
+### A new entry will be created whenever the user tries to complete the email account setup.
+class: EmailAccountRequestCompletionAttempt
+serverOnly: true
+table: serverpod_auth_email_account_request_completion_attempt
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The time of the reset attempt.
+  attemptedAt: DateTime, defaultModel=now
+
+  ### The IP address of the sign in attempt.
+  ipAddress: String
+
+  emailAccountRequest: EmailAccountRequest?, relation(onDelete=Cascade)
+
+indexes:
+  serverpod_auth_email_account_request_completion_attempt_ip:
+    fields: ipAddress
+
+  serverpod_auth_email_account_request_completion_attempt_at:
+    fields: attemptedAt
