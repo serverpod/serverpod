@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-/// User session ID extension for `AuthenticationInfo`
+/// User session ID extension for `AuthenticationInfo`.
 extension AuthenticationInfoUserId on AuthenticationInfo {
   /// Returns the auth session ID of the authenticated user.
   ///
