@@ -1,3 +1,19 @@
+/// Exception thrown when a lookup fails due to an invalid type
+class InvalidServiceTypeException implements Exception {
+  /// The type that was expected
+  final Type expectedType;
+
+  /// The type that was received
+  final Type receivedType;
+
+  /// Create a new instance for an invalid service type exception
+  InvalidServiceTypeException(this.expectedType, this.receivedType);
+
+  @override
+  String toString() =>
+      'InvalidServiceTypeException: Expected type $expectedType but received $receivedType';
+}
+
 /// Exception thrown when lookup by type fails
 class ServiceNotFoundException implements Exception {
   /// The [Type] the lookup failed for
