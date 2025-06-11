@@ -76,8 +76,8 @@ abstract final class AuthSessions {
       return null;
     }
 
-    if (authSession.expiresAt != null &&
-        clock.now().isAfter(authSession.expiresAt!)) {
+    final expiresAt = authSession.expiresAt;
+    if (expiresAt != null && clock.now().isAfter(expiresAt)) {
       session.log(
         'Got session after its set expiration date.',
         level: LogLevel.debug,
@@ -86,10 +86,9 @@ abstract final class AuthSessions {
       return null;
     }
 
-    if (authSession.expireAfterUnusedFor != null &&
-        authSession.lastUsed
-            .add(authSession.expireAfterUnusedFor!)
-            .isBefore(clock.now())) {
+    final expireAfterUnusedFor = authSession.expireAfterUnusedFor;
+    if (expireAfterUnusedFor != null &&
+        authSession.lastUsed.add(expireAfterUnusedFor).isBefore(clock.now())) {
       session.log(
         'Got sessoin which expired due to inactivity.',
         level: LogLevel.debug,
