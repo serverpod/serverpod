@@ -14,33 +14,17 @@ class InvalidServiceTypeException implements Exception {
       'InvalidServiceTypeException: Expected type $expectedType but received $receivedType';
 }
 
-/// Exception thrown when lookup by type fails
+/// Exception thrown when lookup fails
 class ServiceNotFoundException implements Exception {
-  /// The [Type] the lookup failed for
-  final Type type;
-
-  /// Create a new instance for a failed [Type] lookup
-  ServiceNotFoundException(this.type);
-
-  @override
-  String toString() =>
-      'ServiceNotFoundException: No service found for type $type';
-}
-
-/// Exception thrown when lookup by key fails
-class ServiceKeyNotFoundException implements Exception {
-  /// The [Type] the lookup failed for
-  final Type type;
-
   /// The key the lookup failed for
   final Object key;
 
   /// Create a new instance for a failed lookup by key
-  ServiceKeyNotFoundException(this.type, this.key);
+  ServiceNotFoundException(this.key);
 
   @override
   String toString() =>
-      'ServiceKeyNotFoundException: No service found for key $key of type $type';
+      'ServiceKeyNotFoundException: No service found for key $key';
 }
 
 /// Exception thrown when trying to register that is already registered

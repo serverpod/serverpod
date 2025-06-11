@@ -39,7 +39,7 @@ void main() {
 
     test('throws when locating unregistered key', () {
       expect(() => locator.locate<TestService>('unknown'),
-          throwsA(isA<ServiceKeyNotFoundException>()));
+          throwsA(isA<ServiceNotFoundException>()));
     });
 
     test('throws when registering by type twice', () {

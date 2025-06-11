@@ -21,31 +21,17 @@ class ServiceHolder implements ServiceLocator {
   @override
   T locate<T>([Object? key]) => switch (key) {
         // If a key is provided, locate the service by that key.
-        Object k => _locateByKey<T>(k),
+        Object k => _locate<T>(k),
         // If no key is provided, locate the service by type.
-        null => _locateByType<T>(),
+        null => _locate<T>(T),
       };
 
-  T _locateByKey<T>(Object key) {
+  T _locate<T>(Object key) {
     if (!_services.containsKey(key)) {
-      throw ServiceKeyNotFoundException(T, key);
+      throw ServiceNotFoundException(key);
     }
 
     var result = _services[key];
-
-    if (result is! T) {
-      throw InvalidServiceTypeException(T, result.runtimeType);
-    }
-
-    return result;
-  }
-
-  T _locateByType<T>() {
-    if (!_services.containsKey(T)) {
-      throw ServiceNotFoundException(T);
-    }
-
-    var result = _services[T];
 
     if (result is! T) {
       throw InvalidServiceTypeException(T, result.runtimeType);
