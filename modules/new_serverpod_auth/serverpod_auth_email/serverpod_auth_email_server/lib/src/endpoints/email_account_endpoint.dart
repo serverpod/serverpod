@@ -25,7 +25,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
     return _createSession(session, authUserId);
   }
 
-  /// Starts the registration for an email based account.
+  /// Starts the registration for a new user account with an email-based login associated to it.
   ///
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to complete the registration.
@@ -41,13 +41,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
     );
   }
 
-  /// Completes the email account registration.
-  ///
-  /// In case the given [session] belongs to a logged-in user,
-  /// the email account will be added as an authentication method for that user.
-  ///
-  /// If the [session] belongs to a guest, a new auth user account and profile will
-  /// be created.
+  /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
   ///
   /// Returns the session key for the new session.
   Future<String> finishRegistration(
@@ -63,30 +57,21 @@ abstract class EmailAccountEndpoint extends Endpoint {
         transaction: transaction,
       );
 
-      // TODO: Add user consolidation (across providers, not via the profile anymore)
+      final newUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(scopeNames: {}),
+        transaction: transaction,
+      );
+      final authUserId = newUser.id!;
 
-      final authenticationInfo = await session.authenticated;
-
-      final UuidValue authUserId;
-      if (authenticationInfo != null) {
-        authUserId = authenticationInfo.authSessionId;
-      } else {
-        final newUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(scopeNames: {}),
-          transaction: transaction,
-        );
-        authUserId = newUser.id!;
-
-        await UserProfiles.createUserProfile(
-          session,
-          authUserId,
-          UserProfileData(
-            email: accountRequest.email,
-          ),
-          transaction: transaction,
-        );
-      }
+      await UserProfiles.createUserProfile(
+        session,
+        authUserId,
+        UserProfileData(
+          email: accountRequest.email,
+        ),
+        transaction: transaction,
+      );
 
       await EmailAccounts.completeAccountCreation(
         session,
