@@ -58,6 +58,18 @@ class ServiceLocator {
 
     _services[key] = service;
   }
+
+  /// Remove a service by its type or an optional key.
+  ///
+  /// Throws [ServiceNotFoundException] if the service is not found.
+  void remove<T>([Object? key]) {
+    key ??= T;
+
+    if (!_services.containsKey(key)) {
+      throw ServiceNotFoundException(key);
+    }
+    _services.remove(key);
+  }
 }
 
 /// Provide a view of the service locator.

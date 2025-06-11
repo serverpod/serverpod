@@ -65,6 +65,25 @@ void main() {
       expect(() => locator.locate<AnotherService>('myKey'),
           throwsA(isA<InvalidServiceTypeException>()));
     });
+
+    test('throws when removing unregistered service', () {
+      expect(() => locator.locate<TestService>('nonExistentKey'),
+          throwsA(isA<ServiceNotFoundException>()));
+    });
+
+    test('removes service by type', () {
+      locator.register<TestService>(TestService());
+      locator.remove<TestService>();
+      expect(() => locator.locate<TestService>(),
+          throwsA(isA<ServiceNotFoundException>()));
+    });
+
+    test('removes service by key', () {
+      locator.register<TestService>(TestService(), key: 'myKey');
+      locator.remove<TestService>('myKey');
+      expect(() => locator.locate<TestService>('myKey'),
+          throwsA(isA<ServiceNotFoundException>()));
+    });
   });
 
   group('ServiceLocatorView', () {
