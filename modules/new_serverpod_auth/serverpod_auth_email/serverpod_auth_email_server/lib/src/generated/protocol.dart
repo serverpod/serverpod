@@ -19,8 +19,6 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
     as _i5;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i6;
-import 'module_class.dart' as _i7;
-export 'module_class.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -42,12 +40,6 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i7.ModuleClass) {
-      return _i7.ModuleClass.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i7.ModuleClass?>()) {
-      return (data != null ? _i7.ModuleClass.fromJson(data) : null) as T;
-    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -70,9 +62,6 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i7.ModuleClass) {
-      return 'ModuleClass';
-    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
@@ -101,9 +90,6 @@ class Protocol extends _i1.SerializationManagerServer {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
-    }
-    if (dataClassName == 'ModuleClass') {
-      return deserialize<_i7.ModuleClass>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
