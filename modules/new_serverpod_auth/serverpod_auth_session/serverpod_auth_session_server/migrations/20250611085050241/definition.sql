@@ -6,8 +6,11 @@ BEGIN;
 CREATE TABLE "serverpod_auth_session" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "authUserId" uuid NOT NULL,
-    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
     "sessionKeyHash" bytea NOT NULL,
     "sessionKeySalt" bytea NOT NULL,
     "method" text NOT NULL
@@ -274,9 +277,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_session
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_session', '20250607101155018', now())
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250607101155018', "timestamp" = now();
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
