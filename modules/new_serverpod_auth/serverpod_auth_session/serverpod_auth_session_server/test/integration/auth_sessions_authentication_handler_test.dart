@@ -63,7 +63,7 @@ void main() {
     });
 
     test(
-      'when calling `authenticationHandler`, then it returns an `AuthenticationInfo` for the user.',
+      'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` for the user.',
       () async {
         final authInfo = await AuthSessions.authenticationHandler(
           session,
@@ -78,7 +78,7 @@ void main() {
     );
 
     test(
-      'when calling `authenticationHandler` with the wrong secret, then it returns `null`.',
+      'when calling `authenticationHandler` with the wrong secret in the session key, then it returns `null`.',
       () async {
         final sessionKeyParts = sessionKey.split(':');
         sessionKeyParts[2] = base64Encode(utf8.encode('some other secret'));
@@ -135,7 +135,7 @@ void main() {
     });
 
     test(
-      'when calling `authenticationHandler`, then it returns an `AuthenticationInfo` with the correct scopes.',
+      'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` with the correct scopes.',
       () async {
         final authInfo = await AuthSessions.authenticationHandler(
           session,
