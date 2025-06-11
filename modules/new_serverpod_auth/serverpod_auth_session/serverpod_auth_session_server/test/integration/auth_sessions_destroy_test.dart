@@ -97,7 +97,73 @@ void main() {
     );
   });
 
-  withServerpod('Given two sessions for a user,',
+  withServerpod(
+      'Given a user with 2 auth sessions where 1 was invalidated by `destroySession`,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late String destroyedSessionKey;
+    late String retainedSessionKey;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      authUserId = await createAuthUser(session);
+
+      destroyedSessionKey = await AuthSessions.createSession(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+      retainedSessionKey = await AuthSessions.createSession(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final sessionToDestroy = UuidValue.fromByteList(
+          base64Decode(destroyedSessionKey.split(':')[1]));
+      await AuthSessions.destroySession(
+        session,
+        authSessionId: sessionToDestroy,
+      );
+    });
+
+    test(
+      'when calling `authenticationHandler` with the destroyed session key, then it returns `null`.',
+      () async {
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          destroyedSessionKey,
+        );
+
+        expect(
+          authInfo,
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'when calling `authenticationHandler` with the retained session key, then it returns the auth info.',
+      () async {
+        final authInfo = await AuthSessions.authenticationHandler(
+          session,
+          retainedSessionKey,
+        );
+
+        expect(
+          authInfo,
+          isNotNull,
+        );
+      },
+    );
+  });
+
+  withServerpod(
+      'Given a user with 2 sessions which were invalidated using `destroyAllSessions`,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -121,65 +187,38 @@ void main() {
         scopes: {},
         method: 'test',
       );
+
+      await AuthSessions.destroyAllSessions(
+        session,
+        authUserId: authUserId,
+      );
     });
 
     test(
-      'when calling `destroySession` for one session, then this gets invalid while the other continues to work.',
+      'when calling the `authenticationHandler` with the first session key, then it returns `null`.',
       () async {
-        final session1Id =
-            UuidValue.fromByteList(base64Decode(sessionKey1.split(':')[1]));
-        await AuthSessions.destroySession(
-          session,
-          authSessionId: session1Id,
-        );
-
-        final authInfo1 = await AuthSessions.authenticationHandler(
+        final authInfo = await AuthSessions.authenticationHandler(
           session,
           sessionKey1,
         );
 
         expect(
-          authInfo1,
+          authInfo,
           isNull,
-        );
-
-        final authInfo2 = await AuthSessions.authenticationHandler(
-          session,
-          sessionKey2,
-        );
-
-        expect(
-          authInfo2,
-          isNotNull,
         );
       },
     );
 
     test(
-      'when calling `destroyAllSessions`, then all their sessions become invalid.',
+      'when calling the `authenticationHandler` with the  second session key, then it returns `null`.',
       () async {
-        await AuthSessions.destroyAllSessions(
-          session,
-          authUserId: authUserId,
-        );
-
-        final authInfo1 = await AuthSessions.authenticationHandler(
-          session,
-          sessionKey1,
-        );
-
-        expect(
-          authInfo1,
-          isNull,
-        );
-
-        final authInfo2 = await AuthSessions.authenticationHandler(
+        final authInfo = await AuthSessions.authenticationHandler(
           session,
           sessionKey2,
         );
 
         expect(
-          authInfo2,
+          authInfo,
           isNull,
         );
       },

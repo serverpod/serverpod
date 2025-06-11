@@ -172,16 +172,33 @@ void main() {
           1,
         );
       });
+    },
+  );
 
-      test(
-          'when calling `deleteExpiredSessions` after the expiration, then it is deleted.',
-          () async {
-        await withClock(
-          Clock.fixed(expiresAt.add(const Duration(minutes: 1))),
-          () async {
-            await AuthSessionsAdmin().deleteExpiredSessions(session);
-          },
+  withServerpod(
+    'Given an expired auth session,',
+    (final sessionBuilder, final endpoints) {
+      final expiresAt = DateTime.now().subtract(const Duration(days: 1));
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUserId = await createAuthUser(session);
+
+        // ignore: unused_result
+        await AuthSessions.createSession(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          expiresAt: expiresAt,
+          method: 'test',
         );
+      });
+
+      test('when calling `deleteExpiredSessions`, then it is deleted.',
+          () async {
+        await AuthSessionsAdmin().deleteExpiredSessions(session);
 
         expect(
           await AuthSession.db.count(session),
@@ -190,16 +207,11 @@ void main() {
       });
 
       test(
-          'when calling `deleteExpiredSessions` after the expiration with `deleteExpired: false`, then it is kept.',
+          'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
           () async {
-        await withClock(
-          Clock.fixed(expiresAt.add(const Duration(minutes: 1))),
-          () async {
-            await AuthSessionsAdmin().deleteExpiredSessions(
-              session,
-              deleteExpired: false,
-            );
-          },
+        await AuthSessionsAdmin().deleteExpiredSessions(
+          session,
+          deleteExpired: false,
         );
 
         expect(
@@ -209,6 +221,7 @@ void main() {
       });
     },
   );
+
   withServerpod(
     'Given an auth session expiring after 10 minutes of inactivity,',
     (final sessionBuilder, final endpoints) {
@@ -230,8 +243,7 @@ void main() {
         );
       });
 
-      test('when calling `deleteExpiredSessions` right away, then it is kept.',
-          () async {
+      test('when calling `deleteExpiredSessions`, then it is kept.', () async {
         await AuthSessionsAdmin().deleteExpiredSessions(session);
 
         expect(
@@ -239,20 +251,41 @@ void main() {
           1,
         );
       });
+    },
+  );
 
-      test(
-          'when calling `deleteExpiredSessions` after the expiration, then it is deleted.',
-          () async {
+  withServerpod(
+    'Given an auth session which expired due to more than 10 minutes of inactivity,',
+    (final sessionBuilder, final endpoints) {
+      const expireAfterUnusedFor = Duration(minutes: 10);
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUserId = await createAuthUser(session);
+
         await withClock(
           Clock.fixed(
-            DateTime.now().add(
+            DateTime.now().subtract(
               expireAfterUnusedFor + const Duration(minutes: 1),
             ),
           ),
           () async {
-            await AuthSessionsAdmin().deleteExpiredSessions(session);
+            return AuthSessions.createSession(
+              session,
+              authUserId: authUserId,
+              scopes: {},
+              expireAfterUnusedFor: expireAfterUnusedFor,
+              method: 'test',
+            );
           },
         );
+      });
+
+      test('when calling `deleteExpiredSessions`, then it is deleted.',
+          () async {
+        await AuthSessionsAdmin().deleteExpiredSessions(session);
 
         expect(
           await AuthSession.db.count(session),
@@ -261,20 +294,11 @@ void main() {
       });
 
       test(
-          'when calling `deleteExpiredSessions` after the expiration with `deleteInactive: false`, then it is kept.',
+          'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
           () async {
-        await withClock(
-          Clock.fixed(
-            DateTime.now().add(
-              expireAfterUnusedFor + const Duration(minutes: 1),
-            ),
-          ),
-          () async {
-            await AuthSessionsAdmin().deleteExpiredSessions(
-              session,
-              deleteInactive: false,
-            );
-          },
+        await AuthSessionsAdmin().deleteExpiredSessions(
+          session,
+          deleteInactive: false,
         );
 
         expect(

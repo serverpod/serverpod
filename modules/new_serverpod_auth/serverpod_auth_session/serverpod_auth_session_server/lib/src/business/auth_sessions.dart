@@ -164,6 +164,8 @@ abstract final class AuthSessions {
       session,
       AuthSession(
         authUserId: authUserId,
+        created: clock.now(),
+        lastUsed: clock.now(),
         expiresAt: expiresAt,
         expireAfterUnusedFor: expireAfterUnusedFor,
         scopeNames: scopeNames,
