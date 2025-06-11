@@ -22,19 +22,26 @@ abstract class AuthSession
     this.id,
     required this.authUserId,
     this.authUser,
-    DateTime? created,
     required this.scopeNames,
+    DateTime? created,
+    DateTime? lastUsed,
+    this.expiresAt,
+    this.expireAfterUnusedFor,
     required this.sessionKeyHash,
     required this.sessionKeySalt,
     required this.method,
-  }) : created = created ?? DateTime.now();
+  })  : created = created ?? DateTime.now(),
+        lastUsed = lastUsed ?? DateTime.now();
 
   factory AuthSession({
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
     required Set<String> scopeNames,
+    DateTime? created,
+    DateTime? lastUsed,
+    DateTime? expiresAt,
+    Duration? expireAfterUnusedFor,
     required _i3.ByteData sessionKeyHash,
     required _i3.ByteData sessionKeySalt,
     required String method,
@@ -51,10 +58,19 @@ abstract class AuthSession
           ? null
           : _i2.AuthUser.fromJson(
               (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
+      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      lastUsed:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsed']),
+      expiresAt: jsonSerialization['expiresAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
+      expireAfterUnusedFor: jsonSerialization['expireAfterUnusedFor'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['expireAfterUnusedFor']),
       sessionKeyHash: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['sessionKeyHash']),
       sessionKeySalt: _i1.ByteDataJsonExtension.fromJson(
@@ -75,11 +91,28 @@ abstract class AuthSession
   /// The [AuthUser] this session belongs to
   _i2.AuthUser? authUser;
 
-  /// The time when this sesion was created.
-  DateTime created;
-
   /// The scopes this session provides access to.
   Set<String> scopeNames;
+
+  /// The time when this session was created.
+  DateTime created;
+
+  /// The time when this access session was last used.
+  ///
+  /// Operates only with minute resolution, to avoid excessive writes to the database.
+  DateTime lastUsed;
+
+  /// The time after which this session can not be used anymore.
+  ///
+  /// If `null`, the session can be used indefinitely.
+  DateTime? expiresAt;
+
+  /// The maximum duration this session can go unused.
+  ///
+  /// If set, and the session is used after [lastUsed] + [expireAfterUnusedFor], then it will be rejected.
+  ///
+  /// If `null`, the session is valid until [expiresAt].
+  Duration? expireAfterUnusedFor;
 
   /// Hashed version of the session key.
   ///
@@ -91,9 +124,9 @@ abstract class AuthSession
   /// Per default uses 16 bytes of random data.
   _i3.ByteData sessionKeySalt;
 
-  /// The method of signing in this key was generated through.
+  /// The method through which this session was created.
   ///
-  /// This can be either email, a social login, etc.
+  /// This can be either an email or social login, a personal access token, service account etc.
   String method;
 
   @override
@@ -106,8 +139,11 @@ abstract class AuthSession
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
     Set<String>? scopeNames,
+    DateTime? created,
+    DateTime? lastUsed,
+    DateTime? expiresAt,
+    Duration? expireAfterUnusedFor,
     _i3.ByteData? sessionKeyHash,
     _i3.ByteData? sessionKeySalt,
     String? method,
@@ -118,8 +154,12 @@ abstract class AuthSession
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
-      'created': created.toJson(),
       'scopeNames': scopeNames.toJson(),
+      'created': created.toJson(),
+      'lastUsed': lastUsed.toJson(),
+      if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
+      if (expireAfterUnusedFor != null)
+        'expireAfterUnusedFor': expireAfterUnusedFor?.toJson(),
       'sessionKeyHash': sessionKeyHash.toJson(),
       'sessionKeySalt': sessionKeySalt.toJson(),
       'method': method,
@@ -168,8 +208,11 @@ class _AuthSessionImpl extends AuthSession {
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
     required Set<String> scopeNames,
+    DateTime? created,
+    DateTime? lastUsed,
+    DateTime? expiresAt,
+    Duration? expireAfterUnusedFor,
     required _i3.ByteData sessionKeyHash,
     required _i3.ByteData sessionKeySalt,
     required String method,
@@ -177,8 +220,11 @@ class _AuthSessionImpl extends AuthSession {
           id: id,
           authUserId: authUserId,
           authUser: authUser,
-          created: created,
           scopeNames: scopeNames,
+          created: created,
+          lastUsed: lastUsed,
+          expiresAt: expiresAt,
+          expireAfterUnusedFor: expireAfterUnusedFor,
           sessionKeyHash: sessionKeyHash,
           sessionKeySalt: sessionKeySalt,
           method: method,
@@ -192,8 +238,11 @@ class _AuthSessionImpl extends AuthSession {
     Object? id = _Undefined,
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
-    DateTime? created,
     Set<String>? scopeNames,
+    DateTime? created,
+    DateTime? lastUsed,
+    Object? expiresAt = _Undefined,
+    Object? expireAfterUnusedFor = _Undefined,
     _i3.ByteData? sessionKeyHash,
     _i3.ByteData? sessionKeySalt,
     String? method,
@@ -203,8 +252,13 @@ class _AuthSessionImpl extends AuthSession {
       authUserId: authUserId ?? this.authUserId,
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
-      created: created ?? this.created,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
+      created: created ?? this.created,
+      lastUsed: lastUsed ?? this.lastUsed,
+      expiresAt: expiresAt is DateTime? ? expiresAt : this.expiresAt,
+      expireAfterUnusedFor: expireAfterUnusedFor is Duration?
+          ? expireAfterUnusedFor
+          : this.expireAfterUnusedFor,
       sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash.clone(),
       sessionKeySalt: sessionKeySalt ?? this.sessionKeySalt.clone(),
       method: method ?? this.method,
@@ -219,13 +273,26 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
       'authUserId',
       this,
     );
+    scopeNames = _i1.ColumnSerializable(
+      'scopeNames',
+      this,
+    );
     created = _i1.ColumnDateTime(
       'created',
       this,
       hasDefault: true,
     );
-    scopeNames = _i1.ColumnSerializable(
-      'scopeNames',
+    lastUsed = _i1.ColumnDateTime(
+      'lastUsed',
+      this,
+      hasDefault: true,
+    );
+    expiresAt = _i1.ColumnDateTime(
+      'expiresAt',
+      this,
+    );
+    expireAfterUnusedFor = _i1.ColumnDuration(
+      'expireAfterUnusedFor',
       this,
     );
     sessionKeyHash = _i1.ColumnByteData(
@@ -247,11 +314,28 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   /// The [AuthUser] this session belongs to
   _i2.AuthUserTable? _authUser;
 
-  /// The time when this sesion was created.
-  late final _i1.ColumnDateTime created;
-
   /// The scopes this session provides access to.
   late final _i1.ColumnSerializable scopeNames;
+
+  /// The time when this session was created.
+  late final _i1.ColumnDateTime created;
+
+  /// The time when this access session was last used.
+  ///
+  /// Operates only with minute resolution, to avoid excessive writes to the database.
+  late final _i1.ColumnDateTime lastUsed;
+
+  /// The time after which this session can not be used anymore.
+  ///
+  /// If `null`, the session can be used indefinitely.
+  late final _i1.ColumnDateTime expiresAt;
+
+  /// The maximum duration this session can go unused.
+  ///
+  /// If set, and the session is used after [lastUsed] + [expireAfterUnusedFor], then it will be rejected.
+  ///
+  /// If `null`, the session is valid until [expiresAt].
+  late final _i1.ColumnDuration expireAfterUnusedFor;
 
   /// Hashed version of the session key.
   ///
@@ -263,9 +347,9 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   /// Per default uses 16 bytes of random data.
   late final _i1.ColumnByteData sessionKeySalt;
 
-  /// The method of signing in this key was generated through.
+  /// The method through which this session was created.
   ///
-  /// This can be either email, a social login, etc.
+  /// This can be either an email or social login, a personal access token, service account etc.
   late final _i1.ColumnString method;
 
   _i2.AuthUserTable get authUser {
@@ -285,8 +369,11 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         authUserId,
-        created,
         scopeNames,
+        created,
+        lastUsed,
+        expiresAt,
+        expireAfterUnusedFor,
         sessionKeyHash,
         sessionKeySalt,
         method,

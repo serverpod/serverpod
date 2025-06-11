@@ -1,0 +1,34 @@
+class: AuthSessionInfo
+fields:
+  id: UuidValue
+
+  ### The [AuthUser] this session belongs to.
+  authUserId: UuidValue
+
+  ### The scopes this session provides access to.
+  ###
+  ### These are not connected to the [authUser], and can for example represent a subset of their permissions.
+  scopeNames: Set<String>
+
+  ### The time when this session was created.
+  created: DateTime
+
+  ### The time when this session was last used.
+  ###
+  ### Operates only with minute resolution, to avoid excessive writes to the database.
+  lastUsed: DateTime
+
+  ### The time after which this session can not be used anymore.
+  ###
+  ### If `null`, the session can be used indefinitely.
+  expiresAt: DateTime?
+
+  ### The maximum duration this session can go unused.
+  ###
+  ### If set, and the session is used after [lastUsed] + [expireAfterUnusedFor], then it will be rejected.
+  ###
+  ### If `null`, the session is valid until [expiresAt].
+  expireAfterUnusedFor: Duration?
+
+  ### The method through which this session was created.
+  method: String

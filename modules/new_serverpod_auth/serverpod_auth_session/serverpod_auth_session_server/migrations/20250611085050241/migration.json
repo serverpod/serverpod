@@ -22,6 +22,12 @@
             "dartType": "UuidValue"
           },
           {
+            "name": "scopeNames",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Set<String>"
+          },
+          {
             "name": "created",
             "columnType": 4,
             "isNullable": false,
@@ -29,10 +35,23 @@
             "dartType": "DateTime"
           },
           {
-            "name": "scopeNames",
-            "columnType": 8,
+            "name": "lastUsed",
+            "columnType": 4,
             "isNullable": false,
-            "dartType": "Set<String>"
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "expiresAt",
+            "columnType": 4,
+            "isNullable": true,
+            "dartType": "DateTime?"
+          },
+          {
+            "name": "expireAfterUnusedFor",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "Duration?"
           },
           {
             "name": "sessionKeyHash",
