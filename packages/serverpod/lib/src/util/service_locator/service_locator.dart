@@ -91,16 +91,11 @@ class ServiceHolder implements ServiceLocator {
   }
 }
 
-/// Provide an interface only view of the service locator.
+/// Provide a view of the service locator.
 /// This is useful when you want to expose the service locator without allowing
 /// modification of its contents.
-/// It wraps an existing [ServiceLocator] instance and provides the same methods.
-class WrappingServiceLocator implements ServiceLocator {
-  final ServiceLocator _serviceLocator;
-
-  /// Creates a new [WrappingServiceLocator] that wraps the provided [ServiceLocator].
-  WrappingServiceLocator(this._serviceLocator);
-
-  @override
-  T locate<T>([Object? key]) => _serviceLocator.locate<T>(key);
+extension type ServiceLocatorView(ServiceLocator serviceLocator) {
+  /// Locates a service by its type or key.
+  /// Throws [ServiceNotFoundException] if the service is not found.
+  T locate<T>([Object? key]) => serviceLocator.locate<T>(key);
 }

@@ -55,10 +55,10 @@ void main() {
     });
   });
 
-  group('WrappingServiceLocator', () {
+  group('ServiceLocatorView', () {
     test('delegates to underlying locator', () {
       final holder = ServiceHolder();
-      final serviceLocatorView = WrappingServiceLocator(holder);
+      final serviceLocatorView = ServiceLocatorView(holder);
       final service = TestService();
       holder.register<TestService>(service);
       expect(serviceLocatorView.locate<TestService>(), same(service));
