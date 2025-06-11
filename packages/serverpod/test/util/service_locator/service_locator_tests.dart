@@ -42,10 +42,16 @@ void main() {
           throwsA(isA<ServiceKeyNotFoundException>()));
     });
 
-    test('throws when registering key twice', () {
+    test('throws when registering by type twice', () {
+      locator.register<TestService>(TestService());
+      expect(() => locator.register<TestService>(TestService()),
+          throwsA(isA<ServiceAlreadyRegisteredException>()));
+    });
+
+    test('throws when registering by key twice', () {
       locator.register<TestService>(TestService(), key: 'myKey');
       expect(() => locator.register<TestService>(TestService(), key: 'myKey'),
-          throwsA(isA<ServiceKeyAlreadyRegisteredException>()));
+          throwsA(isA<ServiceAlreadyRegisteredException>()));
     });
 
     test('throws when locating by type with wrong type', () {

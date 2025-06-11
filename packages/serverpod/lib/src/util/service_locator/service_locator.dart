@@ -58,41 +58,18 @@ class ServiceHolder implements ServiceLocator {
   ///
   /// If a key is provided, it registers the service by that key.
   /// If no key is provided, it registers the service by its type.
-  void register<T>(T service, {Object? key}) {
-    if (key != null) {
-      _registerKey<T>(key, service);
-    } else {
-      _registerType<T>(service);
-    }
-  }
+  ///
+  /// Throws [ServiceAlreadyRegisteredException] if a service is already
+  /// registered for the given key or type.
+  void register<T>(T service, {Object? key}) => switch (key) {
+        Object k => _register<T>(k, service),
+        null => _register<T>(T, service),
+      };
 
-  /// Register a service by its type.
-  /// Throws [ServiceAlreadyRegisteredException] if a service of the same type is already registered.
-  void _registerType<T>(T service) {
-    if (_services.containsKey(T)) {
-      throw ServiceAlreadyRegisteredException(T);
-    }
-
-    _services[T] = service;
-  }
-
-  /// Register a service by a unique key.
-  /// Throws [ServiceKeyAlreadyRegisteredException] if a service with the same key is already registered.
-  void _registerKey<T>(Object key, T service) {
+  void _register<T>(Object key, T service) {
     if (_services.containsKey(key)) {
-      throw ServiceKeyAlreadyRegisteredException(key, T);
-    }
-
-    try {
-      _registerType(service);
-    } catch (e) {
-      // If the service is already registered by type, we can ignore this error
-      // since we are registering it by key as well.
-      if (e is ServiceAlreadyRegisteredException) {
-        // Do nothing, we can safely ignore this.
-      } else {
-        rethrow; // Rethrow any other exceptions.
-      }
+      var existingService = _services[key];
+      throw ServiceAlreadyRegisteredException(key, existingService);
     }
 
     _services[key] = service;

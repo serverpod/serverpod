@@ -43,29 +43,16 @@ class ServiceKeyNotFoundException implements Exception {
       'ServiceKeyNotFoundException: No service found for key $key of type $type';
 }
 
-/// Exception thrown when trying to register a service that is already registered
+/// Exception thrown when trying to register that is already registered
 class ServiceAlreadyRegisteredException implements Exception {
-  /// The type of the service that is already registered
-  final Type type;
-
-  /// Create a new instance for a service that is already registered
-  ServiceAlreadyRegisteredException(this.type);
-
-  @override
-  String toString() =>
-      'ServiceAlreadyRegisteredException: A service of type $type is already registered';
-}
-
-/// Exception thrown when trying to register a service with a key that is already registered
-class ServiceKeyAlreadyRegisteredException implements Exception {
   /// The key that is already registered
   final Object key;
 
   /// The type of the service that is already registered
-  final Type type;
+  final Object type;
 
   /// Create a new instance for a service key that is already registered
-  ServiceKeyAlreadyRegisteredException(this.key, this.type);
+  ServiceAlreadyRegisteredException(this.key, this.type);
 
   @override
   String toString() =>
