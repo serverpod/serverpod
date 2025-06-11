@@ -17,7 +17,7 @@ class ServiceKeyNotFoundException implements Exception {
   final Type type;
 
   /// The key the lookup failed for
-  final String key;
+  final Object key;
 
   /// Create a new instance for a failed lookup by key
   ServiceKeyNotFoundException(this.type, this.key);
@@ -43,7 +43,7 @@ class ServiceAlreadyRegisteredException implements Exception {
 /// Exception thrown when trying to register a service with a key that is already registered
 class ServiceKeyAlreadyRegisteredException implements Exception {
   /// The key that is already registered
-  final String key;
+  final Object key;
 
   /// The type of the service that is already registered
   final Type type;

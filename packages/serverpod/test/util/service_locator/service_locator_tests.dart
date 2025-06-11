@@ -16,7 +16,7 @@ void main() {
 
     test('registers and locates service by type', () {
       final service = TestService();
-      locator.registerType<TestService>(service);
+      locator.register<TestService>(service);
       expect(locator.locate<TestService>(), same(service));
     });
 
@@ -26,14 +26,14 @@ void main() {
     });
 
     test('throws when registering type twice', () {
-      locator.registerType<TestService>(TestService());
-      expect(() => locator.registerType<TestService>(TestService()),
+      locator.register<TestService>(TestService());
+      expect(() => locator.register<TestService>(TestService()),
           throwsA(isA<ServiceAlreadyRegisteredException>()));
     });
 
     test('registers and locates service by key', () {
       final service = TestService();
-      locator.registerKey<TestService>('myKey', service);
+      locator.register<TestService>(service, key: 'myKey');
       expect(locator.locate<TestService>(key: 'myKey'), same(service));
     });
 
@@ -43,13 +43,13 @@ void main() {
     });
 
     test('throws when registering key twice', () {
-      locator.registerKey<TestService>('myKey', TestService());
-      expect(() => locator.registerKey<TestService>('myKey', TestService()),
+      locator.register<TestService>(TestService(), key: 'myKey');
+      expect(() => locator.register<TestService>(TestService(), key: 'myKey'),
           throwsA(isA<ServiceKeyAlreadyRegisteredException>()));
     });
 
     test('throws when locating key with wrong type', () {
-      locator.registerKey<TestService>('myKey', TestService());
+      locator.register<TestService>(TestService(), key: 'myKey');
       expect(() => locator.locate<AnotherService>(key: 'myKey'),
           throwsA(isA<ServiceNotFoundException>()));
     });
@@ -58,7 +58,7 @@ void main() {
       final parent = ServiceHolder();
       final child = ServiceHolder(parent: parent);
       final service = TestService();
-      parent.registerType<TestService>(service);
+      parent.register<TestService>(service);
       expect(child.locate<TestService>(), same(service));
     });
 
@@ -66,7 +66,7 @@ void main() {
       final parent = ServiceHolder();
       final child = ServiceHolder(parent: parent);
       final service = TestService();
-      parent.registerKey<TestService>('myKey', service);
+      parent.register<TestService>(service, key: 'myKey');
       expect(child.locate<TestService>(key: 'myKey'), same(service));
     });
   });
@@ -76,7 +76,7 @@ void main() {
       final holder = ServiceHolder();
       final wrapper = WrappingServiceLocator(holder);
       final service = TestService();
-      holder.registerType<TestService>(service);
+      holder.register<TestService>(service);
       expect(wrapper.locate<TestService>(), same(service));
     });
   });

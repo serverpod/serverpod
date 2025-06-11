@@ -7,15 +7,14 @@ abstract interface class ServiceLocator {
   /// Throws [ServiceNotFoundException] if the service is not found.
   /// @param T The type of the service to locate.
   /// @return The service of type [T] if found.
-  T locate<T>({String? key});
+  T locate<T>({Object? key});
 }
 
 /// A concrete implementation of [ServiceLocator] that holds services in memory.
 /// It allows for registering services by type or by a unique key.
 class ServiceHolder implements ServiceLocator {
   final ServiceLocator _parent;
-  final Map<Type, dynamic> _services = {};
-  final Map<String, dynamic> _keyedServices = {};
+  final Map<Object, dynamic> _services = {};
 
   /// Creates a new [ServiceHolder] with an optional parent service locator.
   ServiceHolder({ServiceLocator parent = const StubServiceLocator()})
@@ -23,49 +22,62 @@ class ServiceHolder implements ServiceLocator {
 
   /// Walk up the service locator hierarchy to find a service by type.
   @override
-  T locate<T>({String? key}) {
+  T locate<T>({Object? key}) {
     if (key != null) {
-      return _locateKey<T>(key);
+      return _locateByKey<T>(key);
     }
     // If no key is provided, locate the service by type.
-    T result = _services.containsKey(T)
-        ? _services[T] as T
-        : _parent.locate<T>(key: key);
+    T result =
+        _services.containsKey(T) ? _services[T] as T : _parent.locate<T>();
     return result;
   }
 
   /// Walk up the service locator hierarchy to find a service by key.
   /// Throws [ServiceKeyNotFoundException] if the key is not found.
   /// Throws [ServiceNotFoundException] if the type does not match the found service.
-  T _locateKey<T>(String key) {
-    var result = _keyedServices.containsKey(key)
-        ? _keyedServices[key]
+  T _locateByKey<T>(Object key) {
+    var result = _services.containsKey(key)
+        ? _services[key]
         : _parent.locate<T>(key: key);
-    if (result.runtimeType != T) {
+
+    if (result is! T) {
       throw ServiceNotFoundException(T);
     }
 
     return result;
   }
 
+  /// Register a service.
+  ///
+  /// If a key is provided, it registers the service by that key.
+  /// If no key is provided, it registers the service by its type.
+  void register<T>(T service, {Object? key}) {
+    if (key != null) {
+      _registerKey<T>(key, service);
+    } else {
+      _registerType<T>(service);
+    }
+  }
+
   /// Register a service by its type.
   /// Throws [ServiceAlreadyRegisteredException] if a service of the same type is already registered.
-  void registerType<T>(T service) {
+  void _registerType<T>(T service) {
     if (_services.containsKey(T)) {
       throw ServiceAlreadyRegisteredException(T);
     }
+
     _services[T] = service;
   }
 
   /// Register a service by a unique key.
   /// Throws [ServiceKeyAlreadyRegisteredException] if a service with the same key is already registered.
-  void registerKey<T>(String key, T service) {
-    if (_keyedServices.containsKey(key)) {
+  void _registerKey<T>(Object key, T service) {
+    if (_services.containsKey(key)) {
       throw ServiceKeyAlreadyRegisteredException(key, T);
     }
 
     try {
-      registerType(service);
+      _registerType(service);
     } catch (e) {
       // If the service is already registered by type, we can ignore this error
       // since we are registering it by key as well.
@@ -76,7 +88,7 @@ class ServiceHolder implements ServiceLocator {
       }
     }
 
-    _keyedServices[key] = service;
+    _services[key] = service;
   }
 }
 
@@ -91,7 +103,7 @@ class WrappingServiceLocator implements ServiceLocator {
   WrappingServiceLocator(this._serviceLocator);
 
   @override
-  T locate<T>({String? key}) => _serviceLocator.locate<T>(key: key);
+  T locate<T>({Object? key}) => _serviceLocator.locate<T>(key: key);
 }
 
 /// Always fail implementation of [ServiceLocator].
@@ -105,7 +117,7 @@ class StubServiceLocator implements ServiceLocator {
   const StubServiceLocator();
 
   @override
-  T locate<T>({String? key}) {
+  T locate<T>({Object? key}) {
     throw key == null
         ? ServiceNotFoundException(T)
         : ServiceKeyNotFoundException(T, key);
