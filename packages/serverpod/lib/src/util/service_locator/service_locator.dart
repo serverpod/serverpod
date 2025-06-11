@@ -1,24 +1,22 @@
 import 'locator_exceptions.dart';
 
-/// A service locator interface that allows for locating services by type or key.
-// This interface is used to decouple service registration and retrieval.
-abstract interface class ServiceLocator {
-  /// Locates a service by its type.
-  /// Throws [ServiceNotFoundException] if the service is not found.
-  /// @param T The type of the service to locate.
-  /// @return The service of type [T] if found.
-  T locate<T>([Object? key]);
-}
-
-/// A concrete implementation of [ServiceLocator] that holds services in memory.
-/// It allows for registering services by type or by a unique key.
-class ServiceHolder implements ServiceLocator {
+/// A service locator that allows registering and locating services
+/// by type or by a specific key.
+///
+/// This class is useful for dependency injection and service management
+/// in applications, allowing for flexible service retrieval without
+/// tight coupling between components.
+class ServiceLocator {
   final Map<Object, dynamic> _services = {};
 
-  /// Creates a new [ServiceHolder] with an optional parent service locator.
-  ServiceHolder();
+  /// Creates a new [ServiceLocator].
+  ServiceLocator();
 
-  @override
+  /// Locates a service by its type or an optional key.
+  ///
+  /// Throws [ServiceNotFoundException] if the service is not found,
+  /// or [InvalidServiceTypeException] if the found service is not of the
+  /// expected type.
   T locate<T>([Object? key]) => switch (key) {
         // If a key is provided, locate the service by that key.
         Object k => _locate<T>(k),

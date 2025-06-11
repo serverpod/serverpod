@@ -8,10 +8,10 @@ class AnotherService {}
 
 void main() {
   group('ServiceHolder', () {
-    late ServiceHolder locator;
+    late ServiceLocator locator;
 
     setUp(() {
-      locator = ServiceHolder();
+      locator = ServiceLocator();
     });
 
     test('registers and locates service by type', () {
@@ -69,10 +69,10 @@ void main() {
 
   group('ServiceLocatorView', () {
     test('delegates to underlying locator', () {
-      final holder = ServiceHolder();
-      final serviceLocatorView = ServiceLocatorView(holder);
+      final locator = ServiceLocator();
+      final serviceLocatorView = ServiceLocatorView(locator);
       final service = TestService();
-      holder.register<TestService>(service);
+      locator.register<TestService>(service);
       expect(serviceLocatorView.locate<TestService>(), same(service));
     });
   });
