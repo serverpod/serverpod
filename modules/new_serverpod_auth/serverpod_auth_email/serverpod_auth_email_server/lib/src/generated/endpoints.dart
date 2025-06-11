@@ -10,58 +10,25 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/module_endpoint.dart' as _i2;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
-    as _i3;
+    as _i2;
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
-    as _i4;
+    as _i3;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i5;
+    as _i4;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i6;
+    as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'module': _i2.ModuleEndpoint()
-        ..initialize(
-          server,
-          'module',
-          'serverpod_auth_email',
-        )
-    };
-    connectors['module'] = _i1.EndpointConnector(
-      name: 'module',
-      endpoint: endpoints['module']!,
-      methodConnectors: {
-        'hello': _i1.MethodConnector(
-          name: 'hello',
-          params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['module'] as _i2.ModuleEndpoint).hello(
-            session,
-            params['name'],
-          ),
-        )
-      },
-    );
-    modules['serverpod_auth_email_account'] = _i3.Endpoints()
+    modules['serverpod_auth_email_account'] = _i2.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i4.Endpoints()
+    modules['serverpod_auth_profile'] = _i3.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i5.Endpoints()
+    modules['serverpod_auth_session'] = _i4.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i6.Endpoints()
+    modules['serverpod_auth_user'] = _i5.Endpoints()
       ..initializeEndpoints(server);
   }
 }
