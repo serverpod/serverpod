@@ -1,6 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/generated/auth_session.dart';
 
 /// Collection of admin functions for managing sessions.
@@ -36,5 +37,39 @@ final class AuthSessionsAdmin {
         transaction: transaction,
       );
     }
+  }
+
+  /// List all sessions matching the given filters.
+  Future<List<AuthSessionInfo>> findSessions(
+    final Session session, {
+    final UuidValue? authUserId,
+    final String? method,
+    final Transaction? transaction,
+  }) async {
+    final authSessions = await AuthSession.db.find(
+      session,
+      where: (final t) =>
+          (authUserId != null
+              ? t.authUserId.equals(authUserId)
+              : Constant.bool(true)) &
+          (method != null ? t.method.equals(method) : Constant.bool(true)),
+      transaction: transaction,
+    );
+
+    final sessionInfos = <AuthSessionInfo>[
+      for (final authSession in authSessions)
+        AuthSessionInfo(
+          id: authSession.id!,
+          authUserId: authSession.authUserId,
+          scopeNames: authSession.scopeNames,
+          created: authSession.created,
+          lastUsed: authSession.lastUsed,
+          expiresAt: authSession.expiresAt,
+          expireAfterUnusedFor: authSession.expireAfterUnusedFor,
+          method: authSession.method,
+        ),
+    ];
+
+    return sessionInfos;
   }
 }

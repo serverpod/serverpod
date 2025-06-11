@@ -177,38 +177,12 @@ abstract final class AuthSessions {
     return _buildSessionKey(secret: secret, authSessionId: authSession.id!);
   }
 
-  /// List all sessions matching the given filters.
+  /// List all sessions belonging to the given [authUserId].
   static Future<List<AuthSessionInfo>> listSessions(
     final Session session, {
-    final UuidValue? authUserId,
-    final String? method,
-    final Transaction? transaction,
+    required final UuidValue authUserId,
   }) async {
-    final authSessions = await AuthSession.db.find(
-      session,
-      where: (final t) =>
-          (authUserId != null
-              ? t.authUserId.equals(authUserId)
-              : Constant.bool(true)) &
-          (method != null ? t.method.equals(method) : Constant.bool(true)),
-      transaction: transaction,
-    );
-
-    final sessionInfos = <AuthSessionInfo>[
-      for (final authSession in authSessions)
-        AuthSessionInfo(
-          id: authSession.id!,
-          authUserId: authSession.authUserId,
-          scopeNames: authSession.scopeNames,
-          created: authSession.created,
-          lastUsed: authSession.lastUsed,
-          expiresAt: authSession.expiresAt,
-          expireAfterUnusedFor: authSession.expireAfterUnusedFor,
-          method: authSession.method,
-        ),
-    ];
-
-    return sessionInfos;
+    return admin.findSessions(session, authUserId: authUserId);
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.

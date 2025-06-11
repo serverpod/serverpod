@@ -1,15 +1,17 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
+import 'package:serverpod_auth_session_server/src/generated/auth_session.dart';
 import 'package:test/test.dart';
 
 import '../test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given an auth session,',
+  withServerpod('Given an auth session for a user,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
+    late UuidValue authSessionId;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -23,19 +25,8 @@ void main() {
         scopes: {},
         method: 'test',
       );
+      authSessionId = (await AuthSession.db.find(session)).single.id!;
     });
-
-    test(
-      'when calling `listsessions`, then it is returned.',
-      () async {
-        final sessions = await AuthSessions.listSessions(session);
-
-        expect(
-          sessions,
-          hasLength(1),
-        );
-      },
-    );
 
     test(
       'when calling `listSessions` for the user, then it is returned.',
@@ -46,8 +37,8 @@ void main() {
         );
 
         expect(
-          sessions,
-          hasLength(1),
+          sessions.single.id,
+          authSessionId,
         );
       },
     );
@@ -58,62 +49,6 @@ void main() {
         final sessions = await AuthSessions.listSessions(
           session,
           authUserId: const Uuid().v4obj(),
-        );
-
-        expect(sessions, isEmpty);
-      },
-    );
-
-    test(
-      'when calling `listSessions` for its `method`, then it is returned.',
-      () async {
-        final sessions = await AuthSessions.listSessions(
-          session,
-          method: 'test',
-        );
-
-        expect(
-          sessions,
-          hasLength(1),
-        );
-      },
-    );
-
-    test(
-      'when calling `listSessions` for another `method`, then nothing is returned.',
-      () async {
-        final sessions = await AuthSessions.listSessions(
-          session,
-          method: 'something else',
-        );
-
-        expect(sessions, isEmpty);
-      },
-    );
-
-    test(
-      'when calling `listSessions` for the user with its `method`, then it is returned.',
-      () async {
-        final sessions = await AuthSessions.listSessions(
-          session,
-          authUserId: authUserId,
-          method: 'test',
-        );
-
-        expect(
-          sessions,
-          hasLength(1),
-        );
-      },
-    );
-
-    test(
-      'when calling `listSessions` for the user with another `method`, then nothing is returned.',
-      () async {
-        final sessions = await AuthSessions.listSessions(
-          session,
-          authUserId: authUserId,
-          method: 'some other method',
         );
 
         expect(sessions, isEmpty);
