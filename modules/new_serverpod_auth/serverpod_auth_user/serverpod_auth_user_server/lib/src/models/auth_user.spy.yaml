@@ -5,10 +5,10 @@ fields:
   id: UuidValue?, defaultPersist=random
 
   ### The time when this user was created.
-  created: DateTime
+  created: DateTime, defaultModel=now
 
   ### Set of scopes that this user can access.
   scopeNames: Set<String>
 
   ### If `true` the user will be blocked from signing in.
-  blocked: bool
+  blocked: bool, defaultModel=false
