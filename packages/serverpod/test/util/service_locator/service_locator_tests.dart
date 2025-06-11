@@ -53,22 +53,6 @@ void main() {
       expect(() => locator.locate<AnotherService>('myKey'),
           throwsA(isA<ServiceNotFoundException>()));
     });
-
-    test('walks up parent chain for type', () {
-      final parent = ServiceHolder();
-      final child = ServiceHolder(parent: parent);
-      final service = TestService();
-      parent.register<TestService>(service);
-      expect(child.locate<TestService>(), same(service));
-    });
-
-    test('walks up parent chain for key', () {
-      final parent = ServiceHolder();
-      final child = ServiceHolder(parent: parent);
-      final service = TestService();
-      parent.register<TestService>(service, key: 'myKey');
-      expect(child.locate<TestService>('myKey'), same(service));
-    });
   });
 
   group('WrappingServiceLocator', () {
@@ -78,18 +62,6 @@ void main() {
       final service = TestService();
       holder.register<TestService>(service);
       expect(serviceLocatorView.locate<TestService>(), same(service));
-    });
-  });
-
-  group('_StubServiceLocator', () {
-    const stub = StubServiceLocator();
-    test('always throws for type', () {
-      expect(() => stub.locate<TestService>(),
-          throwsA(isA<ServiceNotFoundException>()));
-    });
-    test('always throws for key', () {
-      expect(() => stub.locate<TestService>('key'),
-          throwsA(isA<ServiceKeyNotFoundException>()));
     });
   });
 }

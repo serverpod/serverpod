@@ -13,31 +13,31 @@ abstract interface class ServiceLocator {
 /// A concrete implementation of [ServiceLocator] that holds services in memory.
 /// It allows for registering services by type or by a unique key.
 class ServiceHolder implements ServiceLocator {
-  final ServiceLocator _parent;
   final Map<Object, dynamic> _services = {};
 
   /// Creates a new [ServiceHolder] with an optional parent service locator.
-  ServiceHolder({ServiceLocator parent = const StubServiceLocator()})
-      : _parent = parent;
+  ServiceHolder();
 
-  /// Walk up the service locator hierarchy to find a service by type.
   @override
   T locate<T>([Object? key]) {
     if (key != null) {
       return _locateByKey<T>(key);
     }
+
     // If no key is provided, locate the service by type.
-    T result =
-        _services.containsKey(T) ? _services[T] as T : _parent.locate<T>();
-    return result;
+    if (!_services.containsKey(T)) {
+      throw ServiceNotFoundException(T);
+    }
+
+    return _services[T];
   }
 
-  /// Walk up the service locator hierarchy to find a service by key.
-  /// Throws [ServiceKeyNotFoundException] if the key is not found.
-  /// Throws [ServiceNotFoundException] if the type does not match the found service.
   T _locateByKey<T>(Object key) {
-    var result =
-        _services.containsKey(key) ? _services[key] : _parent.locate<T>(key);
+    if (!_services.containsKey(key)) {
+      throw ServiceKeyNotFoundException(T, key);
+    }
+
+    var result = _services[key];
 
     if (result is! T) {
       throw ServiceNotFoundException(T);
@@ -103,22 +103,4 @@ class WrappingServiceLocator implements ServiceLocator {
 
   @override
   T locate<T>([Object? key]) => _serviceLocator.locate<T>(key);
-}
-
-/// Always fail implementation of [ServiceLocator].
-/// Rather than doing a bunch of if checks to see if the parent service locator is null,
-/// ServiceHolder will always have a parent service locator.
-/// This stub implementation will always throw an exception when trying to locate a service.
-/// It might not be the most efficient implementation, but it is simple and effective,
-/// and should be good enough for most use cases.
-class StubServiceLocator implements ServiceLocator {
-  /// Creates a new [StubServiceLocator] that always throws exceptions.
-  const StubServiceLocator();
-
-  @override
-  T locate<T>([Object? key]) {
-    throw key == null
-        ? ServiceNotFoundException(T)
-        : ServiceKeyNotFoundException(T, key);
-  }
 }
