@@ -34,11 +34,11 @@ void main() {
     test('registers and locates service by key', () {
       final service = TestService();
       locator.register<TestService>(service, key: 'myKey');
-      expect(locator.locate<TestService>(key: 'myKey'), same(service));
+      expect(locator.locate<TestService>('myKey'), same(service));
     });
 
     test('throws when locating unregistered key', () {
-      expect(() => locator.locate<TestService>(key: 'unknown'),
+      expect(() => locator.locate<TestService>('unknown'),
           throwsA(isA<ServiceKeyNotFoundException>()));
     });
 
@@ -50,7 +50,7 @@ void main() {
 
     test('throws when locating key with wrong type', () {
       locator.register<TestService>(TestService(), key: 'myKey');
-      expect(() => locator.locate<AnotherService>(key: 'myKey'),
+      expect(() => locator.locate<AnotherService>('myKey'),
           throwsA(isA<ServiceNotFoundException>()));
     });
 
@@ -67,17 +67,17 @@ void main() {
       final child = ServiceHolder(parent: parent);
       final service = TestService();
       parent.register<TestService>(service, key: 'myKey');
-      expect(child.locate<TestService>(key: 'myKey'), same(service));
+      expect(child.locate<TestService>('myKey'), same(service));
     });
   });
 
   group('WrappingServiceLocator', () {
     test('delegates to underlying locator', () {
       final holder = ServiceHolder();
-      final wrapper = WrappingServiceLocator(holder);
+      final serviceLocatorView = WrappingServiceLocator(holder);
       final service = TestService();
       holder.register<TestService>(service);
-      expect(wrapper.locate<TestService>(), same(service));
+      expect(serviceLocatorView.locate<TestService>(), same(service));
     });
   });
 
@@ -88,7 +88,7 @@ void main() {
           throwsA(isA<ServiceNotFoundException>()));
     });
     test('always throws for key', () {
-      expect(() => stub.locate<TestService>(key: 'key'),
+      expect(() => stub.locate<TestService>('key'),
           throwsA(isA<ServiceKeyNotFoundException>()));
     });
   });

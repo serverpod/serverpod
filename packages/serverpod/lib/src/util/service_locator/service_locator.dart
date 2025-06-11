@@ -7,7 +7,7 @@ abstract interface class ServiceLocator {
   /// Throws [ServiceNotFoundException] if the service is not found.
   /// @param T The type of the service to locate.
   /// @return The service of type [T] if found.
-  T locate<T>({Object? key});
+  T locate<T>([Object? key]);
 }
 
 /// A concrete implementation of [ServiceLocator] that holds services in memory.
@@ -22,7 +22,7 @@ class ServiceHolder implements ServiceLocator {
 
   /// Walk up the service locator hierarchy to find a service by type.
   @override
-  T locate<T>({Object? key}) {
+  T locate<T>([Object? key]) {
     if (key != null) {
       return _locateByKey<T>(key);
     }
@@ -36,9 +36,8 @@ class ServiceHolder implements ServiceLocator {
   /// Throws [ServiceKeyNotFoundException] if the key is not found.
   /// Throws [ServiceNotFoundException] if the type does not match the found service.
   T _locateByKey<T>(Object key) {
-    var result = _services.containsKey(key)
-        ? _services[key]
-        : _parent.locate<T>(key: key);
+    var result =
+        _services.containsKey(key) ? _services[key] : _parent.locate<T>(key);
 
     if (result is! T) {
       throw ServiceNotFoundException(T);
@@ -103,7 +102,7 @@ class WrappingServiceLocator implements ServiceLocator {
   WrappingServiceLocator(this._serviceLocator);
 
   @override
-  T locate<T>({Object? key}) => _serviceLocator.locate<T>(key: key);
+  T locate<T>([Object? key]) => _serviceLocator.locate<T>(key);
 }
 
 /// Always fail implementation of [ServiceLocator].
@@ -117,7 +116,7 @@ class StubServiceLocator implements ServiceLocator {
   const StubServiceLocator();
 
   @override
-  T locate<T>({Object? key}) {
+  T locate<T>([Object? key]) {
     throw key == null
         ? ServiceNotFoundException(T)
         : ServiceKeyNotFoundException(T, key);
