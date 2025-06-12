@@ -1023,9 +1023,7 @@ futureCallExecutionEnabled: false
   });
 
   group('Given an empty Serverpod config map when loading from Map then', () {
-    test(
-        'future call config uses default concurrency limit of 1 instead of null',
-        () {
+    test('future call config uses default concurrency limit of 1', () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
@@ -1034,8 +1032,6 @@ futureCallExecutionEnabled: false
         environment: {},
       );
 
-      // This is the key difference - when parsing an empty map, the future call config
-      // gets the default concurrency limit of 1 instead of null like defaultConfig()
       expect(config.futureCall.concurrencyLimit, 1);
       expect(config.futureCall.scanInterval.inMilliseconds, 5000);
       expect(config.apiServer.port, 8080);
