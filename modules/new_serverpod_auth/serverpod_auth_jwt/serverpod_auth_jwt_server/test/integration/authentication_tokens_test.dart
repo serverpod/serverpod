@@ -242,6 +242,21 @@ void main() {
         throwsA(isA<RefreshTokenInvalidSecretException>()),
       );
     });
+
+    test(
+        'when looking at the auth token via `listAuthenticationTokens`, then the extra claims can be read as a Map.',
+        () async {
+      final authTokensForUser =
+          await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(
+        authTokensForUser.single.extraClaimsMap,
+        {'string': 'foo', 'int': 1},
+      );
+    });
   });
 
   withServerpod('Given an initial `TokenPair` and its refreshed successor,', (

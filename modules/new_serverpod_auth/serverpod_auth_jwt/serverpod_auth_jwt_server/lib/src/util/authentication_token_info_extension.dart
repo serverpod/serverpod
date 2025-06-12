@@ -11,7 +11,7 @@ extension AuthenticationTokenInfoExtension on AuthenticationTokenInfo {
   }
 
   /// Returns the extra claims set on this authentication token.
-  Map<String, dynamic>? get extraClaims {
+  Map<String, dynamic>? get extraClaimsMap {
     final extraClaims = this.extraClaims;
     if (extraClaims == null) {
       return null;
