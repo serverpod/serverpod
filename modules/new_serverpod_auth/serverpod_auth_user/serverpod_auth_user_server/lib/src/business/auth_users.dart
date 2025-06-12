@@ -87,9 +87,13 @@ abstract final class AuthUsers {
 
   /// Returns all auth users.
   static Future<List<AuthUserModel>> listAuthUsers(
-    final Session session,
-  ) async {
-    final authUsers = await AuthUser.db.find(session);
+    final Session session, {
+    final Transaction? transaction,
+  }) async {
+    final authUsers = await AuthUser.db.find(
+      session,
+      transaction: transaction,
+    );
 
     return authUsers.map((final a) => a.toModel()).toList();
   }
