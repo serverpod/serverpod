@@ -60,6 +60,10 @@ declare -a projectPaths=(
     "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client"
     "modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server"
     "modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_client"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client"
 
     "modules/serverpod_chat/serverpod_chat_server"
     "modules/serverpod_chat/serverpod_chat_client"
