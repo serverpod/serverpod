@@ -1071,10 +1071,9 @@ futureCallExecutionEnabled: false
   });
 
   group(
-      'Given a Serverpod config with role configuration when loading from Map then',
+      'Given a Serverpod config with basic API server configuration when loading from Map',
       () {
-    test('role defaults to monolith when no role is specified', () {
-      var serverpodConfig = '''
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -1082,251 +1081,547 @@ apiServer:
   publicScheme: http
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        loadYaml(serverpodConfig),
-      );
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+    );
 
+    test('then role defaults to monolith', () {
       expect(config.role, ServerpodRole.monolith);
     });
 
-    test('role from environment variable is used', () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_SERVER_ROLE': 'serverless',
-        },
-      );
-
-      expect(config.role, ServerpodRole.serverless);
-    });
-
-    test('role from command line args takes precedence over environment', () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_SERVER_ROLE': 'serverless',
-        },
-        commandLineArgs: {
-          'role': ServerpodRole.maintenance,
-        },
-      );
-
-      expect(config.role, ServerpodRole.maintenance);
-    });
-
-    test('invalid role from environment throws ArgumentError', () {
-      expect(
-        () => ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_SERVER_ROLE': 'invalid_role',
-          },
-        ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.toString(),
-          'message',
-          contains(
-              'Invalid SERVERPOD_SERVER_ROLE from environment variable: invalid_role'),
-        )),
-      );
-    });
-
-    test('all valid roles are accepted from environment', () {
-      final validRoles = ['monolith', 'serverless', 'maintenance'];
-      final expectedRoles = [
-        ServerpodRole.monolith,
-        ServerpodRole.serverless,
-        ServerpodRole.maintenance
-      ];
-
-      for (int i = 0; i < validRoles.length; i++) {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_SERVER_ROLE': validRoles[i],
-          },
-        );
-
-        expect(config.role, expectedRoles[i]);
-      }
-    });
-  });
-
-  group(
-      'Given a Serverpod config with logging mode configuration when loading from Map then',
-      () {
-    test('logging mode defaults to normal when no logging mode is specified',
-        () {
-      var serverpodConfig = '''
-apiServer:
-  port: 8080
-  publicHost: localhost
-  publicPort: 8080
-  publicScheme: http
-''';
-
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        loadYaml(serverpodConfig),
-      );
-
+    test('then logging mode defaults to normal', () {
       expect(config.loggingMode, ServerpodLoggingMode.normal);
     });
 
-    test('logging mode from environment variable is used', () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_LOGGING_MODE': 'verbose',
-        },
-      );
-
-      expect(config.loggingMode, ServerpodLoggingMode.verbose);
+    test('then apply migrations defaults to false', () {
+      expect(config.applyMigrations, isFalse);
     });
 
-    test(
-        'logging mode from command line args takes precedence over environment',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_LOGGING_MODE': 'verbose',
-        },
-        commandLineArgs: {
-          'loggingMode': ServerpodLoggingMode.normal,
-        },
-      );
-
-      expect(config.loggingMode, ServerpodLoggingMode.normal);
-    });
-
-    test('invalid logging mode from environment throws ArgumentError', () {
-      expect(
-        () => ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_LOGGING_MODE': 'invalid_logging',
-          },
-        ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.toString(),
-          'message',
-          contains(
-              'Invalid SERVERPOD_LOGGING_MODE from environment variable: invalid_logging'),
-        )),
-      );
-    });
-
-    test('all valid logging modes are accepted from environment', () {
-      final validLoggingModes = ['normal', 'verbose'];
-      final expectedLoggingModes = [
-        ServerpodLoggingMode.normal,
-        ServerpodLoggingMode.verbose
-      ];
-
-      for (int i = 0; i < validLoggingModes.length; i++) {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_LOGGING_MODE': validLoggingModes[i],
-          },
-        );
-
-        expect(config.loggingMode, expectedLoggingModes[i]);
-      }
+    test('then apply repair migration defaults to false', () {
+      expect(config.applyRepairMigration, isFalse);
     });
   });
 
-  group(
-      'Given a Serverpod config with apply migrations configuration when loading from Map then',
+  test(
+      'Given a Serverpod config with role in environment variable when loading from Map then role from environment variable is used',
       () {
-    test('apply migrations defaults to false when not specified', () {
-      var serverpodConfig = '''
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_SERVER_ROLE': 'serverless',
+      },
+    );
+
+    expect(config.role, ServerpodRole.serverless);
+  });
+
+  test(
+      'Given a Serverpod config with role in both environment variable and command line args when loading from Map then role from command line args takes precedence over environment',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_SERVER_ROLE': 'serverless',
+      },
+      commandLineArgs: {
+        'role': ServerpodRole.maintenance,
+      },
+    );
+
+    expect(config.role, ServerpodRole.maintenance);
+  });
+
+  test(
+      'Given a Serverpod config with invalid role in environment variable when loading from Map then ArgumentError is thrown',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_SERVER_ROLE': 'invalid_role',
+        },
+      ),
+      throwsA(isA<ArgumentError>().having(
+        (e) => e.toString(),
+        'message',
+        contains(
+            'Invalid SERVERPOD_SERVER_ROLE from environment variable: invalid_role'),
+      )),
+    );
+  });
+
+  test(
+      'Given a Serverpod config with valid roles in environment variable when loading from Map then all valid roles are accepted from environment',
+      () {
+    final validRoles = ['monolith', 'serverless', 'maintenance'];
+    final expectedRoles = [
+      ServerpodRole.monolith,
+      ServerpodRole.serverless,
+      ServerpodRole.maintenance
+    ];
+
+    for (int i = 0; i < validRoles.length; i++) {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_SERVER_ROLE': validRoles[i],
+        },
+      );
+
+      expect(config.role, expectedRoles[i]);
+    }
+  });
+
+  test(
+      'Given a Serverpod config with logging mode in environment variable when loading from Map then logging mode from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_LOGGING_MODE': 'verbose',
+      },
+    );
+
+    expect(config.loggingMode, ServerpodLoggingMode.verbose);
+  });
+
+  test(
+      'Given a Serverpod config with logging mode in both environment variable and command line args when loading from Map then logging mode from command line args takes precedence over environment',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_LOGGING_MODE': 'verbose',
+      },
+      commandLineArgs: {
+        'loggingMode': ServerpodLoggingMode.normal,
+      },
+    );
+
+    expect(config.loggingMode, ServerpodLoggingMode.normal);
+  });
+
+  test(
+      'Given a Serverpod config with invalid logging mode in environment variable when loading from Map then ArgumentError is thrown',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_LOGGING_MODE': 'invalid_logging',
+        },
+      ),
+      throwsA(isA<ArgumentError>().having(
+        (e) => e.toString(),
+        'message',
+        contains(
+            'Invalid SERVERPOD_LOGGING_MODE from environment variable: invalid_logging'),
+      )),
+    );
+  });
+
+  test(
+      'Given a Serverpod config with valid logging modes in environment variable when loading from Map then all valid logging modes are accepted from environment',
+      () {
+    final validLoggingModes = ['normal', 'verbose'];
+    final expectedLoggingModes = [
+      ServerpodLoggingMode.normal,
+      ServerpodLoggingMode.verbose
+    ];
+
+    for (int i = 0; i < validLoggingModes.length; i++) {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_LOGGING_MODE': validLoggingModes[i],
+        },
+      );
+
+      expect(config.loggingMode, expectedLoggingModes[i]);
+    }
+  });
+
+  test(
+      'Given a Serverpod config with apply migrations environment variable set to true when loading from Map then apply migrations from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_MIGRATIONS': 'true',
+      },
+    );
+
+    expect(config.applyMigrations, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with apply migrations environment variable set to 1 when loading from Map then apply migrations from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_MIGRATIONS': '1',
+      },
+    );
+
+    expect(config.applyMigrations, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with apply migrations environment variable set to false when loading from Map then apply migrations from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_MIGRATIONS': 'false',
+      },
+    );
+
+    expect(config.applyMigrations, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config with apply migrations environment variable set to 0 when loading from Map then apply migrations from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_MIGRATIONS': '0',
+      },
+    );
+
+    expect(config.applyMigrations, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config with apply migrations in both environment variable and command line args when loading from Map then apply migrations from command line args takes precedence over environment',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_MIGRATIONS': 'false',
+      },
+      commandLineArgs: {
+        'applyMigrations': true,
+      },
+    );
+
+    expect(config.applyMigrations, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with invalid apply migrations environment variable when loading from Map then ArgumentError is thrown',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_APPLY_MIGRATIONS': 'invalid_value',
+        },
+      ),
+      throwsA(isA<ArgumentError>().having(
+        (e) => e.toString(),
+        'message',
+        contains(
+            'Invalid SERVERPOD_APPLY_MIGRATIONS from environment variable: invalid_value'),
+      )),
+    );
+  });
+
+  test(
+      'Given a Serverpod config with apply repair migration environment variable set to true when loading from Map then apply repair migration from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_REPAIR_MIGRATION': 'true',
+      },
+    );
+
+    expect(config.applyRepairMigration, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with apply repair migration environment variable set to 1 when loading from Map then apply repair migration from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_REPAIR_MIGRATION': '1',
+      },
+    );
+
+    expect(config.applyRepairMigration, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with apply repair migration environment variable set to false when loading from Map then apply repair migration from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_REPAIR_MIGRATION': 'false',
+      },
+    );
+
+    expect(config.applyRepairMigration, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config with apply repair migration environment variable set to 0 when loading from Map then apply repair migration from environment variable is used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_REPAIR_MIGRATION': '0',
+      },
+    );
+
+    expect(config.applyRepairMigration, isFalse);
+  });
+
+  test(
+      'Given a Serverpod config with apply repair migration in both environment variable and command line args when loading from Map then apply repair migration from command line args takes precedence over environment',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      environment: {
+        'SERVERPOD_APPLY_REPAIR_MIGRATION': 'false',
+      },
+      commandLineArgs: {
+        'applyRepairMigration': true,
+      },
+    );
+
+    expect(config.applyRepairMigration, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with invalid apply repair migration environment variable when loading from Map then ArgumentError is thrown',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_APPLY_REPAIR_MIGRATION': 'invalid_value',
+        },
+      ),
+      throwsA(isA<ArgumentError>().having(
+        (e) => e.toString(),
+        'message',
+        contains(
+            'Invalid SERVERPOD_APPLY_REPAIR_MIGRATION from environment variable: invalid_value'),
+      )),
+    );
+  });
+
+  test(
+      'Given a Serverpod config with no serverId specified and null serverId arg when loading from Map then serverId defaults to "default"',
+      () {
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -1334,353 +1629,20 @@ apiServer:
   publicScheme: http
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        loadYaml(serverpodConfig),
-      );
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      null, // serverId is null
+      passwords,
+      loadYaml(serverpodConfig),
+    );
 
-      expect(config.applyMigrations, isFalse);
-    });
-
-    test('apply migrations from environment variable is used when set to true',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_MIGRATIONS': 'true',
-        },
-      );
-
-      expect(config.applyMigrations, isTrue);
-    });
-
-    test('apply migrations from environment variable is used when set to 1',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_MIGRATIONS': '1',
-        },
-      );
-
-      expect(config.applyMigrations, isTrue);
-    });
-
-    test('apply migrations from environment variable is used when set to false',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_MIGRATIONS': 'false',
-        },
-      );
-
-      expect(config.applyMigrations, isFalse);
-    });
-
-    test('apply migrations from environment variable is used when set to 0',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_MIGRATIONS': '0',
-        },
-      );
-
-      expect(config.applyMigrations, isFalse);
-    });
-
-    test(
-        'apply migrations from command line args takes precedence over environment',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_MIGRATIONS': 'false',
-        },
-        commandLineArgs: {
-          'applyMigrations': true,
-        },
-      );
-
-      expect(config.applyMigrations, isTrue);
-    });
-
-    test('invalid apply migrations from environment throws ArgumentError', () {
-      expect(
-        () => ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_APPLY_MIGRATIONS': 'invalid_value',
-          },
-        ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.toString(),
-          'message',
-          contains(
-              'Invalid SERVERPOD_APPLY_MIGRATIONS from environment variable: invalid_value'),
-        )),
-      );
-    });
+    expect(config.serverId, 'default');
   });
 
-  group(
-      'Given a Serverpod config with apply repair migration configuration when loading from Map then',
+  test(
+      'Given a Serverpod config with serverId in config file and null serverId arg when loading from Map then serverId from config file is used',
       () {
-    test('apply repair migration defaults to false when not specified', () {
-      var serverpodConfig = '''
-apiServer:
-  port: 8080
-  publicHost: localhost
-  publicPort: 8080
-  publicScheme: http
-''';
-
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        loadYaml(serverpodConfig),
-      );
-
-      expect(config.applyRepairMigration, isFalse);
-    });
-
-    test(
-        'apply repair migration from environment variable is used when set to true',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_REPAIR_MIGRATION': 'true',
-        },
-      );
-
-      expect(config.applyRepairMigration, isTrue);
-    });
-
-    test(
-        'apply repair migration from environment variable is used when set to 1',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_REPAIR_MIGRATION': '1',
-        },
-      );
-
-      expect(config.applyRepairMigration, isTrue);
-    });
-
-    test(
-        'apply repair migration from environment variable is used when set to false',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_REPAIR_MIGRATION': 'false',
-        },
-      );
-
-      expect(config.applyRepairMigration, isFalse);
-    });
-
-    test(
-        'apply repair migration from environment variable is used when set to 0',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_REPAIR_MIGRATION': '0',
-        },
-      );
-
-      expect(config.applyRepairMigration, isFalse);
-    });
-
-    test(
-        'apply repair migration from command line args takes precedence over environment',
-        () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
-        },
-        environment: {
-          'SERVERPOD_APPLY_REPAIR_MIGRATION': 'false',
-        },
-        commandLineArgs: {
-          'applyRepairMigration': true,
-        },
-      );
-
-      expect(config.applyRepairMigration, isTrue);
-    });
-
-    test('invalid apply repair migration from environment throws ArgumentError',
-        () {
-      expect(
-        () => ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'apiServer': {
-              'port': 8080,
-              'publicHost': 'localhost',
-              'publicPort': 8080,
-              'publicScheme': 'http',
-            },
-          },
-          environment: {
-            'SERVERPOD_APPLY_REPAIR_MIGRATION': 'invalid_value',
-          },
-        ),
-        throwsA(isA<ArgumentError>().having(
-          (e) => e.toString(),
-          'message',
-          contains(
-              'Invalid SERVERPOD_APPLY_REPAIR_MIGRATION from environment variable: invalid_value'),
-        )),
-      );
-    });
-  });
-
-  group(
-      'Given a Serverpod config with serverId configuration when loading from Map then',
-      () {
-    test(
-        'serverId defaults to "default" when not specified and serverId arg is null',
-        () {
-      var serverpodConfig = '''
-apiServer:
-  port: 8080
-  publicHost: localhost
-  publicPort: 8080
-  publicScheme: http
-''';
-
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        null, // serverId is null
-        passwords,
-        loadYaml(serverpodConfig),
-      );
-
-      expect(config.serverId, 'default');
-    });
-
-    test('serverId from config file is used when serverId arg is null', () {
-      var serverpodConfig = '''
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -1689,20 +1651,20 @@ apiServer:
 serverId: configFileServerId
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        null, // serverId is null
-        passwords,
-        loadYaml(serverpodConfig),
-      );
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      null, // serverId is null
+      passwords,
+      loadYaml(serverpodConfig),
+    );
 
-      expect(config.serverId, 'configFileServerId');
-    });
+    expect(config.serverId, 'configFileServerId');
+  });
 
-    test(
-        'serverId from environment takes precedence over config file when serverId arg is null',
-        () {
-      var serverpodConfig = '''
+  test(
+      'Given a Serverpod config with serverId in both config file and environment variable with null serverId arg when loading from Map then serverId from environment takes precedence over config file',
+      () {
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -1711,23 +1673,23 @@ apiServer:
 serverId: configFileServerId
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        null, // serverId is null
-        passwords,
-        loadYaml(serverpodConfig),
-        environment: {
-          'SERVERPOD_SERVER_ID': 'envServerId',
-        },
-      );
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      null, // serverId is null
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_SERVER_ID': 'envServerId',
+      },
+    );
 
-      expect(config.serverId, 'envServerId');
-    });
+    expect(config.serverId, 'envServerId');
+  });
 
-    test(
-        'serverId from command line arg takes precedence over all other sources',
-        () {
-      var serverpodConfig = '''
+  test(
+      'Given a Serverpod config with serverId in config file and environment variable and command line arg when loading from Map then serverId from command line arg takes precedence over all other sources',
+      () {
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -1736,38 +1698,39 @@ apiServer:
 serverId: configFileServerId
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        'cmdLineServerId', // serverId from command line
-        passwords,
-        loadYaml(serverpodConfig),
-        environment: {
-          'SERVERPOD_SERVER_ID': 'envServerId',
-        },
-      );
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      'cmdLineServerId', // serverId from command line
+      passwords,
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_SERVER_ID': 'envServerId',
+      },
+    );
 
-      expect(config.serverId, 'cmdLineServerId');
-    });
+    expect(config.serverId, 'cmdLineServerId');
+  });
 
-    test('empty string serverId from command line arg is still used', () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        '', // empty string serverId
-        passwords,
-        {
-          'apiServer': {
-            'port': 8080,
-            'publicHost': 'localhost',
-            'publicPort': 8080,
-            'publicScheme': 'http',
-          },
+  test(
+      'Given a Serverpod config with empty string serverId from command line arg when loading from Map then empty string serverId from command line arg is still used',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      '', // empty string serverId
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
         },
-        environment: {
-          'SERVERPOD_SERVER_ID': 'envServerId',
-        },
-      );
+      },
+      environment: {
+        'SERVERPOD_SERVER_ID': 'envServerId',
+      },
+    );
 
-      expect(config.serverId, '');
-    });
+    expect(config.serverId, '');
   });
 }
