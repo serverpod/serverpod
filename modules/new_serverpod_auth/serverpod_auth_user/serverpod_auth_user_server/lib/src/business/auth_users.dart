@@ -105,6 +105,7 @@ abstract final class AuthUsers {
     await AuthUser.db.deleteWhere(
       session,
       where: (final t) => t.id.equals(authUserId),
+      transaction: transaction,
     );
   }
 }
