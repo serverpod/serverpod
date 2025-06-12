@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 export 'src/business/auth_users.dart' show AuthUsers;
 export 'src/generated/endpoints.dart' show Endpoints;
-// We don't want to expose these, but have to for the the generated database code in consuming packages.
+// We don't want to expose these, but have to for the generated database code in consuming packages.
 @visibleForTesting
 export 'src/generated/protocol.dart'
     show AuthUser, AuthUserInclude, AuthUserTable;

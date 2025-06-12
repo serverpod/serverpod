@@ -37,7 +37,7 @@ void main() {
       expect(updatedAuthUser.blocked, isTrue);
     });
 
-    test('when deleting it, then its removed from the database.', () async {
+    test('when deleting it, then it is removed from the database.', () async {
       await AuthUsers.deleteAuthUser(session, authUserId: authUser.id);
 
       expect(await AuthUser.db.find(session), isEmpty);
