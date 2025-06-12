@@ -183,8 +183,13 @@ abstract final class AuthSessions {
   static Future<List<AuthSessionInfo>> listSessions(
     final Session session, {
     required final UuidValue authUserId,
+    final Transaction? transaction,
   }) async {
-    return admin.findSessions(session, authUserId: authUserId);
+    return admin.findSessions(
+      session,
+      authUserId: authUserId,
+      transaction: transaction,
+    );
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.

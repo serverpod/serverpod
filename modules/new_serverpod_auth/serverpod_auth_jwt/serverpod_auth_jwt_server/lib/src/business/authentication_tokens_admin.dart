@@ -10,7 +10,7 @@ final class AuthenticationTokensAdmin {
   AuthenticationTokensAdmin();
 
   /// Removes all expired refresh tokens from the database.
-  static Future<void> deleteExpiredRefreshTokens(
+  Future<void> deleteExpiredRefreshTokens(
     final Session session, {
     final Transaction? transaction,
   }) async {
@@ -22,5 +22,34 @@ final class AuthenticationTokensAdmin {
       where: (final t) => t.lastUpdated < oldestValidRefreshTokenDate,
       transaction: transaction,
     );
+  }
+
+  /// List all authentication tokens matching the given filters.
+  Future<List<AuthenticationTokenInfo>> findAuthenticationTokens(
+    final Session session, {
+    final UuidValue? authUserId,
+    final Transaction? transaction,
+  }) async {
+    final refreshTokens = await RefreshToken.db.find(
+      session,
+      where: (final t) => (authUserId != null
+          ? t.authUserId.equals(authUserId)
+          : Constant.bool(true)),
+      transaction: transaction,
+    );
+
+    final authenticationTokenInfos = [
+      for (final refreshToken in refreshTokens)
+        AuthenticationTokenInfo(
+          id: refreshToken.id!,
+          authUserId: refreshToken.authUserId,
+          scopeNames: refreshToken.scopeNames,
+          created: refreshToken.created,
+          lastUpdated: refreshToken.lastUpdated,
+          extraClaims: refreshToken.extraClaims,
+        ),
+    ];
+
+    return authenticationTokenInfos;
   }
 }

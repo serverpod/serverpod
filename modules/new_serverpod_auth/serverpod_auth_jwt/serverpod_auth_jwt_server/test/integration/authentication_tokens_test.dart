@@ -301,4 +301,45 @@ void main() {
       );
     });
   });
+
+  withServerpod('Given an auth user with an authentication token,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'pepper123';
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
+      );
+
+      authUserId = authUser.id!;
+
+      await AuthenticationTokens.createTokens(session,
+          authUserId: authUserId, scopes: {});
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test('when listing the tokens for that user, then it is returned.',
+        () async {
+      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(tokenInfos.single.authUserId, authUserId);
+    });
+  });
 }
