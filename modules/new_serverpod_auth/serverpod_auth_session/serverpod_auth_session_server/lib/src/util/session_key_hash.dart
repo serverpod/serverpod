@@ -24,16 +24,12 @@ final class AuthSessionKeyHash {
 
     salt ??= generateRandomBytes(AuthSessions.config.sessionKeyHashSaltLength);
 
-    if (pepper.length < 10) {
-      throw ArgumentError.value(pepper, 'pepper', 'Value is too short');
-    }
-
     final hash = Uint8List.fromList(sha512.convert(secret + pepper).bytes);
 
     return (hash: hash, salt: salt);
   }
 
-  /// Validates the sesseion key hash
+  /// Validates the session key hash
   bool validateSessionKeyHash({
     required final Uint8List secret,
     required final Uint8List hash,

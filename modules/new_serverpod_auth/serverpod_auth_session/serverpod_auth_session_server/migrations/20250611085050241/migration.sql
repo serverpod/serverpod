@@ -3,6 +3,22 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_session" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
+    "sessionKeyHash" bytea NOT NULL,
+    "sessionKeySalt" bytea NOT NULL,
+    "method" text NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_cloud_storage" (
     "id" bigserial PRIMARY KEY,
     "storageId" text NOT NULL,
@@ -207,6 +223,26 @@ CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USIN
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
 --
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_user" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "created" timestamp without time zone NOT NULL,
+    "scopeNames" json NOT NULL,
+    "blocked" boolean NOT NULL
+);
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_session"
+    ADD CONSTRAINT "serverpod_auth_session_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "serverpod_log"
@@ -238,12 +274,12 @@ ALTER TABLE ONLY "serverpod_query_log"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_email
+-- MIGRATION VERSION FOR serverpod_auth_session
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_email', '20250429160122027', now())
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250429160122027', "timestamp" = now();
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -252,6 +288,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20240516151843329', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20240516151843329', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_user
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_user', '20250506070330492', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250506070330492', "timestamp" = now();
 
 
 COMMIT;

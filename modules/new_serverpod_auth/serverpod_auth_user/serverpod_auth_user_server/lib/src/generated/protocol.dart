@@ -12,7 +12,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'auth_user.dart' as _i3;
+import 'auth_user_blocked_exception.dart' as _i4;
 export 'auth_user.dart';
+export 'auth_user_blocked_exception.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -83,8 +85,15 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i3.AuthUser) {
       return _i3.AuthUser.fromJson(data) as T;
     }
+    if (t == _i4.AuthUserBlockedException) {
+      return _i4.AuthUserBlockedException.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i3.AuthUser?>()) {
       return (data != null ? _i3.AuthUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.AuthUserBlockedException?>()) {
+      return (data != null ? _i4.AuthUserBlockedException.fromJson(data) : null)
+          as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -102,6 +111,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i3.AuthUser) {
       return 'AuthUser';
     }
+    if (data is _i4.AuthUserBlockedException) {
+      return 'AuthUserBlockedException';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
@@ -117,6 +129,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'AuthUser') {
       return deserialize<_i3.AuthUser>(data['data']);
+    }
+    if (dataClassName == 'AuthUserBlockedException') {
+      return deserialize<_i4.AuthUserBlockedException>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
