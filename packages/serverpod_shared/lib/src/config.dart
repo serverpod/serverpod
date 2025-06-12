@@ -11,6 +11,13 @@ const int _defaultMaxRequestSize = 524288;
 
 const String _developmentRunMode = 'development';
 
+ServerConfig _createDefaultApiServer() => ServerConfig(
+      port: 8080,
+      publicHost: 'localhost',
+      publicPort: 8080,
+      publicScheme: 'http',
+    );
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -84,12 +91,7 @@ class ServerpodConfig {
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
     return ServerpodConfig(
-      apiServer: ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      ),
+      apiServer: _createDefaultApiServer(),
     );
   }
 
@@ -107,14 +109,13 @@ class ServerpodConfig {
     serverId = _readServerId(configMap, environment, serverId);
 
     var apiConfig = _apiConfigMap(configMap, environment);
-    if (apiConfig == null) {
-      throw _ServerpodApiServerConfigMissing();
-    }
 
-    var apiServer = ServerConfig._fromJson(
-      apiConfig,
-      ServerpodConfigMap.apiServer,
-    );
+    var apiServer = apiConfig != null
+        ? ServerConfig._fromJson(
+            apiConfig,
+            ServerpodConfigMap.apiServer,
+          )
+        : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
     var insightsServer = insightsConfig != null
@@ -171,10 +172,7 @@ class ServerpodConfig {
             futureCallConfigJson,
             ServerpodConfigMap.futureCall,
           )
-        : const FutureCallConfig(
-            concurrencyLimit:
-                FutureCallConfig.defaultFutureCallConcurrencyLimit,
-          );
+        : const FutureCallConfig();
 
     var futureCallExecutionEnabled =
         _readIsFutureCallExecutionEnabled(configMap, environment);
@@ -209,20 +207,13 @@ class ServerpodConfig {
       doc = loadYaml(data);
     }
 
-    try {
-      return ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        doc,
-        environment: Platform.environment,
-      );
-    } catch (e) {
-      if (e is _ServerpodApiServerConfigMissing) {
-        return ServerpodConfig.defaultConfig();
-      }
-      rethrow;
-    }
+    return ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      doc,
+      environment: Platform.environment,
+    );
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
@@ -474,7 +465,7 @@ class FutureCallConfig {
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
-    this.concurrencyLimit,
+    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval =
         const Duration(milliseconds: defaultFutureCallScanIntervalMs),
   });
@@ -821,12 +812,4 @@ void _validateJsonConfig(
 List<String>? _parseList(String? value) {
   if (value == null) return null;
   return value.split(',').map((e) => e.trim()).toList();
-}
-
-/// The configuration keys for the serverpod configuration file.
-class _ServerpodApiServerConfigMissing implements Exception {
-  @override
-  String toString() {
-    return 'Serverpod API server configuration is missing.';
-  }
 }
