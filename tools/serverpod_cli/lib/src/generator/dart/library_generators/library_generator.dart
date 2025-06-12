@@ -1600,6 +1600,10 @@ extension on DatabaseDefinition {
                   'vectorDistanceFunction': refer(
                       'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',
                       serverpodProtocolUrl(serverCode)),
+                if (index.vectorColumnType != null)
+                  'vectorColumnType': refer(
+                      'ColumnType.${index.vectorColumnType!.name}',
+                      serverpodProtocolUrl(serverCode)),
                 if (index.parameters != null)
                   'parameters': literalMap(index.parameters!),
               }),

@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/index_element_definition.dart' as _i2;
 import '../database/vector_distance_function.dart' as _i3;
+import '../database/column_type.dart' as _i4;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
@@ -25,6 +26,7 @@ abstract class IndexDefinition
     required this.isPrimary,
     this.predicate,
     this.vectorDistanceFunction,
+    this.vectorColumnType,
     this.parameters,
   });
 
@@ -37,6 +39,7 @@ abstract class IndexDefinition
     required bool isPrimary,
     String? predicate,
     _i3.VectorDistanceFunction? vectorDistanceFunction,
+    _i4.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) = _IndexDefinitionImpl;
 
@@ -57,6 +60,10 @@ abstract class IndexDefinition
               ? null
               : _i3.VectorDistanceFunction.fromJson(
                   (jsonSerialization['vectorDistanceFunction'] as String)),
+      vectorColumnType: jsonSerialization['vectorColumnType'] == null
+          ? null
+          : _i4.ColumnType.fromJson(
+              (jsonSerialization['vectorColumnType'] as int)),
       parameters:
           (jsonSerialization['parameters'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
@@ -90,6 +97,9 @@ abstract class IndexDefinition
   /// The vector index distance function, if it is a vector index.
   _i3.VectorDistanceFunction? vectorDistanceFunction;
 
+  /// The vector column type, if it is a vector index.
+  _i4.ColumnType? vectorColumnType;
+
   /// Parameters for the index, if needed.
   Map<String, String>? parameters;
 
@@ -105,6 +115,7 @@ abstract class IndexDefinition
     bool? isPrimary,
     String? predicate,
     _i3.VectorDistanceFunction? vectorDistanceFunction,
+    _i4.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   });
   @override
@@ -119,6 +130,8 @@ abstract class IndexDefinition
       if (predicate != null) 'predicate': predicate,
       if (vectorDistanceFunction != null)
         'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (vectorColumnType != null)
+        'vectorColumnType': vectorColumnType?.toJson(),
       if (parameters != null) 'parameters': parameters?.toJson(),
     };
   }
@@ -135,6 +148,8 @@ abstract class IndexDefinition
       if (predicate != null) 'predicate': predicate,
       if (vectorDistanceFunction != null)
         'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
+      if (vectorColumnType != null)
+        'vectorColumnType': vectorColumnType?.toJson(),
       if (parameters != null) 'parameters': parameters?.toJson(),
     };
   }
@@ -157,6 +172,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     required bool isPrimary,
     String? predicate,
     _i3.VectorDistanceFunction? vectorDistanceFunction,
+    _i4.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) : super._(
           indexName: indexName,
@@ -167,6 +183,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
           isPrimary: isPrimary,
           predicate: predicate,
           vectorDistanceFunction: vectorDistanceFunction,
+          vectorColumnType: vectorColumnType,
           parameters: parameters,
         );
 
@@ -183,6 +200,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     bool? isPrimary,
     Object? predicate = _Undefined,
     Object? vectorDistanceFunction = _Undefined,
+    Object? vectorColumnType = _Undefined,
     Object? parameters = _Undefined,
   }) {
     return IndexDefinition(
@@ -197,6 +215,9 @@ class _IndexDefinitionImpl extends IndexDefinition {
           vectorDistanceFunction is _i3.VectorDistanceFunction?
               ? vectorDistanceFunction
               : this.vectorDistanceFunction,
+      vectorColumnType: vectorColumnType is _i4.ColumnType?
+          ? vectorColumnType
+          : this.vectorColumnType,
       parameters: parameters is Map<String, String>?
           ? parameters
           : this.parameters?.map((

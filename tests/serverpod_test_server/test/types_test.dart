@@ -21,4 +21,42 @@ void main() {
       expect(ObjectWithVector.t.vectorNullable.dimension, 512);
     });
   });
+
+  group('Given declared ObjectWithHalfVector class', () {
+    test('then half vector fields are generated correctly.', () {
+      expect(ObjectWithHalfVector.t.halfVector, isA<ColumnHalfVector>());
+      expect(
+          ObjectWithHalfVector.t.halfVectorNullable, isA<ColumnHalfVector>());
+    });
+
+    test('then half vector fields have correct dimension.', () {
+      expect(ObjectWithHalfVector.t.halfVector.dimension, 512);
+      expect(ObjectWithHalfVector.t.halfVectorNullable.dimension, 512);
+    });
+  });
+
+  group('Given declared ObjectWithSparseVector class', () {
+    test('then sparse vector fields are generated correctly.', () {
+      expect(ObjectWithSparseVector.t.sparseVector, isA<ColumnSparseVector>());
+      expect(ObjectWithSparseVector.t.sparseVectorNullable,
+          isA<ColumnSparseVector>());
+    });
+
+    test('then sparse vector fields have correct dimension.', () {
+      expect(ObjectWithSparseVector.t.sparseVector.dimension, 512);
+      expect(ObjectWithSparseVector.t.sparseVectorNullable.dimension, 512);
+    });
+  });
+
+  group('Given declared ObjectWithBit class', () {
+    test('then bit fields are generated correctly.', () {
+      expect(ObjectWithBit.t.bit, isA<ColumnBit>());
+      expect(ObjectWithBit.t.bitNullable, isA<ColumnBit>());
+    });
+
+    test('then bit fields have correct dimension.', () {
+      expect(ObjectWithBit.t.bit.dimension, 512);
+      expect(ObjectWithBit.t.bitNullable.dimension, 512);
+    });
+  });
 }

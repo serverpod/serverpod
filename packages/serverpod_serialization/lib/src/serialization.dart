@@ -122,6 +122,15 @@ abstract class SerializationManager {
     } else if (_isNullableType<Vector>(t)) {
       if (data == null) return null as T;
       return VectorJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<HalfVector>(t)) {
+      if (data == null) return null as T;
+      return HalfVectorJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<SparseVector>(t)) {
+      if (data == null) return null as T;
+      return SparseVectorJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<Bit>(t)) {
+      if (data == null) return null as T;
+      return BitJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -161,6 +170,12 @@ abstract class SerializationManager {
       return 'BigInt';
     } else if (data is Vector) {
       return 'Vector';
+    } else if (data is HalfVector) {
+      return 'HalfVector';
+    } else if (data is SparseVector) {
+      return 'SparseVector';
+    } else if (data is Bit) {
+      return 'Bit';
     }
 
     return null;
@@ -194,6 +209,12 @@ abstract class SerializationManager {
         return deserialize<BigInt>(data['data']);
       case 'Vector':
         return deserialize<Vector>(data['data']);
+      case 'HalfVector':
+        return deserialize<HalfVector>(data['data']);
+      case 'SparseVector':
+        return deserialize<SparseVector>(data['data']);
+      case 'Bit':
+        return deserialize<Bit>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -240,6 +261,12 @@ abstract class SerializationManager {
         } else if (nonEncodable is BigInt) {
           return nonEncodable.toString();
         } else if (nonEncodable is Vector) {
+          return nonEncodable.toList();
+        } else if (nonEncodable is HalfVector) {
+          return nonEncodable.toList();
+        } else if (nonEncodable is SparseVector) {
+          return nonEncodable.toList();
+        } else if (nonEncodable is Bit) {
           return nonEncodable.toList();
         } else if (nonEncodable is Set) {
           return nonEncodable.toList();
@@ -333,6 +360,9 @@ const extensionSerializedTypes = [
   'Uri',
   'BigInt',
   'Vector',
+  'HalfVector',
+  'SparseVector',
+  'Bit',
   'Map',
   'List',
   'Set',

@@ -95,4 +95,83 @@ void main() {
       expect(identical(copy.toList(), originalVector.toList()), isFalse);
     });
   });
+
+  group('Given a HalfVector', () {
+    test(
+        'when both the original and copy are serialized then they produce identical results.',
+        () {
+      HalfVector originalVector = const HalfVector([1.0, 2.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+    });
+
+    test(
+        'when clone is created, then the clone and original are deeply equal but not the same instance.',
+        () {
+      HalfVector originalVector = const HalfVector([1.0, 2.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+      expect(identical(copy, originalVector), isFalse);
+      expect(identical(copy.toList(), originalVector.toList()), isFalse);
+    });
+  });
+
+  group('Given a SparseVector', () {
+    test(
+        'when both the original and copy are serialized then they produce identical results.',
+        () {
+      SparseVector originalVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+    });
+
+    test(
+        'when clone is created, then the clone and original are deeply equal but not the same instance.',
+        () {
+      SparseVector originalVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+      expect(identical(copy, originalVector), isFalse);
+      expect(identical(copy.toList(), originalVector.toList()), isFalse);
+
+      // Check SparseVector-specific properties
+      expect(copy.dimensions, originalVector.dimensions);
+      expect(copy.indices, originalVector.indices);
+      expect(copy.values, originalVector.values);
+      expect(identical(copy.indices, originalVector.indices), isFalse);
+      expect(identical(copy.values, originalVector.values), isFalse);
+    });
+  });
+
+  group('Given a Bit vector', () {
+    test(
+        'when both the original and copy are serialized then they produce identical results.',
+        () {
+      Bit originalVector = Bit([true, false, true, false, true]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+    });
+
+    test(
+        'when clone is created, then the clone and original are deeply equal but not the same instance.',
+        () {
+      Bit originalVector = Bit([true, false, true, false, true]);
+
+      var copy = originalVector.clone();
+
+      expect(copy.toJson(), originalVector.toJson());
+      expect(identical(copy, originalVector), isFalse);
+      expect(identical(copy.toList(), originalVector.toList()), isFalse);
+    });
+  });
 }

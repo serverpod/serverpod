@@ -168,6 +168,9 @@ class Restrictions {
       'Endpoints',
       'Protocol',
       'Vector',
+      'HalfVector',
+      'SparseVector',
+      'Bit',
       '_Record',
     };
     if (reservedClassNames.contains(className)) {
@@ -1224,20 +1227,27 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
-    var field = definition.findField(
-      definition.indexes
-          .firstWhere((i) => i.name == parentNodeName)
-          .fields
-          .first,
-    );
+    var index = definition.indexes.firstWhere((e) => e.name == parentNodeName);
+    var field = definition.findField(index.fields.first);
     if (field == null) return [];
 
     var validFunctionsPerClassName = {
-      'Vector': {
+      for (var className in {'Vector', 'SparseVector'})
+        className: {
+          VectorDistanceFunction.l2,
+          VectorDistanceFunction.innerProduct,
+          VectorDistanceFunction.cosine,
+          VectorDistanceFunction.l1,
+        },
+      'HalfVector': {
         VectorDistanceFunction.l2,
         VectorDistanceFunction.innerProduct,
         VectorDistanceFunction.cosine,
-        VectorDistanceFunction.l1,
+        if (index.type == 'hnsw') VectorDistanceFunction.l1,
+      },
+      'Bit': {
+        VectorDistanceFunction.jaccard,
+        VectorDistanceFunction.hamming,
       },
     };
 
@@ -1357,6 +1367,18 @@ class Restrictions {
       var indexFields = definition.fieldsIncludingInherited.where(
         (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
       );
+
+      var index = definition.indexes.where((e) => e.name == parentNodeName);
+      if (indexFields.any((e) => e.type.className == 'SparseVector') &&
+          index.first.type != 'hnsw') {
+        return [
+          SourceSpanSeverityException(
+            'Only "hnsw" index type is supported for "SparseVector" fields.',
+            span,
+          )
+        ];
+      }
+
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
@@ -1764,6 +1786,9 @@ class Restrictions {
     'BigInt',
     'ByteData',
     'Vector',
+    'HalfVector',
+    'SparseVector',
+    'Bit',
     'List',
     'Map',
     'Set',

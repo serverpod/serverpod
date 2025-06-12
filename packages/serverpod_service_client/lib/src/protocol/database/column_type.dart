@@ -46,7 +46,16 @@ enum ColumnType implements _i1.SerializableModel {
   unknown,
 
   /// Dart type: [Vector]
-  vector;
+  vector,
+
+  /// Dart type: [HalfVector]
+  halfvec,
+
+  /// Dart type: [SparseVector]
+  sparsevec,
+
+  /// Dart type: [Bit]
+  bit;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -72,6 +81,12 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.unknown;
       case 10:
         return ColumnType.vector;
+      case 11:
+        return ColumnType.halfvec;
+      case 12:
+        return ColumnType.sparsevec;
+      case 13:
+        return ColumnType.bit;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ColumnType"');

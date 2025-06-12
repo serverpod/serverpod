@@ -248,6 +248,7 @@ END
           .withType('hnsw')
           .withIsUnique(false)
           .withIsPrimary(false)
+          .withVectorColumnType(ColumnType.vector)
           .build();
 
       var sql = index.toPgSql(tableName: tableDefinition.name);
@@ -274,6 +275,7 @@ END
           .withType('ivfflat')
           .withIsUnique(false)
           .withIsPrimary(false)
+          .withVectorColumnType(ColumnType.vector)
           .build();
 
       var sql = index.toPgSql(tableName: tableDefinition.name);
@@ -301,6 +303,7 @@ END
           .withIsUnique(false)
           .withIsPrimary(false)
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
+          .withVectorColumnType(ColumnType.vector)
           .withParameters({'m': '16', 'ef_construction': '128'})
           .build();
 
@@ -329,6 +332,7 @@ END
           .withIsUnique(false)
           .withIsPrimary(false)
           .withVectorDistanceFunction(VectorDistanceFunction.innerProduct)
+          .withVectorColumnType(ColumnType.vector)
           .withParameters({'lists': '100'})
           .build();
 
@@ -349,8 +353,6 @@ END
         VectorDistanceFunction.innerProduct: 'vector_ip_ops',
         VectorDistanceFunction.cosine: 'vector_cosine_ops',
         VectorDistanceFunction.l1: 'vector_l1_ops',
-        VectorDistanceFunction.hamming: 'vector_hamming_ops',
-        VectorDistanceFunction.jaccard: 'vector_jaccard_ops',
       };
 
       for (var entry in distanceFunctions.entries) {
@@ -370,6 +372,7 @@ END
             .withIsUnique(false)
             .withIsPrimary(false)
             .withVectorDistanceFunction(distance)
+            .withVectorColumnType(ColumnType.vector)
             .build();
 
         var sql = index.toPgSql(tableName: tableDefinition.name);
@@ -406,6 +409,192 @@ END
         'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
         'USING btree ("embedding");\n',
       );
+    });
+  });
+
+  group('Given a table definition with a half vector field', () {
+    var modelName = 'halfVectorModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withVectorField('embedding',
+              dimension: 1536, vectorType: 'HalfVector')
+          .build(),
+    ];
+
+    var databaseDefinition =
+        createDatabaseDefinitionFromModels(models, 'example', []);
+    var tableDefinition = databaseDefinition.tables.first;
+
+    test('then code for creating vector extension is generated.', () {
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'when creating half vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+        () {
+      var distanceFunctions = {
+        VectorDistanceFunction.l2: 'halfvec_l2_ops',
+        VectorDistanceFunction.innerProduct: 'halfvec_ip_ops',
+        VectorDistanceFunction.cosine: 'halfvec_cosine_ops',
+        VectorDistanceFunction.l1: 'halfvec_l1_ops',
+      };
+
+      for (var entry in distanceFunctions.entries) {
+        var distance = entry.key;
+        var expectedOps = entry.value;
+        var indexName = '${modelName}_embedding_idx_$distance';
+
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: 'embedding',
+              )
+            ])
+            .withType('hnsw')
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .withVectorDistanceFunction(distance)
+            .withVectorColumnType(ColumnType.halfvec)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING hnsw ("embedding" $expectedOps);\n',
+        );
+      }
+    });
+  });
+
+  group('Given a table definition with a sparse vector field', () {
+    var modelName = 'sparseVectorModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withVectorField('embedding',
+              dimension: 1536, vectorType: 'SparseVector')
+          .build(),
+    ];
+
+    var databaseDefinition =
+        createDatabaseDefinitionFromModels(models, 'example', []);
+    var tableDefinition = databaseDefinition.tables.first;
+
+    test('then code for creating vector extension is generated.', () {
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'when creating sparse vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+        () {
+      var distanceFunctions = {
+        VectorDistanceFunction.l2: 'sparsevec_l2_ops',
+        VectorDistanceFunction.innerProduct: 'sparsevec_ip_ops',
+        VectorDistanceFunction.cosine: 'sparsevec_cosine_ops',
+        VectorDistanceFunction.l1: 'sparsevec_l1_ops',
+      };
+
+      for (var entry in distanceFunctions.entries) {
+        var distance = entry.key;
+        var expectedOps = entry.value;
+        var indexName = '${modelName}_embedding_idx_$distance';
+
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: 'embedding',
+              )
+            ])
+            .withType('hnsw')
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .withVectorDistanceFunction(distance)
+            .withVectorColumnType(ColumnType.sparsevec)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING hnsw ("embedding" $expectedOps);\n',
+        );
+      }
+    });
+  });
+
+  group('Given a table definition with a bit vector field', () {
+    var modelName = 'bitModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withVectorField('embedding', dimension: 1536, vectorType: 'Bit')
+          .build(),
+    ];
+
+    var databaseDefinition =
+        createDatabaseDefinitionFromModels(models, 'example', []);
+    var tableDefinition = databaseDefinition.tables.first;
+
+    test('then code for creating vector extension is generated.', () {
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'when creating bit vector indexes with different distances, then they should generate SQL with correct ops parameters.',
+        () {
+      var distanceFunctions = {
+        VectorDistanceFunction.hamming: 'bit_hamming_ops',
+        VectorDistanceFunction.jaccard: 'bit_jaccard_ops',
+      };
+
+      for (var entry in distanceFunctions.entries) {
+        var distance = entry.key;
+        var expectedOps = entry.value;
+        var indexName = '${modelName}_embedding_idx_$distance';
+
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: 'embedding',
+              )
+            ])
+            .withType('hnsw')
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .withVectorDistanceFunction(distance)
+            .withVectorColumnType(ColumnType.bit)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING hnsw ("embedding" $expectedOps);\n',
+        );
+      }
     });
   });
 }

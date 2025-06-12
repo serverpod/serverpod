@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:postgres/postgres.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -11,7 +9,7 @@ EncodedValue? pgvectorEncoder(TypedValue input, CodecContext context) {
     case Vector():
       return EncodedValue.binary(value.toBinary());
     case HalfVector():
-      return EncodedValue.text(utf8.encode(value.toString()));
+      return EncodedValue.binary(value.toBinary());
     case SparseVector():
       return EncodedValue.binary(value.toBinary());
     case Bit():

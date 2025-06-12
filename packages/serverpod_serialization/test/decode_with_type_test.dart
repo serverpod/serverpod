@@ -339,4 +339,94 @@ void main() {
       expect(decoded, vector);
     },
   );
+
+  test(
+    'Given a HalfVector when encoding and decoding with type then output matches input',
+    () {
+      HalfVector halfVector = const HalfVector([1.0, 2.0, 3.0]);
+      var encoded = protocol.encodeWithType(halfVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, halfVector);
+    },
+  );
+
+  test(
+    'Given a non-null nullable HalfVector when encoding and decoding with type then output matches input',
+    () {
+      HalfVector? halfVector = const HalfVector([1.0, 2.0, 3.0]);
+      var encoded = protocol.encodeWithType(halfVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, halfVector);
+    },
+  );
+
+  test(
+    'Given a null nullable HalfVector when encoding and decoding with type then output matches input',
+    () {
+      HalfVector? halfVector;
+      var encoded = protocol.encodeWithType(halfVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, halfVector);
+    },
+  );
+
+  test(
+    'Given a SparseVector when encoding and decoding with type then output matches input',
+    () {
+      SparseVector sparseVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
+      var encoded = protocol.encodeWithType(sparseVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, sparseVector);
+    },
+  );
+
+  test(
+    'Given a non-null nullable SparseVector when encoding and decoding with type then output matches input',
+    () {
+      SparseVector? sparseVector = SparseVector([1.0, 0.0, 2.0, 0.0, 3.0]);
+      var encoded = protocol.encodeWithType(sparseVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, sparseVector);
+    },
+  );
+
+  test(
+    'Given a null nullable SparseVector when encoding and decoding with type then output matches input',
+    () {
+      SparseVector? sparseVector;
+      var encoded = protocol.encodeWithType(sparseVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, sparseVector);
+    },
+  );
+
+  test(
+    'Given a Bit vector when encoding and decoding with type then output matches input',
+    () {
+      Bit bitVector = Bit([true, false, true, false, true]);
+      var encoded = protocol.encodeWithType(bitVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bitVector);
+    },
+  );
+
+  test(
+    'Given a non-null nullable Bit vector when encoding and decoding with type then output matches input',
+    () {
+      Bit? bitVector = Bit([true, false, true, false, true]);
+      var encoded = protocol.encodeWithType(bitVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bitVector);
+    },
+  );
+
+  test(
+    'Given a null nullable Bit vector when encoding and decoding with type then output matches input',
+    () {
+      Bit? bitVector;
+      var encoded = protocol.encodeWithType(bitVector);
+      var decoded = protocol.decodeWithType(encoded);
+      expect(decoded, bitVector);
+    },
+  );
 }
