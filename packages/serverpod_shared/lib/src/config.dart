@@ -961,8 +961,7 @@ bool _readApplyMigrations(
   final applyMigrationsFromEnv = environment[envVariable];
   if (applyMigrationsFromEnv != null) {
     return switch (applyMigrationsFromEnv) {
-      'true' || '1' => true,
-      'false' || '0' => false,
+      'true' || 'false' => bool.parse(applyMigrationsFromEnv),
       _ => throw ArgumentError(
           'Invalid $envVariable from environment variable: $applyMigrationsFromEnv. '
           'Valid values are: true, false',
@@ -977,8 +976,7 @@ bool _readApplyMigrations(
       return applyMigrationsFromConfig;
     }
     return switch (applyMigrationsFromConfig.toString()) {
-      'true' || '1' => true,
-      'false' || '0' => false,
+      'true' || 'false' => bool.parse(applyMigrationsFromConfig.toString()),
       _ => throw ArgumentError(
           'Invalid $configKey from configuration: $applyMigrationsFromConfig. '
           'Valid values are: true, false',
@@ -1011,8 +1009,7 @@ bool _readApplyRepairMigration(
   final applyRepairMigrationFromEnv = environment[envVariable];
   if (applyRepairMigrationFromEnv != null) {
     return switch (applyRepairMigrationFromEnv) {
-      'true' || '1' => true,
-      'false' || '0' => false,
+      'true' || 'false' => bool.parse(applyRepairMigrationFromEnv),
       _ => throw ArgumentError(
           'Invalid $envVariable from environment variable: $applyRepairMigrationFromEnv. '
           'Valid values are: true, false',
@@ -1027,8 +1024,9 @@ bool _readApplyRepairMigration(
       return applyRepairMigrationFromConfig;
     }
     return switch (applyRepairMigrationFromConfig.toString()) {
-      'true' || '1' => true,
-      'false' || '0' => false,
+      'true' ||
+      'false' =>
+        bool.parse(applyRepairMigrationFromConfig.toString()),
       _ => throw ArgumentError(
           'Invalid $configKey from configuration: $applyRepairMigrationFromConfig. '
           'Valid values are: true, false',
