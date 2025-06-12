@@ -15,10 +15,10 @@ void main() {
       () {
     var config = ServerpodConfig.loadFromMap(runMode, serverId, passwords, {});
     expect(config, isA<ServerpodConfig>());
-    expect(
-      config.apiServer,
-      equals(ServerpodConfig.defaultConfig().apiServer),
-    );
+    expect(config.apiServer.port, 8080);
+    expect(config.apiServer.publicHost, 'localhost');
+    expect(config.apiServer.publicPort, 8080);
+    expect(config.apiServer.publicScheme, 'http');
   });
 
   test(
