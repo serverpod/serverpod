@@ -59,9 +59,15 @@ class Serverpod {
   /// The servers run mode as specified in [ServerpodRunMode].
   String get runMode => config.runMode;
 
+  late final CommandLineArgs _commandLineArgs;
+
   /// The parsed runtime arguments passed to Serverpod at startup.
-  @Deprecated('Use config instead.')
-  late final CommandLineArgs commandLineArgs;
+  @Deprecated(
+    'Use config instead. The commandLineArgs field provides raw command line arguments, '
+    'but the config field offers a more structured and comprehensive configuration system. '
+    'This field will be removed in a future major version.',
+  )
+  CommandLineArgs get commandLineArgs => _commandLineArgs;
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
@@ -321,18 +327,15 @@ class Serverpod {
     );
 
     // Read command line arguments.
-    // ignore: deprecated_member_use_from_same_package
-    commandLineArgs = CommandLineArgs(args);
+    _commandLineArgs = CommandLineArgs(args);
 
-    // ignore: deprecated_member_use_from_same_package
-    final runMode = _calculateRunMode(commandLineArgs);
+    final runMode = _calculateRunMode(_commandLineArgs);
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    // ignore: deprecated_member_use_from_same_package
-    final serverId = _calculateServerId(commandLineArgs);
+    final serverId = _calculateServerId(_commandLineArgs);
 
     // Load config
     this.config = config?.copyWith(runMode: runMode) ??
@@ -340,11 +343,9 @@ class Serverpod {
           runMode,
           serverId,
           _passwords,
-          // ignore: deprecated_member_use_from_same_package
-          commandLineArgs: commandLineArgs.toMap(),
+          commandLineArgs: _commandLineArgs.toMap(),
         );
 
-    // ignore: deprecated_member_use_from_same_package
     stdout.writeln(_getCommandLineArgsString());
 
     logVerbose(this.config.toString());
