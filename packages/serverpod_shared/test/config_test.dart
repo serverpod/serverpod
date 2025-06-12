@@ -1021,4 +1021,54 @@ futureCallExecutionEnabled: false
 
     expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
   });
+
+  group('Given an empty Serverpod config map when loading from Map then', () {
+    test(
+        'future call config uses default concurrency limit of 1 instead of null',
+        () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {},
+      );
+
+      // This is the key difference - when parsing an empty map, the future call config
+      // gets the default concurrency limit of 1 instead of null like defaultConfig()
+      expect(config.futureCall.concurrencyLimit, 1);
+      expect(config.futureCall.scanInterval.inMilliseconds, 5000);
+      expect(config.apiServer.port, 8080);
+      expect(config.apiServer.publicHost, 'localhost');
+    });
+
+    test(
+        'API server uses defaults while other configs can still be parsed from environment',
+        () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'dbpass'},
+        {},
+        environment: {
+          'SERVERPOD_DATABASE_HOST': 'localhost',
+          'SERVERPOD_DATABASE_PORT': '5432',
+          'SERVERPOD_DATABASE_NAME': 'testdb',
+          'SERVERPOD_DATABASE_USER': 'testuser',
+        },
+      );
+
+      // API server should use defaults (since no API config provided)
+      expect(config.apiServer.port, 8080);
+      expect(config.apiServer.publicHost, 'localhost');
+      expect(config.apiServer.publicPort, 8080);
+      expect(config.apiServer.publicScheme, 'http');
+
+      // Other configs should still be parsed from environment
+      expect(config.database?.host, 'localhost');
+      expect(config.database?.port, 5432);
+      expect(config.database?.name, 'testdb');
+      expect(config.database?.user, 'testuser');
+    });
+  });
 }

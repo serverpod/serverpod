@@ -92,9 +92,6 @@ class ServerpodConfig {
   factory ServerpodConfig.defaultConfig() {
     return ServerpodConfig(
       apiServer: _defaultApiServer,
-      futureCall: const FutureCallConfig(
-        concurrencyLimit: FutureCallConfig.defaultFutureCallConcurrencyLimit,
-      ),
     );
   }
 
@@ -175,10 +172,7 @@ class ServerpodConfig {
             futureCallConfigJson,
             ServerpodConfigMap.futureCall,
           )
-        : const FutureCallConfig(
-            concurrencyLimit:
-                FutureCallConfig.defaultFutureCallConcurrencyLimit,
-          );
+        : const FutureCallConfig();
 
     var futureCallExecutionEnabled =
         _readIsFutureCallExecutionEnabled(configMap, environment);
@@ -471,7 +465,7 @@ class FutureCallConfig {
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
-    this.concurrencyLimit,
+    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval =
         const Duration(milliseconds: defaultFutureCallScanIntervalMs),
   });
