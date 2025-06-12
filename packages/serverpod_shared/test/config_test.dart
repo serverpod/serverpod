@@ -496,7 +496,7 @@ redis:
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
-      {...passwords, 'webServer': 'password'},
+      passwords,
       {
         'apiServer': {
           'port': 8080,
