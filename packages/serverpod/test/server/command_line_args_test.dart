@@ -249,55 +249,6 @@ void main() {
     });
   });
 
-  group('Given CommandLineArgs instance when using copyWith method', () {
-    test(
-        'when copy is created with replaced values then copy has new values and original is unchanged',
-        () {
-      final original = CommandLineArgs(['--mode', 'development']);
-      final copy = original.copyWith(
-        runMode: 'production',
-        serverId: 'new-server',
-        loggingMode: ServerpodLoggingMode.verbose,
-        role: ServerpodRole.serverless,
-        applyMigrations: true,
-        applyRepairMigration: true,
-      );
-
-      expect(copy.runMode, equals('production'));
-      expect(copy.serverId, equals('new-server'));
-      expect(copy.loggingMode, equals(ServerpodLoggingMode.verbose));
-      expect(copy.role, equals(ServerpodRole.serverless));
-      expect(copy.applyMigrations, isTrue);
-      expect(copy.applyRepairMigration, isTrue);
-
-      // Original should be unchanged
-      expect(original.runMode, equals('development'));
-      expect(original.serverId, equals('default'));
-    });
-
-    test('when null passed to copyWith then original values are preserved', () {
-      final original = CommandLineArgs([
-        '--mode',
-        'staging',
-        '--server-id',
-        'test',
-        '--logging',
-        'verbose',
-        '--role',
-        'maintenance',
-        '--apply-migrations',
-      ]);
-      final copy = original.copyWith();
-
-      expect(copy.runMode, equals(original.runMode));
-      expect(copy.serverId, equals(original.serverId));
-      expect(copy.loggingMode, equals(original.loggingMode));
-      expect(copy.role, equals(original.role));
-      expect(copy.applyMigrations, equals(original.applyMigrations));
-      expect(copy.applyRepairMigration, equals(original.applyRepairMigration));
-    });
-  });
-
   group('Given CommandLineArgs when validating enum values', () {
     test('when using all valid run modes then all are supported', () {
       final modes = [

@@ -118,39 +118,6 @@ class CommandLineArgs {
     }
   }
 
-  CommandLineArgs._internal({
-    required String? runMode,
-    required String? serverId,
-    required ServerpodLoggingMode? loggingMode,
-    required ServerpodRole? role,
-    required bool? applyMigrations,
-    required bool? applyRepairMigration,
-  })  : _runMode = runMode,
-        _serverId = serverId,
-        _loggingMode = loggingMode,
-        _role = role,
-        _applyMigrations = applyMigrations,
-        _applyRepairMigration = applyRepairMigration;
-
-  /// Creates a copy of this [CommandLineArgs] with the given fields replaced.
-  CommandLineArgs copyWith({
-    String? runMode,
-    String? serverId,
-    ServerpodLoggingMode? loggingMode,
-    ServerpodRole? role,
-    bool? applyMigrations,
-    bool? applyRepairMigration,
-  }) {
-    return CommandLineArgs._internal(
-      runMode: runMode ?? _runMode,
-      serverId: serverId ?? _serverId,
-      loggingMode: loggingMode ?? _loggingMode,
-      role: role ?? _role,
-      applyMigrations: applyMigrations ?? _applyMigrations,
-      applyRepairMigration: applyRepairMigration ?? _applyRepairMigration,
-    );
-  }
-
   /// Returns the raw value for a given command line argument key.
   /// Returns null if the argument was not provided when parsing the command
   /// line arguments.
