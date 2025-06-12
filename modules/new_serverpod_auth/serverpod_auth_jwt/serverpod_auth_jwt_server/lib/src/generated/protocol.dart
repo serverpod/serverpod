@@ -13,12 +13,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i3;
-import 'refresh_token.dart' as _i4;
-import 'refresh_token_expired_exception.dart' as _i5;
-import 'refresh_token_invalid_secret_exception.dart' as _i6;
-import 'refresh_token_malformed_exception.dart' as _i7;
-import 'refresh_token_not_found_exception.dart' as _i8;
-import 'token_pair.dart' as _i9;
+import 'authentication_token_info.dart' as _i4;
+import 'refresh_token.dart' as _i5;
+import 'refresh_token_expired_exception.dart' as _i6;
+import 'refresh_token_invalid_secret_exception.dart' as _i7;
+import 'refresh_token_malformed_exception.dart' as _i8;
+import 'refresh_token_not_found_exception.dart' as _i9;
+import 'token_pair.dart' as _i10;
+export 'authentication_token_info.dart';
 export 'refresh_token.dart';
 export 'refresh_token_expired_exception.dart';
 export 'refresh_token_invalid_secret_exception.dart';
@@ -149,49 +151,56 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i4.RefreshToken) {
-      return _i4.RefreshToken.fromJson(data) as T;
+    if (t == _i4.AuthenticationTokenInfo) {
+      return _i4.AuthenticationTokenInfo.fromJson(data) as T;
     }
-    if (t == _i5.RefreshTokenExpiredException) {
-      return _i5.RefreshTokenExpiredException.fromJson(data) as T;
+    if (t == _i5.RefreshToken) {
+      return _i5.RefreshToken.fromJson(data) as T;
     }
-    if (t == _i6.RefreshTokenInvalidSecretException) {
-      return _i6.RefreshTokenInvalidSecretException.fromJson(data) as T;
+    if (t == _i6.RefreshTokenExpiredException) {
+      return _i6.RefreshTokenExpiredException.fromJson(data) as T;
     }
-    if (t == _i7.RefreshTokenMalformedException) {
-      return _i7.RefreshTokenMalformedException.fromJson(data) as T;
+    if (t == _i7.RefreshTokenInvalidSecretException) {
+      return _i7.RefreshTokenInvalidSecretException.fromJson(data) as T;
     }
-    if (t == _i8.RefreshTokenNotFoundException) {
-      return _i8.RefreshTokenNotFoundException.fromJson(data) as T;
+    if (t == _i8.RefreshTokenMalformedException) {
+      return _i8.RefreshTokenMalformedException.fromJson(data) as T;
     }
-    if (t == _i9.TokenPair) {
-      return _i9.TokenPair.fromJson(data) as T;
+    if (t == _i9.RefreshTokenNotFoundException) {
+      return _i9.RefreshTokenNotFoundException.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.RefreshToken?>()) {
-      return (data != null ? _i4.RefreshToken.fromJson(data) : null) as T;
+    if (t == _i10.TokenPair) {
+      return _i10.TokenPair.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.RefreshTokenExpiredException?>()) {
+    if (t == _i1.getType<_i4.AuthenticationTokenInfo?>()) {
+      return (data != null ? _i4.AuthenticationTokenInfo.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i5.RefreshToken?>()) {
+      return (data != null ? _i5.RefreshToken.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.RefreshTokenExpiredException?>()) {
       return (data != null
-          ? _i5.RefreshTokenExpiredException.fromJson(data)
+          ? _i6.RefreshTokenExpiredException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i6.RefreshTokenInvalidSecretException?>()) {
+    if (t == _i1.getType<_i7.RefreshTokenInvalidSecretException?>()) {
       return (data != null
-          ? _i6.RefreshTokenInvalidSecretException.fromJson(data)
+          ? _i7.RefreshTokenInvalidSecretException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i7.RefreshTokenMalformedException?>()) {
+    if (t == _i1.getType<_i8.RefreshTokenMalformedException?>()) {
       return (data != null
-          ? _i7.RefreshTokenMalformedException.fromJson(data)
+          ? _i8.RefreshTokenMalformedException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i8.RefreshTokenNotFoundException?>()) {
+    if (t == _i1.getType<_i9.RefreshTokenNotFoundException?>()) {
       return (data != null
-          ? _i8.RefreshTokenNotFoundException.fromJson(data)
+          ? _i9.RefreshTokenNotFoundException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i9.TokenPair?>()) {
-      return (data != null ? _i9.TokenPair.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.TokenPair?>()) {
+      return (data != null ? _i10.TokenPair.fromJson(data) : null) as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -209,22 +218,25 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.RefreshToken) {
+    if (data is _i4.AuthenticationTokenInfo) {
+      return 'AuthenticationTokenInfo';
+    }
+    if (data is _i5.RefreshToken) {
       return 'RefreshToken';
     }
-    if (data is _i5.RefreshTokenExpiredException) {
+    if (data is _i6.RefreshTokenExpiredException) {
       return 'RefreshTokenExpiredException';
     }
-    if (data is _i6.RefreshTokenInvalidSecretException) {
+    if (data is _i7.RefreshTokenInvalidSecretException) {
       return 'RefreshTokenInvalidSecretException';
     }
-    if (data is _i7.RefreshTokenMalformedException) {
+    if (data is _i8.RefreshTokenMalformedException) {
       return 'RefreshTokenMalformedException';
     }
-    if (data is _i8.RefreshTokenNotFoundException) {
+    if (data is _i9.RefreshTokenNotFoundException) {
       return 'RefreshTokenNotFoundException';
     }
-    if (data is _i9.TokenPair) {
+    if (data is _i10.TokenPair) {
       return 'TokenPair';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -244,23 +256,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AuthenticationTokenInfo') {
+      return deserialize<_i4.AuthenticationTokenInfo>(data['data']);
+    }
     if (dataClassName == 'RefreshToken') {
-      return deserialize<_i4.RefreshToken>(data['data']);
+      return deserialize<_i5.RefreshToken>(data['data']);
     }
     if (dataClassName == 'RefreshTokenExpiredException') {
-      return deserialize<_i5.RefreshTokenExpiredException>(data['data']);
+      return deserialize<_i6.RefreshTokenExpiredException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenInvalidSecretException') {
-      return deserialize<_i6.RefreshTokenInvalidSecretException>(data['data']);
+      return deserialize<_i7.RefreshTokenInvalidSecretException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenMalformedException') {
-      return deserialize<_i7.RefreshTokenMalformedException>(data['data']);
+      return deserialize<_i8.RefreshTokenMalformedException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenNotFoundException') {
-      return deserialize<_i8.RefreshTokenNotFoundException>(data['data']);
+      return deserialize<_i9.RefreshTokenNotFoundException>(data['data']);
     }
     if (dataClassName == 'TokenPair') {
-      return deserialize<_i9.TokenPair>(data['data']);
+      return deserialize<_i10.TokenPair>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -288,8 +303,8 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i4.RefreshToken:
-        return _i4.RefreshToken.t;
+      case _i5.RefreshToken:
+        return _i5.RefreshToken.t;
     }
     return null;
   }
