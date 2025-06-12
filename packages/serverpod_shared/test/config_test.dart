@@ -1348,29 +1348,6 @@ apiServer:
   });
 
   test(
-      'Given a Serverpod config with apply migrations environment variable set to 1 when loading from Map then apply migrations from environment variable is used',
-      () {
-    var config = ServerpodConfig.loadFromMap(
-      runMode,
-      serverId,
-      passwords,
-      {
-        'apiServer': {
-          'port': 8080,
-          'publicHost': 'localhost',
-          'publicPort': 8080,
-          'publicScheme': 'http',
-        },
-      },
-      environment: {
-        'SERVERPOD_APPLY_MIGRATIONS': '1',
-      },
-    );
-
-    expect(config.applyMigrations, isTrue);
-  });
-
-  test(
       'Given a Serverpod config with apply migrations environment variable set to false when loading from Map then apply migrations from environment variable is used',
       () {
     var config = ServerpodConfig.loadFromMap(
@@ -1387,29 +1364,6 @@ apiServer:
       },
       environment: {
         'SERVERPOD_APPLY_MIGRATIONS': 'false',
-      },
-    );
-
-    expect(config.applyMigrations, isFalse);
-  });
-
-  test(
-      'Given a Serverpod config with apply migrations environment variable set to 0 when loading from Map then apply migrations from environment variable is used',
-      () {
-    var config = ServerpodConfig.loadFromMap(
-      runMode,
-      serverId,
-      passwords,
-      {
-        'apiServer': {
-          'port': 8080,
-          'publicHost': 'localhost',
-          'publicPort': 8080,
-          'publicScheme': 'http',
-        },
-      },
-      environment: {
-        'SERVERPOD_APPLY_MIGRATIONS': '0',
       },
     );
 
@@ -1495,29 +1449,6 @@ apiServer:
   });
 
   test(
-      'Given a Serverpod config with apply repair migration environment variable set to 1 when loading from Map then apply repair migration from environment variable is used',
-      () {
-    var config = ServerpodConfig.loadFromMap(
-      runMode,
-      serverId,
-      passwords,
-      {
-        'apiServer': {
-          'port': 8080,
-          'publicHost': 'localhost',
-          'publicPort': 8080,
-          'publicScheme': 'http',
-        },
-      },
-      environment: {
-        'SERVERPOD_APPLY_REPAIR_MIGRATION': '1',
-      },
-    );
-
-    expect(config.applyRepairMigration, isTrue);
-  });
-
-  test(
       'Given a Serverpod config with apply repair migration environment variable set to false when loading from Map then apply repair migration from environment variable is used',
       () {
     var config = ServerpodConfig.loadFromMap(
@@ -1534,29 +1465,6 @@ apiServer:
       },
       environment: {
         'SERVERPOD_APPLY_REPAIR_MIGRATION': 'false',
-      },
-    );
-
-    expect(config.applyRepairMigration, isFalse);
-  });
-
-  test(
-      'Given a Serverpod config with apply repair migration environment variable set to 0 when loading from Map then apply repair migration from environment variable is used',
-      () {
-    var config = ServerpodConfig.loadFromMap(
-      runMode,
-      serverId,
-      passwords,
-      {
-        'apiServer': {
-          'port': 8080,
-          'publicHost': 'localhost',
-          'publicPort': 8080,
-          'publicScheme': 'http',
-        },
-      },
-      environment: {
-        'SERVERPOD_APPLY_REPAIR_MIGRATION': '0',
       },
     );
 
