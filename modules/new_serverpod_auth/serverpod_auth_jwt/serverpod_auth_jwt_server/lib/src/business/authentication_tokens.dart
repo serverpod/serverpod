@@ -172,7 +172,7 @@ abstract final class AuthenticationTokens {
       refreshTokenRow.copyWith(
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
-        lastUpdated: DateTime.now(),
+        lastUpdated: clock.now(),
       ),
       transaction: transaction,
     );
@@ -287,8 +287,8 @@ extension on Set<Scope> {
 
 extension on RefreshToken {
   bool get isExpired {
-    final oldestAcceptedRefreshTokenDate = DateTime.now()
-        .subtract(AuthenticationTokens.config.refreshTokenLifetime);
+    final oldestAcceptedRefreshTokenDate =
+        clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
   }

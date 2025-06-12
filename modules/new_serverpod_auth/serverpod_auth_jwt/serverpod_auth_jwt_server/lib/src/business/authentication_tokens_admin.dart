@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
@@ -14,8 +15,8 @@ final class AuthenticationTokensAdmin {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final oldestValidRefreshTokenDate = DateTime.now()
-        .subtract(AuthenticationTokens.config.refreshTokenLifetime);
+    final oldestValidRefreshTokenDate =
+        clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     await RefreshToken.db.deleteWhere(
       session,
