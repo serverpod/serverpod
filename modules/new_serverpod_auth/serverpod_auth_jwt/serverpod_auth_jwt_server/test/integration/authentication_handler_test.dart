@@ -68,12 +68,8 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.createAuthUser(session);
+      authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(
         session,
@@ -158,12 +154,8 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.createAuthUser(session);
+      authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(
         session,
