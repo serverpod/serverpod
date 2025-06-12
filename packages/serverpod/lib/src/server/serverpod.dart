@@ -329,7 +329,9 @@ class Serverpod {
     // Read command line arguments.
     _commandLineArgs = CommandLineArgs(args);
 
-    final runMode = _calculateRunMode(_commandLineArgs);
+    final runMode = _calculateRunMode(
+      _commandLineArgs.getRaw<String>(CliArgsConstants.runMode),
+    );
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -709,9 +711,9 @@ class Serverpod {
     }
   }
 
-  String _calculateRunMode(CommandLineArgs commandLineArgs) {
-    if (commandLineArgs.getRaw<String>(CliArgsConstants.runMode) != null) {
-      return commandLineArgs.runMode;
+  String _calculateRunMode(String? runModeFromCommandLine) {
+    if (runModeFromCommandLine != null) {
+      return runModeFromCommandLine;
     }
 
     final runModeFromEnv =
@@ -725,8 +727,7 @@ class Serverpod {
       };
     }
 
-    // Default to development if no run mode is provided.
-    return commandLineArgs.runMode;
+    return 'development';
   }
 
   String? _calculateServerId(CommandLineArgs commandLineArgs) {
