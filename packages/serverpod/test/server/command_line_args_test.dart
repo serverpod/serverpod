@@ -129,6 +129,17 @@ void main() {
       expect(() => args.getRaw<String>('mode'),
           throwsArgumentError); // Should be CliArgsConstants.runMode
     });
+
+    test('when using toMap method then returns null for all raw values', () {
+      final map = args.toMap();
+      expect(map[CliArgsConstants.runMode], isNull);
+      expect(map[CliArgsConstants.serverId], isNull);
+      expect(map[CliArgsConstants.loggingMode], isNull);
+      expect(map[CliArgsConstants.role], isNull);
+      expect(map[CliArgsConstants.applyMigrations], isNull);
+      expect(map[CliArgsConstants.applyRepairMigration], isNull);
+      expect(map.length, equals(6));
+    });
   });
 
   group('Given partially provided command line arguments', () {
@@ -154,6 +165,17 @@ void main() {
       expect(args.getRaw<bool>(CliArgsConstants.applyMigrations), isTrue);
       expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
     });
+
+    test('when using toMap method then returns mixed raw values', () {
+      final map = args.toMap();
+      expect(map[CliArgsConstants.runMode], equals('test'));
+      expect(map[CliArgsConstants.serverId], isNull);
+      expect(map[CliArgsConstants.loggingMode], isNull);
+      expect(map[CliArgsConstants.role], isNull);
+      expect(map[CliArgsConstants.applyMigrations], isTrue);
+      expect(map[CliArgsConstants.applyRepairMigration], isNull);
+      expect(map.length, equals(6));
+    });
   });
 
   group('Given command line arguments explicitly set to default values', () {
@@ -177,6 +199,21 @@ void main() {
       expect(args.getRaw<bool>(CliArgsConstants.applyMigrations),
           isNull); // Flags default to false
       expect(args.getRaw<bool>(CliArgsConstants.applyRepairMigration), isNull);
+    });
+
+    test(
+        'when using toMap method then returns raw values for explicitly provided arguments even when same as defaults',
+        () {
+      final map = args.toMap();
+      expect(map[CliArgsConstants.runMode], equals('development'));
+      expect(map[CliArgsConstants.serverId], equals('default'));
+      expect(map[CliArgsConstants.loggingMode],
+          equals(ServerpodLoggingMode.normal));
+      expect(map[CliArgsConstants.role], equals(ServerpodRole.monolith));
+      expect(map[CliArgsConstants.applyMigrations],
+          isNull); // Flags default to false
+      expect(map[CliArgsConstants.applyRepairMigration], isNull);
+      expect(map.length, equals(6));
     });
   });
 
