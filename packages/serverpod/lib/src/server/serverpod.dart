@@ -335,13 +335,11 @@ class Serverpod {
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    final serverId = _calculateServerId(_commandLineArgs);
-
     // Load config
     this.config = config?.copyWith(runMode: runMode) ??
         ServerpodConfig.load(
           runMode,
-          serverId,
+          _calculateServerId(_commandLineArgs),
           _passwords,
           commandLineArgs: _commandLineArgs.toMap(),
         );
