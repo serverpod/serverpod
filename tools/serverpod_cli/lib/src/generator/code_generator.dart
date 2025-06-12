@@ -12,7 +12,7 @@ abstract class CodeGenerator {
   /// Generates the content of files that only depend the [SerializableModel].
   ///
   /// Returns a map where they key is the path of the file and the value is
-  /// the files content.
+  /// the file's content.
   ///
   /// Relative paths start at the server package directory.
   ///
@@ -26,7 +26,7 @@ abstract class CodeGenerator {
   /// [ProtocolDefinition].
   ///
   /// Returns a map where they key is the path of the file and the value is
-  /// the files content.
+  /// the file's content.
   ///
   /// Relative paths start at the server package directory.
   ///
