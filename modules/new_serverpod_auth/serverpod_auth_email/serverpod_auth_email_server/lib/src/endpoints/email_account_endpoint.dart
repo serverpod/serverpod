@@ -57,7 +57,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
         transaction: transaction,
       );
 
-      final newUser = await AuthUsers.createAuthUser(
+      final newUser = await AuthUsers.create(
         session,
         transaction: transaction,
       );
@@ -118,7 +118,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    final authUser = await AuthUsers.getAuthUser(
+    final authUser = await AuthUsers.get(
       session,
       authUserId: authUserId,
     );

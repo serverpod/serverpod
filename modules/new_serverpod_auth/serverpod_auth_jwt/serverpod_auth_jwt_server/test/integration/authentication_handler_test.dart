@@ -68,7 +68,7 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.createAuthUser(session);
+      final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(
@@ -154,7 +154,7 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.createAuthUser(session);
+      final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(

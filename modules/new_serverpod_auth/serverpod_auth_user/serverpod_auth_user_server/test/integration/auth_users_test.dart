@@ -13,7 +13,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUser = await AuthUsers.createAuthUser(session);
+      authUser = await AuthUsers.create(session);
     });
 
     test('when inspecting it, then the scopes are empty.', () {
@@ -26,7 +26,7 @@ void main() {
 
     test('when updating it, then the returned model contains the new value.',
         () async {
-      final updatedAuthUser = await AuthUsers.updateAuthUser(
+      final updatedAuthUser = await AuthUsers.update(
         session,
         authUserId: authUser.id,
         scopes: {Scope.admin},
@@ -38,13 +38,13 @@ void main() {
     });
 
     test('when deleting it, then it is removed from the database.', () async {
-      await AuthUsers.deleteAuthUser(session, authUserId: authUser.id);
+      await AuthUsers.delete(session, authUserId: authUser.id);
 
       expect(await AuthUser.db.find(session), isEmpty);
     });
 
     test('when listing auth users, then it is returned.', () async {
-      final authUsers = await AuthUsers.listAuthUsers(session);
+      final authUsers = await AuthUsers.list(session);
 
       expect(authUsers.single.id, authUser.id);
     });
@@ -61,7 +61,7 @@ void main() {
     test('when trying to get a non-existent auth user by ID, then it throws.',
         () async {
       await expectLater(
-        () => AuthUsers.getAuthUser(session, authUserId: const Uuid().v4obj()),
+        () => AuthUsers.get(session, authUserId: const Uuid().v4obj()),
         throwsA(isA<AuthUserNotFoundException>()),
       );
     });
@@ -70,8 +70,7 @@ void main() {
         'when trying to update a non-existent auth user by ID, then it throws.',
         () async {
       await expectLater(
-        () =>
-            AuthUsers.updateAuthUser(session, authUserId: const Uuid().v4obj()),
+        () => AuthUsers.update(session, authUserId: const Uuid().v4obj()),
         throwsA(isA<AuthUserNotFoundException>()),
       );
     });
@@ -79,7 +78,7 @@ void main() {
     test(
         'when trying to delete a non-existent auth user by ID, then it succeeds.',
         () async {
-      await AuthUsers.deleteAuthUser(session, authUserId: const Uuid().v4obj());
+      await AuthUsers.delete(session, authUserId: const Uuid().v4obj());
     });
   });
 }

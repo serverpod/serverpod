@@ -4,7 +4,7 @@ import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart'
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 Future<AuthUserModel> createAuthUser(final Session session) {
-  return AuthUsers.createAuthUser(session);
+  return AuthUsers.create(session);
 }
 
 Future<
@@ -126,8 +126,8 @@ Future<void> resetPassword(
 }
 
 Future<void> cleanUpEmailAccountDatabaseEntities(final Session session) async {
-  for (final authUser in await AuthUsers.listAuthUsers(session)) {
-    await AuthUsers.deleteAuthUser(
+  for (final authUser in await AuthUsers.list(session)) {
+    await AuthUsers.delete(
       session,
       authUserId: authUser.id,
     );

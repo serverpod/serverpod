@@ -7,7 +7,7 @@ abstract final class AuthUsers {
   /// Retrieves an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> getAuthUser(
+  static Future<AuthUserModel> get(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -26,7 +26,7 @@ abstract final class AuthUsers {
   }
 
   /// Creates a new auth user.
-  static Future<AuthUserModel> createAuthUser(
+  static Future<AuthUserModel> create(
     final Session session, {
     final Set<Scope> scopes = const {},
     final bool blocked = false,
@@ -48,7 +48,7 @@ abstract final class AuthUsers {
   /// Updates an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> updateAuthUser(
+  static Future<AuthUserModel> update(
     final Session session, {
     required final UuidValue authUserId,
     final Set<Scope>? scopes,
@@ -86,7 +86,7 @@ abstract final class AuthUsers {
   }
 
   /// Returns all auth users.
-  static Future<List<AuthUserModel>> listAuthUsers(
+  static Future<List<AuthUserModel>> list(
     final Session session, {
     final Transaction? transaction,
   }) async {
@@ -101,7 +101,7 @@ abstract final class AuthUsers {
   /// Removes the specified auth user.
   ///
   /// If the auth user does not exist in the database, this completes successfully.
-  static Future<void> deleteAuthUser(
+  static Future<void> delete(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
