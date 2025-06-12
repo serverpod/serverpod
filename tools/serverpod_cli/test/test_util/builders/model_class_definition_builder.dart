@@ -1,6 +1,5 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -130,13 +129,14 @@ class ModelClassDefinitionBuilder {
     String fieldName, {
     int dimension = 3,
     bool nullable = false,
+    String vectorType = 'Vector',
   }) {
     _fields.add(
       () => FieldDefinitionBuilder()
           .withName(fieldName)
           .withType(
             TypeDefinitionBuilder()
-                .withClassName(VectorKeyword.className)
+                .withClassName(vectorType)
                 .withNullable(nullable)
                 .withVectorDimension(dimension)
                 .build(),

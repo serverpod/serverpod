@@ -81,12 +81,28 @@ echo "\nserverpod_auth_user_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
 dart $CLI generate --no-analytics --experimental-features=all
 
-echo "\nserverpod_auth_session"
+echo "\nserverpod_auth_session_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
 dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\nserverpod_auth_profile_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_jwt_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_api_tokens_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_email_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_email_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
 dart $CLI generate --no-analytics --experimental-features=all
 
 # Chat module
@@ -108,4 +124,8 @@ dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
 cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_new_auth_test_server "
+cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
 dart $CLI generate --no-analytics --experimental-features=all

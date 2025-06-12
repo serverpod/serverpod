@@ -10,6 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'auth_user_blocked_exception.dart' as _i2;
+export 'auth_user_blocked_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -25,6 +27,13 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
+    if (t == _i2.AuthUserBlockedException) {
+      return _i2.AuthUserBlockedException.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.AuthUserBlockedException?>()) {
+      return (data != null ? _i2.AuthUserBlockedException.fromJson(data) : null)
+          as T;
+    }
     return super.deserialize<T>(data, t);
   }
 
@@ -32,6 +41,9 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+    if (data is _i2.AuthUserBlockedException) {
+      return 'AuthUserBlockedException';
+    }
     return null;
   }
 
@@ -40,6 +52,9 @@ class Protocol extends _i1.SerializationManager {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'AuthUserBlockedException') {
+      return deserialize<_i2.AuthUserBlockedException>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

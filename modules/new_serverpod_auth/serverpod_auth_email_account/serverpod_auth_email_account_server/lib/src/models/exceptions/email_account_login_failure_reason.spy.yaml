@@ -1,0 +1,4 @@
+enum: EmailAccountLoginFailureReason
+values:
+  - tooManyAttempts
+  - invalidCredentials

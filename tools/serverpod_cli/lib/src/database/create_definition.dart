@@ -68,6 +68,14 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 vectorDistanceFunction: index.isVectorIndex
                     ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
                     : null,
+                vectorColumnType: index.isVectorIndex
+                    ? ColumnType.values.firstWhere((type) =>
+                        type.name ==
+                        classDefinition.fields
+                            .firstWhere((f) => index.fields.contains(f.name))
+                            .type
+                            .databaseTypeEnum)
+                    : null,
                 parameters: index.parameters,
               ),
           ],

@@ -129,6 +129,7 @@ extension IndexComparisons on IndexDefinition {
         other.tableSpace == tableSpace &&
         other.type == type &&
         other.vectorDistanceFunction == vectorDistanceFunction &&
+        other.vectorColumnType == vectorColumnType &&
         _parametersMapEquals(other.parameters);
   }
 
@@ -230,9 +231,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     out += '\n';
 
     // Must be declared before any table creation.
-    if (tables.any(
-      (t) => t.columns.any((c) => c.columnType == ColumnType.vector),
-    )) {
+    if (tables.any((t) => t.columns.any((c) => c.isVectorColumn))) {
       out += _sqlCreateVectorExtensionIfAvailable();
       out += '\n';
     }
@@ -337,6 +336,13 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
       (columnDefault?.startsWith('nextval') ?? false);
 
+  /// Whether the column is of a vector type.
+  bool get isVectorColumn =>
+      columnType == ColumnType.vector ||
+      columnType == ColumnType.halfvec ||
+      columnType == ColumnType.sparsevec ||
+      columnType == ColumnType.bit;
+
   String toPgSqlFragment() {
     String type;
     switch (columnType) {
@@ -369,6 +375,15 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.vector:
         type = 'vector(${vectorDimension!})';
+        break;
+      case ColumnType.halfvec:
+        type = 'halfvec(${vectorDimension!})';
+        break;
+      case ColumnType.sparsevec:
+        type = 'sparsevec(${vectorDimension!})';
+        break;
+      case ColumnType.bit:
+        type = 'bit(${vectorDimension!})';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
@@ -411,7 +426,8 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     String pgvectorParams = '';
 
     if (type == 'hnsw' || type == 'ivfflat') {
-      distanceStr = ' ${vectorDistanceFunction!.asDistanceFunction()}';
+      var prefix = vectorColumnType?.name;
+      distanceStr = ' ${vectorDistanceFunction!.asDistanceFunction(prefix!)}';
 
       var paramStrings = parameters?.entries.map((e) => '${e.key}=${e.value}');
       pgvectorParams = (paramStrings?.isNotEmpty == true)
@@ -488,11 +504,9 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Must be declared before any table creation.
     if (actions.any((e) =>
         (e.createTable != null &&
-            e.createTable!.columns
-                .any((c) => c.columnType == ColumnType.vector)) ||
+            e.createTable!.columns.any((c) => c.isVectorColumn)) ||
         (e.alterTable != null &&
-            e.alterTable!.addColumns
-                .any((c) => c.columnType == ColumnType.vector)))) {
+            e.alterTable!.addColumns.any((c) => c.isVectorColumn)))) {
       out += _sqlCreateVectorExtensionIfAvailable();
       out += '\n';
     }

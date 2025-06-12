@@ -183,6 +183,90 @@ void main() {
   });
 
   test(
+      'Given a class with an index on half vector fields and no explicit type, then default to type "hnsw".',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ModelClassDefinition;
+    var index = definition.indexes.first;
+
+    expect(index.type, 'hnsw');
+  });
+
+  test(
+      'Given a class with an index on sparse vector fields and no explicit type, then default to type "hnsw".',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ModelClassDefinition;
+    var index = definition.indexes.first;
+
+    expect(index.type, 'hnsw');
+  });
+
+  test(
+      'Given a class with an index on bit vector fields and no explicit type, then default to type "hnsw".',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: Bit(1536)
+        indexes:
+          example_index:
+            fields: embedding
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ModelClassDefinition;
+    var index = definition.indexes.first;
+
+    expect(index.type, 'hnsw');
+  });
+
+  test(
       'Given a class with an index on vector fields with explicit type "hnsw", then use that type.',
       () {
     var models = [
@@ -241,6 +325,42 @@ void main() {
   });
 
   test(
+      'Given a class with a sparse vector field and an index type explicitly set to "ivfflat", then collect an error that only HNSW is supported for SparseVector.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: ivfflat
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Only "hnsw" index type is supported for "SparseVector" fields.',
+    );
+  });
+
+  test(
       'Given a class with a vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
       () {
     var models = [
@@ -255,6 +375,114 @@ void main() {
               fields: embedding
               type: invalid_pgsql_type
           ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "type" property must be one of: hnsw, ivfflat.',
+    );
+  });
+
+  test(
+      'Given a class with a half vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: HalfVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: invalid_pgsql_type
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "type" property must be one of: hnsw, ivfflat.',
+    );
+  });
+
+  test(
+      'Given a class with a sparse vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: SparseVector(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: invalid_pgsql_type
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was collected.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Only "hnsw" index type is supported for "SparseVector" fields.',
+    );
+  });
+
+  test(
+      'Given a class with a bit vector field and an index type explicitly set to an invalid type, then collect an error that only vector index types can be used.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          embedding: Bit(1536)
+        indexes:
+          example_index:
+            fields: embedding
+            type: invalid_pgsql_type
+        ''',
       ).build()
     ];
 

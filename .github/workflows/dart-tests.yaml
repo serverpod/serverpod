@@ -13,6 +13,10 @@ on:
       - dev
       - stable-*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dart_format:
     name: dart format
@@ -238,8 +242,12 @@ jobs:
         module: [
           'tests/serverpod_test_module/serverpod_test_module_server',
           'tests/serverpod_test_nonvector/serverpod_test_nonvector_server',
+          'modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server',
+          'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
+          'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
           'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
-          'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server'
+          'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',
+          'modules/serverpod_auth/serverpod_auth_server'
         ]
     steps:
       - uses: actions/checkout@v3
@@ -254,8 +262,13 @@ jobs:
           ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
           ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
         working-directory: tests/docker/tests_integration
-      - name: Run integration tests
-        run: dart test -t integration --reporter=failures-only
+      - name: Run integration tests (concurrently)
+        run: dart test -t integration -x concurrency_one --reporter=failures-only
+        working-directory: ${{ matrix.module }}
+      - name: Run integration tests (sequentially)
+        if: always()
+        # Exit code `79` means that no tests were found for the tags
+        run: dart test -t integration -t concurrency_one --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
         working-directory: ${{ matrix.module }}
       - name: Stop containers
         if: always()

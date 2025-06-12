@@ -152,6 +152,10 @@ class GeneratorConfig implements ModelLoadConfig {
   List<String> get generatedServerProtocolFilePathParts =>
       [...generatedServeModelPathParts, 'protocol.dart'];
 
+  /// The path parts of the generated protocol file.
+  List<String> get generatedServerEndpointDescriptionFilePathParts =>
+      [...generatedServeModelPathParts, 'protocol.yaml'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [

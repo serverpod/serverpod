@@ -43,6 +43,12 @@ class ValueEncoder extends PostgresTextEncoder {
       return input;
     } else if (input is Vector) {
       return '\'${input.toString().replaceAll(' ', '')}\'';
+    } else if (input is HalfVector) {
+      return '\'${input.toString().replaceAll(' ', '')}\'';
+    } else if (input is SparseVector) {
+      return '\'${input.toString()}\'';
+    } else if (input is Bit) {
+      return '\'${input.toString()}\'';
     } else if (input is SerializableModel && input is Enum) {
       return super.convert(
         input.toJson(),

@@ -733,6 +733,9 @@ class DatabaseConnection {
     if (column is ColumnUri) return 'text';
     if (column is ColumnBigInt) return 'text';
     if (column is ColumnVector) return 'vector';
+    if (column is ColumnHalfVector) return 'halfvec';
+    if (column is ColumnSparseVector) return 'sparsevec';
+    if (column is ColumnBit) return 'bit';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
