@@ -10,7 +10,8 @@ export 'package:serverpod_shared/src/config.dart';
 export 'package:serverpod/server.dart';
 
 // Web server
-export 'package:serverpod/relic.dart';
+export 'package:serverpod/web_server.dart';
+export 'package:relic/relic.dart' hide ExceptionHandler;
 
 // Database
 export 'package:serverpod/database.dart';

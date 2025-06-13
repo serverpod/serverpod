@@ -1,5 +1,5 @@
 abstract final class ModuleUtil {
-  static String buildGreeting(String name) {
+  static String buildGreeting(final String name) {
     return 'Hello $name';
   }
 }

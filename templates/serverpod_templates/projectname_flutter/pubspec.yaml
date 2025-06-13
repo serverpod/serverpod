@@ -28,7 +28,6 @@ dependencies:
   projectname_client:
     path: ../projectname_client
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
@@ -38,20 +37,19 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides: 
-  serverpod_flutter: 
-    path: ../../../packages/serverpod_flutter 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_flutter:
+    path: ../../../packages/serverpod_flutter
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

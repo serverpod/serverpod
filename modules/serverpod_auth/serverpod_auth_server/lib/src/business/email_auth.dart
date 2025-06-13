@@ -659,7 +659,7 @@ class Emails {
     var failedSignIn = EmailFailedSignIn(
       email: email,
       time: DateTime.now(),
-      ipAddress: session.httpRequest.remoteIpAddress,
+      ipAddress: session.request.remoteIpAddress,
     );
     await EmailFailedSignIn.db.insertRow(session, failedSignIn);
   }
