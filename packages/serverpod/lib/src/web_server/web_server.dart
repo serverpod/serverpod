@@ -103,6 +103,93 @@ class WebServer {
 
   FutureOr<HandledContext> _handleRequest(NewContext context) async {
     final request = context.request;
+
+    // Extract client IP address from headers
+    String? clientIpAddress;
+    try {
+      // Try 'Forwarded' header first (RFC 7239)
+      final forwardedHeaderValues = request.headers['Forwarded'];
+      if (forwardedHeaderValues != null && forwardedHeaderValues.isNotEmpty) {
+        // According to RFC 7239, the header field value is a list of field-values.
+        // The first element in this list holds information added by the first proxy.
+        // Each field-value is a semicolon-separated list of parameter-identifier pairs.
+        // We are interested in the 'for' parameter of the first field-value.
+        final firstForwardedValue = forwardedHeaderValues
+            .first; // This might contain multiple comma-separated entries
+        final firstForwardedEntry = firstForwardedValue
+            .split(',')
+            .first
+            .trim(); // Get the very first entry
+
+        final params = firstForwardedEntry.split(';');
+        for (final param in params) {
+          final parts = param.trim().split('=');
+          if (parts.length == 2 && parts[0].trim().toLowerCase() == 'for') {
+            var identifier = parts[1].trim();
+
+            // 1. Unquote if the identifier is a quoted-string
+            if (identifier.startsWith('"') && identifier.endsWith('"')) {
+              identifier = identifier.substring(1, identifier.length - 1);
+            }
+
+            // 2. Extract the actual node identifier (IP address, 'unknown', or obfuscated_id)
+            // This needs to distinguish between "[IPv6]:port", "IPv4:port", and "obfuscated_id"
+            String actualNode;
+            if (identifier.startsWith('[')) {
+              // IPv6 Address (e.g., "[2001:db8::1]:4711" or "[2001:db8::1]")
+              int closingBracketIndex = identifier.indexOf(']');
+              if (closingBracketIndex != -1) {
+                actualNode = identifier.substring(
+                    1, closingBracketIndex); // Extracts "2001:db8::1"
+              } else {
+                actualNode = identifier; // Malformed, use as is for filtering
+              }
+            } else {
+              // IPv4, "unknown", or obfuscated_id (e.g., "192.0.2.43:47011", "unknown", "_secret")
+              int lastColonIndex = identifier.lastIndexOf(':');
+              // Check if it's likely an IPv4:port by seeing if a dot exists before the last colon.
+              // This helps avoid incorrectly splitting obfuscated_ids that might contain colons.
+              if (lastColonIndex != -1 &&
+                  identifier.substring(0, lastColonIndex).contains('.')) {
+                actualNode = identifier.substring(
+                    0, lastColonIndex); // Extracts "192.0.2.43"
+              } else {
+                actualNode =
+                    identifier; // No port, or not an IPv4:port structure
+              }
+            }
+
+            // 3. Use the extracted node if it's not 'unknown' and not an obfuscated identifier
+            if (actualNode.isNotEmpty &&
+                actualNode.toLowerCase() != 'unknown' &&
+                !actualNode.startsWith('_')) {
+              clientIpAddress = actualNode;
+            }
+            break; // Found 'for' parameter in the first hop, no need to check further params in this entry.
+          }
+        }
+      }
+
+      // Fallback to 'X-Forwarded-For' if 'Forwarded' didn't yield a usable IP
+      if (clientIpAddress == null) {
+        final xForwardedForValues = request.headers['X-Forwarded-For'];
+        if (xForwardedForValues != null && xForwardedForValues.isNotEmpty) {
+          // The X-Forwarded-For header can contain a comma-separated list of IPs.
+          // The first IP in the list is generally considered the original client IP.
+          final firstIp = xForwardedForValues.first.split(',').first.trim();
+          if (firstIp.isNotEmpty) {
+            clientIpAddress = firstIp;
+          }
+        }
+      }
+    } catch (e, s) {
+      // Log error during IP parsing, but don't fail the request.
+      // Use serverpod.log directly if available or a local logger.
+      // For now, using logDebug which should be available in this class context.
+      logDebug('Error parsing client IP from headers: $e\\n$s');
+    }
+    // End IP extraction
+
     var headers = Headers.empty();
     if (serverpod.runMode == ServerpodRunMode.production) {
       headers = headers.transform((mh) {
@@ -118,10 +205,7 @@ class WebServer {
     try {
       uri = request.requestedUri;
     } catch (e) {
-// TODO(kasper)
-//      logDebug(
-//          'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
-
+      logDebug('Malformed call, invalid uri. Client IP: $clientIpAddress');
       return context.withResponse(Response.badRequest());
     }
 
@@ -139,6 +223,7 @@ class WebServer {
       server: serverpod.server,
       endpoint: uri.path,
       authenticationKey: authenticationKey,
+      clientIpAddress: clientIpAddress,
     );
 
     final match = router.lookup(
