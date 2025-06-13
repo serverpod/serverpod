@@ -100,17 +100,21 @@ abstract final class AuthUsers {
 
   /// Removes the specified auth user.
   ///
-  /// If the auth user does not exist in the database, this completes successfully.
+  /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
   static Future<void> delete(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    await AuthUser.db.deleteWhere(
+    final deletedUsers = await AuthUser.db.deleteWhere(
       session,
       where: (final t) => t.id.equals(authUserId),
       transaction: transaction,
     );
+
+    if (deletedUsers.isEmpty) {
+      throw AuthUserNotFoundException();
+    }
   }
 }
 

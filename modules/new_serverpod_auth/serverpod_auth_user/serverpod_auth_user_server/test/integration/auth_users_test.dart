@@ -76,9 +76,12 @@ void main() {
     });
 
     test(
-        'when trying to delete a non-existent auth user by ID, then it succeeds.',
+        'when trying to delete a non-existent auth user by ID, then it throws.',
         () async {
-      await AuthUsers.delete(session, authUserId: const Uuid().v4obj());
+      await expectLater(
+        () => AuthUsers.delete(session, authUserId: const Uuid().v4obj()),
+        throwsA(isA<AuthUserNotFoundException>()),
+      );
     });
   });
 }
