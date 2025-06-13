@@ -1,14 +1,11 @@
 // ignore_for_file: dead_code
 
 @Timeout(Duration(minutes: 1))
-@Skip(
-    'These tests are disabled because they are flaky, tracked by this issue: https://github.com/serverpod/serverpod/issues/3431')
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:async/async.dart';
 import 'package:http/http.dart';
 import 'package:serverpod_test/serverpod_test.dart';
 import 'package:test/test.dart';
@@ -16,7 +13,7 @@ import 'package:test/test.dart';
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
-  const verbose = false;
+  const verbose = true;
 
   test(
       'Given a serverpod server with db '
@@ -45,11 +42,11 @@ void main() {
       ]),
     );
 
-    processOutput.outQueue.rest.listen((s) {});
-    processOutput.errQueue.rest.listen((s) {});
     var exitCode = await processOutput.process.exitCode;
     expect(exitCode, 0);
-  }, tags: [defaultIntegrationTestTag]);
+  },
+      timeout: const Timeout(Duration(seconds: 60)),
+      tags: [defaultIntegrationTestTag]);
 
   group('Given a running serverpod server', () {
     test(
@@ -81,8 +78,6 @@ void main() {
         ]),
       );
 
-      processOutput.outQueue.rest.listen((s) {});
-      processOutput.errQueue.rest.listen((s) {});
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
@@ -118,8 +113,6 @@ void main() {
         ]),
       );
 
-      processOutput.outQueue.rest.listen((s) {});
-      processOutput.errQueue.rest.listen((s) {});
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
@@ -170,8 +163,6 @@ void main() {
         ]),
       );
 
-      processOutput.outQueue.rest.listen((s) {});
-      processOutput.errQueue.rest.listen((s) {});
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
@@ -192,8 +183,6 @@ void main() {
         processOutput.outQueue,
         emitsThrough(contains('SERVERPOD initialized')),
       );
-      processOutput.outQueue.rest.listen((s) {});
-      processOutput.errQueue.rest.listen((s) {});
 
       await Future.delayed(Duration(seconds: 5));
       print('server should be up');
@@ -225,8 +214,6 @@ void main() {
       print('response received with code ${response.statusCode}');
       expect(response.statusCode, 200);
 
-      processOutput.outQueue.rest.listen((s) {});
-      processOutput.errQueue.rest.listen((s) {});
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
@@ -237,8 +224,8 @@ void main() {
 
 typedef ProcessOutput = ({
   Process process,
-  StreamQueue<String> outQueue,
-  StreamQueue<String> errQueue,
+  Stream<String> outQueue,
+  Stream<String> errQueue,
 });
 
 Stream<String> _streamToLines(
@@ -277,15 +264,37 @@ Future<ProcessOutput> startProcess(
 
   return (
     process: process,
-    outQueue: StreamQueue<String>(_streamToLines(
+    outQueue: _streamToLines(
       process.stdout,
       verbose: verbose,
       prefix: 'stdout',
-    )),
-    errQueue: StreamQueue<String>(_streamToLines(
+    ).asBroadcastStream(
+      onCancel: (controller) {
+        if (verbose) print('<pausing stdout stream>');
+        controller.pause();
+      },
+      onListen: (controller) async {
+        if (controller.isPaused) {
+          if (verbose) print('<resuming stdout stream>');
+          controller.resume();
+        }
+      },
+    ),
+    errQueue: _streamToLines(
       process.stderr,
       verbose: verbose,
       prefix: 'stderr',
-    )),
+    ).asBroadcastStream(
+      onCancel: (controller) {
+        if (verbose) print('<pausing stderr stream>');
+        controller.pause();
+      },
+      onListen: (controller) async {
+        if (controller.isPaused) {
+          if (verbose) print('<resuming stderr stream>');
+          controller.resume();
+        }
+      },
+    ),
   );
 }
