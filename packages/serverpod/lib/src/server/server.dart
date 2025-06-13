@@ -496,7 +496,7 @@ class Server {
       }
     }
 
-    // Get the the authentication key, if any
+    // Get the authentication key, if any
     // If it is provided in the HTTP authorization header we use that,
     // otherwise we look for it in the query parameters (the old method).
     var authHeaderValue =

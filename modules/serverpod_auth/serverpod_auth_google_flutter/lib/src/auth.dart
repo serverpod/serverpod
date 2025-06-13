@@ -29,7 +29,7 @@ import 'google/sign_in_with_google.dart';
 /// ```
 ///
 /// Consider using the GoogleSignInRedirectPageWidget inside [serverpod_auth_server]
-/// to handle the the logic for you.
+/// to handle the logic for you.
 /// ```dart
 /// // main.dart
 /// pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');

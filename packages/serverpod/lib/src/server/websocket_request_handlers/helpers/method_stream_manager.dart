@@ -601,7 +601,7 @@ class MethodStreamManager {
 
     outputController.addStream(methodStream).whenComplete(
           // The stream complete message is sent as an error to circumvent
-          // branching when passing along stream events to the the handler.
+          // branching when passing along stream events to the handler.
           () => outputController.addError(_StreamComplete()),
         );
   }
