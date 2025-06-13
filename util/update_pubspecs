@@ -66,8 +66,6 @@ cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server/CHANGELOG.md
 
@@ -118,8 +116,6 @@ cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_profile/server
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server/README.md
 
