@@ -341,7 +341,7 @@ class Serverpod {
     this.config = config?.copyWith(runMode: runMode) ??
         ServerpodConfig.load(
           runMode,
-          _calculateServerId(_commandLineArgs),
+          _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
           _passwords,
           commandLineArgs: _commandLineArgs.toMap(),
         );
@@ -728,10 +728,6 @@ class Serverpod {
     }
 
     return 'development';
-  }
-
-  String? _calculateServerId(CommandLineArgs commandLineArgs) {
-    return commandLineArgs.getRaw<String>(CliArgsConstants.serverId);
   }
 
   bool _completedHealthChecks = false;
