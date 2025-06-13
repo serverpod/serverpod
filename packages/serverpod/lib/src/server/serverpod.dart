@@ -720,14 +720,18 @@ class Serverpod {
         Platform.environment[ServerpodEnv.runMode.envVariable];
     if (runModeFromEnv != null) {
       return switch (runModeFromEnv) {
-        'development' || 'test' || 'staging' || 'production' => runModeFromEnv,
+        ServerpodRunMode.development ||
+        ServerpodRunMode.test ||
+        ServerpodRunMode.staging ||
+        ServerpodRunMode.production =>
+          runModeFromEnv,
         _ => throw ArgumentError(
             'Invalid run mode from environment (${ServerpodEnv.runMode.envVariable}): $runModeFromEnv',
           ),
       };
     }
 
-    return 'development';
+    return ServerpodRunMode.development;
   }
 
   bool _completedHealthChecks = false;
