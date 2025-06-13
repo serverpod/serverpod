@@ -24,12 +24,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
 
       await AuthenticationTokens.createTokens(
         session,
@@ -108,12 +104,10 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
+      final authUser = await AuthUsers.create(
         session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
       );
-
-      authUserId = authUser.id!;
+      authUserId = authUser.id;
 
       await withClock(
           Clock.fixed(DateTime.now()

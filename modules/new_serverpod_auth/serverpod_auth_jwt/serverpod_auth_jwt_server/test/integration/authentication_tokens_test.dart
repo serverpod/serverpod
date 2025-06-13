@@ -25,12 +25,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
     });
 
     tearDownAll(() {
@@ -114,12 +110,10 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
+      final authUser = await AuthUsers.create(
         session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
       );
-
-      authUserId = authUser.id!;
+      authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(
         session,
@@ -275,14 +269,11 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
+      final authUser = await AuthUsers.create(session);
 
       initialTokenPair = await AuthenticationTokens.createTokens(
         session,
-        authUserId: authUser.id!,
+        authUserId: authUser.id,
         scopes: {},
       );
 
@@ -332,12 +323,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
 
       await AuthenticationTokens.createTokens(session,
           authUserId: authUserId, scopes: {});
