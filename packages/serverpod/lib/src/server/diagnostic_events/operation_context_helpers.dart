@@ -14,12 +14,12 @@ DiagnosticEventContext contextFromServer(Server server) {
 }
 
 class RequestInfo {
-  final ConnectionInfo connectionInfo;
+  final String? clientIpAddress;
   final Uri uri;
 
-  const RequestInfo(this.connectionInfo, this.uri);
+  const RequestInfo(this.clientIpAddress, this.uri);
 
-  static final empty = RequestInfo(ConnectionInfo.empty(), Uri());
+  static final empty = RequestInfo(null, Uri());
 }
 
 extension RequestEx on Request? {
@@ -45,7 +45,7 @@ ClientCallOpContext contextFromRequest(
     operationType: operationType,
     sessionId: null,
     userAuthInfo: null,
-    connectionInfo: requestInfo.connectionInfo,
+    clientIpAddress: requestInfo.clientIpAddress,
     uri: requestInfo.uri,
   );
 }
@@ -105,7 +105,7 @@ WebCallOpContext _fromWebCall(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: requestInfo?.connectionInfo ?? ConnectionInfo.empty(),
+      clientIpAddress: requestInfo?.clientIpAddress,
       uri: requestInfo?.uri ?? Uri.http('', session.endpoint),
     );
 
@@ -118,11 +118,7 @@ MethodCallOpContext _fromMethodCall(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      // session.request is now relic.Request.
-      // toRequestInfo() extension method returns RequestInfo, which has connectionInfo.
-      // Currently, toRequestInfo() for relic.Request returns RequestInfo.empty(),
-      // so this will result in ConnectionInfo.empty().
-      connectionInfo: session.request.toRequestInfo().connectionInfo,
+      clientIpAddress: session.clientIpAddress,
       uri: session
           .uri, // MethodCallSession has its own uri field, which is used here.
       endpoint: session.endpoint,
@@ -139,7 +135,7 @@ StreamOpContext _fromMethodStream(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: requestInfo?.connectionInfo ?? ConnectionInfo.empty(),
+      clientIpAddress: requestInfo?.clientIpAddress,
       uri: requestInfo?.uri ?? Uri.http('localhost'),
       endpoint: session.endpoint,
       methodName: session.method,
@@ -155,11 +151,7 @@ StreamOpContext _fromStreaming(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      // session.request is now relic.Request.
-      // toRequestInfo() extension method returns RequestInfo, which has connectionInfo.
-      // Currently, toRequestInfo() for relic.Request returns RequestInfo.empty(),
-      // so this will result in ConnectionInfo.empty().
-      connectionInfo: session.request.toRequestInfo().connectionInfo,
+      clientIpAddress: session.clientIpAddress,
       uri: session.request.requestedUri, // Use requestedUri from relic.Request
       endpoint: session.endpoint,
       methodName: '-',

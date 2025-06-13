@@ -171,7 +171,7 @@ void main() {
             containsPair('operationType', 'OperationType.method'),
             contains('sessionId'),
             containsPair('userAuthInfo', null),
-            contains('connectionInfo'),
+            contains('clientIpAddress'),
             containsPair('uri', 'http://localhost:8080/exceptionTest'),
             containsPair('endpoint', 'exceptionTest'),
             containsPair('methodName', 'throwNormalException'),
