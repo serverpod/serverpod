@@ -738,7 +738,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(testToolsFile,
             contains('callAwaitableFunctionAndHandleExceptions('));
@@ -804,7 +804,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(testToolsFile,
             contains('callAwaitableFunctionAndHandleExceptions('));
@@ -869,7 +869,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(testToolsFile,
             contains('callAwaitableFunctionAndHandleExceptions('));
@@ -934,7 +934,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(
             testToolsFile,
@@ -1001,7 +1001,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(
             testToolsFile,
@@ -1072,7 +1072,7 @@ void main() {
     );
 
     test(
-      'then the the method body contains a call to the correct exception handler function.',
+      'then the method body contains a call to the correct exception handler function.',
       () {
         expect(
             testToolsFile, contains('callStreamFunctionAndHandleExceptions('));

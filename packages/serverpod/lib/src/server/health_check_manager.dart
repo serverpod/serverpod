@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:system_resources/system_resources.dart';
 
 /// Performs health checks on the server once a minute, typically this class
@@ -67,7 +67,7 @@ class HealthCheckManager {
   }
 
   Future<void> _innerPerformHealthCheck() async {
-    if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    if (_pod.config.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
 
@@ -98,9 +98,9 @@ class HealthCheckManager {
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.
-    if (_pod.commandLineArgs.role == ServerpodRole.monolith) {
+    if (_pod.config.role == ServerpodRole.monolith) {
       _scheduleNextCheck();
-    } else if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    } else if (_pod.config.role == ServerpodRole.maintenance) {
       onCompleted();
     }
   }
@@ -385,7 +385,7 @@ class HealthCheckManager {
       space: OriginSpace.framework,
       context: DiagnosticEventContext(
         serverId: _pod.serverId,
-        serverRunMode: _pod.commandLineArgs.role.name,
+        serverRunMode: _pod.config.role.name,
         serverName: '',
       ),
     );

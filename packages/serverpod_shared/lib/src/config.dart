@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_shared/src/environment_variables.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
 
 /// The configuration sections for the serverpod configuration file.
@@ -11,13 +11,32 @@ const int _defaultMaxRequestSize = 524288;
 
 const String _developmentRunMode = 'development';
 
+ServerConfig _createDefaultApiServer() => ServerConfig(
+      port: 8080,
+      publicHost: 'localhost',
+      publicPort: 8080,
+      publicScheme: 'http',
+    );
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
   final String runMode;
 
+  /// The servers role.
+  final ServerpodRole role;
+
   /// Id of the current server.
   final String serverId;
+
+  /// The servers logging mode.
+  final ServerpodLoggingMode loggingMode;
+
+  /// Whether to apply database migrations.
+  final bool applyMigrations;
+
+  /// Whether to apply database repair migration.
+  late final bool applyRepairMigration;
 
   /// Max limit in bytes of requests to the server.
   final int maxRequestSize;
@@ -58,6 +77,10 @@ class ServerpodConfig {
     required this.apiServer,
     this.runMode = _developmentRunMode,
     this.serverId = 'default',
+    this.role = ServerpodRole.monolith,
+    this.loggingMode = ServerpodLoggingMode.normal,
+    this.applyMigrations = false,
+    this.applyRepairMigration = false,
     this.maxRequestSize = 524288,
     this.insightsServer,
     this.webServer,
@@ -84,12 +107,7 @@ class ServerpodConfig {
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
     return ServerpodConfig(
-      apiServer: ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      ),
+      apiServer: _createDefaultApiServer(),
     );
   }
 
@@ -99,22 +117,35 @@ class ServerpodConfig {
   /// Throws an exception if the configuration is missing required fields.
   factory ServerpodConfig.loadFromMap(
     String runMode,
-    String serverId,
+    String? serverId,
     Map<String, String> passwords,
     Map configMap, {
     Map<String, String> environment = const {},
+    Map<String, dynamic>? commandLineArgs,
   }) {
     serverId = _readServerId(configMap, environment, serverId);
+    final role = _readRole(configMap, environment, commandLineArgs);
+    final loggingMode =
+        _readLoggingMode(configMap, environment, commandLineArgs);
+    final applyMigrations = _readApplyMigrations(
+      configMap,
+      environment,
+      commandLineArgs,
+    );
+    final applyRepairMigration = _readApplyRepairMigration(
+      configMap,
+      environment,
+      commandLineArgs,
+    );
 
     var apiConfig = _apiConfigMap(configMap, environment);
-    if (apiConfig == null) {
-      throw _ServerpodApiServerConfigMissing();
-    }
 
-    var apiServer = ServerConfig._fromJson(
-      apiConfig,
-      ServerpodConfigMap.apiServer,
-    );
+    var apiServer = apiConfig != null
+        ? ServerConfig._fromJson(
+            apiConfig,
+            ServerpodConfigMap.apiServer,
+          )
+        : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
     var insightsServer = insightsConfig != null
@@ -171,10 +202,7 @@ class ServerpodConfig {
             futureCallConfigJson,
             ServerpodConfigMap.futureCall,
           )
-        : const FutureCallConfig(
-            concurrencyLimit:
-                FutureCallConfig.defaultFutureCallConcurrencyLimit,
-          );
+        : const FutureCallConfig();
 
     var futureCallExecutionEnabled =
         _readIsFutureCallExecutionEnabled(configMap, environment);
@@ -182,6 +210,10 @@ class ServerpodConfig {
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
+      role: role,
+      loggingMode: loggingMode,
+      applyMigrations: applyMigrations,
+      applyRepairMigration: applyRepairMigration,
       apiServer: apiServer,
       maxRequestSize: maxRequestSize,
       insightsServer: insightsServer,
@@ -199,9 +231,10 @@ class ServerpodConfig {
   /// on run mode.
   factory ServerpodConfig.load(
     String runMode,
-    String serverId,
-    Map<String, String> passwords,
-  ) {
+    String? serverId,
+    Map<String, String> passwords, {
+    Map<String, dynamic>? commandLineArgs,
+  }) {
     dynamic doc = {};
 
     if (isConfigAvailable(runMode)) {
@@ -209,20 +242,63 @@ class ServerpodConfig {
       doc = loadYaml(data);
     }
 
-    try {
-      return ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        doc,
-        environment: Platform.environment,
-      );
-    } catch (e) {
-      if (e is _ServerpodApiServerConfigMissing) {
-        return ServerpodConfig.defaultConfig();
-      }
-      rethrow;
-    }
+    return ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      doc,
+      environment: Platform.environment,
+      commandLineArgs: commandLineArgs,
+    );
+  }
+
+  /// Creates a copy of this [ServerpodConfig] with the given fields replaced.
+  /// All fields that are not specified will keep their original values.
+  ///
+  /// Note that passing null for a field will not remove/nullify that field -
+  /// the original value will be retained. To explicitly set a field to null,
+  /// create a new [ServerpodConfig] instance instead of using copyWith.
+  ServerpodConfig copyWith({
+    ServerConfig? apiServer,
+    String? runMode,
+    String? serverId,
+    ServerpodRole? role,
+    ServerpodLoggingMode? loggingMode,
+    bool? applyMigrations,
+    bool? applyRepairMigration,
+    int? maxRequestSize,
+    ServerConfig? insightsServer,
+    ServerConfig? webServer,
+    DatabaseConfig? database,
+    RedisConfig? redis,
+    String? serviceSecret,
+    SessionLogConfig? sessionLogs,
+    Duration? experimentalDiagnosticHandlerTimeout,
+    FutureCallConfig? futureCall,
+    bool? futureCallExecutionEnabled,
+  }) {
+    return ServerpodConfig(
+      apiServer: apiServer ?? this.apiServer,
+      runMode: runMode ?? this.runMode,
+      serverId: serverId ?? this.serverId,
+      role: role ?? this.role,
+      loggingMode: loggingMode ?? this.loggingMode,
+      applyMigrations: applyMigrations ?? this.applyMigrations,
+      applyRepairMigration: applyRepairMigration ?? this.applyRepairMigration,
+      maxRequestSize: maxRequestSize ?? this.maxRequestSize,
+      insightsServer: insightsServer ?? this.insightsServer,
+      webServer: webServer ?? this.webServer,
+      database: database ?? this.database,
+      redis: redis ?? this.redis,
+      serviceSecret: serviceSecret ?? this.serviceSecret,
+      sessionLogs: sessionLogs ?? this.sessionLogs,
+      experimentalDiagnosticHandlerTimeout:
+          experimentalDiagnosticHandlerTimeout ??
+              this.experimentalDiagnosticHandlerTimeout,
+      futureCall: futureCall ?? this.futureCall,
+      futureCallExecutionEnabled:
+          futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+    );
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
@@ -474,7 +550,7 @@ class FutureCallConfig {
 
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
-    this.concurrencyLimit,
+    this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval =
         const Duration(milliseconds: defaultFutureCallScanIntervalMs),
   });
@@ -765,15 +841,200 @@ int _readMaxRequestSize(
 String _readServerId(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
-  String serverIdFromCommandLineArg,
+  String? serverIdFromCommandLineArg,
 ) {
-  if (serverIdFromCommandLineArg != 'default') {
+  if (serverIdFromCommandLineArg != null) {
     return serverIdFromCommandLineArg;
   }
-  var serverId = environment[ServerpodEnv.serverId.envVariable] ??
+
+  final serverId = environment[ServerpodEnv.serverId.envVariable] ??
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
+}
+
+ServerpodRole _readRole(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  Map<String, dynamic>? commandLineArgs,
+) {
+  final commandLineArg = commandLineArgs?[CliArgsConstants.role];
+  if (commandLineArg != null) {
+    if (commandLineArg is! ServerpodRole) {
+      throw ArgumentError(
+        'Invalid type for ${CliArgsConstants.role} from command line argument: ${commandLineArg.runtimeType}. '
+        'Expected ServerpodRole.',
+      );
+    }
+    return commandLineArg;
+  }
+
+  final envVariable = ServerpodEnv.role.envVariable;
+  final roleFromEnv = environment[envVariable];
+  if (roleFromEnv != null) {
+    return ServerpodRole.values.firstWhere(
+      (e) => e.name == roleFromEnv,
+      orElse: () => throw ArgumentError(
+        'Invalid $envVariable from environment variable: $roleFromEnv. '
+        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  final configKey = ServerpodEnv.role.configKey;
+  final roleFromConfig = configMap[configKey];
+  if (roleFromConfig != null) {
+    return ServerpodRole.values.firstWhere(
+      (e) => e.name == roleFromConfig,
+      orElse: () => throw ArgumentError(
+        'Invalid $configKey from configuration: $roleFromConfig. '
+        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  return ServerpodRole.monolith;
+}
+
+ServerpodLoggingMode _readLoggingMode(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  Map<String, dynamic>? commandLineArgs,
+) {
+  final commandLineArg = commandLineArgs?[CliArgsConstants.loggingMode];
+  if (commandLineArg != null) {
+    if (commandLineArg is! ServerpodLoggingMode) {
+      throw ArgumentError(
+        'Invalid type for ${CliArgsConstants.loggingMode} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
+        'Expected ServerpodLoggingMode.',
+      );
+    }
+    return commandLineArg;
+  }
+
+  final envVariable = ServerpodEnv.loggingMode.envVariable;
+  final loggingModeFromEnv = environment[envVariable];
+  if (loggingModeFromEnv != null) {
+    return ServerpodLoggingMode.values.firstWhere(
+      (e) => e.name == loggingModeFromEnv,
+      orElse: () => throw ArgumentError(
+        'Invalid $envVariable from environment variable: $loggingModeFromEnv. '
+        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  final configKey = ServerpodEnv.loggingMode.configKey;
+  final loggingModeFromConfig = configMap[configKey];
+  if (loggingModeFromConfig != null) {
+    return ServerpodLoggingMode.values.firstWhere(
+      (e) => e.name == loggingModeFromConfig,
+      orElse: () => throw ArgumentError(
+        'Invalid $configKey from configuration: $loggingModeFromConfig. '
+        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+      ),
+    );
+  }
+
+  return ServerpodLoggingMode.normal;
+}
+
+bool _readApplyMigrations(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  Map<String, dynamic>? commandLineArgs,
+) {
+  final commandLineArg = commandLineArgs?[CliArgsConstants.applyMigrations];
+  if (commandLineArg != null) {
+    if (commandLineArg is! bool) {
+      throw ArgumentError(
+        'Invalid type for ${CliArgsConstants.applyMigrations} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
+        'Expected bool.',
+      );
+    }
+    return commandLineArg;
+  }
+
+  final envVariable = ServerpodEnv.applyMigrations.envVariable;
+  final applyMigrationsFromEnv = environment[envVariable];
+  if (applyMigrationsFromEnv != null) {
+    return switch (applyMigrationsFromEnv) {
+      'true' || 'false' => bool.parse(applyMigrationsFromEnv),
+      _ => throw ArgumentError(
+          'Invalid $envVariable from environment variable: $applyMigrationsFromEnv. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  final configKey = ServerpodEnv.applyMigrations.configKey;
+  final applyMigrationsFromConfig = configMap[configKey];
+  if (applyMigrationsFromConfig != null) {
+    if (applyMigrationsFromConfig is bool) {
+      return applyMigrationsFromConfig;
+    }
+    return switch (applyMigrationsFromConfig.toString()) {
+      'true' || 'false' => bool.parse(applyMigrationsFromConfig.toString()),
+      _ => throw ArgumentError(
+          'Invalid $configKey from configuration: $applyMigrationsFromConfig. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  return false;
+}
+
+bool _readApplyRepairMigration(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+  Map<String, dynamic>? commandLineArgs,
+) {
+  final commandLineArg =
+      commandLineArgs?[CliArgsConstants.applyRepairMigration];
+  if (commandLineArg != null) {
+    if (commandLineArg is! bool) {
+      throw ArgumentError(
+        'Invalid type for ${CliArgsConstants.applyRepairMigration} '
+        'from command line argument: ${commandLineArg.runtimeType}. '
+        'Expected bool.',
+      );
+    }
+    return commandLineArg;
+  }
+
+  final envVariable = ServerpodEnv.applyRepairMigration.envVariable;
+  final applyRepairMigrationFromEnv = environment[envVariable];
+  if (applyRepairMigrationFromEnv != null) {
+    return switch (applyRepairMigrationFromEnv) {
+      'true' || 'false' => bool.parse(applyRepairMigrationFromEnv),
+      _ => throw ArgumentError(
+          'Invalid $envVariable from environment variable: $applyRepairMigrationFromEnv. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  final configKey = ServerpodEnv.applyRepairMigration.configKey;
+  final applyRepairMigrationFromConfig = configMap[configKey];
+  if (applyRepairMigrationFromConfig != null) {
+    if (applyRepairMigrationFromConfig is bool) {
+      return applyRepairMigrationFromConfig;
+    }
+    return switch (applyRepairMigrationFromConfig.toString()) {
+      'true' ||
+      'false' =>
+        bool.parse(applyRepairMigrationFromConfig.toString()),
+      _ => throw ArgumentError(
+          'Invalid $configKey from configuration: $applyRepairMigrationFromConfig. '
+          'Valid values are: true, false',
+        ),
+    };
+  }
+
+  return false;
 }
 
 bool _readIsFutureCallExecutionEnabled(
@@ -821,12 +1082,4 @@ void _validateJsonConfig(
 List<String>? _parseList(String? value) {
   if (value == null) return null;
   return value.split(',').map((e) => e.trim()).toList();
-}
-
-/// The configuration keys for the serverpod configuration file.
-class _ServerpodApiServerConfigMissing implements Exception {
-  @override
-  String toString() {
-    return 'Serverpod API server configuration is missing.';
-  }
 }

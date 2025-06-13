@@ -141,8 +141,23 @@ enum ServerpodEnv {
   /// The format for the console log.
   sessionConsoleLogFormat,
 
+  /// The run mode of the server.
+  runMode,
+
+  /// The role of the server.
+  role,
+
+  /// The logging mode of the server.
+  loggingMode,
+
   /// The id of the server.
-  serverId;
+  serverId,
+
+  /// If true, the server will apply database migrations on startup.
+  applyMigrations,
+
+  /// If true, the server will apply database repair migration on startup.
+  applyRepairMigration;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -181,7 +196,12 @@ enum ServerpodEnv {
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
+      (ServerpodEnv.runMode) => 'mode',
+      (ServerpodEnv.role) => 'role',
+      (ServerpodEnv.loggingMode) => 'logging',
       (ServerpodEnv.serverId) => 'serverId',
+      (ServerpodEnv.applyMigrations) => 'applyMigrations',
+      (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
     };
   }
 
@@ -229,7 +249,12 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogFormat) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT',
+      (ServerpodEnv.runMode) => 'SERVERPOD_RUN_MODE',
+      (ServerpodEnv.role) => 'SERVERPOD_SERVER_ROLE',
+      (ServerpodEnv.loggingMode) => 'SERVERPOD_LOGGING_MODE',
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
+      (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
+      (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
     };
   }
 }

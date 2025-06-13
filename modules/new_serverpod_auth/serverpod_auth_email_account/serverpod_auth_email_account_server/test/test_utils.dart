@@ -3,11 +3,8 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
-Future<AuthUser> createAuthUser(final Session session) {
-  return AuthUser.db.insertRow(
-    session,
-    AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-  );
+Future<AuthUserModel> createAuthUser(final Session session) {
+  return AuthUsers.create(session);
 }
 
 Future<
@@ -129,10 +126,12 @@ Future<void> resetPassword(
 }
 
 Future<void> cleanUpEmailAccountDatabaseEntities(final Session session) async {
-  await AuthUser.db.deleteWhere(
-    session,
-    where: (final t) => Constant.bool(true),
-  );
+  for (final authUser in await AuthUsers.list(session)) {
+    await AuthUsers.delete(
+      session,
+      authUserId: authUser.id,
+    );
+  }
 
   await EmailAccountRequest.db.deleteWhere(
     session,

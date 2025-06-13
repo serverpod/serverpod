@@ -57,12 +57,11 @@ abstract class EmailAccountEndpoint extends Endpoint {
         transaction: transaction,
       );
 
-      final newUser = await AuthUser.db.insertRow(
+      final newUser = await AuthUsers.create(
         session,
-        AuthUser(scopeNames: {}),
         transaction: transaction,
       );
-      final authUserId = newUser.id!;
+      final authUserId = newUser.id;
 
       await UserProfiles.createUserProfile(
         session,
@@ -119,7 +118,10 @@ abstract class EmailAccountEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    final authUser = (await AuthUser.db.findById(session, authUserId))!;
+    final authUser = await AuthUsers.get(
+      session,
+      authUserId: authUserId,
+    );
 
     if (authUser.blocked) {
       throw AuthUserBlockedException();
