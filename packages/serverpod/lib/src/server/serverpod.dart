@@ -623,13 +623,31 @@ class Serverpod {
       await _healthCheckManager?.start();
     }
 
-    logVerbose('Serverpod start complete.');
-
     if (commandLineArgs.role == ServerpodRole.maintenance &&
         appliedMigrations) {
+      logVerbose('Serverpod start complete.');
       logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
     }
+
+    var initializedServices = experimental.service.initializedServices.toList();
+    for (var service in initializedServices) {
+      try {
+        await service.init(this);
+      } catch (e, stackTrace) {
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Failed to initialize service: $service',
+        );
+      }
+    }
+
+    if (initializedServices.isNotEmpty) {
+      logVerbose('Finished initializing services');
+    }
+
+    logVerbose('Serverpod start complete.');
   }
 
   Future<void> _applyMigrations({
@@ -889,6 +907,19 @@ class Serverpod {
   }) async {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
+
+    var disposableServices = experimental.service.disposableServices.toList();
+    for (var service in disposableServices) {
+      try {
+        await service.dispose(this);
+      } catch (e, stackTrace) {
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Failed to dispose service: $service',
+        );
+      }
+    }
 
     var futures = [
       _shutdownTestAuditor(),

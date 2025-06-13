@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'locator_exceptions.dart';
+import 'service.dart';
 
 /// A service locator that allows registering and locating services
 /// by type or by a specific key.
@@ -7,7 +10,7 @@ import 'locator_exceptions.dart';
 /// in applications, allowing for flexible service retrieval without
 /// tight coupling between components.
 class ServiceLocator {
-  final Map<Object, dynamic> _services = {};
+  final LinkedHashMap<Object, dynamic> _services = LinkedHashMap();
 
   /// Creates a new [ServiceLocator].
   ServiceLocator();
@@ -45,6 +48,9 @@ class ServiceLocator {
   ///
   /// Throws [ServiceAlreadyRegisteredException] if a service is already
   /// registered for the given key or type.
+  ///
+  /// Services can implement the [InitializedService] or [DisposableService]
+  /// interfaces to participate in the server's lifecycle hooks.
   void register<T>(T service, {Object? key}) => switch (key) {
         Object k => _register<T>(k, service),
         null => _register<T>(T, service),
@@ -79,4 +85,18 @@ extension type ServiceLocatorView(ServiceLocator serviceLocator) {
   /// Locates a service by its type or key.
   /// Throws [ServiceNotFoundException] if the service is not found.
   T locate<T>([Object? key]) => serviceLocator.locate<T>(key);
+}
+
+/// Provides utility methods for the [ServiceLocator] that are not exported
+/// from the Serverpod package.
+extension ServiceLocatorUtils on ServiceLocator {
+  /// Returns a list of all initialized services in the order they where
+  /// registered.
+  Iterable<InitializedService> get initializedServices =>
+      _services.values.whereType<InitializedService>();
+
+  /// Returns a list of all disposable services in the reverse order they were
+  /// registered.
+  Iterable<DisposableService> get disposableServices =>
+      _services.values.whereType<DisposableService>().toList().reversed;
 }

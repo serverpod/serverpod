@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/util/service_locator/service.dart';
 import 'package:test/test.dart';
 import 'package:serverpod/src/util/service_locator/service_locator.dart';
 import 'package:serverpod/src/util/service_locator/locator_exceptions.dart';
@@ -5,6 +9,30 @@ import 'package:serverpod/src/util/service_locator/locator_exceptions.dart';
 class TestService {}
 
 class AnotherService {}
+
+class TestDisposableService implements DisposableService {
+  final int id;
+
+  TestDisposableService(this.id);
+
+  @override
+  Future<void> dispose(Serverpod serverpod) async {}
+
+  @override
+  String toString() => '#$id disposal service';
+}
+
+class TestInitializedService implements InitializedService {
+  final int id;
+
+  TestInitializedService(this.id);
+
+  @override
+  Future<void> init(Serverpod serverpod) async {}
+
+  @override
+  String toString() => '#$id initialized service';
+}
 
 void main() {
   group('Given empty service locator ', () {
@@ -163,5 +191,65 @@ void main() {
     var locatedService = serviceLocatorView.locate<TestService>();
 
     expect(locatedService, same(service));
+  });
+
+  group(
+      'Given service locator with registered disposable and initialized service ',
+      () {
+    late ServiceLocator locator;
+    final disposableService = TestDisposableService(1);
+    final initializedService = TestInitializedService(2);
+
+    setUp(() {
+      locator = ServiceLocator();
+      locator.register(disposableService);
+      locator.register(initializedService);
+    });
+
+    test(
+        'when fetching all disposable services '
+        'then only disposable service is returned', () {
+      expect(locator.disposableServices, equals([disposableService]));
+    });
+
+    test(
+        'when fetching all initialized services '
+        'then only initialized service is returned', () {
+      expect(locator.initializedServices, equals([initializedService]));
+    });
+  });
+
+  test(
+      'Given service locator with multiple initialized services registered in order '
+      'when fetching initializedServices '
+      'then services are returned in registration order', () {
+    final locator = ServiceLocator();
+    final initialized1 = TestInitializedService(1);
+    final initialized2 = TestInitializedService(2);
+    final initialized3 = TestInitializedService(3);
+
+    locator.register(initialized1, key: #key1);
+    locator.register(initialized2, key: #key2);
+    locator.register(initialized3, key: #key3);
+
+    final initialized = locator.initializedServices.toList();
+    expect(initialized, equals([initialized1, initialized2, initialized3]));
+  });
+
+  test(
+      'Given service locator with multiple disposable services registered in order '
+      'when fetching disposableServices '
+      'then services are returned in reverse registration order', () {
+    final locator = ServiceLocator();
+    final disposable1 = TestDisposableService(1);
+    final disposable2 = TestDisposableService(2);
+    final disposable3 = TestDisposableService(3);
+
+    locator.register(disposable1, key: #key1);
+    locator.register(disposable2, key: #key2);
+    locator.register(disposable3, key: #key3);
+
+    final disposables = locator.disposableServices.toList();
+    expect(disposables, equals([disposable3, disposable2, disposable1]));
   });
 }
