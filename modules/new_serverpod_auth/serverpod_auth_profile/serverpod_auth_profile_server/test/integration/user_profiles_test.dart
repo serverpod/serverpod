@@ -574,13 +574,10 @@ void main() {
         authUserId = authUser.id;
       });
 
-      Future<void> clearDb() async {
-        final session = sessionBuilder.build();
+      tearDown(() async {
         // also cleans up related profile and profile images
         await AuthUsers.delete(session, authUserId: authUserId);
-      }
-
-      tearDown(clearDb);
+      });
 
       test(
           'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
