@@ -130,6 +130,10 @@ abstract class Session implements DatabaseAccessor {
   /// Method that triggered this session, if any.
   final String? method;
 
+  /// The IP address of the client that made this request.
+  /// This is extracted from HTTP headers and may not be trustworthy.
+  final String? clientIpAddress;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     UuidValue? sessionId,
@@ -141,6 +145,7 @@ abstract class Session implements DatabaseAccessor {
     required this.endpoint,
     int? messageId,
     this.method,
+    this.clientIpAddress,
   })  : _authenticationKey = authenticationKey,
         _messageId = messageId,
         sessionId = sessionId ?? const Uuid().v4obj() {
@@ -339,6 +344,7 @@ class MethodCallSession extends Session {
     required this.queryParameters,
     required super.authenticationKey,
     super.enableLogging = true,
+    super.clientIpAddress,
   })  : _method = method,
         super(method: method);
 }
@@ -353,6 +359,7 @@ class WebCallSession extends Session {
     required super.endpoint,
     required super.authenticationKey,
     super.enableLogging = true,
+    super.clientIpAddress,
   });
 }
 

@@ -482,7 +482,7 @@ StreamOpContext _makeEventContext(
     serverRunMode: server.runMode,
     sessionId: session?.sessionId,
     userAuthInfo: session?.authInfoOrNull,
-    connectionInfo: request.toRequestInfo().connectionInfo,
+    clientIpAddress: session?.clientIpAddress,
     uri: request.requestedUri,
     endpoint: endpoint,
     methodName: method,

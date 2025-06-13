@@ -34,14 +34,17 @@ abstract class TestWebSocketServer {
       return context.connect(webSocketHandler);
     }
 
-    var server = await serve(
-      requestHandler,
+    final adapter = IOAdapter(await HttpServer.bind(
       InternetAddress.loopbackIPv4,
       0, // Pick an available port
+    ));
+    final server = RelicServer(
+      adapter,
     );
+    await server.mountAndStart(requestHandler);
 
-    var webSocketHost = Uri.parse(
-        'ws://${InternetAddress.loopbackIPv4.host}:${server.adapter.port}');
+    var webSocketHost =
+        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${adapter.port}');
     onConnected?.call(webSocketHost);
 
     return server;
