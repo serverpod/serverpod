@@ -30,9 +30,18 @@ final class AuthenticationTokensAdmin {
     final Session session, {
     final UuidValue? authUserId,
     final Transaction? transaction,
+
+    /// How many items to return at maximum. Must be <= 1000.
     final int limit = 100,
     final int offset = 0,
   }) async {
+    if (limit <= 0 || limit > 1000) {
+      throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
+    }
+    if (offset < 0) {
+      throw ArgumentError.value(offset, 'offset', 'Must be >= 0');
+    }
+
     final refreshTokens = await RefreshToken.db.find(
       session,
       where: (final t) => (authUserId != null

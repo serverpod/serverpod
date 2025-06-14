@@ -180,6 +180,45 @@ void main() {
         ],
       );
     });
+
+    test(
+        'when calling `listAuthenticationTokens` with `limit: 0`, then it throws.',
+        () async {
+      await expectLater(
+        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+          session,
+          authUserId: authUserId1,
+          limit: 0,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+        'when calling `listAuthenticationTokens` with `limit: 1001`, then it throws.',
+        () async {
+      await expectLater(
+        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+          session,
+          authUserId: authUserId1,
+          limit: 1001,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+        'when calling `listAuthenticationTokens` with `offset: -1`, then it throws.',
+        () async {
+      await expectLater(
+        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+          session,
+          authUserId: authUserId1,
+          offset: -1,
+        ),
+        throwsArgumentError,
+      );
+    });
   });
 
   withServerpod('Given an auth user with an expired authentication token,',
