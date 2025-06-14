@@ -57,11 +57,13 @@ class HealthCheckManager {
       await _innerPerformHealthCheck();
       completer.complete();
     } catch (e, stackTrace) {
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error in health check',
-      );
+      if (!(e is ExitException && e.exitCode == 0)) {
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error in health check',
+        );
+      }
       completer.completeError(e, stackTrace);
     }
   }
