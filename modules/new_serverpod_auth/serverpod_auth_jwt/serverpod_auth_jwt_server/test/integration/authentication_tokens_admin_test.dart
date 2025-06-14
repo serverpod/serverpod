@@ -53,7 +53,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for all users, then it is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().findAuthenticationTokens(
+      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
         session,
       );
 
@@ -66,7 +66,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for that specific user, then it is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().findAuthenticationTokens(
+      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
         session,
         authUserId: authUserId,
       );
@@ -80,7 +80,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for another user, then nothing is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().findAuthenticationTokens(
+      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
         session,
         authUserId: const Uuid().v4obj(),
       );

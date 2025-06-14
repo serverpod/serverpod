@@ -244,7 +244,7 @@ abstract final class AuthenticationTokens {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    return admin.findAuthenticationTokens(
+    return admin.listAuthenticationTokens(
       session,
       authUserId: authUserId,
       transaction: transaction,

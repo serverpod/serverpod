@@ -26,7 +26,7 @@ final class AuthenticationTokensAdmin {
   }
 
   /// List all authentication tokens matching the given filters.
-  Future<List<AuthenticationTokenInfo>> findAuthenticationTokens(
+  Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
     final Session session, {
     final UuidValue? authUserId,
     final Transaction? transaction,
