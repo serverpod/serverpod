@@ -11,12 +11,12 @@ extension AuthenticationTokenInfoExtension on AuthenticationTokenInfo {
   }
 
   /// Returns the extra claims set on this authentication token.
-  Map<String, dynamic>? get extraClaimsMap {
-    final extraClaims = this.extraClaims;
-    if (extraClaims == null) {
+  Map<String, dynamic>? get extraClaims {
+    final extraClaimsJSON = this.extraClaimsJSON;
+    if (extraClaimsJSON == null) {
       return null;
     }
 
-    return (jsonDecode(extraClaims) as Map).cast<String, dynamic>();
+    return (jsonDecode(extraClaimsJSON) as Map).cast<String, dynamic>();
   }
 }

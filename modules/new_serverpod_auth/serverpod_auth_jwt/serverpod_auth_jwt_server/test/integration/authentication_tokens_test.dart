@@ -247,7 +247,7 @@ void main() {
       );
 
       expect(
-        authTokensForUser.single.extraClaimsMap,
+        authTokensForUser.single.extraClaims,
         {'string': 'foo', 'int': 1},
       );
     });

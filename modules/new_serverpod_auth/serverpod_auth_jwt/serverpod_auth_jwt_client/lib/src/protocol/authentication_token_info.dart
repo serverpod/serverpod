@@ -16,7 +16,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
     required this.id,
     required this.authUserId,
     required this.scopeNames,
-    this.extraClaims,
+    this.extraClaimsJSON,
     required this.lastUpdated,
     required this.created,
   });
@@ -25,7 +25,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
-    String? extraClaims,
+    String? extraClaimsJSON,
     required DateTime lastUpdated,
     required DateTime created,
   }) = _AuthenticationTokenInfoImpl;
@@ -39,7 +39,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
-      extraClaims: jsonSerialization['extraClaims'] as String?,
+      extraClaimsJSON: jsonSerialization['extraClaimsJSON'] as String?,
       lastUpdated:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUpdated']),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
@@ -57,7 +57,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
   /// Extra claims set on this session.
   ///
   /// Stored as JSON encoded `Map<String, dynamic>`
-  String? extraClaims;
+  String? extraClaimsJSON;
 
   /// The last time when a new token pair was created for this session.
   DateTime lastUpdated;
@@ -72,7 +72,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
-    String? extraClaims,
+    String? extraClaimsJSON,
     DateTime? lastUpdated,
     DateTime? created,
   });
@@ -82,7 +82,7 @@ abstract class AuthenticationTokenInfo implements _i1.SerializableModel {
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
-      if (extraClaims != null) 'extraClaims': extraClaims,
+      if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
       'lastUpdated': lastUpdated.toJson(),
       'created': created.toJson(),
     };
@@ -101,14 +101,14 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
-    String? extraClaims,
+    String? extraClaimsJSON,
     required DateTime lastUpdated,
     required DateTime created,
   }) : super._(
           id: id,
           authUserId: authUserId,
           scopeNames: scopeNames,
-          extraClaims: extraClaims,
+          extraClaimsJSON: extraClaimsJSON,
           lastUpdated: lastUpdated,
           created: created,
         );
@@ -121,7 +121,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
-    Object? extraClaims = _Undefined,
+    Object? extraClaimsJSON = _Undefined,
     DateTime? lastUpdated,
     DateTime? created,
   }) {
@@ -129,7 +129,8 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
       id: id ?? this.id,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
+      extraClaimsJSON:
+          extraClaimsJSON is String? ? extraClaimsJSON : this.extraClaimsJSON,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       created: created ?? this.created,
     );

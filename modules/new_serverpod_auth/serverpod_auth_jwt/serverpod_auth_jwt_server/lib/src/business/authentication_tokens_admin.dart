@@ -52,7 +52,7 @@ final class AuthenticationTokensAdmin {
           scopeNames: refreshToken.scopeNames,
           created: refreshToken.created,
           lastUpdated: refreshToken.lastUpdated,
-          extraClaims: refreshToken.extraClaims,
+          extraClaimsJSON: refreshToken.extraClaims,
         ),
     ];
 
