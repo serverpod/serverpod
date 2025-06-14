@@ -47,7 +47,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'gen_random_uuid_v7()',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
