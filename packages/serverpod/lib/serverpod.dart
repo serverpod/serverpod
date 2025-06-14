@@ -30,6 +30,7 @@ export 'package:serverpod/src/cache/cache_miss_handler.dart';
 // Experimental features
 export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
-export 'service_locator.dart';
-
+export 'src/util/service_locator/locator_exceptions.dart';
+export 'src/util/service_locator/service.dart';
+export 'src/util/service_locator/service_locator.dart';
 export 'package:meta/meta.dart' show useResult;
