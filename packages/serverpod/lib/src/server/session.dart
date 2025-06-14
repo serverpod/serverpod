@@ -11,8 +11,7 @@ import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
-import 'package:serverpod/src/util/service_locator/service_locator.dart';
-
+import 'package:serverpod/service_locator.dart';
 import '../cache/caches.dart';
 
 /// A listener that will be called when the session is about to close.
