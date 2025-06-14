@@ -228,21 +228,30 @@ typedef ProcessOutput = ({
   Stream<String> errQueue,
 });
 
-Stream<String> _streamToLines(
+Stream<String> _streamTransformer(
   Stream<List<int>> stream, {
   bool verbose = false,
   String? prefix,
 }) {
-  var lines = stream
-      .transform(Utf8Decoder())
-      .expand((str) => str.split('\n').where((l) => l.isNotEmpty));
-  if (!verbose) {
-    return lines;
-  }
-  return lines.map((line) {
-    print('${prefix != null ? '$prefix: ' : ''}$line');
+  final startOfLine = prefix != null ? '$prefix: ' : '';
+  return stream
+      .transform(const Utf8Decoder())
+      .transform(const LineSplitter())
+      .map((line) {
+    if (verbose) print('$startOfLine$line');
     return line;
-  });
+  }).asBroadcastStream(
+    onCancel: (controller) {
+      if (verbose) print('<pausing ${prefix ?? ''} stream>');
+      controller.pause();
+    },
+    onListen: (controller) async {
+      if (controller.isPaused) {
+        if (verbose) print('<resuming ${prefix ?? ''} stream>');
+        controller.resume();
+      }
+    },
+  );
 }
 
 Future<ProcessOutput> startProcess(
@@ -256,45 +265,29 @@ Future<ProcessOutput> startProcess(
     arguments,
     environment: environment,
   );
+  final outQueue = _streamTransformer(
+    process.stdout,
+    prefix: 'stdout',
+    verbose: verbose,
+  );
+  final errQueue = _streamTransformer(
+    process.stderr,
+    prefix: 'stderr',
+    verbose: verbose,
+  );
 
-  // ensure process is killed when test is done
+  // ensure output is drained and process is killed when test is done
   addTearDown(() {
+    if (verbose) print('<process teardown>');
+    outQueue.listen((s) {}, cancelOnError: true);
+    errQueue.listen((s) {}, cancelOnError: true);
+
     process.kill(ProcessSignal.sigkill);
   });
 
   return (
     process: process,
-    outQueue: _streamToLines(
-      process.stdout,
-      verbose: verbose,
-      prefix: 'stdout',
-    ).asBroadcastStream(
-      onCancel: (controller) {
-        if (verbose) print('<pausing stdout stream>');
-        controller.pause();
-      },
-      onListen: (controller) async {
-        if (controller.isPaused) {
-          if (verbose) print('<resuming stdout stream>');
-          controller.resume();
-        }
-      },
-    ),
-    errQueue: _streamToLines(
-      process.stderr,
-      verbose: verbose,
-      prefix: 'stderr',
-    ).asBroadcastStream(
-      onCancel: (controller) {
-        if (verbose) print('<pausing stderr stream>');
-        controller.pause();
-      },
-      onListen: (controller) async {
-        if (controller.isPaused) {
-          if (verbose) print('<resuming stderr stream>');
-          controller.resume();
-        }
-      },
-    ),
+    outQueue: outQueue,
+    errQueue: errQueue,
   );
 }
