@@ -344,4 +344,55 @@ void main() {
       expect(tokenInfos.single.authUserId, authUserId);
     });
   });
+
+  withServerpod('Given two auth users with an authentication token each,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId1;
+    late UuidValue authUserId2;
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'pepper123';
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser1 = await AuthUsers.create(session);
+      authUserId1 = authUser1.id;
+
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId1,
+        scopes: {},
+      );
+
+      final authUser2 = await AuthUsers.create(session);
+      authUserId2 = authUser2.id;
+
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId2,
+        scopes: {},
+      );
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test(
+        'when listing the tokens for one user, then only their tokens are returned.',
+        () async {
+      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId1,
+      );
+
+      expect(tokenInfos.single.authUserId, authUserId1);
+    });
+  });
 }

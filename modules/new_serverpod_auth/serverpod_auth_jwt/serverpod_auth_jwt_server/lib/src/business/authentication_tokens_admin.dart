@@ -30,12 +30,17 @@ final class AuthenticationTokensAdmin {
     final Session session, {
     final UuidValue? authUserId,
     final Transaction? transaction,
+    final int limit = 100,
+    final int offset = 0,
   }) async {
     final refreshTokens = await RefreshToken.db.find(
       session,
       where: (final t) => (authUserId != null
           ? t.authUserId.equals(authUserId)
           : Constant.bool(true)),
+      limit: limit,
+      offset: offset,
+      orderBy: (final t) => t.id,
       transaction: transaction,
     );
 
