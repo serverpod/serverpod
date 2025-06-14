@@ -20,12 +20,8 @@ void main() {
 
         UserProfileConfig.current = UserProfileConfig();
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
-
-        authUserId = authUser.id!;
+        final authUser = await AuthUsers.create(session);
+        authUserId = authUser.id;
       });
 
       test(
@@ -193,11 +189,8 @@ void main() {
         imageFetchFunc: (final _) => onePixelPng,
       );
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
 
       await UserProfiles.createUserProfile(
         session,
@@ -447,17 +440,13 @@ void main() {
   withServerpod('Given an `AuthUser` with a profile with an image,',
       (final sessionBuilder, final endpoints) {
     late Session session;
-    late AuthUser authUser;
     late UuidValue authUserId;
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
 
       await UserProfiles.createUserProfile(
         session,
@@ -542,7 +531,7 @@ void main() {
 
     test('when deleting the auth user, then the profile is cleaned up as well.',
         () async {
-      await AuthUser.db.deleteRow(session, authUser);
+      await AuthUsers.delete(session, authUserId: authUserId);
 
       final authUserAfterDelete = await AuthUser.db.findById(
         session,
@@ -581,24 +570,14 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await AuthUser.db.insertRow(
-          session,
-          AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-        );
-
-        authUserId = authUser.id!;
+        final authUser = await AuthUsers.create(session);
+        authUserId = authUser.id;
       });
 
-      Future<void> clearDb() async {
-        final session = sessionBuilder.build();
+      tearDown(() async {
         // also cleans up related profile and profile images
-        await AuthUser.db.deleteWhere(
-          session,
-          where: (final f) => f.id.equals(authUserId),
-        );
-      }
-
-      tearDown(clearDb);
+        await AuthUsers.delete(session, authUserId: authUserId);
+      });
 
       test(
           'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',

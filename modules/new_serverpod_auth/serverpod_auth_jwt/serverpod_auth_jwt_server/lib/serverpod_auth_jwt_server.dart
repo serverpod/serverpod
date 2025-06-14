@@ -6,3 +6,5 @@ export 'src/business/authentication_tokens_admin.dart'
     show AuthenticationTokensAdmin;
 export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart' hide RefreshToken, RefreshTokenRepository;
+export 'src/util/authentication_token_info_extension.dart'
+    show AuthenticationTokenInfoExtension;

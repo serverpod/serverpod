@@ -2,7 +2,7 @@ class: RefreshToken
 serverOnly: true
 table: serverpod_auth_jwt_refresh_token
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this refresh token belongs to.
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)

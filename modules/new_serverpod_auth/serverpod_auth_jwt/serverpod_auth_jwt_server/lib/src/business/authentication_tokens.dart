@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
@@ -82,6 +83,8 @@ abstract final class AuthenticationTokens {
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
         extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
+        created: clock.now(),
+        lastUpdated: clock.now(),
       ),
       transaction: transaction,
     );
@@ -169,7 +172,7 @@ abstract final class AuthenticationTokens {
       refreshTokenRow.copyWith(
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
-        lastUpdated: DateTime.now(),
+        lastUpdated: clock.now(),
       ),
       transaction: transaction,
     );
@@ -235,6 +238,19 @@ abstract final class AuthenticationTokens {
     );
   }
 
+  /// List all authentication tokens belonging to the given [authUserId].
+  static Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
+    final Session session, {
+    required final UuidValue authUserId,
+    final Transaction? transaction,
+  }) async {
+    return admin.listAuthenticationTokens(
+      session,
+      authUserId: authUserId,
+      transaction: transaction,
+    );
+  }
+
   static Uint8List _generateRefreshTokenFixedSecret() {
     return generateRandomBytes(
       AuthenticationTokens.config.refreshTokenFixedSecretLength,
@@ -271,8 +287,8 @@ extension on Set<Scope> {
 
 extension on RefreshToken {
   bool get isExpired {
-    final oldestAcceptedRefreshTokenDate = DateTime.now()
-        .subtract(AuthenticationTokens.config.refreshTokenLifetime);
+    final oldestAcceptedRefreshTokenDate =
+        clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
     return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
   }

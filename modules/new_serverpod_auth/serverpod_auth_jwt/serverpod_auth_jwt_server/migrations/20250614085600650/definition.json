@@ -11,7 +11,7 @@
           "name": "id",
           "columnType": 7,
           "isNullable": false,
-          "columnDefault": "gen_random_uuid()",
+          "columnDefault": "gen_random_uuid_v7()",
           "dartType": "UuidValue?"
         },
         {
@@ -1298,7 +1298,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_jwt",
-      "version": "20250528131509267"
+      "version": "20250614085600650"
     },
     {
       "module": "serverpod",
