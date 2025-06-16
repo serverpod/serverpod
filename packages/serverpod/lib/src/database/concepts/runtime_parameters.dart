@@ -66,7 +66,7 @@ class HnswIndexQueryOptions extends RuntimeParameters {
 }
 
 /// Query options for the IVFFLAT index.
-class IvfFlatIndexQueryOptions extends RuntimeParameters {
+class IvfflatIndexQueryOptions extends RuntimeParameters {
   /// The number of probes for the IVFFLAT index.
   final int? probes;
 
@@ -77,7 +77,7 @@ class IvfFlatIndexQueryOptions extends RuntimeParameters {
   final int? maxProbes;
 
   /// Creates a new IVFFLAT index query options object.
-  const IvfFlatIndexQueryOptions({
+  const IvfflatIndexQueryOptions({
     this.probes,
     this.iterativeScan,
     this.maxProbes,

@@ -35,10 +35,10 @@ void main() async {
   });
 
   test(
-      'Given a transaction with IvfFlatIndexQueryOptions parameters '
+      'Given a transaction with IvfflatIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
-    var options = const IvfFlatIndexQueryOptions(
+    var options = const IvfflatIndexQueryOptions(
       probes: 8,
       iterativeScan: IterativeScan.strict,
       maxProbes: 20,
@@ -106,7 +106,7 @@ void main() async {
       maxScanTuples: 500,
       scanMemMultiplier: 2,
     );
-    var ivfFlatOptions = const IvfFlatIndexQueryOptions(
+    var ivfflatOptions = const IvfflatIndexQueryOptions(
       probes: 6,
       iterativeScan: IterativeScan.strict,
       maxProbes: 12,
@@ -124,7 +124,7 @@ void main() async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters([
         hnswOptions,
-        ivfFlatOptions,
+        ivfflatOptions,
         vectorOptions,
       ]);
 
@@ -139,15 +139,15 @@ void main() async {
       expect(hnswRow['hnsw_max_scan_tuples'], '500');
       expect(hnswRow['hnsw_scan_mem_multiplier'], '2');
 
-      var ivfFlatCheckQuery = ivfFlatOptions.buildCheckValues();
-      var ivfFlatResult = await session.db.unsafeQuery(
-        ivfFlatCheckQuery,
+      var ivfflatCheckQuery = ivfflatOptions.buildCheckValues();
+      var ivfflatResult = await session.db.unsafeQuery(
+        ivfflatCheckQuery,
         transaction: transaction,
       );
-      var ivfFlatRow = ivfFlatResult.first.toColumnMap();
-      expect(ivfFlatRow['ivfflat_probes'], '6');
-      expect(ivfFlatRow['ivfflat_iterative_scan'], 'strict_order');
-      expect(ivfFlatRow['ivfflat_max_probes'], '12');
+      var ivfflatRow = ivfflatResult.first.toColumnMap();
+      expect(ivfflatRow['ivfflat_probes'], '6');
+      expect(ivfflatRow['ivfflat_iterative_scan'], 'strict_order');
+      expect(ivfflatRow['ivfflat_max_probes'], '12');
 
       var vectorCheckQuery = vectorOptions.buildCheckValues();
       var vectorResult = await session.db.unsafeQuery(

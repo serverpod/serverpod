@@ -228,11 +228,11 @@ void main() {
     });
   });
 
-  group('Given a IvfFlatIndexQueryOptions', () {
+  group('Given a IvfflatIndexQueryOptions', () {
     test(
         'when build is called with all parameters then correct SQL statements are returned.',
         () {
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 5,
         iterativeScan: IterativeScan.strict,
         maxProbes: 10,
@@ -251,7 +251,7 @@ void main() {
     test(
         'when build is called with isLocal true then LOCAL is included in SQL statements.',
         () {
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 3,
         maxProbes: 15,
       );
@@ -268,7 +268,7 @@ void main() {
     test(
         'when build is called with partial parameters then only non-null parameters are included.',
         () {
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 7,
         iterativeScan: null,
         maxProbes: null,
@@ -282,7 +282,7 @@ void main() {
     test(
         'when buildCheckValues is called then SELECT statement with all options is returned.',
         () {
-      var options = const IvfFlatIndexQueryOptions();
+      var options = const IvfflatIndexQueryOptions();
 
       var result = options.buildCheckValues();
 

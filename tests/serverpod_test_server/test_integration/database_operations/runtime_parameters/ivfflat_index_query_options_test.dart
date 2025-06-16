@@ -5,10 +5,10 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given IvfFlatIndexQueryOptions runtime parameters', () {
+  group('Given IvfflatIndexQueryOptions runtime parameters', () {
     test('when setting parameters globally then options are applied globally.',
         () async {
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 5,
         iterativeScan: IterativeScan.strict,
         maxProbes: 10,
@@ -29,7 +29,7 @@ void main() async {
     test(
         'when setting parameters locally in a transaction then options are applied locally.',
         () async {
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 3,
         iterativeScan: IterativeScan.relaxed,
         maxProbes: 15,
@@ -58,14 +58,14 @@ void main() async {
     test(
         'when setting parameters with null values then only later non-null values are set and override earlier ones.',
         () async {
-      var allOptions = const IvfFlatIndexQueryOptions(
+      var allOptions = const IvfflatIndexQueryOptions(
         probes: 5,
         iterativeScan: IterativeScan.strict,
         maxProbes: 10,
       );
       await session.db.setRuntimeParameters([allOptions]);
 
-      var options = const IvfFlatIndexQueryOptions(
+      var options = const IvfflatIndexQueryOptions(
         probes: 7,
         iterativeScan: null,
         maxProbes: null,
@@ -86,7 +86,7 @@ void main() async {
     test(
         'when setting parameters in transaction then they do not affect global settings.',
         () async {
-      var globalOptions = const IvfFlatIndexQueryOptions(
+      var globalOptions = const IvfflatIndexQueryOptions(
         probes: 5,
         iterativeScan: IterativeScan.strict,
         maxProbes: 10,
@@ -94,7 +94,7 @@ void main() async {
       await session.db.setRuntimeParameters([globalOptions]);
 
       await session.db.transaction((transaction) async {
-        var localOptions = const IvfFlatIndexQueryOptions(
+        var localOptions = const IvfflatIndexQueryOptions(
           probes: 10,
           iterativeScan: IterativeScan.relaxed,
           maxProbes: 15,
