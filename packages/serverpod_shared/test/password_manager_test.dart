@@ -383,6 +383,21 @@ development:
   });
 
   test(
+      'Given user-defined environment passwords when loading passwords then custom SERVERPOD_PASSWORD_ prefixed variables override built-in passwords',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      loadYaml(_defaultPasswordConfig),
+      environment: {
+        'SERVERPOD_DATABASE_PASSWORD': 'built_in_pass',
+        'SERVERPOD_PASSWORD_database': 'custom_override_pass',
+      },
+    );
+
+    expect(passwords['database'], 'custom_override_pass');
+  });
+
+  test(
       'Given user-defined environment passwords when loading passwords then environment variables with empty suffix are ignored',
       () {
     final passwords =
