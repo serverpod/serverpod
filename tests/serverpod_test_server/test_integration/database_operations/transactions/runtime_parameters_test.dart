@@ -9,17 +9,17 @@ void main() async {
       'Given a transaction with HnswIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
-    var options = const HnswIndexQueryOptions(
-      efSearch: 75,
-      iterativeScan: IterativeScan.strict,
-      maxScanTuples: 750,
-      scanMemMultiplier: 3,
-    );
-
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters([options]);
+      await transaction.setRuntimeParameters((params) => [
+            params.hnswIndexQuery(
+              efSearch: 75,
+              iterativeScan: IterativeScan.strict,
+              maxScanTuples: 750,
+              scanMemMultiplier: 3,
+            ),
+          ]);
 
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = HnswIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
         checkQuery,
         transaction: transaction,
@@ -38,16 +38,16 @@ void main() async {
       'Given a transaction with IvfflatIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
-    var options = const IvfflatIndexQueryOptions(
-      probes: 8,
-      iterativeScan: IterativeScan.strict,
-      maxProbes: 20,
-    );
-
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters([options]);
+      await transaction.setRuntimeParameters((params) => [
+            params.ivfflatIndexQuery(
+              probes: 8,
+              iterativeScan: IterativeScan.strict,
+              maxProbes: 20,
+            ),
+          ]);
 
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
         checkQuery,
         transaction: transaction,
@@ -65,20 +65,20 @@ void main() async {
       'Given a transaction with VectorIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
-    var options = const VectorIndexQueryOptions(
-      enableIndexScan: true,
-      enableSeqScan: false,
-      minParallelTableScanSize: 2048,
-      parallelSetupCost: 3,
-      maintenanceWorkMem: 65536 * 4,
-      maxParallelMaintenanceWorkers: 8,
-      maxParallelWorkersPerGather: 4,
-    );
-
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters([options]);
+      await transaction.setRuntimeParameters((params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: true,
+              enableSeqScan: false,
+              minParallelTableScanSize: 2048,
+              parallelSetupCost: 3,
+              maintenanceWorkMem: 65536 * 4,
+              maxParallelMaintenanceWorkers: 8,
+              maxParallelWorkersPerGather: 4,
+            ),
+          ]);
 
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = VectorIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
         checkQuery,
         transaction: transaction,
@@ -100,35 +100,31 @@ void main() async {
       'Given a transaction with mixed runtime parameters '
       'when setting multiple different parameter types using transaction.setRuntimeParameters '
       'then all options are applied locally to the transaction', () async {
-    var hnswOptions = const HnswIndexQueryOptions(
-      efSearch: 50,
-      iterativeScan: IterativeScan.relaxed,
-      maxScanTuples: 500,
-      scanMemMultiplier: 2,
-    );
-    var ivfflatOptions = const IvfflatIndexQueryOptions(
-      probes: 6,
-      iterativeScan: IterativeScan.strict,
-      maxProbes: 12,
-    );
-    var vectorOptions = const VectorIndexQueryOptions(
-      enableIndexScan: false,
-      enableSeqScan: true,
-      minParallelTableScanSize: 1024,
-      parallelSetupCost: 2,
-      maintenanceWorkMem: 65536 * 3,
-      maxParallelMaintenanceWorkers: 6,
-      maxParallelWorkersPerGather: 3,
-    );
-
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters([
-        hnswOptions,
-        ivfflatOptions,
-        vectorOptions,
-      ]);
+      await transaction.setRuntimeParameters((params) => [
+            params.hnswIndexQuery(
+              efSearch: 50,
+              iterativeScan: IterativeScan.relaxed,
+              maxScanTuples: 500,
+              scanMemMultiplier: 2,
+            ),
+            params.ivfflatIndexQuery(
+              probes: 6,
+              iterativeScan: IterativeScan.strict,
+              maxProbes: 12,
+            ),
+            params.vectorIndexQuery(
+              enableIndexScan: false,
+              enableSeqScan: true,
+              minParallelTableScanSize: 1024,
+              parallelSetupCost: 2,
+              maintenanceWorkMem: 65536 * 3,
+              maxParallelMaintenanceWorkers: 6,
+              maxParallelWorkersPerGather: 3,
+            ),
+          ]);
 
-      var hnswCheckQuery = hnswOptions.buildCheckValues();
+      var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
       var hnswResult = await session.db.unsafeQuery(
         hnswCheckQuery,
         transaction: transaction,
@@ -139,7 +135,7 @@ void main() async {
       expect(hnswRow['hnsw_max_scan_tuples'], '500');
       expect(hnswRow['hnsw_scan_mem_multiplier'], '2');
 
-      var ivfflatCheckQuery = ivfflatOptions.buildCheckValues();
+      var ivfflatCheckQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var ivfflatResult = await session.db.unsafeQuery(
         ivfflatCheckQuery,
         transaction: transaction,
@@ -149,7 +145,7 @@ void main() async {
       expect(ivfflatRow['ivfflat_iterative_scan'], 'strict_order');
       expect(ivfflatRow['ivfflat_max_probes'], '12');
 
-      var vectorCheckQuery = vectorOptions.buildCheckValues();
+      var vectorCheckQuery = VectorIndexQueryOptions().buildCheckValues();
       var vectorResult = await session.db.unsafeQuery(
         vectorCheckQuery,
         transaction: transaction,
@@ -169,17 +165,17 @@ void main() async {
       'Given a transaction with runtime parameters containing null values '
       'when setting parameters using transaction.setRuntimeParameters '
       'then only non-null values are applied to the transaction', () async {
-    var options = const HnswIndexQueryOptions(
-      efSearch: 80,
-      iterativeScan: null,
-      maxScanTuples: null,
-      scanMemMultiplier: 4,
-    );
-
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters([options]);
+      await transaction.setRuntimeParameters((params) => [
+            params.hnswIndexQuery(
+              efSearch: 80,
+              iterativeScan: null,
+              maxScanTuples: null,
+              scanMemMultiplier: 4,
+            ),
+          ]);
 
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = HnswIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
         checkQuery,
         transaction: transaction,
@@ -199,24 +195,27 @@ void main() async {
       'Given global runtime parameters are set '
       'when setting different parameters in a transaction using transaction.setRuntimeParameters '
       'then transaction parameters do not affect global settings', () async {
-    var globalOptions = const HnswIndexQueryOptions(
-      efSearch: 100,
-      iterativeScan: IterativeScan.strict,
-      maxScanTuples: 1000,
-      scanMemMultiplier: 2,
-    );
-    await session.db.setRuntimeParameters([globalOptions]);
+    var checkQuery = HnswIndexQueryOptions().buildCheckValues();
+
+    await session.db.setRuntimeParameters((params) => [
+          params.hnswIndexQuery(
+            efSearch: 100,
+            iterativeScan: IterativeScan.strict,
+            maxScanTuples: 1000,
+            scanMemMultiplier: 2,
+          ),
+        ]);
 
     await session.db.transaction((transaction) async {
-      var localOptions = const HnswIndexQueryOptions(
-        efSearch: 200,
-        iterativeScan: IterativeScan.relaxed,
-      );
-      await transaction.setRuntimeParameters([localOptions]);
+      await transaction.setRuntimeParameters((params) => [
+            params.hnswIndexQuery(
+              efSearch: 200,
+              iterativeScan: IterativeScan.relaxed,
+            ),
+          ]);
 
-      var localCheckQuery = localOptions.buildCheckValues();
       var localResult = await session.db.unsafeQuery(
-        localCheckQuery,
+        checkQuery,
         transaction: transaction,
       );
       var localRow = localResult.first.toColumnMap();
@@ -226,8 +225,7 @@ void main() async {
       expect(localRow['hnsw_scan_mem_multiplier'], '2');
     });
 
-    var globalCheckQuery = globalOptions.buildCheckValues();
-    var globalResult = await session.db.unsafeQuery(globalCheckQuery);
+    var globalResult = await session.db.unsafeQuery(checkQuery);
     var globalRow = globalResult.first.toColumnMap();
     expect(globalRow['hnsw_ef_search'], '100');
     expect(globalRow['hnsw_iterative_scan'], 'strict_order');

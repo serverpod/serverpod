@@ -8,15 +8,15 @@ void main() async {
   group('Given IvfflatIndexQueryOptions runtime parameters', () {
     test('when setting parameters globally then options are applied globally.',
         () async {
-      var options = const IvfflatIndexQueryOptions(
-        probes: 5,
-        iterativeScan: IterativeScan.strict,
-        maxProbes: 10,
-      );
+      await session.db.setRuntimeParameters((params) => [
+            params.ivfflatIndexQuery(
+              probes: 5,
+              iterativeScan: IterativeScan.strict,
+              maxProbes: 10,
+            ),
+          ]);
 
-      await session.db.setRuntimeParameters([options]);
-
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
 
       expect(result.length, 1);
@@ -29,19 +29,19 @@ void main() async {
     test(
         'when setting parameters locally in a transaction then options are applied locally.',
         () async {
-      var options = const IvfflatIndexQueryOptions(
-        probes: 3,
-        iterativeScan: IterativeScan.relaxed,
-        maxProbes: 15,
-      );
-
       await session.db.transaction((transaction) async {
         await session.db.setRuntimeParameters(
-          [options],
+          (params) => [
+            params.ivfflatIndexQuery(
+              probes: 3,
+              iterativeScan: IterativeScan.relaxed,
+              maxProbes: 15,
+            ),
+          ],
           transaction: transaction,
         );
 
-        var checkQuery = options.buildCheckValues();
+        var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
         var result = await session.db.unsafeQuery(
           checkQuery,
           transaction: transaction,
@@ -58,22 +58,23 @@ void main() async {
     test(
         'when setting parameters with null values then only later non-null values are set and override earlier ones.',
         () async {
-      var allOptions = const IvfflatIndexQueryOptions(
-        probes: 5,
-        iterativeScan: IterativeScan.strict,
-        maxProbes: 10,
-      );
-      await session.db.setRuntimeParameters([allOptions]);
+      await session.db.setRuntimeParameters((params) => [
+            params.ivfflatIndexQuery(
+              probes: 5,
+              iterativeScan: IterativeScan.strict,
+              maxProbes: 10,
+            ),
+          ]);
 
-      var options = const IvfflatIndexQueryOptions(
-        probes: 7,
-        iterativeScan: null,
-        maxProbes: null,
-      );
+      await session.db.setRuntimeParameters((params) => [
+            params.ivfflatIndexQuery(
+              probes: 7,
+              iterativeScan: null,
+              maxProbes: null,
+            ),
+          ]);
 
-      await session.db.setRuntimeParameters([options]);
-
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
 
       expect(result.length, 1);
@@ -86,25 +87,28 @@ void main() async {
     test(
         'when setting parameters in transaction then they do not affect global settings.',
         () async {
-      var globalOptions = const IvfflatIndexQueryOptions(
-        probes: 5,
-        iterativeScan: IterativeScan.strict,
-        maxProbes: 10,
-      );
-      await session.db.setRuntimeParameters([globalOptions]);
+      var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
+
+      await session.db.setRuntimeParameters((params) => [
+            params.ivfflatIndexQuery(
+              probes: 5,
+              iterativeScan: IterativeScan.strict,
+              maxProbes: 10,
+            ),
+          ]);
 
       await session.db.transaction((transaction) async {
-        var localOptions = const IvfflatIndexQueryOptions(
-          probes: 10,
-          iterativeScan: IterativeScan.relaxed,
-          maxProbes: 15,
-        );
         await session.db.setRuntimeParameters(
-          [localOptions],
+          (params) => [
+            params.ivfflatIndexQuery(
+              probes: 10,
+              iterativeScan: IterativeScan.relaxed,
+              maxProbes: 15,
+            ),
+          ],
           transaction: transaction,
         );
 
-        var checkQuery = localOptions.buildCheckValues();
         var localResult = await session.db.unsafeQuery(
           checkQuery,
           transaction: transaction,
@@ -116,7 +120,6 @@ void main() async {
         expect(localRow['ivfflat_max_probes'], '15');
       });
 
-      var checkQuery = globalOptions.buildCheckValues();
       var globalResult = await session.db.unsafeQuery(checkQuery);
       var globalRow = globalResult.first.toColumnMap();
       expect(globalRow['ivfflat_probes'], '5');

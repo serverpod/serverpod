@@ -223,12 +223,12 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<void> setRuntimeParameters(
-    List<RuntimeParameters> parameters, {
+    RuntimeParametersListBuilder builder, {
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.setRuntimeParameters(
-        parameters,
+        builder,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,

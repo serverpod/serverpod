@@ -384,6 +384,66 @@ void main() {
       );
     });
   });
+
+  group('Given RuntimeParametersBuilder', () {
+    test(
+        'when using hnswIndexQuery then correct HnswIndexQueryOptions is created.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.hnswIndexQuery(
+        efSearch: 100,
+        iterativeScan: IterativeScan.strict,
+        maxScanTuples: 1000,
+        scanMemMultiplier: 2,
+      );
+
+      expect(options, isA<HnswIndexQueryOptions>());
+      expect(options.efSearch, 100);
+      expect(options.iterativeScan, IterativeScan.strict);
+      expect(options.maxScanTuples, 1000);
+      expect(options.scanMemMultiplier, 2);
+    });
+
+    test(
+        'when using ivfflatIndexQuery then correct IvfflatIndexQueryOptions is created.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.ivfflatIndexQuery(
+        probes: 5,
+        iterativeScan: IterativeScan.relaxed,
+        maxProbes: 10,
+      );
+
+      expect(options, isA<IvfflatIndexQueryOptions>());
+      expect(options.probes, 5);
+      expect(options.iterativeScan, IterativeScan.relaxed);
+      expect(options.maxProbes, 10);
+    });
+
+    test(
+        'when using vectorIndexQuery then correct VectorIndexQueryOptions is created.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.vectorIndexQuery(
+        enableIndexScan: true,
+        enableSeqScan: false,
+        minParallelTableScanSize: 1024,
+        parallelSetupCost: 1000,
+        maintenanceWorkMem: 64,
+        maxParallelMaintenanceWorkers: 4,
+        maxParallelWorkersPerGather: 2,
+      );
+
+      expect(options, isA<VectorIndexQueryOptions>());
+      expect(options.enableIndexScan, true);
+      expect(options.enableSeqScan, false);
+      expect(options.minParallelTableScanSize, 1024);
+      expect(options.parallelSetupCost, 1000);
+      expect(options.maintenanceWorkMem, 64);
+      expect(options.maxParallelMaintenanceWorkers, 4);
+      expect(options.maxParallelWorkersPerGather, 2);
+    });
+  });
 }
 
 // Mock classes for testing RuntimeParameters behavior

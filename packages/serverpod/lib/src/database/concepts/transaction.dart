@@ -27,7 +27,15 @@ abstract interface class Transaction {
   Future<Savepoint> createSavepoint();
 
   /// Sets runtime parameters local to the transaction.
-  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters);
+  ///
+  /// Use the callback function to discover runtime parameters:
+  /// ```dart
+  /// await transaction.setRuntimeParameters((params) => [
+  ///   params.hnswIndexQuery(efSearch: 50),
+  ///   params.vectorIndexQuery(enableIndexScan: true),
+  /// ]);
+  /// ```
+  Future<void> setRuntimeParameters(RuntimeParametersListBuilder builder);
 }
 
 /// Isolation levels for transactions.

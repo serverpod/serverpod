@@ -843,7 +843,10 @@ class _PostgresTransaction implements Transaction {
   }
 
   @override
-  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters) async {
+  Future<void> setRuntimeParameters(
+    RuntimeParametersListBuilder builder,
+  ) async {
+    final parameters = builder(RuntimeParametersBuilder());
     await Future.wait([
       for (var group in parameters)
         for (var statement in group.buildStatements(isLocal: true))

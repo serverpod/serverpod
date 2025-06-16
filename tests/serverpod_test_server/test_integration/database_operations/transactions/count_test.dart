@@ -13,7 +13,7 @@ class MockTransaction implements Transaction {
   }
 
   @override
-  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters) {
+  Future<void> setRuntimeParameters(RuntimeParametersListBuilder builder) {
     throw UnimplementedError();
   }
 }

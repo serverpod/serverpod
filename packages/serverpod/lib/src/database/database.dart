@@ -349,13 +349,22 @@ class Database {
 
   /// Sets runtime parameters. If a transaction is provided, the parameters
   /// are set as local to that transaction. Otherwise, they are set globally.
+  ///
+  /// Use the callback function to discover runtime parameters:
+  /// ```dart
+  /// await session.db.setRuntimeParameters((params) => [
+  ///   params.hnswIndexQuery(efSearch: 100),
+  ///   params.vectorIndexQuery(enableSeqScan: false),
+  /// ]);
+  /// ```
   Future<void> setRuntimeParameters(
-    List<RuntimeParameters> parameters, {
+    RuntimeParametersListBuilder builder, {
     Transaction? transaction,
   }) async {
     if (transaction != null) {
-      return transaction.setRuntimeParameters(parameters);
+      return transaction.setRuntimeParameters(builder);
     }
+    final parameters = builder(RuntimeParametersBuilder());
     for (var option in parameters) {
       await unsafeExecute(option.build(isLocal: transaction != null));
     }

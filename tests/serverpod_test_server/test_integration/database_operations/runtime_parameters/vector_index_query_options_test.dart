@@ -8,19 +8,19 @@ void main() async {
   group('Given VectorIndexQueryOptions runtime parameters', () {
     test('when setting parameters globally then options are applied globally.',
         () async {
-      var options = const VectorIndexQueryOptions(
-        enableIndexScan: true,
-        enableSeqScan: false,
-        minParallelTableScanSize: 1024,
-        parallelSetupCost: 1,
-        maintenanceWorkMem: 65536,
-        maxParallelMaintenanceWorkers: 4,
-        maxParallelWorkersPerGather: 2,
-      );
+      await session.db.setRuntimeParameters((params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: true,
+              enableSeqScan: false,
+              minParallelTableScanSize: 1024,
+              parallelSetupCost: 1,
+              maintenanceWorkMem: 65536,
+              maxParallelMaintenanceWorkers: 4,
+              maxParallelWorkersPerGather: 2,
+            ),
+          ]);
 
-      await session.db.setRuntimeParameters([options]);
-
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = VectorIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
 
       expect(result.length, 1);
@@ -37,23 +37,23 @@ void main() async {
     test(
         'when setting parameters locally in a transaction then options are applied locally.',
         () async {
-      var options = const VectorIndexQueryOptions(
-        enableIndexScan: false,
-        enableSeqScan: true,
-        minParallelTableScanSize: 512,
-        parallelSetupCost: 2,
-        maintenanceWorkMem: 65536 * 2,
-        maxParallelMaintenanceWorkers: 2,
-        maxParallelWorkersPerGather: 1,
-      );
-
       await session.db.transaction((transaction) async {
         await session.db.setRuntimeParameters(
-          [options],
+          (params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: false,
+              enableSeqScan: true,
+              minParallelTableScanSize: 512,
+              parallelSetupCost: 2,
+              maintenanceWorkMem: 65536 * 2,
+              maxParallelMaintenanceWorkers: 2,
+              maxParallelWorkersPerGather: 1,
+            ),
+          ],
           transaction: transaction,
         );
 
-        var checkQuery = options.buildCheckValues();
+        var checkQuery = VectorIndexQueryOptions().buildCheckValues();
         var result = await session.db.unsafeQuery(
           checkQuery,
           transaction: transaction,
@@ -74,30 +74,31 @@ void main() async {
     test(
         'when setting parameters with null values then only later non-null values are set and override earlier ones.',
         () async {
-      var allOptions = const VectorIndexQueryOptions(
-        enableIndexScan: true,
-        enableSeqScan: false,
-        minParallelTableScanSize: 1024,
-        parallelSetupCost: 1,
-        maintenanceWorkMem: 65536,
-        maxParallelMaintenanceWorkers: 4,
-        maxParallelWorkersPerGather: 2,
-      );
-      await session.db.setRuntimeParameters([allOptions]);
+      await session.db.setRuntimeParameters((params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: true,
+              enableSeqScan: false,
+              minParallelTableScanSize: 1024,
+              parallelSetupCost: 1,
+              maintenanceWorkMem: 65536,
+              maxParallelMaintenanceWorkers: 4,
+              maxParallelWorkersPerGather: 2,
+            ),
+          ]);
 
-      var options = const VectorIndexQueryOptions(
-        enableIndexScan: true,
-        enableSeqScan: null,
-        minParallelTableScanSize: null,
-        parallelSetupCost: 2,
-        maintenanceWorkMem: null,
-        maxParallelMaintenanceWorkers: null,
-        maxParallelWorkersPerGather: 3,
-      );
+      await session.db.setRuntimeParameters((params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: true,
+              enableSeqScan: null,
+              minParallelTableScanSize: null,
+              parallelSetupCost: 2,
+              maintenanceWorkMem: null,
+              maxParallelMaintenanceWorkers: null,
+              maxParallelWorkersPerGather: 3,
+            ),
+          ]);
 
-      await session.db.setRuntimeParameters([options]);
-
-      var checkQuery = options.buildCheckValues();
+      var checkQuery = VectorIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
 
       expect(result.length, 1);
@@ -114,33 +115,36 @@ void main() async {
     test(
         'when setting parameters in transaction then they do not affect global settings.',
         () async {
-      var globalOptions = const VectorIndexQueryOptions(
-        enableIndexScan: true,
-        enableSeqScan: false,
-        minParallelTableScanSize: 1024,
-        parallelSetupCost: 1,
-        maintenanceWorkMem: 65536,
-        maxParallelMaintenanceWorkers: 4,
-        maxParallelWorkersPerGather: 2,
-      );
-      await session.db.setRuntimeParameters([globalOptions]);
+      var checkQuery = VectorIndexQueryOptions().buildCheckValues();
+
+      await session.db.setRuntimeParameters((params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: true,
+              enableSeqScan: false,
+              minParallelTableScanSize: 1024,
+              parallelSetupCost: 1,
+              maintenanceWorkMem: 65536,
+              maxParallelMaintenanceWorkers: 4,
+              maxParallelWorkersPerGather: 2,
+            ),
+          ]);
 
       await session.db.transaction((transaction) async {
-        var localOptions = const VectorIndexQueryOptions(
-          enableIndexScan: false,
-          enableSeqScan: true,
-          minParallelTableScanSize: 512,
-          parallelSetupCost: 2,
-          maintenanceWorkMem: 65536 * 2,
-          maxParallelMaintenanceWorkers: 2,
-          maxParallelWorkersPerGather: 1,
-        );
         await session.db.setRuntimeParameters(
-          [localOptions],
+          (params) => [
+            params.vectorIndexQuery(
+              enableIndexScan: false,
+              enableSeqScan: true,
+              minParallelTableScanSize: 512,
+              parallelSetupCost: 2,
+              maintenanceWorkMem: 65536 * 2,
+              maxParallelMaintenanceWorkers: 2,
+              maxParallelWorkersPerGather: 1,
+            ),
+          ],
           transaction: transaction,
         );
 
-        var checkQuery = localOptions.buildCheckValues();
         var localResult = await session.db.unsafeQuery(
           checkQuery,
           transaction: transaction,
@@ -155,7 +159,6 @@ void main() async {
         expect(localRow['max_parallel_workers_per_gather'], '1');
       });
 
-      var checkQuery = globalOptions.buildCheckValues();
       var globalResult = await session.db.unsafeQuery(checkQuery);
       var globalRow = globalResult.first.toColumnMap();
       expect(globalRow['enable_indexscan'], 'on');

@@ -146,3 +146,62 @@ enum IterativeScan {
   /// provides better recall.
   relaxed,
 }
+
+/// Builder class for runtime parameters that provides discoverable factory methods.
+/// This enables the callback pattern: setRuntimeParameters((params) => [...])
+class RuntimeParametersBuilder {
+  /// Creates HNSW index query options for vector similarity search. For more
+  /// information on each parameter, refer to the [HnswIndexQueryOptions] class.
+  HnswIndexQueryOptions hnswIndexQuery({
+    int? efSearch,
+    IterativeScan? iterativeScan,
+    int? maxScanTuples,
+    int? scanMemMultiplier,
+  }) =>
+      HnswIndexQueryOptions(
+        efSearch: efSearch,
+        iterativeScan: iterativeScan,
+        maxScanTuples: maxScanTuples,
+        scanMemMultiplier: scanMemMultiplier,
+      );
+
+  /// Creates IVFFLAT index query options for vector similarity search. For more
+  /// information on each parameter, refer to the [IvfflatIndexQueryOptions] class.
+  IvfflatIndexQueryOptions ivfflatIndexQuery({
+    int? probes,
+    IterativeScan? iterativeScan,
+    int? maxProbes,
+  }) =>
+      IvfflatIndexQueryOptions(
+        probes: probes,
+        iterativeScan: iterativeScan,
+        maxProbes: maxProbes,
+      );
+
+  /// Creates vector index query options for general vector operations. For more
+  /// information on each parameter, refer to the [VectorIndexQueryOptions] class.
+  VectorIndexQueryOptions vectorIndexQuery({
+    bool? enableIndexScan,
+    bool? enableSeqScan,
+    int? minParallelTableScanSize,
+    int? parallelSetupCost,
+    int? maintenanceWorkMem,
+    int? maxParallelMaintenanceWorkers,
+    int? maxParallelWorkersPerGather,
+  }) =>
+      VectorIndexQueryOptions(
+        enableIndexScan: enableIndexScan,
+        enableSeqScan: enableSeqScan,
+        minParallelTableScanSize: minParallelTableScanSize,
+        parallelSetupCost: parallelSetupCost,
+        maintenanceWorkMem: maintenanceWorkMem,
+        maxParallelMaintenanceWorkers: maxParallelMaintenanceWorkers,
+        maxParallelWorkersPerGather: maxParallelWorkersPerGather,
+      );
+}
+
+/// A function that returns a list of [RuntimeParameters] for configuring
+/// database runtime parameters.
+typedef RuntimeParametersListBuilder = List<RuntimeParameters> Function(
+  RuntimeParametersBuilder params,
+);
