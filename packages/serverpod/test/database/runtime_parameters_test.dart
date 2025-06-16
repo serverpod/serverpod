@@ -22,9 +22,9 @@ void main() {
         'SET test.boolean_true = on;\n'
         'SET test.boolean_false = off;\n'
         'SET test.integer_value = 17;\n'
-        'SET test.string_value = test_string;\n'
+        'SET test.string_value = \'test_string\';\n'
         'SET test.enum_value = strict_order;\n'
-        'SET nested.option = nested_value;',
+        'SET nested.option = \'nested_value\';',
       );
     });
 
@@ -43,7 +43,7 @@ void main() {
         result,
         'SET LOCAL test.boolean_true = on;\n'
         'SET LOCAL test.integer_value = 100;\n'
-        'SET LOCAL nested.option = nested_value;',
+        'SET LOCAL nested.option = \'nested_value\';',
       );
     });
 
@@ -75,7 +75,7 @@ void main() {
       expect(
         result,
         'SET test.boolean_true = on;\n'
-        'SET test.string_value = partial_test;',
+        'SET test.string_value = \'partial_test\';',
       );
     });
 
@@ -136,7 +136,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET nested.option = nested_value;');
+        expect(result, 'SET nested.option = \'nested_value\';');
       });
 
       test(
@@ -148,7 +148,7 @@ void main() {
 
         var result = options.build(isLocal: true);
 
-        expect(result, 'SET LOCAL nested.option = nested_value;');
+        expect(result, 'SET LOCAL nested.option = \'nested_value\';');
       });
     });
   });
