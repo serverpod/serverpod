@@ -25,12 +25,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
-
-      authUserId = authUser.id!;
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
     });
 
     tearDownAll(() {
@@ -114,12 +110,10 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
+      final authUser = await AuthUsers.create(
         session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
       );
-
-      authUserId = authUser.id!;
+      authUserId = authUser.id;
 
       tokenPair = await AuthenticationTokens.createTokens(
         session,
@@ -242,6 +236,21 @@ void main() {
         throwsA(isA<RefreshTokenInvalidSecretException>()),
       );
     });
+
+    test(
+        'when looking at the auth token via `listAuthenticationTokens`, then the extra claims can be read as a Map.',
+        () async {
+      final authTokensForUser =
+          await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(
+        authTokensForUser.single.extraClaims,
+        {'string': 'foo', 'int': 1},
+      );
+    });
   });
 
   withServerpod('Given an initial `TokenPair` and its refreshed successor,', (
@@ -260,14 +269,11 @@ void main() {
 
       session = sessionBuilder.build();
 
-      final authUser = await AuthUser.db.insertRow(
-        session,
-        AuthUser(created: DateTime.now(), scopeNames: {}, blocked: false),
-      );
+      final authUser = await AuthUsers.create(session);
 
       initialTokenPair = await AuthenticationTokens.createTokens(
         session,
-        authUserId: authUser.id!,
+        authUserId: authUser.id,
         scopes: {},
       );
 
@@ -299,6 +305,94 @@ void main() {
         ),
         throwsA(isA<RefreshTokenNotFoundException>()),
       );
+    });
+  });
+
+  withServerpod('Given an auth user with an authentication token,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'pepper123';
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+
+      await AuthenticationTokens.createTokens(session,
+          authUserId: authUserId, scopes: {});
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test('when listing the tokens for that user, then it is returned.',
+        () async {
+      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(tokenInfos.single.authUserId, authUserId);
+    });
+  });
+
+  withServerpod('Given two auth users with an authentication token each,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId1;
+    late UuidValue authUserId2;
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride =
+          AuthenticationTokenSecretsMock()
+            ..setHs512Algorithm()
+            ..refreshTokenHashPepper = 'pepper123';
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser1 = await AuthUsers.create(session);
+      authUserId1 = authUser1.id;
+
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId1,
+        scopes: {},
+      );
+
+      final authUser2 = await AuthUsers.create(session);
+      authUserId2 = authUser2.id;
+
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId2,
+        scopes: {},
+      );
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test(
+        'when listing the tokens for one user, then only their tokens are returned.',
+        () async {
+      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+        session,
+        authUserId: authUserId1,
+      );
+
+      expect(tokenInfos.single.authUserId, authUserId1);
     });
   });
 }

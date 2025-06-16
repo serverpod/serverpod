@@ -11,7 +11,7 @@
           "name": "id",
           "columnType": 7,
           "isNullable": false,
-          "columnDefault": "gen_random_uuid()",
+          "columnDefault": "gen_random_uuid_v7()",
           "dartType": "UuidValue?"
         },
         {
