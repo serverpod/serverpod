@@ -1,0 +1,237 @@
+import 'package:serverpod/database.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:test/test.dart';
+
+void main() async {
+  var session = await IntegrationTestServer().session();
+
+  test(
+      'Given a transaction with HnswIndexQueryOptions parameters '
+      'when setting parameters using transaction.setRuntimeParameters '
+      'then options are applied locally to the transaction', () async {
+    var options = const HnswIndexQueryOptions(
+      efSearch: 75,
+      iterativeScan: IterativeScan.strict,
+      maxScanTuples: 750,
+      scanMemMultiplier: 3,
+    );
+
+    await session.db.transaction((transaction) async {
+      await transaction.setRuntimeParameters([options]);
+
+      var checkQuery = options.buildCheckValues();
+      var result = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(result.length, 1);
+      var row = result.first.toColumnMap();
+      expect(row['hnsw_ef_search'], '75');
+      expect(row['hnsw_iterative_scan'], 'strict_order');
+      expect(row['hnsw_max_scan_tuples'], '750');
+      expect(row['hnsw_scan_mem_multiplier'], '3');
+    });
+  });
+
+  test(
+      'Given a transaction with IvfFlatIndexQueryOptions parameters '
+      'when setting parameters using transaction.setRuntimeParameters '
+      'then options are applied locally to the transaction', () async {
+    var options = const IvfFlatIndexQueryOptions(
+      probes: 8,
+      iterativeScan: IterativeScan.strict,
+      maxProbes: 20,
+    );
+
+    await session.db.transaction((transaction) async {
+      await transaction.setRuntimeParameters([options]);
+
+      var checkQuery = options.buildCheckValues();
+      var result = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(result.length, 1);
+      var row = result.first.toColumnMap();
+      expect(row['ivfflat_probes'], '8');
+      expect(row['ivfflat_iterative_scan'], 'strict_order');
+      expect(row['ivfflat_max_probes'], '20');
+    });
+  });
+
+  test(
+      'Given a transaction with VectorIndexQueryOptions parameters '
+      'when setting parameters using transaction.setRuntimeParameters '
+      'then options are applied locally to the transaction', () async {
+    var options = const VectorIndexQueryOptions(
+      enableIndexScan: true,
+      enableSeqScan: false,
+      minParallelTableScanSize: 2048,
+      parallelSetupCost: 3,
+      maintenanceWorkMem: 65536 * 4,
+      maxParallelMaintenanceWorkers: 8,
+      maxParallelWorkersPerGather: 4,
+    );
+
+    await session.db.transaction((transaction) async {
+      await transaction.setRuntimeParameters([options]);
+
+      var checkQuery = options.buildCheckValues();
+      var result = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(result.length, 1);
+      var row = result.first.toColumnMap();
+      expect(row['enable_indexscan'], 'on');
+      expect(row['enable_seqscan'], 'off');
+      expect(row['min_parallel_table_scan_size'], '16MB');
+      expect(row['parallel_setup_cost'], '3');
+      expect(row['maintenance_work_mem'], '256MB');
+      expect(row['max_parallel_maintenance_workers'], '8');
+      expect(row['max_parallel_workers_per_gather'], '4');
+    });
+  });
+
+  test(
+      'Given a transaction with mixed runtime parameters '
+      'when setting multiple different parameter types using transaction.setRuntimeParameters '
+      'then all options are applied locally to the transaction', () async {
+    var hnswOptions = const HnswIndexQueryOptions(
+      efSearch: 50,
+      iterativeScan: IterativeScan.relaxed,
+      maxScanTuples: 500,
+      scanMemMultiplier: 2,
+    );
+    var ivfFlatOptions = const IvfFlatIndexQueryOptions(
+      probes: 6,
+      iterativeScan: IterativeScan.strict,
+      maxProbes: 12,
+    );
+    var vectorOptions = const VectorIndexQueryOptions(
+      enableIndexScan: false,
+      enableSeqScan: true,
+      minParallelTableScanSize: 1024,
+      parallelSetupCost: 2,
+      maintenanceWorkMem: 65536 * 3,
+      maxParallelMaintenanceWorkers: 6,
+      maxParallelWorkersPerGather: 3,
+    );
+
+    await session.db.transaction((transaction) async {
+      await transaction.setRuntimeParameters([
+        hnswOptions,
+        ivfFlatOptions,
+        vectorOptions,
+      ]);
+
+      var hnswCheckQuery = hnswOptions.buildCheckValues();
+      var hnswResult = await session.db.unsafeQuery(
+        hnswCheckQuery,
+        transaction: transaction,
+      );
+      var hnswRow = hnswResult.first.toColumnMap();
+      expect(hnswRow['hnsw_ef_search'], '50');
+      expect(hnswRow['hnsw_iterative_scan'], 'relaxed_order');
+      expect(hnswRow['hnsw_max_scan_tuples'], '500');
+      expect(hnswRow['hnsw_scan_mem_multiplier'], '2');
+
+      var ivfFlatCheckQuery = ivfFlatOptions.buildCheckValues();
+      var ivfFlatResult = await session.db.unsafeQuery(
+        ivfFlatCheckQuery,
+        transaction: transaction,
+      );
+      var ivfFlatRow = ivfFlatResult.first.toColumnMap();
+      expect(ivfFlatRow['ivfflat_probes'], '6');
+      expect(ivfFlatRow['ivfflat_iterative_scan'], 'strict_order');
+      expect(ivfFlatRow['ivfflat_max_probes'], '12');
+
+      var vectorCheckQuery = vectorOptions.buildCheckValues();
+      var vectorResult = await session.db.unsafeQuery(
+        vectorCheckQuery,
+        transaction: transaction,
+      );
+      var vectorRow = vectorResult.first.toColumnMap();
+      expect(vectorRow['enable_indexscan'], 'off');
+      expect(vectorRow['enable_seqscan'], 'on');
+      expect(vectorRow['min_parallel_table_scan_size'], '8MB');
+      expect(vectorRow['parallel_setup_cost'], '2');
+      expect(vectorRow['maintenance_work_mem'], '192MB');
+      expect(vectorRow['max_parallel_maintenance_workers'], '6');
+      expect(vectorRow['max_parallel_workers_per_gather'], '3');
+    });
+  });
+
+  test(
+      'Given a transaction with runtime parameters containing null values '
+      'when setting parameters using transaction.setRuntimeParameters '
+      'then only non-null values are applied to the transaction', () async {
+    var options = const HnswIndexQueryOptions(
+      efSearch: 80,
+      iterativeScan: null,
+      maxScanTuples: null,
+      scanMemMultiplier: 4,
+    );
+
+    await session.db.transaction((transaction) async {
+      await transaction.setRuntimeParameters([options]);
+
+      var checkQuery = options.buildCheckValues();
+      var result = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(result.length, 1);
+      var row = result.first.toColumnMap();
+      expect(row['hnsw_ef_search'], '80');
+      expect(row['hnsw_scan_mem_multiplier'], '4');
+      // When not yet set, parameters return an empty string
+      expect(row['hnsw_iterative_scan'], isEmpty);
+      expect(row['hnsw_max_scan_tuples'], isEmpty);
+    });
+  });
+
+  test(
+      'Given global runtime parameters are set '
+      'when setting different parameters in a transaction using transaction.setRuntimeParameters '
+      'then transaction parameters do not affect global settings', () async {
+    var globalOptions = const HnswIndexQueryOptions(
+      efSearch: 100,
+      iterativeScan: IterativeScan.strict,
+      maxScanTuples: 1000,
+      scanMemMultiplier: 2,
+    );
+    await session.db.setRuntimeParameters([globalOptions]);
+
+    await session.db.transaction((transaction) async {
+      var localOptions = const HnswIndexQueryOptions(
+        efSearch: 200,
+        iterativeScan: IterativeScan.relaxed,
+      );
+      await transaction.setRuntimeParameters([localOptions]);
+
+      var localCheckQuery = localOptions.buildCheckValues();
+      var localResult = await session.db.unsafeQuery(
+        localCheckQuery,
+        transaction: transaction,
+      );
+      var localRow = localResult.first.toColumnMap();
+      expect(localRow['hnsw_ef_search'], '200');
+      expect(localRow['hnsw_iterative_scan'], 'relaxed_order');
+      expect(localRow['hnsw_max_scan_tuples'], '1000');
+      expect(localRow['hnsw_scan_mem_multiplier'], '2');
+    });
+
+    var globalCheckQuery = globalOptions.buildCheckValues();
+    var globalResult = await session.db.unsafeQuery(globalCheckQuery);
+    var globalRow = globalResult.first.toColumnMap();
+    expect(globalRow['hnsw_ef_search'], '100');
+    expect(globalRow['hnsw_iterative_scan'], 'strict_order');
+    expect(globalRow['hnsw_max_scan_tuples'], '1000');
+    expect(globalRow['hnsw_scan_mem_multiplier'], '2');
+  });
+}

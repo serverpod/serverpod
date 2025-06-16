@@ -11,6 +11,11 @@ class MockTransaction implements Transaction {
   Future<Savepoint> createSavepoint() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters) {
+    throw UnimplementedError();
+  }
 }
 
 void main() async {

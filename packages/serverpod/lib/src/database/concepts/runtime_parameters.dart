@@ -8,19 +8,21 @@ abstract class RuntimeParameters {
   /// the value to set it to. The value can also be a [RuntimeParameters].
   Map<String, dynamic> get options;
 
-  /// Returns the SQL statement to set the runtime parameters. If [isLocal] is
-  /// true, options are set for the current transaction only and not globally.
-  String build({bool isLocal = false}) => options.entries
-      .where((e) => e.value != null)
-      .map((e) {
+  /// Returns a list with the SQL statements to set each runtime parameters.
+  /// If [isLocal] is true, options are set for the current transaction only.
+  Iterable<String> buildStatements({bool isLocal = false}) =>
+      options.entries.where((e) => e.value != null).map((e) {
         var value = e.value;
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = '${value.name}_order';
         if (value is bool) value = e.value == true ? 'on' : 'off';
         return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} = $value;';
-      })
-      .where((e) => e != '')
-      .join('\n');
+      }).where((e) => e != '');
+
+  /// Returns the SQL statement to set the runtime parameters. If [isLocal] is
+  /// true, options are set for the current transaction only and not globally.
+  String build({bool isLocal = false}) =>
+      buildStatements(isLocal: isLocal).join('\n');
 
   /// Returns a SELECT statement to check current values of all options.
   /// When running the query, parameters that were not yet set will return null.

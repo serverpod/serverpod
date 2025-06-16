@@ -1,3 +1,5 @@
+import 'runtime_parameters.dart';
+
 /// A function performing a transaction, passed to the transaction method.
 typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
 
@@ -23,6 +25,9 @@ abstract interface class Transaction {
   /// Creates a savepoint in the transaction that can be used to rollback to a
   /// previous state.
   Future<Savepoint> createSavepoint();
+
+  /// Sets runtime parameters local to the transaction.
+  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters);
 }
 
 /// Isolation levels for transactions.

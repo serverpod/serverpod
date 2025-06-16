@@ -353,12 +353,11 @@ class Database {
     List<RuntimeParameters> parameters, {
     Transaction? transaction,
   }) async {
+    if (transaction != null) {
+      return transaction.setRuntimeParameters(parameters);
+    }
     for (var option in parameters) {
-      await unsafeExecute(
-        option.build(isLocal: transaction != null),
-        // ignore: invalid_use_of_visible_for_testing_member
-        transaction: transaction ?? _session.transaction,
-      );
+      await unsafeExecute(option.build(isLocal: transaction != null));
     }
   }
 

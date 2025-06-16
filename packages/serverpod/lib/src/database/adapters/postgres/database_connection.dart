@@ -8,6 +8,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
@@ -839,6 +840,15 @@ class _PostgresTransaction implements Transaction {
     var savepointId = 'savepoint_$postgresCompatibleRandomString';
     await _query('SAVEPOINT $savepointId;');
     return _PostgresSavepoint(savepointId, this);
+  }
+
+  @override
+  Future<void> setRuntimeParameters(List<RuntimeParameters> parameters) async {
+    await Future.wait([
+      for (var group in parameters)
+        for (var statement in group.buildStatements(isLocal: true))
+          _query(statement),
+    ]);
   }
 }
 
