@@ -65,7 +65,7 @@ class PasswordManager {
       },
     ).map(
       (entry) => MapEntry(
-        entry.key.replaceFirst(_userDefinedPasswordPrefix, ''),
+        entry.key.substring(_userDefinedPasswordPrefix.length),
         entry.value,
       ),
     );
