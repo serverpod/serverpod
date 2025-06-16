@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -919,17 +918,6 @@ class Restrictions {
         (parentNodeName == defaultPrimaryKeyName)) {
       var typeClassName = field.type.className;
       var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
-
-      const experimentalFeature = ExperimentalFeature.changeIdType;
-      if (!config.isExperimentalFeatureEnabled(experimentalFeature)) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The "${experimentalFeature.name}" experimental feature is not '
-            'enabled. Enable it first to change the id type of a table class.',
-            span,
-          ),
-        );
-      }
 
       if (!supportedTypes.contains(typeClassName)) {
         errors.add(
