@@ -50,7 +50,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,
@@ -136,7 +136,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,
@@ -223,7 +223,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,

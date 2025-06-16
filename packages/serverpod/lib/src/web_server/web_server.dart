@@ -83,24 +83,6 @@ class WebServer {
     return true;
   }
 
-  /*
-  void _start() async {
-    logInfo('Webserver listening on port $_port');
-
-    try {
-      await for (var request in httpServer) {
-        try {
-          _handleRequest(request);
-        } catch (e, stackTrace) {
-          await _reportException(e, stackTrace, request: request);
-        }
-      }
-    } catch (e, stackTrace) {
-      await _reportException(e, stackTrace);
-    }
-  }
-  */
-
   FutureOr<HandledContext> _handleRequest(NewContext context) async {
     final request = context.request;
 
@@ -341,9 +323,7 @@ abstract class Route {
   /// Creates a new [Route].
   Route({this.method = RouteMethod.get});
 
-  /// Handles a call to this route. This method is responsible for setting
-  /// a correct response headers, status code, and write the response body to
-  /// `request.response`.
+  /// Handles a call to this route.
   FutureOr<HandledContext> handleCall(Session session, NewContext request);
 
   // TODO: May want to create another abstraction layer here, to handle other

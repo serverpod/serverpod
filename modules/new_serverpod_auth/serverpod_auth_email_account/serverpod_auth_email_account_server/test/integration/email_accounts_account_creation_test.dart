@@ -230,7 +230,7 @@ void main() {
         await expectLater(
           () => EmailAccounts.completeAccountCreation(
             session,
-            authUserId: authUser.id!,
+            authUserId: authUser.id,
             accountRequestId: pendingAccountRequestId,
           ),
           throwsA(isA<EmailAccountRequestNotVerifiedException>()),
@@ -291,7 +291,7 @@ void main() {
 
         final result = await EmailAccounts.completeAccountCreation(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           accountRequestId: pendingAccountRequestId,
         );
 
@@ -318,7 +318,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         final accountCreationDetails = await createVerifiedEmailAccount(
           session,

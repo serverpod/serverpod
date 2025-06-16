@@ -62,7 +62,7 @@ void main() {
         final authUser = await createAuthUser(session);
         await createVerifiedEmailAccount(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           email: email,
           password: 'Yolo1234!',
         );
@@ -116,7 +116,7 @@ void main() {
         final authUser = await createAuthUser(session);
         await createVerifiedEmailAccount(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           email: email,
           password: 'Yolo1234!',
         );
