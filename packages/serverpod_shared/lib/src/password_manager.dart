@@ -19,13 +19,11 @@ class PasswordManager {
   /// Load all passwords for the current run mode from the supplied [Map],
   /// or null if passwords fail to load.
   ///
-  /// Passwords can be loaded from three sources:
+  /// Passwords are be loaded in the following order:
   /// 1. Shared passwords from the config map
   /// 2. Run mode specific passwords from the config map
-  /// 3. Environment variables:
-  ///    - Standard Serverpod password environment variables
-  ///    - Custom passwords using the SERVERPOD_PASSWORD_ prefix
-  ///      (e.g. SERVERPOD_PASSWORD_myApiKey=secret becomes a password with key 'myApiKey')
+  /// 3. Serverpod password environment variables
+  /// 4. Custom passwords from the SERVERPOD_PASSWORD_ prefix environment variable (e.g. SERVERPOD_PASSWORD_myApiKey=secret becomes a password with key 'myApiKey')
   Map<String, String> loadPasswordsFromMap(
     Map passwordConfig, {
     Map<String, String> environment = const {},
