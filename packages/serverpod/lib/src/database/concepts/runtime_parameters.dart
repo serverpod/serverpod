@@ -91,25 +91,25 @@ class IvfFlatIndexQueryOptions extends RuntimeParameters {
 
 /// Query options for vector indexes.
 class VectorIndexQueryOptions extends RuntimeParameters {
-  /// Whether to enable index scan for the transaction.
+  /// Whether to enable index scan.
   final bool? enableIndexScan;
 
-  /// Whether to enable sequential scan for the transaction.
+  /// Whether to enable sequential scan.
   final bool? enableSeqScan;
 
-  /// The minimum parallel table scan size (in 8kB blocks) for the transaction.
+  /// The minimum parallel table scan size (in 8kB blocks).
   final int? minParallelTableScanSize;
 
-  /// The parallel setup cost for the transaction.
+  /// The parallel setup cost.
   final int? parallelSetupCost;
 
-  /// The maintenance work memory (in KB) for the transaction.
+  /// The maintenance work memory (in KB).
   final int? maintenanceWorkMem;
 
-  /// The maximum parallel maintenance workers for the transaction.
+  /// The maximum parallel maintenance workers.
   final int? maxParallelMaintenanceWorkers;
 
-  /// The maximum parallel workers per gather for the transaction.
+  /// The maximum parallel workers per gather.
   final int? maxParallelWorkersPerGather;
 
   /// Creates a new vector index query options object.
