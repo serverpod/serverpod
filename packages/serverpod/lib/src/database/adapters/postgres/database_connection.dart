@@ -847,11 +847,11 @@ class _PostgresTransaction implements Transaction {
     RuntimeParametersListBuilder builder,
   ) async {
     final parameters = builder(RuntimeParametersBuilder());
-    await Future.wait([
-      for (var group in parameters)
-        for (var statement in group.buildStatements(isLocal: true))
-          _query(statement),
-    ]);
+    for (var group in parameters) {
+      for (var statement in group.buildStatements(isLocal: true)) {
+        await _query(statement);
+      }
+    }
   }
 }
 

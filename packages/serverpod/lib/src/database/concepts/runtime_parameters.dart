@@ -13,6 +13,7 @@ abstract class RuntimeParameters {
   Iterable<String> buildStatements({bool isLocal = false}) =>
       options.entries.where((e) => e.value != null).map((e) {
         var value = e.value;
+        if (value is String) value = '\'${value.replaceAll("'", "''")}\'';
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = '${value.name}_order';
         if (value is bool) value = e.value == true ? 'on' : 'off';

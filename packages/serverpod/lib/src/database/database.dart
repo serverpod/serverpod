@@ -366,7 +366,7 @@ class Database {
     }
     final parameters = builder(RuntimeParametersBuilder());
     for (var option in parameters) {
-      await unsafeExecute(option.build(isLocal: transaction != null));
+      await unsafeExecute(option.build(isLocal: false));
     }
   }
 
