@@ -28,6 +28,7 @@ dependencies:
   # See https://pub.dev/packages/image_picker for installation instructions.
   image_picker: ^1.0.0
 
+
 dev_dependencies:
   serverpod_lints: 2.8.0
   flutter_test:
@@ -42,10 +43,12 @@ dependency_overrides:
     path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
+flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:

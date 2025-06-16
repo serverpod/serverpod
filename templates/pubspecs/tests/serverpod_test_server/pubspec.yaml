@@ -11,6 +11,10 @@ environment:
   sdk: DART_VERSION
 dependencies:
   http: '>=1.0.0 <2.0.0'
+  relic:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: serverpod-integration
   serverpod: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_cloud_storage_s3: SERVERPOD_VERSION

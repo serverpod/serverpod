@@ -43,3 +43,5 @@ dependency_overrides:
     path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+
+flutter:

@@ -30,3 +30,5 @@ dependency_overrides:
     path: ../serverpod_lints
   serverpod_serialization:
     path: ../serverpod_serialization
+
+flutter:
