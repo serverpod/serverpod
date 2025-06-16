@@ -19,8 +19,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     // Set the response code
     if (file == null) {
-      // HttpStatus.notFound should be handled by Server.dart based on null return.
-      return null;
+      throw EndpointNotFoundException('File not found: $path');
     }
 
     // TODO: Support more extension types.
