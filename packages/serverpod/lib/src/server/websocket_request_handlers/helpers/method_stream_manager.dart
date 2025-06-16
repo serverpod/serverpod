@@ -517,7 +517,7 @@ class MethodStreamManager {
         space: OriginSpace.application,
         context: contextFromSession(
           session,
-          requestInfo: request.toRequestInfo(),
+          request: request,
         ),
       );
 
@@ -590,7 +590,7 @@ class MethodStreamManager {
         space: OriginSpace.application,
         context: contextFromSession(
           session,
-          requestInfo: request.toRequestInfo(),
+          request: request,
         ),
       );
 

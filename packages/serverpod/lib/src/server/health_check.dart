@@ -69,10 +69,6 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     }
   }
 
-  // RelicServer doesn\'t have connectionsInfo() like dart:io.HttpServer.
-  // Using placeholders for now.
-  // TODO: Investigate if RelicServer offers alternative connection metrics.
-
   return ServerHealthResult(
     metrics: [
       if (dbHealthy != null)

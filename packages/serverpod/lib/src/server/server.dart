@@ -519,8 +519,7 @@ class Server {
             StackTrace.current,
           ),
           space: OriginSpace.framework,
-          context: contextFromRequest(
-              this, request.toRequestInfo(), OperationType.method),
+          context: contextFromRequest(this, request, OperationType.method),
         );
 
         return ResultInternalServerError(
@@ -543,8 +542,7 @@ class Server {
         serverpod.internalSubmitEvent(
           ExceptionEvent(e, stackTrace),
           space: OriginSpace.application,
-          context:
-              contextFromSession(session, requestInfo: request.toRequestInfo()),
+          context: contextFromSession(session, request: request),
         );
 
         rethrow;
@@ -609,7 +607,7 @@ class Server {
     stderr.writeln('$stackTrace');
 
     var context = request != null
-        ? contextFromRequest(this, request.toRequestInfo(), operationType)
+        ? contextFromRequest(this, request, operationType)
         : contextFromServer(this);
 
     serverpod.internalSubmitEvent(

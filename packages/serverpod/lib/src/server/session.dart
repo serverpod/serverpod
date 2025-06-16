@@ -139,7 +139,6 @@ abstract class Session implements DatabaseAccessor {
     UuidValue? sessionId,
     required this.server,
     String? authenticationKey,
-    Request? request,
     WebSocket? webSocket,
     required this.enableLogging,
     required this.endpoint,

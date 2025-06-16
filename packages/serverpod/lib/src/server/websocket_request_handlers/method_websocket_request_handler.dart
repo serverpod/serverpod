@@ -129,8 +129,7 @@ class MethodWebsocketRequestHandler {
       server.serverpod.internalSubmitEvent(
         ExceptionEvent(e, stackTrace, message: 'Method stream websocket error'),
         space: OriginSpace.framework,
-        context: contextFromRequest(
-            server, request.toRequestInfo(), OperationType.stream),
+        context: contextFromRequest(server, request, OperationType.stream),
       );
       if (e is! UnknownMessageException ||
           server.serverpod.runtimeSettings.logMalformedCalls) {

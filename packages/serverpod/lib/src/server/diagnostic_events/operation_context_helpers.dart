@@ -13,29 +13,11 @@ DiagnosticEventContext contextFromServer(Server server) {
   );
 }
 
-class RequestInfo {
-  final String? clientIpAddress;
-  final Uri uri;
-
-  const RequestInfo(this.clientIpAddress, this.uri);
-
-  static final empty = RequestInfo(null, Uri());
-}
-
-extension RequestEx on Request? {
-  RequestInfo toRequestInfo() {
-    // TODO: Determine how to get ConnectionInfo from relic.Request if possible.
-    // For now, returning empty as per the previous TODO in web_server.dart
-    // and because relic.Request does not seem to expose .connectionInfo directly.
-    return RequestInfo.empty;
-  }
-}
-
 /// Creates a new [ClientCallOpContext] given a [Server]
-/// and an [RequestInfo].
+/// and an [Request].
 ClientCallOpContext contextFromRequest(
   Server server,
-  RequestInfo requestInfo, [
+  Request request, [
   OperationType? operationType,
 ]) {
   return ClientCallOpContext(
@@ -45,8 +27,8 @@ ClientCallOpContext contextFromRequest(
     operationType: operationType,
     sessionId: null,
     userAuthInfo: null,
-    clientIpAddress: requestInfo.clientIpAddress,
-    uri: requestInfo.uri,
+    clientIpAddress: request.clientIpAddress,
+    uri: request.requestedUri,
   );
 }
 
@@ -54,19 +36,19 @@ ClientCallOpContext contextFromRequest(
 /// and an [Request] if available.
 OperationEventContext contextFromSession(
   Session session, {
-  RequestInfo? requestInfo,
+  Request? request,
 }) {
   return switch (session) {
     FutureCallSession futureCall => _fromFutureCall(
         futureCall,
       ),
-    WebCallSession webCall => _fromWebCall(webCall, requestInfo),
+    WebCallSession webCall => _fromWebCall(webCall, request),
     MethodCallSession methodCall => _fromMethodCall(
         methodCall,
       ),
     MethodStreamSession methodStream => _fromMethodStream(
         methodStream,
-        requestInfo: requestInfo,
+        request: request,
       ),
     StreamingSession streaming => _fromStreaming(
         streaming,
@@ -97,7 +79,7 @@ FutureCallOpContext _fromFutureCall(
 
 WebCallOpContext _fromWebCall(
   WebCallSession session,
-  RequestInfo? requestInfo,
+  Request? request,
 ) =>
     WebCallOpContext(
       serverName: session.server.name,
@@ -105,8 +87,8 @@ WebCallOpContext _fromWebCall(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      clientIpAddress: requestInfo?.clientIpAddress,
-      uri: requestInfo?.uri ?? Uri.http('', session.endpoint),
+      clientIpAddress: request?.clientIpAddress,
+      uri: request?.requestedUri ?? Uri.http('', session.endpoint),
     );
 
 MethodCallOpContext _fromMethodCall(
@@ -127,7 +109,7 @@ MethodCallOpContext _fromMethodCall(
 
 StreamOpContext _fromMethodStream(
   MethodStreamSession session, {
-  RequestInfo? requestInfo,
+  Request? request,
 }) =>
     StreamOpContext(
       serverName: session.server.name,
@@ -135,8 +117,8 @@ StreamOpContext _fromMethodStream(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      clientIpAddress: requestInfo?.clientIpAddress,
-      uri: requestInfo?.uri ?? Uri.http('localhost'),
+      clientIpAddress: request?.clientIpAddress,
+      uri: request?.requestedUri ?? Uri.http('localhost'),
       endpoint: session.endpoint,
       methodName: session.method,
       streamConnectionId: session.connectionId,
@@ -152,7 +134,7 @@ StreamOpContext _fromStreaming(
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
       clientIpAddress: session.clientIpAddress,
-      uri: session.request.requestedUri, // Use requestedUri from relic.Request
+      uri: session.request.requestedUri,
       endpoint: session.endpoint,
       methodName: '-',
       streamConnectionId: null,
