@@ -11,12 +11,13 @@ abstract class RuntimeParameters {
   /// Returns a list with the SQL statements to set each runtime parameters.
   /// If [isLocal] is true, options are set for the current transaction only.
   Iterable<String> buildStatements({bool isLocal = false}) =>
-      options.entries.where((e) => e.value != null).map((e) {
+      options.entries.map((e) {
         var value = e.value;
         if (value is String) value = '\'${value.replaceAll("'", "''")}\'';
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = '${value.name}_order';
-        if (value is bool) value = e.value == true ? 'on' : 'off';
+        if (value is bool) value = (value == true) ? 'on' : 'off';
+        value ??= 'TO DEFAULT';
         return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} = $value;';
       }).where((e) => e != '');
 

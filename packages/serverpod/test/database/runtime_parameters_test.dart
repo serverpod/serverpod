@@ -24,7 +24,54 @@ void main() {
         'SET test.integer_value = 17;\n'
         'SET test.string_value = \'test_string\';\n'
         'SET test.enum_value = strict_order;\n'
-        'SET nested.option = \'nested_value\';',
+        'SET nested.option = \'nested_value\';\n'
+        'SET test.null_value = TO DEFAULT;',
+      );
+    });
+
+    test(
+        'when build is called with mixed null and non-null values then null values become TO DEFAULT.',
+        () {
+      var options = const _ComprehensiveRuntimeParameters(
+        booleanTrue: true,
+        booleanFalse: null,
+        integerValue: null,
+        stringValue: 'partial_test',
+        enumValue: null,
+        nestedParameters: null,
+        nullValue: null,
+      );
+
+      var result = options.build();
+
+      expect(
+        result,
+        'SET test.boolean_true = on;\n'
+        'SET test.boolean_false = TO DEFAULT;\n'
+        'SET test.integer_value = TO DEFAULT;\n'
+        'SET test.string_value = \'partial_test\';\n'
+        'SET test.enum_value = TO DEFAULT;\n'
+        'SET test.nested_parameters = TO DEFAULT;\n'
+        'SET test.null_value = TO DEFAULT;',
+      );
+    });
+
+    test(
+        'when build is called with only null values then TO DEFAULT is used for all parameters.',
+        () {
+      var options = const _ComprehensiveRuntimeParameters();
+
+      var result = options.build();
+
+      expect(
+        result,
+        'SET test.boolean_true = TO DEFAULT;\n'
+        'SET test.boolean_false = TO DEFAULT;\n'
+        'SET test.integer_value = TO DEFAULT;\n'
+        'SET test.string_value = TO DEFAULT;\n'
+        'SET test.enum_value = TO DEFAULT;\n'
+        'SET test.nested_parameters = TO DEFAULT;\n'
+        'SET test.null_value = TO DEFAULT;',
       );
     });
 
@@ -42,40 +89,12 @@ void main() {
       expect(
         result,
         'SET LOCAL test.boolean_true = on;\n'
+        'SET LOCAL test.boolean_false = TO DEFAULT;\n'
         'SET LOCAL test.integer_value = 100;\n'
-        'SET LOCAL nested.option = \'nested_value\';',
-      );
-    });
-
-    test(
-        'when build is called with only null values then empty string is returned.',
-        () {
-      var options = const _ComprehensiveRuntimeParameters();
-
-      var result = options.build();
-
-      expect(result, '');
-    });
-
-    test(
-        'when build is called with mixed null and non-null values then only non-null values are included.',
-        () {
-      var options = const _ComprehensiveRuntimeParameters(
-        booleanTrue: true,
-        booleanFalse: null,
-        integerValue: null,
-        stringValue: 'partial_test',
-        enumValue: null,
-        nestedParameters: null,
-        nullValue: null,
-      );
-
-      var result = options.build();
-
-      expect(
-        result,
-        'SET test.boolean_true = on;\n'
-        'SET test.string_value = \'partial_test\';',
+        'SET LOCAL test.string_value = TO DEFAULT;\n'
+        'SET LOCAL test.enum_value = TO DEFAULT;\n'
+        'SET LOCAL nested.option = \'nested_value\';\n'
+        'SET LOCAL test.null_value = TO DEFAULT;',
       );
     });
 
@@ -88,7 +107,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET test.enum_value = strict_order;');
+        expect(result, contains('SET test.enum_value = strict_order;'));
       });
 
       test(
@@ -100,7 +119,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET test.enum_value = relaxed_order;');
+        expect(result, contains('SET test.enum_value = relaxed_order;'));
       });
     });
 
@@ -112,7 +131,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET test.boolean_true = on;');
+        expect(result, contains('SET test.boolean_true = on;'));
       });
 
       test('when boolean is false then off is used in SQL.', () {
@@ -122,7 +141,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET test.boolean_false = off;');
+        expect(result, contains('SET test.boolean_false = off;'));
       });
     });
 
@@ -136,7 +155,7 @@ void main() {
 
         var result = options.build();
 
-        expect(result, 'SET nested.option = \'nested_value\';');
+        expect(result, contains('SET nested.option = \'nested_value\';'));
       });
 
       test(
@@ -148,7 +167,7 @@ void main() {
 
         var result = options.build(isLocal: true);
 
-        expect(result, 'SET LOCAL nested.option = \'nested_value\';');
+        expect(result, contains('SET LOCAL nested.option = \'nested_value\';'));
       });
     });
   });
@@ -183,6 +202,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 40;\n'
+        'SET hnsw.iterative_scan = TO DEFAULT;\n'
         'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 1;',
       );
@@ -208,7 +228,7 @@ void main() {
     });
 
     test(
-        'when build is called with null parameters then only non-null parameters are included.',
+        'when build is called with null parameters then null parameters become TO DEFAULT.',
         () {
       var options = const HnswIndexQueryOptions(
         efSearch: 50,
@@ -221,6 +241,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 50;\n'
+        'SET hnsw.iterative_scan = TO DEFAULT;\n'
         'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 3;',
       );
@@ -268,7 +289,12 @@ void main() {
 
       var result = options.build();
 
-      expect(result, 'SET ivfflat.probes = 1;');
+      expect(
+        result,
+        'SET ivfflat.probes = 1;\n'
+        'SET ivfflat.iterative_scan = TO DEFAULT;\n'
+        'SET ivfflat.max_probes = TO DEFAULT;',
+      );
     });
 
     test(
@@ -284,12 +310,13 @@ void main() {
       expect(
         result,
         'SET LOCAL ivfflat.probes = 3;\n'
+        'SET LOCAL ivfflat.iterative_scan = TO DEFAULT;\n'
         'SET LOCAL ivfflat.max_probes = 15;',
       );
     });
 
     test(
-        'when build is called with partial parameters then only non-null parameters are included.',
+        'when build is called with partial parameters then null parameters become TO DEFAULT.',
         () {
       var options = const IvfflatIndexQueryOptions(
         probes: 7,
@@ -299,7 +326,12 @@ void main() {
 
       var result = options.build();
 
-      expect(result, 'SET ivfflat.probes = 7;');
+      expect(
+        result,
+        'SET ivfflat.probes = 7;\n'
+        'SET ivfflat.iterative_scan = TO DEFAULT;\n'
+        'SET ivfflat.max_probes = TO DEFAULT;',
+      );
     });
 
     test(
