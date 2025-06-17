@@ -284,6 +284,14 @@ class Serverpod {
   final SecurityContextConfig? _securityContextConfig;
 
   /// Runtime parameters builder to apply to all sessions of the connection pool.
+  ///
+  /// Use the callback function to discover runtime parameters:
+  /// ```dart
+  ///   runtimeParametersBuilder: (params) => [
+  ///     params.hnswIndexQuery(efSearch: 100),
+  ///     params.vectorIndexQuery(enableSeqScan: false),
+  ///   ],
+  /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
   /// Creates a new Serverpod.

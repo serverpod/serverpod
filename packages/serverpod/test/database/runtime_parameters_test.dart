@@ -25,7 +25,7 @@ void main() {
         'SET test.string_value = \'test_string\';\n'
         'SET test.enum_value = strict_order;\n'
         'SET nested.option = \'nested_value\';\n'
-        'SET test.null_value = TO DEFAULT;',
+        'SET test.null_value TO DEFAULT;',
       );
     });
 
@@ -47,12 +47,12 @@ void main() {
       expect(
         result,
         'SET test.boolean_true = on;\n'
-        'SET test.boolean_false = TO DEFAULT;\n'
-        'SET test.integer_value = TO DEFAULT;\n'
+        'SET test.boolean_false TO DEFAULT;\n'
+        'SET test.integer_value TO DEFAULT;\n'
         'SET test.string_value = \'partial_test\';\n'
-        'SET test.enum_value = TO DEFAULT;\n'
-        'SET test.nested_parameters = TO DEFAULT;\n'
-        'SET test.null_value = TO DEFAULT;',
+        'SET test.enum_value TO DEFAULT;\n'
+        'SET test.nested_parameters TO DEFAULT;\n'
+        'SET test.null_value TO DEFAULT;',
       );
     });
 
@@ -65,13 +65,13 @@ void main() {
 
       expect(
         result,
-        'SET test.boolean_true = TO DEFAULT;\n'
-        'SET test.boolean_false = TO DEFAULT;\n'
-        'SET test.integer_value = TO DEFAULT;\n'
-        'SET test.string_value = TO DEFAULT;\n'
-        'SET test.enum_value = TO DEFAULT;\n'
-        'SET test.nested_parameters = TO DEFAULT;\n'
-        'SET test.null_value = TO DEFAULT;',
+        'SET test.boolean_true TO DEFAULT;\n'
+        'SET test.boolean_false TO DEFAULT;\n'
+        'SET test.integer_value TO DEFAULT;\n'
+        'SET test.string_value TO DEFAULT;\n'
+        'SET test.enum_value TO DEFAULT;\n'
+        'SET test.nested_parameters TO DEFAULT;\n'
+        'SET test.null_value TO DEFAULT;',
       );
     });
 
@@ -89,12 +89,12 @@ void main() {
       expect(
         result,
         'SET LOCAL test.boolean_true = on;\n'
-        'SET LOCAL test.boolean_false = TO DEFAULT;\n'
+        'SET LOCAL test.boolean_false TO DEFAULT;\n'
         'SET LOCAL test.integer_value = 100;\n'
-        'SET LOCAL test.string_value = TO DEFAULT;\n'
-        'SET LOCAL test.enum_value = TO DEFAULT;\n'
+        'SET LOCAL test.string_value TO DEFAULT;\n'
+        'SET LOCAL test.enum_value TO DEFAULT;\n'
         'SET LOCAL nested.option = \'nested_value\';\n'
-        'SET LOCAL test.null_value = TO DEFAULT;',
+        'SET LOCAL test.null_value TO DEFAULT;',
       );
     });
 
@@ -202,7 +202,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 40;\n'
-        'SET hnsw.iterative_scan = TO DEFAULT;\n'
+        'SET hnsw.iterative_scan TO DEFAULT;\n'
         'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 1;',
       );
@@ -241,7 +241,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 50;\n'
-        'SET hnsw.iterative_scan = TO DEFAULT;\n'
+        'SET hnsw.iterative_scan TO DEFAULT;\n'
         'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 3;',
       );
@@ -292,8 +292,8 @@ void main() {
       expect(
         result,
         'SET ivfflat.probes = 1;\n'
-        'SET ivfflat.iterative_scan = TO DEFAULT;\n'
-        'SET ivfflat.max_probes = TO DEFAULT;',
+        'SET ivfflat.iterative_scan TO DEFAULT;\n'
+        'SET ivfflat.max_probes TO DEFAULT;',
       );
     });
 
@@ -310,7 +310,7 @@ void main() {
       expect(
         result,
         'SET LOCAL ivfflat.probes = 3;\n'
-        'SET LOCAL ivfflat.iterative_scan = TO DEFAULT;\n'
+        'SET LOCAL ivfflat.iterative_scan TO DEFAULT;\n'
         'SET LOCAL ivfflat.max_probes = 15;',
       );
     });
@@ -329,8 +329,8 @@ void main() {
       expect(
         result,
         'SET ivfflat.probes = 7;\n'
-        'SET ivfflat.iterative_scan = TO DEFAULT;\n'
-        'SET ivfflat.max_probes = TO DEFAULT;',
+        'SET ivfflat.iterative_scan TO DEFAULT;\n'
+        'SET ivfflat.max_probes TO DEFAULT;',
       );
     });
 

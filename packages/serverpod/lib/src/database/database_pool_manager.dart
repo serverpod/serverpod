@@ -52,7 +52,7 @@ class DatabasePoolManager {
           onOpen: (connection) async {
             var searchPaths =
                 config.searchPaths?.map((s) => encoder.convert(s)).join(',');
-            if (searchPaths != null) {
+            if (searchPaths != null && searchPaths.isNotEmpty) {
               await connection.execute('SET search_path TO $searchPaths;');
             }
 
