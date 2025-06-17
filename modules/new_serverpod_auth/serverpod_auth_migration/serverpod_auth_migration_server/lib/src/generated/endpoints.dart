@@ -12,17 +12,21 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i2;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+    as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i4;
+    as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     modules['serverpod_auth_email_account'] = _i2.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i4.Endpoints()
+    modules['serverpod_auth_profile'] = _i3.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i4.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_user'] = _i5.Endpoints()
       ..initializeEndpoints(server);
   }
 }
