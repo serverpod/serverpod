@@ -17,8 +17,8 @@ abstract class RuntimeParameters {
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = '${value.name}_order';
         if (value is bool) value = (value == true) ? 'on' : 'off';
-        value ??= 'TO DEFAULT';
-        return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} = $value;';
+        value = (value == null) ? 'TO DEFAULT' : '= $value';
+        return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} $value;';
       }).where((e) => e != '');
 
   /// Returns the SQL statement to set the runtime parameters. If [isLocal] is

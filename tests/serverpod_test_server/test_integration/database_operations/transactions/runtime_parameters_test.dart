@@ -188,4 +188,50 @@ void main() async {
       expect(row['hnsw_iterative_scan'], isEmpty);
     });
   });
+
+  test(
+      'Given a transaction with runtime parameters containing null values '
+      'when setting parameters using transaction.setRuntimeParameters '
+      'then null values are reverted to default ', () async {
+    var session = await IntegrationTestServer(
+        runtimeParametersBuilder: (params) => [
+              params.hnswIndexQuery(
+                iterativeScan: IterativeScan.strict,
+              ),
+            ]).session();
+
+    var checkQuery = HnswIndexQueryOptions().buildCheckValues();
+
+    await session.db.transaction((transaction) async {
+      var resultBefore = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(resultBefore.length, 1);
+      var rowBefore = resultBefore.first.toColumnMap();
+      expect(rowBefore['hnsw_iterative_scan'], 'strict_order');
+
+      await transaction.setRuntimeParameters((params) => [
+            params.hnswIndexQuery(
+              iterativeScan: null,
+            ),
+          ]);
+
+      var resultInside = await session.db.unsafeQuery(
+        checkQuery,
+        transaction: transaction,
+      );
+
+      expect(resultInside.length, 1);
+      var rowInside = resultInside.first.toColumnMap();
+      expect(rowInside['hnsw_iterative_scan'], isEmpty);
+    });
+
+    var resultAfter = await session.db.unsafeQuery(checkQuery);
+
+    expect(resultAfter.length, 1);
+    var rowAfter = resultAfter.first.toColumnMap();
+    expect(rowAfter['hnsw_iterative_scan'], 'strict_order');
+  });
 }
