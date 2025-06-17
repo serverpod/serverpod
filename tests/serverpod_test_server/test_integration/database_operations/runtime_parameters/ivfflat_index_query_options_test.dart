@@ -3,18 +3,18 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  var session = await IntegrationTestServer().session();
-
   group('Given IvfflatIndexQueryOptions runtime parameters', () {
     test('when setting parameters globally then options are applied globally.',
         () async {
-      await session.db.setRuntimeParameters((params) => [
-            params.ivfflatIndexQuery(
-              probes: 5,
-              iterativeScan: IterativeScan.strict,
-              maxProbes: 10,
-            ),
-          ]);
+      var session = await IntegrationTestServer(
+        runtimeParametersBuilder: (params) => [
+          params.ivfflatIndexQuery(
+            probes: 5,
+            iterativeScan: IterativeScan.strict,
+            maxProbes: 10,
+          ),
+        ],
+      ).session();
 
       var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
@@ -27,78 +27,22 @@ void main() async {
     });
 
     test(
-        'when setting parameters locally in a transaction then options are applied locally.',
-        () async {
-      await session.db.transaction((transaction) async {
-        await session.db.setRuntimeParameters(
-          (params) => [
-            params.ivfflatIndexQuery(
-              probes: 3,
-              iterativeScan: IterativeScan.relaxed,
-              maxProbes: 15,
-            ),
-          ],
-          transaction: transaction,
-        );
-
-        var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
-        var result = await session.db.unsafeQuery(
-          checkQuery,
-          transaction: transaction,
-        );
-
-        expect(result.length, 1);
-        var row = result.first.toColumnMap();
-        expect(row['ivfflat_probes'], '3');
-        expect(row['ivfflat_iterative_scan'], 'relaxed_order');
-        expect(row['ivfflat_max_probes'], '15');
-      });
-    });
-
-    test(
-        'when setting parameters with null values then only later non-null values are set and override earlier ones.',
-        () async {
-      await session.db.setRuntimeParameters((params) => [
-            params.ivfflatIndexQuery(
-              probes: 5,
-              iterativeScan: IterativeScan.strict,
-              maxProbes: 10,
-            ),
-          ]);
-
-      await session.db.setRuntimeParameters((params) => [
-            params.ivfflatIndexQuery(
-              probes: 7,
-              iterativeScan: null,
-              maxProbes: null,
-            ),
-          ]);
-
-      var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
-      var result = await session.db.unsafeQuery(checkQuery);
-
-      expect(result.length, 1);
-      var row = result.first.toColumnMap();
-      expect(row['ivfflat_probes'], '7');
-      expect(row['ivfflat_iterative_scan'], 'strict_order');
-      expect(row['ivfflat_max_probes'], '10');
-    });
-
-    test(
         'when setting parameters in transaction then they do not affect global settings.',
         () async {
       var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
 
-      await session.db.setRuntimeParameters((params) => [
-            params.ivfflatIndexQuery(
-              probes: 5,
-              iterativeScan: IterativeScan.strict,
-              maxProbes: 10,
-            ),
-          ]);
+      var session = await IntegrationTestServer(
+        runtimeParametersBuilder: (params) => [
+          params.ivfflatIndexQuery(
+            probes: 5,
+            iterativeScan: IterativeScan.strict,
+            maxProbes: 10,
+          ),
+        ],
+      ).session();
 
       await session.db.transaction((transaction) async {
-        await session.db.setRuntimeParameters(
+        await transaction.setRuntimeParameters(
           (params) => [
             params.ivfflatIndexQuery(
               probes: 10,
@@ -106,7 +50,6 @@ void main() async {
               maxProbes: 15,
             ),
           ],
-          transaction: transaction,
         );
 
         var localResult = await session.db.unsafeQuery(

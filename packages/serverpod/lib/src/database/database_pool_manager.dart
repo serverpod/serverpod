@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 
 import 'adapters/postgres/pgvector_encoder.dart';
@@ -41,22 +42,30 @@ class DatabasePoolManager {
   /// when starting the [Server].
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
   ) : _poolSettings = pg.PoolSettings(
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
           typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
-          onOpen: config.searchPaths != null
-              ? (connection) async {
-                  var encodedSearchPaths = config.searchPaths
-                      ?.map((s) => encoder.convert(s))
-                      .join(',');
-                  await connection.execute(
-                    'SET search_path TO $encodedSearchPaths;',
-                  );
-                }
-              : null,
+          onOpen: (connection) async {
+            var searchPaths =
+                config.searchPaths?.map((s) => encoder.convert(s)).join(',');
+            if (searchPaths != null) {
+              await connection.execute('SET search_path TO $searchPaths;');
+            }
+
+            var setParametersStatements = runtimeParametersBuilder
+                ?.call(RuntimeParametersBuilder())
+                .map((p) => p.buildStatements(isLocal: false))
+                .expand((e) => e);
+            if (setParametersStatements != null) {
+              for (var statement in setParametersStatements) {
+                await connection.execute(statement);
+              }
+            }
+          },
         ) {
     _serializationManager = serializationManager;
   }

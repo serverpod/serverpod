@@ -283,6 +283,9 @@ class Serverpod {
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
 
+  /// Runtime parameters builder to apply to all sessions of the connection pool.
+  final RuntimeParametersListBuilder? runtimeParametersBuilder;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -300,6 +303,7 @@ class Serverpod {
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
+    this.runtimeParametersBuilder,
   })  : _securityContextConfig = securityContextConfig,
         _experimental = ExperimentalApi._(
           config: config,
@@ -366,6 +370,7 @@ class Serverpod {
     if (Features.enableDatabase && databaseConfiguration != null) {
       _databasePoolManager = DatabasePoolManager(
         serializationManager,
+        runtimeParametersBuilder,
         databaseConfiguration,
       );
 

@@ -3,19 +3,19 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  var session = await IntegrationTestServer().session();
-
   group('Given HnswIndexQueryOptions runtime parameters', () {
     test('when setting parameters globally then options are applied globally.',
         () async {
-      await session.db.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 100,
-              iterativeScan: IterativeScan.strict,
-              maxScanTuples: 1000,
-              scanMemMultiplier: 2,
-            ),
-          ]);
+      var session = await IntegrationTestServer(
+        runtimeParametersBuilder: (params) => [
+          params.hnswIndexQuery(
+            efSearch: 100,
+            iterativeScan: IterativeScan.strict,
+            maxScanTuples: 1000,
+            scanMemMultiplier: 2,
+          ),
+        ],
+      ).session();
 
       var checkQuery = HnswIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(checkQuery);
@@ -29,84 +29,23 @@ void main() async {
     });
 
     test(
-        'when setting parameters locally in a transaction then options are applied locally.',
-        () async {
-      await session.db.transaction((transaction) async {
-        await session.db.setRuntimeParameters(
-          (params) => [
-            params.hnswIndexQuery(
-              efSearch: 50,
-              iterativeScan: IterativeScan.relaxed,
-              maxScanTuples: 500,
-              scanMemMultiplier: 1,
-            ),
-          ],
-          transaction: transaction,
-        );
-
-        var checkQuery = HnswIndexQueryOptions().buildCheckValues();
-        var result = await session.db.unsafeQuery(
-          checkQuery,
-          transaction: transaction,
-        );
-
-        expect(result.length, 1);
-        var row = result.first.toColumnMap();
-        expect(row['hnsw_ef_search'], '50');
-        expect(row['hnsw_iterative_scan'], 'relaxed_order');
-        expect(row['hnsw_max_scan_tuples'], '500');
-        expect(row['hnsw_scan_mem_multiplier'], '1');
-      });
-    });
-
-    test(
-        'when setting parameters with null values then only later non-null values are set and override earlier ones.',
-        () async {
-      await session.db.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 100,
-              iterativeScan: IterativeScan.strict,
-              maxScanTuples: 1000,
-              scanMemMultiplier: 2,
-            ),
-          ]);
-
-      await session.db.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 75,
-              iterativeScan: null,
-              maxScanTuples: null,
-              scanMemMultiplier: 3,
-            ),
-          ]);
-
-      var checkQuery = HnswIndexQueryOptions().buildCheckValues();
-      var result = await session.db.unsafeQuery(checkQuery);
-
-      expect(result.length, 1);
-      var row = result.first.toColumnMap();
-      expect(row['hnsw_ef_search'], '75');
-      expect(row['hnsw_scan_mem_multiplier'], '3');
-      expect(row['hnsw_iterative_scan'], 'strict_order');
-      expect(row['hnsw_max_scan_tuples'], '1000');
-    });
-
-    test(
         'when setting parameters in transaction then they do not affect global settings.',
         () async {
       var checkQuery = HnswIndexQueryOptions().buildCheckValues();
 
-      await session.db.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 100,
-              iterativeScan: IterativeScan.strict,
-              maxScanTuples: 1000,
-              scanMemMultiplier: 2,
-            ),
-          ]);
+      var session = await IntegrationTestServer(
+        runtimeParametersBuilder: (params) => [
+          params.hnswIndexQuery(
+            efSearch: 100,
+            iterativeScan: IterativeScan.strict,
+            maxScanTuples: 1000,
+            scanMemMultiplier: 2,
+          ),
+        ],
+      ).session();
 
       await session.db.transaction((transaction) async {
-        await session.db.setRuntimeParameters(
+        await transaction.setRuntimeParameters(
           (params) => [
             params.hnswIndexQuery(
               efSearch: 200,
@@ -115,7 +54,6 @@ void main() async {
               scanMemMultiplier: 1,
             ),
           ],
-          transaction: transaction,
         );
 
         var localResult = await session.db.unsafeQuery(
