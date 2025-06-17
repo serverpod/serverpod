@@ -1,7 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../test_tags.dart';
@@ -230,7 +229,7 @@ void main() {
         await expectLater(
           () => EmailAccounts.completeAccountCreation(
             session,
-            authUserId: authUser.id!,
+            authUserId: authUser.id,
             accountRequestId: pendingAccountRequestId,
           ),
           throwsA(isA<EmailAccountRequestNotVerifiedException>()),
@@ -291,7 +290,7 @@ void main() {
 
         final result = await EmailAccounts.completeAccountCreation(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           accountRequestId: pendingAccountRequestId,
         );
 
@@ -318,7 +317,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         final accountCreationDetails = await createVerifiedEmailAccount(
           session,
