@@ -21,8 +21,9 @@ class GoogleAuth {
   static GoogleClientSecret? _loadClientSecret(Session session) {
     try {
       late final String jsonData;
-      if (session.passwords.containsKey(_passwordKey)) {
-        jsonData = session.passwords[_passwordKey]!;
+      final passwordFromEnv = Platform.environment[_passwordKey];
+      if (passwordFromEnv != null) {
+        jsonData = passwordFromEnv;
       } else {
         var file = File(_configFilePath);
         jsonData = file.readAsStringSync();

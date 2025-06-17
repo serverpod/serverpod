@@ -27,10 +27,9 @@ class FirebaseAuth {
 
     Map<String, dynamic> firebaseServiceAccountJson;
     try {
-      if (Platform.environment.containsKey(_passwordKey)) {
-        firebaseServiceAccountJson = jsonDecode(
-          Platform.environment[_passwordKey]!,
-        );
+      final passwordFromEnv = Platform.environment[_passwordKey];
+      if (passwordFromEnv != null) {
+        firebaseServiceAccountJson = jsonDecode(passwordFromEnv);
       } else {
         firebaseServiceAccountJson = jsonDecode(
           await File(AuthConfig.current.firebaseServiceAccountKeyJson)
