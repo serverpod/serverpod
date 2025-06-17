@@ -1,7 +1,6 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -267,10 +266,6 @@ void main() {
 
   group('Given a class with a declared id field with a "defaultModel" keyword',
       () {
-    var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-      [ExperimentalFeature.changeIdType],
-    ).build();
-
     group(
       'when the field is of type UUID and the defaultModel is set to "random"',
       () {

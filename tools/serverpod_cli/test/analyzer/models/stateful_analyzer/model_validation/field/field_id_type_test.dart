@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -8,9 +7,7 @@ import '../../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-    [ExperimentalFeature.changeIdType],
-  ).build();
+  var config = GeneratorConfigBuilder().build();
 
   group('Given a class with a table defined and no id field', () {
     var models = [
@@ -50,34 +47,6 @@ void main() {
     test('then the default persist is "serial".', () {
       expect(definition.fields.first.defaultPersistValue, defaultIntSerial);
     });
-  });
-
-  test(
-      'Given a class changing the id type, when changeIdType is not enabled, then an error is collected that it is not allowed',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
-        class: Example
-        table: example
-        fields:
-          id: int
-        ''',
-      ).build()
-    ];
-
-    var config = GeneratorConfigBuilder().build();
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
-
-    expect(collector.errors, isNotEmpty);
-
-    expect(
-      collector.errors.first.message,
-      'The "changeIdType" experimental feature is not enabled. Enable '
-      'it first to change the id type of a table class.',
-    );
   });
 
   test(

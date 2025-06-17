@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -8,9 +7,7 @@ import '../../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-    [ExperimentalFeature.changeIdType],
-  ).build();
+  var config = GeneratorConfigBuilder().build();
 
   group(
       'Given two classes with different id types and a one to one relation defined in an object relation field on the class that holds the foreign key',
