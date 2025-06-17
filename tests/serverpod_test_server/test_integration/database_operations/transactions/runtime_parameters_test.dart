@@ -170,7 +170,6 @@ void main() async {
             params.hnswIndexQuery(
               efSearch: 80,
               iterativeScan: null,
-              maxScanTuples: null,
               scanMemMultiplier: 4,
             ),
           ]);
@@ -187,7 +186,6 @@ void main() async {
       expect(row['hnsw_scan_mem_multiplier'], '4');
       // When not yet set, parameters return an empty string
       expect(row['hnsw_iterative_scan'], isEmpty);
-      expect(row['hnsw_max_scan_tuples'], isEmpty);
     });
   });
 }

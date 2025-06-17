@@ -37,26 +37,25 @@ abstract class RuntimeParameters {
 
 /// Query options for the HNSW index.
 class HnswIndexQueryOptions extends RuntimeParameters {
-  /// The ef search parameter for HNSW index.
-  final int? efSearch;
+  /// The ef search parameter for HNSW index. Default is 40.
+  final int efSearch;
 
-  /// The iterative scan limit.
+  /// The iterative scan limit. Default is null (disabled).
   final IterativeScan? iterativeScan;
 
-  /// The maximum number of tuples to scan.
-  final int? maxScanTuples;
+  /// The maximum number of tuples to scan. Default is 20000.
+  final int maxScanTuples;
 
-  /// The memory multiplier for the scan.
-  final int? scanMemMultiplier;
+  /// The memory multiplier for the scan. Default is 1.
+  final int scanMemMultiplier;
 
   /// Creates a new HNSW index query options object.
   const HnswIndexQueryOptions({
-    this.efSearch,
+    this.efSearch = 40,
     this.iterativeScan,
-    this.maxScanTuples,
-    this.scanMemMultiplier,
+    this.maxScanTuples = 20000,
+    this.scanMemMultiplier = 1,
   });
-
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'hnsw.ef_search': efSearch,
@@ -68,22 +67,21 @@ class HnswIndexQueryOptions extends RuntimeParameters {
 
 /// Query options for the IVFFLAT index.
 class IvfflatIndexQueryOptions extends RuntimeParameters {
-  /// The number of probes for the IVFFLAT index.
-  final int? probes;
+  /// The number of probes for the IVFFLAT index. Default is 1.
+  final int probes;
 
-  /// The iterative scan limit.
+  /// The iterative scan limit. Default is null (disabled).
   final IterativeScan? iterativeScan;
 
-  /// The maximum number of probes for the IVFFLAT index.
+  /// The maximum number of probes for the IVFFLAT index. Default to null (unset).
   final int? maxProbes;
 
   /// Creates a new IVFFLAT index query options object.
   const IvfflatIndexQueryOptions({
-    this.probes,
+    this.probes = 1,
     this.iterativeScan,
     this.maxProbes,
   });
-
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'ivfflat.probes': probes,
@@ -94,38 +92,37 @@ class IvfflatIndexQueryOptions extends RuntimeParameters {
 
 /// Query options for vector indexes.
 class VectorIndexQueryOptions extends RuntimeParameters {
-  /// Whether to enable index scan.
-  final bool? enableIndexScan;
+  /// Whether to enable index scan. Default is true.
+  final bool enableIndexScan;
 
-  /// Whether to enable sequential scan.
-  final bool? enableSeqScan;
+  /// Whether to enable sequential scan. Default is true.
+  final bool enableSeqScan;
 
-  /// The minimum parallel table scan size (in 8kB blocks).
-  final int? minParallelTableScanSize;
+  /// The minimum parallel table scan size (in 8kB blocks). Default is 1024 blocks (8MB).
+  final int minParallelTableScanSize;
 
-  /// The parallel setup cost.
-  final int? parallelSetupCost;
+  /// The parallel setup cost. Default is 1000.0.
+  final double parallelSetupCost;
 
-  /// The maintenance work memory (in KB).
-  final int? maintenanceWorkMem;
+  /// The maintenance work memory (in KB). Default is 65536 (64MB).
+  final int maintenanceWorkMem;
 
-  /// The maximum parallel maintenance workers.
-  final int? maxParallelMaintenanceWorkers;
+  /// The maximum parallel maintenance workers. Default is 2.
+  final int maxParallelMaintenanceWorkers;
 
-  /// The maximum parallel workers per gather.
-  final int? maxParallelWorkersPerGather;
+  /// The maximum parallel workers per gather. Default is 2.
+  final int maxParallelWorkersPerGather;
 
   /// Creates a new vector index query options object.
   const VectorIndexQueryOptions({
-    this.enableIndexScan,
-    this.enableSeqScan,
-    this.minParallelTableScanSize,
-    this.parallelSetupCost,
-    this.maintenanceWorkMem,
-    this.maxParallelMaintenanceWorkers,
-    this.maxParallelWorkersPerGather,
+    this.enableIndexScan = true,
+    this.enableSeqScan = true,
+    this.minParallelTableScanSize = 1024,
+    this.parallelSetupCost = 1000.0,
+    this.maintenanceWorkMem = 65536,
+    this.maxParallelMaintenanceWorkers = 2,
+    this.maxParallelWorkersPerGather = 2,
   });
-
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'enable_indexscan': enableIndexScan,
@@ -154,10 +151,10 @@ class RuntimeParametersBuilder {
   /// Creates HNSW index query options for vector similarity search. For more
   /// information on each parameter, refer to the [HnswIndexQueryOptions] class.
   HnswIndexQueryOptions hnswIndexQuery({
-    int? efSearch,
+    int efSearch = 40,
     IterativeScan? iterativeScan,
-    int? maxScanTuples,
-    int? scanMemMultiplier,
+    int maxScanTuples = 20000,
+    int scanMemMultiplier = 1,
   }) =>
       HnswIndexQueryOptions(
         efSearch: efSearch,
@@ -169,7 +166,7 @@ class RuntimeParametersBuilder {
   /// Creates IVFFLAT index query options for vector similarity search. For more
   /// information on each parameter, refer to the [IvfflatIndexQueryOptions] class.
   IvfflatIndexQueryOptions ivfflatIndexQuery({
-    int? probes,
+    int probes = 1,
     IterativeScan? iterativeScan,
     int? maxProbes,
   }) =>
@@ -182,13 +179,13 @@ class RuntimeParametersBuilder {
   /// Creates vector index query options for general vector operations. For more
   /// information on each parameter, refer to the [VectorIndexQueryOptions] class.
   VectorIndexQueryOptions vectorIndexQuery({
-    bool? enableIndexScan,
-    bool? enableSeqScan,
-    int? minParallelTableScanSize,
-    int? parallelSetupCost,
-    int? maintenanceWorkMem,
-    int? maxParallelMaintenanceWorkers,
-    int? maxParallelWorkersPerGather,
+    bool enableIndexScan = true,
+    bool enableSeqScan = true,
+    int minParallelTableScanSize = 1024,
+    double parallelSetupCost = 1000.0,
+    int maintenanceWorkMem = 65536,
+    int maxParallelMaintenanceWorkers = 2,
+    int maxParallelWorkersPerGather = 2,
   }) =>
       VectorIndexQueryOptions(
         enableIndexScan: enableIndexScan,

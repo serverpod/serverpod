@@ -175,6 +175,19 @@ void main() {
       );
     });
 
+    test('when created with no parameters then default values are used.', () {
+      var options = const HnswIndexQueryOptions();
+
+      var result = options.build();
+
+      expect(
+        result,
+        'SET hnsw.ef_search = 40;\n'
+        'SET hnsw.max_scan_tuples = 20000;\n'
+        'SET hnsw.scan_mem_multiplier = 1;',
+      );
+    });
+
     test(
         'when build is called with isLocal true then LOCAL is included in SQL statements.',
         () {
@@ -188,7 +201,9 @@ void main() {
       expect(
         result,
         'SET LOCAL hnsw.ef_search = 100;\n'
-        'SET LOCAL hnsw.iterative_scan = relaxed_order;',
+        'SET LOCAL hnsw.iterative_scan = relaxed_order;\n'
+        'SET LOCAL hnsw.max_scan_tuples = 20000;\n'
+        'SET LOCAL hnsw.scan_mem_multiplier = 1;',
       );
     });
 
@@ -198,7 +213,6 @@ void main() {
       var options = const HnswIndexQueryOptions(
         efSearch: 50,
         iterativeScan: null,
-        maxScanTuples: null,
         scanMemMultiplier: 3,
       );
 
@@ -207,6 +221,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 50;\n'
+        'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 3;',
       );
     });
@@ -246,6 +261,14 @@ void main() {
         'SET ivfflat.iterative_scan = strict_order;\n'
         'SET ivfflat.max_probes = 10;',
       );
+    });
+
+    test('when created with no parameters then default values are used.', () {
+      var options = const IvfflatIndexQueryOptions();
+
+      var result = options.build();
+
+      expect(result, 'SET ivfflat.probes = 1;');
     });
 
     test(
@@ -303,7 +326,7 @@ void main() {
         enableIndexScan: true,
         enableSeqScan: false,
         minParallelTableScanSize: 1024,
-        parallelSetupCost: 1000,
+        parallelSetupCost: 1000.0,
         maintenanceWorkMem: 64,
         maxParallelMaintenanceWorkers: 4,
         maxParallelWorkersPerGather: 2,
@@ -316,9 +339,26 @@ void main() {
         'SET enable_indexscan = on;\n'
         'SET enable_seqscan = off;\n'
         'SET min_parallel_table_scan_size = 1024;\n'
-        'SET parallel_setup_cost = 1000;\n'
+        'SET parallel_setup_cost = 1000.0;\n'
         'SET maintenance_work_mem = 64;\n'
         'SET max_parallel_maintenance_workers = 4;\n'
+        'SET max_parallel_workers_per_gather = 2;',
+      );
+    });
+
+    test('when created with no parameters then default values are used.', () {
+      var options = const VectorIndexQueryOptions();
+
+      var result = options.build();
+
+      expect(
+        result,
+        'SET enable_indexscan = on;\n'
+        'SET enable_seqscan = on;\n'
+        'SET min_parallel_table_scan_size = 1024;\n'
+        'SET parallel_setup_cost = 1000.0;\n'
+        'SET maintenance_work_mem = 65536;\n'
+        'SET max_parallel_maintenance_workers = 2;\n'
         'SET max_parallel_workers_per_gather = 2;',
       );
     });
@@ -338,30 +378,11 @@ void main() {
         result,
         'SET LOCAL enable_indexscan = on;\n'
         'SET LOCAL enable_seqscan = off;\n'
-        'SET LOCAL min_parallel_table_scan_size = 512;',
-      );
-    });
-
-    test(
-        'when build is called with mixed null and non-null parameters then only non-null parameters are included.',
-        () {
-      var options = const VectorIndexQueryOptions(
-        enableIndexScan: true,
-        enableSeqScan: null,
-        minParallelTableScanSize: null,
-        parallelSetupCost: 2000,
-        maintenanceWorkMem: null,
-        maxParallelMaintenanceWorkers: null,
-        maxParallelWorkersPerGather: 3,
-      );
-
-      var result = options.build();
-
-      expect(
-        result,
-        'SET enable_indexscan = on;\n'
-        'SET parallel_setup_cost = 2000;\n'
-        'SET max_parallel_workers_per_gather = 3;',
+        'SET LOCAL min_parallel_table_scan_size = 512;\n'
+        'SET LOCAL parallel_setup_cost = 1000.0;\n'
+        'SET LOCAL maintenance_work_mem = 65536;\n'
+        'SET LOCAL max_parallel_maintenance_workers = 2;\n'
+        'SET LOCAL max_parallel_workers_per_gather = 2;',
       );
     });
 
@@ -441,6 +462,46 @@ void main() {
       expect(options.parallelSetupCost, 1000);
       expect(options.maintenanceWorkMem, 64);
       expect(options.maxParallelMaintenanceWorkers, 4);
+      expect(options.maxParallelWorkersPerGather, 2);
+    });
+
+    test('when using hnswIndexQuery with no parameters then defaults are used.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.hnswIndexQuery();
+
+      expect(options, isA<HnswIndexQueryOptions>());
+      expect(options.efSearch, 40);
+      expect(options.iterativeScan, null);
+      expect(options.maxScanTuples, 20000);
+      expect(options.scanMemMultiplier, 1);
+    });
+
+    test(
+        'when using ivfflatIndexQuery with no parameters then defaults are used.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.ivfflatIndexQuery();
+
+      expect(options, isA<IvfflatIndexQueryOptions>());
+      expect(options.probes, 1);
+      expect(options.iterativeScan, null);
+      expect(options.maxProbes, null);
+    });
+
+    test(
+        'when using vectorIndexQuery with no parameters then defaults are used.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.vectorIndexQuery();
+
+      expect(options, isA<VectorIndexQueryOptions>());
+      expect(options.enableIndexScan, true);
+      expect(options.enableSeqScan, true);
+      expect(options.minParallelTableScanSize, 1024);
+      expect(options.parallelSetupCost, 1000.0);
+      expect(options.maintenanceWorkMem, 65536);
+      expect(options.maxParallelMaintenanceWorkers, 2);
       expect(options.maxParallelWorkersPerGather, 2);
     });
   });
