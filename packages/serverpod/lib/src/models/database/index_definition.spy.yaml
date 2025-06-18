@@ -16,3 +16,9 @@ fields:
   isPrimary: bool
   ### The predicate of this partial index, if it is one.
   predicate: String?
+  ### The vector index distance function, if it is a vector index.
+  vectorDistanceFunction: VectorDistanceFunction?
+  ### The vector column type, if it is a vector index.
+  vectorColumnType: ColumnType?
+  ### Parameters for the index, if needed.
+  parameters: Map<String, String>?

@@ -38,6 +38,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                     column.defaultPersistValue,
                     classDefinition.tableName!,
                   ),
+                  vectorDimension: column.type.vectorDimension,
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),
@@ -64,6 +65,18 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
+                vectorDistanceFunction: index.isVectorIndex
+                    ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
+                    : null,
+                vectorColumnType: index.isVectorIndex
+                    ? ColumnType.values.firstWhere((type) =>
+                        type.name ==
+                        classDefinition.fields
+                            .firstWhere((f) => index.fields.contains(f.name))
+                            .type
+                            .databaseTypeEnum)
+                    : null,
+                parameters: index.parameters,
               ),
           ],
           managed: classDefinition.manageMigration,

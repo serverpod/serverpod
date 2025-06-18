@@ -39,9 +39,9 @@ class Features {
 
   /// Returns true if the web server is enabled.
   static bool get enablePersistentLogging =>
-      _instance._config.sessionLogs?.persistentEnabled == true;
+      _instance._config.sessionLogs.persistentEnabled;
 
   /// Returns true if the web server is enabled.
   static bool get enableConsoleLogging =>
-      _instance._config.sessionLogs?.consoleEnabled == true;
+      _instance._config.sessionLogs.consoleEnabled;
 }

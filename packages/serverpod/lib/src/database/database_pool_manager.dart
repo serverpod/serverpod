@@ -4,6 +4,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 
+import 'adapters/postgres/pgvector_encoder.dart';
 import 'adapters/postgres/value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
@@ -45,6 +46,7 @@ class DatabasePoolManager {
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+          typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
           onOpen: config.searchPaths != null
               ? (connection) async {
                   var encodedSearchPaths = config.searchPaths

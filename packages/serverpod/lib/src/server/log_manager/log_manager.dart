@@ -7,7 +7,6 @@ import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
-import '../../../server.dart';
 import '../../generated/protocol.dart';
 
 const double _microNormalizer = 1000 * 1000;
@@ -127,12 +126,6 @@ class SessionLogManager {
       stackTrace: stackTrace?.toString(),
       order: _nextLogOrderId,
     );
-
-    if (_session.serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
 
     if (!_shouldLogEntry(session: _session, entry: entry)) {
       return;
@@ -296,16 +289,6 @@ class SessionLogManager {
 
     var duration = session.duration;
     LogSettings logSettings = _settingsForSession(session);
-
-    if (session.serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln(
-        'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
-      );
-      if (exception != null) {
-        stdout.writeln(exception);
-        stdout.writeln('$stackTrace');
-      }
-    }
 
     var slowMicros =
         (logSettings.slowSessionDuration * _microNormalizer).toInt();

@@ -388,4 +388,1319 @@ void main() {
       },
     );
   });
+
+  group('Given tables with vector indexes', () {
+    test(
+      'when vector indexes have different distance functions then mismatches include distance function mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.innerProduct,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('cosine'));
+        expect(mismatches.first.subs.first.found, equals('innerProduct'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when vector indexes have different parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '8', 'ef_construction': '32'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, '16');
+        expect(mismatches.first.subs.first.found, '8');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, '64');
+        expect(mismatches.first.subs.last.found, '32');
+        expect(mismatches.first.subs.last.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when vector indexes have missing parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, '16');
+        expect(mismatches.first.subs.first.found, isNull);
+        expect(mismatches.first.subs.first.isMissing, isTrue);
+        expect(mismatches.first.subs.last.expected, '64');
+        expect(mismatches.first.subs.last.found, isNull);
+        expect(mismatches.first.subs.last.isMissing, isTrue);
+      },
+    );
+
+    test(
+      'when one index is vector type and the other is not then mismatches include type mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'btree',
+              isUnique: false,
+              isPrimary: false,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, 'ivfflat');
+        expect(mismatches.first.subs.first.found, 'btree');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, 'cosine');
+        expect(mismatches.first.subs.last.found, isNull);
+        expect(mismatches.first.subs.last.isMissing, isTrue);
+      },
+    );
+
+    test(
+      'when vector indexes are identical then no mismatches are reported.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 0);
+      },
+    );
+
+    test(
+      'when vector indexes have additional parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, isNull);
+        expect(mismatches.first.subs.first.found, '16');
+        expect(mismatches.first.subs.first.isAdded, isTrue);
+      },
+    );
+
+    test(
+      'when vector indexes have different types but same distance function then mismatches include type mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, 'ivfflat');
+        expect(mismatches.first.subs.first.found, 'hnsw');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when vector indexes have different distance functions then mismatches include vector distance function mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.vector,
+              isNullable: false,
+              dartType: 'Vector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.innerProduct,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('cosine'));
+        expect(mismatches.first.subs.first.found, equals('innerProduct'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+  });
+
+  group('Given tables with half vector indexes', () {
+    test(
+      'when half vector indexes have different distance functions then mismatches include distance function mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.innerProduct,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('cosine'));
+        expect(mismatches.first.subs.first.found, equals('innerProduct'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when half vector indexes have different parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '8', 'ef_construction': '32'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, '16');
+        expect(mismatches.first.subs.first.found, '8');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, '64');
+        expect(mismatches.first.subs.last.found, '32');
+        expect(mismatches.first.subs.last.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when half vector indexes are identical then no mismatches are reported.',
+      () {
+        var tableA = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'half_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.halfvec,
+              isNullable: false,
+              dartType: 'HalfVector(3)',
+              vectorDimension: 3,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 0);
+      },
+    );
+  });
+
+  group('Given tables with sparse vector indexes', () {
+    test(
+      'when sparse vector indexes have different distance functions then mismatches include distance function mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.innerProduct,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('cosine'));
+        expect(mismatches.first.subs.first.found, equals('innerProduct'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when sparse vector indexes have different parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '8', 'ef_construction': '32'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, '16');
+        expect(mismatches.first.subs.first.found, '8');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, '64');
+        expect(mismatches.first.subs.last.found, '32');
+        expect(mismatches.first.subs.last.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when sparse vector indexes are identical then no mismatches are reported.',
+      () {
+        var tableA = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'sparse_vector_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.sparsevec,
+              isNullable: false,
+              dartType: 'SparseVector(1000)',
+              vectorDimension: 1000,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.cosine,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 0);
+      },
+    );
+  });
+
+  group('Given tables with bit vector indexes', () {
+    test(
+      'when bit vector indexes have different distance functions then mismatches include distance function mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.hamming,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'ivfflat',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.jaccard,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('hamming'));
+        expect(mismatches.first.subs.first.found, equals('jaccard'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when bit vector indexes have different parameters then mismatches include parameters mismatch.',
+      () {
+        var tableA = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.hamming,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.hamming,
+              parameters: {'m': '8', 'ef_construction': '32'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, '16');
+        expect(mismatches.first.subs.first.found, '8');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, '64');
+        expect(mismatches.first.subs.last.found, '32');
+        expect(mismatches.first.subs.last.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when bit vector indexes are identical then no mismatches are reported.',
+      () {
+        var tableA = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.hamming,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'bit_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'embedding',
+              columnType: ColumnType.bit,
+              isNullable: false,
+              dartType: 'Bit(64)',
+              vectorDimension: 64,
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_embedding',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'embedding',
+                ),
+              ],
+              type: 'hnsw',
+              isUnique: false,
+              isPrimary: false,
+              vectorDistanceFunction: VectorDistanceFunction.hamming,
+              parameters: {'m': '16', 'ef_construction': '64'},
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 0);
+      },
+    );
+  });
 }

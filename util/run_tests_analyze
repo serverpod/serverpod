@@ -39,6 +39,8 @@ declare -a projectPaths=(
     "tests/serverpod_test_flutter"
     "tests/serverpod_test_module/serverpod_test_module_server"
     "tests/serverpod_test_module/serverpod_test_module_client"
+    "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+    "tests/serverpod_test_nonvector/serverpod_test_nonvector_client"
 
     "modules/serverpod_auth/serverpod_auth_server"
     "modules/serverpod_auth/serverpod_auth_client"
@@ -50,8 +52,16 @@ declare -a projectPaths=(
 
     "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server"
     "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client"
+    "modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server"
+    "modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_client"
     "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server"
     "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client"
+    "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server"
+    "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client"
 
     "modules/serverpod_chat/serverpod_chat_server"
     "modules/serverpod_chat/serverpod_chat_client"

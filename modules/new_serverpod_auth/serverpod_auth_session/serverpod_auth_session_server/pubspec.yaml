@@ -1,21 +1,22 @@
 name: serverpod_auth_session_server
 description: Serverpod authentication user session server module.
-version: 2.7.0
+version: 2.8.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
+  clock: ^1.1.1
   crypto: ^3.0.2
   meta: ^1.11.0
-  serverpod: 2.7.0
-  serverpod_auth_user_server: 2.7.0
-  serverpod_shared: 2.7.0
+  serverpod: 2.8.0
+  serverpod_auth_user_server: 2.8.0
+  serverpod_shared: 2.8.0
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
-  serverpod_test: 2.7.0
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: 2.8.0
   test: '^1.24.2'
 
 dependency_overrides:

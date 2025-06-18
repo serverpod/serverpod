@@ -26,6 +26,10 @@ class EndpointDescriptionGenerator extends CodeGenerator {
       }
     }
 
-    return {p.join('lib', 'src', 'generated', 'protocol.yaml'): out};
+    return {
+      p.joinAll([
+        ...config.generatedServerEndpointDescriptionFilePathParts,
+      ]): out
+    };
   }
 }

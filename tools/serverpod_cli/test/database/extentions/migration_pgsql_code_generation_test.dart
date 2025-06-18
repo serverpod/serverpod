@@ -44,6 +44,357 @@ void main() {
     });
   });
 
+  group('pgvector extension creation in migrations', () {
+    const createVectorExtension = '''
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';
+  ELSE
+    RAISE EXCEPTION 'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.';
+  END IF;
+END
+\$\$;
+''';
+
+    test(
+        'Given a migration with no vector field changes, then the code for creating vector extension is not generated.',
+        () {
+      var migration = DatabaseMigration(
+        actions: [],
+        warnings: [],
+        migrationApiVersion: 1,
+      );
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+
+    test(
+        'Given a migration that adds a table with a vector field, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder().build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that adds a vector column to existing table, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+              TableDefinitionBuilder().withName('existing_table').build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that removes a table with a vector field, then the code for creating vector extension is not generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.vector)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder().build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+
+    test(
+        'Given a migration that adds a table with a half vector field, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder().build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('half_vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.halfvec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that adds a half vector column to existing table, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+              TableDefinitionBuilder().withName('existing_table').build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.halfvec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that removes a table with a half vector field, then the code for creating vector extension is not generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('half_vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.halfvec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder().build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+
+    test(
+        'Given a migration that adds a table with a sparse vector field, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder().build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('sparse_vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.sparsevec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that adds a sparse vector column to existing table, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+              TableDefinitionBuilder().withName('existing_table').build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.sparsevec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that removes a table with a sparse vector field, then the code for creating vector extension is not generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('sparse_vector_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.sparsevec)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder().build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+
+    test(
+        'Given a migration that adds a table with a bit vector field, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder().build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('bit_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.bit)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that adds a bit vector column to existing table, then the code for creating vector extension is generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+              TableDefinitionBuilder().withName('existing_table').build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('existing_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.bit)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, contains(createVectorExtension));
+    });
+
+    test(
+        'Given a migration that removes a table with a bit vector field, then the code for creating vector extension is not generated.',
+        () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(TableDefinitionBuilder()
+              .withName('bit_table')
+              .withColumn(ColumnDefinitionBuilder()
+                  .withName('embedding')
+                  .withColumnType(ColumnType.bit)
+                  .withVectorDimension(512)
+                  .build())
+              .build())
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder().build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+
+      expect(pgsql, isNot(contains(createVectorExtension)));
+    });
+  });
+
   /// Issue: https://github.com/serverpod/serverpod/issues/3503
   test(
       'Given an existing table that that references a new table with a name lexically sorted before the existing one, when creating migraion sql then the migration code should create the table before defining the foreign key',

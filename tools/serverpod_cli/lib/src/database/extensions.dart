@@ -85,7 +85,8 @@ extension ColumnComparisons on ColumnDefinition {
     return (other.isNullable == isNullable &&
         other.columnType.like(columnType) &&
         other.name == name &&
-        other.columnDefault == columnDefault);
+        other.columnDefault == columnDefault &&
+        other.vectorDimension == vectorDimension);
   }
 
   bool canMigrateTo(ColumnDefinition other) {
@@ -126,7 +127,22 @@ extension IndexComparisons on IndexDefinition {
         other.indexName == indexName &&
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
-        other.type == type;
+        other.type == type &&
+        other.vectorDistanceFunction == vectorDistanceFunction &&
+        other.vectorColumnType == vectorColumnType &&
+        _parametersMapEquals(other.parameters);
+  }
+
+  bool _parametersMapEquals(Map<String, String>? other) {
+    final parameters = this.parameters;
+    if (parameters == null && other == null) return true;
+    if (parameters == null || other == null) return false;
+    if (parameters.length != other.length) return false;
+
+    for (var key in {...parameters.keys, ...other.keys}) {
+      if (parameters[key] != other[key]) return false;
+    }
+    return true;
   }
 }
 
@@ -213,6 +229,12 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    // Must be declared before any table creation.
+    if (tables.any((t) => t.columns.any((c) => c.isVectorColumn))) {
+      out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
 
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
@@ -314,6 +336,13 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
       (columnDefault?.startsWith('nextval') ?? false);
 
+  /// Whether the column is of a vector type.
+  bool get isVectorColumn =>
+      columnType == ColumnType.vector ||
+      columnType == ColumnType.halfvec ||
+      columnType == ColumnType.sparsevec ||
+      columnType == ColumnType.bit;
+
   String toPgSqlFragment() {
     String type;
     switch (columnType) {
@@ -343,6 +372,18 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.uuid:
         type = 'uuid';
+        break;
+      case ColumnType.vector:
+        type = 'vector(${vectorDimension!})';
+        break;
+      case ColumnType.halfvec:
+        type = 'halfvec(${vectorDimension!})';
+        break;
+      case ColumnType.sparsevec:
+        type = 'sparsevec(${vectorDimension!})';
+        break;
+      case ColumnType.bit:
+        type = 'bit(${vectorDimension!})';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
@@ -381,9 +422,21 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
-    out +=
-        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')});\n';
+    String distanceStr = '';
+    String pgvectorParams = '';
+
+    if (type == 'hnsw' || type == 'ivfflat') {
+      var prefix = vectorColumnType?.name;
+      distanceStr = ' ${vectorDistanceFunction!.asDistanceFunction(prefix!)}';
+
+      var paramStrings = parameters?.entries.map((e) => '${e.key}=${e.value}');
+      pgvectorParams = (paramStrings?.isNotEmpty == true)
+          ? ' WITH (${paramStrings!.join(', ')})'
+          : '';
+    }
+
+    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
 
     return out;
   }
@@ -447,6 +500,16 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    // Must be declared before any table creation.
+    if (actions.any((e) =>
+        (e.createTable != null &&
+            e.createTable!.columns.any((c) => c.isVectorColumn)) ||
+        (e.alterTable != null &&
+            e.alterTable!.addColumns.any((c) => c.isVectorColumn)))) {
+      out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
 
     // Must be declared at the beginning for the function to be available.
     // Only add the function if it is used by any column on the migration.
@@ -657,6 +720,22 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   return out;
 }
 
+String _sqlCreateVectorExtensionIfAvailable() {
+  return '--'
+      '\n-- CREATE VECTOR EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
 const pgsqlFunctionRandomUuidV7 = 'gen_random_uuid_v7()';
 
 /// Add a function to generate v7 UUIDs in the database. The function name was
@@ -734,5 +813,12 @@ extension ColumnTypeComparison on ColumnType {
     }
 
     return this == other;
+  }
+}
+
+extension VectorIndexDistanceFunction on VectorDistanceFunction {
+  String asDistanceFunction([String vectorType = 'vector']) {
+    var funcCode = (this == VectorDistanceFunction.innerProduct) ? 'ip' : name;
+    return '${vectorType}_${funcCode}_ops';
   }
 }

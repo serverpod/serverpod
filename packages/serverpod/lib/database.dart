@@ -12,3 +12,4 @@ export 'src/database/postgres_error_codes.dart';
 export 'src/database/database_accessor.dart';
 export 'src/database/database.dart' show Database;
 export 'src/generated/database/enum_serialization.dart';
+export 'src/util/database_util.dart';

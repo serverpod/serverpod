@@ -7,18 +7,40 @@ fields:
   ### The [AuthUser] this session belongs to
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
 
-  ### The time when this sesion was created.
-  created: DateTime, default=now
-
   ### The scopes this session provides access to.
   scopeNames: Set<String>
+
+  ### The time when this session was created.
+  created: DateTime, default=now
+
+  ### The time when this access session was last used.
+  ###
+  ### Operates only with minute resolution, to avoid excessive writes to the database.
+  lastUsed: DateTime, default=now
+
+  ### The time after which this session can not be used anymore.
+  ###
+  ### If `null`, the session can be used indefinitely.
+  expiresAt: DateTime?
+
+  ### The maximum duration this session can go unused.
+  ###
+  ### If set, and the session is used after [lastUsed] + [expireAfterUnusedFor], then it will be rejected.
+  ###
+  ### If `null`, the session is valid until [expiresAt].
+  expireAfterUnusedFor: Duration?
 
   ### Hashed version of the session key.
   ###
   ### The clients authentication header will be compared against this to check the validity of the session.
-  sessionKeyHash: String
+  sessionKeyHash: ByteData
 
-  ### The method of signing in this key was generated through.
+  ### The salt used for computing the [sessionKeyHash].
   ###
-  ### This can be either email, a social login, etc.
+  ### Per default uses 16 bytes of random data.
+  sessionKeySalt: ByteData
+
+  ### The method through which this session was created.
+  ###
+  ### This can be either an email or social login, a personal access token, service account etc.
   method: String

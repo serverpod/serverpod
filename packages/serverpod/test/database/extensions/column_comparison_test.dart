@@ -198,4 +198,196 @@ void main() {
       },
     );
   });
+
+  test(
+    'when vector columns have different dimension then mismatches include dimension mismatch.',
+    () {
+      var tableA = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.vector,
+            isNullable: false,
+            dartType: 'Vector(512)',
+            vectorDimension: 512,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var tableB = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.vector,
+            isNullable: false,
+            dartType: 'Vector(256)',
+            vectorDimension: 256,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var mismatches = tableA.like(tableB);
+
+      expect(mismatches.length, 1);
+      expect(mismatches.first.subs, isNotEmpty);
+      expect(mismatches.first, isA<ColumnComparisonWarning>());
+      expect(mismatches.first.subs.first.expected, equals('512'));
+      expect(mismatches.first.subs.first.found, equals('256'));
+      expect(mismatches.first.subs.first.isMismatch, isTrue);
+    },
+  );
+
+  test(
+    'when half vector columns have different dimension then mismatches include dimension mismatch.',
+    () {
+      var tableA = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.halfvec,
+            isNullable: false,
+            dartType: 'HalfVector(512)',
+            vectorDimension: 512,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var tableB = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.halfvec,
+            isNullable: false,
+            dartType: 'HalfVector(256)',
+            vectorDimension: 256,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var mismatches = tableA.like(tableB);
+
+      expect(mismatches.length, 1);
+      expect(mismatches.first.subs, isNotEmpty);
+      expect(mismatches.first, isA<ColumnComparisonWarning>());
+      expect(mismatches.first.subs.first.expected, equals('512'));
+      expect(mismatches.first.subs.first.found, equals('256'));
+      expect(mismatches.first.subs.first.isMismatch, isTrue);
+    },
+  );
+
+  test(
+    'when sparse vector columns have different dimension then mismatches include dimension mismatch.',
+    () {
+      var tableA = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.sparsevec,
+            isNullable: false,
+            dartType: 'SparseVector(512)',
+            vectorDimension: 512,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var tableB = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.sparsevec,
+            isNullable: false,
+            dartType: 'SparseVector(256)',
+            vectorDimension: 256,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var mismatches = tableA.like(tableB);
+
+      expect(mismatches.length, 1);
+      expect(mismatches.first.subs, isNotEmpty);
+      expect(mismatches.first, isA<ColumnComparisonWarning>());
+      expect(mismatches.first.subs.first.expected, equals('512'));
+      expect(mismatches.first.subs.first.found, equals('256'));
+      expect(mismatches.first.subs.first.isMismatch, isTrue);
+    },
+  );
+
+  test(
+    'when bit vector columns have different dimension then mismatches include dimension mismatch.',
+    () {
+      var tableA = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.bit,
+            isNullable: false,
+            dartType: 'Bit(512)',
+            vectorDimension: 512,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var tableB = TableDefinition(
+        name: 'test_table',
+        schema: 'public',
+        columns: [
+          ColumnDefinition(
+            name: 'embedding',
+            columnType: ColumnType.bit,
+            isNullable: false,
+            dartType: 'Bit(256)',
+            vectorDimension: 256,
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [],
+        managed: true,
+      );
+
+      var mismatches = tableA.like(tableB);
+
+      expect(mismatches.length, 1);
+      expect(mismatches.first.subs, isNotEmpty);
+      expect(mismatches.first, isA<ColumnComparisonWarning>());
+      expect(mismatches.first.subs.first.expected, equals('512'));
+      expect(mismatches.first.subs.first.found, equals('256'));
+      expect(mismatches.first.subs.first.isMismatch, isTrue);
+    },
+  );
 }

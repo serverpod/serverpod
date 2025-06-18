@@ -188,4 +188,332 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with an index that mixes vector and non-vector fields, then collect an error that mixing is not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+            vector: Vector(512)
+          indexes:
+            example_index:
+              fields: name, vector
+              type: btree
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Mixing vector and non-vector'),
+      );
+
+      expect(
+        error.message,
+        'Mixing vector and non-vector fields in the same index is not allowed.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index containing more than one vector field, then collect an error that multiple vector fields are not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            vector1: Vector(512)
+            vector2: Vector(512)
+          indexes:
+            example_index:
+              fields: vector1, vector2
+              type: hnsw
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Only one vector'),
+      );
+
+      expect(
+        error.message,
+        'Only one vector field is allowed in an index.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index that mixes half vector and non-vector fields, then collect an error that mixing is not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+            vector: HalfVector(512)
+          indexes:
+            example_index:
+              fields: name, vector
+              type: btree
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Mixing vector and non-vector'),
+      );
+
+      expect(
+        error.message,
+        'Mixing vector and non-vector fields in the same index is not allowed.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index containing more than one half vector field, then collect an error that multiple vector fields are not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            vector1: HalfVector(512)
+            vector2: HalfVector(512)
+          indexes:
+            example_index:
+              fields: vector1, vector2
+              type: hnsw
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Only one vector'),
+      );
+
+      expect(
+        error.message,
+        'Only one vector field is allowed in an index.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index that mixes sparse vector and non-vector fields, then collect an error that mixing is not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+            vector: SparseVector(512)
+          indexes:
+            example_index:
+              fields: name, vector
+              type: btree
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Mixing vector and non-vector'),
+      );
+
+      expect(
+        error.message,
+        'Mixing vector and non-vector fields in the same index is not allowed.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index containing more than one sparse vector field, then collect an error that multiple vector fields are not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            vector1: SparseVector(512)
+            vector2: SparseVector(512)
+          indexes:
+            example_index:
+              fields: vector1, vector2
+              type: hnsw
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Only one vector'),
+      );
+
+      expect(
+        error.message,
+        'Only one vector field is allowed in an index.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index that mixes bit vector and non-vector fields, then collect an error that mixing is not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+            vector: Bit(512)
+          indexes:
+            example_index:
+              fields: name, vector
+              type: btree
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Mixing vector and non-vector'),
+      );
+
+      expect(
+        error.message,
+        'Mixing vector and non-vector fields in the same index is not allowed.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index containing more than one bit vector field, then collect an error that multiple vector fields are not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            vector1: Bit(512)
+            vector2: Bit(512)
+          indexes:
+            example_index:
+              fields: vector1, vector2
+              type: hnsw
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Only one vector'),
+      );
+
+      expect(
+        error.message,
+        'Only one vector field is allowed in an index.',
+      );
+    },
+  );
 }

@@ -12,7 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'auth_user.dart' as _i3;
+import 'auth_user_blocked_exception.dart' as _i4;
+import 'auth_user_model.dart' as _i5;
+import 'auth_user_not_found_exception.dart' as _i6;
 export 'auth_user.dart';
+export 'auth_user_blocked_exception.dart';
+export 'auth_user_model.dart';
+export 'auth_user_not_found_exception.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -83,8 +89,29 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i3.AuthUser) {
       return _i3.AuthUser.fromJson(data) as T;
     }
+    if (t == _i4.AuthUserBlockedException) {
+      return _i4.AuthUserBlockedException.fromJson(data) as T;
+    }
+    if (t == _i5.AuthUserModel) {
+      return _i5.AuthUserModel.fromJson(data) as T;
+    }
+    if (t == _i6.AuthUserNotFoundException) {
+      return _i6.AuthUserNotFoundException.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i3.AuthUser?>()) {
       return (data != null ? _i3.AuthUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.AuthUserBlockedException?>()) {
+      return (data != null ? _i4.AuthUserBlockedException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i5.AuthUserModel?>()) {
+      return (data != null ? _i5.AuthUserModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.AuthUserNotFoundException?>()) {
+      return (data != null
+          ? _i6.AuthUserNotFoundException.fromJson(data)
+          : null) as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -102,6 +129,15 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i3.AuthUser) {
       return 'AuthUser';
     }
+    if (data is _i4.AuthUserBlockedException) {
+      return 'AuthUserBlockedException';
+    }
+    if (data is _i5.AuthUserModel) {
+      return 'AuthUserModel';
+    }
+    if (data is _i6.AuthUserNotFoundException) {
+      return 'AuthUserNotFoundException';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
@@ -117,6 +153,15 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'AuthUser') {
       return deserialize<_i3.AuthUser>(data['data']);
+    }
+    if (dataClassName == 'AuthUserBlockedException') {
+      return deserialize<_i4.AuthUserBlockedException>(data['data']);
+    }
+    if (dataClassName == 'AuthUserModel') {
+      return deserialize<_i5.AuthUserModel>(data['data']);
+    }
+    if (dataClassName == 'AuthUserNotFoundException') {
+      return deserialize<_i6.AuthUserNotFoundException>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);

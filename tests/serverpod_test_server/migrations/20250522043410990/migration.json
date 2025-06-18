@@ -1,0 +1,177 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_vector",
+        "dartName": "ObjectWithVector",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_vector_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "vector",
+            "columnType": 10,
+            "isNullable": false,
+            "dartType": "Vector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "vectorNullable",
+            "columnType": 10,
+            "isNullable": true,
+            "dartType": "Vector(512)?",
+            "vectorDimension": 512
+          },
+          {
+            "name": "vectorIndexedHnsw",
+            "columnType": 10,
+            "isNullable": false,
+            "dartType": "Vector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "vectorIndexedHnswWithParams",
+            "columnType": 10,
+            "isNullable": false,
+            "dartType": "Vector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "vectorIndexedIvfflat",
+            "columnType": 10,
+            "isNullable": false,
+            "dartType": "Vector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "vectorIndexedIvfflatWithParams",
+            "columnType": 10,
+            "isNullable": false,
+            "dartType": "Vector(512)",
+            "vectorDimension": 512
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_vector_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "vector_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vector"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2"
+          },
+          {
+            "indexName": "vector_index_hnsw",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedHnsw"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2"
+          },
+          {
+            "indexName": "vector_index_hnsw_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedHnswWithParams"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "cosine",
+            "parameters": {
+              "m": "64",
+              "ef_construction": "200"
+            }
+          },
+          {
+            "indexName": "vector_index_ivfflat",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedIvfflat"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2"
+          },
+          {
+            "indexName": "vector_index_ivfflat_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedIvfflatWithParams"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "innerProduct",
+            "parameters": {
+              "lists": "300"
+            }
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "types",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "aVector",
+            "columnType": 10,
+            "isNullable": true,
+            "dartType": "Vector(3)?",
+            "vectorDimension": 3
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

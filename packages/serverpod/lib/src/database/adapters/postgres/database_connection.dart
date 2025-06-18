@@ -485,7 +485,17 @@ class DatabaseConnection {
       context: _resolveQueryContext(transaction),
     );
 
-    return result.map((row) => row.toColumnMap());
+    return result.map((row) {
+      return {
+        for (final entry in row.toColumnMap().entries)
+          // Serverpod serialization already knows the type of the target
+          // class, so we can remove `UndecodedBytes` here to avoid the
+          // dependency of serverpod_serialization on the `postgres` package.
+          entry.key: entry.value is pg.UndecodedBytes
+              ? (entry.value as pg.UndecodedBytes).bytes
+              : entry.value
+      };
+    });
   }
 
   pg.Session _resolveQueryContext(Transaction? transaction) {
@@ -722,6 +732,10 @@ class DatabaseConnection {
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnUri) return 'text';
     if (column is ColumnBigInt) return 'text';
+    if (column is ColumnVector) return 'vector';
+    if (column is ColumnHalfVector) return 'halfvec';
+    if (column is ColumnSparseVector) return 'sparsevec';
+    if (column is ColumnBit) return 'bit';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {

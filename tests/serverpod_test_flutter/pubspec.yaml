@@ -9,8 +9,8 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
-  flutter: '>=3.19.0'
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
 
 dependencies:
   flutter:

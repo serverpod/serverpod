@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
+import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 
 const tempDirName = 'temp';
 
@@ -26,7 +27,7 @@ void main() {
 
   tearDownAll(() async {
     try {
-      Directory(tempDirName).deleteSync(recursive: true);
+      Directory(tempPath).deleteSync(recursive: true);
     } catch (e) {}
   });
 
@@ -176,6 +177,58 @@ void main() {
           )).existsSync(),
           isTrue,
           reason: 'Server migration registry does not exist.',
+        );
+      });
+
+      test(
+          'then the server projects has docker compose file with project name replaced',
+          () {
+        final dockerComposeFile = File(
+          path.join(tempPath, serverDir, 'docker-compose.yaml'),
+        );
+        expect(
+          dockerComposeFile.existsSync(),
+          isTrue,
+          reason: 'Server docker compose file does not exist.',
+        );
+        expect(
+          dockerComposeFile.readAsStringSync(),
+          containsCount('${projectName}_test', 3),
+          reason: 'Server docker compose data volume name does not match.',
+        );
+      });
+
+      test(
+          'then the server project has test configuration with project name replaced',
+          () {
+        final testConfigFile = File(
+          path.join(tempPath, serverDir, 'config', 'test.yaml'),
+        );
+
+        expect(
+          testConfigFile.existsSync(),
+          isTrue,
+          reason: 'Server test configuration file does not exist.',
+        );
+        expect(
+          testConfigFile.readAsStringSync(),
+          contains('name: ${projectName}_test'),
+          reason: 'Server test configuration database name does not match.',
+        );
+      });
+
+      test('then the server project has a generated protocol file', () {
+        expect(
+          File(path.join(
+            tempPath,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'protocol.yaml',
+          )).existsSync(),
+          isTrue,
+          reason: 'Server generated protocol file does not exist.',
         );
       });
 

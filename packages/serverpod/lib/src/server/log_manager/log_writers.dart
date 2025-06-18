@@ -161,18 +161,16 @@ class DatabaseLogWriter extends LogWriter {
 }
 
 @internal
-class StdOutLogWriter extends LogWriter {
+class JsonStdOutLogWriter extends LogWriter {
   final int _logId;
 
-  StdOutLogWriter(Session session) : _logId = session.sessionId.hashCode;
+  JsonStdOutLogWriter(Session session) : _logId = session.sessionId.hashCode;
 
   @override
   Future<void> logEntry(LogEntry entry) async {
     entry.sessionLogId = _logId;
 
-    if (entry.error != null ||
-        entry.logLevel == LogLevel.error ||
-        entry.logLevel == LogLevel.fatal) {
+    if (_isError(entry)) {
       stderr.writeln(entry);
     } else {
       stdout.writeln(entry);
@@ -223,6 +221,301 @@ class StdOutLogWriter extends LogWriter {
     }
 
     return _logId;
+  }
+}
+
+@internal
+class TextStdOutLogWriter extends LogWriter {
+  static bool headersWritten = false;
+
+  /// Formats a duration value expressed in milliseconds so that it is easy to
+  /// read in logs. Very short durations will be printed using microseconds
+  /// while longer ones will switch to milliseconds or seconds.
+  static String _printDuration(double? milliseconds) {
+    if (milliseconds == null) return 'n/a';
+    var micros = (milliseconds * Duration.microsecondsPerMillisecond).round();
+    if (micros < 1000) {
+      // Ignore required because dart does not understand that "µ" is a valid
+      // character in a string.
+      // ignore: unnecessary_brace_in_string_interps
+      return '${micros}µs';
+    }
+    if (micros < Duration.microsecondsPerSecond) {
+      var ms = micros / 1000;
+      return _formatNumber(ms, 'ms');
+    }
+    var s = micros / Duration.microsecondsPerSecond;
+    return _formatNumber(s, 's');
+  }
+
+  static String _formatNumber(double value, String suffix) {
+    String formatted;
+    if (value >= 100) {
+      formatted = value.toStringAsFixed(0);
+    } else if (value >= 10) {
+      formatted = value.toStringAsFixed(1);
+    } else {
+      formatted = value.toStringAsFixed(2);
+    }
+    if (formatted.contains('.')) {
+      formatted = formatted
+          .replaceFirst(RegExp(r'0+$'), '')
+          .replaceFirst(RegExp(r'\.$'), '');
+    }
+    return '$formatted$suffix';
+  }
+
+  static void writeHeadersIfNeeded() {
+    if (!headersWritten) {
+      _writeFormatHeaders();
+      headersWritten = true;
+    }
+  }
+
+  final int _logId;
+  final Session _session;
+
+  TextStdOutLogWriter(this._session) : _logId = _session.sessionId.hashCode {
+    writeHeadersIfNeeded();
+  }
+
+  @override
+  Future<void> logEntry(LogEntry entry) async {
+    _writeFormattedLog(
+      'LOG',
+      context: entry.logLevel.name.toUpperCase(),
+      id: _logId,
+      fields: {
+        'message': entry.message,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+      toStdErr: _isError(entry),
+    );
+  }
+
+  @override
+  Future<void> logMessage(MessageLogEntry entry) async {
+    _writeFormattedLog(
+      'STREAM MESSAGE',
+      context: entry.endpoint,
+      id: _logId,
+      fields: {
+        'id': entry.messageId,
+        'name': entry.messageName,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+    );
+  }
+
+  @override
+  Future<void> logQuery(QueryLogEntry entry) async {
+    _writeFormattedLog(
+      'QUERY',
+      context: null,
+      id: _logId,
+      fields: {
+        'id': entry.id,
+        'duration': _printDuration(entry.duration),
+        'query': entry.query,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+    );
+  }
+
+  @override
+  Future<void> openLog(SessionLogEntry entry) async {
+    if (_session is! StreamingSession && _session is! MethodStreamSession) {
+      return;
+    }
+
+    _writeFormattedLog(
+      'STREAM OPEN',
+      context:
+          '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
+      id: _logId,
+      fields: {
+        'user': entry.authenticatedUserId,
+      },
+      error: entry.error,
+      stackTrace: entry.stackTrace,
+    );
+  }
+
+  @override
+  Future<int> closeLog(SessionLogEntry entry) async {
+    switch (_session) {
+      case MethodCallSession():
+        _writeFormattedLog(
+          'METHOD',
+          context: '${entry.endpoint}.${entry.method}',
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case FutureCallSession():
+        _writeFormattedLog(
+          'FUTURE',
+          context: _session.futureCallName,
+          id: _logId,
+          fields: {
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case WebCallSession():
+        _writeFormattedLog(
+          'WEB',
+          context: entry.endpoint,
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case StreamingSession() || MethodStreamSession():
+        _writeFormattedLog(
+          'STREAM CLOSED',
+          context:
+              '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
+          id: _logId,
+          fields: {
+            'user': entry.authenticatedUserId,
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      case InternalSession():
+        _writeFormattedLog(
+          'INTERNAL',
+          context: null,
+          id: _logId,
+          fields: {
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+      default:
+        // This should never happen, but we handle it gracefully.
+        _writeFormattedLog(
+          'UNKNOWN',
+          context: null,
+          id: _logId,
+          fields: {
+            'sessionType': _session.runtimeType.toString(),
+            'queries': entry.numQueries,
+            'duration': _printDuration(entry.duration),
+          },
+          error: entry.error,
+          stackTrace: entry.stackTrace,
+        );
+        break;
+    }
+
+    return _logId;
+  }
+
+  static void _writeFormatHeaders() {
+    stdout.writeln(
+      '${'TIME'.padRight(27)}'
+      ' ${'ID'.padRight(10)}'
+      ' ${'TYPE'.padRight(14)}'
+      ' ${'CONTEXT'.padRight(25)}'
+      'DETAILS',
+    );
+    stdout.writeln(
+      '${'-' * 27}' // Time
+      ' ${'-' * 10}' // Id
+      ' ${'-' * 14}' // Type
+      ' ${'-' * 24}' // Context
+      ' ${'-' * 30}', // Details
+    );
+  }
+
+  static void _writeFormattedLog(
+    String type, {
+    required String? context,
+    required int id,
+    required Map<String, dynamic> fields,
+    required String? error,
+    required String? stackTrace,
+    bool toStdErr = false,
+  }) {
+    var now = DateTime.now().toUtc();
+    _write(
+      type,
+      context: context,
+      id: id,
+      message: fields.isNotEmpty
+          ? fields.entries.map((e) => '${e.key}=${e.value}').join(', ')
+          : '',
+      now: now,
+      toStdErr: toStdErr,
+    );
+
+    if (error != null) {
+      _write(
+        'ERROR',
+        context: 'n/a',
+        id: id,
+        message: error,
+        now: now,
+        toStdErr: true,
+      );
+      if (stackTrace != null) {
+        _write(
+          'STACK TRACE',
+          context: 'n/a',
+          id: id,
+          message: stackTrace,
+          now: now,
+          toStdErr: true,
+        );
+      }
+    }
+  }
+
+  static void _write(
+    String type, {
+    required String? context,
+    required int id,
+    required String message,
+    required DateTime now,
+    required bool toStdErr,
+  }) {
+    var output = StringBuffer();
+    output.write('$id'.padLeft(10));
+    output.write(' $type'.padRight(15));
+
+    output.write(' ${context ?? 'n/a'}'.padRight(25));
+    output.write(' $message');
+
+    if (toStdErr) {
+      stderr.writeln('$now ${output.toString()}');
+    } else {
+      stdout.writeln('$now ${output.toString()}');
+    }
   }
 }
 
@@ -282,4 +575,10 @@ class MultipleLogWriter extends LogWriter {
       _logWriters.map((writer) => writer.openLog(entry)),
     );
   }
+}
+
+bool _isError(LogEntry entry) {
+  return entry.error != null ||
+      entry.logLevel == LogLevel.error ||
+      entry.logLevel == LogLevel.fatal;
 }

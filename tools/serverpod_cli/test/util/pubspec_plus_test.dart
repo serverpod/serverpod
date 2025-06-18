@@ -10,13 +10,13 @@ void main() {
     const pubspecString = '''
 name: x_server
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
   serverpod: 2.3.1
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: '>=3.0.0 <7.0.0'
   test: ^1.24.2
   serverpod_test: 2.3.1
 ''';
@@ -52,7 +52,7 @@ dev_dependencies:
         var lintsDep = depsByName['lints']!;
         expect(
           (lintsDep as HostedDep).dependency.version,
-          VersionConstraint.parse('>=3.0.0 <6.0.0'),
+          VersionConstraint.parse('>=3.0.0 <7.0.0'),
         );
       });
 
@@ -97,12 +97,12 @@ dev_dependencies:
         expect(lintsSpan.start.column, 9);
         expect(lintsSpan.end.line, 8);
         expect(lintsSpan.end.column, 25);
-        expect(lintsSpan.text, "'>=3.0.0 <6.0.0'");
+        expect(lintsSpan.text, "'>=3.0.0 <7.0.0'");
         expect(
           lintsSpan.message('<the message>'),
           'line 9, column 10: <the message>\n' // 1-based
           '  ╷\n'
-          "9 │   lints: '>=3.0.0 <6.0.0'\n"
+          "9 │   lints: '>=3.0.0 <7.0.0'\n"
           '  │          ^^^^^^^^^^^^^^^^\n'
           '  ╵',
         );

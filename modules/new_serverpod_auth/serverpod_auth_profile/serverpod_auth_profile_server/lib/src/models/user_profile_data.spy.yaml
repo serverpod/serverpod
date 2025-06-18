@@ -1,0 +1,13 @@
+class: UserProfileData
+serverOnly: true
+fields:
+  ### The first name of the user or the user's nickname.
+  userName: String?
+
+  ### The full name of the user.
+  fullName: String?
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String?

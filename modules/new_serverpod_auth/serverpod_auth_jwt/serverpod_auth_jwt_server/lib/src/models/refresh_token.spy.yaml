@@ -1,0 +1,58 @@
+class: RefreshToken
+serverOnly: true
+table: serverpod_auth_jwt_refresh_token
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this refresh token belongs to.
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The scopes given to this session.
+  ###
+  ### These will also be added to each access token (JWT) created from this refresh token as a claim named "dev.serverpod.scopeNames".
+  scopeNames: Set<String>
+
+  ### Extra claims to be added to each access token created for this refresh token.
+  ###
+  ### This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
+  ### The values must be JSON-encodable.
+  ###
+  ### Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  ### or the above-mentioned claim for [scopeNames].
+  ###
+  ### This is only stored as a serialized String in the database due to schema limitations.
+  extraClaims: String?
+
+  ### The fixed part of the secret.
+  ###
+  ### Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
+  ### but not the correct `secret`, will cause the refresh token to be invalidated (as the refresh token
+  ### may have been leaked at that point).
+  ### Since the refresh token's `id` is also part of the JWT access tokens for reference, we have to have this second
+  ### part in here, ensuring that no one with just a (potentially expired) JWT can invalidate the refresh token.
+  ###
+  ### Per default uses 16 bytes of random data.
+  fixedSecret: ByteData
+
+  ### The most recent rotating secret associated with this refresh token.
+  ###
+  ### This is changed on every rotation of the refresh token,
+  ### whenever a new access token is created.
+  ###
+  ### Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
+  rotatingSecretHash: ByteData
+
+  ### The salt used for computing the [rotatingSecretHash].
+  ###
+  ### Per default uses 16 bytes of random data.
+  rotatingSecretSalt: ByteData
+
+  ### The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
+  lastUpdated: DateTime, default=now
+
+  ### The time when the first refresh token was created.
+  created: DateTime, default=now
+
+indexes:
+  serverpod_auth_jwt_refresh_token_last_updated:
+    fields: lastUpdated

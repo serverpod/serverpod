@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
@@ -12,6 +15,12 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 ///
 /// This should be used instead of [AuthSession.db].
 abstract final class AuthSessions {
+  /// The current session module configuration.
+  static AuthSessionConfig config = AuthSessionConfig();
+
+  /// Admin-related functions for managing session.
+  static final admin = AuthSessionsAdmin();
+
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
   /// Only looks at keys created with this package (by checking the prefix),
@@ -51,9 +60,9 @@ abstract final class AuthSessions {
 
       return null;
     }
-    final secret = parts[2];
+    final secret = base64Decode(parts[2]);
 
-    final authSession = await AuthSession.db.findById(
+    var authSession = await AuthSession.db.findById(
       session,
       authSessionId,
     );
@@ -67,27 +76,32 @@ abstract final class AuthSessions {
       return null;
     }
 
-    final maximumSessionLifetime =
-        AuthSessionConfig.current.maximumSessionLifetime;
-
-    if (maximumSessionLifetime != null &&
-        authSession.created
-            .add(maximumSessionLifetime)
-            .isBefore(DateTime.now())) {
+    final expiresAt = authSession.expiresAt;
+    if (expiresAt != null && clock.now().isAfter(expiresAt)) {
       session.log(
-        'Session has expired',
+        'Got session after its set expiration date.',
         level: LogLevel.debug,
       );
 
       return null;
     }
 
-    final sessionKeyHash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
-    );
+    final expireAfterUnusedFor = authSession.expireAfterUnusedFor;
+    if (expireAfterUnusedFor != null &&
+        authSession.lastUsed.add(expireAfterUnusedFor).isBefore(clock.now())) {
+      session.log(
+        'Got session which expired due to inactivity.',
+        level: LogLevel.debug,
+      );
 
-    if (sessionKeyHash != authSession.sessionKeyHash) {
+      return null;
+    }
+
+    if (!_sessionKeyHash.validateSessionKeyHash(
+      secret: secret,
+      hash: Uint8List.sublistView(authSession.sessionKeyHash),
+      salt: Uint8List.sublistView(authSession.sessionKeySalt),
+    )) {
       session.log(
         'Provided `secret` did not result in correct session key hash.',
         level: LogLevel.debug,
@@ -96,15 +110,17 @@ abstract final class AuthSessions {
       return null;
     }
 
-    // Setup scopes
-    final scopes = <Scope>{};
-    for (final scopeName in authSession.scopeNames) {
-      scopes.add(Scope(scopeName));
+    if (authSession.lastUsed
+        .isBefore(clock.now().subtract(const Duration(minutes: 1)))) {
+      authSession = await AuthSession.db.updateRow(
+        session,
+        authSession.copyWith(lastUsed: clock.now()),
+      );
     }
 
     return AuthenticationInfo(
       authSession.authUserId,
-      scopes,
+      authSession.scopeNames.map(Scope.new).toSet(),
       authId: authSessionId.toString(),
     );
   }
@@ -112,6 +128,11 @@ abstract final class AuthSessions {
   /// Create a session for the user, returning the secret session key to be used for the authentication header.
   ///
   /// The user should have been authenticated before calling this method.
+  ///
+  /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
+  ///
+  /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
+  /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decomissioned.
   ///
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
@@ -122,12 +143,17 @@ abstract final class AuthSessions {
     required final UuidValue authUserId,
     required final String method,
     required final Set<Scope> scopes,
+
+    /// Fixed date at which the session expires.
+    /// If `null` the session will work until it's deleted or when it's been inactive for [expireAfterUnusedFor].
+    final DateTime? expiresAt,
+
+    /// Length of inactivity after which the session is no longer usable.
+    final Duration? expireAfterUnusedFor,
+    final Transaction? transaction,
   }) async {
-    final secret = generateRandomString();
-    final hash = hashSessionKey(
-      secret,
-      pepper: AuthSessionSecrets.sessionKeyHashPepper,
-    );
+    final secret = generateRandomBytes(config.sessionKeySecretLength);
+    final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
     final scopeNames = <String>{
       for (final scope in scopes)
@@ -138,13 +164,32 @@ abstract final class AuthSessions {
       session,
       AuthSession(
         authUserId: authUserId,
+        created: clock.now(),
+        lastUsed: clock.now(),
+        expiresAt: expiresAt,
+        expireAfterUnusedFor: expireAfterUnusedFor,
         scopeNames: scopeNames,
-        sessionKeyHash: hash,
+        sessionKeyHash: ByteData.sublistView(hash.hash),
+        sessionKeySalt: ByteData.sublistView(hash.salt),
         method: method,
       ),
+      transaction: transaction,
     );
 
     return _buildSessionKey(secret: secret, authSessionId: authSession.id!);
+  }
+
+  /// List all sessions belonging to the given [authUserId].
+  static Future<List<AuthSessionInfo>> listSessions(
+    final Session session, {
+    required final UuidValue authUserId,
+    final Transaction? transaction,
+  }) async {
+    return admin.findSessions(
+      session,
+      authUserId: authUserId,
+      transaction: transaction,
+    );
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.
@@ -156,16 +201,17 @@ abstract final class AuthSessions {
   static Future<void> destroyAllSessions(
     final Session session, {
     required final UuidValue authUserId,
+    final Transaction? transaction,
   }) async {
     // Delete all sessions for the user
     final auths = await AuthSession.db.deleteWhere(
       session,
       where: (final row) => row.authUserId.equals(authUserId),
+      transaction: transaction,
     );
 
     if (auths.isEmpty) return;
 
-    // Notify clients about the revoked authentication for the user
     await session.messages.authenticationRevoked(
       authUserId,
       RevokedAuthenticationUser(),
@@ -181,11 +227,13 @@ abstract final class AuthSessions {
   static Future<void> destroySession(
     final Session session, {
     required final UuidValue authSessionId,
+    final Transaction? transaction,
   }) async {
     // Delete the user session for the current device
     final authSession = (await AuthSession.db.deleteWhere(
       session,
       where: (final row) => row.id.equals(authSessionId),
+      transaction: transaction,
     ))
         .firstOrNull;
 
@@ -207,8 +255,19 @@ abstract final class AuthSessions {
 
   static String _buildSessionKey({
     required final UuidValue authSessionId,
-    required final String secret,
+    required final Uint8List secret,
   }) {
-    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:$secret';
+    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:${base64Encode(secret)}';
   }
+
+  /// The secrets configuration.
+  static final __secrets = AuthSessionSecrets();
+
+  /// Secrets to the used for testing. Also affects the internally used [AuthSessionKeyHash].
+  @visibleForTesting
+  static AuthSessionSecrets? secretsTestOverride;
+  static AuthSessionSecrets get _secrets => secretsTestOverride ?? __secrets;
+
+  static AuthSessionKeyHash get _sessionKeyHash =>
+      AuthSessionKeyHash(secrets: _secrets);
 }

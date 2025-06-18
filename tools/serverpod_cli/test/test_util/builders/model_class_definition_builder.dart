@@ -1,6 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'foreign_relation_definition_builder.dart';
 import 'serializable_entity_field_definition_builder.dart';
@@ -118,6 +119,27 @@ class ModelClassDefinitionBuilder {
           .withDefaults(
             defaultModelValue: defaultModelValue,
             defaultPersistValue: defaultPersistValue,
+          )
+          .build(),
+    );
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withVectorField(
+    String fieldName, {
+    int dimension = 3,
+    bool nullable = false,
+    String vectorType = 'Vector',
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withType(
+            TypeDefinitionBuilder()
+                .withClassName(vectorType)
+                .withNullable(nullable)
+                .withVectorDimension(dimension)
+                .build(),
           )
           .build(),
     );
@@ -334,6 +356,21 @@ class ModelClassDefinitionBuilder {
   ) {
     _indexes = indexes;
     return this;
+  }
+
+  ModelClassDefinitionBuilder withIndexesFromDefinitions(
+    List<IndexDefinition> indexes,
+  ) {
+    return withIndexes(indexes
+        .map((index) => SerializableModelIndexDefinition(
+              name: index.indexName,
+              type: index.type,
+              unique: index.isUnique,
+              fields: index.elements.map((e) => e.definition).toList(),
+              vectorDistanceFunction: index.vectorDistanceFunction,
+              parameters: index.parameters,
+            ))
+        .toList());
   }
 
   ModelClassDefinitionBuilder withDocumentation(List<String>? documentation) {

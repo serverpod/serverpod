@@ -68,12 +68,21 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
     String schemaName,
     String tableName,
   ) async {
+    final vectorTypes =
+        VectorColumnType.vectorTypes.map((e) => "'${e.name}'").join(', ');
+
     var queryResult = await database.unsafeQuery(
 // Get the columns of this table and sort them based on their position.
         '''
-SELECT column_name, column_default, is_nullable, data_type
+SELECT column_name, column_default, is_nullable,
+       CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
+       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
 FROM information_schema.columns
+  LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
+  LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
+  AND n.nspname = '$schemaName' AND c.relname = '$tableName'
 ORDER BY ordinal_position;
 ''');
 
@@ -83,7 +92,8 @@ ORDER BY ordinal_position;
             columnDefault: e[1],
             columnType: ExtendedColumnType.fromSqlType(e[3]),
             // SQL outputs YES or NO. So we have to convert it to a bool manually.
-            isNullable: e[2] == 'YES'))
+            isNullable: e[2] == 'YES',
+            vectorDimension: e[4]))
         .toList();
   }
 
@@ -95,6 +105,8 @@ ORDER BY ordinal_position;
     var queryResult = await database.unsafeQuery(
 // We want to get the name (0), tablespace (1), isUnique (2), isPrimary (3),
 // elements (4), isElementAColumn (5), predicate (6) and type of each index for this table.
+// We also fetch reloptions (8) which contains the parameters for specialized indexes like pgvector's HNSW and IVFFLAT.
+// For pgvector indexes, we extract the operator class names (9) which contain the distance metric information.
 //
 // Most information is stored in pg_index.
 //
@@ -113,6 +125,9 @@ ORDER BY ordinal_position;
 //
 // We need to know the type of the index (e.g. btree). Use pg_am to map between the type id and its name.
 //
+// For pgvector indexes, the operator class contains the distance metric information.
+// Extract this information using the pg_opclass table and joining with the indclass from pg_index.
+//
 // Filter for the current table.
 //
 // In the first ARRAY, generate_subscripts generates us the indexes for the values of indkey. (In the first dimension.)
@@ -130,7 +145,13 @@ ARRAY(
        FROM generate_subscripts(indkey, 1) as k
        ) as indkey_names,
 ARRAY(SELECT i > 0 FROM unnest(indkey::int[]) as i) indkey_is_column,
-pg_get_expr(indpred, indrelid), am.amname
+pg_get_expr(indpred, indrelid), am.amname, i.reloptions,
+ARRAY(
+       SELECT oc.opcname
+       FROM unnest(indclass::oid[]) WITH ORDINALITY AS ind_class(indclass, ord)
+       JOIN pg_opclass oc ON oc.oid = ind_class.indclass
+       ORDER BY ind_class.ord
+       )::text[] as opclass_names
 FROM pg_index
 JOIN pg_class t ON t.oid = indrelid
 JOIN pg_namespace n ON n.oid = t.relnamespace
@@ -146,6 +167,45 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       if (indkeyNames is! List<String> || indkeyIsColumn is! List<bool>) {
         throw Exception('Failed to parse index definition.');
       }
+
+      var parameters = <String, String>{};
+      VectorDistanceFunction? vectorDistanceFunction;
+      ColumnType? vectorColumnType;
+
+      final indexType = index[7] as String;
+      if (['hnsw', 'ivfflat'].contains(indexType)) {
+        // Parse index parameters from reloptions
+        var reloptions = index[8];
+        if (reloptions != null && reloptions is List<String>) {
+          for (var option in reloptions) {
+            var parts = option.split('=');
+            if (parts.length == 2) {
+              parameters[parts[0]] = parts[1];
+            }
+          }
+        }
+
+        // Extract pgvector distance metric from operator class
+        var opclassNames = index[9];
+        if (opclassNames is List<String> && opclassNames.isNotEmpty) {
+          // For pgvector, the first operator class contains the distance metric
+          final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
+          final match = opClassRegex.firstMatch(opclassNames[0]);
+
+          if (match != null && match.groupCount >= 1) {
+            vectorColumnType = VectorColumnType.vectorTypes
+                .where((c) => c.name == match.group(1))
+                .firstOrNull;
+
+            var distanceMetric = match.group(2)!;
+            if (distanceMetric == 'ip') distanceMetric = 'innerProduct';
+            vectorDistanceFunction = VectorDistanceFunction.values
+                .where((e) => e.name == distanceMetric)
+                .firstOrNull;
+          }
+        }
+      }
+
       return IndexDefinition(
         indexName: index[0],
         tableSpace: index[1],
@@ -161,6 +221,9 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         isPrimary: index[3],
         //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
         predicate: index[6],
+        vectorDistanceFunction: vectorDistanceFunction,
+        vectorColumnType: vectorColumnType,
+        parameters: parameters.isEmpty ? null : parameters,
       );
     }).toList();
   }
@@ -244,6 +307,20 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
       return [];
     }
   }
+}
+
+/// Extension methods for [ColumnType] to handle vector types.
+extension VectorColumnType on ColumnType {
+  /// Return valid vector types.
+  static List<ColumnType> get vectorTypes => [
+        ColumnType.vector,
+        ColumnType.halfvec,
+        ColumnType.sparsevec,
+        ColumnType.bit,
+      ];
+
+  /// Whether the column is of a vector type.
+  bool get isVectorType => vectorTypes.contains(this);
 }
 
 extension on String {

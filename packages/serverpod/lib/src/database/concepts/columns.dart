@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// A function that returns a [Column] for a [Table].
@@ -318,6 +319,115 @@ class ColumnCount extends _ValueOperatorColumn<int>
   Expression _encodeValueForQuery(int value) => Expression(value);
 }
 
+/// A [Column] holding a [Vector] from pgvector.
+class ColumnVector extends _ValueOperatorColumn<Vector>
+    with
+        _ColumnDefaultOperations<Vector>,
+        _VectorColumnDefaultOperations<Vector> {
+  /// The dimension of the vector (number of elements).
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVector(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Vector value) => EscapedExpression(value);
+}
+
+/// A [Column] holding a [HalfVector] from pgvector.
+class ColumnHalfVector extends _ValueOperatorColumn<HalfVector>
+    with
+        _ColumnDefaultOperations<HalfVector>,
+        _VectorColumnDefaultOperations<HalfVector> {
+  /// The dimension of the half vector (number of elements).
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnHalfVector(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(HalfVector value) => EscapedExpression(value);
+}
+
+/// A [Column] holding a [SparseVector] from pgvector.
+class ColumnSparseVector extends _ValueOperatorColumn<SparseVector>
+    with
+        _ColumnDefaultOperations<SparseVector>,
+        _VectorColumnDefaultOperations<SparseVector> {
+  /// The dimension of the sparse vector (number of elements).
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnSparseVector(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(SparseVector value) =>
+      EscapedExpression(value);
+}
+
+/// A [Column] holding a [Bit] vector from pgvector.
+class ColumnBit extends _ValueOperatorColumn<Bit>
+    with _ColumnDefaultOperations<Bit> {
+  /// The number of bits in the bit vector.
+  final int dimension;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnBit(
+    super.columnName,
+    super.table, {
+    required this.dimension,
+    super.hasDefault,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Bit value) => EscapedExpression(value);
+
+  /// Computes the Jaccard distance between this vector column and another vector.
+  ColumnVectorDistance<Bit> distanceJaccard(Bit other) {
+    return ColumnVectorDistance<Bit>(VectorDistanceExpression<Bit>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.jaccard,
+    ));
+  }
+
+  /// Computes the Hamming distance between this vector column and another vector.
+  ColumnVectorDistance<Bit> distanceHamming(Bit other) {
+    return ColumnVectorDistance<Bit>(VectorDistanceExpression<Bit>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.hamming,
+    ));
+  }
+}
+
+/// A [Column] holding the result of a vector distance operation.
+class ColumnVectorDistance<T> extends ColumnDouble {
+  final VectorDistanceExpression<T> _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnVectorDistance(this._expression)
+      : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -472,6 +582,45 @@ mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
         this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+  }
+}
+
+/// Mixin providing vector-specific operations for vector columns.
+mixin _VectorColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
+  /// Computes the L2 (Euclidean) distance between this vector column and another vector.
+  ColumnVectorDistance<T> distanceL2(T other) {
+    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.l2,
+    ));
+  }
+
+  /// Computes the inner product distance between this vector column and another vector.
+  ColumnVectorDistance<T> distanceInnerProduct(T other) {
+    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.innerProduct,
+    ));
+  }
+
+  /// Computes the cosine distance between this vector column and another vector.
+  ColumnVectorDistance<T> distanceCosine(T other) {
+    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.cosine,
+    ));
+  }
+
+  /// Computes the L1 (Manhattan) distance between this vector column and another vector.
+  ColumnVectorDistance<T> distanceL1(T other) {
+    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
+      this,
+      _encodeValueForQuery(other),
+      VectorDistanceFunction.l1,
+    ));
   }
 }
 
@@ -751,6 +900,33 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String get operator => 'NOT IN';
+}
+
+/// Vector distance expression for use with pgvector.
+class VectorDistanceExpression<T> extends _TwoPartColumnExpression<T> {
+  /// The vector distance operator to calculate.
+  final VectorDistanceFunction distanceOperator;
+
+  /// Creates a new [VectorDistanceExpression].
+  VectorDistanceExpression(super.column, super.other, this.distanceOperator);
+
+  @override
+  String get operator {
+    switch (distanceOperator) {
+      case VectorDistanceFunction.l2:
+        return '<->';
+      case VectorDistanceFunction.innerProduct:
+        return '<#>';
+      case VectorDistanceFunction.cosine:
+        return '<=>';
+      case VectorDistanceFunction.l1:
+        return '<+>';
+      case VectorDistanceFunction.hamming:
+        return '<~>';
+      case VectorDistanceFunction.jaccard:
+        return '<%>';
+    }
+  }
 }
 
 /// An extension on iterable for Id columns.

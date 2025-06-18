@@ -1,0 +1,32 @@
+class: ObjectWithHalfVector
+table: object_with_half_vector
+fields:
+  halfVector: HalfVector(512)
+  halfVectorNullable: HalfVector(512)?
+  halfVectorIndexedHnsw: HalfVector(512)
+  halfVectorIndexedHnswWithParams: HalfVector(512)
+  halfVectorIndexedIvfflat: HalfVector(512)
+  halfVectorIndexedIvfflatWithParams: HalfVector(512)
+
+indexes:
+  half_vector_index_default:
+    fields: halfVector
+  half_vector_index_hnsw:
+    fields: halfVectorIndexedHnsw
+    type: hnsw
+  half_vector_index_hnsw_with_params:
+    fields: halfVectorIndexedHnswWithParams
+    type: hnsw
+    distanceFunction: l2
+    parameters:
+      m: 64
+      ef_construction: 200
+  half_vector_index_ivfflat:
+    fields: halfVectorIndexedIvfflat
+    type: ivfflat
+  half_vector_index_ivfflat_with_params:
+    fields: halfVectorIndexedIvfflatWithParams
+    type: ivfflat
+    distanceFunction: cosine
+    parameters:
+      lists: 300

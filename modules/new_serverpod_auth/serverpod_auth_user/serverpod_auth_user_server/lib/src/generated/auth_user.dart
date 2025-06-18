@@ -15,16 +15,17 @@ abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   AuthUser._({
     this.id,
-    required this.created,
+    DateTime? created,
     required this.scopeNames,
-    required this.blocked,
-  });
+    bool? blocked,
+  })  : created = created ?? DateTime.now(),
+        blocked = blocked ?? false;
 
   factory AuthUser({
     _i1.UuidValue? id,
-    required DateTime created,
+    DateTime? created,
     required Set<String> scopeNames,
-    required bool blocked,
+    bool? blocked,
   }) = _AuthUserImpl;
 
   factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -118,9 +119,9 @@ class _Undefined {}
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
     _i1.UuidValue? id,
-    required DateTime created,
+    DateTime? created,
     required Set<String> scopeNames,
-    required bool blocked,
+    bool? blocked,
   }) : super._(
           id: id,
           created: created,

@@ -329,13 +329,24 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// The vector index distance function, if it is a vector index.
+  final VectorDistanceFunction? vectorDistanceFunction;
+
+  /// The parameters of the index, if any. Used for Vector indexes.
+  final Map<String, String>? parameters;
+
   /// Create a new [SerializableModelIndexDefinition].
   SerializableModelIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
     required this.fields,
+    this.vectorDistanceFunction,
+    this.parameters,
   });
+
+  /// Whether the index is of vector type.
+  bool get isVectorIndex => VectorIndexType.values.any((e) => e.name == type);
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
@@ -605,3 +616,9 @@ const String defaultBooleanFalse = 'false';
 /// UuidValue
 const String defaultUuidValueRandom = 'random';
 const String defaultUuidValueRandomV7 = 'random_v7';
+
+/// Allowed types for vector indexes.
+enum VectorIndexType {
+  hnsw,
+  ivfflat,
+}

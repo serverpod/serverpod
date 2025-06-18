@@ -21,6 +21,14 @@ void main() {
       'UuidValue',
       'Uri',
       'BigInt',
+      'Vector(512)',
+      'Vector(512)?',
+      'HalfVector(256)',
+      'HalfVector(256)?',
+      'SparseVector(128)',
+      'SparseVector(128)?',
+      'Bit(64)',
+      'Bit(64)?',
       'List<String>',
       'List<String>?',
       'List<String?>?',
@@ -1578,6 +1586,332 @@ fields:
     test('then a definition column type is set to bigint.', () {
       var definition = definitions.first as ClassDefinition;
       expect(definition.fields.first.type.databaseType, 'bigint');
+    });
+  });
+
+  group('Given a class with a field with Vector type', () {
+    test(
+        'when missing dimension, then collect an error that dimension must be defined.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is zero, then collect an error that dimension must be greater than zero.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(0)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'Invalid vector dimension "0". Vector dimension must be an integer '
+        'number greater than 0.',
+      );
+    });
+
+    test(
+        'when dimension is negative, then collect an error that dimension must be greater than zero.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(-5)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'Invalid vector dimension "-5". Vector dimension must be an integer '
+        'number greater than 0.',
+      );
+    });
+
+    test(
+        'when dimension is a float value, then collect an error that dimension must be a valid integer.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(5.5)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is a string, then collect an error that dimension must be a valid integer.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(abc)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is malformed with only opening parentheses, then collect an error.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is malformed with more than one opening parentheses, then collect an error.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector((512)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is malformed with only closing parentheses, then collect an error.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector)
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
+    });
+
+    test(
+        'when dimension is malformed with more than one closing parentheses, then collect an error.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            embedding: Vector(512))
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The vector type must have an integer dimension defined between '
+        'parentheses after the type name (e.g. Vector(512)).',
+      );
     });
   });
 }

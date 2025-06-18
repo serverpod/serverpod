@@ -340,6 +340,21 @@ void main() async {
             reason: 'Server migration registry does not exist.',
           );
         });
+
+        test('has a generated protocol.yaml file', () {
+          expect(
+            File(path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'generated',
+              'protocol.yaml',
+            )).existsSync(),
+            isTrue,
+            reason: 'Server generated protocol.yaml file does not exist.',
+          );
+        });
       });
 
       group('then the flutter project', () {

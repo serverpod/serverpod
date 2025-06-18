@@ -1,0 +1,4 @@
+type: server
+
+client_package_path: ../serverpod_new_auth_test_client
+server_test_tools_path: test/integration/test_tools

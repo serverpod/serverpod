@@ -42,3 +42,9 @@ templates/serverpod_templates/projectname_client/lib/src/
 templates/serverpod_templates/projectname_server/lib/src/generated/
 templates/serverpod_templates/projectname_server/test/integration/test_tools/
 templates/serverpod_templates/projectname_server_upgrade/test/
+templates/serverpod_templates/modulename_client/lib/src/
+templates/serverpod_templates/modulename_server/lib/src/generated/
+templates/serverpod_templates/modulename_server/test/integration/test_tools/
+.asdf
+.tool-versions
+.cursor

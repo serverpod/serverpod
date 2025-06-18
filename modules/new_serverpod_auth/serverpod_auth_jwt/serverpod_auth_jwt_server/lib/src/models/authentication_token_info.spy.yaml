@@ -1,0 +1,20 @@
+class: AuthenticationTokenInfo
+fields:
+  id: UuidValue
+
+  ### The [AuthUser] this refresh token belongs to.
+  authUserId: UuidValue
+
+  ### The scopes given to this session.
+  scopeNames: Set<String>
+
+  ### Extra claims set on this session.
+  ###
+  ### Stored as JSON encoded `Map<String, dynamic>`
+  extraClaimsJSON: String?
+
+  ### The last time when a new token pair was created for this session.
+  lastUpdated: DateTime
+
+  ### The time when this session was initially created.
+  created: DateTime

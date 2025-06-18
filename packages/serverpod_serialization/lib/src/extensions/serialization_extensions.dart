@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -157,5 +158,95 @@ extension SetJsonExtension<T> on Set<T> {
     }
 
     return set;
+  }
+}
+
+/// Expose toJson on Vector
+extension VectorJsonExtension on Vector {
+  /// Returns a serialized version of the [Vector] with values serialized.
+  static Vector fromJson(dynamic value) {
+    if (value is Uint8List) return Vector.fromBinary(value);
+    if (value is String) return _fromString(value);
+    if (value is List) return Vector(value.cast<double>());
+    if (value is Vector) return value;
+
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+
+  /// Returns a serialized version of the [Vector] as a [List<double>].
+  List<double> toJson() => toList();
+
+  static Vector _fromString(String value) {
+    return Vector((json.decode(value) as List).cast<double>());
+  }
+}
+
+/// Expose toJson on HalfVector
+extension HalfVectorJsonExtension on HalfVector {
+  /// Returns a deserialized version of the [HalfVector] from various formats.
+  static HalfVector fromJson(dynamic value) {
+    if (value is Uint8List) return HalfVector.fromBinary(value);
+    if (value is String) return _fromString(value);
+    if (value is List) return HalfVector(value.cast<double>());
+    if (value is HalfVector) return value;
+
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+
+  /// Returns a serialized version of the [HalfVector] as a [List<double>].
+  List<double> toJson() => toList();
+
+  static HalfVector _fromString(String value) {
+    return HalfVector((json.decode(value) as List).cast<double>());
+  }
+}
+
+/// Expose toJson on SparseVector
+extension SparseVectorJsonExtension on SparseVector {
+  /// Returns a deserialized version of the [SparseVector] from various formats.
+  static SparseVector fromJson(dynamic value) {
+    if (value is Uint8List) return SparseVector.fromBinary(value);
+    if (value is String) return _fromString(value);
+    if (value is List) return SparseVector(value.cast<double>());
+    if (value is SparseVector) return value;
+
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+
+  /// Returns a serialized version of the [SparseVector] as a [String].
+  String toJson() => toString();
+
+  static SparseVector _fromString(String value) {
+    // Handle string format like "{1:1.0,3:2.0,5:3.0}/6"
+    if (value.startsWith('{') && value.contains('}/')) {
+      return SparseVector.fromString(value);
+    }
+    return SparseVector((json.decode(value) as List).cast<double>());
+  }
+}
+
+/// Expose toJson on Bit
+extension BitJsonExtension on Bit {
+  /// Returns a deserialized version of the [Bit] from various formats.
+  static Bit fromJson(dynamic value) {
+    if (value is Uint8List) return Bit.fromBinary(value);
+    if (value is String) return _fromString(value);
+    if (value is List) return _fromList(value);
+    if (value is Bit) return value;
+
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+
+  /// Returns a serialized version of the [Bit] as a [String].
+  String toJson() => toString();
+
+  static Bit _fromList(List<dynamic> value) {
+    return Bit(value.map((v) => v == 1 || v == true).toList());
+  }
+
+  static Bit _fromString(String value) {
+    return value.contains('0') || value.contains('1')
+        ? Bit.fromString(value)
+        : _fromList(json.decode(value) as List);
   }
 }
