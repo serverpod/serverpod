@@ -168,7 +168,7 @@ class Serverpod {
 
   final TaskManagerImpl _externalShutdownTaskManager = TaskManagerImpl();
 
-  late TaskManagerImpl _internalShutdownTaskManager;
+  final TaskManagerImpl _internalShutdownTaskManager = TaskManagerImpl();
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -224,8 +224,6 @@ class Serverpod {
   /// resources. The tasks are executed concurrently when [shutdown]
   /// is called.
   void _initializeShutdownTaskManager() {
-    _internalShutdownTaskManager = TaskManagerImpl();
-
     _internalShutdownTaskManager.addTask(
       Task(
         'Test Auditor',
