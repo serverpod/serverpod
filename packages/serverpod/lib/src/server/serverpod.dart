@@ -235,28 +235,28 @@ class Serverpod {
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Web Server',
-        () async => _webServer?.stop,
+        () async => _webServer?.stop(),
       ),
     );
 
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Service Server',
-        () async => _serviceServer?.shutdown,
+        () async => _serviceServer?.shutdown(),
       ),
     );
 
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Future Call Manager',
-        () async => _futureCallManager?.stop,
+        () async => _futureCallManager?.stop(),
       ),
     );
 
     _internalServicesShutdownTasks.addTask(
       Task(
         'Test Auditor',
-        () async => _shutdownTestAuditor,
+        () async => _shutdownTestAuditor(),
       ),
     );
 
