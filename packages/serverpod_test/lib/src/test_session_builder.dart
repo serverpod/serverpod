@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'test_serverpod.dart';
@@ -11,7 +10,7 @@ abstract class AuthenticationOverride {
     Set<Scope> scopes, {
     String? authId,
   }) =>
-      AuthenticationInfoOverride(userIdentifier, scopes, authId: authId);
+      _AuthenticationInfoOverride(userIdentifier, scopes, authId: authId);
 
   /// Sets the session to be unauthenticated. This is the default.
   static AuthenticationOverride unauthenticated() => _Unauthenticated();
@@ -82,7 +81,7 @@ class InternalTestSessionBuilder extends TestSessionBuilder {
 
   void _configureServerpodSession(InternalServerpodSession session) {
     var authenticationOverride = _authenticationOverride;
-    if (authenticationOverride is AuthenticationInfoOverride) {
+    if (authenticationOverride is _AuthenticationInfoOverride) {
       session.updateAuthenticated(authenticationOverride.authenticationInfo);
     }
   }
@@ -105,13 +104,11 @@ abstract class TestSessionBuilder {
 }
 
 /// Overrides the authenticationInfo on the session. This will bypass any auth handlers.
-@visibleForTesting
-class AuthenticationInfoOverride extends AuthenticationOverride {
+class _AuthenticationInfoOverride extends AuthenticationOverride {
   final AuthenticationInfo _authenticationInfo;
 
   /// Creates a new AuthenticationInfoOverride with the provided authentication info.
-  @visibleForTesting
-  AuthenticationInfoOverride(
+  _AuthenticationInfoOverride(
     Object userIdentifier,
     Set<Scope> scopes, {
     String? authId,
