@@ -15,6 +15,8 @@ abstract interface class TaskManager {
   /// The task is stored in the task map with its ID as the key.
   /// The [task] contains an ID for identification and a callback function
   /// that will be executed when the task is run.
+  ///
+  /// Throws [StateError] if a task with the same ID already exists.
   void addTask(Task task);
 
   /// Removes a task with the specified ID from the task map.
@@ -31,7 +33,12 @@ class TaskManagerImpl extends TaskManager {
   final Map<Object, Task> _tasks = {};
 
   @override
-  void addTask(Task task) => _tasks[task.id] = task;
+  void addTask(Task task) {
+    if (_tasks.containsKey(task.id)) {
+      throw StateError('Task with id ${task.id} already exists.');
+    }
+    _tasks[task.id] = task;
+  }
 
   @override
   bool removeTask(Object id) {
@@ -52,7 +59,7 @@ class TaskManagerImpl extends TaskManager {
   }) async {
     final futures = <Future<void>>[];
 
-    for (final entry in _tasks.entries) {
+    for (final entry in _tasks.entries.toList()) {
       final Object id = entry.key;
       final Task task = entry.value;
 
