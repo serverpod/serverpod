@@ -3,7 +3,7 @@
 /// Tasks are managed by the [TaskManager] and can be executed at various points,
 /// such as during server shutdown. Tasks can be executed in parallel or
 /// sequentially based on their configuration.
-class Task<T> {
+class Task {
   /// Creates a new task.
   ///
   /// The [id] is used for identification and logging purposes.
@@ -19,5 +19,5 @@ class Task<T> {
   /// The function to execute when the task is run.
   ///
   /// This function should return a [Future] that completes when the task is done.
-  final Future<T> Function() callback;
+  final Future<void> Function() callback;
 }
