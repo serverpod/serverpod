@@ -8,7 +8,7 @@ export 'package:serverpod_shared/src/config.dart';
 
 // Server
 export 'package:serverpod/server.dart';
-export 'package:serverpod/src/server/tasks/tasks.dart';
+export 'package:serverpod/src/server/tasks/tasks.dart' hide TaskManagerImpl;
 
 // Web server
 export 'package:serverpod/relic.dart';

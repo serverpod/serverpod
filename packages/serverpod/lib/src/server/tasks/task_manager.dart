@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import 'task.dart';
 
 /// Manages tasks that need to be executed.
@@ -7,18 +9,13 @@ import 'task.dart';
 /// The `TaskManager` allows registering tasks that can be executed
 /// concurrently. Each task is identified by a unique ID and contains
 /// a callback function that will be executed when the task is run.
-class TaskManager {
-  final Map<Object, Task> _tasks = {};
-
+abstract interface class TaskManager {
   /// Adds a task to be executed.
   ///
   /// The task is stored in the task map with its ID as the key.
   /// The [task] contains an ID for identification and a callback function
   /// that will be executed when the task is run.
-  void addTask<T>(
-    Task task,
-  ) =>
-      _tasks[task.id] = task;
+  void addTask(Task task);
 
   /// Removes a task with the specified ID from the task map.
   ///
@@ -26,6 +23,17 @@ class TaskManager {
   /// Return [bool] if success in removing task.
   ///
   /// The [id] is the identifier of the task to remove.
+  bool removeTask(Object id);
+}
+
+@internal
+class TaskManagerImpl extends TaskManager {
+  final Map<Object, Task> _tasks = {};
+
+  @override
+  void addTask(Task task) => _tasks[task.id] = task;
+
+  @override
   bool removeTask(Object id) {
     return _tasks.remove(id) != null;
   }

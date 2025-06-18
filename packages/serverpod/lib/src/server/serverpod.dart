@@ -166,9 +166,9 @@ class Serverpod {
   /// You can use this to add custom tasks using [shutdownTasks.addTask].
   TaskManager get shutdownTasks => _externalShutdownTaskManager;
 
-  final TaskManager _externalShutdownTaskManager = TaskManager();
+  final TaskManagerImpl _externalShutdownTaskManager = TaskManagerImpl();
 
-  late TaskManager _internalShutdownTaskManager;
+  late TaskManagerImpl _internalShutdownTaskManager;
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -224,7 +224,7 @@ class Serverpod {
   /// resources. The tasks are executed concurrently when [shutdown]
   /// is called.
   void _initializeShutdownTaskManager() {
-    _internalShutdownTaskManager = TaskManager();
+    _internalShutdownTaskManager = TaskManagerImpl();
 
     _internalShutdownTaskManager.addTask(
       Task(
