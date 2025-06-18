@@ -1003,14 +1003,14 @@ class Serverpod {
 
     Object? shutdownError;
 
-    await _externalShutdownTaskManager.handleTasks(
+    await _externalShutdownTaskManager.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
         _reportException(error, stack, message: 'Error in task "$id"');
       },
     );
 
-    await _internalShutdownTaskManager.handleTasks(
+    await _internalShutdownTaskManager.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
         _reportException(error, stack, message: 'Error in internal task "$id"');

@@ -46,7 +46,7 @@ class TaskManagerImpl extends TaskManager {
   ///
   /// The [onTaskError] callback is required and is called when a task throws
   /// an exception.
-  Future<void> handleTasks({
+  Future<void> executeTasks({
     required void Function(Object error, StackTrace stack, Object id)
         onTaskError,
   }) async {
