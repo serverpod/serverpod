@@ -14,11 +14,11 @@ class Task<T> {
   ///
   /// Used for identification and logging purposes, especially when errors
   /// occur.
-  Object id;
+  final Object id;
 
   /// The function to execute when the task is run.
   ///
   /// This callback can return a Future that completes when the task is done,
   /// or it can be null if no action is needed.
-  Future<T>? Function()? callback;
+  final Future<T>? Function()? callback;
 }
