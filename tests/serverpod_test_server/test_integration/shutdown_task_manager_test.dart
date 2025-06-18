@@ -4,18 +4,13 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late Serverpod serverpod;
-
-  setUp(() {
-    serverpod = IntegrationTestServer.create();
-  });
-
   test(
       'Given a registered shutdown task '
       'when the server is shutdown '
       'then the task is executed.', () async {
     var called = false;
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(
       Task(
         #testTask,
@@ -43,6 +38,7 @@ void main() {
       },
     );
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(task);
     serverpod.shutdownTasks.removeTask(task.id);
 
@@ -57,6 +53,7 @@ void main() {
       'then the task once for each shutdown.', () async {
     var callCount = 0;
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(
       Task(
         #testTask,
@@ -83,6 +80,7 @@ void main() {
       },
     );
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(task);
 
     expect(
@@ -111,6 +109,7 @@ void main() {
       },
     );
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(task1);
     serverpod.shutdownTasks.addTask(task2);
 
@@ -142,6 +141,7 @@ void main() {
       },
     );
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(task1);
     serverpod.shutdownTasks.addTask(task2);
 
@@ -160,6 +160,7 @@ void main() {
     var webServerStopped = false;
     var serviceServerStopped = false;
 
+    var serverpod = IntegrationTestServer.create();
     serverpod.shutdownTasks.addTask(
       Task(
         #testTask,
