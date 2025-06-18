@@ -150,4 +150,34 @@ void main() {
     expect(completer1.isCompleted, isTrue);
     expect(completer2.isCompleted, isTrue);
   });
+
+  test(
+      'Given a registered shutdown task '
+      'when the server is shutdown '
+      'then the task is executed after all request receiving services are shutdown',
+      () async {
+    var serverStopped = false;
+    var webServerStopped = false;
+    var serviceServerStopped = false;
+
+    serverpod.shutdownTasks.addTask(
+      Task(
+        #testTask,
+        () async {
+          serverStopped = serverpod.server.running;
+          webServerStopped = serverpod.webServer.running;
+          serviceServerStopped = serverpod.serviceServer.running;
+        },
+      ),
+    );
+
+    await serverpod.shutdown(exitProcess: false);
+
+    expect(serverStopped, isFalse,
+        reason: 'Server was not shutdown when task executed');
+    expect(webServerStopped, isFalse,
+        reason: 'Web server was not shutdown when task executed');
+    expect(serviceServerStopped, isFalse,
+        reason: 'Service server was not shutdown when task executed');
+  });
 }

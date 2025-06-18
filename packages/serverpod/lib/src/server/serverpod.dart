@@ -168,7 +168,8 @@ class Serverpod {
 
   final TaskManagerImpl _externalShutdownTaskManager = TaskManagerImpl();
 
-  final TaskManagerImpl _internalShutdownTaskManager = TaskManagerImpl();
+  final TaskManagerImpl _requestReceivingShutdownTasks = TaskManagerImpl();
+  final TaskManagerImpl _internalServicesShutdownTasks = TaskManagerImpl();
 
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
@@ -224,56 +225,56 @@ class Serverpod {
   /// resources. The tasks are executed concurrently when [shutdown]
   /// is called.
   void _initializeShutdownTaskManager() {
-    _internalShutdownTaskManager.addTask(
-      Task(
-        'Test Auditor',
-        _shutdownTestAuditor,
-      ),
-    );
-
-    _internalShutdownTaskManager.addTask(
-      Task(
-        'Internal Session',
-        _internalSession.close,
-      ),
-    );
-
-    _internalShutdownTaskManager.addTask(
-      Task(
-        'Redis Controller',
-        redisController?.stop,
-      ),
-    );
-
-    _internalShutdownTaskManager.addTask(
+    _requestReceivingShutdownTasks.addTask(
       Task(
         'Server',
         server.shutdown,
       ),
     );
 
-    _internalShutdownTaskManager.addTask(
+    _requestReceivingShutdownTasks.addTask(
       Task(
         'Web Server',
         _webServer?.stop,
       ),
     );
 
-    _internalShutdownTaskManager.addTask(
+    _requestReceivingShutdownTasks.addTask(
       Task(
         'Service Server',
         _serviceServer?.shutdown,
       ),
     );
 
-    _internalShutdownTaskManager.addTask(
+    _requestReceivingShutdownTasks.addTask(
       Task(
         'Future Call Manager',
         _futureCallManager?.stop,
       ),
     );
 
-    _internalShutdownTaskManager.addTask(
+    _internalServicesShutdownTasks.addTask(
+      Task(
+        'Test Auditor',
+        _shutdownTestAuditor,
+      ),
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      Task(
+        'Internal Session',
+        _internalSession.close,
+      ),
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      Task(
+        'Redis Controller',
+        redisController?.stop,
+      ),
+    );
+
+    _internalServicesShutdownTasks.addTask(
       Task(
         'Health Check Manager',
         _healthCheckManager?.stop,
@@ -1001,17 +1002,29 @@ class Serverpod {
 
     Object? shutdownError;
 
-    await _externalShutdownTaskManager.executeTasks(
+    await _requestReceivingShutdownTasks.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
-        _reportException(error, stack, message: 'Error in task "$id"');
+        _reportException(
+          error,
+          stack,
+          message: 'Error in request receiving shutdown "$id"',
+        );
       },
     );
 
-    await _internalShutdownTaskManager.executeTasks(
+    await _externalShutdownTaskManager.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
-        _reportException(error, stack, message: 'Error in internal task "$id"');
+        _reportException(error, stack, message: 'Error in shutdown task "$id"');
+      },
+    );
+
+    await _internalServicesShutdownTasks.executeTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(error, stack,
+            message: 'Error in service shutdown "$id"');
       },
     );
 
