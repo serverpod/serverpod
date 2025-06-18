@@ -235,28 +235,28 @@ class Serverpod {
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Web Server',
-        _webServer?.stop,
+        () async => _webServer?.stop,
       ),
     );
 
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Service Server',
-        _serviceServer?.shutdown,
+        () async => _serviceServer?.shutdown,
       ),
     );
 
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Future Call Manager',
-        _futureCallManager?.stop,
+        () async => _futureCallManager?.stop,
       ),
     );
 
     _internalServicesShutdownTasks.addTask(
       Task(
         'Test Auditor',
-        _shutdownTestAuditor,
+        () async => _shutdownTestAuditor,
       ),
     );
 
@@ -270,14 +270,14 @@ class Serverpod {
     _internalServicesShutdownTasks.addTask(
       Task(
         'Redis Controller',
-        redisController?.stop,
+        () async => redisController?.stop,
       ),
     );
 
     _internalServicesShutdownTasks.addTask(
       Task(
         'Health Check Manager',
-        _healthCheckManager?.stop,
+        () async => _healthCheckManager?.stop,
       ),
     );
   }

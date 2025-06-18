@@ -56,17 +56,15 @@ class TaskManagerImpl extends TaskManager {
       final Object id = entry.key;
       final Task task = entry.value;
 
-      if (task.callback != null) {
-        futures.add(
-          Future(() async {
-            try {
-              await task.callback!();
-            } catch (e, stack) {
-              onTaskError(e, stack, id);
-            }
-          }),
-        );
-      }
+      futures.add(
+        Future(() async {
+          try {
+            await task.callback();
+          } catch (e, stack) {
+            onTaskError(e, stack, id);
+          }
+        }),
+      );
     }
 
     await Future.wait(futures);

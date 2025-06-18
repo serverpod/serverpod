@@ -18,7 +18,6 @@ class Task<T> {
 
   /// The function to execute when the task is run.
   ///
-  /// This callback can return a Future that completes when the task is done,
-  /// or it can be null if no action is needed.
-  final Future<T>? Function()? callback;
+  /// This function should return a [Future] that completes when the task is done.
+  final Future<T> Function() callback;
 }
