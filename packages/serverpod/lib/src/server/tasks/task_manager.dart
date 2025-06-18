@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:serverpod/src/server/task.dart';
+import 'task.dart';
 
 /// Manages tasks that need to be executed.
 ///

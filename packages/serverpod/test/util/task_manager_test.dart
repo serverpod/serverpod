@@ -1,8 +1,7 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/generated/endpoints.dart';
 import 'package:serverpod/src/server/serverpod.dart';
-import 'package:serverpod/src/server/task.dart';
-import 'package:serverpod/src/server/task_manager.dart';
+import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:test/test.dart';
 
 void main() {
