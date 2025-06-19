@@ -270,7 +270,7 @@ void main() {
         () {
       var options = const IvfflatIndexQueryOptions(
         probes: 5,
-        iterativeScan: IterativeScan.strict,
+        iterativeScan: IterativeScan.relaxed,
         maxProbes: 10,
       );
 
@@ -279,7 +279,7 @@ void main() {
       expect(
         result,
         'SET ivfflat.probes = 5;\n'
-        'SET ivfflat.iterative_scan = strict_order;\n'
+        'SET ivfflat.iterative_scan = relaxed_order;\n'
         'SET ivfflat.max_probes = 10;',
       );
     });

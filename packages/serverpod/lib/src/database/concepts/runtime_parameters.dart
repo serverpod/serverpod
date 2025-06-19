@@ -82,7 +82,9 @@ class IvfflatIndexQueryOptions extends RuntimeParameters {
     this.probes = 1,
     this.iterativeScan,
     this.maxProbes,
-  });
+  }) : assert(iterativeScan != IterativeScan.strict,
+            'Strict iterative scan is not supported for IVFFLAT indexes');
+
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'ivfflat.probes': probes,
