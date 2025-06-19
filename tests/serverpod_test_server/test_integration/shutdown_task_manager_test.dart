@@ -154,7 +154,7 @@ void main() {
   test(
       'Given a registered shutdown task '
       'when the server is shutdown '
-      'then the task is executed after all request receiving services are shutdown',
+      'then the task is executed after all request receiving services are shutdown.',
       () async {
     var serverStopped = false;
     var webServerStopped = false;
