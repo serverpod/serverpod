@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../test_tags.dart';
@@ -50,7 +49,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,
@@ -136,7 +135,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,
@@ -223,7 +222,7 @@ void main() {
         session = sessionBuilder.build();
 
         final authUser = await createAuthUser(session);
-        authUserId = authUser.id!;
+        authUserId = authUser.id;
 
         await createVerifiedEmailAccount(
           session,

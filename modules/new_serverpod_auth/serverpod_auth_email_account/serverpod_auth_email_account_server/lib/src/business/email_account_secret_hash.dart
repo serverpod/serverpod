@@ -9,14 +9,16 @@ import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account
 import 'package:serverpod_auth_email_account_server/src/business/email_account_secrets.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// Class for handling password and verification code hashing in the email account module.
+/// Class for handling password and verification code hashing in the email
+/// account module.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
 abstract final class EmailAccountSecretHash {
   /// Create the hash for the given [value].
   ///
-  /// Applies a random salt, which must be stored with the hash to validate it later.
+  /// Applies a random salt, which must be stored with the hash to validate it
+  /// later.
   static Future<({Uint8List hash, Uint8List salt})> createHash({
     required final String value,
     @protected Uint8List? salt,
@@ -61,6 +63,13 @@ abstract final class EmailAccountSecretHash {
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
+    if (hash.isEmpty) {
+      // Empty hashes are stored in the database when no password has been set.
+      // In this case we can just skip the computation below, as it would never
+      // match the fixed-length output of `createHash`.
+      return false;
+    }
+
     return uint8ListAreEqual(
       hash,
       (await createHash(value: value, salt: salt)).hash,

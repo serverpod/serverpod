@@ -11,6 +11,7 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod('Given a pending account request,',
       (final sessionBuilder, final endpoints) {
+    const email = 'test@serverpod.dev';
     late Session session;
 
     setUp(() async {
@@ -18,7 +19,7 @@ void main() {
 
       await EmailAccounts.startAccountCreation(
         session,
-        email: 'test@serverpod.dev',
+        email: email,
         password: 'Yolo12345!',
       );
     });
@@ -48,7 +49,147 @@ void main() {
         0,
       );
     });
+
+    test(
+      'when calling `findAccount`, it does not return an account.',
+      () async {
+        expect(
+          await EmailAccounts.admin.findAccount(session, email: email),
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'when calling `setPassword`, it fails as it only works on fully created accounts.',
+      () async {
+        await expectLater(
+          () => EmailAccounts.admin.setPassword(
+            session,
+            email: email,
+            password: 'Asdf123456!',
+          ),
+          throwsA(isA<EmailAccountNotFoundException>()),
+        );
+      },
+    );
   });
+
+  withServerpod(
+    'Given an existing account,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'test@serverpod.dev';
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await createAuthUser(session);
+        authUserId = authUser.id;
+        await createVerifiedEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: 'Yolo1234!',
+        );
+      });
+
+      tearDown(() async {
+        await cleanUpEmailAccountDatabaseEntities(session);
+      });
+
+      test(
+        'when calling `findAccount`, it does return the account.',
+        () async {
+          expect(
+            await EmailAccounts.admin.findAccount(session, email: email),
+            isNotNull,
+          );
+        },
+      );
+
+      test(
+        'when calling `setPassword`, it succeeds.',
+        () async {
+          const newPassword = 'short1';
+          await EmailAccounts.admin.setPassword(
+            session,
+            email: email,
+            password: newPassword,
+          );
+
+          expect(
+            await EmailAccounts.login(
+              session,
+              email: email,
+              password: newPassword,
+            ),
+            authUserId,
+          );
+        },
+      );
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+  );
+
+  withServerpod(
+    'Given an existing account created with `createEmailAuthentication`,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'test@serverpod.dev';
+      const password = 'short1';
+
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await createAuthUser(session);
+        authUserId = authUser.id;
+
+        await EmailAccounts.admin.createEmailAuthentication(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: password,
+        );
+      });
+
+      tearDown(() async {
+        await cleanUpEmailAccountDatabaseEntities(session);
+      });
+
+      test(
+        'when calling `findAccount`, it does return the account.',
+        () async {
+          final account = await EmailAccounts.admin.findAccount(
+            session,
+            email: email,
+          );
+
+          expect(account?.authUserId, authUserId);
+        },
+      );
+
+      test(
+        'when calling `EmailAccounts.login`, it works right away (without verification).',
+        () async {
+          expect(
+            await EmailAccounts.login(
+              session,
+              email: email,
+              password: password,
+            ),
+            authUserId,
+          );
+        },
+      );
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+  );
 
   withServerpod(
     'Given an existing account with a pending password reset request,',
@@ -62,7 +203,7 @@ void main() {
         final authUser = await createAuthUser(session);
         await createVerifiedEmailAccount(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           email: email,
           password: 'Yolo1234!',
         );
@@ -116,7 +257,7 @@ void main() {
         final authUser = await createAuthUser(session);
         await createVerifiedEmailAccount(
           session,
-          authUserId: authUser.id!,
+          authUserId: authUser.id,
           email: email,
           password: 'Yolo1234!',
         );
@@ -178,8 +319,11 @@ void main() {
         session = sessionBuilder.build();
 
         try {
-          await EmailAccounts.login(session,
-              email: '404@serverpod.dev', password: 'Asdf123ll!');
+          await EmailAccounts.login(
+            session,
+            email: '404@serverpod.dev',
+            password: 'Asdf123ll!',
+          );
         } catch (_) {
           // error expect due to invalid credentials
         }
