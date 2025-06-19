@@ -579,13 +579,7 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        if (_isValidSecret(config.serviceSecret)) {
-          serversStarted &= await _serviceServer?.start() ?? true;
-        } else {
-          stderr.write(
-            'Invalid serviceSecret in password file, Insights server disabled.',
-          );
-        }
+        serversStarted &= await _serviceServer?.start() ?? true;
       }
 
       // Main API server.
