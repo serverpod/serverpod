@@ -122,14 +122,15 @@ final class EmailAccountsAdmin {
   /// ensure that it comes from a trusted source.
   /// The [password] argument is not checked against the configured password
   /// policy.
+  /// A `null` [password] can be passed to create an account without a password.
+  /// In that case either the user has to complete a password reset or
+  /// [setPassword] needs to be called before the user can log in.
   ///
   /// Returns the email account ID for the newly created authentication method.
   Future<UuidValue> createEmailAuthentication(
     final Session session, {
     required final UuidValue authUserId,
     required String email,
-
-    /// If `null`, no password will be set for this user.
     required final String? password,
     final Transaction? transaction,
   }) async {
