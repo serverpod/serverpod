@@ -358,6 +358,33 @@ void main() {
         "current_setting('ivfflat.max_probes', true) as ivfflat_max_probes;",
       );
     });
+
+    group('with constructor validation', () {
+      test('when iterative scan is strict then assertion error is thrown.', () {
+        expect(
+          () => IvfflatIndexQueryOptions(iterativeScan: IterativeScan.strict),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test(
+          'when iterative scan is not strict then no assertion error is thrown.',
+          () {
+        expect(
+          () => const IvfflatIndexQueryOptions(
+              iterativeScan: IterativeScan.relaxed),
+          returnsNormally,
+        );
+      });
+
+      test('when iterative scan is null then no assertion error is thrown.',
+          () {
+        expect(
+          () => const IvfflatIndexQueryOptions(iterativeScan: null),
+          returnsNormally,
+        );
+      });
+    });
   });
 
   group('Given a VectorIndexQueryOptions', () {

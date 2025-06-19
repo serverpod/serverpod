@@ -10,7 +10,7 @@ void main() async {
         runtimeParametersBuilder: (params) => [
           params.ivfflatIndexQuery(
             probes: 5,
-            iterativeScan: IterativeScan.strict,
+            iterativeScan: IterativeScan.relaxed,
             maxProbes: 10,
           ),
         ],
@@ -22,7 +22,7 @@ void main() async {
       expect(result.length, 1);
       var row = result.first.toColumnMap();
       expect(row['ivfflat_probes'], '5');
-      expect(row['ivfflat_iterative_scan'], 'strict_order');
+      expect(row['ivfflat_iterative_scan'], 'relaxed_order');
       expect(row['ivfflat_max_probes'], '10');
     });
 
@@ -35,7 +35,7 @@ void main() async {
         runtimeParametersBuilder: (params) => [
           params.ivfflatIndexQuery(
             probes: 5,
-            iterativeScan: IterativeScan.strict,
+            iterativeScan: IterativeScan.relaxed,
             maxProbes: 10,
           ),
         ],
@@ -46,7 +46,7 @@ void main() async {
           (params) => [
             params.ivfflatIndexQuery(
               probes: 10,
-              iterativeScan: IterativeScan.relaxed,
+              iterativeScan: IterativeScan.off,
               maxProbes: 15,
             ),
           ],
@@ -59,14 +59,14 @@ void main() async {
         var localRow = localResult.first.toColumnMap();
 
         expect(localRow['ivfflat_probes'], '10');
-        expect(localRow['ivfflat_iterative_scan'], 'relaxed_order');
+        expect(localRow['ivfflat_iterative_scan'], 'off');
         expect(localRow['ivfflat_max_probes'], '15');
       });
 
       var globalResult = await session.db.unsafeQuery(checkQuery);
       var globalRow = globalResult.first.toColumnMap();
       expect(globalRow['ivfflat_probes'], '5');
-      expect(globalRow['ivfflat_iterative_scan'], 'strict_order');
+      expect(globalRow['ivfflat_iterative_scan'], 'relaxed_order');
       expect(globalRow['ivfflat_max_probes'], '10');
     });
   });

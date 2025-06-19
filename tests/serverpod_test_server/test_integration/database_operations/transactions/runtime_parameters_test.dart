@@ -42,7 +42,7 @@ void main() async {
       await transaction.setRuntimeParameters((params) => [
             params.ivfflatIndexQuery(
               probes: 8,
-              iterativeScan: IterativeScan.strict,
+              iterativeScan: IterativeScan.relaxed,
               maxProbes: 20,
             ),
           ]);
@@ -56,7 +56,7 @@ void main() async {
       expect(result.length, 1);
       var row = result.first.toColumnMap();
       expect(row['ivfflat_probes'], '8');
-      expect(row['ivfflat_iterative_scan'], 'strict_order');
+      expect(row['ivfflat_iterative_scan'], 'relaxed_order');
       expect(row['ivfflat_max_probes'], '20');
     });
   });
@@ -110,7 +110,7 @@ void main() async {
             ),
             params.ivfflatIndexQuery(
               probes: 6,
-              iterativeScan: IterativeScan.strict,
+              iterativeScan: IterativeScan.relaxed,
               maxProbes: 12,
             ),
             params.vectorIndexQuery(
@@ -142,7 +142,7 @@ void main() async {
       );
       var ivfflatRow = ivfflatResult.first.toColumnMap();
       expect(ivfflatRow['ivfflat_probes'], '6');
-      expect(ivfflatRow['ivfflat_iterative_scan'], 'strict_order');
+      expect(ivfflatRow['ivfflat_iterative_scan'], 'relaxed_order');
       expect(ivfflatRow['ivfflat_max_probes'], '12');
 
       var vectorCheckQuery = VectorIndexQueryOptions().buildCheckValues();
