@@ -41,6 +41,8 @@ declare -a projectPaths=(
     "tests/serverpod_test_module/serverpod_test_module_client"
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_client"
+    "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
+    "tests/serverpod_new_auth_test/serverpod_new_auth_test_client"
 
     "modules/serverpod_auth/serverpod_auth_server"
     "modules/serverpod_auth/serverpod_auth_client"

@@ -242,6 +242,7 @@ jobs:
         module: [
           'tests/serverpod_test_module/serverpod_test_module_server',
           'tests/serverpod_test_nonvector/serverpod_test_nonvector_server',
+          'tests/serverpod_new_auth_test/serverpod_new_auth_test_server',
           'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
           'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
           'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
