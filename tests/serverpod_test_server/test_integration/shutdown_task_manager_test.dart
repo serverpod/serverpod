@@ -50,7 +50,7 @@ void main() {
   test(
       'Given shutdown task that records number of calls '
       'when the server is shutdown multiple times '
-      'then the task once for each shutdown.', () async {
+      'then the task is executed once for each shutdown.', () async {
     var callCount = 0;
 
     var serverpod = IntegrationTestServer.create();
