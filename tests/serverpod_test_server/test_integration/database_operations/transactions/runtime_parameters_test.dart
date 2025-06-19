@@ -190,9 +190,9 @@ void main() async {
   });
 
   test(
-      'Given a transaction with runtime parameters containing null values '
+      'Given a transaction with custom runtime parameters supplied to the Serverpod instance '
       'when setting parameters using transaction.setRuntimeParameters '
-      'then null values are reverted to default ', () async {
+      'then parameters set to null are cleared', () async {
     var customSession = await IntegrationTestServer(
         runtimeParametersBuilder: (params) => [
               params.hnswIndexQuery(
