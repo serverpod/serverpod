@@ -15,6 +15,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -157,6 +158,9 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
+  final TaskManagerImpl _requestReceivingShutdownTasks = TaskManagerImpl();
+  final TaskManagerImpl _internalServicesShutdownTasks = TaskManagerImpl();
+
   /// Cloud storages used by the serverpod. By default two storages are set up,
   /// if the database integration is enabled. The storages are named
   /// `public` and `private`. The default storages are using the database,
@@ -201,6 +205,54 @@ class Serverpod {
     _runtimeSettings = settings;
     _logSettingsManager = LogSettingsManager(settings);
     _logManager = LogManager(settings, serverId: serverId);
+  }
+
+  /// Initializes the servers internal shutdown task managers and registers
+  /// shutdown tasks.
+  ///
+  /// This method is called during server startup and sets up the servers
+  /// internal task managers with all the necessary tasks to properly shutdown
+  /// the server.
+  void _initializeShutdownTaskManagers() {
+    _requestReceivingShutdownTasks.addTask(
+      'Server',
+      server.shutdown,
+    );
+
+    _requestReceivingShutdownTasks.addTask(
+      'Web Server',
+      () async => _webServer?.stop(),
+    );
+
+    _requestReceivingShutdownTasks.addTask(
+      'Service Server',
+      () async => _insightsServer?.shutdown(),
+    );
+
+    _requestReceivingShutdownTasks.addTask(
+      'Future Call Manager',
+      () async => _futureCallManager?.stop(),
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Test Auditor',
+      () async => _shutdownTestAuditor(),
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Internal Session',
+      _internalSession.close,
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Redis Controller',
+      () async => redisController?.stop(),
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Health Check Manager',
+      () async => _healthCheckManager?.stop(),
+    );
   }
 
   /// Updates the runtime settings and writes the new settings to the database.
@@ -357,6 +409,9 @@ class Serverpod {
           message: 'Error in Serverpod initialization');
       rethrow;
     }
+
+    // Initializes shutdown task manager
+    _initializeShutdownTaskManagers();
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -911,7 +966,8 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  /// If [exitProcess] is set to false, the process will not exit at the end of the shutdown.
+  /// If [exitProcess] is set to false, the process will not exit at the end of
+  /// the shutdown.
   Future<void> shutdown({
     bool exitProcess = true,
     int? signalNumber,
@@ -919,41 +975,36 @@ class Serverpod {
     stdout.writeln(
         'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
 
-    var futures = [
-      _shutdownTestAuditor(),
-      _internalSession.close(),
-      redisController?.stop(),
-      server.shutdown(),
-      _webServer?.stop(),
-      _insightsServer?.shutdown(),
-      _futureCallManager?.stop(),
-      _healthCheckManager?.stop(),
-    ].nonNulls;
-
     Object? shutdownError;
-    await futures.wait.onError((ParallelWaitError e, stackTrace) {
-      shutdownError = e;
-      var errors = e.errors;
-      if (errors is Iterable<AsyncError?>) {
-        for (var error in errors.nonNulls) {
-          _reportException(
-            error.error,
-            error.stackTrace,
-            message: 'Error in server shutdown',
-          );
-        }
-      } else {
-        _reportException(
-          errors,
-          stackTrace,
-          message: 'Error in serverpod shutdown',
-        );
-      }
-      return e.values;
-    });
 
+    await _requestReceivingShutdownTasks.executeTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(
+          error,
+          stack,
+          message: 'Error in request receiving shutdown "$id"',
+        );
+      },
+    );
+
+    await experimental._shutdownTasks.executeTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(error, stack, message: 'Error in shutdown task "$id"');
+      },
+    );
+
+    await _internalServicesShutdownTasks.executeTasks(
+      onTaskError: (error, stack, id) {
+        shutdownError = error;
+        _reportException(error, stack,
+            message: 'Error in service shutdown "$id"');
+      },
+    );
+
+    // This needs to be closed last as it is used by the other services.
     try {
-      // This needs to be closed last as it is used by the other services.
       await _databasePoolManager?.stop();
     } catch (e, stackTrace) {
       shutdownError = e;
@@ -973,7 +1024,7 @@ class Serverpod {
     }
 
     if (shutdownError != null) {
-      throw shutdownError as Object;
+      throw shutdownError!;
     }
   }
 
@@ -1122,13 +1173,26 @@ Future<void>? _shutdownTestAuditor() {
 class ExperimentalApi {
   final DiagnosticEventHandler _eventDispatcher;
 
+  final TaskManagerImpl _shutdownTasks;
+
+  /// Shutdown tasks can be used to perform cleanup operations before the server
+  /// is shut down. The tasks will be executed asynchronously after the server
+  /// has received the shutdown signal.
+  ///
+  /// You can use this to add custom tasks using [shutdownTasks.addTask].
+  ///
+  /// Before the shutdown tasks are executed, the server will close the api
+  /// server, web server, insights server, and future call manager.
+  TaskManager get shutdownTasks => _shutdownTasks;
+
   ExperimentalApi._({
     ServerpodConfig? config,
     ExperimentalFeatures? experimentalFeatures,
-  }) : _eventDispatcher = DiagnosticEventDispatcher(
+  })  : _eventDispatcher = DiagnosticEventDispatcher(
           experimentalFeatures?.diagnosticEventHandlers ?? const [],
           timeout: config?.experimentalDiagnosticHandlerTimeout,
-        );
+        ),
+        _shutdownTasks = TaskManagerImpl();
 
   /// Application method for submitting a diagnostic event
   /// to registered event handlers.
