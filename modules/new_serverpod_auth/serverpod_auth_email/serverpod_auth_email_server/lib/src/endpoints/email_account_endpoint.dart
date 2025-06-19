@@ -34,11 +34,21 @@ abstract class EmailAccountEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    await EmailAccounts.startAccountCreation(
+    final result = await EmailAccounts.startAccountCreation(
       session,
       email: email,
       password: password,
     );
+
+    // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+    // Clients should always show something like "check your email to proceed with the account creation".
+    // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
+    if (result.result != EmailAccountRequestResult.accountRequestCreated) {
+      session.log(
+        'Failed to start account registration for $email, reason: ${result.result}',
+        level: LogLevel.debug,
+      );
+    }
   }
 
   /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
@@ -79,7 +89,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
         transaction: transaction,
       );
 
-      return _createSession(session, authUserId);
+      return _createSession(session, authUserId, transaction: transaction);
     });
   }
 
@@ -88,7 +98,19 @@ abstract class EmailAccountEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    await EmailAccounts.startPasswordReset(session, email: email);
+    final result = await EmailAccounts.startPasswordReset(
+      session,
+      email: email,
+    );
+
+    // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+    // Clients should always show something like "check your email to proceed with the password reset".
+    if (result != PasswordResetResult.passwordResetSent) {
+      session.log(
+        'Failed to start password reset for $email, reason: $result',
+        level: LogLevel.debug,
+      );
+    }
   }
 
   /// Completes a password reset request by setting a new password.
@@ -111,16 +133,21 @@ abstract class EmailAccountEndpoint extends Endpoint {
 
     await AuthSessions.destroyAllSessions(session, authUserId: authUserId);
 
-    return _createSession(session, authUserId);
+    return _createSession(
+      session,
+      authUserId,
+    );
   }
 
   Future<String> _createSession(
     final Session session,
-    final UuidValue authUserId,
-  ) async {
+    final UuidValue authUserId, {
+    final Transaction? transaction,
+  }) async {
     final authUser = await AuthUsers.get(
       session,
       authUserId: authUserId,
+      transaction: transaction,
     );
 
     if (authUser.blocked) {
@@ -132,6 +159,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
       authUserId: authUserId,
       method: _method,
       scopes: authUser.scopes,
+      transaction: transaction,
     );
 
     return sessionKey;

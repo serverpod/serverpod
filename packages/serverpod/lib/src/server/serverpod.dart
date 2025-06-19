@@ -118,11 +118,11 @@ class Serverpod {
   /// The main server managed by this [Serverpod].
   late Server server;
 
-  Server? _serviceServer;
+  Server? _insightsServer;
 
   /// The service server managed by this [Serverpod].
   Server get serviceServer {
-    var service = _serviceServer;
+    var service = _insightsServer;
     if (service == null) {
       throw StateError(
         'Insights server is disabled, supply a Insights configuration '
@@ -232,7 +232,7 @@ class Serverpod {
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Service Server',
-        () async => _serviceServer?.shutdown(),
+        () async => _insightsServer?.shutdown(),
       ),
     );
 
@@ -538,6 +538,16 @@ class Serverpod {
         securityContext: _securityContextConfig?.webServer,
       );
     }
+
+    if (Features.enableInsights) {
+      if (_isValidSecret(config.serviceSecret)) {
+        _insightsServer = _configureInsightsServer();
+      } else {
+        stderr.write(
+          'Invalid serviceSecret in password file, Insights server disabled.',
+        );
+      }
+    }
   }
 
   int _exitCode = 0;
@@ -641,13 +651,7 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        if (_isValidSecret(config.serviceSecret)) {
-          serversStarted &= await _startInsightsServer();
-        } else {
-          stderr.write(
-            'Invalid serviceSecret in password file, Insights server disabled.',
-          );
-        }
+        serversStarted &= await _insightsServer?.start() ?? true;
       }
 
       // Main API server.
@@ -851,10 +855,10 @@ class Serverpod {
     shutdown(exitProcess: true, signalNumber: signal.signalNumber);
   }
 
-  Future<bool> _startInsightsServer() async {
+  Server _configureInsightsServer() {
     var endpoints = internal.Endpoints();
 
-    _serviceServer = Server(
+    var insightsServer = Server(
       serverpod: this,
       serverId: serverId,
       port: config.insightsServer!.port,
@@ -870,11 +874,9 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.insightsServer,
     );
-    endpoints.initializeEndpoints(_serviceServer!);
+    endpoints.initializeEndpoints(insightsServer);
 
-    var success = await _serviceServer!.start();
-
-    return success;
+    return insightsServer;
   }
 
   /// Registers a [FutureCall] with the [Serverpod] and associates it with

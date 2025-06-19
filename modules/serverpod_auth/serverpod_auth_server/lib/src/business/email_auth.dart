@@ -655,11 +655,12 @@ class Emails {
   }
 
   static Future<void> _logFailedSignIn(Session session, String email) async {
-    session as MethodCallSession;
     var failedSignIn = EmailFailedSignIn(
       email: email,
       time: DateTime.now(),
-      ipAddress: session.httpRequest.remoteIpAddress,
+      ipAddress: session is MethodCallSession
+          ? session.httpRequest.remoteIpAddress
+          : '',
     );
     await EmailFailedSignIn.db.insertRow(session, failedSignIn);
   }
