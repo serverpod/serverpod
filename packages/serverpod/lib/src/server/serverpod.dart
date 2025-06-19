@@ -207,14 +207,13 @@ class Serverpod {
     _logManager = LogManager(settings, serverId: serverId);
   }
 
-  /// Initializes the task manager and registers default shutdown tasks.
+  /// Initializes the servers internal shutdown task managers and registers
+  /// shutdown tasks.
   ///
-  /// This method is called during server startup and sets up the task manager
-  /// with all the necessary tasks to properly shut down the server.
-  /// It registers tasks for closing sessions, stopping services, and releasing
-  /// resources. The tasks are executed concurrently when [shutdown]
-  /// is called.
-  void _initializeShutdownTaskManager() {
+  /// This method is called during server startup and sets up the servers
+  /// internal task managers with all the necessary tasks to properly shutdown
+  /// the server.
+  void _initializeShutdownTaskManagers() {
     _requestReceivingShutdownTasks.addTask(
       Task(
         'Server',
@@ -428,7 +427,7 @@ class Serverpod {
     }
 
     // Initializes shutdown task manager
-    _initializeShutdownTaskManager();
+    _initializeShutdownTaskManagers();
 
     stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
@@ -1192,12 +1191,14 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
-  /// Provides access to the task manager.
+  /// Shutdown tasks can be used to perform cleanup operations before the server
+  /// is shut down. The tasks will be executed asynchronously after the server
+  /// has received the shutdown signal.
   ///
-  /// The task manager is responsible for executing tasks concurrently.
-  /// In this case, it's used to manage server shutdown tasks, ensuring that all
-  /// resources are properly released and services are stopped.
   /// You can use this to add custom tasks using [shutdownTasks.addTask].
+  ///
+  /// Before the shutdown tasks are executed, the server will close the api
+  /// server, web server, service server, and future call manager.
   TaskManager get shutdownTasks => _shutdownTasks;
 
   ExperimentalApi._({
