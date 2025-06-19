@@ -1,3 +1,5 @@
+import 'package:serverpod/src/database/database_pool_manager.dart';
+
 /// Base class for runtime parameters group to apply to the database.
 abstract class RuntimeParameters {
   /// Base constructor for runtime parameters group.
@@ -13,11 +15,21 @@ abstract class RuntimeParameters {
   Iterable<String> buildStatements({bool isLocal = false}) =>
       options.entries.map((e) {
         var value = e.value;
-        if (value is String) value = '\'${value.replaceAll("'", "''")}\'';
+        if (value is String) value = DatabasePoolManager.encoder.convert(value);
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = value.alias;
         if (value is bool) value = (value == true) ? 'on' : 'off';
-        value = (value == null) ? 'TO DEFAULT' : '= $value';
+
+        if (value == null) {
+          value = 'TO DEFAULT';
+        } else if (this is SearchPathsConfig) {
+          value = (value as List<String>)
+              .map((s) => DatabasePoolManager.encoder.convert(s))
+              .join(', ');
+          value = 'TO $value';
+        } else {
+          value = '= $value';
+        }
         return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} $value;';
       }).where((e) => e != '');
 
@@ -140,6 +152,23 @@ class VectorIndexQueryOptions extends RuntimeParameters {
       };
 }
 
+/// Search path configuration for database schema resolution.
+class SearchPathsConfig extends RuntimeParameters {
+  /// The search paths for schema resolution on the database. Default is null (no override).
+  final List<String>? searchPaths;
+
+  /// Creates a new search path runtime parameters object.
+  const SearchPathsConfig({
+    this.searchPaths,
+  }) : assert(searchPaths == null || searchPaths.length > 0,
+            'Search paths cannot be empty.');
+
+  @override
+  Map<String, dynamic> get options => <String, dynamic>{
+        'search_path': searchPaths,
+      };
+}
+
 /// Automatically scan more of the index until enough results are found.
 enum IterativeScan {
   /// No iterative scan, use the specified efSearch or probes.
@@ -208,6 +237,15 @@ class RuntimeParametersBuilder {
         maintenanceWorkMem: maintenanceWorkMem,
         maxParallelMaintenanceWorkers: maxParallelMaintenanceWorkers,
         maxParallelWorkersPerGather: maxParallelWorkersPerGather,
+      );
+
+  /// Define search paths for database schema resolution. Set to null to revert
+  /// to the default search paths.
+  SearchPathsConfig searchPaths([
+    List<String>? searchPaths,
+  ]) =>
+      SearchPathsConfig(
+        searchPaths: searchPaths,
       );
 }
 

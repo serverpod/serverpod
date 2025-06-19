@@ -475,6 +475,109 @@ void main() {
     });
   });
 
+  group('Given a SearchPathsConfig', () {
+    test(
+        'when build is called with search paths then correct SQL statement is returned.',
+        () {
+      var options = SearchPathsConfig(
+        searchPaths: ['public', 'custom_schema', 'another_schema'],
+      );
+
+      var result = options.build();
+
+      expect(
+        result,
+        "SET search_path TO 'public', 'custom_schema', 'another_schema';",
+      );
+    });
+
+    test('when build is called with null search paths then TO DEFAULT is used.',
+        () {
+      var options = const SearchPathsConfig(
+        searchPaths: null,
+      );
+
+      var result = options.build();
+
+      expect(
+        result,
+        'SET search_path TO DEFAULT;',
+      );
+    });
+
+    test(
+        'when build is called with isLocal true then LOCAL is included in SQL statement.',
+        () {
+      var options = SearchPathsConfig(
+        searchPaths: ['public', 'custom_schema'],
+      );
+
+      var result = options.build(isLocal: true);
+
+      expect(
+        result,
+        "SET LOCAL search_path TO 'public', 'custom_schema';",
+      );
+    });
+
+    test(
+        'when build is called with isLocal true and null paths then LOCAL TO DEFAULT is used.',
+        () {
+      var options = const SearchPathsConfig(
+        searchPaths: null,
+      );
+
+      var result = options.build(isLocal: true);
+
+      expect(
+        result,
+        'SET LOCAL search_path TO DEFAULT;',
+      );
+    });
+
+    test(
+        'when buildCheckValues is called then SELECT statement with search_path option is returned.',
+        () {
+      var options = SearchPathsConfig(
+        searchPaths: ['public'],
+      );
+
+      var result = options.buildCheckValues();
+
+      expect(
+        result,
+        "SELECT current_setting('search_path', true) as search_path;",
+      );
+    });
+
+    group('with constructor validation', () {
+      test('when search paths list is empty then assertion error is thrown.',
+          () {
+        expect(
+          () => SearchPathsConfig(searchPaths: []),
+          throwsA(isA<AssertionError>()),
+        );
+      });
+
+      test('when search paths list is null then no assertion error is thrown.',
+          () {
+        expect(
+          () => const SearchPathsConfig(searchPaths: null),
+          returnsNormally,
+        );
+      });
+
+      test(
+          'when search paths list has valid entries then no assertion error is thrown.',
+          () {
+        expect(
+          () => SearchPathsConfig(searchPaths: ['public', 'custom']),
+          returnsNormally,
+        );
+      });
+    });
+  });
+
   group('Given RuntimeParametersBuilder', () {
     test(
         'when using hnswIndexQuery then correct HnswIndexQueryOptions is created.',
@@ -572,6 +675,25 @@ void main() {
       expect(options.maintenanceWorkMem, 65536);
       expect(options.maxParallelMaintenanceWorkers, 2);
       expect(options.maxParallelWorkersPerGather, 2);
+    });
+
+    test('when using searchPaths then correct SearchPathsConfig is created.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.searchPaths(['public', 'custom_schema']);
+
+      expect(options, isA<SearchPathsConfig>());
+      expect(options.searchPaths, ['public', 'custom_schema']);
+    });
+
+    test(
+        'when using searchPaths with null then correct SearchPathsConfig is created.',
+        () {
+      var builder = RuntimeParametersBuilder();
+      var options = builder.searchPaths(null);
+
+      expect(options, isA<SearchPathsConfig>());
+      expect(options.searchPaths, null);
     });
   });
 }

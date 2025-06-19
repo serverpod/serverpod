@@ -50,17 +50,22 @@ class DatabasePoolManager {
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
           typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
           onOpen: (connection) async {
-            var searchPaths =
-                config.searchPaths?.map((s) => encoder.convert(s)).join(',');
-            if (searchPaths != null && searchPaths.isNotEmpty) {
-              await connection.execute('SET search_path TO $searchPaths;');
+            var parameters =
+                runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ??
+                    [];
+
+            if (!parameters.any((p) => p is SearchPathsConfig) &&
+                config.searchPaths != null &&
+                config.searchPaths!.isNotEmpty) {
+              parameters.add(
+                SearchPathsConfig(searchPaths: config.searchPaths),
+              );
             }
 
-            var setParametersStatements = runtimeParametersBuilder
-                ?.call(RuntimeParametersBuilder())
+            var setParametersStatements = parameters
                 .map((p) => p.buildStatements(isLocal: false))
                 .expand((e) => e);
-            if (setParametersStatements != null) {
+            if (setParametersStatements.isNotEmpty) {
               for (var statement in setParametersStatements) {
                 await connection.execute(statement);
               }
