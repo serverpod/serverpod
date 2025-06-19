@@ -5,6 +5,38 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
+    'Given withServerpod without runtimeParametersBuilder',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      test(
+          'when querying runtime parameters globally '
+          'then no database parameters are set', () async {
+        var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
+        var hnswResult = await session.db.unsafeQuery(hnswCheckQuery);
+        var hnswRow = hnswResult.first.toColumnMap();
+
+        var ivfflatCheckQuery = IvfflatIndexQueryOptions().buildCheckValues();
+        var ivfflatResult = await session.db.unsafeQuery(ivfflatCheckQuery);
+        var ivfflatRow = ivfflatResult.first.toColumnMap();
+
+        // Checking VectorIndexQueryOptions is skipped because all of these
+        // options are standard PostgreSQL configuration settings and have
+        // default values set by the database.
+        var allParameters = {...hnswRow, ...ivfflatRow};
+
+        for (var parameter in [
+          ...HnswIndexQueryOptions().options.keys,
+          ...IvfflatIndexQueryOptions().options.keys,
+        ]) {
+          var paramName = parameter.replaceAll('.', '_');
+          expect(allParameters[paramName], anyOf(isNull, isEmpty));
+        }
+      });
+    },
+  );
+
+  withServerpod(
     'Given withServerpod with runtime parameters set globally'
     'when querying runtime parameters globally',
     runtimeParametersBuilder: (params) => [
@@ -116,38 +148,6 @@ void main() {
         expect(globalRow['hnsw_iterative_scan'], 'relaxed_order');
         expect(globalRow['hnsw_max_scan_tuples'], '500');
         expect(globalRow['hnsw_scan_mem_multiplier'], '2');
-      });
-    },
-  );
-
-  withServerpod(
-    'Given withServerpod without runtimeParametersBuilder',
-    (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
-
-      test(
-          'when querying runtime parameters globally '
-          'then no database parameters are set', () async {
-        var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
-        var hnswResult = await session.db.unsafeQuery(hnswCheckQuery);
-        var hnswRow = hnswResult.first.toColumnMap();
-
-        var ivfflatCheckQuery = IvfflatIndexQueryOptions().buildCheckValues();
-        var ivfflatResult = await session.db.unsafeQuery(ivfflatCheckQuery);
-        var ivfflatRow = ivfflatResult.first.toColumnMap();
-
-        // Checking VectorIndexQueryOptions is skipped because all of these
-        // options are standard PostgreSQL configuration settings and have
-        // default values set by the database.
-        var allParameters = {...hnswRow, ...ivfflatRow};
-
-        for (var parameter in [
-          ...HnswIndexQueryOptions().options.keys,
-          ...IvfflatIndexQueryOptions().options.keys,
-        ]) {
-          var paramName = parameter.replaceAll('.', '_');
-          expect(allParameters[paramName], anyOf(isNull, isEmpty));
-        }
       });
     },
   );
