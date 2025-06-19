@@ -117,11 +117,11 @@ class Serverpod {
   /// The main server managed by this [Serverpod].
   late Server server;
 
-  Server? _serviceServer;
+  Server? _insightsServer;
 
   /// The service server managed by this [Serverpod].
   Server get serviceServer {
-    var service = _serviceServer;
+    var service = _insightsServer;
     if (service == null) {
       throw StateError(
         'Insights server is disabled, supply a Insights configuration '
@@ -469,7 +469,7 @@ class Serverpod {
 
     if (Features.enableInsights) {
       if (_isValidSecret(config.serviceSecret)) {
-        _serviceServer = _configureInsightsServer();
+        _insightsServer = _configureInsightsServer();
       } else {
         stderr.write(
           'Invalid serviceSecret in password file, Insights server disabled.',
@@ -579,7 +579,7 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        serversStarted &= await _serviceServer?.start() ?? true;
+        serversStarted &= await _insightsServer?.start() ?? true;
       }
 
       // Main API server.
@@ -925,7 +925,7 @@ class Serverpod {
       redisController?.stop(),
       server.shutdown(),
       _webServer?.stop(),
-      _serviceServer?.shutdown(),
+      _insightsServer?.shutdown(),
       _futureCallManager?.stop(),
       _healthCheckManager?.stop(),
     ].nonNulls;
