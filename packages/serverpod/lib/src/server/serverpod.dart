@@ -215,59 +215,43 @@ class Serverpod {
   /// the server.
   void _initializeShutdownTaskManagers() {
     _requestReceivingShutdownTasks.addTask(
-      Task(
-        'Server',
-        server.shutdown,
-      ),
+      'Server',
+      server.shutdown,
     );
 
     _requestReceivingShutdownTasks.addTask(
-      Task(
-        'Web Server',
-        () async => _webServer?.stop(),
-      ),
+      'Web Server',
+      () async => _webServer?.stop(),
     );
 
     _requestReceivingShutdownTasks.addTask(
-      Task(
-        'Service Server',
-        () async => _insightsServer?.shutdown(),
-      ),
+      'Service Server',
+      () async => _insightsServer?.shutdown(),
     );
 
     _requestReceivingShutdownTasks.addTask(
-      Task(
-        'Future Call Manager',
-        () async => _futureCallManager?.stop(),
-      ),
+      'Future Call Manager',
+      () async => _futureCallManager?.stop(),
     );
 
     _internalServicesShutdownTasks.addTask(
-      Task(
-        'Test Auditor',
-        () async => _shutdownTestAuditor(),
-      ),
+      'Test Auditor',
+      () async => _shutdownTestAuditor(),
     );
 
     _internalServicesShutdownTasks.addTask(
-      Task(
-        'Internal Session',
-        _internalSession.close,
-      ),
+      'Internal Session',
+      _internalSession.close,
     );
 
     _internalServicesShutdownTasks.addTask(
-      Task(
-        'Redis Controller',
-        () async => redisController?.stop(),
-      ),
+      'Redis Controller',
+      () async => redisController?.stop(),
     );
 
     _internalServicesShutdownTasks.addTask(
-      Task(
-        'Health Check Manager',
-        () async => _healthCheckManager?.stop(),
-      ),
+      'Health Check Manager',
+      () async => _healthCheckManager?.stop(),
     );
   }
 

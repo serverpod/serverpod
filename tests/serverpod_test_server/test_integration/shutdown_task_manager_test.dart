@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
@@ -12,12 +11,10 @@ void main() {
 
     var serverpod = IntegrationTestServer.create();
     serverpod.experimental.shutdownTasks.addTask(
-      Task(
-        #testTask,
-        () async {
-          called = true;
-        },
-      ),
+      #testTask,
+      () async {
+        called = true;
+      },
     );
 
     await serverpod.shutdown(exitProcess: false);
@@ -31,16 +28,15 @@ void main() {
       'then the task is not executed.', () async {
     var called = false;
 
-    var task = Task(
-      #testTask,
+    const id = #testTask;
+    var serverpod = IntegrationTestServer.create();
+    serverpod.experimental.shutdownTasks.addTask(
+      id,
       () async {
         called = true;
       },
     );
-
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(task);
-    serverpod.experimental.shutdownTasks.removeTask(task.id);
+    serverpod.experimental.shutdownTasks.removeTask(id);
 
     await serverpod.shutdown(exitProcess: false);
 
@@ -55,12 +51,10 @@ void main() {
 
     var serverpod = IntegrationTestServer.create();
     serverpod.experimental.shutdownTasks.addTask(
-      Task(
-        #testTask,
-        () async {
-          callCount++;
-        },
-      ),
+      #testTask,
+      () async {
+        callCount++;
+      },
     );
 
     await serverpod.shutdown(exitProcess: false);
@@ -73,15 +67,13 @@ void main() {
       'Given a shutdown task that throws an error '
       'when the server is shutdown '
       'then the error is thrown from shutdown.', () async {
-    var task = Task(
+    var serverpod = IntegrationTestServer.create();
+    serverpod.experimental.shutdownTasks.addTask(
       #testTask,
       () async {
         throw Exception('Test exception');
       },
     );
-
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(task);
 
     expect(
       () async => await serverpod.shutdown(exitProcess: false),
@@ -95,23 +87,21 @@ void main() {
       'then last thrown exception is thrown from shutdown method.', () async {
     var exception1 = #firstException;
     var exception2 = #secondException;
-    var task1 = Task(
+
+    var serverpod = IntegrationTestServer.create();
+    serverpod.experimental.shutdownTasks.addTask(
       #testTask1,
       () async {
         throw exception1;
       },
     );
-    var task2 = Task(
+    serverpod.experimental.shutdownTasks.addTask(
       #testTask2,
       () async {
         await Future.delayed(Duration(milliseconds: 100));
         throw exception2;
       },
     );
-
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(task1);
-    serverpod.experimental.shutdownTasks.addTask(task2);
 
     await expectLater(
       () async => await serverpod.shutdown(exitProcess: false),
@@ -126,24 +116,21 @@ void main() {
     final completer1 = Completer<void>();
     final completer2 = Completer<void>();
 
-    var task1 = Task(
+    var serverpod = IntegrationTestServer.create();
+    serverpod.experimental.shutdownTasks.addTask(
       #task1,
       () async {
         completer1.complete();
         await completer2.future;
       },
     );
-    var task2 = Task(
+    serverpod.experimental.shutdownTasks.addTask(
       #task2,
       () async {
         await completer1.future;
         completer2.complete();
       },
     );
-
-    var serverpod = IntegrationTestServer.create();
-    serverpod.experimental.shutdownTasks.addTask(task1);
-    serverpod.experimental.shutdownTasks.addTask(task2);
 
     await serverpod.shutdown(exitProcess: false);
 
@@ -162,14 +149,12 @@ void main() {
 
     var serverpod = IntegrationTestServer.create();
     serverpod.experimental.shutdownTasks.addTask(
-      Task(
-        #testTask,
-        () async {
-          serverStopped = serverpod.server.running;
-          webServerStopped = serverpod.webServer.running;
-          serviceServerStopped = serverpod.serviceServer.running;
-        },
-      ),
+      #testTask,
+      () async {
+        serverStopped = serverpod.server.running;
+        webServerStopped = serverpod.webServer.running;
+        serviceServerStopped = serverpod.serviceServer.running;
+      },
     );
 
     await serverpod.shutdown(exitProcess: false);

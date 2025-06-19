@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-import 'task.dart';
-
 /// Manages tasks that need to be executed.
 ///
 /// The `TaskManager` allows registering tasks that can be executed
@@ -12,12 +10,14 @@ import 'task.dart';
 abstract interface class TaskManager {
   /// Adds a task to be executed.
   ///
-  /// The task is stored in the task map with its ID as the key.
-  /// The [task] contains an ID for identification and a callback function
-  /// that will be executed when the task is run.
+  /// The task is stored in the task map with its ID as the key and a callback
+  /// function that will be executed when the task is run.
   ///
   /// Throws [StateError] if a task with the same ID already exists.
-  void addTask(Task task);
+  void addTask(
+    Object id,
+    Future<void> Function() callback,
+  );
 
   /// Removes a task with the specified ID from the task map.
   ///
@@ -30,14 +30,17 @@ abstract interface class TaskManager {
 
 @internal
 class TaskManagerImpl extends TaskManager {
-  final Map<Object, Task> _tasks = {};
+  final Map<Object, _Task> _tasks = {};
 
   @override
-  void addTask(Task task) {
-    if (_tasks.containsKey(task.id)) {
-      throw StateError('Task with id ${task.id} already exists.');
+  void addTask(
+    Object id,
+    Future<void> Function() callback,
+  ) {
+    if (_tasks.containsKey(id)) {
+      throw StateError('Task with id $id already exists.');
     }
-    _tasks[task.id] = task;
+    _tasks[id] = _Task(id, callback);
   }
 
   @override
@@ -61,7 +64,7 @@ class TaskManagerImpl extends TaskManager {
 
     for (final entry in _tasks.entries.toList()) {
       final Object id = entry.key;
-      final Task task = entry.value;
+      final _Task task = entry.value;
 
       futures.add(task.callback().onError((Object e, s) {
         onTaskError(e, s, id);
@@ -70,4 +73,27 @@ class TaskManagerImpl extends TaskManager {
 
     await futures.wait;
   }
+}
+
+/// A task that can be executed by the [TaskManager].
+///
+/// Tasks are managed by the [TaskManager] and can be executed at various points,
+/// such as during server shutdown.
+class _Task {
+  /// Creates a new task.
+  ///
+  /// The [id] is used for identification and logging purposes.
+  /// The [callback] is the function that will be executed when the task is run.
+  _Task(this.id, this.callback);
+
+  /// The identifier for this task.
+  ///
+  /// Used for identification and logging purposes, especially when errors
+  /// occur.
+  final Object id;
+
+  /// The function to execute when the task is run.
+  ///
+  /// This function should return a [Future] that completes when the task is done.
+  final Future<void> Function() callback;
 }

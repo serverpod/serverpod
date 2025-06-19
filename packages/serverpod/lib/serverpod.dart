@@ -30,6 +30,5 @@ export 'package:serverpod/src/cache/cache_miss_handler.dart';
 // Experimental features
 export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
-export 'package:serverpod/src/server/tasks/tasks.dart' hide TaskManagerImpl;
 
 export 'package:meta/meta.dart' show useResult;
