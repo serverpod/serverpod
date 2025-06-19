@@ -259,14 +259,14 @@ class Serverpod {
     _internalServicesShutdownTasks.addTask(
       Task(
         'Redis Controller',
-        () async => redisController?.stop,
+        () async => redisController?.stop(),
       ),
     );
 
     _internalServicesShutdownTasks.addTask(
       Task(
         'Health Check Manager',
-        () async => _healthCheckManager?.stop,
+        () async => _healthCheckManager?.stop(),
       ),
     );
   }
