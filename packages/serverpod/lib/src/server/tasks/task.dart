@@ -1,8 +1,7 @@
 /// A task that can be executed by the [TaskManager].
 ///
 /// Tasks are managed by the [TaskManager] and can be executed at various points,
-/// such as during server shutdown. Tasks can be executed in parallel or
-/// sequentially based on their configuration.
+/// such as during server shutdown.
 class Task {
   /// Creates a new task.
   ///
