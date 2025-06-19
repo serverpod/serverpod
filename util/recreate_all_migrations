@@ -49,11 +49,6 @@ cd $BASE/modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
-echo "\nserverpod_auth_api_tokens_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_api_tokens/serverpod_auth_api_tokens_server
-rm -r $MIGRATION_DIR
-dart $CLI create-migration --no-analytics
-
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
 rm -r $MIGRATION_DIR

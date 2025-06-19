@@ -68,12 +68,15 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
     String schemaName,
     String tableName,
   ) async {
+    final vectorTypes =
+        VectorColumnType.vectorTypes.map((e) => "'${e.name}'").join(', ');
+
     var queryResult = await database.unsafeQuery(
 // Get the columns of this table and sort them based on their position.
         '''
 SELECT column_name, column_default, is_nullable,
        CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
-       CASE WHEN (udt_name = 'vector') THEN a.atttypmod ELSE NULL END as vector_size
+       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
   LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
@@ -167,6 +170,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 
       var parameters = <String, String>{};
       VectorDistanceFunction? vectorDistanceFunction;
+      ColumnType? vectorColumnType;
 
       final indexType = index[7] as String;
       if (['hnsw', 'ivfflat'].contains(indexType)) {
@@ -185,11 +189,15 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         var opclassNames = index[9];
         if (opclassNames is List<String> && opclassNames.isNotEmpty) {
           // For pgvector, the first operator class contains the distance metric
-          RegExp opClassRegex = RegExp(r'vector_(\w+)_ops');
+          final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
           final match = opClassRegex.firstMatch(opclassNames[0]);
 
           if (match != null && match.groupCount >= 1) {
-            var distanceMetric = match.group(1)!;
+            vectorColumnType = VectorColumnType.vectorTypes
+                .where((c) => c.name == match.group(1))
+                .firstOrNull;
+
+            var distanceMetric = match.group(2)!;
             if (distanceMetric == 'ip') distanceMetric = 'innerProduct';
             vectorDistanceFunction = VectorDistanceFunction.values
                 .where((e) => e.name == distanceMetric)
@@ -214,6 +222,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
         predicate: index[6],
         vectorDistanceFunction: vectorDistanceFunction,
+        vectorColumnType: vectorColumnType,
         parameters: parameters.isEmpty ? null : parameters,
       );
     }).toList();
@@ -298,6 +307,20 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
       return [];
     }
   }
+}
+
+/// Extension methods for [ColumnType] to handle vector types.
+extension VectorColumnType on ColumnType {
+  /// Return valid vector types.
+  static List<ColumnType> get vectorTypes => [
+        ColumnType.vector,
+        ColumnType.halfvec,
+        ColumnType.sparsevec,
+        ColumnType.bit,
+      ];
+
+  /// Whether the column is of a vector type.
+  bool get isVectorType => vectorTypes.contains(this);
 }
 
 extension on String {

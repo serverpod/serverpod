@@ -300,6 +300,16 @@ extension IndexComparisons on IndexDefinition {
       );
     }
 
+    if (vectorColumnType != other.vectorColumnType) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'vector column type',
+          expected: vectorColumnType?.name,
+          found: other.vectorColumnType?.name,
+        ),
+      );
+    }
+
     // New parameters missing on other (or if other is null)
     parameters?.entries.forEach((entry) {
       if (other.parameters?[entry.key] != entry.value) {

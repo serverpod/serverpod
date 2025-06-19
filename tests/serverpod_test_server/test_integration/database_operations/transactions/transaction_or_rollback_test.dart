@@ -390,7 +390,7 @@ void main() async {
 
       test(
           'when throwing in a nested transaction callback, '
-          'then the the data written with the transaction is not visible on the outside.',
+          'then the data written with the transaction is not visible on the outside.',
           () async {
         try {
           await DatabaseUtil.runInTransactionOrSavepoint(

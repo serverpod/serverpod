@@ -8,6 +8,7 @@ class IndexDefinitionBuilder {
   bool _isPrimary;
   String? _predicate;
   VectorDistanceFunction? _vectorDistanceFunction;
+  ColumnType? _vectorColumnType;
   Map<String, String>? _parameters;
 
   IndexDefinitionBuilder()
@@ -18,6 +19,7 @@ class IndexDefinitionBuilder {
         _isPrimary = false,
         _predicate = null,
         _vectorDistanceFunction = null,
+        _vectorColumnType = null,
         _parameters = null;
 
   IndexDefinition build() {
@@ -29,6 +31,7 @@ class IndexDefinitionBuilder {
       isPrimary: _isPrimary,
       predicate: _predicate,
       vectorDistanceFunction: _vectorDistanceFunction,
+      vectorColumnType: _vectorColumnType,
       parameters: _parameters,
     );
   }
@@ -83,6 +86,11 @@ class IndexDefinitionBuilder {
     VectorDistanceFunction? vectorDistanceFunction,
   ) {
     _vectorDistanceFunction = vectorDistanceFunction;
+    return this;
+  }
+
+  IndexDefinitionBuilder withVectorColumnType(ColumnType? vectorColumnType) {
+    _vectorColumnType = vectorColumnType;
     return this;
   }
 

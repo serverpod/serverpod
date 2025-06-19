@@ -135,7 +135,10 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
-  bool get isVectorType => className == VectorKeyword.className;
+  static List<String> get vectorClassNames =>
+      ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
+
+  bool get isVectorType => vectorClassNames.contains(className);
 
   bool get isRecordType => className == recordTypeClassName;
 
@@ -307,7 +310,8 @@ class TypeDefinition {
               serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
-            (url == null && ['UuidValue', 'Vector'].contains(className))) {
+            (url == null &&
+                (['UuidValue', ...vectorClassNames]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -387,6 +391,9 @@ class TypeDefinition {
     if (className == 'Uri') return 'text';
     if (className == 'BigInt') return 'text';
     if (className == 'Vector') return 'vector';
+    if (className == 'HalfVector') return 'halfvec';
+    if (className == 'SparseVector') return 'sparsevec';
+    if (className == 'Bit') return 'bit';
 
     return 'json';
   }
@@ -411,6 +418,9 @@ class TypeDefinition {
     if (className == 'Uri') return 'ColumnUri';
     if (className == 'BigInt') return 'ColumnBigInt';
     if (className == 'Vector') return 'ColumnVector';
+    if (className == 'HalfVector') return 'ColumnHalfVector';
+    if (className == 'SparseVector') return 'ColumnSparseVector';
+    if (className == 'Bit') return 'ColumnBit';
 
     return 'ColumnSerializable';
   }
@@ -650,6 +660,9 @@ class TypeDefinition {
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'BigInt') return ValueType.bigInt;
     if (className == 'Vector') return ValueType.vector;
+    if (className == 'HalfVector') return ValueType.halfVector;
+    if (className == 'SparseVector') return ValueType.sparseVector;
+    if (className == 'Bit') return ValueType.bit;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -816,7 +829,7 @@ TypeDefinition parseType(
 
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
-  var vectorDimension = (className == VectorKeyword.className &&
+  var vectorDimension = (TypeDefinition.vectorClassNames.contains(className) &&
           (trimmedInput.count('(') == 1 && trimmedInput.count(')') == 1))
       ? int.tryParse(
           trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
@@ -876,6 +889,9 @@ enum ValueType {
   isEnum,
   classType,
   vector,
+  halfVector,
+  sparseVector,
+  bit,
   uri;
 }
 

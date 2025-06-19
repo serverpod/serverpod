@@ -101,7 +101,7 @@ void main() {
       });
     });
 
-    group('with vector-specific distance operations', () {
+    group('with _VectorColumnDefaultOperations mixin', () {
       test(
           'when distanceL2 is called then output is correct operator expression.',
           () {

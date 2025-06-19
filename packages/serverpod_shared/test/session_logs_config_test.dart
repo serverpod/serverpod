@@ -5,7 +5,9 @@ import 'package:yaml/yaml.dart';
 void main() {
   var developmentRunMode = 'development';
   var productionRunMode = 'production';
-  var serverId = 'default';
+  // Setting the serverId to null as the default value.
+  // ignore: avoid_init_to_null
+  var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
     'database': 'dbpassword'

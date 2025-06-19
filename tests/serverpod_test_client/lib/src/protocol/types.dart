@@ -29,6 +29,9 @@ abstract class Types implements _i1.SerializableModel {
     this.aUri,
     this.aBigInt,
     this.aVector,
+    this.aHalfVector,
+    this.aSparseVector,
+    this.aBit,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -50,6 +53,9 @@ abstract class Types implements _i1.SerializableModel {
     Uri? aUri,
     BigInt? aBigInt,
     _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -86,6 +92,17 @@ abstract class Types implements _i1.SerializableModel {
       aVector: jsonSerialization['aVector'] == null
           ? null
           : _i1.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+      aHalfVector: jsonSerialization['aHalfVector'] == null
+          ? null
+          : _i1.HalfVectorJsonExtension.fromJson(
+              jsonSerialization['aHalfVector']),
+      aSparseVector: jsonSerialization['aSparseVector'] == null
+          ? null
+          : _i1.SparseVectorJsonExtension.fromJson(
+              jsonSerialization['aSparseVector']),
+      aBit: jsonSerialization['aBit'] == null
+          ? null
+          : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -135,6 +152,12 @@ abstract class Types implements _i1.SerializableModel {
 
   _i1.Vector? aVector;
 
+  _i1.HalfVector? aHalfVector;
+
+  _i1.SparseVector? aSparseVector;
+
+  _i1.Bit? aBit;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -163,6 +186,9 @@ abstract class Types implements _i1.SerializableModel {
     Uri? aUri,
     BigInt? aBigInt,
     _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -185,6 +211,9 @@ abstract class Types implements _i1.SerializableModel {
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
       if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -217,6 +246,9 @@ class _TypesImpl extends Types {
     Uri? aUri,
     BigInt? aBigInt,
     _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -236,6 +268,9 @@ class _TypesImpl extends Types {
           aUri: aUri,
           aBigInt: aBigInt,
           aVector: aVector,
+          aHalfVector: aHalfVector,
+          aSparseVector: aSparseVector,
+          aBit: aBit,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
           aList: aList,
@@ -261,6 +296,9 @@ class _TypesImpl extends Types {
     Object? aUri = _Undefined,
     Object? aBigInt = _Undefined,
     Object? aVector = _Undefined,
+    Object? aHalfVector = _Undefined,
+    Object? aSparseVector = _Undefined,
+    Object? aBit = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -282,6 +320,13 @@ class _TypesImpl extends Types {
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
       aVector: aVector is _i1.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _i1.HalfVector?
+          ? aHalfVector
+          : this.aHalfVector?.clone(),
+      aSparseVector: aSparseVector is _i1.SparseVector?
+          ? aSparseVector
+          : this.aSparseVector?.clone(),
+      aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum

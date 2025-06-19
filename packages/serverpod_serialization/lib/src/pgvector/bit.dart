@@ -48,6 +48,14 @@ class Bit {
     return vec;
   }
 
+  /// Creates a [Bit] from a string representation.
+  static Bit fromString(String value) {
+    if (value.isEmpty || !RegExp(r'^[01]+$').hasMatch(value)) {
+      throw FormatException('Invalid bit string: $value');
+    }
+    return Bit(value.split('').map((c) => c == '1').toList());
+  }
+
   @override
   String toString() => toList().map((v) => v ? '1' : '0').join();
 

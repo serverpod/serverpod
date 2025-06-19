@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 
+const _userDefinedPasswordPrefix = 'SERVERPOD_PASSWORD_';
+
 /// Keeps track of passwords used by the server. Passwords are loaded from
 /// the config/passwords.yaml file.
 class PasswordManager {
@@ -16,6 +18,12 @@ class PasswordManager {
 
   /// Load all passwords for the current run mode from the supplied [Map],
   /// or null if passwords fail to load.
+  ///
+  /// Passwords are be loaded in the following order:
+  /// 1. Shared passwords from the config map
+  /// 2. Run mode specific passwords from the config map
+  /// 3. Serverpod password environment variables
+  /// 4. Custom passwords from the SERVERPOD_PASSWORD_ prefix environment variable (e.g. SERVERPOD_PASSWORD_myApiKey=secret becomes a password with key 'myApiKey')
   Map<String, String> loadPasswordsFromMap(
     Map passwordConfig, {
     Map<String, String> environment = const {},
@@ -23,7 +31,7 @@ class PasswordManager {
     var sharedPasswords = _extractPasswords(passwordConfig, 'shared');
     var runModePasswords = _extractPasswords(passwordConfig, runMode);
 
-    var envPasswords = ServerpodPassword.values.fold(
+    var envPasswords = ServerpodPassword.values.fold<Map<String, String>>(
       {},
       (collection, password) {
         var envPassword = environment[password.envVariable];
@@ -33,11 +41,34 @@ class PasswordManager {
       },
     );
 
+    final userDefinedEnvPasswords =
+        _findUserDefinedPasswordsFromEnv(environment);
+
+    envPasswords.addAll(userDefinedEnvPasswords);
+
     return {
       ...sharedPasswords,
       ...runModePasswords,
       ...envPasswords,
     };
+  }
+
+  Map<String, String> _findUserDefinedPasswordsFromEnv(
+    Map<String, String> environment,
+  ) {
+    final userDefinedEnvPasswords = environment.entries.where(
+      (entry) {
+        if (!entry.key.startsWith(_userDefinedPasswordPrefix)) return false;
+        return entry.key.length > _userDefinedPasswordPrefix.length;
+      },
+    ).map(
+      (entry) => MapEntry(
+        entry.key.substring(_userDefinedPasswordPrefix.length),
+        entry.value,
+      ),
+    );
+
+    return Map.fromEntries(userDefinedEnvPasswords);
   }
 
   Map<String, String> _extractPasswords(Map data, String key) {
