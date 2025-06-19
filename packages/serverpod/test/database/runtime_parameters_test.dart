@@ -99,6 +99,16 @@ void main() {
     });
 
     group('with enum handling', () {
+      test('when IterativeScan.off is used then off is generated.', () {
+        var options = const _ComprehensiveRuntimeParameters(
+          enumValue: IterativeScan.off,
+        );
+
+        var result = options.build();
+
+        expect(result, contains('SET test.enum_value = off;'));
+      });
+
       test('when IterativeScan.strict is used then strict_order is generated.',
           () {
         var options = const _ComprehensiveRuntimeParameters(

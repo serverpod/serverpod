@@ -15,7 +15,7 @@ abstract class RuntimeParameters {
         var value = e.value;
         if (value is String) value = '\'${value.replaceAll("'", "''")}\'';
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
-        if (value is IterativeScan) value = '${value.name}_order';
+        if (value is IterativeScan) value = value.alias;
         if (value is bool) value = (value == true) ? 'on' : 'off';
         value = (value == null) ? 'TO DEFAULT' : '= $value';
         return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} $value;';
@@ -57,6 +57,7 @@ class HnswIndexQueryOptions extends RuntimeParameters {
     this.maxScanTuples = 20000,
     this.scanMemMultiplier = 1,
   });
+
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'hnsw.ef_search': efSearch,
@@ -126,6 +127,7 @@ class VectorIndexQueryOptions extends RuntimeParameters {
     this.maxParallelMaintenanceWorkers = 2,
     this.maxParallelWorkersPerGather = 2,
   });
+
   @override
   Map<String, dynamic> get options => <String, dynamic>{
         'enable_indexscan': enableIndexScan,
@@ -140,12 +142,20 @@ class VectorIndexQueryOptions extends RuntimeParameters {
 
 /// Automatically scan more of the index until enough results are found.
 enum IterativeScan {
+  /// No iterative scan, use the specified efSearch or probes.
+  off,
+
   /// Strict ensures results are in the exact order by distance.
   strict,
 
   /// Relaxed allows results to be slightly out of order by distance, but
   /// provides better recall.
   relaxed,
+}
+
+extension on IterativeScan {
+  /// The alias of the iterative scan mode on the database.
+  String get alias => this == IterativeScan.off ? 'off' : '${name}_order';
 }
 
 /// Builder class for runtime parameters that provides discoverable factory methods.
