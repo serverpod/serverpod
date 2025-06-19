@@ -1,18 +1,18 @@
 import 'dart:math' as math;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
+
+import '../../test_tools/serverpod_test_tools.dart';
 
 const totalVectors = 5000;
 const vectorDimension = 512;
 
-void main() async {
-  var session = await IntegrationTestServer().session();
-
-  group('Given a large number of vectors with very similar distances ', () {
-    late List<ObjectWithVector> testVectors;
-
+void main() {
+  withServerpod('Given a large number of vectors with very similar distances',
+      (sessionBuilder, _) {
+    final session = sessionBuilder.build();
     final queryVector =
         Vector([0.5, 0.5] + List.filled(vectorDimension - 2, 0.0));
 
@@ -23,7 +23,7 @@ void main() async {
       // Create 5000 vectors with very similar distances around the query point
       // [0.5, 0.5, ...]. This creates many borderline cases where low efSearch
       // might miss some vectors.
-      testVectors = [
+      final testVectors = [
         for (int i = 0; i < totalVectors; i++)
           ObjectWithVector(
             vector: zeroFilledVector,
@@ -34,14 +34,7 @@ void main() async {
           ),
       ];
 
-      testVectors = await ObjectWithVector.db.insert(session, testVectors);
-    });
-
-    tearDownAll(() async {
-      await ObjectWithVector.db.deleteWhere(
-        session,
-        where: (t) => t.id.inSet(testVectors.map((v) => v.id!).toSet()),
-      );
+      await ObjectWithVector.db.insert(session, testVectors);
     });
 
     group('when using conservative and aggressive index query parameters', () {
@@ -125,7 +118,7 @@ void main() async {
         expect(aggressiveAvg, lessThan(conservativeAvg));
       });
     });
-  });
+  }, testGroupTagsOverride: [TestTags.concurrencyOneTestTag]);
 }
 
 /// Helper function to generate test vectors with very similar distances.
