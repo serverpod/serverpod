@@ -158,16 +158,6 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
-  /// Provides access to the task manager.
-  ///
-  /// The task manager is responsible for executing tasks concurrently.
-  /// In this case, it's used to manage server shutdown tasks, ensuring that all
-  /// resources are properly released and services are stopped.
-  /// You can use this to add custom tasks using [shutdownTasks.addTask].
-  TaskManager get shutdownTasks => _externalShutdownTaskManager;
-
-  final TaskManagerImpl _externalShutdownTaskManager = TaskManagerImpl();
-
   final TaskManagerImpl _requestReceivingShutdownTasks = TaskManagerImpl();
   final TaskManagerImpl _internalServicesShutdownTasks = TaskManagerImpl();
 
@@ -1013,7 +1003,7 @@ class Serverpod {
       },
     );
 
-    await _externalShutdownTaskManager.executeTasks(
+    await experimental._shutdownTasks.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
         _reportException(error, stack, message: 'Error in shutdown task "$id"');
@@ -1198,13 +1188,24 @@ Future<void>? _shutdownTestAuditor() {
 class ExperimentalApi {
   final DiagnosticEventHandler _eventDispatcher;
 
+  final TaskManagerImpl _shutdownTasks;
+
+  /// Provides access to the task manager.
+  ///
+  /// The task manager is responsible for executing tasks concurrently.
+  /// In this case, it's used to manage server shutdown tasks, ensuring that all
+  /// resources are properly released and services are stopped.
+  /// You can use this to add custom tasks using [shutdownTasks.addTask].
+  TaskManager get shutdownTasks => _shutdownTasks;
+
   ExperimentalApi._({
     ServerpodConfig? config,
     ExperimentalFeatures? experimentalFeatures,
-  }) : _eventDispatcher = DiagnosticEventDispatcher(
+  })  : _eventDispatcher = DiagnosticEventDispatcher(
           experimentalFeatures?.diagnosticEventHandlers ?? const [],
           timeout: config?.experimentalDiagnosticHandlerTimeout,
-        );
+        ),
+        _shutdownTasks = TaskManagerImpl();
 
   /// Application method for submitting a diagnostic event
   /// to registered event handlers.

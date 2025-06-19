@@ -11,7 +11,7 @@ void main() {
     var called = false;
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(
+    serverpod.experimental.shutdownTasks.addTask(
       Task(
         #testTask,
         () async {
@@ -39,8 +39,8 @@ void main() {
     );
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(task);
-    serverpod.shutdownTasks.removeTask(task.id);
+    serverpod.experimental.shutdownTasks.addTask(task);
+    serverpod.experimental.shutdownTasks.removeTask(task.id);
 
     await serverpod.shutdown(exitProcess: false);
 
@@ -54,7 +54,7 @@ void main() {
     var callCount = 0;
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(
+    serverpod.experimental.shutdownTasks.addTask(
       Task(
         #testTask,
         () async {
@@ -81,7 +81,7 @@ void main() {
     );
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(task);
+    serverpod.experimental.shutdownTasks.addTask(task);
 
     expect(
       () async => await serverpod.shutdown(exitProcess: false),
@@ -110,8 +110,8 @@ void main() {
     );
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(task1);
-    serverpod.shutdownTasks.addTask(task2);
+    serverpod.experimental.shutdownTasks.addTask(task1);
+    serverpod.experimental.shutdownTasks.addTask(task2);
 
     await expectLater(
       () async => await serverpod.shutdown(exitProcess: false),
@@ -142,8 +142,8 @@ void main() {
     );
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(task1);
-    serverpod.shutdownTasks.addTask(task2);
+    serverpod.experimental.shutdownTasks.addTask(task1);
+    serverpod.experimental.shutdownTasks.addTask(task2);
 
     await serverpod.shutdown(exitProcess: false);
 
@@ -161,7 +161,7 @@ void main() {
     var serviceServerStopped = false;
 
     var serverpod = IntegrationTestServer.create();
-    serverpod.shutdownTasks.addTask(
+    serverpod.experimental.shutdownTasks.addTask(
       Task(
         #testTask,
         () async {
