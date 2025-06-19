@@ -1198,7 +1198,7 @@ class ExperimentalApi {
   /// You can use this to add custom tasks using [shutdownTasks.addTask].
   ///
   /// Before the shutdown tasks are executed, the server will close the api
-  /// server, web server, service server, and future call manager.
+  /// server, web server, insights server, and future call manager.
   TaskManager get shutdownTasks => _shutdownTasks;
 
   ExperimentalApi._({
