@@ -12,7 +12,7 @@ dependencies:
   serverpod: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
-  http: '>=1.0.0 <2.0.0'
+  http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   path: ^1.8.2
 
