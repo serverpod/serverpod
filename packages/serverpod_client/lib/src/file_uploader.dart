@@ -35,14 +35,18 @@ class FileUploader {
 
     if (_uploadDescription.type == _UploadType.binary) {
       try {
-        var result = await http.post(
-          _uploadDescription.url,
-          body: await _readStreamData(stream),
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Accept': '*/*',
-          },
+        var request = http.StreamedRequest('POST', _uploadDescription.url);
+        request.headers['Content-Type'] = 'application/octet-stream';
+        request.headers['Accept'] = '*/*';
+        request.headers['Content-Length'] = length.toString();
+
+        stream.listen(
+          request.sink.add,
+          onError: request.sink.addError,
+          onDone: request.sink.close,
         );
+
+        var result = await request.send();
         return result.statusCode == 200;
       } catch (e) {
         return false;
