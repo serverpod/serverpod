@@ -79,26 +79,6 @@ class FileUploader {
     }
     throw UnimplementedError('Unknown upload type');
   }
-
-  // Future<String?> _readBody(http.ByteStream stream) async {
-  //   // TODO: Find more efficient solution?
-  //   var len = 0;
-  //   var data = <int>[];
-  //   await for (var segment in stream) {
-  //     len += segment.length;
-  //     data += segment;
-  //   }
-  //   return Utf8Decoder().convert(data);
-  // }
-
-  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
-    // TODO: Find more efficient solution?
-    var data = <int>[];
-    await for (var segment in stream) {
-      data += segment;
-    }
-    return data;
-  }
 }
 
 enum _UploadType {
