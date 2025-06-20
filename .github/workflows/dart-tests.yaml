@@ -245,6 +245,7 @@ jobs:
           'tests/serverpod_new_auth_test/serverpod_new_auth_test_server',
           'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
           'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
+          'modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server',
           'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
           'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',
           'modules/serverpod_auth/serverpod_auth_server'

@@ -1,0 +1,12 @@
+type: module
+nickname: serverpod_auth_migration
+
+modules:
+  serverpod_auth:
+    nickname: auth
+
+  serverpod_auth_user:
+    nickname: auth_user
+
+client_package_path: ../serverpod_auth_migration_client
+server_test_tools_path: test/integration/test_tools

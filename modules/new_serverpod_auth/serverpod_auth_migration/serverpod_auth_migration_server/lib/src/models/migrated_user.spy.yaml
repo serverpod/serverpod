@@ -1,0 +1,18 @@
+class: MigratedUser
+serverOnly: true
+table: serverpod_auth_migration_migrated_user
+fields:
+  ### The [UserInfo] object which was migrated to the new user.
+  oldUser: module:auth:UserInfo?, relation(onDelete=Cascade)
+
+  ### The [AuthUser] the old user was migrated to.
+  newAuthUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+indexes:
+  serverpod_auth_migration_migrated_user_old:
+    fields: oldUserId
+    unique: true
+
+  serverpod_auth_migration_migrated_user_new:
+    fields: newAuthUserId
+    unique: true
