@@ -26,7 +26,9 @@ class FileUploader {
     return _upload(stream, byteData.lengthInBytes);
   }
 
-  /// Uploads a file from a [Stream], returns true if successful.
+  /// Uploads a file from a [Stream], returns true if successful. The [length]
+  /// of the stream is optional, but if it's not provided for a multipart upload,
+  /// the entire file will be buffered in memory.
   Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
       _upload(stream.toByteStream(), length);
 
