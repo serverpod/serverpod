@@ -22,9 +22,8 @@ class FileUploader {
   /// Uploads a file contained by a [ByteData] object, returns true if
   /// successful.
   Future<bool> uploadByteData(ByteData byteData) async {
-    final buffer = byteData.buffer;
-    var stream = http.ByteStream.fromBytes(buffer.asUint8List());
-    return _upload(stream, buffer.lengthInBytes);
+    var stream = http.ByteStream.fromBytes(Uint8List.sublistView(byteData));
+    return _upload(stream, byteData.lengthInBytes);
   }
 
   /// Uploads a file from a [Stream], returns true if successful.
