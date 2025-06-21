@@ -43,8 +43,11 @@ class DatabasePoolManager {
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    this.config,
-  ) : _poolSettings = pg.PoolSettings(
+    this.config, {
+    /// Whether the server is running in testing mode and all runtime parameters
+    /// should be set for the current transaction only.
+    bool testing = false,
+  }) : _poolSettings = pg.PoolSettings(
           maxConnectionCount: 10,
           queryTimeout: const Duration(minutes: 1),
           sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
@@ -63,7 +66,7 @@ class DatabasePoolManager {
             }
 
             var setParametersStatements = parameters
-                .map((p) => p.buildStatements(isLocal: false))
+                .map((p) => p.buildStatements(isLocal: testing))
                 .expand((e) => e);
             if (setParametersStatements.isNotEmpty) {
               for (var statement in setParametersStatements) {

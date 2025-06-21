@@ -112,8 +112,12 @@ void main() {
         var checkQuery = HnswIndexQueryOptions().buildCheckValues();
 
         await session.db.transaction((transaction) async {
-          // The savepoint is needed to avoid altering global parameters, since
-          // the test framework runs all tests in a single transaction.
+          // From PostgreSQL 8.3 onwards, releasing a savepoint does not revert
+          // runtime parameters changed in the savepoint. Because the test
+          // framework runs all tests in a single transaction and translates
+          // inner transactions to savepoints (released at the end), we need
+          // to create a savepoint to ensure that the local parameters
+          // do not affect the "global" parameters.
           final savePoint = await transaction.createSavepoint();
 
           await transaction.setRuntimeParameters((params) => [

@@ -299,6 +299,9 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// Whether the server is running in testing mode.
+  final bool testing;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -317,6 +320,7 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
+    this.testing = false,
   })  : _securityContextConfig = securityContextConfig,
         _experimental = ExperimentalApi._(
           config: config,
@@ -389,6 +393,7 @@ class Serverpod {
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
+        testing: testing,
       );
 
       // TODO: Remove this when we have a better way to handle this.
