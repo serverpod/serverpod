@@ -466,7 +466,11 @@ class ServerTestToolsGenerator {
         Parameter((p) => p
           ..name = 'applyMigrations'
           ..named = true
-          ..type = refer('bool?'))
+          ..type = refer('bool?')),
+        Parameter((p) => p
+          ..name = 'runtimeParametersBuilder'
+          ..named = true
+          ..type = refer('RuntimeParametersListBuilder?', serverpodUrl(true))),
       ],
     ]..sort(_sortParameterByName);
 
@@ -509,6 +513,8 @@ class ServerTestToolsGenerator {
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
                 'experimentalFeatures': refer('experimentalFeatures'),
+                if (config.isFeatureEnabled(ServerpodFeature.database))
+                  'runtimeParametersBuilder': refer('runtimeParametersBuilder'),
               },
             ),
           ],
