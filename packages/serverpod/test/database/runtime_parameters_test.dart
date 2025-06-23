@@ -16,7 +16,7 @@ void main() {
         nullValue: null,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
       expect(
         result,
         'SET test.boolean_true = on;\n'
@@ -42,7 +42,7 @@ void main() {
         nullValue: null,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -61,7 +61,7 @@ void main() {
         () {
       var options = const _ComprehensiveRuntimeParameters();
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -104,7 +104,7 @@ void main() {
           enumValue: IterativeScan.off,
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET test.enum_value = off;'));
       });
@@ -115,7 +115,7 @@ void main() {
           enumValue: IterativeScan.strict,
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET test.enum_value = strict_order;'));
       });
@@ -127,7 +127,7 @@ void main() {
           enumValue: IterativeScan.relaxed,
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET test.enum_value = relaxed_order;'));
       });
@@ -139,7 +139,7 @@ void main() {
           booleanTrue: true,
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET test.boolean_true = on;'));
       });
@@ -149,7 +149,7 @@ void main() {
           booleanFalse: false,
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET test.boolean_false = off;'));
       });
@@ -163,7 +163,7 @@ void main() {
           nestedParameters: _NestedRuntimeParameters(),
         );
 
-        var result = options.build();
+        var result = options.build(isLocal: false);
 
         expect(result, contains('SET nested.option = \'nested_value\';'));
       });
@@ -193,7 +193,7 @@ void main() {
         scanMemMultiplier: 2,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -207,7 +207,7 @@ void main() {
     test('when created with no parameters then default values are used.', () {
       var options = const HnswIndexQueryOptions();
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -264,7 +264,7 @@ void main() {
         maxProbes: 10,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -277,7 +277,7 @@ void main() {
     test('when created with no parameters then default values are used.', () {
       var options = const IvfflatIndexQueryOptions();
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -362,7 +362,7 @@ void main() {
         maxParallelWorkersPerGather: 2,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -379,7 +379,7 @@ void main() {
     test('when created with no parameters then default values are used.', () {
       var options = const VectorIndexQueryOptions();
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -444,7 +444,7 @@ void main() {
         searchPaths: ['public', 'custom_schema', 'another_schema'],
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -458,7 +458,7 @@ void main() {
         searchPaths: null,
       );
 
-      var result = options.build();
+      var result = options.build(isLocal: false);
 
       expect(
         result,
@@ -669,7 +669,7 @@ void main() {
         'custom.null': null,
       });
 
-      var result = params.build();
+      var result = params.build(isLocal: false);
 
       expect(
         result,
@@ -688,7 +688,7 @@ void main() {
         'nested': MapRuntimeParameters({'nested.key': 'nested'}),
       });
 
-      var result = params.build();
+      var result = params.build(isLocal: false);
 
       expect(result, contains("SET outer.key = 'outer';"));
       expect(result, contains("SET nested.key = 'nested';"));

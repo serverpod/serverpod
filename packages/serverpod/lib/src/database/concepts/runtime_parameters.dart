@@ -13,7 +13,7 @@ abstract class RuntimeParameters {
 
   /// Returns a list with the SQL statements to set each runtime parameters.
   /// If [isLocal] is true, options are set for the current transaction only.
-  Iterable<String> buildStatements({bool isLocal = false}) =>
+  Iterable<String> buildStatements({required bool isLocal}) =>
       options.entries.map((e) {
         var value = e.value;
         if (value is String) value = DatabasePoolManager.encoder.convert(value);
@@ -36,7 +36,7 @@ abstract class RuntimeParameters {
 
   /// Returns the SQL statement to set the runtime parameters. If [isLocal] is
   /// true, options are set for the current transaction only and not globally.
-  String build({bool isLocal = false}) =>
+  String build({required bool isLocal}) =>
       buildStatements(isLocal: isLocal).join('\n');
 
   /// Returns a SELECT statement to check current values of all options.
