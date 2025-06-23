@@ -12,7 +12,7 @@ Stream<int> streamBytes() async* {
 }
 
 extension<T> on Stream<T> {
-  Stream<List<T>> inChunks(int chunkSize) async* {
+  Stream<List<T>> inChunksOf(int chunkSize) async* {
     var chunk = <T>[];
     await for (final e in this) {
       chunk.add(e);
@@ -180,13 +180,14 @@ void main() {
       expect(verifyByteData(byteData), equals(true));
     });
 
-    test('Direct file upload (binary stream)', () async {
+    test('Direct file upload (Stream<List<int>>)', () async {
       var uploadDescription = await client.cloudStorage
           .getDirectFilePostUrl('testdir/directupload_stream_binary.bin');
       expect(uploadDescription, isNotNull);
 
       var uploader = FileUploader(uploadDescription!);
-      var result = await uploader.upload(streamBytes().take(512).inChunks(64));
+      var result =
+          await uploader.upload(streamBytes().take(512).inChunksOf(64));
 
       expect(result, equals(true));
 
