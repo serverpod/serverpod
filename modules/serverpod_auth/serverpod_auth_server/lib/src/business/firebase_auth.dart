@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
 import 'package:serverpod_auth_server/src/firebase/firebase_auth_manager.dart';
@@ -9,8 +10,7 @@ import 'package:serverpod_auth_server/src/firebase/firebase_auth_manager.dart';
 // manually check for the password with the prefix "SERVERPOD_PASSWORD_" in the
 // environment variables. This prefix would be stripped by the PasswordManager
 // when the password is loaded.
-const _passwordKey =
-    'SERVERPOD_PASSWORD_serverpod_auth_firebaseServiceAccountKey';
+const _passwordKey = 'serverpod_auth_firebaseServiceAccountKey';
 
 /// Convenience methods for handling authentication with Firebase.
 class FirebaseAuth {
@@ -27,9 +27,9 @@ class FirebaseAuth {
 
     Map<String, dynamic> firebaseServiceAccountJson;
     try {
-      final passwordFromEnv = Platform.environment[_passwordKey];
-      if (passwordFromEnv != null) {
-        firebaseServiceAccountJson = jsonDecode(passwordFromEnv);
+      final password = Serverpod.instance.getPassword(_passwordKey);
+      if (password != null) {
+        firebaseServiceAccountJson = jsonDecode(password);
       } else {
         firebaseServiceAccountJson = jsonDecode(
           await File(AuthConfig.current.firebaseServiceAccountKeyJson)
