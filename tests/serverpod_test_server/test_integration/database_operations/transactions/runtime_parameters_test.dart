@@ -167,11 +167,11 @@ void main() async {
       'then only non-null values are applied to the transaction', () async {
     await session.db.transaction((transaction) async {
       await transaction.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 80,
-              iterativeScan: null,
-              scanMemMultiplier: 4,
-            ),
+            MapRuntimeParameters({
+              'hnsw.ef_search': 80,
+              'hnsw.iterative_scan': null,
+              'hnsw.scan_mem_multiplier': 4,
+            }),
           ]);
 
       var checkQuery = HnswIndexQueryOptions().buildCheckValues();
@@ -213,9 +213,9 @@ void main() async {
       expect(rowBefore['hnsw_iterative_scan'], 'strict_order');
 
       await transaction.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              iterativeScan: null,
-            ),
+            MapRuntimeParameters({
+              'hnsw.iterative_scan': null,
+            }),
           ]);
 
       var resultInside = await customSession.db.unsafeQuery(

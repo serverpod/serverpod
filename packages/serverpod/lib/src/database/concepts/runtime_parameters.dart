@@ -63,8 +63,8 @@ class HnswIndexQueryOptions extends RuntimeParameters {
   /// The ef search parameter for HNSW index. Default is 40.
   final int efSearch;
 
-  /// The iterative scan limit. Default is null (disabled).
-  final IterativeScan? iterativeScan;
+  /// The iterative scan limit. Default is off.
+  final IterativeScan iterativeScan;
 
   /// The maximum number of tuples to scan. Default is 20000.
   final int maxScanTuples;
@@ -75,7 +75,7 @@ class HnswIndexQueryOptions extends RuntimeParameters {
   /// Creates a new HNSW index query options object.
   const HnswIndexQueryOptions({
     this.efSearch = 40,
-    this.iterativeScan,
+    this.iterativeScan = IterativeScan.off,
     this.maxScanTuples = 20000,
     this.scanMemMultiplier = 1,
   });
@@ -94,17 +94,17 @@ class IvfflatIndexQueryOptions extends RuntimeParameters {
   /// The number of probes for the IVFFLAT index. Default is 1.
   final int probes;
 
-  /// The iterative scan limit. Default is null (disabled).
-  final IterativeScan? iterativeScan;
+  /// The iterative scan limit. Default is off.
+  final IterativeScan iterativeScan;
 
   /// The maximum number of probes for the IVFFLAT index. Default to null (unset).
-  final int? maxProbes;
+  final int maxProbes;
 
   /// Creates a new IVFFLAT index query options object.
   const IvfflatIndexQueryOptions({
     this.probes = 1,
-    this.iterativeScan,
-    this.maxProbes,
+    this.iterativeScan = IterativeScan.off,
+    this.maxProbes = 32768,
   }) : assert(iterativeScan != IterativeScan.strict,
             'Strict iterative scan is not supported for IVFFLAT indexes');
 
@@ -204,7 +204,7 @@ class RuntimeParametersBuilder {
   /// information on each parameter, refer to the [HnswIndexQueryOptions] class.
   HnswIndexQueryOptions hnswIndexQuery({
     int efSearch = 40,
-    IterativeScan? iterativeScan,
+    IterativeScan iterativeScan = IterativeScan.off,
     int maxScanTuples = 20000,
     int scanMemMultiplier = 1,
   }) =>
@@ -219,8 +219,8 @@ class RuntimeParametersBuilder {
   /// information on each parameter, refer to the [IvfflatIndexQueryOptions] class.
   IvfflatIndexQueryOptions ivfflatIndexQuery({
     int probes = 1,
-    IterativeScan? iterativeScan,
-    int? maxProbes,
+    IterativeScan iterativeScan = IterativeScan.off,
+    int maxProbes = 32768,
   }) =>
       IvfflatIndexQueryOptions(
         probes: probes,

@@ -212,7 +212,7 @@ void main() {
       expect(
         result,
         'SET hnsw.ef_search = 40;\n'
-        'SET hnsw.iterative_scan TO DEFAULT;\n'
+        'SET hnsw.iterative_scan = off;\n'
         'SET hnsw.max_scan_tuples = 20000;\n'
         'SET hnsw.scan_mem_multiplier = 1;',
       );
@@ -234,26 +234,6 @@ void main() {
         'SET LOCAL hnsw.iterative_scan = relaxed_order;\n'
         'SET LOCAL hnsw.max_scan_tuples = 20000;\n'
         'SET LOCAL hnsw.scan_mem_multiplier = 1;',
-      );
-    });
-
-    test(
-        'when build is called with null parameters then null parameters become TO DEFAULT.',
-        () {
-      var options = const HnswIndexQueryOptions(
-        efSearch: 50,
-        iterativeScan: null,
-        scanMemMultiplier: 3,
-      );
-
-      var result = options.build();
-
-      expect(
-        result,
-        'SET hnsw.ef_search = 50;\n'
-        'SET hnsw.iterative_scan TO DEFAULT;\n'
-        'SET hnsw.max_scan_tuples = 20000;\n'
-        'SET hnsw.scan_mem_multiplier = 3;',
       );
     });
 
@@ -302,8 +282,8 @@ void main() {
       expect(
         result,
         'SET ivfflat.probes = 1;\n'
-        'SET ivfflat.iterative_scan TO DEFAULT;\n'
-        'SET ivfflat.max_probes TO DEFAULT;',
+        'SET ivfflat.iterative_scan = off;\n'
+        'SET ivfflat.max_probes = 32768;',
       );
     });
 
@@ -320,27 +300,8 @@ void main() {
       expect(
         result,
         'SET LOCAL ivfflat.probes = 3;\n'
-        'SET LOCAL ivfflat.iterative_scan TO DEFAULT;\n'
+        'SET LOCAL ivfflat.iterative_scan = off;\n'
         'SET LOCAL ivfflat.max_probes = 15;',
-      );
-    });
-
-    test(
-        'when build is called with partial parameters then null parameters become TO DEFAULT.',
-        () {
-      var options = const IvfflatIndexQueryOptions(
-        probes: 7,
-        iterativeScan: null,
-        maxProbes: null,
-      );
-
-      var result = options.build();
-
-      expect(
-        result,
-        'SET ivfflat.probes = 7;\n'
-        'SET ivfflat.iterative_scan TO DEFAULT;\n'
-        'SET ivfflat.max_probes TO DEFAULT;',
       );
     });
 
@@ -377,10 +338,10 @@ void main() {
         );
       });
 
-      test('when iterative scan is null then no assertion error is thrown.',
-          () {
+      test('when iterative scan is off then no assertion error is thrown.', () {
         expect(
-          () => const IvfflatIndexQueryOptions(iterativeScan: null),
+          () =>
+              const IvfflatIndexQueryOptions(iterativeScan: IterativeScan.off),
           returnsNormally,
         );
       });
@@ -644,7 +605,7 @@ void main() {
 
       expect(options, isA<HnswIndexQueryOptions>());
       expect(options.efSearch, 40);
-      expect(options.iterativeScan, null);
+      expect(options.iterativeScan, IterativeScan.off);
       expect(options.maxScanTuples, 20000);
       expect(options.scanMemMultiplier, 1);
     });
@@ -657,8 +618,8 @@ void main() {
 
       expect(options, isA<IvfflatIndexQueryOptions>());
       expect(options.probes, 1);
-      expect(options.iterativeScan, null);
-      expect(options.maxProbes, null);
+      expect(options.iterativeScan, IterativeScan.off);
+      expect(options.maxProbes, 32768);
     });
 
     test(
