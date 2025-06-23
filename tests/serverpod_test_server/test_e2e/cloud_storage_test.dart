@@ -27,15 +27,15 @@ extension<T> on Stream<T> {
 ByteData createByteData(int len) {
   var ints = Uint8List(len);
   for (var i = 0; i < len; i++) {
-    ints[i] = i % len;
+    ints[i] = i % 256;
   }
   return ByteData.view(ints.buffer);
 }
 
 bool verifyByteData(ByteData byteData) {
   var ints = byteData.buffer.asUint8List();
-  for (var i in ints) {
-    if (ints[i] != i % byteData.lengthInBytes) return false;
+  for (var i = 0; i < ints.length; i++) {
+    if (ints[i] != i % 256) return false;
   }
   return true;
 }
