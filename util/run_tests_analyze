@@ -66,6 +66,8 @@ declare -a projectPaths=(
     "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client"
     "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server"
     "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client"
+    "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server"
+    "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_client"
 
     "modules/serverpod_chat/serverpod_chat_server"
     "modules/serverpod_chat/serverpod_chat_client"
