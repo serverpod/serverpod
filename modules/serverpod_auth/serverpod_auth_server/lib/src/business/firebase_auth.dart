@@ -35,7 +35,7 @@ class FirebaseAuth {
     } catch (e) {
       throw FirebaseInitException(
         'Failed to load "firebase_service_account_key.json" file or password '
-        '${_passwordKey.substring('SERVERPOD_PASSWORD_'.length)}: $e',
+        '$_passwordKey: $e',
       );
     }
 
