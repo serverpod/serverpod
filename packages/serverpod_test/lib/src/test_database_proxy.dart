@@ -8,11 +8,17 @@ class TestDatabaseProxy implements Database {
   final Database _db;
   final RollbackDatabase _rollbackDatabase;
   final TransactionManager _transactionManager;
+  final RuntimeParametersListBuilder? _runtimeParametersBuilder;
 
   final Lock _databaseOperationLock = Lock();
 
   /// Creates a new [TestDatabaseProxy]
-  TestDatabaseProxy(this._db, this._rollbackDatabase, this._transactionManager);
+  TestDatabaseProxy(
+    this._db,
+    this._rollbackDatabase,
+    this._transactionManager,
+    this._runtimeParametersBuilder,
+  );
 
   @override
   Future<int> count<T extends TableRow>({
@@ -196,6 +202,7 @@ class TestDatabaseProxy implements Database {
     try {
       var result = await transactionFunction(localTransaction);
       await _transactionManager.releasePreviousSavepoint(unlock: true);
+      await _resetRuntimeParameters(localTransaction);
       return result;
     } catch (e) {
       await _transactionManager.rollbackToPreviousSavepoint(unlock: true);
@@ -353,5 +360,20 @@ class TestDatabaseProxy implements Database {
         rethrow;
       }
     });
+  }
+
+  Future<void> _resetRuntimeParameters(Transaction transaction) async {
+    if (transaction.runtimeParameters.isEmpty) return;
+    for (var paramName in transaction.runtimeParameters.keys.toList()) {
+      await _db.unsafeExecute('SET LOCAL $paramName TO DEFAULT;');
+      transaction.runtimeParameters.remove(paramName);
+    }
+
+    // As eventual runtime parameters might have been overridden locally in the
+    // transaction and reverted to default above, they need to be set again to
+    // the previously set global values.
+    if (_runtimeParametersBuilder != null) {
+      await transaction.setRuntimeParameters(_runtimeParametersBuilder);
+    }
   }
 }
