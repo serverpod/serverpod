@@ -49,6 +49,15 @@ abstract class RuntimeParameters {
   }
 }
 
+/// Runtime parameters that can be built from a map of options.
+class MapRuntimeParameters extends RuntimeParameters {
+  /// Creates a new runtime parameters object from a map of options.
+  MapRuntimeParameters(this.options);
+
+  @override
+  Map<String, dynamic> options;
+}
+
 /// Query options for the HNSW index.
 class HnswIndexQueryOptions extends RuntimeParameters {
   /// The ef search parameter for HNSW index. Default is 40.

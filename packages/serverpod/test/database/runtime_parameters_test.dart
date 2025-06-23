@@ -696,6 +696,64 @@ void main() {
       expect(options.searchPaths, null);
     });
   });
+
+  group('Given a MapRuntimeParameters', () {
+    test(
+        'when build is called with various types then correct SQL is returned.',
+        () {
+      var params = MapRuntimeParameters({
+        'custom.string': 'value',
+        'custom.int': 42,
+        'custom.bool': true,
+        'custom.null': null,
+      });
+
+      var result = params.build();
+
+      expect(
+        result,
+        'SET custom.string = \'value\';\n'
+        'SET custom.int = 42;\n'
+        'SET custom.bool = on;\n'
+        'SET custom.null TO DEFAULT;',
+      );
+    });
+
+    test(
+        'when build is called with nested RuntimeParameters then nested SQL is included.',
+        () {
+      var params = MapRuntimeParameters({
+        'outer.key': 'outer',
+        'nested': MapRuntimeParameters({'nested.key': 'nested'}),
+      });
+
+      var result = params.build();
+
+      expect(result, contains("SET outer.key = 'outer';"));
+      expect(result, contains("SET nested.key = 'nested';"));
+    });
+
+    test('when build is called with isLocal true then LOCAL is included.', () {
+      var params = MapRuntimeParameters({'custom.key': 1});
+
+      var result = params.build(isLocal: true);
+
+      expect(result, 'SET LOCAL custom.key = 1;');
+    });
+
+    test('when buildCheckValues is called then SELECT statement is correct.',
+        () {
+      var params = MapRuntimeParameters({
+        'a': 1,
+        'b': 'x',
+      });
+      var result = params.buildCheckValues();
+      expect(
+        result,
+        "SELECT current_setting('a', true) as a, current_setting('b', true) as b;",
+      );
+    });
+  });
 }
 
 // Mock classes for testing RuntimeParameters behavior
