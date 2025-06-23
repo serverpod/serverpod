@@ -57,6 +57,7 @@ class InternalServerpodSession extends Session {
     required this.rollbackDatabase,
     required bool isDatabaseEnabled,
     TransactionManager? transactionManager,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) {
     if (!isDatabaseEnabled) {
       this.transactionManager = null;
@@ -70,6 +71,7 @@ class InternalServerpodSession extends Session {
       super.db,
       rollbackDatabase,
       localTransactionManager,
+      runtimeParametersBuilder,
     );
 
     this.transactionManager = localTransactionManager;
@@ -177,6 +179,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
       rollbackDatabase: rollbackDatabase,
       transactionManager: transactionManager,
       isDatabaseEnabled: isDatabaseEnabled,
+      runtimeParametersBuilder: _serverpod.runtimeParametersBuilder,
     );
   }
 }

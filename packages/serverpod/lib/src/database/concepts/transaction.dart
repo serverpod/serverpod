@@ -36,6 +36,9 @@ abstract interface class Transaction {
   /// ]);
   /// ```
   Future<void> setRuntimeParameters(RuntimeParametersListBuilder builder);
+
+  /// All locally applied runtime parameters.
+  Map<String, dynamic> get runtimeParameters;
 }
 
 /// Isolation levels for transactions.

@@ -16,6 +16,9 @@ class MockTransaction implements Transaction {
   Future<void> setRuntimeParameters(RuntimeParametersListBuilder builder) {
     throw UnimplementedError();
   }
+
+  @override
+  Map<String, dynamic> runtimeParameters = {};
 }
 
 void main() async {

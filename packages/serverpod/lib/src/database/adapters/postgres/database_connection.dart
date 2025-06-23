@@ -817,6 +817,9 @@ class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
   final Session _session;
 
+  @override
+  final Map<String, dynamic> runtimeParameters = {};
+
   _PostgresTransaction(
     this.executionContext,
     this._session,
@@ -854,6 +857,7 @@ class _PostgresTransaction implements Transaction {
       for (var statement in group.buildStatements(isLocal: true)) {
         await _query(statement);
       }
+      runtimeParameters.addAll(group.options);
     }
   }
 }

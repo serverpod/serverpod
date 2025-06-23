@@ -1,3 +1,4 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 
 /// Base class for runtime parameters group to apply to the database.
@@ -254,3 +255,14 @@ class RuntimeParametersBuilder {
 typedef RuntimeParametersListBuilder = List<RuntimeParameters> Function(
   RuntimeParametersBuilder params,
 );
+
+/// Extension to add vector specific utilities to the database.
+extension VectorDatabase on Database {
+  /// Ensures that the vector extension is loaded in the database.
+  /// This is useful to ensure that vector runtime parameters default values
+  /// are available. Otherwise, if parameters are queried before the extension
+  /// is loaded, they will return null, making the behavior unpredictable.
+  Future<void> ensureVectorLoaded() {
+    return unsafeQuery("SELECT '[1, 2, 3]'::vector AS vec");
+  }
+}
