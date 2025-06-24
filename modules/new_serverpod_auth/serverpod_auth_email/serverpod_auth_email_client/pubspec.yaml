@@ -1,12 +1,12 @@
 name: serverpod_auth_email_client
 description: Serverpod email authentication endpoint client module.
-version: 2.8.0
+version: 2.9.0
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod_client: 2.8.0
+  serverpod_client: 2.9.0
 
 dependency_overrides:
   serverpod_auth_email_account_client:

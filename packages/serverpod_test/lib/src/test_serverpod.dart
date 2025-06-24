@@ -57,6 +57,7 @@ class InternalServerpodSession extends Session {
     required this.rollbackDatabase,
     required bool isDatabaseEnabled,
     TransactionManager? transactionManager,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) {
     if (!isDatabaseEnabled) {
       this.transactionManager = null;
@@ -70,6 +71,7 @@ class InternalServerpodSession extends Session {
       super.db,
       rollbackDatabase,
       localTransactionManager,
+      runtimeParametersBuilder,
     );
 
     this.transactionManager = localTransactionManager;
@@ -114,6 +116,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required ServerpodLoggingMode? serverpodLoggingMode,
     required String? runMode,
     ExperimentalFeatures? experimentalFeatures,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
@@ -129,6 +132,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
               serializationManager,
               endpoints,
               experimentalFeatures: experimentalFeatures,
+              runtimeParametersBuilder: runtimeParametersBuilder,
             );
             endpoints.initializeEndpoints(serverpod.server);
             return serverpod;
@@ -175,6 +179,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
       rollbackDatabase: rollbackDatabase,
       transactionManager: transactionManager,
       isDatabaseEnabled: isDatabaseEnabled,
+      runtimeParametersBuilder: _serverpod.runtimeParametersBuilder,
     );
   }
 }

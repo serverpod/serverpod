@@ -8,6 +8,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
@@ -816,6 +817,9 @@ class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
   final Session _session;
 
+  @override
+  final Map<String, dynamic> runtimeParameters = {};
+
   _PostgresTransaction(
     this.executionContext,
     this._session,
@@ -842,6 +846,19 @@ class _PostgresTransaction implements Transaction {
     var savepointId = 'savepoint_$postgresCompatibleRandomString';
     await _query('SAVEPOINT $savepointId;');
     return _PostgresSavepoint(savepointId, this);
+  }
+
+  @override
+  Future<void> setRuntimeParameters(
+    RuntimeParametersListBuilder builder,
+  ) async {
+    final parameters = builder(RuntimeParametersBuilder());
+    for (var group in parameters) {
+      for (var statement in group.buildStatements(isLocal: true)) {
+        await _query(statement);
+      }
+      runtimeParameters.addAll(group.options);
+    }
   }
 }
 
