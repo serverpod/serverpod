@@ -5,4 +5,4 @@ export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart'
     show Protocol, AuthSessionInfo, AuthSuccess;
 export 'src/util/authentication_info_extension.dart'
-    show AuthenticationInfoUserId;
+    show AuthenticationInfoAuthSessionId;
