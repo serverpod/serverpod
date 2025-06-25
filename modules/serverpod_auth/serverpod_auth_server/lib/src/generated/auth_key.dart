@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class AuthKey
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   AuthKey._({
     this.id,
     required this.userId,
@@ -68,7 +69,7 @@ abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
   String method;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
@@ -177,7 +178,7 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
-class AuthKeyTable extends _i1.Table {
+class AuthKeyTable extends _i1.Table<int?> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
     userId = _i1.ColumnInt(
       'userId',
@@ -227,7 +228,7 @@ class AuthKeyInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => AuthKey.t;
+  _i1.Table<int?> get table => AuthKey.t;
 }
 
 class AuthKeyIncludeList extends _i1.IncludeList {
@@ -247,7 +248,7 @@ class AuthKeyIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => AuthKey.t;
+  _i1.Table<int?> get table => AuthKey.t;
 }
 
 class AuthKeyRepository {

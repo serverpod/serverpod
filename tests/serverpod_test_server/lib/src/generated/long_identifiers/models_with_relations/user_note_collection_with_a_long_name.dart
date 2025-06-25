@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
     as _i2;
 
 abstract class UserNoteCollectionWithALongName
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UserNoteCollectionWithALongName._({
     this.id,
     required this.name,
@@ -51,7 +53,7 @@ abstract class UserNoteCollectionWithALongName
   List<_i2.UserNoteWithALongName>? notes;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +146,7 @@ class _UserNoteCollectionWithALongNameImpl
   }
 }
 
-class UserNoteCollectionWithALongNameTable extends _i1.Table {
+class UserNoteCollectionWithALongNameTable extends _i1.Table<int?> {
   UserNoteCollectionWithALongNameTable({super.tableRelation})
       : super(tableName: 'user_note_collection_with_a_long_name') {
     name = _i1.ColumnString(
@@ -219,7 +221,7 @@ class UserNoteCollectionWithALongNameInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'notes': _notes};
 
   @override
-  _i1.Table get table => UserNoteCollectionWithALongName.t;
+  _i1.Table<int?> get table => UserNoteCollectionWithALongName.t;
 }
 
 class UserNoteCollectionWithALongNameIncludeList extends _i1.IncludeList {
@@ -239,7 +241,7 @@ class UserNoteCollectionWithALongNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserNoteCollectionWithALongName.t;
+  _i1.Table<int?> get table => UserNoteCollectionWithALongName.t;
 }
 
 class UserNoteCollectionWithALongNameRepository {

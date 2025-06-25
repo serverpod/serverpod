@@ -12,14 +12,17 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
 
-abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UuidDefault
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UuidDefault._({
     this.id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
   })  : uuidDefaultRandom = uuidDefaultRandom ?? _i2.Uuid().v4obj(),
+        uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? _i2.Uuid().v7obj(),
         uuidDefaultRandomNull = uuidDefaultRandomNull ?? _i2.Uuid().v4obj(),
         uuidDefaultStr = uuidDefaultStr ??
             _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
@@ -29,6 +32,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   factory UuidDefault({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
@@ -39,6 +43,8 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       uuidDefaultRandom: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['uuidDefaultRandom']),
+      uuidDefaultRandomV7: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['uuidDefaultRandomV7']),
       uuidDefaultRandomNull: jsonSerialization['uuidDefaultRandomNull'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
@@ -61,6 +67,8 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
 
   _i1.UuidValue uuidDefaultRandom;
 
+  _i1.UuidValue uuidDefaultRandomV7;
+
   _i1.UuidValue? uuidDefaultRandomNull;
 
   _i1.UuidValue uuidDefaultStr;
@@ -68,7 +76,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   _i1.UuidValue? uuidDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UuidDefault]
   /// with some or all fields replaced by the given arguments.
@@ -76,6 +84,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   UuidDefault copyWith({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
@@ -85,6 +94,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
     return {
       if (id != null) 'id': id,
       'uuidDefaultRandom': uuidDefaultRandom.toJson(),
+      'uuidDefaultRandomV7': uuidDefaultRandomV7.toJson(),
       if (uuidDefaultRandomNull != null)
         'uuidDefaultRandomNull': uuidDefaultRandomNull?.toJson(),
       'uuidDefaultStr': uuidDefaultStr.toJson(),
@@ -98,6 +108,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
     return {
       if (id != null) 'id': id,
       'uuidDefaultRandom': uuidDefaultRandom.toJson(),
+      'uuidDefaultRandomV7': uuidDefaultRandomV7.toJson(),
       if (uuidDefaultRandomNull != null)
         'uuidDefaultRandomNull': uuidDefaultRandomNull?.toJson(),
       'uuidDefaultStr': uuidDefaultStr.toJson(),
@@ -142,12 +153,14 @@ class _UuidDefaultImpl extends UuidDefault {
   _UuidDefaultImpl({
     int? id,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
   }) : super._(
           id: id,
           uuidDefaultRandom: uuidDefaultRandom,
+          uuidDefaultRandomV7: uuidDefaultRandomV7,
           uuidDefaultRandomNull: uuidDefaultRandomNull,
           uuidDefaultStr: uuidDefaultStr,
           uuidDefaultStrNull: uuidDefaultStrNull,
@@ -160,6 +173,7 @@ class _UuidDefaultImpl extends UuidDefault {
   UuidDefault copyWith({
     Object? id = _Undefined,
     _i1.UuidValue? uuidDefaultRandom,
+    _i1.UuidValue? uuidDefaultRandomV7,
     Object? uuidDefaultRandomNull = _Undefined,
     _i1.UuidValue? uuidDefaultStr,
     Object? uuidDefaultStrNull = _Undefined,
@@ -167,6 +181,7 @@ class _UuidDefaultImpl extends UuidDefault {
     return UuidDefault(
       id: id is int? ? id : this.id,
       uuidDefaultRandom: uuidDefaultRandom ?? this.uuidDefaultRandom,
+      uuidDefaultRandomV7: uuidDefaultRandomV7 ?? this.uuidDefaultRandomV7,
       uuidDefaultRandomNull: uuidDefaultRandomNull is _i1.UuidValue?
           ? uuidDefaultRandomNull
           : this.uuidDefaultRandomNull,
@@ -178,10 +193,15 @@ class _UuidDefaultImpl extends UuidDefault {
   }
 }
 
-class UuidDefaultTable extends _i1.Table {
+class UuidDefaultTable extends _i1.Table<int?> {
   UuidDefaultTable({super.tableRelation}) : super(tableName: 'uuid_default') {
     uuidDefaultRandom = _i1.ColumnUuid(
       'uuidDefaultRandom',
+      this,
+      hasDefault: true,
+    );
+    uuidDefaultRandomV7 = _i1.ColumnUuid(
+      'uuidDefaultRandomV7',
       this,
       hasDefault: true,
     );
@@ -204,6 +224,8 @@ class UuidDefaultTable extends _i1.Table {
 
   late final _i1.ColumnUuid uuidDefaultRandom;
 
+  late final _i1.ColumnUuid uuidDefaultRandomV7;
+
   late final _i1.ColumnUuid uuidDefaultRandomNull;
 
   late final _i1.ColumnUuid uuidDefaultStr;
@@ -214,6 +236,7 @@ class UuidDefaultTable extends _i1.Table {
   List<_i1.Column> get columns => [
         id,
         uuidDefaultRandom,
+        uuidDefaultRandomV7,
         uuidDefaultRandomNull,
         uuidDefaultStr,
         uuidDefaultStrNull,
@@ -227,7 +250,7 @@ class UuidDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UuidDefault.t;
+  _i1.Table<int?> get table => UuidDefault.t;
 }
 
 class UuidDefaultIncludeList extends _i1.IncludeList {
@@ -247,7 +270,7 @@ class UuidDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UuidDefault.t;
+  _i1.Table<int?> get table => UuidDefault.t;
 }
 
 class UuidDefaultRepository {

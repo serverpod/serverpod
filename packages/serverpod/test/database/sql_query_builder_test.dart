@@ -3,14 +3,14 @@ import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
-class _TableWithoutFields extends Table {
+class _TableWithoutFields extends Table<int?> {
   _TableWithoutFields() : super(tableName: 'table');
 
   @override
   List<Column> get columns => [];
 }
 
-class _TableWithManyRelation extends Table {
+class _TableWithManyRelation extends Table<int?> {
   final String _relationAlias;
   _TableWithManyRelation(
       {required String relationAlias,
@@ -49,8 +49,8 @@ class _TableWithManyRelation extends Table {
 }
 
 void main() {
-  var citizenTable = Table(tableName: 'citizen');
-  var companyTable = Table(tableName: 'company');
+  var citizenTable = Table<int?>(tableName: 'citizen');
+  var companyTable = Table<int?>(tableName: 'company');
 
   group('Given SelectQueryBuilder', () {
     test(
@@ -225,7 +225,7 @@ void main() {
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -247,7 +247,7 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var nestedRelationTable = Table(
+      var nestedRelationTable = Table<int?>(
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -276,7 +276,7 @@ void main() {
 
     test('when all properties configured is built then output is valid SQL.',
         () {
-      var manyRelationTable = Table(
+      var manyRelationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -288,7 +288,7 @@ void main() {
           )
         ]),
       );
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -404,7 +404,7 @@ void main() {
     test(
         'when same count column with inner where appears multiple times then query includes multiple ordering by same column.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -518,7 +518,7 @@ void main() {
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -543,7 +543,7 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var nestedRelationTable = Table(
+      var nestedRelationTable = Table<int?>(
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -573,7 +573,7 @@ void main() {
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -653,7 +653,7 @@ void main() {
     test(
         'when where expression depends on relations then output includes using according to table relations.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -675,7 +675,7 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes using according to table relations.',
         () {
-      var nestedRelationTable = Table(
+      var nestedRelationTable = Table<int?>(
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
@@ -702,7 +702,7 @@ void main() {
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var relationTable = Table(
+      var relationTable = Table<int?>(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(

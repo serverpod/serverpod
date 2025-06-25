@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnBool', () {
     var columnName = 'production';
-    var column = ColumnBool(columnName, Table(tableName: 'test'));
+    var column = ColumnBool(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
 
-abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   City._({
     this.id,
     required this.name,
@@ -55,7 +57,7 @@ abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
   List<_i3.Organization>? organizations;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
@@ -165,7 +167,7 @@ class _CityImpl extends City {
   }
 }
 
-class CityTable extends _i1.Table {
+class CityTable extends _i1.Table<int?> {
   CityTable({super.tableRelation}) : super(tableName: 'city') {
     name = _i1.ColumnString(
       'name',
@@ -283,7 +285,7 @@ class CityInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => City.t;
+  _i1.Table<int?> get table => City.t;
 }
 
 class CityIncludeList extends _i1.IncludeList {
@@ -303,7 +305,7 @@ class CityIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => City.t;
+  _i1.Table<int?> get table => City.t;
 }
 
 class CityRepository {

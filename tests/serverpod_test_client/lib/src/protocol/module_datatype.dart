@@ -12,18 +12,21 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class ModuleDatatype implements _i1.SerializableModel {
   ModuleDatatype._({
     required this.model,
     required this.list,
     required this.map,
+    this.record,
   });
 
   factory ModuleDatatype({
     required _i2.ModuleClass model,
     required List<_i2.ModuleClass> list,
     required Map<String, _i2.ModuleClass> map,
+    (_i2.ModuleClass,)? record,
   }) = _ModuleDatatypeImpl;
 
   factory ModuleDatatype.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,6 +40,10 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
             k as String,
             _i2.ModuleClass.fromJson((v as Map<String, dynamic>)),
           )),
+      record: jsonSerialization['record'] == null
+          ? null
+          : _i3.Protocol().deserialize<(_i2.ModuleClass,)?>(
+              (jsonSerialization['record'] as Map<String, dynamic>)),
     );
   }
 
@@ -46,6 +53,8 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
 
   Map<String, _i2.ModuleClass> map;
 
+  (_i2.ModuleClass,)? record;
+
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -53,6 +62,7 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
     _i2.ModuleClass? model,
     List<_i2.ModuleClass>? list,
     Map<String, _i2.ModuleClass>? map,
+    (_i2.ModuleClass,)? record,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -60,6 +70,7 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
       'model': model.toJson(),
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
+      if (record != null) 'record': _i3.mapRecordToJson(record),
     };
   }
 
@@ -69,15 +80,19 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
   }
 }
 
+class _Undefined {}
+
 class _ModuleDatatypeImpl extends ModuleDatatype {
   _ModuleDatatypeImpl({
     required _i2.ModuleClass model,
     required List<_i2.ModuleClass> list,
     required Map<String, _i2.ModuleClass> map,
+    (_i2.ModuleClass,)? record,
   }) : super._(
           model: model,
           list: list,
           map: map,
+          record: record,
         );
 
   /// Returns a shallow copy of this [ModuleDatatype]
@@ -88,6 +103,7 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
     _i2.ModuleClass? model,
     List<_i2.ModuleClass>? list,
     Map<String, _i2.ModuleClass>? map,
+    Object? record = _Undefined,
   }) {
     return ModuleDatatype(
       model: model ?? this.model.copyWith(),
@@ -101,6 +117,11 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
                     key0,
                     value0.copyWith(),
                   )),
+      record: record is (_i2.ModuleClass,)?
+          ? record
+          : this.record == null
+              ? null
+              : (this.record!.$1.copyWith(),),
     );
   }
 }

@@ -1,9 +1,10 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -98,7 +99,7 @@ void main() {
       var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index = definition.indexes.first;
       expect(index.name, 'example_index');
@@ -132,7 +133,7 @@ void main() {
         expect(errors, isEmpty);
       });
 
-      var definition = definitions.firstOrNull as ClassDefinition?;
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
       test('then the index definition contains the fields of the index.', () {
         var index = definition?.indexes.first;
         var field = index?.fields.first;
@@ -177,7 +178,7 @@ void main() {
         expect(errors, isEmpty);
       });
 
-      var definition = definitions.firstOrNull as ClassDefinition?;
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
       test('then index definition contains the first field.', () {
         var index = definition?.indexes.first;
         var indexFields = index?.fields;
@@ -234,7 +235,7 @@ void main() {
       var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
       var index1 = definition.indexes.first;
       var index2 = definition.indexes.last;
@@ -276,7 +277,8 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "invalidKey" property is not allowed for example_index type. Valid keys are {fields, type, unique}.',
+      'The "invalidKey" property is not allowed for example_index type. Valid '
+      'keys are {fields, type, unique, distanceFunction, parameters}.',
     );
   });
 }

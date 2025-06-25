@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -32,6 +33,17 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      return _idTypeDefaultValidation(
+        definition.tableName!,
+        field.type,
+        value,
+        span,
+      );
+    }
+
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
         return _dateDateValidation(value, span);
@@ -54,6 +66,57 @@ class DefaultValueRestriction extends ValueRestriction {
       case DefaultValueAllowedType.uri:
         return _uriValueValidation(value, span);
     }
+  }
+
+  List<SourceSpanSeverityException> _idTypeDefaultValidation(
+    String tableName,
+    TypeDefinition idType,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    var typeClassName = idType.className;
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((value == defaultIntSerial) && (key == Keyword.defaultModelKey)) {
+      return [
+        SourceSpanSeverityException(
+          'The default value "$defaultIntSerial" can not be set for the '
+          '"int" $defaultPrimaryKeyName field using the "$key" keyword. '
+          'Use the "${Keyword.defaultPersistKey}" keyword instead.',
+          span,
+        ),
+      ];
+    }
+
+    if ((key == Keyword.defaultModelKey) && idType.nullable) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$defaultPrimaryKeyName" field is nullable, but the keyword '
+          '"${Keyword.defaultModelKey}" ensures that it will always have a '
+          'value, unless explicitly removed. Consider making it non-nullable '
+          'to avoid unnecessary null checks.',
+          span,
+          severity: SourceSpanSeverity.hint,
+        ),
+      );
+    }
+
+    var supportedDefaults = SupportedIdType.all
+        .where((e) => e.type.className == typeClassName)
+        .map((e) => e.defaultValue);
+
+    if (!supportedDefaults.contains(value)) {
+      var options = supportedDefaults.map((e) => '"$e"').join(', ');
+      errors.add(
+        SourceSpanSeverityException(
+          'The default value "$value" is not supported for the id type '
+          '"$typeClassName". Valid options are: $options.',
+          span,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> _dateDateValidation(
@@ -247,7 +310,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
+        'The "$key" value must be "random", "random_v7" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
 
     if (value is! String || value.isEmpty) {
       errors.add(
@@ -259,11 +322,12 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
-        !value.startsWith("'") &&
-        !value.startsWith('"');
+    if ((value == defaultUuidValueRandom) ||
+        (value == defaultUuidValueRandomV7)) {
+      return [];
+    }
 
-    if (invalidDefaultValue) {
+    if (!value.startsWith("'") && !value.startsWith('"')) {
       errors.add(
         SourceSpanSeverityException(
           invalidValueError,
@@ -272,8 +336,6 @@ class DefaultValueRestriction extends ValueRestriction {
       );
       return errors;
     }
-
-    if (value == defaultUuidValueRandom) return [];
 
     bool validSingleQuote = isValidSingleQuote(value);
     bool validDoubleQuote = isValidDoubleQuote(value);

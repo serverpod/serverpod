@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefaultModel
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   IntDefaultModel._({
     this.id,
     int? intDefaultModel,
@@ -46,7 +46,7 @@ abstract class IntDefaultModel
   int intDefaultModelNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [IntDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -134,7 +134,7 @@ class _IntDefaultModelImpl extends IntDefaultModel {
   }
 }
 
-class IntDefaultModelTable extends _i1.Table {
+class IntDefaultModelTable extends _i1.Table<int?> {
   IntDefaultModelTable({super.tableRelation})
       : super(tableName: 'int_default_model') {
     intDefaultModel = _i1.ColumnInt(
@@ -166,7 +166,7 @@ class IntDefaultModelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => IntDefaultModel.t;
+  _i1.Table<int?> get table => IntDefaultModel.t;
 }
 
 class IntDefaultModelIncludeList extends _i1.IncludeList {
@@ -186,7 +186,7 @@ class IntDefaultModelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => IntDefaultModel.t;
+  _i1.Table<int?> get table => IntDefaultModel.t;
 }
 
 class IntDefaultModelRepository {

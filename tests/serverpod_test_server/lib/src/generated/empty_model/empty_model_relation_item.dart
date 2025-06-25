@@ -12,11 +12,11 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class EmptyModelRelationItem
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
-  });
+  }) : _relationEmptyModelItemsRelationEmptyModelId = null;
 
   factory EmptyModelRelationItem({
     int? id,
@@ -25,9 +25,12 @@ abstract class EmptyModelRelationItem
 
   factory EmptyModelRelationItem.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return EmptyModelRelationItem(
+    return EmptyModelRelationItemImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          jsonSerialization['_relationEmptyModelItemsRelationEmptyModelId']
+              as int?,
     );
   }
 
@@ -40,10 +43,10 @@ abstract class EmptyModelRelationItem
 
   String name;
 
-  int? _relationEmptyModelItemsRelationEmptyModelId;
+  final int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
@@ -120,9 +123,11 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
     Object? id = _Undefined,
     String? name,
   }) {
-    return EmptyModelRelationItem(
+    return EmptyModelRelationItemImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          this._relationEmptyModelItemsRelationEmptyModelId,
     );
   }
 }
@@ -131,8 +136,10 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   EmptyModelRelationItemImplicit._({
     int? id,
     required String name,
-    this.$_relationEmptyModelItemsRelationEmptyModelId,
-  }) : super(
+    int? $_relationEmptyModelItemsRelationEmptyModelId,
+  })  : _relationEmptyModelItemsRelationEmptyModelId =
+            $_relationEmptyModelItemsRelationEmptyModelId,
+        super(
           id: id,
           name: name,
         );
@@ -149,20 +156,11 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
     );
   }
 
-  int? $_relationEmptyModelItemsRelationEmptyModelId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_relationEmptyModelItemsRelationEmptyModelId':
-          $_relationEmptyModelItemsRelationEmptyModelId
-    });
-    return jsonMap;
-  }
+  final int? _relationEmptyModelItemsRelationEmptyModelId;
 }
 
-class EmptyModelRelationItemTable extends _i1.Table {
+class EmptyModelRelationItemTable extends _i1.Table<int?> {
   EmptyModelRelationItemTable({super.tableRelation})
       : super(tableName: 'empty_model_relation_item') {
     name = _i1.ColumnString(
@@ -185,6 +183,12 @@ class EmptyModelRelationItemTable extends _i1.Table {
         name,
         $_relationEmptyModelItemsRelationEmptyModelId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class EmptyModelRelationItemInclude extends _i1.IncludeObject {
@@ -194,7 +198,7 @@ class EmptyModelRelationItemInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int?> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
@@ -214,7 +218,7 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmptyModelRelationItem.t;
+  _i1.Table<int?> get table => EmptyModelRelationItem.t;
 }
 
 class EmptyModelRelationItemRepository {

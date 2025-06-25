@@ -1,8 +1,9 @@
-import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
-import 'package:test/test.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:test/test.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -122,7 +123,7 @@ fields:
   });
 
   test(
-      'Given a model with a severe error (invalid syntax), when validating all, then hasSeverErrors returns true',
+      'Given a model with a severe error (invalid syntax), when validating all, then hasSevereErrors returns true',
       () {
     var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
@@ -132,7 +133,7 @@ fields:
     );
 
     statefulAnalyzer.validateAll();
-    expect(statefulAnalyzer.hasSeverErrors, true);
+    expect(statefulAnalyzer.hasSevereErrors, true);
   });
 
   test(
@@ -307,5 +308,31 @@ and neither is this line
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
+  });
+
+  test(
+      'Given a yaml model with a field type wrapped in (), when parsing, then an error should be returned',
+      () {
+    var yamlSource = ModelSourceBuilder().withFileName('example').withYaml(
+      '''
+      class: Example
+      fields:
+        name: (String)
+      ''',
+    ).build();
+
+    CodeGenerationCollector? reportedErrors;
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [yamlSource], (uri, errors) {
+      reportedErrors = errors;
+    });
+
+    statefulAnalyzer.validateAll();
+
+    expect(reportedErrors?.errors, hasLength(1));
+    expect(
+      reportedErrors?.errors.single.message,
+      contains('invalid datatype "(String)"'),
+    );
   });
 }

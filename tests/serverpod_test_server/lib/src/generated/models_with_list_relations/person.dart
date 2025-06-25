@@ -8,17 +8,19 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
 
-abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Person._({
     this.id,
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityCitizensCityId = null;
 
   factory Person({
     int? id,
@@ -28,7 +30,7 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
   }) = _PersonImpl;
 
   factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Person(
+    return PersonImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -36,6 +38,7 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
           ? null
           : _i2.Organization.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
     );
   }
 
@@ -52,10 +55,10 @@ abstract class Person implements _i1.TableRow, _i1.ProtocolSerialization {
 
   _i2.Organization? organization;
 
-  int? _cityCitizensCityId;
+  final int? _cityCitizensCityId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +147,7 @@ class _PersonImpl extends Person {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return Person(
+    return PersonImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -152,6 +155,7 @@ class _PersonImpl extends Person {
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
+      $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }
 }
@@ -162,8 +166,9 @@ class PersonImplicit extends _PersonImpl {
     required String name,
     int? organizationId,
     _i2.Organization? organization,
-    this.$_cityCitizensCityId,
-  }) : super(
+    int? $_cityCitizensCityId,
+  })  : _cityCitizensCityId = $_cityCitizensCityId,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -183,17 +188,11 @@ class PersonImplicit extends _PersonImpl {
     );
   }
 
-  int? $_cityCitizensCityId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
-    return jsonMap;
-  }
+  final int? _cityCitizensCityId;
 }
 
-class PersonTable extends _i1.Table {
+class PersonTable extends _i1.Table<int?> {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
     name = _i1.ColumnString(
       'name',
@@ -239,6 +238,13 @@ class PersonTable extends _i1.Table {
       ];
 
   @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+        organizationId,
+      ];
+
+  @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'organization') {
       return organization;
@@ -258,7 +264,7 @@ class PersonInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table get table => Person.t;
+  _i1.Table<int?> get table => Person.t;
 }
 
 class PersonIncludeList extends _i1.IncludeList {
@@ -278,7 +284,7 @@ class PersonIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Person.t;
+  _i1.Table<int?> get table => Person.t;
 }
 
 class PersonRepository {

@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class _RevokedAuthenticationHandler {
@@ -24,7 +27,7 @@ class _RevokedAuthenticationHandler {
         localAuthenticationInfo != null) {
       session.messages.removeListener(
         MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.userId,
+          localAuthenticationInfo.userIdentifier,
         ),
         localRevokedAuthenticationCallback,
       );
@@ -73,7 +76,7 @@ class _RevokedAuthenticationHandler {
 
     session.messages.addListener(
       MessageCentralServerpodChannels.revokedAuthentication(
-        authenticationInfo.userId,
+        authenticationInfo.userIdentifier,
       ),
       localRevokedAuthenticationCallback,
     );
@@ -135,6 +138,10 @@ typedef _OnInputStreamClosed = void Function(
 @internal
 class MethodStreamManager {
   static const Duration _closeTimeout = Duration(seconds: 6);
+
+  /// The originating HTTP request.
+  final HttpRequest? httpRequest;
+
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
@@ -144,6 +151,7 @@ class MethodStreamManager {
   final _OnInputStreamClosed? _onInputStreamClosed;
 
   MethodStreamManager({
+    required this.httpRequest,
     _OnInputStreamClosed? onInputStreamClosed,
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
@@ -505,6 +513,15 @@ class MethodStreamManager {
         outputController.add(result);
       }
     } catch (e, stackTrace) {
+      session.serverpod.internalSubmitEvent(
+        ExceptionEvent(e, stackTrace),
+        space: OriginSpace.application,
+        context: contextFromSession(
+          session,
+          httpRequest: httpRequest,
+        ),
+      );
+
       _updateCloseReason(streamKey, CloseReason.error);
       outputController.addError(e, stackTrace);
     }
@@ -569,13 +586,22 @@ class MethodStreamManager {
         streamParams,
       );
     } catch (e, stackTrace) {
+      session.serverpod.internalSubmitEvent(
+        ExceptionEvent(e, stackTrace),
+        space: OriginSpace.application,
+        context: contextFromSession(
+          session,
+          httpRequest: httpRequest,
+        ),
+      );
+
       outputController.addError(e, stackTrace);
       return;
     }
 
     outputController.addStream(methodStream).whenComplete(
           // The stream complete message is sent as an error to circumvent
-          // branching when passing along stream events to the the handler.
+          // branching when passing along stream events to the handler.
           () => outputController.addError(_StreamComplete()),
         );
   }

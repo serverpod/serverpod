@@ -10,15 +10,25 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../simple_data.dart' as _i2;
 
 abstract class ScopeNoneFields
-    implements _i1.TableRow, _i1.ProtocolSerialization {
-  ScopeNoneFields._({this.id});
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  ScopeNoneFields._({this.id})
+      : _name = null,
+        _object = null;
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
 
   factory ScopeNoneFields.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ScopeNoneFields(id: jsonSerialization['id'] as int?);
+    return ScopeNoneFieldsImplicit._(
+      id: jsonSerialization['id'] as int?,
+      $name: jsonSerialization['name'] as String?,
+      $object: jsonSerialization['object'] == null
+          ? null
+          : _i2.SimpleData.fromJson(
+              (jsonSerialization['object'] as Map<String, dynamic>)),
+    );
   }
 
   static final t = ScopeNoneFieldsTable();
@@ -28,10 +38,12 @@ abstract class ScopeNoneFields
   @override
   int? id;
 
-  String? _name;
+  final String? _name;
+
+  final _i2.SimpleData? _object;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
@@ -42,6 +54,7 @@ abstract class ScopeNoneFields
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
+      if (_object != null) 'object': _object.toJson(),
     };
   }
 
@@ -90,52 +103,68 @@ class _ScopeNoneFieldsImpl extends ScopeNoneFields {
   @_i1.useResult
   @override
   ScopeNoneFields copyWith({Object? id = _Undefined}) {
-    return ScopeNoneFields(id: id is int? ? id : this.id);
+    return ScopeNoneFieldsImplicit._(
+      id: id is int? ? id : this.id,
+      $name: this._name,
+      $object: this._object?.copyWith(),
+    );
   }
 }
 
 class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   ScopeNoneFieldsImplicit._({
     int? id,
-    this.$name,
-  }) : super(id: id);
+    String? $name,
+    _i2.SimpleData? $object,
+  })  : _name = $name,
+        _object = $object,
+        super(id: id);
 
   factory ScopeNoneFieldsImplicit(
     ScopeNoneFields scopeNoneFields, {
     String? $name,
+    _i2.SimpleData? $object,
   }) {
     return ScopeNoneFieldsImplicit._(
       id: scopeNoneFields.id,
       $name: $name,
+      $object: $object,
     );
   }
 
-  String? $name;
+  @override
+  final String? _name;
 
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({'name': $name});
-    return jsonMap;
-  }
+  final _i2.SimpleData? _object;
 }
 
-class ScopeNoneFieldsTable extends _i1.Table {
+class ScopeNoneFieldsTable extends _i1.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
       : super(tableName: 'scope_none_fields') {
     $name = _i1.ColumnString(
       'name',
       this,
     );
+    $object = _i1.ColumnSerializable(
+      'object',
+      this,
+    );
   }
 
   late final _i1.ColumnString $name;
+
+  late final _i1.ColumnSerializable $object;
 
   @override
   List<_i1.Column> get columns => [
         id,
         $name,
+        $object,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [id];
 }
 
 class ScopeNoneFieldsInclude extends _i1.IncludeObject {
@@ -145,7 +174,7 @@ class ScopeNoneFieldsInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ScopeNoneFields.t;
+  _i1.Table<int?> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
@@ -165,7 +194,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ScopeNoneFields.t;
+  _i1.Table<int?> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsRepository {

@@ -1,0 +1,52 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_new_auth_test_server
+description: Test server for new Serverpod authentication modules
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_email_server: SERVERPOD_VERSION
+  serverpod_auth_profile_server: SERVERPOD_VERSION
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_auth_email_account_server: SERVERPOD_VERSION
+  serverpod_auth_session_server: SERVERPOD_VERSION
+  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_test: SERVERPOD_VERSION
+  test: ^1.24.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_email_account_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
+  serverpod_auth_email_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
+  serverpod_auth_profile_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+  serverpod_auth_session_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
+  serverpod_auth_user_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+  serverpod_cli:
+    path: ../../../tools/serverpod_cli
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_cloud_storage_s3:
+    path: ../../../integrations/serverpod_cloud_storage_s3
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test

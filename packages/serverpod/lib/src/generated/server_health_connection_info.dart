@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
 abstract class ServerHealthConnectionInfo
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -77,7 +77,7 @@ abstract class ServerHealthConnectionInfo
   int granularity;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
@@ -193,7 +193,7 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
   }
 }
 
-class ServerHealthConnectionInfoTable extends _i1.Table {
+class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
   ServerHealthConnectionInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_health_connection_info') {
     serverId = _i1.ColumnString(
@@ -260,7 +260,7 @@ class ServerHealthConnectionInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ServerHealthConnectionInfo.t;
+  _i1.Table<int?> get table => ServerHealthConnectionInfo.t;
 }
 
 class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
@@ -280,7 +280,7 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ServerHealthConnectionInfo.t;
+  _i1.Table<int?> get table => ServerHealthConnectionInfo.t;
 }
 
 class ServerHealthConnectionInfoRepository {

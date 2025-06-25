@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -66,7 +66,7 @@ abstract class FutureCallEntry
   String? identifier;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
@@ -177,7 +177,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
   }
 }
 
-class FutureCallEntryTable extends _i1.Table {
+class FutureCallEntryTable extends _i1.Table<int?> {
   FutureCallEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_future_call') {
     name = _i1.ColumnString(
@@ -235,7 +235,7 @@ class FutureCallEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => FutureCallEntry.t;
+  _i1.Table<int?> get table => FutureCallEntry.t;
 }
 
 class FutureCallEntryIncludeList extends _i1.IncludeList {
@@ -255,7 +255,7 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => FutureCallEntry.t;
+  _i1.Table<int?> get table => FutureCallEntry.t;
 }
 
 class FutureCallEntryRepository {

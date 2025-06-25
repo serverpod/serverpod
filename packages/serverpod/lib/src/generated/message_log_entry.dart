@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
 abstract class MessageLogEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -98,7 +98,7 @@ abstract class MessageLogEntry
   int order;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -242,7 +242,7 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
-class MessageLogEntryTable extends _i1.Table {
+class MessageLogEntryTable extends _i1.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_message_log') {
     sessionLogId = _i1.ColumnInt(
@@ -342,7 +342,7 @@ class MessageLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int?> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryIncludeList extends _i1.IncludeList {
@@ -362,7 +362,7 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int?> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryRepository {

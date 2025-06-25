@@ -13,14 +13,14 @@ environment:
 dependencies:
   serverpod: SERVERPOD_VERSION
   amazon_cognito_identity_dart_2: ^3.0.0
-  http: '>=1.0.0 <2.0.0'
+  http: '>=1.1.0 <2.0.0'
   built_collection: ^5.1.1
   built_value: ^8.4.4
   path: ^1.8.2
   xml2json: ^6.0.0
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: '>=3.0.0 <7.0.0'
 
 dependency_overrides:
   serverpod:

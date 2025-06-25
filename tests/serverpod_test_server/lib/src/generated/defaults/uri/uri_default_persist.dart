@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UriDefaultPersist._({
     this.id,
     this.uriDefaultPersist,
@@ -43,7 +43,7 @@ abstract class UriDefaultPersist
   Uri? uriDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -128,7 +128,7 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }
 }
 
-class UriDefaultPersistTable extends _i1.Table {
+class UriDefaultPersistTable extends _i1.Table<int?> {
   UriDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uri_default_persist') {
     uriDefaultPersist = _i1.ColumnUri(
@@ -154,7 +154,7 @@ class UriDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UriDefaultPersist.t;
+  _i1.Table<int?> get table => UriDefaultPersist.t;
 }
 
 class UriDefaultPersistIncludeList extends _i1.IncludeList {
@@ -174,7 +174,7 @@ class UriDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UriDefaultPersist.t;
+  _i1.Table<int?> get table => UriDefaultPersist.t;
 }
 
 class UriDefaultPersistRepository {

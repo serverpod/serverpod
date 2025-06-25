@@ -14,7 +14,7 @@ import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EnumDefaultPersist._({
     this.id,
     this.byNameEnumDefaultPersist,
@@ -55,7 +55,7 @@ abstract class EnumDefaultPersist
   _i3.ByIndexEnum? byIndexEnumDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -151,7 +151,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }
 }
 
-class EnumDefaultPersistTable extends _i1.Table {
+class EnumDefaultPersistTable extends _i1.Table<int?> {
   EnumDefaultPersistTable({super.tableRelation})
       : super(tableName: 'enum_default_persist') {
     byNameEnumDefaultPersist = _i1.ColumnEnum(
@@ -187,7 +187,7 @@ class EnumDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EnumDefaultPersist.t;
+  _i1.Table<int?> get table => EnumDefaultPersist.t;
 }
 
 class EnumDefaultPersistIncludeList extends _i1.IncludeList {
@@ -207,7 +207,7 @@ class EnumDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EnumDefaultPersist.t;
+  _i1.Table<int?> get table => EnumDefaultPersist.t;
 }
 
 class EnumDefaultPersistRepository {

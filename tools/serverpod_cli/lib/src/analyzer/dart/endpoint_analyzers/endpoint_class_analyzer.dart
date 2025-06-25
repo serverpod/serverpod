@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_shared/annotations.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/element_ignore_endpoint_extension.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -30,19 +30,25 @@ abstract class EndpointClassAnalyzer {
     return '{$filePath}_${element.name}';
   }
 
-  /// Returns true if the [ClassElement] is an endpoint class that should
+  /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
-    if (element.supertype?.element.name != 'Endpoint') return false;
-    bool markedAsIgnored = element.metadata.any((annotation) {
-      var constant = annotation.computeConstantValue();
-      var type = constant?.type;
-      var typeName = type?.element?.name;
-      return typeName == ServerpodAnnotationClassNames.ignoreEndpoint;
-    });
-    if (markedAsIgnored) return false;
+    if (!element.isConstructable) return false;
 
-    return true;
+    if (element.markedAsIgnored) return false;
+
+    return isEndpointInterface(element);
+  }
+
+  /// Returns `true` if the class extends the Serverpod `Endpoint` base class.
+  ///
+  /// The class itself might still need to be ignored as an endpoint, because
+  /// it could be marked `abstract` or `@doNotGenerate`.
+  ///
+  /// To check whether and endpoint class should actually be implemented
+  /// by the server use [isEndpointClass].
+  static bool isEndpointInterface(ClassElement element) {
+    return element.allSupertypes.any((s) => s.element.name == 'Endpoint');
   }
 
   /// Validates the [ClassElement] and returns a list of errors.

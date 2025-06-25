@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
@@ -156,7 +157,21 @@ class Restrictions {
       ];
     }
 
-    var reservedClassNames = const {'List', 'Set', 'Map', 'String', 'DateTime'};
+    const reservedClassNames = {
+      'List',
+      'Set',
+      'Map',
+      'String',
+      'DateTime',
+      'Client',
+      'Endpoints',
+      'Protocol',
+      'Vector',
+      'HalfVector',
+      'SparseVector',
+      'Bit',
+      '_Record',
+    };
     if (reservedClassNames.contains(className)) {
       return [
         SourceSpanSeverityException(
@@ -259,7 +274,7 @@ class Restrictions {
 
     var currentModel = parsedModels.findByTableName(tableName);
 
-    if (currentModel is ClassDefinition) {
+    if (currentModel is ModelClassDefinition) {
       var ancestorWithTable = _findTableClassInParentClasses(currentModel);
 
       if (ancestorWithTable != null) {
@@ -311,7 +326,7 @@ class Restrictions {
     var currentModel =
         parsedModels.findByClassName(documentDefinition!.className);
 
-    if (currentModel is ClassDefinition) {
+    if (currentModel is ModelClassDefinition) {
       var ancestorServerOnlyClass =
           _findServerOnlyClassInParentClasses(currentModel);
 
@@ -461,16 +476,7 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ClassDefinition && def.tableName != null && fieldName == 'id') {
-      return [
-        SourceSpanSeverityException(
-          'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
-          span,
-        )
-      ];
-    }
-
-    if (def is ClassDefinition &&
+    if (def is ModelClassDefinition &&
         def.tableName != null &&
         _databaseModelReservedFieldNames.contains(fieldName)) {
       return [
@@ -499,10 +505,10 @@ class Restrictions {
       ];
     }
 
-    if (def is ClassDefinition) {
+    if (def is ModelClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is ClassDefinition) {
+      if (currentModel is ModelClassDefinition) {
         var fieldWithDuplicatedName =
             _findFieldWithDuplicatedName(currentModel, fieldName);
         var parentClassWithDuplicatedFieldName =
@@ -530,7 +536,7 @@ class Restrictions {
   ) {
     var classDefinition = documentDefinition;
 
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
@@ -625,7 +631,7 @@ class Restrictions {
     if (fieldName is! String) return [];
 
     var classDefinition = documentDefinition;
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     var foreignKeyField = classDefinition.findField(fieldName);
     if (foreignKeyField == null) {
@@ -699,7 +705,7 @@ class Restrictions {
 
   bool _isOneToOneObjectRelation(
     SerializableModelFieldDefinition? field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     if (field == null) return false;
 
@@ -726,40 +732,114 @@ class Restrictions {
     return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
 
+  List<SourceSpanSeverityException> validateIndexUniqueKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "unique" property cannot be used with vector indexes of '
+          'type "${index.type}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexDistanceFunctionKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.distanceFunction}" property can only be used with vector '
+          'indexes of type "${VectorIndexType.values.map((e) => e.name).join(", ")}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexParametersKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isVectorIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.parameters}" property can only be used with vector indexes '
+          'of type "${VectorIndexType.values.map((e) => e.name).join(", ")}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateRelationInterdependencies(
     String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {
-    var errors = <SourceSpanSeverityException>[];
-    var definition = documentDefinition;
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return const [];
 
-    if (definition is! ClassDefinition) return errors;
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null) return const [];
 
-    var field = definition.findField(parentNodeName);
-    if (field == null) return errors;
-    var type = field.type.className;
-
-    if (AnalyzeChecker.isIdType(type) &&
-        !AnalyzeChecker.isParentDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "parent" property must be defined on id fields.',
-        span,
-      ));
+    if (field.type.isIdType && !AnalyzeChecker.isParentDefined(content)) {
+      return [
+        SourceSpanSeverityException(
+          'The "parent" property must be defined on id fields.',
+          span,
+        )
+      ];
     }
 
-    if (!AnalyzeChecker.isFieldDefined(content)) {
-      var isOptional = AnalyzeChecker.isOptionalDefined(content);
-      var isServerOnly = field.scope == ModelFieldScopeDefinition.serverOnly;
-      if (isServerOnly && !isOptional) {
-        errors.add(SourceSpanSeverityException(
+    var relation = field.relation;
+    if (relation is! ObjectRelationDefinition) return const [];
+
+    if (!AnalyzeChecker.isFieldDefined(content) &&
+        !classDefinition.serverOnly &&
+        field.scope == ModelFieldScopeDefinition.serverOnly &&
+        !relation.nullableRelation) {
+      return [
+        SourceSpanSeverityException(
           'The relation with scope "${field.scope.name}" requires the relation to be optional.',
           span,
-        ));
-      }
+        )
+      ];
     }
 
-    return errors;
+    return const [];
   }
 
   List<SourceSpanSeverityException> validateParentName(
@@ -779,7 +859,7 @@ class Restrictions {
     }
 
     var definition = documentDefinition;
-    if (definition is ClassDefinition && definition.tableName == null) {
+    if (definition is ModelClassDefinition && definition.tableName == null) {
       return [
         SourceSpanSeverityException(
           'The "table" property must be defined in the class to set a parent on a field.',
@@ -832,6 +912,41 @@ class Restrictions {
     if (field == null) return errors;
 
     errors.addAll(_validateFieldDataType(field.type, span));
+
+    if ((classDefinition is ModelClassDefinition) &&
+        (classDefinition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      var typeClassName = field.type.className;
+      var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
+
+      if (!supportedTypes.contains(typeClassName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" is not a valid id type. Valid options '
+            'are: ${supportedTypes.toSet().join(', ')}.',
+            span,
+          ),
+        );
+      } else if (!field.hasDefaults) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" must have a default value. Use '
+            'either the "${Keyword.defaultModelKey}" key or the '
+            '"${Keyword.defaultPersistKey}" key to set it.',
+            span,
+          ),
+        );
+      } else if (field.type.className == 'int' && !field.type.nullable) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "$typeClassName" must be nullable for the field '
+            '"$parentNodeName". Use the "?" operator to make it nullable '
+            '(e.g. $parentNodeName: $typeClassName?).',
+            span,
+          ),
+        );
+      }
+    }
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -899,11 +1014,29 @@ class Restrictions {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
         'The field has an invalid datatype "$typeName".',
-        span?.subspan(
-          span.text.indexOf(typeName),
-          span.text.indexOf(typeName) + typeName.length,
-        ),
+        span?.text.contains(typeName) == true
+            ? span?.subspan(
+                span.text.indexOf(typeName),
+                span.text.indexOf(typeName) + typeName.length,
+              )
+            : span,
       ));
+    }
+
+    if (fieldType.isVectorType) {
+      if (fieldType.vectorDimension == null) {
+        errors.add(SourceSpanSeverityException(
+          'The vector type must have an integer dimension defined between '
+          'parentheses after the type name (e.g. Vector(512)).',
+          span,
+        ));
+      } else if (fieldType.vectorDimension! < 1) {
+        errors.add(SourceSpanSeverityException(
+          'Invalid vector dimension "${fieldType.vectorDimension}". Vector '
+          'dimension must be an integer number greater than 0.',
+          span,
+        ));
+      }
     }
 
     if (fieldType.isMapType) {
@@ -936,6 +1069,22 @@ class Restrictions {
         errors.add(
           SourceSpanSeverityException(
             'The Set type must have one generic type defined (e.g. Set<String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.isRecordType) {
+      if (fieldType.generics.isNotEmpty) {
+        errors.addAll(
+          fieldType.generics.expand(
+            (field) => _validateFieldDataType(field, span),
+          ),
+        );
+      } else {
+        // The current parser would not create a `Record` type without generics (fields), but we guard against it just in case that ever changes
+        errors.add(
+          SourceSpanSeverityException(
+            'A record type must have at least one field defined (e.g. (int,)).',
             span,
           ),
         );
@@ -1001,8 +1150,8 @@ class Restrictions {
       ];
     }
 
-    if (documentDefinition is! ClassDefinition) return [];
-    var definition = documentDefinition as ClassDefinition;
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
 
     var fields = definition.fieldsIncludingInherited;
     var indexFields = convertIndexList(content);
@@ -1027,7 +1176,171 @@ class Restrictions {
               span,
             ));
 
-    return [...missingFieldErrors, ...duplicateFieldErrors];
+    var hasVectorField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isVectorType)
+        .toSet();
+
+    var vectorErrors = [
+      if (hasVectorField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing vector and non-vector fields in the same index is not allowed.',
+          span,
+        ),
+      if (hasVectorField.any((e) => e) && indexFields.length > 1)
+        SourceSpanSeverityException(
+          'Only one vector field is allowed in an index.',
+          span,
+        ),
+    ];
+
+    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
+  }
+
+  List<SourceSpanSeverityException> validateIndexDistanceFunctionValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content == null) return [];
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.distanceFunction}" property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere((e) => e.name == parentNodeName);
+    var field = definition.findField(index.fields.first);
+    if (field == null) return [];
+
+    var validFunctionsPerClassName = {
+      for (var className in {'Vector', 'SparseVector'})
+        className: {
+          VectorDistanceFunction.l2,
+          VectorDistanceFunction.innerProduct,
+          VectorDistanceFunction.cosine,
+          VectorDistanceFunction.l1,
+        },
+      'HalfVector': {
+        VectorDistanceFunction.l2,
+        VectorDistanceFunction.innerProduct,
+        VectorDistanceFunction.cosine,
+        if (index.type == 'hnsw') VectorDistanceFunction.l1,
+      },
+      'Bit': {
+        VectorDistanceFunction.jaccard,
+        VectorDistanceFunction.hamming,
+      },
+    };
+
+    var validFunctions =
+        validFunctionsPerClassName[field.type.className]?.map((e) => e.name);
+    if (validFunctions != null && !validFunctions.contains(content)) {
+      return [
+        SourceSpanSeverityException(
+          'Invalid distance function "$content". Allowed values are: '
+          '"${validFunctions.join('", "')}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexParametersValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    if (content is! YamlMap) {
+      return [
+        SourceSpanSeverityException(
+          'The "parameters" property must be a map.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+    if (!index.isVectorIndex) return [];
+
+    Map<String, Set<String>> allowedParamsByType = {
+      'hnsw': {'m', 'ef_construction'},
+      'ivfflat': {'lists'},
+    };
+
+    Map<String, Type> parameterTypes = {
+      'm': int,
+      'ef_construction': int,
+      'lists': int,
+    };
+
+    var allowedParams = allowedParamsByType[index.type] ?? <String>{};
+    var unknownKeys = content.keys.toSet().difference(allowedParams);
+    if (unknownKeys.isNotEmpty) {
+      errors.add(SourceSpanSeverityException(
+        'Unknown parameters for ${index.type} index: "${unknownKeys.join('", "')}". '
+        'Allowed parameters are: "${allowedParams.join('", "')}".',
+        span,
+      ));
+    }
+
+    for (var key in content.keys) {
+      var value = content[key];
+      if (allowedParams.contains(key) &&
+          parameterTypes.containsKey(key) &&
+          value != null &&
+          value.runtimeType != parameterTypes[key]) {
+        errors.add(SourceSpanSeverityException(
+          'The "$key" parameter must be a '
+          '${parameterTypes[key]!.toString().toLowerCase()}.',
+          span,
+        ));
+      }
+    }
+
+    // If either 'm' or 'ef_construction' parameters are present, validate the
+    // HNSW index constraint that ef_construction >= 2 * m.
+    if (index.type == 'hnsw' &&
+        content['m'] is int? &&
+        content['ef_construction'] is int?) {
+      var m = content['m'] as int? ?? 16;
+      var efConstruction = content['ef_construction'] as int? ?? 64;
+
+      if (efConstruction < 2 * m) {
+        String suggestion;
+        if (!content.containsKey('m')) {
+          suggestion = 'Set "ef_construction" >= ${2 * m} or declare "m" with '
+              'a value <= ${efConstruction ~/ 2}';
+        } else if (!content.containsKey('ef_construction')) {
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or declare '
+              '"ef_construction" with a value >= ${2 * m}';
+        } else {
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or increase '
+              '"ef_construction" to a value >= ${2 * m}';
+        }
+        errors.add(SourceSpanSeverityException(
+          'The "ef_construction" parameter must be greater than or equal to '
+          '2 * m. $suggestion.',
+          span,
+        ));
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateIndexType(
@@ -1036,6 +1349,28 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var validIndexTypes = {'btree', 'hash', 'gin', 'gist', 'spgist', 'brin'};
+
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition) {
+      var indexFields = definition.fieldsIncludingInherited.where(
+        (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
+      );
+
+      var index = definition.indexes.where((e) => e.name == parentNodeName);
+      if (indexFields.any((e) => e.type.className == 'SparseVector') &&
+          index.first.type != 'hnsw') {
+        return [
+          SourceSpanSeverityException(
+            'Only "hnsw" index type is supported for "SparseVector" fields.',
+            span,
+          )
+        ];
+      }
+
+      if (indexFields.any((e) => e.type.isVectorType)) {
+        validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
+      }
+    }
 
     if (content is! String || !validIndexTypes.contains(content)) {
       return [
@@ -1056,7 +1391,7 @@ class Restrictions {
   ) {
     var definition = documentDefinition;
 
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     if (definition.tableName == null) {
       return [
@@ -1090,13 +1425,35 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateScopeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(SourceSpanSeverityException(
+        'The "${Keyword.scope}" key is not allowed on the "id" field.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validatePersistKey(
     String parentNodeName,
     String relation,
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     var errors = <SourceSpanSeverityException>[];
 
@@ -1105,6 +1462,13 @@ class Restrictions {
         'The "persist" property requires a table to be set on the class.',
         span,
       ));
+    } else if (parentNodeName == defaultPrimaryKeyName) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.persist}" key is not allowed on the "id" field.',
+          span,
+        ),
+      ];
     }
 
     var field = definition.findField(parentNodeName);
@@ -1126,7 +1490,7 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var classDefinition = documentDefinition;
-    if (classDefinition is! ClassDefinition) return [];
+    if (classDefinition is! ModelClassDefinition) return [];
 
     if (name is! String) {
       return [
@@ -1200,6 +1564,32 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateEnumDefaultValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "default" property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! EnumDefinition) return [];
+    final values = definition.values;
+    if (values.any((value) => value.name == content)) return [];
+    return [
+      SourceSpanSeverityException(
+        '"$content" is not a valid default value. Allowed values are: ${values.map((e) => e.name).join(', ')}.',
+        span,
+      )
+    ];
+  }
+
   List<SourceSpanSeverityException> validateEnumValues(
     String parentNodeName,
     dynamic content,
@@ -1269,6 +1659,21 @@ class Restrictions {
       errors.add(
         SourceSpanSeverityException(
           'The "default" key is not supported for "${field.type.className}" types',
+          span,
+        ),
+      );
+    }
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      var besidePersistKey = (field.type.className == 'int')
+          ? 'Either omit the default key or use the'
+          : 'Use either the "${Keyword.defaultModelKey}" key or the';
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.defaultKey}" key is not allowed on the "id" field. '
+          '$besidePersistKey "${Keyword.defaultPersistKey}" key instead.',
           span,
         ),
       );
@@ -1368,6 +1773,10 @@ class Restrictions {
     'Uri',
     'BigInt',
     'ByteData',
+    'Vector',
+    'HalfVector',
+    'SparseVector',
+    'Bit',
     'List',
     'Map',
     'Set',
@@ -1384,7 +1793,8 @@ class Restrictions {
   bool _isValidType(TypeDefinition type) {
     return whiteListedTypes.contains(type.className) ||
         _isModelType(type) ||
-        _isCustomType(type);
+        _isCustomType(type) ||
+        _isRecordType(type);
   }
 
   bool _isUnsupportedType(TypeDefinition type) {
@@ -1422,8 +1832,12 @@ class Restrictions {
     return config.extraClasses.any((c) => c.className == type.className);
   }
 
+  bool _isRecordType(TypeDefinition type) {
+    return type.isRecordType && type.generics.every(_isValidType);
+  }
+
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {
-    if (classDefinition is! ClassDefinition) return false;
+    if (classDefinition is! ModelClassDefinition) return false;
 
     return classDefinition.tableName != null;
   }
@@ -1447,7 +1861,7 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
+  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
@@ -1466,8 +1880,8 @@ class Restrictions {
   /// );
   /// ```
   T? _findInParentHierarchy<T>(
-    ClassDefinition currentModel,
-    T? Function(ClassDefinition) predicate,
+    ModelClassDefinition currentModel,
+    T? Function(ModelClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
@@ -1481,32 +1895,32 @@ class Restrictions {
     return null;
   }
 
-  ClassDefinition? _findTableClassInParentClasses(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findTableClassInParentClasses(
+    ModelClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) =>
+      (ModelClassDefinition ancestor) =>
           ancestor.tableName != null ? ancestor : null,
     );
   }
 
-  ClassDefinition? _findServerOnlyClassInParentClasses(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findServerOnlyClassInParentClasses(
+    ModelClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  ClassDefinition? _findAncestorWithDuplicatedFieldName(
-    ClassDefinition currentModel,
+  ModelClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ModelClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) {
+      (ModelClassDefinition ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -1519,12 +1933,12 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    ClassDefinition currentModel,
+    ModelClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ClassDefinition ancestor) {
+      (ModelClassDefinition ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;

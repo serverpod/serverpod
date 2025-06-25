@@ -2,17 +2,17 @@
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/pub_get_all"
+    echo "I.e. util/generate_all"
     exit 1
 fi
 
 generateServerUpgradeFiles() {
     # The upgrade folder doesn't have all the files needed
-    # run `serverpod generate`. Therefore some project files have 
+    # run `serverpod generate`. Therefore some project files have
     # to temporarily be copied over from the base projectname_server template.
 
     # Save current files
-    find . -type f | sort > before.txt 
+    find . -type f | sort > before.txt
 
     # Copy over project files temporarily from base projectname_server template
     cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
@@ -28,7 +28,7 @@ generateServerUpgradeFiles() {
     # The generated endpoint files are already tracked in projectname_server,
     # and should not be tracked again in the upgrade template.
     test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
-    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm 
+    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
     rm before.txt
 }
 
@@ -75,6 +75,40 @@ echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
 dart $CLI generate --no-analytics
 
+# New auth modules
+
+echo "\nserverpod_auth_user_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_session_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_profile_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_jwt_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_email_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_email_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_migration_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_google_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server
+dart $CLI generate --no-analytics --experimental-features=all
+
 # Chat module
 
 echo "\nserverpod_chat_server"
@@ -90,4 +124,12 @@ dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_new_auth_test_server "
+cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
 dart $CLI generate --no-analytics --experimental-features=all

@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class StringDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   StringDefaultPersist._({
     this.id,
     this.stringDefaultPersist,
@@ -102,7 +102,7 @@ abstract class StringDefaultPersist
   String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [StringDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -311,7 +311,7 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
   }
 }
 
-class StringDefaultPersistTable extends _i1.Table {
+class StringDefaultPersistTable extends _i1.Table<int?> {
   StringDefaultPersistTable({super.tableRelation})
       : super(tableName: 'string_default_persist') {
     stringDefaultPersist = _i1.ColumnString(
@@ -405,7 +405,7 @@ class StringDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => StringDefaultPersist.t;
+  _i1.Table<int?> get table => StringDefaultPersist.t;
 }
 
 class StringDefaultPersistIncludeList extends _i1.IncludeList {
@@ -425,7 +425,7 @@ class StringDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => StringDefaultPersist.t;
+  _i1.Table<int?> get table => StringDefaultPersist.t;
 }
 
 class StringDefaultPersistRepository {

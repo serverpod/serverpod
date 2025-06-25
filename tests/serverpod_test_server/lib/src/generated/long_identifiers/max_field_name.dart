@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class MaxFieldName
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   MaxFieldName._({
     this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -43,7 +44,7 @@ abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MaxFieldName]
   /// with some or all fields replaced by the given arguments.
@@ -130,7 +131,7 @@ class _MaxFieldNameImpl extends MaxFieldName {
   }
 }
 
-class MaxFieldNameTable extends _i1.Table {
+class MaxFieldNameTable extends _i1.Table<int?> {
   MaxFieldNameTable({super.tableRelation})
       : super(tableName: 'max_field_name') {
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo =
@@ -157,7 +158,7 @@ class MaxFieldNameInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MaxFieldName.t;
+  _i1.Table<int?> get table => MaxFieldName.t;
 }
 
 class MaxFieldNameIncludeList extends _i1.IncludeList {
@@ -177,7 +178,7 @@ class MaxFieldNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MaxFieldName.t;
+  _i1.Table<int?> get table => MaxFieldName.t;
 }
 
 class MaxFieldNameRepository {

@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
@@ -12,28 +12,38 @@ import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-class GenerateCommand extends ServerpodCommand {
+enum GenerateOption<V> implements OptionDefinition<V> {
+  watch(FlagOption(
+    argName: 'watch',
+    argAbbrev: 'w',
+    defaultsTo: false,
+    negatable: false,
+    helpText: 'Watch for changes and continuously generate code.',
+  ));
+
+  const GenerateOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class GenerateCommand extends ServerpodCommand<GenerateOption> {
   @override
   final name = 'generate';
   @override
   final description = 'Generate code from yaml files for server and clients.';
 
-  GenerateCommand() {
-    argParser.addFlag(
-      'watch',
-      abbr: 'w',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Watch for changes and continuously generate code.',
-    );
-  }
+  GenerateCommand() : super(options: GenerateOption.values);
 
   @override
-  Future<void> run() async {
+  Future<void> runWithConfig(
+    Configuration<GenerateOption> commandConfig,
+  ) async {
     // Always do a full generate.
-    bool watch = argResults!['watch'];
+    bool watch = commandConfig.value(GenerateOption.watch);
 
     // TODO: add a -d option to select the directory
     GeneratorConfig config;
@@ -44,9 +54,23 @@ class GenerateCommand extends ServerpodCommand {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // Directory.current is the server directory
+    var serverPubspecFile = File('pubspec.yaml');
+    var clientPubspecFile = File(path.joinAll([
+      ...config.clientPackagePathParts,
+      'pubspec.yaml',
+    ]));
+    var pubspecsToCheck = [
+      serverPubspecFile,
+      if (await clientPubspecFile.exists()) clientPubspecFile,
+    ].map(PubspecPlus.fromFile);
+
     // Validate cli version is compatible with serverpod packages
-    var warnings = performServerpodPackagesAndCliVersionCheck(
-        Version.parse(templateVersion), Directory.current.parent);
+    var cliVersion = Version.parse(templateVersion);
+    var warnings = [
+      for (var p in pubspecsToCheck)
+        ...validateServerpodPackagesVersion(cliVersion, p)
+    ];
     if (warnings.isNotEmpty) {
       log.warning(
         'The version of the CLI may be incompatible with the Serverpod '

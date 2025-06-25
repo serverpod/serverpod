@@ -215,7 +215,7 @@ class SelectQueryBuilder {
   /// Adds an additional filter on the query to find only rows that have a
   /// relation to the specified ids.
   SelectQueryBuilder withWhereRelationInResultSet(
-    Set<int> ids,
+    Set<Object?> ids,
     Table relationTable,
   ) {
     var tableRelation = relationTable.tableRelation;
@@ -238,7 +238,8 @@ class SelectQueryBuilder {
 
     var relationFieldName = tableRelation.foreignFieldBaseQuery;
 
-    var whereAddition = Expression('$relationFieldName IN (${ids.join(', ')})');
+    var strIds = ids.map(DatabasePoolManager.encoder.convert).join(', ');
+    var whereAddition = Expression('$relationFieldName IN ($strIds)');
 
     _listQueryAdditions = _ListQueryAdditions(
       relationalFieldName: tableRelation.foreignFieldQueryAlias,
@@ -322,16 +323,23 @@ class InsertQueryBuilder {
   }
 
   /// Builds the insert SQL query.
-  String build() {
-    var selectedColumns = _table.columns.where(
-      (column) => column.columnName != 'id',
-    );
+  String? _build(bool onlyWithIdNull) {
+    var selectedColumns = onlyWithIdNull
+        ? _table.columns.where((column) => column.columnName != 'id')
+        : _table.columns;
 
     var columnNames =
         selectedColumns.map((e) => '"${e.columnName}"').join(', ');
 
-    var values =
-        _rows.map((row) => row.toJson() as Map<String, dynamic>).map((row) {
+    var filteredValues = onlyWithIdNull
+        ? _rows.where((row) => row.id == null)
+        : _rows.where((row) => row.id != null);
+
+    if (filteredValues.isEmpty) return null;
+
+    var values = filteredValues
+        .map((row) => row.toJson() as Map<String, dynamic>)
+        .map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
         return DatabasePoolManager.encoder.convert(
@@ -345,6 +353,23 @@ class InsertQueryBuilder {
     return columnNames.isEmpty
         ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING *'
         : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
+  }
+
+  /// Builds the insert SQL query.
+  String build() {
+    // Can not be empty because the constructor checks for empty rows.
+    var insertQueries = [true, false].map(_build).nonNulls;
+    if (insertQueries.length == 1) return insertQueries.single;
+
+    return '''
+WITH
+  insertWithIdNull AS (${insertQueries.first}),
+  insertWithIdNotNull AS (${insertQueries.last})
+
+SELECT * FROM insertWithIdNull
+UNION ALL
+SELECT * FROM insertWithIdNotNull
+''';
   }
 }
 

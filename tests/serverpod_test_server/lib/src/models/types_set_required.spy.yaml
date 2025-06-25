@@ -1,0 +1,3 @@
+class: TypesSetRequired
+fields:
+  anInt: Set<int>

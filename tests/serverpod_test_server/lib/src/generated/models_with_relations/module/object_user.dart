@@ -8,11 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
-abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class ObjectUser
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectUser._({
     this.id,
     this.name,
@@ -53,7 +56,7 @@ abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.UserInfo? userInfo;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +152,7 @@ class _ObjectUserImpl extends ObjectUser {
   }
 }
 
-class ObjectUserTable extends _i1.Table {
+class ObjectUserTable extends _i1.Table<int?> {
   ObjectUserTable({super.tableRelation}) : super(tableName: 'object_user') {
     name = _i1.ColumnString(
       'name',
@@ -207,7 +210,7 @@ class ObjectUserInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'userInfo': _userInfo};
 
   @override
-  _i1.Table get table => ObjectUser.t;
+  _i1.Table<int?> get table => ObjectUser.t;
 }
 
 class ObjectUserIncludeList extends _i1.IncludeList {
@@ -227,7 +230,7 @@ class ObjectUserIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectUser.t;
+  _i1.Table<int?> get table => ObjectUser.t;
 }
 
 class ObjectUserRepository {

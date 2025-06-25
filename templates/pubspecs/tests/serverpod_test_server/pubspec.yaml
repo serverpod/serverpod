@@ -10,7 +10,7 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: DART_VERSION
 dependencies:
-  http: '>=1.0.0 <2.0.0'
+  http: '>=1.1.0 <2.0.0'
   serverpod: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_cloud_storage_s3: SERVERPOD_VERSION
@@ -22,9 +22,10 @@ dependencies:
   web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: '>=3.0.0 <7.0.0'
   test: ^1.24.2
   path: ^1.8.2
+  test_descriptor: ^2.0.2
   serverpod_cli: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_test_client:

@@ -10,7 +10,7 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: DART_VERSION
 dependencies:
-  lints: '>=3.0.0 <6.0.0'
+  lints: '>=3.0.0 <7.0.0'
   serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides:

@@ -8,12 +8,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note.dart' as _i2;
 
 abstract class UserNoteCollection
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UserNoteCollection._({
     this.id,
     required this.name,
@@ -49,7 +51,7 @@ abstract class UserNoteCollection
   List<_i2.UserNote>? userNotesPropertyName;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserNoteCollection]
   /// with some or all fields replaced by the given arguments.
@@ -145,7 +147,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   }
 }
 
-class UserNoteCollectionTable extends _i1.Table {
+class UserNoteCollectionTable extends _i1.Table<int?> {
   UserNoteCollectionTable({super.tableRelation})
       : super(tableName: 'user_note_collections') {
     name = _i1.ColumnString(
@@ -221,7 +223,7 @@ class UserNoteCollectionInclude extends _i1.IncludeObject {
       {'userNotesPropertyName': _userNotesPropertyName};
 
   @override
-  _i1.Table get table => UserNoteCollection.t;
+  _i1.Table<int?> get table => UserNoteCollection.t;
 }
 
 class UserNoteCollectionIncludeList extends _i1.IncludeList {
@@ -241,7 +243,7 @@ class UserNoteCollectionIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserNoteCollection.t;
+  _i1.Table<int?> get table => UserNoteCollection.t;
 }
 
 class UserNoteCollectionRepository {

@@ -32,6 +32,8 @@ enum RollbackDatabase {
 By default Serverpod test tools tags the `withServerpod` test group with `"integration"`. 
 This is to provide a simple way to only run unit or integration tests. 
 This property allows this tag to be overridden to something else. Defaults to `['integration']`.''',
+  'experimentalFeatures':
+      'Optionally specify experimental features. See [Serverpod] for more information.',
 };
 
 var _methodDescription = '''

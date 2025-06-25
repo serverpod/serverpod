@@ -8,19 +8,21 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i2;
 
 abstract class PersonWithLongTableName
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   PersonWithLongTableName._({
     this.id,
     required this.name,
     this.organizationId,
     this.organization,
-  });
+  }) : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id = null;
 
   factory PersonWithLongTableName({
     int? id,
@@ -31,7 +33,7 @@ abstract class PersonWithLongTableName
 
   factory PersonWithLongTableName.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
@@ -39,6 +41,10 @@ abstract class PersonWithLongTableName
           ? null
           : _i2.OrganizationWithLongTableName.fromJson(
               (jsonSerialization['organization'] as Map<String, dynamic>)),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          jsonSerialization[
+                  '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
+              as int?,
     );
   }
 
@@ -55,10 +61,10 @@ abstract class PersonWithLongTableName
 
   _i2.OrganizationWithLongTableName? organization;
 
-  int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +156,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
-    return PersonWithLongTableName(
+    return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       organizationId:
@@ -158,6 +164,8 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organization: organization is _i2.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
+          this._cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     );
   }
 }
@@ -168,8 +176,10 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     required String name,
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
-    this.$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-  }) : super(
+    int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+  })  : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
+            $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+        super(
           id: id,
           name: name,
           organizationId: organizationId,
@@ -190,20 +200,11 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     );
   }
 
-  int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
-          $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
-    });
-    return jsonMap;
-  }
+  final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 }
 
-class PersonWithLongTableNameTable extends _i1.Table {
+class PersonWithLongTableNameTable extends _i1.Table<int?> {
   PersonWithLongTableNameTable({super.tableRelation})
       : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
     name = _i1.ColumnString(
@@ -253,6 +254,13 @@ class PersonWithLongTableNameTable extends _i1.Table {
       ];
 
   @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+        organizationId,
+      ];
+
+  @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'organization') {
       return organization;
@@ -273,7 +281,7 @@ class PersonWithLongTableNameInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table get table => PersonWithLongTableName.t;
+  _i1.Table<int?> get table => PersonWithLongTableName.t;
 }
 
 class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
@@ -293,7 +301,7 @@ class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => PersonWithLongTableName.t;
+  _i1.Table<int?> get table => PersonWithLongTableName.t;
 }
 
 class PersonWithLongTableNameRepository {

@@ -1,7 +1,8 @@
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
   group('Given a class definition with a String field', () {
@@ -12,7 +13,7 @@ void main() {
           .withDefaults(defaultPersistValue: '\'This is a default value\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -62,7 +63,7 @@ void main() {
           .withTypeDefinition('String', false)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -113,7 +114,7 @@ void main() {
           .withDefaults(defaultPersistValue: '\'This is a default value\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -172,7 +173,7 @@ void main() {
           .withTypeDefinition('String', true)
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -232,7 +233,7 @@ void main() {
           .withDefaults(defaultModelValue: '\'This is a default value\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();
@@ -283,7 +284,7 @@ void main() {
           .withDefaults(defaultModelValue: '\'This is a default value\'')
           .build();
 
-      var model = ClassDefinitionBuilder()
+      var model = ModelClassDefinitionBuilder()
           .withTableName('example')
           .withField(field)
           .build();

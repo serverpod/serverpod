@@ -11,11 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class UserNote
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UserNote._({
     this.id,
     required this.name,
-  });
+  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = null;
 
   factory UserNote({
     int? id,
@@ -23,9 +24,13 @@ abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
   }) = _UserNoteImpl;
 
   factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          jsonSerialization[
+                  '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
+              as int?,
     );
   }
 
@@ -38,10 +43,10 @@ abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
 
   String name;
 
-  int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
@@ -119,9 +124,11 @@ class _UserNoteImpl extends UserNote {
     Object? id = _Undefined,
     String? name,
   }) {
-    return UserNote(
+    return UserNoteImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+          this._userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
     );
   }
 }
@@ -130,8 +137,10 @@ class UserNoteImplicit extends _UserNoteImpl {
   UserNoteImplicit._({
     int? id,
     required String name,
-    this.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-  }) : super(
+    int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  })  : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
+            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        super(
           id: id,
           name: name,
         );
@@ -148,20 +157,11 @@ class UserNoteImplicit extends _UserNoteImpl {
     );
   }
 
-  int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
-
   @override
-  Map<String, dynamic> toJson() {
-    var jsonMap = super.toJson();
-    jsonMap.addAll({
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
-    });
-    return jsonMap;
-  }
+  final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 }
 
-class UserNoteTable extends _i1.Table {
+class UserNoteTable extends _i1.Table<int?> {
   UserNoteTable({super.tableRelation}) : super(tableName: 'user_note') {
     name = _i1.ColumnString(
       'name',
@@ -185,6 +185,12 @@ class UserNoteTable extends _i1.Table {
         name,
         $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ];
+
+  @override
+  List<_i1.Column> get managedColumns => [
+        id,
+        name,
+      ];
 }
 
 class UserNoteInclude extends _i1.IncludeObject {
@@ -194,7 +200,7 @@ class UserNoteInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserNote.t;
+  _i1.Table<int?> get table => UserNote.t;
 }
 
 class UserNoteIncludeList extends _i1.IncludeList {
@@ -214,7 +220,7 @@ class UserNoteIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UserNote.t;
+  _i1.Table<int?> get table => UserNote.t;
 }
 
 class UserNoteRepository {

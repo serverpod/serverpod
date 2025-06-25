@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DateTimeDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DateTimeDefaultPersist._({
     this.id,
     this.dateTimeDefaultPersistNow,
@@ -54,7 +54,7 @@ abstract class DateTimeDefaultPersist
   DateTime? dateTimeDefaultPersistStr;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DateTimeDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +150,7 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   }
 }
 
-class DateTimeDefaultPersistTable extends _i1.Table {
+class DateTimeDefaultPersistTable extends _i1.Table<int?> {
   DateTimeDefaultPersistTable({super.tableRelation})
       : super(tableName: 'datetime_default_persist') {
     dateTimeDefaultPersistNow = _i1.ColumnDateTime(
@@ -184,7 +184,7 @@ class DateTimeDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DateTimeDefaultPersist.t;
+  _i1.Table<int?> get table => DateTimeDefaultPersist.t;
 }
 
 class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
@@ -204,7 +204,7 @@ class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DateTimeDefaultPersist.t;
+  _i1.Table<int?> get table => DateTimeDefaultPersist.t;
 }
 
 class DateTimeDefaultPersistRepository {

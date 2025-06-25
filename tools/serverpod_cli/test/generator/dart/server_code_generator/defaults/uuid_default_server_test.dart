@@ -1,12 +1,13 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -32,6 +33,11 @@ void main() {
             .withDefaults(defaultModelValue: 'random')
             .build(),
         FieldDefinitionBuilder()
+            .withName('uuidDefaultRandomV7')
+            .withTypeDefinition('UuidValue', false)
+            .withDefaults(defaultModelValue: 'random_v7')
+            .build(),
+        FieldDefinitionBuilder()
             .withName('uuidDefaultStr')
             .withTypeDefinition('UuidValue', false)
             .withDefaults(
@@ -46,7 +52,7 @@ void main() {
       ];
 
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withFields(fields)
@@ -82,7 +88,7 @@ void main() {
         () {
           expect(
             privateConstructor?.parameters.toSource().withoutImportPrefix,
-            '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
+            '({UuidValue? uuidDefaultRandom, UuidValue? uuidDefaultRandomV7, UuidValue? uuidDefaultStr, UuidValue? uuidDefaultStrNull})',
           );
         },
       );
@@ -94,6 +100,16 @@ void main() {
               .firstWhere((e) => e.toSource().contains('uuidDefaultRandom'));
           expect(initializer?.toSource().withoutImportPrefix,
               'uuidDefaultRandom = uuidDefaultRandom ?? Uuid().v4obj()');
+        },
+      );
+
+      test(
+        'with uuidDefaultRandomV7 default value set correctly',
+        () {
+          var initializer = privateConstructor?.initializers
+              .firstWhere((e) => e.toSource().contains('uuidDefaultRandomV7'));
+          expect(initializer?.toSource().withoutImportPrefix,
+              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? Uuid().v7obj()');
         },
       );
 
@@ -146,7 +162,7 @@ void main() {
       ];
 
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withFields(fields)

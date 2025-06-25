@@ -93,6 +93,8 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+diagnosticEventTest:
+  - submitExceptionEvent:
 echoRequest:
   - echoAuthenticationKey:
   - echoHttpHeader:
@@ -101,6 +103,14 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+loggedIn:
+myLoggedIn:
+  - echo:
+admin:
+myAdmin:
+  - echo:
+myConcreteAdmin:
+  - echo:
 exceptionTest:
   - throwNormalException:
   - throwExceptionWithData:
@@ -116,6 +126,7 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+  - makeFutureCallThatThrows:
 listParameters:
   - returnIntList:
   - returnIntListList:
@@ -217,6 +228,14 @@ methodStreaming:
   - simpleStreamWithParameter:
   - simpleDataStream:
   - simpleInOutDataStream:
+  - simpleListInOutIntStream:
+  - simpleListInOutDataStream:
+  - simpleListInOutOtherModuleTypeStream:
+  - simpleNullableListInOutNullableDataStream:
+  - simpleListInOutNullableDataStream:
+  - simpleSetInOutIntStream:
+  - simpleSetInOutDataStream:
+  - nestedSetInListInOutDataStream:
   - simpleEndpoint:
   - intParameter:
   - doubleInputValue:
@@ -242,6 +261,27 @@ methodStreaming:
 authenticatedMethodStreaming:
   - simpleStream:
   - intEchoStream:
+moduleEndpointSubclass:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointAdaptation:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointReduction:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointExtension:
+  - greet:
+  - ignoredMethod:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
@@ -251,6 +291,44 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+recordParameters:
+  - returnRecordOfInt:
+  - returnNullableRecordOfInt:
+  - returnRecordOfNullableInt:
+  - returnNullableRecordOfNullableInt:
+  - streamNullableRecordOfNullableInt:
+  - returnIntStringRecord:
+  - returnNullableIntStringRecord:
+  - returnIntSimpleDataRecord:
+  - returnNullableIntSimpleDataRecord:
+  - returnNamedIntStringRecord:
+  - returnNamedNullableIntStringRecord:
+  - returnRecordOfNamedIntAndObject:
+  - returnNullableRecordOfNamedIntAndObject:
+  - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnRecordTypedef:
+  - returnNullableRecordTypedef:
+  - returnListOfIntSimpleDataRecord:
+  - returnListOfNullableIntSimpleDataRecord:
+  - returnSetOfIntSimpleDataRecord:
+  - returnSetOfNullableIntSimpleDataRecord:
+  - returnNullableSetOfIntSimpleDataRecord:
+  - returnStringMapOfIntSimpleDataRecord:
+  - returnStringMapOfNullableIntSimpleDataRecord:
+  - returnRecordMapOfIntSimpleDataRecord:
+  - returnStringMapOfListOfRecord:
+  - returnNestedNamedRecord:
+  - returnNestedNullableNamedRecord:
+  - returnNestedPositionalAndNamedRecord:
+  - returnListOfNestedPositionalAndNamedRecord:
+  - streamNullableListOfNullableNestedPositionalAndNamedRecord:
+  - echoModelClassWithRecordField:
+  - echoNullableModelClassWithRecordField:
+  - echoNullableModelClassWithRecordFieldFromExternalModule:
+  - streamOfModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordFieldFromExternalModule:
+  - recordParametersWithCustomNames:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:
@@ -323,6 +401,19 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoTypes:
+  - echoTypesList:
+  - echoModuleDatatype:
+  - streamModuleDatatype:
+  - echoModuleClass:
+  - streamModuleClass:
+  - echoRecord:
+  - echoRecords:
+  - recordEchoStream:
+  - listOfRecordEchoStream:
+  - nullableRecordEchoStream:
+  - nullableListOfRecordEchoStream:
+  - modelWithRecordsEchoStream:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:
@@ -331,6 +422,8 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+upload:
+  - uploadByteData:
 myFeature:
   - myFeatureMethod:
   - myFeatureModel:

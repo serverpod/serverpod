@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DateTimeDefault
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DateTimeDefault._({
     this.id,
     DateTime? dateTimeDefaultNow,
@@ -60,7 +60,7 @@ abstract class DateTimeDefault
   DateTime? dateTimeDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DateTimeDefault]
   /// with some or all fields replaced by the given arguments.
@@ -159,7 +159,7 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
   }
 }
 
-class DateTimeDefaultTable extends _i1.Table {
+class DateTimeDefaultTable extends _i1.Table<int?> {
   DateTimeDefaultTable({super.tableRelation})
       : super(tableName: 'datetime_default') {
     dateTimeDefaultNow = _i1.ColumnDateTime(
@@ -201,7 +201,7 @@ class DateTimeDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DateTimeDefault.t;
+  _i1.Table<int?> get table => DateTimeDefault.t;
 }
 
 class DateTimeDefaultIncludeList extends _i1.IncludeList {
@@ -221,7 +221,7 @@ class DateTimeDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DateTimeDefault.t;
+  _i1.Table<int?> get table => DateTimeDefault.t;
 }
 
 class DateTimeDefaultRepository {

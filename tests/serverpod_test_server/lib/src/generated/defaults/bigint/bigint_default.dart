@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BigIntDefault
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   BigIntDefault._({
     this.id,
     BigInt? bigintDefaultStr,
@@ -52,7 +52,7 @@ abstract class BigIntDefault
   BigInt? bigintDefaultStrNull;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +144,7 @@ class _BigIntDefaultImpl extends BigIntDefault {
   }
 }
 
-class BigIntDefaultTable extends _i1.Table {
+class BigIntDefaultTable extends _i1.Table<int?> {
   BigIntDefaultTable({super.tableRelation})
       : super(tableName: 'bigint_default') {
     bigintDefaultStr = _i1.ColumnBigInt(
@@ -178,7 +178,7 @@ class BigIntDefaultInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => BigIntDefault.t;
+  _i1.Table<int?> get table => BigIntDefault.t;
 }
 
 class BigIntDefaultIncludeList extends _i1.IncludeList {
@@ -198,7 +198,7 @@ class BigIntDefaultIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => BigIntDefault.t;
+  _i1.Table<int?> get table => BigIntDefault.t;
 }
 
 class BigIntDefaultRepository {

@@ -41,6 +41,14 @@ class ValueEncoder extends PostgresTextEncoder {
       // encoded to base64. Best would be to find a better way to detect when we
       // are trying to store a ByteData.
       return input;
+    } else if (input is Vector) {
+      return '\'${input.toString().replaceAll(' ', '')}\'';
+    } else if (input is HalfVector) {
+      return '\'${input.toString().replaceAll(' ', '')}\'';
+    } else if (input is SparseVector) {
+      return '\'${input.toString()}\'';
+    } else if (input is Bit) {
+      return '\'${input.toString()}\'';
     } else if (input is SerializableModel && input is Enum) {
       return super.convert(
         input.toJson(),

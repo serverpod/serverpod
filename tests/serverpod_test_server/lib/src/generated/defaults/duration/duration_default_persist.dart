@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DurationDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DurationDefaultPersist._({
     this.id,
     this.durationDefaultPersist,
@@ -45,7 +45,7 @@ abstract class DurationDefaultPersist
   Duration? durationDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DurationDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -130,7 +130,7 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   }
 }
 
-class DurationDefaultPersistTable extends _i1.Table {
+class DurationDefaultPersistTable extends _i1.Table<int?> {
   DurationDefaultPersistTable({super.tableRelation})
       : super(tableName: 'duration_default_persist') {
     durationDefaultPersist = _i1.ColumnDuration(
@@ -156,7 +156,7 @@ class DurationDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DurationDefaultPersist.t;
+  _i1.Table<int?> get table => DurationDefaultPersist.t;
 }
 
 class DurationDefaultPersistIncludeList extends _i1.IncludeList {
@@ -176,7 +176,7 @@ class DurationDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DurationDefaultPersist.t;
+  _i1.Table<int?> get table => DurationDefaultPersist.t;
 }
 
 class DurationDefaultPersistRepository {

@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to notify the server that messages have been read.
 abstract class ChatReadMessage
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ChatReadMessage._({
     this.id,
     required this.channel,
@@ -54,7 +54,7 @@ abstract class ChatReadMessage
   int lastReadMessageId;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ChatReadMessage]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,7 @@ class _ChatReadMessageImpl extends ChatReadMessage {
   }
 }
 
-class ChatReadMessageTable extends _i1.Table {
+class ChatReadMessageTable extends _i1.Table<int?> {
   ChatReadMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_read_message') {
     channel = _i1.ColumnString(
@@ -191,7 +191,7 @@ class ChatReadMessageInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ChatReadMessage.t;
+  _i1.Table<int?> get table => ChatReadMessage.t;
 }
 
 class ChatReadMessageIncludeList extends _i1.IncludeList {
@@ -211,7 +211,7 @@ class ChatReadMessageIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ChatReadMessage.t;
+  _i1.Table<int?> get table => ChatReadMessage.t;
 }
 
 class ChatReadMessageRepository {

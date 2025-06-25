@@ -16,7 +16,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
 ) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
-      if (classDefinition is ClassDefinition &&
+      if (classDefinition is ModelClassDefinition &&
           classDefinition.tableName != null)
         TableDefinition(
           module: moduleName,
@@ -30,14 +30,15 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   name: column.name,
                   columnType:
                       ColumnType.values.byName(column.type.databaseTypeEnum),
-                  // The id column is not null, since it is auto incrementing.
+                  // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
-                  columnDefault: _getColumnDefault(
-                    column,
-                    classDefinition,
-                    ColumnType.values.byName(column.type.databaseTypeEnum),
+                  columnDefault: getColumnDefault(
+                    column.type,
+                    column.defaultPersistValue,
+                    classDefinition.tableName!,
                   ),
+                  vectorDimension: column.type.vectorDimension,
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),
@@ -64,6 +65,18 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
+                vectorDistanceFunction: index.isVectorIndex
+                    ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
+                    : null,
+                vectorColumnType: index.isVectorIndex
+                    ? ColumnType.values.firstWhere((type) =>
+                        type.name ==
+                        classDefinition.fields
+                            .firstWhere((f) => index.fields.contains(f.name))
+                            .type
+                            .databaseTypeEnum)
+                    : null,
+                parameters: index.parameters,
               ),
           ],
           managed: classDefinition.manageMigration,
@@ -89,7 +102,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
-List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
+List<ForeignKeyDefinition> _createForeignKeys(
+    ModelClassDefinition classDefinition) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
@@ -117,20 +131,13 @@ void _sortTableDefinitions(List<TableDefinition> tables) {
   tables.sort((a, b) => a.name.compareTo(b.name));
 }
 
-String? _getColumnDefault(
-  SerializableModelFieldDefinition column,
-  ClassDefinition classDefinition,
-  ColumnType type,
+String? getColumnDefault(
+  TypeDefinition columnType,
+  dynamic defaultValue,
+  String tableName,
 ) {
-  if (column.name == 'id') {
-    return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
-  }
-
-  var defaultValueType = column.type.defaultValueType;
-  if (defaultValueType == null) return null;
-
-  var defaultValue = column.defaultPersistValue;
-  if (defaultValue == null) return null;
+  var defaultValueType = columnType.defaultValueType;
+  if ((defaultValue == null) || (defaultValueType == null)) return null;
 
   switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
@@ -147,6 +154,9 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.bool:
       return defaultValue;
     case DefaultValueAllowedType.int:
+      if (defaultValue == defaultIntSerial) {
+        return "nextval('${tableName}_id_seq'::regclass)";
+      }
       return '$defaultValue';
     case DefaultValueAllowedType.double:
       return '$defaultValue';
@@ -155,6 +165,9 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.uuidValue:
       if (defaultUuidValueRandom == defaultValue) {
         return 'gen_random_uuid()';
+      }
+      if (defaultUuidValueRandomV7 == defaultValue) {
+        return 'gen_random_uuid_v7()';
       }
       return '${_escapeSqlString(defaultValue)}::uuid';
     case DefaultValueAllowedType.uri:
@@ -166,7 +179,7 @@ String? _getColumnDefault(
       Duration parsedDuration = parseDuration(defaultValue);
       return '${parsedDuration.toJson()}';
     case DefaultValueAllowedType.isEnum:
-      var enumDefinition = column.type.enumDefinition;
+      var enumDefinition = columnType.enumDefinition;
       if (enumDefinition == null) return null;
       var values = enumDefinition.values;
       return switch (enumDefinition.serialized) {

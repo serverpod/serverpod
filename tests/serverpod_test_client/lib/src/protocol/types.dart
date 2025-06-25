@@ -13,6 +13,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
 abstract class Types implements _i1.SerializableModel {
   Types._({
@@ -27,11 +28,16 @@ abstract class Types implements _i1.SerializableModel {
     this.aUuid,
     this.aUri,
     this.aBigInt,
+    this.aVector,
+    this.aHalfVector,
+    this.aSparseVector,
+    this.aBit,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
     this.aMap,
     this.aSet,
+    this.aRecord,
   });
 
   factory Types({
@@ -46,11 +52,16 @@ abstract class Types implements _i1.SerializableModel {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -78,6 +89,20 @@ abstract class Types implements _i1.SerializableModel {
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
           : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+      aVector: jsonSerialization['aVector'] == null
+          ? null
+          : _i1.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+      aHalfVector: jsonSerialization['aHalfVector'] == null
+          ? null
+          : _i1.HalfVectorJsonExtension.fromJson(
+              jsonSerialization['aHalfVector']),
+      aSparseVector: jsonSerialization['aSparseVector'] == null
+          ? null
+          : _i1.SparseVectorJsonExtension.fromJson(
+              jsonSerialization['aSparseVector']),
+      aBit: jsonSerialization['aBit'] == null
+          ? null
+          : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -93,6 +118,10 @@ abstract class Types implements _i1.SerializableModel {
           ? null
           : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
               itemFromJson: (e) => e as int),
+      aRecord: jsonSerialization['aRecord'] == null
+          ? null
+          : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
+              (jsonSerialization['aRecord'] as Map<String, dynamic>)),
     );
   }
 
@@ -121,6 +150,14 @@ abstract class Types implements _i1.SerializableModel {
 
   BigInt? aBigInt;
 
+  _i1.Vector? aVector;
+
+  _i1.HalfVector? aHalfVector;
+
+  _i1.SparseVector? aSparseVector;
+
+  _i1.Bit? aBit;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -130,6 +167,8 @@ abstract class Types implements _i1.SerializableModel {
   Map<int, int>? aMap;
 
   Set<int>? aSet;
+
+  (String, {Uri? optionalUri})? aRecord;
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -146,11 +185,16 @@ abstract class Types implements _i1.SerializableModel {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -166,12 +210,17 @@ abstract class Types implements _i1.SerializableModel {
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
     };
   }
 
@@ -196,11 +245,16 @@ class _TypesImpl extends Types {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -213,11 +267,16 @@ class _TypesImpl extends Types {
           aUuid: aUuid,
           aUri: aUri,
           aBigInt: aBigInt,
+          aVector: aVector,
+          aHalfVector: aHalfVector,
+          aSparseVector: aSparseVector,
+          aBit: aBit,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
           aList: aList,
           aMap: aMap,
           aSet: aSet,
+          aRecord: aRecord,
         );
 
   /// Returns a shallow copy of this [Types]
@@ -236,11 +295,16 @@ class _TypesImpl extends Types {
     Object? aUuid = _Undefined,
     Object? aUri = _Undefined,
     Object? aBigInt = _Undefined,
+    Object? aVector = _Undefined,
+    Object? aHalfVector = _Undefined,
+    Object? aSparseVector = _Undefined,
+    Object? aBit = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
     Object? aMap = _Undefined,
     Object? aSet = _Undefined,
+    Object? aRecord = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -255,6 +319,14 @@ class _TypesImpl extends Types {
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
+      aVector: aVector is _i1.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _i1.HalfVector?
+          ? aHalfVector
+          : this.aHalfVector?.clone(),
+      aSparseVector: aSparseVector is _i1.SparseVector?
+          ? aSparseVector
+          : this.aSparseVector?.clone(),
+      aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
@@ -271,6 +343,14 @@ class _TypesImpl extends Types {
                     value0,
                   )),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
+      aRecord: aRecord is (String, {Uri? optionalUri})?
+          ? aRecord
+          : this.aRecord == null
+              ? null
+              : (
+                  this.aRecord!.$1,
+                  optionalUri: this.aRecord!.optionalUri,
+                ),
     );
   }
 }

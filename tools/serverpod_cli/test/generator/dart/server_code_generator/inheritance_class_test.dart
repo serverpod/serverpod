@@ -1,11 +1,11 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -27,25 +27,25 @@ void main() {
       'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
@@ -226,32 +226,32 @@ void main() {
       'Given a child-class named $childClassName with one primitive var and a var with default value extending a parent-class named $parentClassName with one primitive var and a var with default value when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
-          .withSimpleField('parentDefault', 'int', defaultValue: '0')
+          .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
-              .withSimpleField('childDefault', 'int', defaultValue: '-1')
+              .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
-          .withSimpleField('childDefault', 'int', defaultValue: '-1')
+          .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
-                .withSimpleField('parentDefault', 'int', defaultValue: '0')
+                .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
                 .build(),
           )
           .build(),
@@ -390,26 +390,26 @@ void main() {
 
   group('Given a child-class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int', nullable: true)
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withTableName(childTableName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
@@ -519,26 +519,26 @@ void main() {
       'Given a child-class with a nullable field inheriting a nullable field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String', nullable: true)
           .withChildClasses(
         [
-          ClassDefinitionBuilder()
+          ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int', nullable: true)
               .build(),
         ],
       ).build(),
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withTableName(childTableName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            ClassDefinitionBuilder()
+            ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String', nullable: true)

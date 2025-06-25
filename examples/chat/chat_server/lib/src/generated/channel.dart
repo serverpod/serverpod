@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Channel
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Channel._({
     this.id,
     required this.name,
@@ -47,7 +48,7 @@ abstract class Channel implements _i1.TableRow, _i1.ProtocolSerialization {
   String channel;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.
@@ -135,7 +136,7 @@ class _ChannelImpl extends Channel {
   }
 }
 
-class ChannelTable extends _i1.Table {
+class ChannelTable extends _i1.Table<int?> {
   ChannelTable({super.tableRelation}) : super(tableName: 'channel') {
     name = _i1.ColumnString(
       'name',
@@ -168,7 +169,7 @@ class ChannelInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Channel.t;
+  _i1.Table<int?> get table => Channel.t;
 }
 
 class ChannelIncludeList extends _i1.IncludeList {
@@ -188,7 +189,7 @@ class ChannelIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Channel.t;
+  _i1.Table<int?> get table => Channel.t;
 }
 
 class ChannelRepository {

@@ -1,0 +1,12 @@
+class: AuthUserModel
+fields:
+  id: UuidValue
+
+  ### The time when this user was created.
+  created: DateTime
+
+  ### Set of scopes that this user can access.
+  scopeNames: Set<String>
+
+  ### If `true` the user will be blocked from signing in.
+  blocked: bool

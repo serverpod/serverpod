@@ -1,0 +1,556 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_bit",
+        "dartName": "ObjectWithBit",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_bit_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "bit",
+            "columnType": 13,
+            "isNullable": false,
+            "dartType": "Bit(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "bitNullable",
+            "columnType": 13,
+            "isNullable": true,
+            "dartType": "Bit(512)?",
+            "vectorDimension": 512
+          },
+          {
+            "name": "bitIndexedHnsw",
+            "columnType": 13,
+            "isNullable": false,
+            "dartType": "Bit(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "bitIndexedHnswWithParams",
+            "columnType": 13,
+            "isNullable": false,
+            "dartType": "Bit(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "bitIndexedIvfflat",
+            "columnType": 13,
+            "isNullable": false,
+            "dartType": "Bit(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "bitIndexedIvfflatWithParams",
+            "columnType": 13,
+            "isNullable": false,
+            "dartType": "Bit(512)",
+            "vectorDimension": 512
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_bit_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "bit_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "bit"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "hamming",
+            "vectorColumnType": 13
+          },
+          {
+            "indexName": "bit_index_hnsw",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "bitIndexedHnsw"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "hamming",
+            "vectorColumnType": 13
+          },
+          {
+            "indexName": "bit_index_hnsw_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "bitIndexedHnswWithParams"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "jaccard",
+            "vectorColumnType": 13,
+            "parameters": {
+              "m": "64",
+              "ef_construction": "200"
+            }
+          },
+          {
+            "indexName": "bit_index_ivfflat",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "bitIndexedIvfflat"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "hamming",
+            "vectorColumnType": 13
+          },
+          {
+            "indexName": "bit_index_ivfflat_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "bitIndexedIvfflatWithParams"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "hamming",
+            "vectorColumnType": 13,
+            "parameters": {
+              "lists": "300"
+            }
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_half_vector",
+        "dartName": "ObjectWithHalfVector",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_half_vector_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "halfVector",
+            "columnType": 11,
+            "isNullable": false,
+            "dartType": "HalfVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "halfVectorNullable",
+            "columnType": 11,
+            "isNullable": true,
+            "dartType": "HalfVector(512)?",
+            "vectorDimension": 512
+          },
+          {
+            "name": "halfVectorIndexedHnsw",
+            "columnType": 11,
+            "isNullable": false,
+            "dartType": "HalfVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "halfVectorIndexedHnswWithParams",
+            "columnType": 11,
+            "isNullable": false,
+            "dartType": "HalfVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "halfVectorIndexedIvfflat",
+            "columnType": 11,
+            "isNullable": false,
+            "dartType": "HalfVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "halfVectorIndexedIvfflatWithParams",
+            "columnType": 11,
+            "isNullable": false,
+            "dartType": "HalfVector(512)",
+            "vectorDimension": 512
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_half_vector_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "half_vector_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "halfVector"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 11
+          },
+          {
+            "indexName": "half_vector_index_hnsw",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "halfVectorIndexedHnsw"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 11
+          },
+          {
+            "indexName": "half_vector_index_hnsw_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "halfVectorIndexedHnswWithParams"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 11,
+            "parameters": {
+              "m": "64",
+              "ef_construction": "200"
+            }
+          },
+          {
+            "indexName": "half_vector_index_ivfflat",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "halfVectorIndexedIvfflat"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 11
+          },
+          {
+            "indexName": "half_vector_index_ivfflat_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "halfVectorIndexedIvfflatWithParams"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "cosine",
+            "vectorColumnType": 11,
+            "parameters": {
+              "lists": "300"
+            }
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_sparse_vector",
+        "dartName": "ObjectWithSparseVector",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_sparse_vector_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "sparseVector",
+            "columnType": 12,
+            "isNullable": false,
+            "dartType": "SparseVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "sparseVectorNullable",
+            "columnType": 12,
+            "isNullable": true,
+            "dartType": "SparseVector(512)?",
+            "vectorDimension": 512
+          },
+          {
+            "name": "sparseVectorIndexedHnsw",
+            "columnType": 12,
+            "isNullable": false,
+            "dartType": "SparseVector(512)",
+            "vectorDimension": 512
+          },
+          {
+            "name": "sparseVectorIndexedHnswWithParams",
+            "columnType": 12,
+            "isNullable": false,
+            "dartType": "SparseVector(512)",
+            "vectorDimension": 512
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_sparse_vector_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "sparse_vector_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "sparseVector"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 12
+          },
+          {
+            "indexName": "sparse_vector_index_hnsw",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "sparseVectorIndexedHnsw"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 12
+          },
+          {
+            "indexName": "sparse_vector_index_hnsw_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "sparseVectorIndexedHnswWithParams"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l1",
+            "vectorColumnType": 12,
+            "parameters": {
+              "m": "64",
+              "ef_construction": "200"
+            }
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "object_with_vector",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [
+          {
+            "indexName": "vector_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vector"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 10
+          },
+          {
+            "indexName": "vector_index_hnsw",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedHnsw"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 10
+          },
+          {
+            "indexName": "vector_index_hnsw_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedHnswWithParams"
+              }
+            ],
+            "type": "hnsw",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "cosine",
+            "vectorColumnType": 10,
+            "parameters": {
+              "m": "64",
+              "ef_construction": "200"
+            }
+          },
+          {
+            "indexName": "vector_index_ivfflat",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedIvfflat"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "l2",
+            "vectorColumnType": 10
+          },
+          {
+            "indexName": "vector_index_ivfflat_with_params",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "vectorIndexedIvfflatWithParams"
+              }
+            ],
+            "type": "ivfflat",
+            "isUnique": false,
+            "isPrimary": false,
+            "vectorDistanceFunction": "innerProduct",
+            "vectorColumnType": 10,
+            "parameters": {
+              "lists": "300"
+            }
+          }
+        ],
+        "deleteIndexes": [
+          "vector_index_default",
+          "vector_index_hnsw",
+          "vector_index_hnsw_with_params",
+          "vector_index_ivfflat",
+          "vector_index_ivfflat_with_params"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "types",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "aHalfVector",
+            "columnType": 11,
+            "isNullable": true,
+            "dartType": "HalfVector(3)?",
+            "vectorDimension": 3
+          },
+          {
+            "name": "aSparseVector",
+            "columnType": 12,
+            "isNullable": true,
+            "dartType": "SparseVector(3)?",
+            "vectorDimension": 3
+          },
+          {
+            "name": "aBit",
+            "columnType": 13,
+            "isNullable": true,
+            "dartType": "Bit(3)?",
+            "vectorDimension": 3
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

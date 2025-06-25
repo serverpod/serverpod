@@ -2,9 +2,10 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -34,6 +35,33 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue, 'random');
         expect(definition.fields.last.defaultPersistValue, 'random');
+      },
+    );
+
+    test(
+      'when the field is of type UUID and the default is set to "random_v7", then the field\'s default model and persist values are "random_v7".',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            uuidType: UuidValue, default=random_v7
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultModelValue, 'random_v7');
+        expect(definition.fields.last.defaultPersistValue, 'random_v7');
       },
     );
 
@@ -128,7 +156,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a "random" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "default" value must be "random", "random_v7" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -156,7 +184,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a "random" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "default" value must be "random", "random_v7" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -217,4 +245,30 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given a class with a declared id field of type UUID with a "default" keyword, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: UuidValue?, default=random
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors.first.message,
+        'The "default" key is not allowed on the "id" field. Use either '
+        'the "defaultModel" key or the "defaultPersist" key instead.',
+      );
+    },
+  );
 }

@@ -2,38 +2,72 @@
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/run_tests"
+    echo "I.e. util/run_tests_unit"
     exit 1
 fi
 
-
-# Add projects that has unit tests here
-declare -a projectPaths=(
-    "tools/serverpod_cli" 
-    "packages/serverpod"
-    "packages/serverpod_client"
-    "packages/serverpod_shared" 
-    "packages/serverpod_serialization"
-    "tests/serverpod_test_client"
-    "tests/serverpod_test_server"
-    "tests/serverpod_test_flutter"
-    "modules/serverpod_auth/serverpod_auth_server"
+# List of directories to exclude from the search (relative to repo root)
+EXCLUDE_DIRS=(
+  "tests/bootstrap_project"
+  "tests/serverpod_cli_e2e_test"
+  "templates"
 )
+
+# Build the find exclude arguments
+FIND_EXCLUDES=""
+for dir in "${EXCLUDE_DIRS[@]}"; do
+  FIND_EXCLUDES+=" -path ./$dir -prune -o"
+done
+
+# Find all directories containing pubspec.yaml that are Dart-only (not Flutter) and not in excluded dirs
+projectPaths=()
+while IFS= read -r pubspec; do
+    # Check if pubspec.yaml contains 'flutter' in dependencies or dev_dependencies
+    if ! grep -qE '^ *flutter *:' "$pubspec"; then
+        dir=$(dirname "$pubspec")
+        projectPaths+=("$dir")
+    fi
+done < <(eval "find . \${FIND_EXCLUDES} -name pubspec.yaml -not -path './.dart_tool/*' -not -path './build/*' -print")
+
+# Print the list of included directories at the top
+if [ ${#projectPaths[@]} -eq 0 ]; then
+  echo "No Dart-only projects found to test."
+  exit 0
+fi
+
+echo "==================== Included Dart-only Projects ===================="
+for dir in "${projectPaths[@]}"; do
+  echo "  $dir"
+done
+echo "==================================================================="
+echo ""
 
 exit_code=0
 
+BASE=`pwd`
+
+echo "Running unit tests in all project that contain a test directory"
+echo ""
+
 for i in "${projectPaths[@]}"
 do
-   echo "Running unit tests in $i"
-   cd $i
+   cd $BASE/$i
 
-   dart test 
-
-   if [ $? != 0 ]; then
-     exit_code=1
+   # Check if the test directory exists
+   if [ ! -d test ]; then
+     # If the test directory doesn't exist, skip this project
+     continue
    fi
 
-   cd -
+   echo "==== Running tests in $i ===="
+   dart test -x integration --reporter=failures-only
+   last_exit_code=$?
+
+  if [ $last_exit_code != 0 ] && [ $last_exit_code != 79 ]; then
+    exit_code=1
+   fi
+
+   echo ""
 done
 
 exit $exit_code

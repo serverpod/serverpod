@@ -1,9 +1,10 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/column_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
+
+import '../../../test_util/builders/database/column_definition_builder.dart';
+import '../../../test_util/builders/database/database_definition_builder.dart';
+import '../../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group('Given a database table definition with a UUID column', () {
@@ -92,6 +93,34 @@ void main() {
         sql,
         contains(
           '"uuid" uuid NOT NULL DEFAULT gen_random_uuid()',
+        ),
+      );
+    });
+
+    test(
+        'when generating SQL with columnDefault set to "gen_random_uuid_v7()", then the table should have gen_random_uuid_v7() as the default value.',
+        () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('uuid')
+                      .withColumnType(ColumnType.uuid)
+                      .withColumnDefault('gen_random_uuid_v7()')
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(
+        sql,
+        contains(
+          '"uuid" uuid NOT NULL DEFAULT gen_random_uuid_v7()',
         ),
       );
     });

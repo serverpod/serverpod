@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
 abstract class ServerHealthMetric
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ServerHealthMetric._({
     this.id,
     required this.name,
@@ -76,7 +76,7 @@ abstract class ServerHealthMetric
   int granularity;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
@@ -192,7 +192,7 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
   }
 }
 
-class ServerHealthMetricTable extends _i1.Table {
+class ServerHealthMetricTable extends _i1.Table<int?> {
   ServerHealthMetricTable({super.tableRelation})
       : super(tableName: 'serverpod_health_metric') {
     name = _i1.ColumnString(
@@ -259,7 +259,7 @@ class ServerHealthMetricInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ServerHealthMetric.t;
+  _i1.Table<int?> get table => ServerHealthMetric.t;
 }
 
 class ServerHealthMetricIncludeList extends _i1.IncludeList {
@@ -279,7 +279,7 @@ class ServerHealthMetricIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ServerHealthMetric.t;
+  _i1.Table<int?> get table => ServerHealthMetric.t;
 }
 
 class ServerHealthMetricRepository {

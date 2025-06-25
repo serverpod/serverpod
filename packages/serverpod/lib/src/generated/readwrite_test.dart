@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
 abstract class ReadWriteTestEntry
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
     this.id,
     required this.number,
@@ -43,7 +43,7 @@ abstract class ReadWriteTestEntry
   int number;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
@@ -124,7 +124,7 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
   }
 }
 
-class ReadWriteTestEntryTable extends _i1.Table {
+class ReadWriteTestEntryTable extends _i1.Table<int?> {
   ReadWriteTestEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_readwrite_test') {
     number = _i1.ColumnInt(
@@ -150,7 +150,7 @@ class ReadWriteTestEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ReadWriteTestEntry.t;
+  _i1.Table<int?> get table => ReadWriteTestEntry.t;
 }
 
 class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
@@ -170,7 +170,7 @@ class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ReadWriteTestEntry.t;
+  _i1.Table<int?> get table => ReadWriteTestEntry.t;
 }
 
 class ReadWriteTestEntryRepository {

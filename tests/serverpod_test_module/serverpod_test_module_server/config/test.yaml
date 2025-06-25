@@ -17,12 +17,12 @@ webServer:
   publicScheme: http
 
 database:
-  host: postgres
-  port: 5432
-  name: serverpod_test
+  host: localhost
+  port: 9090
+  name: serverpod_test_module_test
   user: postgres
 
 redis:
-  enabled: true
-  host: redis
-  port: 6379
+  enabled: false
+  host: localhost
+  port: 9091

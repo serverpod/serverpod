@@ -12,17 +12,23 @@ var _integrationTestMode =
 var _integrationTestFlags = ['-m', _integrationTestMode];
 
 class IntegrationTestServer extends TestServerpod {
-  IntegrationTestServer()
-      : super(
+  IntegrationTestServer({
+    ServerpodConfig? config,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
+  }) : super(
           _integrationTestFlags,
           Protocol(),
           Endpoints(),
+          config: config,
+          runtimeParametersBuilder: runtimeParametersBuilder,
         );
 
   static Serverpod create({
     ServerpodConfig? config,
     AuthenticationHandler? authenticationHandler,
     SecurityContextConfig? securityContextConfig,
+    ExperimentalFeatures? experimentalFeatures,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) {
     return Serverpod(
       _integrationTestFlags,
@@ -32,6 +38,8 @@ class IntegrationTestServer extends TestServerpod {
       authenticationHandler:
           authenticationHandler ?? auth.authenticationHandler,
       securityContextConfig: securityContextConfig,
+      experimentalFeatures: experimentalFeatures,
+      runtimeParametersBuilder: runtimeParametersBuilder,
     );
   }
 }
@@ -47,13 +55,17 @@ class TestServerpod {
   TestServerpod(
     List<String> args,
     SerializationManagerServer serializationManager,
-    EndpointDispatch endpoints,
-  ) {
+    EndpointDispatch endpoints, {
+    ServerpodConfig? config,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
+  }) {
     _serverpod = Serverpod(
       args,
       serializationManager,
       endpoints,
+      config: config,
       authenticationHandler: auth.authenticationHandler,
+      runtimeParametersBuilder: runtimeParametersBuilder,
     );
   }
 

@@ -1,0 +1,5 @@
+type: module
+nickname: serverpod_auth_google_account
+
+client_package_path: ../serverpod_auth_google_account_client
+server_test_tools_path: test/integration/test_tools

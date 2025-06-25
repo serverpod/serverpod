@@ -31,7 +31,7 @@ class TableRelationBuilder {
 
   /// Builds a table with the relations added.
   Table build() {
-    return Table(
+    return Table<int?>(
       tableName: _table.tableName,
       tableRelation: TableRelation(_entries),
     );

@@ -3,12 +3,6 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:yaml/yaml.dart';
 
 class AnalyzeChecker {
-  static bool isIdType(dynamic type) {
-    if (type is! String) return false;
-
-    return type == 'int' || type == 'int?';
-  }
-
   static bool isParentDefined(dynamic node) {
     if (node is! YamlMap) return false;
     return node.containsKey(Keyword.parent);
@@ -25,8 +19,8 @@ class AnalyzeChecker {
   }
 
   static List<SerializableModelFieldDefinition> filterRelationByName(
-    ClassDefinition classDefinition,
-    ClassDefinition foreignClass,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition foreignClass,
     String relationFieldName,
     String? relationName,
   ) {

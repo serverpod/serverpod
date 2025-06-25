@@ -12,7 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class EmailAuth
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -53,7 +54,7 @@ abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
   String hash;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
@@ -148,7 +149,7 @@ class _EmailAuthImpl extends EmailAuth {
   }
 }
 
-class EmailAuthTable extends _i1.Table {
+class EmailAuthTable extends _i1.Table<int?> {
   EmailAuthTable({super.tableRelation})
       : super(tableName: 'serverpod_email_auth') {
     userId = _i1.ColumnInt(
@@ -190,7 +191,7 @@ class EmailAuthInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmailAuth.t;
+  _i1.Table<int?> get table => EmailAuth.t;
 }
 
 class EmailAuthIncludeList extends _i1.IncludeList {
@@ -210,7 +211,7 @@ class EmailAuthIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmailAuth.t;
+  _i1.Table<int?> get table => EmailAuth.t;
 }
 
 class EmailAuthRepository {

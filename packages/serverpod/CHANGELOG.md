@@ -1,3 +1,90 @@
+## 2.9.0
+- feat: Adds support for `HalfVector`, `SparseVector` and `Bit` vector types in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
+- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
+- feat: Adds support for supplying CLI arguments from environment variables when starting the server.
+- feat: Adds support for loading custom passwords from environment variables.
+- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.  
+- feat(EXPERIMENTAL): Adds support for registering shutdown tasks that are executed when the server is shutting down. ([yashas-hm](https://github.com/yashas-hm))
+- fix: Fixes an issue where unblocking a user would not invalidate the user cache. ([@LesYampolskyi](https://github.com/LesYampolskyi))
+- fix: Fixes an issue where paths starting with `v` would be stripped when serving static files in the web server.
+- fix: Fixes an issue where the endpoint description would not be generated when creating new projects.
+- fix: Fixes an issue where server configuration would not be loaded correctly if API configuration was missing.
+- fix: Reduce memory footprint of the client when uploading files with `FileUploader`.
+- fix: Improves duration formatting in human-readable log output.
+
+## 2.8.0
+- feat: Adds `DatabaseUtils` with support for executing code blocks in transactions or savepoints.
+- feat: Adds support for `Vector` type, with database `HNSW` and `IVFFLAT` indexing, in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for SSL connections with Redis. ([@remonh87](https://github.com/remonh87))
+- fix: Fixes an issue where configured `user` would not be used when connecting to Redis. ([@remonh87](https://github.com/remonh87))
+- fix: Improves error message when failing to connect to database during startup.
+
+## 2.7.0
+- feat: Adds support for storing `String`-representable user id in `AuthenticationInfo`.
+- feat: Adds support for `UUIDv7` as a default value in models.
+- feat: Adds support for the `@doNotGenerate` annotation for endpoint methods. (Replaces `@ignoreEndpoint`.)
+- feat: Adds support for configuring execution, scan interval, and concurrency limit for future calls.
+- fix: Fixes an issue where migrations could add foreign key relations before their associated table was created.
+- fix: Prevents multiple servers from running migrations in parallel.
+- fix: Fixes an issue where the end of a call would not be logged to the console.
+- fix: Failed health checks now respond with a 503 status code.
+
+## 2.6.0
+- feat: Adds support for endpoint inheritance.
+- feat: Adds support for `@ignoreEndpoint` annotation for endpoint methods.
+- feat: Updates the starter template for new Serverpod projects.
+- fix: Removes unnecessary stack trace from platforms that do not support health checks.
+- fix: Fixes an issue where the `serverpod generate` command would fail in workspace setups.
+- fix: Silences error reporting for authentication rejections in legacy streaming endpoints.
+- feat(EXPERIMENTAL): Adds support for using `UuidValue` as the type for model `id` fields.
+
+## 2.5.1
+ - feat: Adds support for configuring database search path across all database connections.
+ - fix: Limits version compatibility check to `serverpod` and `serverpod_client` packages.
+ - fix: Fixes an issue where record parameters could only be named `record`.
+
+## 2.5.0
+- feat: Enables translations for SignInWithEmailDialog.
+- feat: Adds support for `Record` type in Streaming methods.
+- feat: Adds support for `Record` type in models.
+- feat: Adds support for defining a default value for `Enum` models.
+- feat(EXPERIMENTAL): Adds support for attaching custom data to diagnostic events.
+- fix: Always drains request bodies to prevent unexpected closed connections in the client.
+- fix: Prevents generated model file naming conflicts with framework-generated files.
+- fix: Fixes crash when validating Serverpod package version in CLI.
+- fix: Preserves stack trace in database query exceptions.
+- fix: Fixes crash in update queries for models without fields or when id column is specified.
+- fix: Fixes import issue causing WASM incompatibility in client.
+- fix: Re-enables support for models named "Record".
+- fix: Fixes issue where implicit relations could be dropped during update database operations.
+- fix: Fixes issue where implicit relations were not preserved during serialization roundtrips.
+- fix: Adds support for non-nullable `Set` in models.
+- fix(EXPERIMENTAL): Includes Uri path in diagnostic events.
+- fix(EXPERIMENTAL): Reports diagnostic event on exception during database start and health checks.
+
+## 2.4.0
+- feat: Adds support for configuring certificates for Serverpod API, Web, and Insights servers.
+- feat: Adds support for `Uri`, `BigInt`, and `Set` type in endpoints and models.
+- feat: Adds support for `Record` type in endpoint `Future` return and parameters.
+- feat: Adds support for `List` and `Set` containers in Streaming methods.
+- feat: Adds option to disable caching for static content matching a regexp path in the web server.
+- feat: Gracefully shuts down server on `SIGTERM` signal.
+- feat: Allows configuration of server id via the `SERVERPOD_SERVER_ID` environmental variable.
+- feat(EXPERIMENTAL): Adds support for exception event hooks to enable reporting diagnostic events to monitoring tools.
+- feat(EXPERIMENTAL): Adds API for submitting diagnostic events from user code.
+- fix: Fixes issue where filtering in insights didn’t work as expected with the provided Dockerfile.
+- fix: Fixes an issue so that `name` is now a supported value in Enum models.
+- fix: Removes debug prints from generated client code.
+- fix: Fixes issue where server-only relation fields didn’t enforce the relation as optional.
+- fix: Fixes crash when generator processes model many(`List`) relations without generics.
+- fix: Harmonizes local and global cache miss behavior to ensure proper cache miss handling.
+- fix: Returns a generic error message for internal server errors in web server routes.
+- fix: Adds doc comments to all generated model methods.
+- fix: Fixes issue with relative imports generating backwards slashes on Windows.
+- fix: Fixes crash in `create-migration` when server folder is renamed.
+- fix: Fixes issue where table renaming caused migrations that couldn’t be applied.
+
 ## 2.3.1
 - fix: Resolved an issue where database exceptions failed to generate informative `toString` messages.
 - fix: Improves performance of HTTP request body parsing for both endpoints and the web server.

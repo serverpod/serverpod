@@ -279,8 +279,8 @@ void main() async {
     test(
         'persistent logging should be enabled by default and console logging disabled',
         () async {
-      expect(server.config.sessionLogs?.persistentEnabled, isTrue);
-      expect(server.config.sessionLogs?.consoleEnabled, isFalse);
+      expect(server.config.sessionLogs.persistentEnabled, isTrue);
+      expect(server.config.sessionLogs.consoleEnabled, isFalse);
     });
   });
 
@@ -309,8 +309,8 @@ void main() async {
     test(
         'console logging should be enabled by default and persistent logging disabled',
         () async {
-      expect(server.config.sessionLogs?.persistentEnabled, isFalse);
-      expect(server.config.sessionLogs?.consoleEnabled, isTrue);
+      expect(server.config.sessionLogs.persistentEnabled, isFalse);
+      expect(server.config.sessionLogs.consoleEnabled, isTrue);
     });
   });
 }

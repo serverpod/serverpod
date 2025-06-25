@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
-import '../../../server.dart';
 import '../../generated/protocol.dart';
 
 const double _microNormalizer = 1000 * 1000;
@@ -126,12 +126,6 @@ class SessionLogManager {
       stackTrace: stackTrace?.toString(),
       order: _nextLogOrderId,
     );
-
-    if (_session.serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
 
     if (!_shouldLogEntry(session: _session, entry: entry)) {
       return;
@@ -286,7 +280,7 @@ class SessionLogManager {
   @internal
   Future<int?> finalizeLog(
     Session session, {
-    int? authenticatedUserId,
+    String? authenticatedUserId,
     String? exception,
     StackTrace? stackTrace,
   }) async {
@@ -295,16 +289,6 @@ class SessionLogManager {
 
     var duration = session.duration;
     LogSettings logSettings = _settingsForSession(session);
-
-    if (session.serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln(
-        'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
-      );
-      if (exception != null) {
-        stdout.writeln(exception);
-        stdout.writeln('$stackTrace');
-      }
-    }
 
     var slowMicros =
         (logSettings.slowSessionDuration * _microNormalizer).toInt();
@@ -329,7 +313,10 @@ class SessionLogManager {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
-        authenticatedUserId: authenticatedUserId,
+        // TODO: Support non-`int` user IDs https://github.com/serverpod/serverpod/issues/3448
+        authenticatedUserId: authenticatedUserId == null
+            ? null
+            : int.tryParse(authenticatedUserId),
       );
 
       try {
@@ -338,14 +325,13 @@ class SessionLogManager {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         stderr.writeln(
             'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$logStackTrace');
+        if (exception != null) {
+          stderr.writeln('CALL error: $exception');
+          stderr.writeln('$stackTrace');
+        }
 
-        stderr.writeln('LOG ERRORS');
-        stderr.writeln('$e');
+        stderr.writeln('LOG ERROR: $e');
         stderr.writeln('$logStackTrace');
-        stderr.writeln('Current stacktrace:');
-        stderr.writeln('${StackTrace.current}');
       }
     }
     return null;

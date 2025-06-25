@@ -316,4 +316,116 @@ development:
 
     expect(passwords['database'], 'password');
   });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then custom passwords are included',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      environment: {
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'custom1',
+        'SERVERPOD_PASSWORD_CUSTOM_2': 'custom2',
+      },
+    );
+
+    expect(passwords['CUSTOM_1'], 'custom1');
+    expect(passwords['CUSTOM_2'], 'custom2');
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then non-password environment variables are ignored',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      environment: {
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'custom1',
+        'OTHER_ENV_VAR': 'other',
+      },
+    );
+
+    expect(passwords['CUSTOM_1'], 'custom1');
+    expect(passwords['OTHER_ENV_VAR'], isNull);
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then custom passwords override config passwords',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      loadYaml('''
+development:
+  CUSTOM_1: 'config_value'
+'''),
+      environment: {
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'env_value',
+      },
+    );
+
+    expect(passwords['CUSTOM_1'], 'env_value');
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then custom passwords are merged with standard passwords',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      environment: {
+        'SERVERPOD_DATABASE_PASSWORD': 'db_pass',
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'custom1',
+      },
+    );
+
+    expect(passwords['database'], 'db_pass');
+    expect(passwords['CUSTOM_1'], 'custom1');
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then custom SERVERPOD_PASSWORD_ prefixed variables override built-in passwords',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      loadYaml(_defaultPasswordConfig),
+      environment: {
+        'SERVERPOD_DATABASE_PASSWORD': 'built_in_pass',
+        'SERVERPOD_PASSWORD_database': 'custom_override_pass',
+      },
+    );
+
+    expect(passwords['database'], 'custom_override_pass');
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then environment variables with empty suffix are ignored',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      environment: {
+        'SERVERPOD_PASSWORD_': 'empty_suffix',
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'custom1',
+      },
+    );
+
+    expect(passwords[''], isNull);
+    expect(passwords['CUSTOM_1'], 'custom1');
+  });
+
+  test(
+      'Given user-defined environment passwords when loading passwords then environment variables with only prefix are ignored',
+      () {
+    final passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      environment: {
+        'SERVERPOD_PASSWORD': 'only_prefix',
+        'SERVERPOD_PASSWORD_CUSTOM_1': 'custom1',
+      },
+    );
+
+    expect(passwords['SERVERPOD_PASSWORD'], isNull);
+    expect(passwords['CUSTOM_1'], 'custom1');
+  });
 }

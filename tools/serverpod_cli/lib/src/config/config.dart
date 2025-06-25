@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/util/yaml_util.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -151,6 +152,10 @@ class GeneratorConfig implements ModelLoadConfig {
   List<String> get generatedServerProtocolFilePathParts =>
       [...generatedServeModelPathParts, 'protocol.dart'];
 
+  /// The path parts of the generated protocol file.
+  List<String> get generatedServerEndpointDescriptionFilePathParts =>
+      [...generatedServeModelPathParts, 'protocol.yaml'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [
@@ -259,13 +264,10 @@ class GeneratorConfig implements ModelLoadConfig {
     var name = _stripPackage(serverPackage);
 
     var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
-    Map generatorConfig = {};
-    try {
-      var yamlStr = file.readAsStringSync();
-      generatorConfig = loadYaml(yamlStr);
-    } catch (_) {}
-
-    PackageType type = getPackageType(generatorConfig);
+    YamlMap generatorConfig = await file.exists()
+        ? loadYamlMap(await file.readAsString(), sourceUrl: file.uri)
+        : YamlMap();
+    var type = getPackageType(generatorConfig);
 
     var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
@@ -337,16 +339,11 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var modules = await locateModules(
-      directory: Directory(serverRootDir),
-      manualModules: manualModules,
+    var modules = loadModuleConfigs(
+      packageConfig: packageConfig,
+      projectPubspec: pubspec,
+      nickNameOverrides: manualModules,
     );
-
-    if (modules == null) {
-      throw const ServerpodModulesNotFoundException(
-        'Failed to locate modules',
-      );
-    }
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];

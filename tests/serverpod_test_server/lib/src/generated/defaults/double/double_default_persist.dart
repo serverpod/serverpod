@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefaultPersist
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DoubleDefaultPersist._({
     this.id,
     this.doubleDefaultPersist,
@@ -42,7 +42,7 @@ abstract class DoubleDefaultPersist
   double? doubleDefaultPersist;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -127,7 +127,7 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }
 }
 
-class DoubleDefaultPersistTable extends _i1.Table {
+class DoubleDefaultPersistTable extends _i1.Table<int?> {
   DoubleDefaultPersistTable({super.tableRelation})
       : super(tableName: 'double_default_persist') {
     doubleDefaultPersist = _i1.ColumnDouble(
@@ -153,7 +153,7 @@ class DoubleDefaultPersistInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => DoubleDefaultPersist.t;
+  _i1.Table<int?> get table => DoubleDefaultPersist.t;
 }
 
 class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
@@ -173,7 +173,7 @@ class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => DoubleDefaultPersist.t;
+  _i1.Table<int?> get table => DoubleDefaultPersist.t;
 }
 
 class DoubleDefaultPersistRepository {

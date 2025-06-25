@@ -3,9 +3,9 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var citizenTable = Table(tableName: 'citizen');
-  var companyTable = Table(tableName: 'company');
-  var relationTable = Table(
+  var citizenTable = Table<int?>(tableName: 'citizen');
+  var companyTable = Table<int?>(tableName: 'company');
+  var relationTable = Table<int?>(
     tableName: companyTable.tableName,
     tableRelation: TableRelation([
       TableRelationEntry(

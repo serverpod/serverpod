@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given ColumnBigInt', () {
     var columnName = 'bigint';
-    var column = ColumnBigInt(columnName, Table(tableName: 'test'));
+    var column = ColumnBigInt(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',

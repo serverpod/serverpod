@@ -2,9 +2,10 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -34,6 +35,43 @@ void main() {
         expect(
           definition.fields.last.defaultModelValue,
           '\'Default error message\'',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type Enum serialized by string, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withFileName('by_name_enum').withYaml(
+            '''
+          enum: ByNameEnum
+          serialized: byName
+          values:
+            - byName1
+            - byName2
+          ''',
+          ).build(),
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultEnum: ByNameEnum, default=byName1
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.last as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          'byName1',
         );
       },
     );

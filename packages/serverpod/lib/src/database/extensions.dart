@@ -79,16 +79,6 @@ extension TableComparisons on TableDefinition {
       );
     }
 
-    if (other.schema != schema) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'schema',
-          expected: schema,
-          found: other.schema,
-        ),
-      );
-    }
-
     if (managed != null && other.managed != null && managed != other.managed) {
       mismatches.add(
         TableComparisonWarning(
@@ -215,6 +205,16 @@ extension ColumnComparisons on ColumnDefinition {
       );
     }
 
+    if (vectorDimension != other.vectorDimension) {
+      mismatches.add(
+        ColumnComparisonWarning(
+          name: 'vector dimension',
+          expected: '$vectorDimension',
+          found: '${other.vectorDimension}',
+        ),
+      );
+    }
+
     return mismatches;
   }
 }
@@ -289,6 +289,52 @@ extension IndexComparisons on IndexDefinition {
         ),
       );
     }
+
+    if (vectorDistanceFunction != other.vectorDistanceFunction) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'vector distance function',
+          expected: vectorDistanceFunction?.name,
+          found: other.vectorDistanceFunction?.name,
+        ),
+      );
+    }
+
+    if (vectorColumnType != other.vectorColumnType) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'vector column type',
+          expected: vectorColumnType?.name,
+          found: other.vectorColumnType?.name,
+        ),
+      );
+    }
+
+    // New parameters missing on other (or if other is null)
+    parameters?.entries.forEach((entry) {
+      if (other.parameters?[entry.key] != entry.value) {
+        mismatches.add(
+          IndexComparisonWarning(
+            name: 'parameter ${entry.key}',
+            expected: entry.value,
+            found: other.parameters?[entry.key],
+          ),
+        );
+      }
+    });
+
+    // Other parameters missing on this (or if this is null)
+    other.parameters?.entries.forEach((otherEntry) {
+      if (parameters?[otherEntry.key] == null) {
+        mismatches.add(
+          IndexComparisonWarning(
+            name: 'parameter ${otherEntry.key}',
+            expected: null,
+            found: otherEntry.value,
+          ),
+        );
+      }
+    });
 
     if (elements.length != other.elements.length) {
       mismatches.add(
@@ -379,16 +425,6 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
           name: 'reference table',
           expected: referenceTable,
           found: other.referenceTable,
-        ),
-      );
-    }
-
-    if (referenceTableSchema != other.referenceTableSchema) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference schema',
-          expected: referenceTableSchema,
-          found: other.referenceTableSchema,
         ),
       );
     }

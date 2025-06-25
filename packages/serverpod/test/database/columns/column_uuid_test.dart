@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnUuid', () {
     var columnName = 'id';
-    var column = ColumnUuid(columnName, Table(tableName: 'test'));
+    var column = ColumnUuid(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
@@ -106,6 +106,162 @@ void main() {
 
         expect(comparisonExpression.toString(), 'TRUE');
       });
+    });
+
+    test(
+        'when greater than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column > const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column > 10');
+    });
+
+    test(
+        'when greater than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column > UuidValue.fromString('testUuid1');
+
+      expect(comparisonExpression.toString(), '$column > \'testuuid1\'');
+    });
+
+    test(
+        'when greater than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column > column;
+
+      expect(comparisonExpression.toString(), '$column > $column');
+    });
+
+    test(
+        'when greater than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column > 'string is unhandled',
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: String, allowed types are Expression, UuidValue or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when greater or equal than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column >= const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column >= 10');
+    });
+
+    test(
+        'when greater or equal than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column >= UuidValue.fromString('testUuid1');
+
+      expect(comparisonExpression.toString(), '$column >= \'testuuid1\'');
+    });
+
+    test(
+        'when greater or equal than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column >= column;
+
+      expect(comparisonExpression.toString(), '$column >= $column');
+    });
+
+    test(
+        'when greater or equal than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column >= 'string is unhandled',
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: String, allowed types are Expression, UuidValue or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when less than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column < const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column < 10');
+    });
+
+    test(
+        'when less than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column < UuidValue.fromString('testUuid1');
+
+      expect(comparisonExpression.toString(), '$column < \'testuuid1\'');
+    });
+
+    test(
+        'when less than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column < column;
+
+      expect(comparisonExpression.toString(), '$column < $column');
+    });
+
+    test(
+        'when less than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column < 'string is unhandled',
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: String, allowed types are Expression, UuidValue or Column',
+          ),
+        ),
+      );
+    });
+
+    test(
+        'when less or equal than compared to expression then output is operator expression.',
+        () {
+      var comparisonExpression = column <= const Expression('10');
+
+      expect(comparisonExpression.toString(), '$column <= 10');
+    });
+
+    test(
+        'when less or equal than compared to column type then output is operator expression.',
+        () {
+      var comparisonExpression = column <= UuidValue.fromString('testUuid1');
+
+      expect(comparisonExpression.toString(), '$column <= \'testuuid1\'');
+    });
+
+    test(
+        'when less or equal than compared to column then output is operator expression.',
+        () {
+      var comparisonExpression = column <= column;
+
+      expect(comparisonExpression.toString(), '$column <= $column');
+    });
+
+    test(
+        'when less or equal than compared to unhandled type then argument error is thrown.',
+        () {
+      expect(
+        () => column <= 'string is unhandled',
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid type for comparison: String, allowed types are Expression, UuidValue or Column',
+          ),
+        ),
+      );
     });
   });
 }

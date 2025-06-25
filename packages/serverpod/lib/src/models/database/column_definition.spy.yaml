@@ -17,3 +17,7 @@ fields:
   ### Is nullable, since this is not available when
   ### analyzing the database.
   dartType: String?
+
+  ### Stores the dimension of Vector type (e.g., 1536 for Vector(1536)).
+  ### Only populated for Vector types.
+  vectorDimension: int?

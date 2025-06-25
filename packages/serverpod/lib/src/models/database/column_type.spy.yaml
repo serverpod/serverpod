@@ -23,3 +23,11 @@ values:
   ### Used for unknown types, that have never been
   ### used by Serverpod.
   - unknown
+  ### Dart type: [Vector]
+  - vector
+  ### Dart type: [HalfVector]
+  - halfvec
+  ### Dart type: [SparseVector]
+  - sparsevec
+  ### Dart type: [Bit]
+  - bit

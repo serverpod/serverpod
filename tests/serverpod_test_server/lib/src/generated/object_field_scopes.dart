@@ -12,7 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectFieldScopes
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectFieldScopes._({
     this.id,
     required this.normal,
@@ -50,7 +50,7 @@ abstract class ObjectFieldScopes
   String? database;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +144,7 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
   }
 }
 
-class ObjectFieldScopesTable extends _i1.Table {
+class ObjectFieldScopesTable extends _i1.Table<int?> {
   ObjectFieldScopesTable({super.tableRelation})
       : super(tableName: 'object_field_scopes') {
     normal = _i1.ColumnString(
@@ -176,7 +176,7 @@ class ObjectFieldScopesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectFieldScopes.t;
+  _i1.Table<int?> get table => ObjectFieldScopes.t;
 }
 
 class ObjectFieldScopesIncludeList extends _i1.IncludeList {
@@ -196,7 +196,7 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectFieldScopes.t;
+  _i1.Table<int?> get table => ObjectFieldScopes.t;
 }
 
 class ObjectFieldScopesRepository {

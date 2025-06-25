@@ -5,25 +5,31 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// Holds data corresponding to a row in the database. Concrete classes are
 /// typically generated. Instances of [TableRow] can also be serialized and
 /// either passed to clients or cached.
-abstract interface class TableRow implements SerializableModel {
+abstract interface class TableRow<T_ID> implements SerializableModel {
+  TableRow(this.id);
+
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
-  int? id;
+  T_ID id;
 
   /// The table that this row belongs to.
-  Table get table;
+  Table<T_ID> get table;
 }
 
 /// Represents a database table.
-class Table {
+class Table<T_ID> {
   /// Name of the table as used in the database.
   final String tableName;
 
   /// The database id.
-  late final ColumnInt id;
+  late final ColumnComparable<T_ID> id;
 
   /// List of [Column] used by the table.
   List<Column> get columns => [id];
+
+  /// List of [Column] that are managed by this table.
+  /// This is mostly used to exclude columns created by implicit relations.
+  List<Column> get managedColumns => columns;
 
   /// Query prefix for [Column]s of the table.
   String get queryPrefix {
@@ -38,15 +44,32 @@ class Table {
     required this.tableName,
     this.tableRelation,
   }) {
-    id = ColumnInt(
-      'id',
-      this,
-      hasDefault: true,
-    );
+    if (T_ID == dynamic) {
+      throw Exception(
+        'Can not create a table without passing an id type. Use the format '
+        'Table<int?>(...) or Table<UuidValue>(...) to specify the id type.',
+      );
+    }
+    if (equalsType<T_ID, int>()) {
+      id = ColumnInt(
+        'id',
+        this,
+        hasDefault: true,
+      ) as ColumnComparable<T_ID>;
+    } else if (equalsType<T_ID, UuidValue>()) {
+      id = ColumnUuid(
+        'id',
+        this,
+        hasDefault: true,
+      ) as ColumnComparable<T_ID>;
+    } else {
+      throw Exception('Unsupported id type: $T_ID');
+    }
   }
 
   /// Returns [TableColumnRelation] for the given [relationField]. If no relation
-  /// exists, returns null.
+  /// exists, returns null. The return must be dynamic to allow for relations
+  /// with different id types.
   Table? getRelationTable(String relationField) {
     return null;
   }
@@ -93,3 +116,7 @@ T createRelationTable<T>({
     tableRelation.copyAndAppend(relationDefinition),
   );
 }
+
+/// Checks if the type [T] is equal to type [Y] (nullable or non-nullable).
+bool equalsType<T_ID, Y>() => _equalsType<T_ID, Y>() || _equalsType<T_ID, Y?>();
+bool _equalsType<T, Y>() => T == Y;

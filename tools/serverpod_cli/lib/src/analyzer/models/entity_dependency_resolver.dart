@@ -12,11 +12,21 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      _resolveInheritance(classDefinition, modelDefinitions);
-      for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
-        _resolveFieldIndexes(fieldDefinition, classDefinition);
+      if (classDefinition is ModelClassDefinition) {
+        _resolveInheritance(classDefinition, modelDefinitions);
+      }
+
+      var fields = classDefinition is ModelClassDefinition
+          ? classDefinition.fieldsIncludingInherited
+          : classDefinition.fields;
+
+      for (var fieldDefinition in fields) {
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
         _resolveEnumType(fieldDefinition.type, modelDefinitions);
+
+        if (classDefinition is! ModelClassDefinition) continue;
+
+        _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveObjectRelationReference(
           classDefinition,
           fieldDefinition,
@@ -32,7 +42,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveInheritance(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var extendedClass = classDefinition.extendsClass;
@@ -42,7 +52,7 @@ class ModelDependencyResolver {
     var parentClassName = extendedClass.className;
 
     var parentClass = modelDefinitions
-        .whereType<ClassDefinition>()
+        .whereType<ModelClassDefinition>()
         .where((element) => element.className == parentClassName)
         .firstOrNull;
 
@@ -59,7 +69,7 @@ class ModelDependencyResolver {
 
   static void _resolveFieldIndexes(
     SerializableModelFieldDefinition fieldDefinition,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     var indexes = classDefinition.indexes;
     if (indexes.isEmpty) return;
@@ -101,7 +111,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveObjectRelationReference(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     SerializableModelFieldDefinition fieldDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
@@ -116,7 +126,7 @@ class ModelDependencyResolver {
                 model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
             orElse: () => null);
 
-    if (referenceClass is! ClassDefinition) return;
+    if (referenceClass is! ModelClassDefinition) return;
 
     var tableName = referenceClass.tableName;
     if (tableName is! String) return;
@@ -150,6 +160,7 @@ class ModelDependencyResolver {
     } else if (foreignField != null) {
       _resolveNamedForeignObjectRelation(
         classDefinition,
+        referenceClass,
         fieldDefinition,
         relation,
         tableName,
@@ -159,7 +170,8 @@ class ModelDependencyResolver {
   }
 
   static void _resolveNamedForeignObjectRelation(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition referenceClass,
     SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
@@ -186,6 +198,9 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       name: relation.name,
+      parentTableIdType: relation.isForeignKeyOrigin
+          ? classDefinition.idField.type
+          : referenceClass.idField.type,
       parentTable: tableName,
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
@@ -196,15 +211,15 @@ class ModelDependencyResolver {
   }
 
   static void _resolveImplicitDefinedRelation(
-    ClassDefinition classDefinition,
-    ClassDefinition referenceDefinition,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition referenceDefinition,
     SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
     var relationFieldType = relation.nullableRelation
-        ? TypeDefinition.int.asNullable
-        : TypeDefinition.int;
+        ? referenceDefinition.idField.type.asNullable
+        : referenceDefinition.idField.type.asNonNullable;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -243,6 +258,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: foreignRelationField.name,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,
@@ -252,8 +268,8 @@ class ModelDependencyResolver {
   }
 
   static void _resolveManualDefinedRelation(
-    ClassDefinition classDefinition,
-    ClassDefinition referenceDefinition,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition referenceDefinition,
     SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
@@ -293,6 +309,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
+      parentTableIdType: classDefinition.idField.type,
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,
@@ -302,8 +319,8 @@ class ModelDependencyResolver {
   }
 
   static SerializableModelFieldDefinition? _findForeignFieldByRelationName(
-    ClassDefinition classDefinition,
-    ClassDefinition foreignClass,
+    ModelClassDefinition classDefinition,
+    ModelClassDefinition foreignClass,
     String fieldName,
     String? relationName,
   ) {
@@ -335,7 +352,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveListRelationReference(
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
     SerializableModelFieldDefinition fieldDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
@@ -359,7 +376,7 @@ class ModelDependencyResolver {
               orElse: () => null,
             );
 
-    if (referenceClass is! ClassDefinition) return;
+    if (referenceClass is! ModelClassDefinition) return;
 
     var tableName = classDefinition.tableName;
     if (tableName == null) return;
@@ -374,7 +391,7 @@ class ModelDependencyResolver {
 
       var foreignField = SerializableModelFieldDefinition(
         name: foreignFieldName,
-        type: TypeDefinition.int.asNullable,
+        type: classDefinition.idField.type.asNullable,
         scope: ModelFieldScopeDefinition.none,
         shouldPersist: true,
         relation: ForeignRelationDefinition(
@@ -392,6 +409,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: autoRelationName,
+        foreignKeyOwnerIdType: classDefinition.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField:
@@ -403,7 +421,9 @@ class ModelDependencyResolver {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
         if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
-            fieldRelation is ForeignRelationDefinition)) return false;
+            fieldRelation is ForeignRelationDefinition)) {
+          return false;
+        }
         return fieldRelation?.name == relation.name;
       });
 
@@ -433,6 +453,7 @@ class ModelDependencyResolver {
 
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
+        foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,

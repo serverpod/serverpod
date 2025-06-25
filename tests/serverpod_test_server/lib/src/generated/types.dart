@@ -13,8 +13,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i5;
 
-abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
+abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -27,11 +28,16 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     this.aUuid,
     this.aUri,
     this.aBigInt,
+    this.aVector,
+    this.aHalfVector,
+    this.aSparseVector,
+    this.aBit,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
     this.aMap,
     this.aSet,
+    this.aRecord,
   });
 
   factory Types({
@@ -46,11 +52,16 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -78,6 +89,20 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
           : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+      aVector: jsonSerialization['aVector'] == null
+          ? null
+          : _i1.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+      aHalfVector: jsonSerialization['aHalfVector'] == null
+          ? null
+          : _i1.HalfVectorJsonExtension.fromJson(
+              jsonSerialization['aHalfVector']),
+      aSparseVector: jsonSerialization['aSparseVector'] == null
+          ? null
+          : _i1.SparseVectorJsonExtension.fromJson(
+              jsonSerialization['aSparseVector']),
+      aBit: jsonSerialization['aBit'] == null
+          ? null
+          : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -93,6 +118,10 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
           ? null
           : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
               itemFromJson: (e) => e as int),
+      aRecord: jsonSerialization['aRecord'] == null
+          ? null
+          : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
+              (jsonSerialization['aRecord'] as Map<String, dynamic>)),
     );
   }
 
@@ -123,6 +152,14 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
 
   BigInt? aBigInt;
 
+  _i1.Vector? aVector;
+
+  _i1.HalfVector? aHalfVector;
+
+  _i1.SparseVector? aSparseVector;
+
+  _i1.Bit? aBit;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -133,8 +170,10 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
 
   Set<int>? aSet;
 
+  (String, {Uri? optionalUri})? aRecord;
+
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -151,11 +190,16 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -171,12 +215,17 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
     };
   }
 
@@ -194,12 +243,17 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
       if (aUuid != null) 'aUuid': aUuid?.toJson(),
       if (aUri != null) 'aUri': aUri?.toJson(),
       if (aBigInt != null) 'aBigInt': aBigInt?.toJson(),
+      if (aVector != null) 'aVector': aVector?.toJson(),
+      if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
+      if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
+      if (aBit != null) 'aBit': aBit?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
+      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
     };
   }
 
@@ -248,11 +302,16 @@ class _TypesImpl extends Types {
     _i1.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
+    _i1.Vector? aVector,
+    _i1.HalfVector? aHalfVector,
+    _i1.SparseVector? aSparseVector,
+    _i1.Bit? aBit,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
+    (String, {Uri? optionalUri})? aRecord,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -265,11 +324,16 @@ class _TypesImpl extends Types {
           aUuid: aUuid,
           aUri: aUri,
           aBigInt: aBigInt,
+          aVector: aVector,
+          aHalfVector: aHalfVector,
+          aSparseVector: aSparseVector,
+          aBit: aBit,
           anEnum: anEnum,
           aStringifiedEnum: aStringifiedEnum,
           aList: aList,
           aMap: aMap,
           aSet: aSet,
+          aRecord: aRecord,
         );
 
   /// Returns a shallow copy of this [Types]
@@ -288,11 +352,16 @@ class _TypesImpl extends Types {
     Object? aUuid = _Undefined,
     Object? aUri = _Undefined,
     Object? aBigInt = _Undefined,
+    Object? aVector = _Undefined,
+    Object? aHalfVector = _Undefined,
+    Object? aSparseVector = _Undefined,
+    Object? aBit = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
     Object? aMap = _Undefined,
     Object? aSet = _Undefined,
+    Object? aRecord = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -307,6 +376,14 @@ class _TypesImpl extends Types {
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
+      aVector: aVector is _i1.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _i1.HalfVector?
+          ? aHalfVector
+          : this.aHalfVector?.clone(),
+      aSparseVector: aSparseVector is _i1.SparseVector?
+          ? aSparseVector
+          : this.aSparseVector?.clone(),
+      aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
@@ -323,11 +400,19 @@ class _TypesImpl extends Types {
                     value0,
                   )),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
+      aRecord: aRecord is (String, {Uri? optionalUri})?
+          ? aRecord
+          : this.aRecord == null
+              ? null
+              : (
+                  this.aRecord!.$1,
+                  optionalUri: this.aRecord!.optionalUri,
+                ),
     );
   }
 }
 
-class TypesTable extends _i1.Table {
+class TypesTable extends _i1.Table<int?> {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
@@ -369,6 +454,26 @@ class TypesTable extends _i1.Table {
       'aBigInt',
       this,
     );
+    aVector = _i1.ColumnVector(
+      'aVector',
+      this,
+      dimension: 3,
+    );
+    aHalfVector = _i1.ColumnHalfVector(
+      'aHalfVector',
+      this,
+      dimension: 3,
+    );
+    aSparseVector = _i1.ColumnSparseVector(
+      'aSparseVector',
+      this,
+      dimension: 3,
+    );
+    aBit = _i1.ColumnBit(
+      'aBit',
+      this,
+      dimension: 3,
+    );
     anEnum = _i1.ColumnEnum(
       'anEnum',
       this,
@@ -389,6 +494,10 @@ class TypesTable extends _i1.Table {
     );
     aSet = _i1.ColumnSerializable(
       'aSet',
+      this,
+    );
+    aRecord = _i1.ColumnSerializable(
+      'aRecord',
       this,
     );
   }
@@ -413,6 +522,14 @@ class TypesTable extends _i1.Table {
 
   late final _i1.ColumnBigInt aBigInt;
 
+  late final _i1.ColumnVector aVector;
+
+  late final _i1.ColumnHalfVector aHalfVector;
+
+  late final _i1.ColumnSparseVector aSparseVector;
+
+  late final _i1.ColumnBit aBit;
+
   late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
   late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
@@ -422,6 +539,8 @@ class TypesTable extends _i1.Table {
   late final _i1.ColumnSerializable aMap;
 
   late final _i1.ColumnSerializable aSet;
+
+  late final _i1.ColumnSerializable aRecord;
 
   @override
   List<_i1.Column> get columns => [
@@ -436,11 +555,16 @@ class TypesTable extends _i1.Table {
         aUuid,
         aUri,
         aBigInt,
+        aVector,
+        aHalfVector,
+        aSparseVector,
+        aBit,
         anEnum,
         aStringifiedEnum,
         aList,
         aMap,
         aSet,
+        aRecord,
       ];
 }
 
@@ -451,7 +575,7 @@ class TypesInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Types.t;
+  _i1.Table<int?> get table => Types.t;
 }
 
 class TypesIncludeList extends _i1.IncludeList {
@@ -471,7 +595,7 @@ class TypesIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Types.t;
+  _i1.Table<int?> get table => Types.t;
 }
 
 class TypesRepository {

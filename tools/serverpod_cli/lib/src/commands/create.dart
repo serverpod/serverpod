@@ -3,9 +3,65 @@ import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-class CreateCommand extends ServerpodCommand {
-  final templateTypes =
-      ServerpodTemplateType.values.map((t) => t.name).toList();
+enum CreateOption<V> implements OptionDefinition<V> {
+  force(FlagOption(
+    argName: 'force',
+    argAbbrev: 'f',
+    defaultsTo: false,
+    negatable: false,
+    helpText:
+        'Create the project even if there are issues that prevent it from '
+        'running out of the box.',
+  )),
+  mini(FlagOption(
+    argName: 'mini',
+    defaultsTo: false,
+    negatable: false,
+    helpText: 'Shortcut for --template mini.',
+    group: _templateGroup,
+  )),
+  template(EnumOption(
+    enumParser: EnumParser(ServerpodTemplateType.values),
+    argName: 'template',
+    argAbbrev: 't',
+    defaultsTo: ServerpodTemplateType.server,
+    helpText: 'Template to use when creating a new project',
+    allowedValues: ServerpodTemplateType.values,
+    allowedHelp: {
+      'mini': 'Mini project with minimal features and no database',
+      'server': 'Server project with standard features including database',
+      'module': 'Serverpod Module project',
+    },
+    group: _templateGroup,
+  )),
+  name(StringOption(
+    argName: 'name',
+    argAbbrev: 'n',
+    argPos: 0,
+    helpText: 'The name of the project to create.\n'
+        'Can also be specified as the first argument.',
+    mandatory: true,
+  ));
+
+  static const _templateGroup = MutuallyExclusive(
+    'Project Template',
+    mode: MutuallyExclusiveMode.allowDefaults,
+  );
+
+  const CreateOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class CreateCommand extends ServerpodCommand<CreateOption> {
+  final restrictedNames = [
+    ...ServerpodTemplateType.values.map((t) => t.name),
+    'create',
+    'migration',
+    'repair',
+    'repair-migration',
+  ];
 
   @override
   final name = 'create';
@@ -15,56 +71,22 @@ class CreateCommand extends ServerpodCommand {
       'Creates a new Serverpod project, specify project name (must be '
       'lowercase with no special characters).';
 
-  CreateCommand() {
-    argParser.addFlag(
-      'force',
-      abbr: 'f',
-      negatable: false,
-      help: 'Create the project even if there are issues that prevent it from '
-          'running out of the box.',
-    );
-    argParser.addFlag(
-      'mini',
-      negatable: false,
-      help: 'Shortcut for --template mini.',
-    );
-    argParser.addOption(
-      'template',
-      abbr: 't',
-      defaultsTo: ServerpodTemplateType.server.name,
-      allowed: templateTypes,
-      help: 'Template to use when creating a new project, valid options are '
-          '"mini", "server" or "module".',
-    );
-  }
+  CreateCommand() : super(options: CreateOption.values);
 
   @override
-  Future<void> run() async {
-    var rest = argResults?.rest;
+  Future<void> runWithConfig(Configuration<CreateOption> commandConfig) async {
+    var template = commandConfig.value(CreateOption.mini)
+        ? ServerpodTemplateType.mini
+        : commandConfig.value(CreateOption.template);
+    var force = commandConfig.value(CreateOption.force);
+    var name = commandConfig.value(CreateOption.name);
 
-    if (rest == null || rest.isEmpty) {
-      log.error('Project name missing.');
-      printUsage();
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    if (rest.length > 1) {
-      log.error('Multiple project names specified, please specify only.');
-      printUsage();
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var name = rest.last;
-    var template = ServerpodTemplateType.tryParse(argResults!['template']);
-    bool force = argResults!['force'];
-
-    if (argResults!['mini']) {
-      template = ServerpodTemplateType.mini;
-    }
-
-    if (template == null || templateTypes.contains(name) || name == 'create') {
-      printUsage();
-      return;
+    if (restrictedNames.contains(name) && !force) {
+      log.error(
+        'Are you sure you want to create a project named "$name"?\n'
+        'Use the --${CreateOption.force.option.argName} flag to force creation.',
+      );
+      throw ExitException.error();
     }
 
     if (!await performCreate(name, template, force)) {

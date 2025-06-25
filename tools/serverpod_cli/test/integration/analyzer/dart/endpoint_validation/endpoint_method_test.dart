@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/endpoint_validation_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
+
+import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
 var testProjectDirectory = Directory(path.joinAll([
@@ -1184,21 +1185,33 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation error is reported that the type is not supported.',
-        () {
-      expect(collector.errors, hasLength(1));
-      expect(
-        collector.errors.firstOrNull?.message,
-        'The type "(String, String)" is not a supported endpoint return type.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint method definition is not created.', () {
-      expect(endpointDefinitions.firstOrNull?.methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('has expected name.', () {
+        var name = endpointDefinitions.firstOrNull?.methods.firstOrNull?.name;
+        expect(name, 'hello');
+      });
+
+      test('has no documentation.', () {
+        var documentation = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.documentationComment;
+        expect(documentation, isNull);
+      });
+
+      test('has expected return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.single.isRecordType, isTrue);
+      });
     });
   });
 
@@ -1260,6 +1273,90 @@ Error on line 6, column 31 of .+: The type "String Function\(\)" is not a suppor
 
     test('then endpoint method definition is not created.', () {
       expect(endpointDefinitions.firstOrNull?.methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given valid endpoint with a single method marked as `@doNotGenerate` when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @doNotGenerate
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no methods are collected.', () {
+      expect(
+        endpointDefinitions.firstOrNull?.methods,
+        isEmpty,
+      );
+    });
+  });
+
+  group(
+      'Given valid endpoint with a single method marked with legacy `@ignoreEndpoint` annotation when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @ignoreEndpoint
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no methods are collected.', () {
+      expect(
+        endpointDefinitions.firstOrNull?.methods,
+        isEmpty,
+      );
     });
   });
 }

@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
 abstract class EmailFailedSignIn
-    implements _i1.TableRow, _i1.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   EmailFailedSignIn._({
     this.id,
     required this.email,
@@ -55,7 +55,7 @@ abstract class EmailFailedSignIn
   String ipAddress;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
@@ -150,7 +150,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
   }
 }
 
-class EmailFailedSignInTable extends _i1.Table {
+class EmailFailedSignInTable extends _i1.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
       : super(tableName: 'serverpod_email_failed_sign_in') {
     email = _i1.ColumnString(
@@ -192,7 +192,7 @@ class EmailFailedSignInInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => EmailFailedSignIn.t;
+  _i1.Table<int?> get table => EmailFailedSignIn.t;
 }
 
 class EmailFailedSignInIncludeList extends _i1.IncludeList {
@@ -212,7 +212,7 @@ class EmailFailedSignInIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => EmailFailedSignIn.t;
+  _i1.Table<int?> get table => EmailFailedSignIn.t;
 }
 
 class EmailFailedSignInRepository {

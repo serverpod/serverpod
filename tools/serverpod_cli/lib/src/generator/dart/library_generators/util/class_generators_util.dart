@@ -5,6 +5,13 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+Expression createClassExpression(bool hasImplicitClass, String className) {
+  return switch (hasImplicitClass) {
+    true => refer('${className}Implicit').property('_'),
+    false => refer(className),
+  };
+}
+
 String createFieldName(
   bool serverCode,
   SerializableModelFieldDefinition field,
@@ -71,7 +78,7 @@ Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   Reference jsonReference = refer('jsonSerialization');
   return _buildFromJson(
@@ -79,8 +86,8 @@ Expression buildFromJsonForField(
     field.type,
     serverCode,
     config,
-    classDefinition,
     fieldName: field.name,
+    subDirParts: subDirParts,
   );
 }
 
@@ -105,10 +112,10 @@ Expression _buildFromJson(
   Reference jsonReference,
   TypeDefinition type,
   bool serverCode,
-  GeneratorConfig config,
-  ClassDefinition classDefinition, {
+  GeneratorConfig config, {
   String? fieldName,
   Expression? mapExpression,
+  required List<String> subDirParts,
 }) {
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
@@ -132,6 +139,15 @@ Expression _buildFromJson(
     case ValueType.byteData:
     case ValueType.uuidValue:
     case ValueType.uri:
+    case ValueType.vector:
+    case ValueType.halfVector:
+    case ValueType.sparseVector:
+    case ValueType.bit:
+      return _buildComplexTypeFromJson(
+        type,
+        valueExpression,
+        serverCode,
+      );
     case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,
@@ -149,7 +165,7 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
       );
     case ValueType.list:
     case ValueType.set:
@@ -159,8 +175,8 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
         valueType == ValueType.list,
+        subDirParts,
       );
     case ValueType.map:
       return _buildMapTypeFromJson(
@@ -169,7 +185,7 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
       );
     case ValueType.classType:
       return _buildClassTypeFromJson(
@@ -177,7 +193,15 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         config,
-        classDefinition,
+        subDirParts,
+      );
+    case ValueType.record:
+      return _buildRecordTypeFromJson(
+        type,
+        valueExpression,
+        serverCode,
+        config,
+        subDirParts,
       );
   }
 }
@@ -227,11 +251,11 @@ Expression _buildEnumTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   Reference typeRef = type.asNonNullable.reference(
     serverCode,
-    subDirParts: classDefinition.subDirParts,
+    subDirParts: subDirParts,
     config: config,
   );
 
@@ -260,8 +284,8 @@ Expression _buildListOrSetTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
   bool isList,
+  List<String> subDirParts,
 ) {
   if (type.isSetType) {
     return CodeExpression(Block.of([
@@ -283,10 +307,11 @@ Expression _buildListOrSetTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e'),
+        subDirParts: subDirParts,
       ).code,
       const Code(')'),
+      if (type.isSetType && !type.nullable) const Code('!'),
     ]));
   }
 
@@ -303,8 +328,8 @@ Expression _buildListOrSetTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e'),
+        subDirParts: subDirParts,
       ).code,
       const Code(').toList()'),
     ]),
@@ -317,7 +342,7 @@ Expression _buildMapTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   if (type.generics.first.valueType == ValueType.string) {
     return CodeExpression(
@@ -333,16 +358,16 @@ Expression _buildMapTypeFromJson(
             type.generics.first,
             serverCode,
             config,
-            classDefinition,
             mapExpression: refer('k'),
+            subDirParts: subDirParts,
           ),
           _buildFromJson(
             jsonReference,
             type.generics.last,
             serverCode,
             config,
-            classDefinition,
             mapExpression: refer('v'),
+            subDirParts: subDirParts,
           ),
         ]).code,
         const Code(')'),
@@ -359,7 +384,7 @@ Expression _buildMapTypeFromJson(
       type.generics.first
           .reference(
             serverCode,
-            subDirParts: classDefinition.subDirParts,
+            subDirParts: subDirParts,
             config: config,
           )
           .code,
@@ -367,7 +392,7 @@ Expression _buildMapTypeFromJson(
       type.generics.last
           .reference(
             serverCode,
-            subDirParts: classDefinition.subDirParts,
+            subDirParts: subDirParts,
             config: config,
           )
           .code,
@@ -377,8 +402,8 @@ Expression _buildMapTypeFromJson(
         type.generics.first,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e').index(literalString('k')),
+        subDirParts: subDirParts,
       ).code,
       const Code(':'),
       _buildFromJson(
@@ -386,8 +411,8 @@ Expression _buildMapTypeFromJson(
         type.generics.last,
         serverCode,
         config,
-        classDefinition,
         mapExpression: refer('e').index(literalString('v')),
+        subDirParts: subDirParts,
       ).code,
       const Code('})'),
     ]),
@@ -399,13 +424,13 @@ Expression _buildClassTypeFromJson(
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition,
+  List<String> subDirParts,
 ) {
   return CodeExpression(
     type.asNonNullable
         .reference(
           serverCode,
-          subDirParts: classDefinition.subDirParts,
+          subDirParts: subDirParts,
           config: config,
         )
         .property('fromJson')
@@ -418,6 +443,37 @@ Expression _buildClassTypeFromJson(
         .checkIfNull(type, valueExpression: valueExpression)
         .code,
   );
+}
+
+Expression _buildRecordTypeFromJson(
+  TypeDefinition type,
+  Expression valueExpression,
+  bool serverCode,
+  GeneratorConfig config,
+  List<String> subDirParts,
+) {
+  var protocolRef = refer(
+    'Protocol',
+    serverCode
+        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+  );
+
+  return CodeExpression(Block.of([
+    if (type.nullable) ...[
+      valueExpression.code,
+      const Code('== null ? null : '),
+    ],
+    protocolRef
+        .newInstance([])
+        .property('deserialize')
+        .call(
+          [valueExpression.asA(refer('Map<String, dynamic>'))],
+          {},
+          [type.reference(serverCode, config: config)],
+        )
+        .code,
+  ]));
 }
 
 extension ExpressionExtension on Expression {

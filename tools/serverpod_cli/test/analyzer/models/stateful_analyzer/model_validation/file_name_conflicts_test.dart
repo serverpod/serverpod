@@ -1,8 +1,9 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
+
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -90,4 +91,37 @@ void main() {
       );
     });
   });
+
+  for (var fileName in ['client', 'endpoints', 'protocol']) {
+    group(
+        'Given a model with the reserved file name "$fileName" when analyzing',
+        () {
+      late final modelSources = [
+        ModelSourceBuilder().withFileName(fileName).withYaml(
+          '''
+        class: Whatever
+        fields:
+          name: String
+        ''',
+        ).build(),
+      ];
+
+      late final collector = CodeGenerationCollector();
+
+      setUp(() {
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+            .validateAll();
+      });
+
+      test(
+          'then an error informs the user that there is a generated file collision.',
+          () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The file name "$fileName" is reserved and cannot be used.',
+        );
+      });
+    });
+  }
 }

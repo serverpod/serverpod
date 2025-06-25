@@ -4,8 +4,8 @@ import 'package:serverpod/test_util/table_relation_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var citizenTable = Table(tableName: 'citizen');
-  var companyTable = Table(tableName: 'company');
+  var citizenTable = Table<int?>(tableName: 'citizen');
+  var companyTable = Table<int?>(tableName: 'company');
   var relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
     BuilderRelation(
       citizenTable,

@@ -34,13 +34,35 @@ sealed class SerializableModelDefinition {
 ///
 /// See also:
 /// - [EnumDefinition]
-class ClassDefinition extends SerializableModelDefinition {
+sealed class ClassDefinition extends SerializableModelDefinition {
+  /// The fields of this class / exception.
+  List<SerializableModelFieldDefinition> fields;
+
+  /// The documentation of this class, line by line.
+  final List<String>? documentation;
+
+  /// Create a new [ClassDefinition].
+  ClassDefinition({
+    required super.fileName,
+    required super.sourceFileName,
+    required super.className,
+    required this.fields,
+    required super.serverOnly,
+    required super.type,
+    super.subDirParts,
+    this.documentation,
+  });
+
+  SerializableModelFieldDefinition? findField(String name) {
+    return fields.where((element) => element.name == name).firstOrNull;
+  }
+}
+
+/// A [ClassDefinition] specialization that represents a model class.
+final class ModelClassDefinition extends ClassDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
-
-  /// The fields of this class / exception.
-  List<SerializableModelFieldDefinition> fields;
 
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
@@ -48,13 +70,7 @@ class ClassDefinition extends SerializableModelDefinition {
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableModelIndexDefinition> indexes;
 
-  /// The documentation of this class, line by line.
-  final List<String>? documentation;
-
   final bool manageMigration;
-
-  /// `true` if this is an exception and not a class.
-  final bool isException;
 
   /// If set to true the class is sealed.
   final bool isSealed;
@@ -65,17 +81,16 @@ class ClassDefinition extends SerializableModelDefinition {
   /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
 
-  List<ClassDefinition>? _descendantClasses;
+  List<ModelClassDefinition>? _descendantClasses;
 
-  /// Create a new [ClassDefinition].
-  ClassDefinition({
+  /// Create a new [ModelClassDefinition].
+  ModelClassDefinition({
     required super.fileName,
     required super.sourceFileName,
     required super.className,
-    required this.fields,
+    required super.fields,
     required super.serverOnly,
     required this.manageMigration,
-    required this.isException,
     required super.type,
     required this.isSealed,
     List<InheritanceDefinition>? childClasses,
@@ -83,16 +98,17 @@ class ClassDefinition extends SerializableModelDefinition {
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
-    this.documentation,
+    super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
-  SerializableModelFieldDefinition? findField(String name) {
-    return fields.where((element) => element.name == name).firstOrNull;
-  }
+  /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
+  /// If the field is not present, an error is thrown.
+  SerializableModelFieldDefinition get idField =>
+      findField(defaultPrimaryKeyName)!;
 
-  /// Returns the `ClassDefinition` of the parent class.
+  /// Returns the `ModelClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
-  ClassDefinition? get parentClass {
+  ModelClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
 
@@ -152,12 +168,12 @@ class ClassDefinition extends SerializableModelDefinition {
   /// Returns a list of all descendant classes.
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
-  List<ClassDefinition> get descendantClasses {
+  List<ModelClassDefinition> get descendantClasses {
     return _descendantClasses ??= _computeDescendantClasses();
   }
 
-  List<ClassDefinition> _computeDescendantClasses() {
-    List<ClassDefinition> descendants = [];
+  List<ModelClassDefinition> _computeDescendantClasses() {
+    List<ModelClassDefinition> descendants = [];
 
     var resolvedChildClasses =
         childClasses.whereType<ResolvedInheritanceDefinition>();
@@ -169,6 +185,21 @@ class ClassDefinition extends SerializableModelDefinition {
 
     return descendants;
   }
+}
+
+/// A [ClassDefinition] specialization that represents an exception.
+final class ExceptionClassDefinition extends ClassDefinition {
+  /// Create a new [ExceptionClassDefinition].
+  ExceptionClassDefinition({
+    required super.className,
+    required super.fields,
+    required super.fileName,
+    required super.serverOnly,
+    required super.sourceFileName,
+    required super.type,
+    super.documentation,
+    super.subDirParts,
+  });
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -298,19 +329,33 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// The vector index distance function, if it is a vector index.
+  final VectorDistanceFunction? vectorDistanceFunction;
+
+  /// The parameters of the index, if any. Used for Vector indexes.
+  final Map<String, String>? parameters;
+
   /// Create a new [SerializableModelIndexDefinition].
   SerializableModelIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
     required this.fields,
+    this.vectorDistanceFunction,
+    this.parameters,
   });
+
+  /// Whether the index is of vector type.
+  bool get isVectorIndex => VectorIndexType.values.any((e) => e.name == type);
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableModelDefinition {
   /// The type of serialization this enum should use.
   final EnumSerialization serialized;
+
+  /// The default value of the enum when parsing of the enum fails.
+  final ProtocolEnumValueDefinition? defaultValue;
 
   /// All the values of the enum.
   /// This also contains possible documentation for them.
@@ -325,6 +370,7 @@ class EnumDefinition extends SerializableModelDefinition {
     required super.sourceFileName,
     required super.className,
     required this.serialized,
+    required this.defaultValue,
     required this.values,
     required super.serverOnly,
     required super.type,
@@ -354,12 +400,12 @@ class UnresolvedInheritanceDefinition extends InheritanceDefinition {
 }
 
 class ResolvedInheritanceDefinition extends InheritanceDefinition {
-  final ClassDefinition classDefinition;
+  final ModelClassDefinition classDefinition;
 
   ResolvedInheritanceDefinition(this.classDefinition);
 }
 
-abstract class RelationDefinition {
+sealed class RelationDefinition {
   String? name;
 
   bool isForeignKeyOrigin;
@@ -387,6 +433,9 @@ class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
 
+  /// Type of the id of the table that owns the [foreignFieldName] field.
+  TypeDefinition foreignKeyOwnerIdType;
+
   /// References the field in the other object holding the data for the relation.
   /// Meaning either an object of the type of the current object.
   /// If this is null then there is no link from the other side.
@@ -401,6 +450,7 @@ class ListRelationDefinition extends RelationDefinition {
     String? name,
     required this.fieldName,
     required this.foreignFieldName,
+    required this.foreignKeyOwnerIdType,
     this.foreignContainerField,
     required this.nullableRelation,
     this.implicitForeignField = false,
@@ -415,6 +465,11 @@ class ObjectRelationDefinition extends RelationDefinition {
   /// For now, the foreign key only references the id column of the
   /// [parentTable].
   String parentTable;
+
+  /// Type of the primary key of the [parentTable]. It is the type that the
+  /// generator needs to build attach/detach methods. It is not the type of
+  /// the [foreignFieldName].
+  TypeDefinition parentTableIdType;
 
   /// References the field in the current object that points to the foreign table.
   final String fieldName;
@@ -431,6 +486,7 @@ class ObjectRelationDefinition extends RelationDefinition {
 
   ObjectRelationDefinition({
     String? name,
+    required this.parentTableIdType,
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
@@ -547,6 +603,9 @@ const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
 
+/// Int for the default primary key type.
+const String defaultIntSerial = 'serial';
+
 /// DateTime
 const String defaultDateTimeValueNow = 'now';
 
@@ -556,3 +615,10 @@ const String defaultBooleanFalse = 'false';
 
 /// UuidValue
 const String defaultUuidValueRandom = 'random';
+const String defaultUuidValueRandomV7 = 'random_v7';
+
+/// Allowed types for vector indexes.
+enum VectorIndexType {
+  hnsw,
+  ivfflat,
+}

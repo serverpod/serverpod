@@ -1,0 +1,235 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:async' as _i2;
+import 'package:uuid/uuid_value.dart' as _i3;
+import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart'
+    as _i4;
+import 'dart:typed_data' as _i5;
+import 'package:serverpod_auth_email_client/serverpod_auth_email_client.dart'
+    as _i6;
+import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
+    as _i7;
+import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
+    as _i8;
+import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+    as _i9;
+import 'protocol.dart' as _i10;
+
+/// Endpoint for email-based authentication.
+/// {@category Endpoint}
+class EndpointEmailAccount extends _i1.EndpointRef {
+  EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'emailAccount';
+
+  /// Logs in the user and returns a session key.
+  ///
+  /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
+  _i2.Future<String> login({
+    required String email,
+    required String password,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'login',
+        {
+          'email': email,
+          'password': password,
+        },
+      );
+
+  /// Starts the registration for a new user account with an email-based login associated to it.
+  ///
+  /// Upon successful completion of this method, an email will have been
+  /// sent to [email] with a verification link, which the user must open to complete the registration.
+  _i2.Future<void> startRegistration({
+    required String email,
+    required String password,
+  }) =>
+      caller.callServerEndpoint<void>(
+        'emailAccount',
+        'startRegistration',
+        {
+          'email': email,
+          'password': password,
+        },
+      );
+
+  /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
+  ///
+  /// Returns the session key for the new session.
+  _i2.Future<String> finishRegistration({
+    required _i3.UuidValue accountRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'finishRegistration',
+        {
+          'accountRequestId': accountRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
+  /// Requests a password reset for [email].
+  _i2.Future<void> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<void>(
+        'emailAccount',
+        'startPasswordReset',
+        {'email': email},
+      );
+
+  /// Completes a password reset request by setting a new password.
+  ///
+  /// If the reset was successful, a new session key is returned.
+  ///
+  /// Destroys all active sessions of the user.
+  _i2.Future<String> finishPasswordReset({
+    required _i3.UuidValue passwordResetRequestId,
+    required String verificationCode,
+    required String newPassword,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'finishPasswordReset',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+          'newPassword': newPassword,
+        },
+      );
+}
+
+/// Endpoint to view and edit one's profile.
+/// {@category Endpoint}
+class EndpointUserProfile extends _i1.EndpointRef {
+  EndpointUserProfile(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'userProfile';
+
+  /// Returns the user profile of the current user.
+  _i2.Future<_i4.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'userProfile',
+        'get',
+        {},
+      );
+
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
+  _i2.Future<_i4.UserProfileModel> removeUserImage() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'userProfile',
+        'removeUserImage',
+        {},
+      );
+
+  /// Sets a new user image for the signed in user.
+  _i2.Future<_i4.UserProfileModel> setUserImage(_i5.ByteData image) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'userProfile',
+        'setUserImage',
+        {'image': image},
+      );
+
+  /// Changes the name of a user.
+  _i2.Future<_i4.UserProfileModel> changeUserName(String? userName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'userProfile',
+        'changeUserName',
+        {'userName': userName},
+      );
+
+  /// Changes the full name of a user.
+  _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'userProfile',
+        'changeFullName',
+        {'fullName': fullName},
+      );
+}
+
+class Modules {
+  Modules(Client client) {
+    serverpod_auth_email = _i6.Caller(client);
+    serverpod_auth_profile = _i4.Caller(client);
+    serverpod_auth_email_account = _i7.Caller(client);
+    serverpod_auth_session = _i8.Caller(client);
+    serverpod_auth_user = _i9.Caller(client);
+  }
+
+  late final _i6.Caller serverpod_auth_email;
+
+  late final _i4.Caller serverpod_auth_profile;
+
+  late final _i7.Caller serverpod_auth_email_account;
+
+  late final _i8.Caller serverpod_auth_session;
+
+  late final _i9.Caller serverpod_auth_user;
+}
+
+class Client extends _i1.ServerpodClientShared {
+  Client(
+    String host, {
+    dynamic securityContext,
+    _i1.AuthenticationKeyManager? authenticationKeyManager,
+    Duration? streamingConnectionTimeout,
+    Duration? connectionTimeout,
+    Function(
+      _i1.MethodCallContext,
+      Object,
+      StackTrace,
+    )? onFailedCall,
+    Function(_i1.MethodCallContext)? onSucceededCall,
+    bool? disconnectStreamsOnLostInternetConnection,
+  }) : super(
+          host,
+          _i10.Protocol(),
+          securityContext: securityContext,
+          authenticationKeyManager: authenticationKeyManager,
+          streamingConnectionTimeout: streamingConnectionTimeout,
+          connectionTimeout: connectionTimeout,
+          onFailedCall: onFailedCall,
+          onSucceededCall: onSucceededCall,
+          disconnectStreamsOnLostInternetConnection:
+              disconnectStreamsOnLostInternetConnection,
+        ) {
+    emailAccount = EndpointEmailAccount(this);
+    userProfile = EndpointUserProfile(this);
+    modules = Modules(this);
+  }
+
+  late final EndpointEmailAccount emailAccount;
+
+  late final EndpointUserProfile userProfile;
+
+  late final Modules modules;
+
+  @override
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'emailAccount': emailAccount,
+        'userProfile': userProfile,
+      };
+
+  @override
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+        'serverpod_auth_email': modules.serverpod_auth_email,
+        'serverpod_auth_profile': modules.serverpod_auth_profile,
+        'serverpod_auth_email_account': modules.serverpod_auth_email_account,
+        'serverpod_auth_session': modules.serverpod_auth_session,
+        'serverpod_auth_user': modules.serverpod_auth_user,
+      };
+}

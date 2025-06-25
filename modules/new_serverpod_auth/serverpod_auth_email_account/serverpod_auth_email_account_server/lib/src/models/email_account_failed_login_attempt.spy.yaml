@@ -1,0 +1,25 @@
+### Database table for tracking failed email sign-ins. Saves IP-address, time,
+### and email to be prevent brute force attacks.
+class: EmailAccountFailedLoginAttempt
+serverOnly: true
+table: serverpod_auth_email_account_failed_login_attempt
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### Email attempting to sign in with.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The time of the sign in attempt.
+  attemptedAt: DateTime, defaultModel=now
+
+  ### The IP address of the sign in attempt.
+  ipAddress: String
+
+indexes:
+  serverpod_auth_email_account_failed_login_attempt_email:
+    fields: email
+
+  serverpod_auth_email_account_failed_login_attempt_attempted_at:
+    fields: attemptedAt
