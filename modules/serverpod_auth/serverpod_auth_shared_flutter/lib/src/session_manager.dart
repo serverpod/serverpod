@@ -15,11 +15,13 @@ const _prefsVersion = 2;
 /// Please refer to the documentation to see supported methods. Session
 /// information is stored in the shared preferences of the app and persists
 /// between restarts of the app.
-class SessionManager with ChangeNotifier {
+class SessionManager with ChangeNotifier implements AuthenticationKeyProvider {
   static SessionManager? _instance;
 
   /// The auth module's caller.
-  Caller caller;
+  // NOTE(tp): Due to the circular dependency between the `Client` (providing
+  // the `Caller`) and this class, this will only be set later
+  late final Caller _caller;
 
   /// The key manager, holding the key's of the user, if signed in.
   late FlutterAuthenticationKeyManager keyManager;
@@ -28,17 +30,21 @@ class SessionManager with ChangeNotifier {
 
   /// Creates a new session manager.
   SessionManager({
-    required this.caller,
     Storage? storage,
   }) : _storage = storage ?? SharedPreferenceStorage() {
+    // TODO: In practice this should be fine, but some tests create multiple session managers
+    // In order to remove the `instance` here we'd have to pass the session manager to the individual auth packages
+    // But since this is is just for the legacy auth anyway, we might just keep it this way, not introducing too many changes
+    // if (_instance != null) {
+    //   throw Exception('An instance has already been created.');
+    // }
+
     _instance = this;
-    assert(caller.client.authenticationKeyManager != null,
-        'The client needs an associated key manager');
-    keyManager = caller.client.authenticationKeyManager!
-        as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager
+  // TODO: Find usages and see if we can remove this (though not super important
+  // for the legacy package, we should just avoid it in the new one).
   static Future<SessionManager> get instance async {
     assert(_instance != null,
         'You need to create a SessionManager before the instance method can be called');
@@ -68,7 +74,7 @@ class SessionManager with ChangeNotifier {
     await _storeSharedPrefs();
 
     // Update streaming connection, if it's open.
-    await caller.client.updateStreamingConnectionAuthenticationKey(key);
+    await _caller.client.updateStreamingConnectionAuthenticationKey(key);
     notifyListeners();
   }
 
@@ -78,7 +84,8 @@ class SessionManager with ChangeNotifier {
   /// Initializes the session manager by reading the current state from
   /// shared preferences. The returned bool is true if the session was
   /// initialized, or false if the server could not be reached.
-  Future<bool> initialize() async {
+  Future<bool> initialize(Caller caller) async {
+    _caller = caller;
     await _loadSharedPrefs();
     return refreshSession();
   }
@@ -93,11 +100,11 @@ class SessionManager with ChangeNotifier {
 
     try {
       if (allDevices) {
-        await caller.status.signOutAllDevices();
+        await _caller.status.signOutAllDevices();
       } else {
-        await caller.status.signOutDevice();
+        await _caller.status.signOutDevice();
       }
-      await caller.client.updateStreamingConnectionAuthenticationKey(null);
+      await _caller.client.updateStreamingConnectionAuthenticationKey(null);
 
       _signedInUser = null;
       await _storeSharedPrefs();
@@ -135,7 +142,7 @@ class SessionManager with ChangeNotifier {
   /// Returns true if successful.
   Future<bool> refreshSession() async {
     try {
-      _signedInUser = await caller.status.getUserInfo();
+      _signedInUser = await _caller.status.getUserInfo();
       await _storeSharedPrefs();
       notifyListeners();
       return true;
@@ -174,9 +181,9 @@ class SessionManager with ChangeNotifier {
     if (_signedInUser == null) return false;
 
     try {
-      var success = await caller.user.setUserImage(image);
+      var success = await _caller.user.setUserImage(image);
       if (success) {
-        _signedInUser = await caller.status.getUserInfo();
+        _signedInUser = await _caller.status.getUserInfo();
 
         notifyListeners();
         return true;
@@ -185,5 +192,19 @@ class SessionManager with ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  @override
+  Future<String?> getAuthenticationKey() {
+    return keyManager.get();
+  }
+
+  @override
+  void onUnauthenticatedException(String authenticationKey) async {
+    _signedInUser = null;
+    await _storeSharedPrefs();
+    await keyManager.remove();
+
+    notifyListeners();
   }
 }

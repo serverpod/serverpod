@@ -49,7 +49,7 @@ void main() {
     late String authToken;
     setUp(() async {
       authToken = const Uuid().v4();
-      authKeyManager.put(authToken);
+      authKeyManager.key = authToken;
     });
     group('connected to an authenticated streaming method', () {
       late Completer<dynamic> streamClosedCompleter;

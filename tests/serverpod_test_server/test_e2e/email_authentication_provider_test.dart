@@ -4,9 +4,10 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var authenticationKeyManager = TestAuthKeyManager();
   var client = Client(
     serverUrl,
-    authenticationKeyManager: TestAuthKeyManager(),
+    authenticationKeyManager: authenticationKeyManager,
   );
   // ".bar" is the only valid top level domain for test email addresses
   const email = 'test@serverpod.bar';
@@ -126,15 +127,17 @@ void main() {
             await client.modules.auth.email.authenticate(email, password);
         assert(authResponse.success, 'Failed to authenticate user');
         assert(authResponse.key != null, 'Failed to retrieve auth key');
-        await client.authenticationKeyManager
-            ?.put('${authResponse.keyId}:${authResponse.key}');
+        authenticationKeyManager.key =
+            ('${authResponse.keyId}:${authResponse.key}');
 
         assert(await client.modules.auth.status.isSignedIn(),
             'User not signed in');
       },
     );
 
-    tearDown(() async => await client.authenticationKeyManager?.remove());
+    tearDown(() {
+      authenticationKeyManager.key = null;
+    });
 
     test('when changing password then user can authenticate with new password',
         () async {

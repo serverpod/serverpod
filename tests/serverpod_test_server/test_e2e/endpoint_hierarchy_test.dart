@@ -5,9 +5,10 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var authenticationKeyManager = TestAuthKeyManager();
   var client = Client(
     serverUrl,
-    authenticationKeyManager: TestAuthKeyManager(),
+    authenticationKeyManager: authenticationKeyManager,
   );
 
   setUp(() async {
@@ -17,7 +18,7 @@ void main() {
   });
 
   tearDown(() async {
-    await client.authenticationKeyManager?.remove();
+    authenticationKeyManager.key = null;
     await client.authentication.removeAllUsers();
     await client.authentication.signOut();
     assert(
@@ -49,8 +50,8 @@ void main() {
         'test@foo.bar',
         'password',
       );
-      await client.authenticationKeyManager!
-          .put('${loginResponse.keyId}:${loginResponse.key}');
+      authenticationKeyManager.key =
+          '${loginResponse.keyId}:${loginResponse.key}';
 
       final response = await client.myLoggedIn.echo('hello');
 
@@ -81,8 +82,8 @@ void main() {
         'test@foo.bar',
         'password',
       );
-      await client.authenticationKeyManager!
-          .put('${loginResponse.keyId}:${loginResponse.key}');
+      authenticationKeyManager.key =
+          '${loginResponse.keyId}:${loginResponse.key}';
 
       await expectLater(
         () async => await client.myAdmin.echo('hello'),
@@ -102,8 +103,8 @@ void main() {
         'password',
         [Scope.admin.name!],
       );
-      await client.authenticationKeyManager!
-          .put('${loginResponse.keyId}:${loginResponse.key}');
+      authenticationKeyManager.key =
+          '${loginResponse.keyId}:${loginResponse.key}';
 
       final response = await client.myAdmin.echo('hello');
 
@@ -134,8 +135,8 @@ void main() {
         'test@foo.bar',
         'password',
       );
-      await client.authenticationKeyManager!
-          .put('${loginResponse.keyId}:${loginResponse.key}');
+      authenticationKeyManager.key =
+          '${loginResponse.keyId}:${loginResponse.key}';
 
       await expectLater(
         () async => await client.myConcreteAdmin.echo('hello'),
@@ -155,8 +156,8 @@ void main() {
         'password',
         [Scope.admin.name!],
       );
-      await client.authenticationKeyManager!
-          .put('${loginResponse.keyId}:${loginResponse.key}');
+      authenticationKeyManager.key =
+          '${loginResponse.keyId}:${loginResponse.key}';
 
       final response = await client.myConcreteAdmin.echo('hello');
 

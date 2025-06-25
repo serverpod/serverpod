@@ -18,7 +18,7 @@ void main() {
     });
 
     tearDown(() async {
-      await client.authenticationKeyManager?.remove();
+      authKeyManager.key = null;
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -56,7 +56,7 @@ void main() {
       expect(response.keyId, isNotNull);
 
       var key = '${response.keyId}:${response.key}';
-      await authKeyManager.put(key);
+      authKeyManager.key = key;
 
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
