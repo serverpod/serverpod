@@ -112,7 +112,7 @@ void main() {
       test(
           'when calling `finishRegistration`, then it succeeds returning a valid session key.',
           () async {
-        final sessionKey = await endpoints.emailAccount.finishRegistration(
+        final authSuccess = await endpoints.emailAccount.finishRegistration(
           sessionBuilder,
           accountRequestId: receivedAccountRequestId,
           verificationCode: receivedVerificationCode,
@@ -121,7 +121,7 @@ void main() {
         expect(
           await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            sessionKey,
+            authSuccess.sessionKey,
           ),
           isNotNull,
         );
@@ -152,7 +152,7 @@ void main() {
       test(
           'when calling `login` with the correct credentials, then it succeeds returning a valid session key.',
           () async {
-        final sessionKey = await endpoints.emailAccount.login(
+        final authSuccess = await endpoints.emailAccount.login(
           sessionBuilder,
           email: email,
           password: password,
@@ -161,7 +161,7 @@ void main() {
         expect(
           await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            sessionKey,
+            authSuccess.sessionKey,
           ),
           isNotNull,
         );
@@ -288,7 +288,7 @@ void main() {
       test(
         'when calling `finishPasswordReset` with the correct credentials, then it succeeds returning a valid session key.',
         () async {
-          final sessionKey = await endpoints.emailAccount.finishPasswordReset(
+          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
@@ -297,7 +297,7 @@ void main() {
 
           final authInfo = await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            sessionKey,
+            authSuccess.sessionKey,
           );
 
           expect(authInfo?.userUuid, authUserId);
@@ -363,7 +363,7 @@ void main() {
       test(
         'when calling `login` with the new credentials, then it succeeds returning a valid session key.',
         () async {
-          final sessionKey = await endpoints.emailAccount.login(
+          final authSuccess = await endpoints.emailAccount.login(
             sessionBuilder,
             email: email,
             password: newPassword,
@@ -372,7 +372,7 @@ void main() {
           expect(
             await AuthSessions.authenticationHandler(
               sessionBuilder.build(),
-              sessionKey,
+              authSuccess.sessionKey,
             ),
             isNotNull,
           );
@@ -436,7 +436,7 @@ extension on TestEndpoints {
       password: password,
     );
 
-    final sessionKey = await emailAccount.finishRegistration(
+    final authSuccess = await emailAccount.finishRegistration(
       sessionBuilder,
       accountRequestId: receivedAccountRequestId,
       verificationCode: receivedVerificationCode,
@@ -444,10 +444,10 @@ extension on TestEndpoints {
 
     final authInfo = await AuthSessions.authenticationHandler(
       sessionBuilder.build(),
-      sessionKey,
+      authSuccess.sessionKey,
     );
 
-    return (sessionKey: sessionKey, authUserId: authInfo!.userUuid);
+    return (sessionKey: authSuccess.sessionKey, authUserId: authInfo!.userUuid);
   }
 
   Future<
@@ -493,14 +493,14 @@ extension on TestEndpoints {
     final passwordReset =
         await _startPasswordReset(sessionBuilder, email: email);
 
-    final sessionKey = await emailAccount.finishPasswordReset(
+    final authSuccess = await emailAccount.finishPasswordReset(
       sessionBuilder,
       passwordResetRequestId: passwordReset.passwordResetRequestId,
       verificationCode: passwordReset.verificationCode,
       newPassword: password,
     );
 
-    return sessionKey;
+    return authSuccess.sessionKey;
   }
 }
 

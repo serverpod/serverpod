@@ -54,12 +54,13 @@ void main() {
 
       authUserId = await createAuthUser(session);
 
-      sessionKey = await AuthSessions.createSession(
+      sessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
+      ))
+          .sessionKey;
     });
 
     test(
@@ -126,12 +127,13 @@ void main() {
 
       final authUserId = await createAuthUser(session);
 
-      sessionKey = await AuthSessions.createSession(
+      sessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
         method: 'test',
-      );
+      ))
+          .sessionKey;
     });
 
     test(
@@ -163,13 +165,14 @@ void main() {
 
         authUserId = await createAuthUser(session);
 
-        sessionKey = await AuthSessions.createSession(
+        sessionKey = (await AuthSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
           expiresAt: expiresAt,
-        );
+        ))
+            .sessionKey;
       });
 
       tearDown(() {
@@ -223,13 +226,14 @@ void main() {
 
       authUserId = await createAuthUser(session);
 
-      sessionKey = await AuthSessions.createSession(
+      sessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
         expireAfterUnusedFor: expireAfterUnusedFor,
-      );
+      ))
+          .sessionKey;
     });
 
     test(
