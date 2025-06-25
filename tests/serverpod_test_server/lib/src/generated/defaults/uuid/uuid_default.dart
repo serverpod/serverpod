@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
 
 abstract class UuidDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -21,9 +20,9 @@ abstract class UuidDefault
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
-  })  : uuidDefaultRandom = uuidDefaultRandom ?? _i2.Uuid().v4obj(),
-        uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? _i2.Uuid().v7obj(),
-        uuidDefaultRandomNull = uuidDefaultRandomNull ?? _i2.Uuid().v4obj(),
+  })  : uuidDefaultRandom = uuidDefaultRandom ?? _i1.Uuid().v4obj(),
+        uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? _i1.Uuid().v7obj(),
+        uuidDefaultRandomNull = uuidDefaultRandomNull ?? _i1.Uuid().v4obj(),
         uuidDefaultStr = uuidDefaultStr ??
             _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
         uuidDefaultStrNull = uuidDefaultStrNull ??

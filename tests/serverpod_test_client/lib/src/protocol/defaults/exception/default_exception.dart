@@ -11,7 +11,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import 'package:uuid/uuid.dart' as _i3;
 
 abstract class DefaultException
     implements _i1.SerializableException, _i1.SerializableModel {
@@ -40,7 +39,7 @@ abstract class DefaultException
         defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
         defaultInteger = defaultInteger ?? 10,
         defaultString = defaultString ?? 'Default error message',
-        defaultUuid = defaultUuid ?? _i3.Uuid().v4obj(),
+        defaultUuid = defaultUuid ?? _i1.Uuid().v4obj(),
         defaultModelField = defaultModelField ?? 'Model specific message',
         defaultMixField = defaultMixField ?? 'Model specific mix message';
 

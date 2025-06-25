@@ -10,8 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../../changed_id_type/one_to_one/citizen.dart' as _i3;
+import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
 
 abstract class AddressUuid implements _i1.SerializableModel {
   AddressUuid._({
@@ -19,13 +18,13 @@ abstract class AddressUuid implements _i1.SerializableModel {
     required this.street,
     this.inhabitantId,
     this.inhabitant,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  }) : id = id ?? _i1.Uuid().v4obj();
 
   factory AddressUuid({
     _i1.UuidValue? id,
     required String street,
     int? inhabitantId,
-    _i3.CitizenInt? inhabitant,
+    _i2.CitizenInt? inhabitant,
   }) = _AddressUuidImpl;
 
   factory AddressUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +34,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i3.CitizenInt.fromJson(
+          : _i2.CitizenInt.fromJson(
               (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
     );
   }
@@ -49,7 +48,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
 
   int? inhabitantId;
 
-  _i3.CitizenInt? inhabitant;
+  _i2.CitizenInt? inhabitant;
 
   /// Returns a shallow copy of this [AddressUuid]
   /// with some or all fields replaced by the given arguments.
@@ -58,7 +57,7 @@ abstract class AddressUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     String? street,
     int? inhabitantId,
-    _i3.CitizenInt? inhabitant,
+    _i2.CitizenInt? inhabitant,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +82,7 @@ class _AddressUuidImpl extends AddressUuid {
     _i1.UuidValue? id,
     required String street,
     int? inhabitantId,
-    _i3.CitizenInt? inhabitant,
+    _i2.CitizenInt? inhabitant,
   }) : super._(
           id: id,
           street: street,
@@ -105,7 +104,7 @@ class _AddressUuidImpl extends AddressUuid {
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i3.CitizenInt?
+      inhabitant: inhabitant is _i2.CitizenInt?
           ? inhabitant
           : this.inhabitant?.copyWith(),
     );

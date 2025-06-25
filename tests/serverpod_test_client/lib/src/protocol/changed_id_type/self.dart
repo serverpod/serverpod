@@ -10,8 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../changed_id_type/self.dart' as _i3;
+import '../changed_id_type/self.dart' as _i2;
 
 abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
   ChangedIdTypeSelf._({
@@ -23,17 +22,17 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
     this.parentId,
     this.parent,
     this.children,
-  }) : id = id ?? _i2.Uuid().v4obj();
+  }) : id = id ?? _i1.Uuid().v4obj();
 
   factory ChangedIdTypeSelf({
     _i1.UuidValue? id,
     required String name,
-    _i3.ChangedIdTypeSelf? previous,
+    _i2.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i3.ChangedIdTypeSelf? next,
+    _i2.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i3.ChangedIdTypeSelf? parent,
-    List<_i3.ChangedIdTypeSelf>? children,
+    _i2.ChangedIdTypeSelf? parent,
+    List<_i2.ChangedIdTypeSelf>? children,
   }) = _ChangedIdTypeSelfImpl;
 
   factory ChangedIdTypeSelf.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,25 +43,25 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i3.ChangedIdTypeSelf.fromJson(
+          : _i2.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['previous'] as Map<String, dynamic>)),
       nextId: jsonSerialization['nextId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
       next: jsonSerialization['next'] == null
           ? null
-          : _i3.ChangedIdTypeSelf.fromJson(
+          : _i2.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['next'] as Map<String, dynamic>)),
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i3.ChangedIdTypeSelf.fromJson(
+          : _i2.ChangedIdTypeSelf.fromJson(
               (jsonSerialization['parent'] as Map<String, dynamic>)),
       children: (jsonSerialization['children'] as List?)
           ?.map((e) =>
-              _i3.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
+              _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -74,17 +73,17 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
 
   String name;
 
-  _i3.ChangedIdTypeSelf? previous;
+  _i2.ChangedIdTypeSelf? previous;
 
   _i1.UuidValue? nextId;
 
-  _i3.ChangedIdTypeSelf? next;
+  _i2.ChangedIdTypeSelf? next;
 
   _i1.UuidValue? parentId;
 
-  _i3.ChangedIdTypeSelf? parent;
+  _i2.ChangedIdTypeSelf? parent;
 
-  List<_i3.ChangedIdTypeSelf>? children;
+  List<_i2.ChangedIdTypeSelf>? children;
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
@@ -92,12 +91,12 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
   ChangedIdTypeSelf copyWith({
     _i1.UuidValue? id,
     String? name,
-    _i3.ChangedIdTypeSelf? previous,
+    _i2.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i3.ChangedIdTypeSelf? next,
+    _i2.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i3.ChangedIdTypeSelf? parent,
-    List<_i3.ChangedIdTypeSelf>? children,
+    _i2.ChangedIdTypeSelf? parent,
+    List<_i2.ChangedIdTypeSelf>? children,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,12 +125,12 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   _ChangedIdTypeSelfImpl({
     _i1.UuidValue? id,
     required String name,
-    _i3.ChangedIdTypeSelf? previous,
+    _i2.ChangedIdTypeSelf? previous,
     _i1.UuidValue? nextId,
-    _i3.ChangedIdTypeSelf? next,
+    _i2.ChangedIdTypeSelf? next,
     _i1.UuidValue? parentId,
-    _i3.ChangedIdTypeSelf? parent,
-    List<_i3.ChangedIdTypeSelf>? children,
+    _i2.ChangedIdTypeSelf? parent,
+    List<_i2.ChangedIdTypeSelf>? children,
   }) : super._(
           id: id,
           name: name,
@@ -160,15 +159,15 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     return ChangedIdTypeSelf(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      previous: previous is _i3.ChangedIdTypeSelf?
+      previous: previous is _i2.ChangedIdTypeSelf?
           ? previous
           : this.previous?.copyWith(),
       nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
-      next: next is _i3.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
+      next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
       parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
       parent:
-          parent is _i3.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
-      children: children is List<_i3.ChangedIdTypeSelf>?
+          parent is _i2.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
+      children: children is List<_i2.ChangedIdTypeSelf>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
     );

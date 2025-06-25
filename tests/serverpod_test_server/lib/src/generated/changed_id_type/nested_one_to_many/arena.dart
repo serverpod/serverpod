@@ -12,8 +12,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../../changed_id_type/nested_one_to_many/team.dart' as _i3;
+import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class ArenaUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -21,12 +20,12 @@ abstract class ArenaUuid
     _i1.UuidValue? id,
     required this.name,
     this.team,
-  }) : id = id ?? _i2.Uuid().v7obj();
+  }) : id = id ?? _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
     required String name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) = _ArenaUuidImpl;
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +34,7 @@ abstract class ArenaUuid
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.TeamInt.fromJson(
+          : _i2.TeamInt.fromJson(
               (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
@@ -49,7 +48,7 @@ abstract class ArenaUuid
 
   String name;
 
-  _i3.TeamInt? team;
+  _i2.TeamInt? team;
 
   @override
   _i1.Table<_i1.UuidValue> get table => t;
@@ -60,7 +59,7 @@ abstract class ArenaUuid
   ArenaUuid copyWith({
     _i1.UuidValue? id,
     String? name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -80,7 +79,7 @@ abstract class ArenaUuid
     };
   }
 
-  static ArenaUuidInclude include({_i3.TeamIntInclude? team}) {
+  static ArenaUuidInclude include({_i2.TeamIntInclude? team}) {
     return ArenaUuidInclude._(team: team);
   }
 
@@ -116,7 +115,7 @@ class _ArenaUuidImpl extends ArenaUuid {
   _ArenaUuidImpl({
     _i1.UuidValue? id,
     required String name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) : super._(
           id: id,
           name: name,
@@ -135,7 +134,7 @@ class _ArenaUuidImpl extends ArenaUuid {
     return ArenaUuid(
       id: id ?? this.id,
       name: name ?? this.name,
-      team: team is _i3.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _i2.TeamInt? ? team : this.team?.copyWith(),
     );
   }
 }
@@ -150,17 +149,17 @@ class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnString name;
 
-  _i3.TeamIntTable? _team;
+  _i2.TeamIntTable? _team;
 
-  _i3.TeamIntTable get team {
+  _i2.TeamIntTable get team {
     if (_team != null) return _team!;
     _team = _i1.createRelationTable(
       relationFieldName: 'team',
       field: ArenaUuid.t.id,
-      foreignField: _i3.TeamInt.t.arenaId,
+      foreignField: _i2.TeamInt.t.arenaId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.TeamIntTable(tableRelation: foreignTableRelation),
+          _i2.TeamIntTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
@@ -181,11 +180,11 @@ class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class ArenaUuidInclude extends _i1.IncludeObject {
-  ArenaUuidInclude._({_i3.TeamIntInclude? team}) {
+  ArenaUuidInclude._({_i2.TeamIntInclude? team}) {
     _team = team;
   }
 
-  _i3.TeamIntInclude? _team;
+  _i2.TeamIntInclude? _team;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -445,7 +444,7 @@ class ArenaUuidAttachRowRepository {
   Future<void> team(
     _i1.Session session,
     ArenaUuid arenaUuid,
-    _i3.TeamInt team, {
+    _i2.TeamInt team, {
     _i1.Transaction? transaction,
   }) async {
     if (team.id == null) {
@@ -456,9 +455,9 @@ class ArenaUuidAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arenaUuid.id);
-    await session.db.updateRow<_i3.TeamInt>(
+    await session.db.updateRow<_i2.TeamInt>(
       $team,
-      columns: [_i3.TeamInt.t.arenaId],
+      columns: [_i2.TeamInt.t.arenaId],
       transaction: transaction,
     );
   }
@@ -490,9 +489,9 @@ class ArenaUuidDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i3.TeamInt>(
+    await session.db.updateRow<_i2.TeamInt>(
       $$team,
-      columns: [_i3.TeamInt.t.arenaId],
+      columns: [_i2.TeamInt.t.arenaId],
       transaction: transaction,
     );
   }
