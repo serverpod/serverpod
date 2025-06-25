@@ -7,6 +7,19 @@ import 'package:serverpod_auth_email_flutter/src/signin_labels.dart';
 const _defaultMaxPasswordLength = 128;
 const _defaultMinPasswordLength = 8;
 
+/// Configure the initial page of the sign in dialog.
+enum InitPage {
+  /// Use sign in as the initial page.
+  signIn._(_Page.signIn),
+
+  /// Use create account as the initial page.
+  createAccount._(_Page.createAccount);
+
+  const InitPage._(this._page);
+
+  final _Page _page;
+}
+
 enum _Page {
   createAccount,
   confirmEmail,
@@ -33,6 +46,10 @@ class SignInWithEmailDialog extends StatefulWidget {
   /// If null, default English labels will be used.
   final SignInWithEmailDialogLabels? localization;
 
+  /// Optionally configure the initial page to show in the dialog.
+  /// If null, defaults to [InitPage.createAccount].
+  final InitPage? initPage;
+
   /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
     super.key,
@@ -41,6 +58,7 @@ class SignInWithEmailDialog extends StatefulWidget {
     this.maxPasswordLength = _defaultMaxPasswordLength,
     this.minPasswordLength = _defaultMinPasswordLength,
     this.localization,
+    this.initPage,
   });
 
   @override
@@ -63,7 +81,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   late final EmailAuthController _emailAuth;
   late final SignInWithEmailDialogLabels _localization;
 
-  _Page _page = _Page.createAccount;
+  late _Page _page;
 
   bool _enabled = true;
   bool _isPasswordObscured = true;
@@ -73,6 +91,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     super.initState();
     _emailAuth = EmailAuthController(widget.caller);
     _localization = widget.localization ?? SignInWithEmailDialogLabels.enUS();
+    _page = widget.initPage?._page ?? _Page.createAccount;
   }
 
   @override
@@ -615,6 +634,7 @@ void showSignInWithEmailDialog({
   int? maxPasswordLength,
   int? minPasswordLength,
   SignInWithEmailDialogLabels? localization,
+  InitPage? initPage,
 }) {
   showDialog(
     context: context,
@@ -625,6 +645,7 @@ void showSignInWithEmailDialog({
         maxPasswordLength: maxPasswordLength ?? _defaultMaxPasswordLength,
         minPasswordLength: minPasswordLength ?? _defaultMinPasswordLength,
         localization: localization,
+        initPage: initPage,
       );
     },
   );
