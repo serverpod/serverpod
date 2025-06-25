@@ -1,6 +1,8 @@
 // ignore_for_file: dead_code
 
 @Timeout(Duration(minutes: 1))
+@Skip('This is skipped due to flaky tests, issue to resolve this is tracked in '
+    'https://github.com/serverpod/serverpod/issues/3431')
 
 import 'dart:async';
 import 'dart:convert';
