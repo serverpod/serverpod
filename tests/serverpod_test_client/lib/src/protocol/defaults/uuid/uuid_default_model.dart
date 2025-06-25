@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
 
 abstract class UuidDefaultModel implements _i1.SerializableModel {
   UuidDefaultModel._({
@@ -20,11 +19,11 @@ abstract class UuidDefaultModel implements _i1.SerializableModel {
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
-  })  : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i2.Uuid().v4obj(),
+  })  : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i1.Uuid().v4obj(),
         uuidDefaultModelRandomV7 =
-            uuidDefaultModelRandomV7 ?? _i2.Uuid().v7obj(),
+            uuidDefaultModelRandomV7 ?? _i1.Uuid().v7obj(),
         uuidDefaultModelRandomNull =
-            uuidDefaultModelRandomNull ?? _i2.Uuid().v4obj(),
+            uuidDefaultModelRandomNull ?? _i1.Uuid().v4obj(),
         uuidDefaultModelStr = uuidDefaultModelStr ??
             _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
         uuidDefaultModelStrNull = uuidDefaultModelStrNull ??

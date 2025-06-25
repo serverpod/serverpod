@@ -1571,7 +1571,7 @@ class SerializableModelLibraryGenerator {
           _ => null,
         };
         if (uuidGeneratorMethod != null) {
-          return refer('Uuid()', 'package:uuid/uuid.dart')
+          return refer('Uuid()', serverpodUrl(serverCode))
               .property(uuidGeneratorMethod)
               .call([]).code;
         }

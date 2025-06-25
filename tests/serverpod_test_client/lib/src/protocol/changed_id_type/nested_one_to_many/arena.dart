@@ -10,20 +10,19 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:uuid/uuid.dart' as _i2;
-import '../../changed_id_type/nested_one_to_many/team.dart' as _i3;
+import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class ArenaUuid implements _i1.SerializableModel {
   ArenaUuid._({
     _i1.UuidValue? id,
     required this.name,
     this.team,
-  }) : id = id ?? _i2.Uuid().v7obj();
+  }) : id = id ?? _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
     required String name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) = _ArenaUuidImpl;
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,7 +31,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.TeamInt.fromJson(
+          : _i2.TeamInt.fromJson(
               (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
@@ -44,7 +43,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
 
   String name;
 
-  _i3.TeamInt? team;
+  _i2.TeamInt? team;
 
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.
@@ -52,7 +51,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
   ArenaUuid copyWith({
     _i1.UuidValue? id,
     String? name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,7 +74,7 @@ class _ArenaUuidImpl extends ArenaUuid {
   _ArenaUuidImpl({
     _i1.UuidValue? id,
     required String name,
-    _i3.TeamInt? team,
+    _i2.TeamInt? team,
   }) : super._(
           id: id,
           name: name,
@@ -94,7 +93,7 @@ class _ArenaUuidImpl extends ArenaUuid {
     return ArenaUuid(
       id: id ?? this.id,
       name: name ?? this.name,
-      team: team is _i3.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _i2.TeamInt? ? team : this.team?.copyWith(),
     );
   }
 }
