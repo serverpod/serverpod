@@ -1415,17 +1415,20 @@ class SerializableModelLibraryGenerator {
 
       var defaultValueFields = classFields.where((field) => field.hasDefaults);
       for (var field in defaultValueFields) {
-        Code? defaultCode = _getDefaultValue(
-          field,
-          subDirParts: subDirParts,
-        );
-        if (defaultCode == null) continue;
+        if (field.shouldIncludeField(serverCode)) {
+          Code? defaultCode = _getDefaultValue(
+            field,
+            subDirParts: subDirParts,
+          );
 
-        c.initializers.add(Block.of([
-          refer(field.name).code,
-          const Code('='),
-          refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
-        ]));
+          if (defaultCode == null) continue;
+
+          c.initializers.add(Block.of([
+            refer(field.name).code,
+            const Code('='),
+            refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
+          ]));
+        }
       }
 
       var implicitFields = classFields.where(
