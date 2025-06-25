@@ -7,8 +7,8 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 /// and is set up to connect to a Serverpod running on a local server on
 /// the default port. You will need to modify this to connect to staging or
 /// production servers.
-/// In a larger app, you may want to use the dependency injection of your choice instead of
-/// using a global client object. This is just a simple example.
+/// In a larger app, you may want to use the dependency injection of your choice
+/// instead of using a global client object. This is just a simple example.
 late final Client client;
 
 late String serverUrl;
@@ -36,9 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Serverpod Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
@@ -57,8 +55,8 @@ class MyHomePageState extends State<MyHomePage> {
   /// Holds the last result or null if no result exists yet.
   String? _resultMessage;
 
-  /// Holds the last error message that we've received from the server or null if no
-  /// error exists yet.
+  /// Holds the last error message that we've received from the server or null
+  /// if no error exists yet.
   String? _errorMessage;
 
   final _textEditingController = TextEditingController();
@@ -83,9 +81,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -94,9 +90,7 @@ class MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.only(bottom: 16.0),
               child: TextField(
                 controller: _textEditingController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter your name',
-                ),
+                decoration: const InputDecoration(hintText: 'Enter your name'),
               ),
             ),
             Padding(
@@ -117,17 +111,13 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// ResultDisplays shows the result of the call. Either the returned result from
-/// the `example.greeting` endpoint method or an error message.
+/// ResultDisplays shows the result of the call. Either the returned result
+/// from the `example.greeting` endpoint method or an error message.
 class ResultDisplay extends StatelessWidget {
   final String? resultMessage;
   final String? errorMessage;
 
-  const ResultDisplay({
-    super.key,
-    this.resultMessage,
-    this.errorMessage,
-  });
+  const ResultDisplay({super.key, this.resultMessage, this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -148,9 +138,7 @@ class ResultDisplay extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 50),
       child: Container(
         color: backgroundColor,
-        child: Center(
-          child: Text(text),
-        ),
+        child: Center(child: Text(text)),
       ),
     );
   }

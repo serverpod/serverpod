@@ -10,7 +10,8 @@ class BirthdayReminder extends FutureCall<Greeting> {
   Future<void> invoke(Session session, Greeting? object) async {
     // This is where you would implement the logic to send a birthday reminder.
     // For example, you could send an email or a notification to the user.
-    // You can access the user information from the `object` parameter if needed.
+    // You can access the user information from the `object` parameter if
+    // needed.
 
     session.log('${object?.message} Remember to send a birthday card!');
   }
