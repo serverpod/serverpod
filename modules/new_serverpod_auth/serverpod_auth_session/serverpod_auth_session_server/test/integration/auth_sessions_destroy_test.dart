@@ -20,12 +20,13 @@ void main() {
 
       authUserId = await createAuthUser(session);
 
-      sessionKey = await AuthSessions.createSession(
+      sessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
+      ))
+          .sessionKey;
     });
 
     test(
@@ -110,18 +111,20 @@ void main() {
 
       authUserId = await createAuthUser(session);
 
-      destroyedSessionKey = await AuthSessions.createSession(
+      destroyedSessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
-      retainedSessionKey = await AuthSessions.createSession(
+      ))
+          .sessionKey;
+      retainedSessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
+      ))
+          .sessionKey;
 
       final sessionToDestroy = UuidValue.fromByteList(
           base64Decode(destroyedSessionKey.split(':')[1]));
@@ -175,18 +178,20 @@ void main() {
 
       authUserId = await createAuthUser(session);
 
-      sessionKey1 = await AuthSessions.createSession(
+      sessionKey1 = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
-      sessionKey2 = await AuthSessions.createSession(
+      ))
+          .sessionKey;
+      sessionKey2 = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      );
+      ))
+          .sessionKey;
 
       await AuthSessions.destroyAllSessions(
         session,

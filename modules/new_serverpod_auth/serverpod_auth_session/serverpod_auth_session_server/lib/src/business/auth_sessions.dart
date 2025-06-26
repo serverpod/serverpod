@@ -138,7 +138,7 @@ abstract final class AuthSessions {
   ///
   /// In most situations this should not be called directly, but rather through an authentication provider.
   @useResult
-  static Future<String> createSession(
+  static Future<AuthSuccess> createSession(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
@@ -176,7 +176,14 @@ abstract final class AuthSessions {
       transaction: transaction,
     );
 
-    return _buildSessionKey(secret: secret, authSessionId: authSession.id!);
+    return AuthSuccess(
+      sessionKey: _buildSessionKey(
+        secret: secret,
+        authSessionId: authSession.id!,
+      ),
+      authUserId: authUserId,
+      scopeNames: scopeNames,
+    );
   }
 
   /// List all sessions belonging to the given [authUserId].

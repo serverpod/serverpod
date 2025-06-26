@@ -14,10 +14,12 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
-    as _i5;
-import 'dart:typed_data' as _i6;
+    as _i6;
+import 'dart:typed_data' as _i7;
 import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart';
 import 'package:serverpod_new_auth_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -137,7 +139,7 @@ class _EmailAccountEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String> login(
+  _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
     required String password,
@@ -162,7 +164,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<String>);
+        ) as _i3.Future<_i4.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -203,9 +205,9 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<String> finishRegistration(
+  _i3.Future<_i4.AuthSuccess> finishRegistration(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i4.UuidValue accountRequestId,
+    required _i5.UuidValue accountRequestId,
     required String verificationCode,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -228,7 +230,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<String>);
+        ) as _i3.Future<_i4.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -265,9 +267,9 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<String> finishPasswordReset(
+  _i3.Future<_i4.AuthSuccess> finishPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
-    required _i4.UuidValue passwordResetRequestId,
+    required _i5.UuidValue passwordResetRequestId,
     required String verificationCode,
     required String newPassword,
   }) async {
@@ -292,7 +294,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<String>);
+        ) as _i3.Future<_i4.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -311,7 +313,7 @@ class _UserProfileEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i5.UserProfileModel> get(
+  _i3.Future<_i6.UserProfileModel> get(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -330,7 +332,7 @@ class _UserProfileEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UserProfileModel>);
+        ) as _i3.Future<_i6.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -338,7 +340,7 @@ class _UserProfileEndpoint {
     });
   }
 
-  _i3.Future<_i5.UserProfileModel> removeUserImage(
+  _i3.Future<_i6.UserProfileModel> removeUserImage(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -357,7 +359,7 @@ class _UserProfileEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UserProfileModel>);
+        ) as _i3.Future<_i6.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -365,9 +367,9 @@ class _UserProfileEndpoint {
     });
   }
 
-  _i3.Future<_i5.UserProfileModel> setUserImage(
+  _i3.Future<_i6.UserProfileModel> setUserImage(
     _i1.TestSessionBuilder sessionBuilder,
-    _i6.ByteData image,
+    _i7.ByteData image,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -386,7 +388,7 @@ class _UserProfileEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UserProfileModel>);
+        ) as _i3.Future<_i6.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -394,7 +396,7 @@ class _UserProfileEndpoint {
     });
   }
 
-  _i3.Future<_i5.UserProfileModel> changeUserName(
+  _i3.Future<_i6.UserProfileModel> changeUserName(
     _i1.TestSessionBuilder sessionBuilder,
     String? userName,
   ) async {
@@ -415,7 +417,7 @@ class _UserProfileEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UserProfileModel>);
+        ) as _i3.Future<_i6.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -423,7 +425,7 @@ class _UserProfileEndpoint {
     });
   }
 
-  _i3.Future<_i5.UserProfileModel> changeFullName(
+  _i3.Future<_i6.UserProfileModel> changeFullName(
     _i1.TestSessionBuilder sessionBuilder,
     String? fullName,
   ) async {
@@ -444,7 +446,7 @@ class _UserProfileEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UserProfileModel>);
+        ) as _i3.Future<_i6.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

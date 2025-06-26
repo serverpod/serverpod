@@ -8,10 +8,10 @@ import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 abstract class EmailAccountEndpoint extends Endpoint {
   static const String _method = 'email';
 
-  /// Logs in the user and returns a session key.
+  /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
-  Future<String> login(
+  Future<AuthSuccess> login(
     final Session session, {
     required final String email,
     required final String password,
@@ -52,9 +52,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
   }
 
   /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
-  ///
-  /// Returns the session key for the new session.
-  Future<String> finishRegistration(
+  Future<AuthSuccess> finishRegistration(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
@@ -118,7 +116,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
   /// If the reset was successful, a new session key is returned.
   ///
   /// Destroys all active sessions of the user.
-  Future<String> finishPasswordReset(
+  Future<AuthSuccess> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -139,7 +137,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
     );
   }
 
-  Future<String> _createSession(
+  Future<AuthSuccess> _createSession(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
