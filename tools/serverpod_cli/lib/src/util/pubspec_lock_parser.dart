@@ -29,6 +29,31 @@ enum DependencyType {
   }
 }
 
+/// Represents the source of a package in pubspec.lock
+enum PackageSource {
+  /// Package from pub.dev or custom hosted repository
+  hosted('hosted'),
+
+  /// Local path dependency
+  path('path'),
+
+  /// Git repository dependency
+  git('git'),
+
+  /// SDK dependency (dart, flutter)
+  sdk('sdk');
+
+  final String value;
+  const PackageSource(this.value);
+
+  static PackageSource fromString(String value) {
+    return PackageSource.values.firstWhere(
+      (source) => source.value == value,
+      orElse: () => throw ArgumentError('Unknown package source: $value'),
+    );
+  }
+}
+
 /// Represents a package entry in pubspec.lock
 class LockedPackage {
   final String name;
@@ -36,7 +61,7 @@ class LockedPackage {
   final DependencyType dependencyType;
   final Version version;
   final String? sha256;
-  final String source;
+  final PackageSource source;
 
   LockedPackage({
     required this.name,
@@ -63,8 +88,8 @@ class LockedPackage {
 /// Parser for pubspec.lock files
 class PubspecLockParser {
   final Map<String, LockedPackage> packages;
-  final String? dartSdkConstraint;
-  final String? flutterSdkConstraint;
+  final VersionConstraint? dartSdkConstraint;
+  final VersionConstraint? flutterSdkConstraint;
 
   PubspecLockParser._({
     required this.packages,
@@ -100,13 +125,20 @@ class PubspecLockParser {
     }
 
     // Parse SDK constraints
-    String? dartSdkConstraint;
-    String? flutterSdkConstraint;
+    VersionConstraint? dartSdkConstraint;
+    VersionConstraint? flutterSdkConstraint;
 
     final sdksYaml = yaml['sdks'] as YamlMap?;
     if (sdksYaml != null) {
-      dartSdkConstraint = sdksYaml['dart'] as String?;
-      flutterSdkConstraint = sdksYaml['flutter'] as String?;
+      final dartConstraint = sdksYaml['dart'];
+      if (dartConstraint != null) {
+        dartSdkConstraint = VersionConstraint.parse(dartConstraint as String);
+      }
+      final flutterConstraint = sdksYaml['flutter'];
+      if (flutterConstraint != null) {
+        flutterSdkConstraint =
+            VersionConstraint.parse(flutterConstraint as String);
+      }
     }
 
     return PubspecLockParser._(
@@ -120,7 +152,8 @@ class PubspecLockParser {
     final dependencyTypeStr = packageData['dependency'] as String;
     final dependencyType = DependencyType.fromString(dependencyTypeStr);
 
-    final source = packageData['source'] as String;
+    final sourceStr = packageData['source'] as String;
+    final source = PackageSource.fromString(sourceStr);
     final versionStr = packageData['version'] as String;
     final version = Version.parse(versionStr);
 
@@ -131,7 +164,7 @@ class PubspecLockParser {
     String? sha256;
 
     switch (source) {
-      case 'hosted':
+      case PackageSource.hosted:
         if (descriptionYaml is String) {
           // Simple hosted dependency
           dependency = HostedDependency(
@@ -151,16 +184,14 @@ class PubspecLockParser {
         } else {
           throw const FormatException('Invalid hosted dependency description');
         }
-        break;
 
-      case 'path':
+      case PackageSource.path:
         final path = descriptionYaml is YamlMap
             ? descriptionYaml['path'] as String
             : descriptionYaml as String;
         dependency = PathDependency(path);
-        break;
 
-      case 'git':
+      case PackageSource.git:
         if (descriptionYaml is! YamlMap) {
           throw const FormatException(
               'Git dependency must have a map description');
@@ -174,18 +205,13 @@ class PubspecLockParser {
           ref: ref,
           path: path,
         );
-        break;
 
-      case 'sdk':
+      case PackageSource.sdk:
         final sdk = descriptionYaml as String;
         dependency = SdkDependency(
           sdk,
           version: VersionConstraint.compatibleWith(version),
         );
-        break;
-
-      default:
-        throw const FormatException('Unknown source type');
     }
 
     return LockedPackage(
@@ -226,20 +252,22 @@ class PubspecLockParser {
       packages.values.where((p) => p.dependencyType == type).toList();
 
   /// Get all packages from a specific source
-  List<LockedPackage> getPackagesBySource(String source) =>
+  List<LockedPackage> getPackagesBySource(PackageSource source) =>
       packages.values.where((p) => p.source == source).toList();
 
   /// Get all hosted packages
-  List<LockedPackage> get hostedPackages => getPackagesBySource('hosted');
+  List<LockedPackage> get hostedPackages =>
+      getPackagesBySource(PackageSource.hosted);
 
   /// Get all path packages
-  List<LockedPackage> get pathPackages => getPackagesBySource('path');
+  List<LockedPackage> get pathPackages =>
+      getPackagesBySource(PackageSource.path);
 
   /// Get all git packages
-  List<LockedPackage> get gitPackages => getPackagesBySource('git');
+  List<LockedPackage> get gitPackages => getPackagesBySource(PackageSource.git);
 
   /// Get all SDK packages
-  List<LockedPackage> get sdkPackages => getPackagesBySource('sdk');
+  List<LockedPackage> get sdkPackages => getPackagesBySource(PackageSource.sdk);
 
   /// Get package count by type
   Map<DependencyType, int> get packageCountByType {

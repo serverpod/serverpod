@@ -59,8 +59,8 @@ sdks:
       });
 
       test('then it returns correct SDK constraints', () {
-        expect(parser.dartSdkConstraint, '>=3.5.0 <4.0.0');
-        expect(parser.flutterSdkConstraint, '>=3.24.0');
+        expect(parser.dartSdkConstraint?.toString(), '>=3.5.0 <4.0.0');
+        expect(parser.flutterSdkConstraint?.toString(), '>=3.24.0');
       });
 
       test('then analyzer package has correct dependency type', () {
@@ -78,7 +78,7 @@ sdks:
 
       test('then analyzer package has correct source', () {
         final analyzer = packagesByName['analyzer']!;
-        expect(analyzer.source, 'hosted');
+        expect(analyzer.source, PackageSource.hosted);
       });
 
       test('then analyzer package has correct sha256', () {
@@ -175,7 +175,7 @@ sdks:
       });
 
       test('then package has correct source', () {
-        expect(package.source, 'path');
+        expect(package.source, PackageSource.path);
       });
 
       test('then package has PathDependency', () {
@@ -219,7 +219,7 @@ sdks:
       });
 
       test('then package has correct source', () {
-        expect(package.source, 'git');
+        expect(package.source, PackageSource.git);
       });
 
       test('then package has GitDependency', () {
@@ -277,7 +277,7 @@ sdks:
       });
 
       test('then flutter package has correct source', () {
-        expect(flutterPackage.source, 'sdk');
+        expect(flutterPackage.source, PackageSource.sdk);
       });
 
       test('then flutter package has SdkDependency', () {
@@ -384,10 +384,10 @@ packages:
     version: "1.0.0"
 ''';
 
-      test('then parsing throws FormatException', () {
+      test('then parsing throws ArgumentError', () {
         expect(
           () => PubspecLockParser.parse(lockString),
-          throwsA(isA<FormatException>()),
+          throwsA(isA<ArgumentError>()),
         );
       });
     });
@@ -422,7 +422,7 @@ sdks:
       });
 
       test('then SDK constraint is parsed correctly', () {
-        expect(parser.dartSdkConstraint, '>=3.0.0 <4.0.0');
+        expect(parser.dartSdkConstraint?.toString(), '>=3.0.0 <4.0.0');
       });
     });
   });
