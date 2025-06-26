@@ -98,12 +98,10 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       var lockWarnings = [
         for (var lockParser in lockFilesToCheck)
           validateServerpodLockFileVersion(cliVersion, lockParser),
-      ];
+      ].nonNulls;
 
       for (var warning in lockWarnings) {
-        if (warning != null) {
-          log.sourceSpanException(warning);
-        }
+        log.sourceSpanException(warning);
       }
     }
 
