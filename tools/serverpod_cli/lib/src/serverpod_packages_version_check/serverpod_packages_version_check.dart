@@ -1,5 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 
 /// Warnings for when the package version does not match the version of the
@@ -13,6 +14,10 @@ class ServerpodPackagesVersionCheckWarnings {
       '"^$cliVersion"). This can cause a mismatch with Serverpod\'s CLI '
       'version. It\'s preferred to use "$cliVersion" over "^$cliVersion" for '
       'the Serverpod packages.';
+  static const lockFileOutOfSync =
+      'The pubspec.lock file contains Serverpod packages with versions that '
+      'don\'t match the CLI version. This may cause errors or unexpected behavior. '
+      'Run "dart pub get" to update your dependencies.';
 }
 
 extension on PubspecPlus {
@@ -23,6 +28,14 @@ extension on PubspecPlus {
           ].contains(d.name));
 }
 
+extension on PubspecLockParser {
+  Iterable<LockedPackage> get serverpodPackages =>
+      allPackages.where((p) => const [
+            'serverpod',
+            'serverpod_client',
+          ].contains(p.name));
+}
+
 List<SourceSpanSeverityException> validateServerpodPackagesVersion(
   Version version,
   PubspecPlus pubspecPlus,
@@ -31,6 +44,23 @@ List<SourceSpanSeverityException> validateServerpodPackagesVersion(
     for (var dep in pubspecPlus.serverpodDeps)
       ..._validatePackageCompatibilities(dep, version)
   ];
+}
+
+SourceSpanSeverityException? validateServerpodLockFileVersion(
+  Version cliVersion,
+  PubspecLockParser lockParser,
+) {
+  for (var package in lockParser.serverpodPackages) {
+    if (package.version != cliVersion) {
+      return SourceSpanSeverityException(
+        ServerpodPackagesVersionCheckWarnings.lockFileOutOfSync,
+        null, // No source span available for lock file entries
+        severity: SourceSpanSeverity.warning,
+      );
+    }
+  }
+
+  return null;
 }
 
 List<SourceSpanSeverityException> _validatePackageCompatibilities(
