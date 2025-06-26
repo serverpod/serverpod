@@ -5,7 +5,6 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
@@ -94,22 +93,15 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       var lockFilesToCheck = [
         if (await serverLockFile.exists()) serverLockFile,
         if (await clientLockFile.exists()) clientLockFile,
+      ].map(PubspecLockParser.fromFile);
+
+      var lockWarnings = [
+        for (var lockParser in lockFilesToCheck)
+          validateServerpodLockFileVersion(cliVersion, lockParser),
       ];
 
-      var lockWarnings = <SourceSpanSeverityException>[];
-      for (var lockFile in lockFilesToCheck) {
-        try {
-          var lockParser = PubspecLockParser.fromFile(lockFile);
-          lockWarnings
-              .addAll(validateServerpodLockFileVersion(cliVersion, lockParser));
-        } catch (e) {
-          // Skip if lock file can't be parsed, but don't fail the command
-          continue;
-        }
-      }
-
-      if (lockWarnings.isNotEmpty) {
-        for (var warning in lockWarnings) {
+      for (var warning in lockWarnings) {
+        if (warning != null) {
           log.sourceSpanException(warning);
         }
       }

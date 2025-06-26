@@ -46,24 +46,21 @@ List<SourceSpanSeverityException> validateServerpodPackagesVersion(
   ];
 }
 
-List<SourceSpanSeverityException> validateServerpodLockFileVersion(
+SourceSpanSeverityException? validateServerpodLockFileVersion(
   Version cliVersion,
   PubspecLockParser lockParser,
 ) {
-  List<SourceSpanSeverityException> warnings = [];
-
   for (var package in lockParser.serverpodPackages) {
     if (package.version != cliVersion) {
-      warnings.add(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         ServerpodPackagesVersionCheckWarnings.lockFileOutOfSync,
         null, // No source span available for lock file entries
         severity: SourceSpanSeverity.warning,
-      ));
-      break; // Only show warning once, not for each package
+      );
     }
   }
 
-  return warnings;
+  return null;
 }
 
 List<SourceSpanSeverityException> _validatePackageCompatibilities(
