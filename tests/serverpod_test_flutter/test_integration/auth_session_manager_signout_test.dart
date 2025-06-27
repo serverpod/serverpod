@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 class MockStorage implements Storage {
   final Map<String, dynamic> _values = {};
@@ -27,29 +27,23 @@ void main() {
     late SessionManager secondarySessionManager;
 
     setUp(() async {
+      primarySessionManager = SessionManager(
+        storage: MockStorage(),
+      );
       primaryClient = Client(
         serverUrl,
-        authenticationKeyManager: FlutterAuthenticationKeyManager(
-          storage: MockStorage(),
-        ),
+        authenticationKeyManager: primarySessionManager,
       );
-      primarySessionManager = SessionManager(
-        caller: primaryClient.modules.auth,
+      await primarySessionManager.initialize(primaryClient.modules.auth);
+
+      secondarySessionManager = SessionManager(
         storage: MockStorage(),
       );
-      await primarySessionManager.initialize();
-
       secondaryClient = Client(
         serverUrl,
-        authenticationKeyManager: FlutterAuthenticationKeyManager(
-          storage: MockStorage(),
-        ),
+        authenticationKeyManager: secondarySessionManager,
       );
-      secondarySessionManager = SessionManager(
-        caller: secondaryClient.modules.auth,
-        storage: MockStorage(),
-      );
-      await secondarySessionManager.initialize();
+      await secondarySessionManager.initialize(secondaryClient.modules.auth);
 
       await _authenticateClientAndSessionManager(
         primaryClient,

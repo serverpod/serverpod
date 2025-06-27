@@ -1,3 +1,4 @@
+import 'package:chat_client/chat_client.dart';
 import 'package:chat_flutter/src/disconnected_page.dart';
 import 'package:chat_flutter/src/loading_page.dart';
 import 'package:chat_flutter/src/main_page.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:chat_client/chat_client.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 late SessionManager sessionManager;
@@ -17,22 +17,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Sets up a singleton client object that can be used to talk to the server
+  // The session manager keeps track of the signed-in state of the user. You
+  // can query it to see if the user is currently signed in and get information
+  // about the user.
+  sessionManager = SessionManager();
+
   // from anywhere in our app. The client is generated from your server code.
   // The client is set up to connect to a Serverpod running on a local server on
   // the default port. You will need to modify this to connect to staging or
   // production servers.
   client = Client(
     'http://$localhost:8080/',
-    authenticationKeyManager: FlutterAuthenticationKeyManager(),
+    authenticationKeyManager: sessionManager,
   )..connectivityMonitor = FlutterConnectivityMonitor();
 
-  // The session manager keeps track of the signed-in state of the user. You
-  // can query it to see if the user is currently signed in and get information
-  // about the user.
-  sessionManager = SessionManager(
-    caller: client.modules.auth,
-  );
-  await sessionManager.initialize();
+  await sessionManager.initialize(client.modules.auth);
 
   runApp(const MyApp());
 }

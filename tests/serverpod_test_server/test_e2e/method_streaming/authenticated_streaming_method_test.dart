@@ -9,9 +9,10 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var authenticationKeyManager = TestAuthKeyManager();
   var client = Client(
     serverUrl,
-    authenticationKeyManager: TestAuthKeyManager(),
+    authenticationKeyManager: authenticationKeyManager,
   );
 
   test(
@@ -40,14 +41,13 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+      authenticationKeyManager.key = '${response.keyId}:${response.key}';
       assert(
           await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
     });
 
     tearDown(() async {
-      await client.authenticationKeyManager?.remove();
+      authenticationKeyManager.key = null;
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -84,14 +84,13 @@ void main() {
         [Scope.admin.name!],
       );
       assert(response.success, 'Failed to authenticate user');
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+      authenticationKeyManager.key = '${response.keyId}:${response.key}';
       assert(
           await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
     });
 
     tearDown(() async {
-      await client.authenticationKeyManager?.remove();
+      authenticationKeyManager.key = null;
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -129,14 +128,13 @@ void main() {
       );
       assert(response.success, 'Failed to authenticate user');
       userId = response.userInfo!.id!;
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+      authenticationKeyManager.key = '${response.keyId}:${response.key}';
       assert(
           await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
     });
 
     tearDown(() async {
-      await client.authenticationKeyManager?.remove();
+      authenticationKeyManager.key = null;
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(

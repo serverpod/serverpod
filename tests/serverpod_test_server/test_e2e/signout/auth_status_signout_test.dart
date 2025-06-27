@@ -1,25 +1,27 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Given two authenticated clients', () {
     late Client primaryClient;
+    late TestAuthKeyManager primaryAuthKeyManager = TestAuthKeyManager();
     late Client secondaryClient;
+    late TestAuthKeyManager secondaryAuthKeyManager = TestAuthKeyManager();
 
     setUp(() async {
       primaryClient = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authenticationKeyManager: primaryAuthKeyManager,
       );
       secondaryClient = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authenticationKeyManager: secondaryAuthKeyManager,
       );
 
-      await _authenticateClient(primaryClient);
-      await _authenticateClient(secondaryClient);
+      await _authenticateClient(primaryClient, primaryAuthKeyManager);
+      await _authenticateClient(secondaryClient, secondaryAuthKeyManager);
 
       assert(
         await primaryClient.modules.auth.status.isSignedIn(),
@@ -110,12 +112,14 @@ void main() {
   });
 }
 
-Future<void> _authenticateClient(Client client) async {
+Future<void> _authenticateClient(
+  Client client,
+  TestAuthKeyManager authKeyManager,
+) async {
   var response = await client.authentication.authenticate(
     'test@foo.bar',
     'password',
   );
   expect(response.success, isTrue, reason: 'Authentication failed for client');
-  await client.authenticationKeyManager
-      ?.put('${response.keyId}:${response.key}');
+  authKeyManager.key = '${response.keyId}:${response.key}';
 }

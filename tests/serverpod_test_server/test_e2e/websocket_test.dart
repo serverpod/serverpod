@@ -9,9 +9,10 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var authenticationKeyManager = TestAuthKeyManager();
   var client = Client(
     serverUrl,
-    authenticationKeyManager: TestAuthKeyManager(),
+    authenticationKeyManager: authenticationKeyManager,
   );
 
   var streamingStream = client.streaming.stream.asBroadcastStream();
@@ -97,8 +98,7 @@ void main() {
       var response =
           await client.authentication.authenticate('test@foo.bar', 'password');
       if (response.success) {
-        await client.authenticationKeyManager!
-            .put('${response.keyId}:${response.key}');
+        authenticationKeyManager.key = '${response.keyId}:${response.key}';
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
@@ -132,7 +132,7 @@ void main() {
     test('Upgrade streaming connection', () async {
       // Make sure we are signed out.
       await client.authentication.signOut();
-      await client.authenticationKeyManager!.remove();
+      authenticationKeyManager.key = null;
       await client.closeStreamingConnection();
       client.signInRequired.resetStream();
       await client.openStreamingConnection(
@@ -147,8 +147,7 @@ void main() {
       var response =
           await client.authentication.authenticate('test@foo.bar', 'password');
       if (response.success) {
-        await client.authenticationKeyManager!
-            .put('${response.keyId}:${response.key}');
+        authenticationKeyManager.key = '${response.keyId}:${response.key}';
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
@@ -184,8 +183,7 @@ void main() {
           'password',
         );
         assert(response.success, 'Failed to authenticate user');
-        await client.authenticationKeyManager
-            ?.put('${response.keyId}:${response.key}');
+        authenticationKeyManager.key = '${response.keyId}:${response.key}';
         assert(
             await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
         await client.openStreamingConnection(
@@ -194,7 +192,7 @@ void main() {
       });
 
       tearDown(() async {
-        await client.authenticationKeyManager?.remove();
+        authenticationKeyManager.key = null;
         await client.authentication.removeAllUsers();
         await client.authentication.signOut();
         assert(
@@ -227,8 +225,7 @@ void main() {
           [Scope.admin.name!],
         );
         assert(response.success, 'Failed to authenticate user');
-        await client.authenticationKeyManager
-            ?.put('${response.keyId}:${response.key}');
+        authenticationKeyManager.key = '${response.keyId}:${response.key}';
         assert(
             await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
         await client.openStreamingConnection(
@@ -237,7 +234,7 @@ void main() {
       });
 
       tearDown(() async {
-        await client.authenticationKeyManager?.remove();
+        authenticationKeyManager.key = null;
         await client.authentication.removeAllUsers();
         await client.authentication.signOut();
         assert(
