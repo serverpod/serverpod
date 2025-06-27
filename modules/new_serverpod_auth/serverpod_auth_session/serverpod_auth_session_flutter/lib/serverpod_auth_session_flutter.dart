@@ -1,7 +1,3 @@
 export './src/key_value_storage.dart' show KeyValueStorage;
 export './src/session_manager.dart'
-    show
-        SessionManager,
-        AuthInfo,
-        RepeatedSessionManagerInitError,
-        IncompleteSessionManagerStorageException;
+    show SessionManager, AuthInfo, IncompleteSessionManagerStorageException;

@@ -178,10 +178,10 @@ void main() {
       await sessionManager.init();
     });
 
-    test('when calling init again, then it throws.', () async {
+    test('when calling init again, then it completes.', () async {
       await expectLater(
-        () => sessionManager.init(),
-        throwsA(isA<RepeatedSessionManagerInitError>()),
+        sessionManager.init(),
+        completes,
       );
     });
 

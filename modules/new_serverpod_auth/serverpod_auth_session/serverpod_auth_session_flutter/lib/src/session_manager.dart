@@ -30,56 +30,58 @@ class SessionManager extends AuthenticationKeyManager {
 
   String? _key;
 
-  var _init = false;
+  var _didInit = false;
 
-  /// Read the configuration from the storage
+  /// Restores the persisted session from the storage, if any.
   Future<void> init() async {
-    if (_init) {
-      throw RepeatedSessionManagerInitError();
+    if (_didInit) {
+      return;
     }
-    _init = true;
+    _didInit = true;
 
+    return _init();
+  }
+
+  Future<void> _init() async {
     final sessionKey = await _secureStorage.get(
       SessionManagerStorageKeys.sessionKey.key,
     );
 
-    if (sessionKey != null) {
-      _key = sessionKey;
+    _key = sessionKey;
 
-      final persistedUserId = await _storage.get(
+    if (sessionKey == null) {
+      _authInfo.value = null;
+
+      return;
+    }
+
+    final persistedUserId = await _storage.get(
+      SessionManagerStorageKeys.authUserId.key,
+    );
+    if (persistedUserId == null) {
+      throw IncompleteSessionManagerStorageException(
         SessionManagerStorageKeys.authUserId.key,
       );
-      if (persistedUserId == null) {
-        throw IncompleteSessionManagerStorageException(
-          SessionManagerStorageKeys.authUserId.key,
-        );
-      }
+    }
 
-      final persistedScopeNames = await _storage.get(
+    final persistedScopeNames = await _storage.get(
+      SessionManagerStorageKeys.scopeNames.key,
+    );
+    if (persistedScopeNames == null) {
+      throw IncompleteSessionManagerStorageException(
         SessionManagerStorageKeys.scopeNames.key,
       );
-      if (persistedScopeNames == null) {
-        throw IncompleteSessionManagerStorageException(
-          SessionManagerStorageKeys.scopeNames.key,
-        );
-      }
-
-      _authInfo.value = (
-        authUserId: UuidValue.fromString(persistedUserId),
-        scopeNames:
-            (jsonDecode(persistedScopeNames) as List).cast<String>().toSet(),
-      );
     }
+
+    _authInfo.value = (
+      authUserId: UuidValue.fromString(persistedUserId),
+      scopeNames:
+          (jsonDecode(persistedScopeNames) as List).cast<String>().toSet(),
+    );
   }
 
   /// Set the current session to a logged-in user described by [authSuccess].
   Future<void> setLoggedIn(AuthSuccess authSuccess) async {
-    _key = authSuccess.sessionKey;
-    _authInfo.value = (
-      authUserId: authSuccess.authUserId,
-      scopeNames: authSuccess.scopeNames,
-    );
-
     await _secureStorage.set(
       SessionManagerStorageKeys.sessionKey.key,
       authSuccess.sessionKey,
@@ -94,6 +96,8 @@ class SessionManager extends AuthenticationKeyManager {
       SessionManagerStorageKeys.scopeNames.key,
       jsonEncode(authSuccess.scopeNames.toList()),
     );
+
+    await _init();
   }
 
   /// Log out the current user.
@@ -105,8 +109,7 @@ class SessionManager extends AuthenticationKeyManager {
     await _storage.set(SessionManagerStorageKeys.authUserId.key, null);
     await _storage.set(SessionManagerStorageKeys.scopeNames.key, null);
 
-    _key = null;
-    _authInfo.value = null;
+    await _init();
   }
 
   @override
@@ -139,14 +142,6 @@ enum SessionManagerStorageKeys {
   const SessionManagerStorageKeys(this.key);
 
   final String key;
-}
-
-/// Error to be thrown when a `SessionManager` is initialized multiple times.
-class RepeatedSessionManagerInitError extends Error {
-  @override
-  String toString() {
-    return 'SessionManager.init has been called multiple times. It must only be called once.';
-  }
 }
 
 /// Exception to be thrown when the `SessionManager`'s storage does not contain
