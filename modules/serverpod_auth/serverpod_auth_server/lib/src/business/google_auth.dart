@@ -14,14 +14,15 @@ const _passwordKey = 'serverpod_auth_googleClientSecret';
 /// Convenience methods for handling authentication with Google and accessing
 /// Google's APIs.
 class GoogleAuth {
-  /// The client secret loaded from `config/google_client_secret.json`, null
-  /// if the client secrets failed to load.
-  static GoogleClientSecret? clientSecret;
+  /// The client secret loaded from `config/google_client_secret.json` or
+  /// password `serverpod_auth_googleClientSecret`, null if the client secrets
+  /// failed to load.
+  static final clientSecret = _loadClientSecret();
 
-  static GoogleClientSecret? _loadClientSecret(Session session) {
+  static GoogleClientSecret? _loadClientSecret() {
     try {
       late final String jsonData;
-      final password = session.passwords[_passwordKey];
+      final password = Serverpod.instance.getPassword(_passwordKey);
       if (password != null) {
         jsonData = password;
       } else {
@@ -55,12 +56,11 @@ class GoogleAuth {
         throw const FormatException('Missing "redirect_uris"');
       }
 
-      clientSecret = GoogleClientSecret._(
+      return GoogleClientSecret._(
         clientId: webClientId,
         clientSecret: webClientSecret,
         redirectUris: (webRedirectUris as List).cast<String>(),
       );
-      return clientSecret;
     } catch (e) {
       stderr.writeln(
         'serverpod_auth_server: Failed to load $_configFilePath or password $_passwordKey. Sign in with Google will be disabled. Error: $e',
@@ -77,8 +77,6 @@ class GoogleAuth {
     Session session,
     int userId,
   ) async {
-    clientSecret ??= _loadClientSecret(session);
-
     if (clientSecret == null) {
       throw StateError(
         'Google client secret from $_configFilePath or password $_passwordKey is not loaded',
