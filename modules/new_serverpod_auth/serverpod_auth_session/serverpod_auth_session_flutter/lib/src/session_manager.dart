@@ -98,7 +98,8 @@ class SessionManager extends AuthenticationKeyManager {
 
   /// Drop the current user.
   ///
-  /// This should be called after a `logout` endpoint has been called on the server.
+  /// This should be called after a `logout` endpoint has been called on the
+  /// server.
   Future<void> logout() async {
     await _secureStorage.set(
         SessionManagerStorageKeys.sessionKeyStorageKey, null);
@@ -145,7 +146,8 @@ class RepeatedSessionManagerInitError extends Error {
   }
 }
 
-/// Exception to be thrown when the `SessionManager`'s storage does not contain all expected keys.
+/// Exception to be thrown when the `SessionManager`'s storage does not contain
+/// all expected keys.
 class IncompleteSessionManagerStorageException implements Exception {
   final String _missingKey;
 
