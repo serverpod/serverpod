@@ -1,4 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+    show AuthSessions;
 import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';
@@ -14,6 +16,7 @@ void run(final List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
+    authenticationHandler: AuthSessions.authenticationHandler,
   );
 
   // Setup a default page at the web root.
