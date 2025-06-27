@@ -167,12 +167,12 @@ class TestStorage extends KeyValueStorage {
   final values = <String, String>{};
 
   @override
-  FutureOr<String?> get(String key) {
+  String? get(String key) {
     return values[key];
   }
 
   @override
-  FutureOr set(String key, String? value) {
+  void set(String key, String? value) {
     if (value == null) {
       values.remove(key);
     } else {
