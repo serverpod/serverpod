@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart';
 import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart';
@@ -191,13 +189,13 @@ void main() {
 
     test('when calling `logout`, then the storage values are cleared.',
         () async {
-      await sessionManager.logout();
+      await sessionManager.setLoggedOut();
 
       expect(storage.values, isEmpty);
     });
 
     test('when calling `logout`, then `authInfo` is cleared.', () async {
-      await sessionManager.logout();
+      await sessionManager.setLoggedOut();
 
       expect(sessionManager.authInfo.value, isNull);
     });

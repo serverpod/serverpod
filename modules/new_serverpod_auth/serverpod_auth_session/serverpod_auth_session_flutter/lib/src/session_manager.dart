@@ -96,11 +96,11 @@ class SessionManager extends AuthenticationKeyManager {
     );
   }
 
-  /// Drop the current user.
+  /// Log out the current user.
   ///
   /// This should be called after a `logout` endpoint has been called on the
   /// server.
-  Future<void> logout() async {
+  Future<void> setLoggedOut() async {
     await _secureStorage.set(
         SessionManagerStorageKeys.sessionKeyStorageKey, null);
     await _storage.set(SessionManagerStorageKeys.authUserIdStorageKey, null);
