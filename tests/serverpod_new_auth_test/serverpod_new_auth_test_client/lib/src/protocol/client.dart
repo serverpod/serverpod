@@ -109,6 +109,35 @@ class EndpointEmailAccount extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointSessionTest extends _i1.EndpointRef {
+  EndpointSessionTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'sessionTest';
+
+  _i2.Future<_i4.UuidValue> createTestUser() =>
+      caller.callServerEndpoint<_i4.UuidValue>(
+        'sessionTest',
+        'createTestUser',
+        {},
+      );
+
+  _i2.Future<_i3.AuthSuccess> createSession(_i4.UuidValue authUserId) =>
+      caller.callServerEndpoint<_i3.AuthSuccess>(
+        'sessionTest',
+        'createSession',
+        {'authUserId': authUserId},
+      );
+
+  _i2.Future<bool> checkSession(_i4.UuidValue authUserId) =>
+      caller.callServerEndpoint<bool>(
+        'sessionTest',
+        'checkSession',
+        {'authUserId': authUserId},
+      );
+}
+
 /// Endpoint to view and edit one's profile.
 /// {@category Endpoint}
 class EndpointUserProfile extends _i1.EndpointRef {
@@ -206,11 +235,14 @@ class Client extends _i1.ServerpodClientShared {
               disconnectStreamsOnLostInternetConnection,
         ) {
     emailAccount = EndpointEmailAccount(this);
+    sessionTest = EndpointSessionTest(this);
     userProfile = EndpointUserProfile(this);
     modules = Modules(this);
   }
 
   late final EndpointEmailAccount emailAccount;
+
+  late final EndpointSessionTest sessionTest;
 
   late final EndpointUserProfile userProfile;
 
@@ -219,6 +251,7 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'emailAccount': emailAccount,
+        'sessionTest': sessionTest,
         'userProfile': userProfile,
       };
 
