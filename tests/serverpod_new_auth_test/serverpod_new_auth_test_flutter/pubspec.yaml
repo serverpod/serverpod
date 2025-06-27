@@ -1,0 +1,42 @@
+publish_to: none
+
+name: serverpod_new_auth_test_flutter
+description: Auth module client-side tests.
+version: 0.0.1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  serverpod_auth_session_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter
+
+  serverpod_new_auth_test_client:
+    path: ../serverpod_new_auth_test_client
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ">=3.0.0 <7.0.0"
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_session_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client
+  serverpod_auth_user_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client
+  serverpod_auth_profile_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_client
+  serverpod_auth_email_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client
+  serverpod_auth_email_account_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
