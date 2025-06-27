@@ -25,6 +25,14 @@ void main() {
       );
     });
 
+    test('when calling put, then it throws UnimplementedError.', () async {
+      expect(() => sessionManager.put('test-key'), throwsUnimplementedError);
+    });
+
+    test('when calling remove, then it throws UnimplementedError.', () async {
+      expect(() => sessionManager.remove(), throwsUnimplementedError);
+    });
+
     test('when logging-in, then all entries are written to the storage.',
         () async {
       // `init` is not called in before this one
@@ -199,17 +207,81 @@ void main() {
       );
     });
 
-    test('when calling `logout`, then the storage values are cleared.',
+    test('when calling `setLoggedOut`, then the storage values are cleared.',
         () async {
       await sessionManager.setLoggedOut();
 
       expect(storage.values, isEmpty);
     });
 
-    test('when calling `logout`, then `authInfo` is cleared.', () async {
+    test('when calling `setLoggedOut`, then `authInfo` is cleared.', () async {
       await sessionManager.setLoggedOut();
 
       expect(sessionManager.authInfo.value, isNull);
+    });
+
+    test('when calling `setLoggedIn`, then `authInfo` is updated.', () async {
+      await sessionManager.setLoggedIn(_authSucces);
+
+      expect(sessionManager.authInfo.value, isNotNull);
+      expect(
+        sessionManager.authInfo.value?.authUserId,
+        _authSucces.authUserId,
+      );
+    });
+  });
+
+  group(
+      'Given a `SessionManager` with a storage containing an invalid persisted auth user ID, ',
+      () {
+    late TestStorage storage;
+    late SessionManager sessionManager;
+
+    setUp(() async {
+      storage = TestStorage()
+        ..values.addAll({
+          SessionManagerStorageKeys.sessionKey.key: 'session-key',
+          SessionManagerStorageKeys.authUserId.key: 'invalid-uuid',
+          SessionManagerStorageKeys.scopeNames.key: '[]'
+        });
+
+      sessionManager = SessionManager(
+        storage: storage,
+      );
+    });
+
+    test('when calling `init`, then it throws.', () async {
+      await expectLater(
+        sessionManager.init(),
+        throwsA(isA<FormatException>()),
+      );
+    });
+  });
+
+  group(
+      'Given a `SessionManager` with a storage containing invalid persisted scope names, ',
+      () {
+    late TestStorage storage;
+    late SessionManager sessionManager;
+
+    setUp(() async {
+      storage = TestStorage()
+        ..values.addAll({
+          SessionManagerStorageKeys.sessionKey.key: 'session-key',
+          SessionManagerStorageKeys.authUserId.key: const Uuid().v4(),
+          SessionManagerStorageKeys.scopeNames.key: 'invalid-json'
+        });
+
+      sessionManager = SessionManager(
+        storage: storage,
+      );
+    });
+
+    test('when calling `init`, then it throws.', () async {
+      await expectLater(
+        sessionManager.init(),
+        throwsA(isA<FormatException>()),
+      );
     });
   });
 }

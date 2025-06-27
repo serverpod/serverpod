@@ -74,7 +74,7 @@ class SessionManager extends AuthenticationKeyManager {
     }
 
     _authInfo.value = (
-      authUserId: UuidValue.fromString(persistedUserId),
+      authUserId: UuidValue.withValidation(persistedUserId),
       scopeNames:
           (jsonDecode(persistedScopeNames) as List).cast<String>().toSet(),
     );
