@@ -19,8 +19,17 @@ void main() {
       await expectLater(sessionManager.init(), completes);
     });
 
+    test('when getting the authentication key, then it returns `null`.',
+        () async {
+      expect(
+        await sessionManager.get(),
+        isNull,
+      );
+    });
+
     test('when logging-in, then all entries are written to the storage.',
         () async {
+      // In here this is called without `init` first!
       await sessionManager.setLoggedIn(_authSucces);
 
       expect(
@@ -34,13 +43,45 @@ void main() {
         },
       );
     });
+  });
 
-    test('when getting the authentication key, then it returns `null`.',
-        () async {
+  group(
+      'Given a `SessionManager` created with a single empty storage which was then logged in, ',
+      () {
+    late TestStorage storage;
+    late SessionManager sessionManager;
+
+    setUp(() async {
+      storage = TestStorage();
+      sessionManager = SessionManager(storage: storage);
+
+      await sessionManager.init();
+      await sessionManager.setLoggedIn(_authSucces);
+    });
+
+    test('when reading the storage, then all keys are present.', () async {
       expect(
-        await sessionManager.get(),
-        isNull,
+        storage.values,
+        {
+          SessionManagerStorageKeys.sessionKeyStorageKey:
+              _authSucces.sessionKey,
+          SessionManagerStorageKeys.authUserIdStorageKey:
+              _authSucces.authUserId.toString(),
+          SessionManagerStorageKeys.scopeNamesStorageKey: '["test1","test2"]'
+        },
       );
+    });
+
+    test('when getting the authentication key, then it is returned.', () async {
+      expect(await sessionManager.get(), 'session-key');
+    });
+
+    test('when getting the auth info, then it is returned.', () async {
+      final authInfo = sessionManager.authInfo.value;
+
+      expect(authInfo, isNotNull);
+      expect(authInfo?.authUserId, _authSucces.authUserId);
+      expect(authInfo?.scopeNames, {'test1', 'test2'});
     });
   });
 

@@ -75,6 +75,10 @@ class SessionManager extends AuthenticationKeyManager {
   /// Set the current session to a logged-in user described by [authSuccess].
   Future<void> setLoggedIn(AuthSuccess authSuccess) async {
     _key = authSuccess.sessionKey;
+    _authInfo.value = (
+      authUserId: authSuccess.authUserId,
+      scopeNames: authSuccess.scopeNames,
+    );
 
     await _secureStorage.set(
       SessionManagerStorageKeys.sessionKeyStorageKey,
