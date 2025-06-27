@@ -6,6 +6,6 @@ extension AuthenticationInfoUserId on AuthenticationInfo {
   ///
   /// Assumes that the `authId` is set and the system uses `Uuid` auth session IDs, otherwise throws.
   UuidValue get authSessionId {
-    return UuidValue.fromString(authId!);
+    return UuidValue.withValidation(authId!);
   }
 }
