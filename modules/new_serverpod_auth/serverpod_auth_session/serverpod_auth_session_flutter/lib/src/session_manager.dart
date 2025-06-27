@@ -40,27 +40,27 @@ class SessionManager extends AuthenticationKeyManager {
     _init = true;
 
     final sessionKey = await _secureStorage.get(
-      SessionManagerStorageKeys.sessionKeyStorageKey,
+      SessionManagerStorageKeys.sessionKey.key,
     );
 
     if (sessionKey != null) {
       _key = sessionKey;
 
       final persistedUserId = await _storage.get(
-        SessionManagerStorageKeys.authUserIdStorageKey,
+        SessionManagerStorageKeys.authUserId.key,
       );
       if (persistedUserId == null) {
-        throw const IncompleteSessionManagerStorageException(
-          SessionManagerStorageKeys.authUserIdStorageKey,
+        throw IncompleteSessionManagerStorageException(
+          SessionManagerStorageKeys.authUserId.key,
         );
       }
 
       final persistedScopeNames = await _storage.get(
-        SessionManagerStorageKeys.scopeNamesStorageKey,
+        SessionManagerStorageKeys.scopeNames.key,
       );
       if (persistedScopeNames == null) {
-        throw const IncompleteSessionManagerStorageException(
-          SessionManagerStorageKeys.scopeNamesStorageKey,
+        throw IncompleteSessionManagerStorageException(
+          SessionManagerStorageKeys.scopeNames.key,
         );
       }
 
@@ -81,17 +81,17 @@ class SessionManager extends AuthenticationKeyManager {
     );
 
     await _secureStorage.set(
-      SessionManagerStorageKeys.sessionKeyStorageKey,
+      SessionManagerStorageKeys.sessionKey.key,
       authSuccess.sessionKey,
     );
 
     await _storage.set(
-      SessionManagerStorageKeys.authUserIdStorageKey,
+      SessionManagerStorageKeys.authUserId.key,
       authSuccess.authUserId.uuid,
     );
 
     await _storage.set(
-      SessionManagerStorageKeys.scopeNamesStorageKey,
+      SessionManagerStorageKeys.scopeNames.key,
       jsonEncode(authSuccess.scopeNames.toList()),
     );
   }
@@ -101,10 +101,9 @@ class SessionManager extends AuthenticationKeyManager {
   /// This should be called after a `logout` endpoint has been called on the
   /// server.
   Future<void> setLoggedOut() async {
-    await _secureStorage.set(
-        SessionManagerStorageKeys.sessionKeyStorageKey, null);
-    await _storage.set(SessionManagerStorageKeys.authUserIdStorageKey, null);
-    await _storage.set(SessionManagerStorageKeys.scopeNamesStorageKey, null);
+    await _secureStorage.set(SessionManagerStorageKeys.sessionKey.key, null);
+    await _storage.set(SessionManagerStorageKeys.authUserId.key, null);
+    await _storage.set(SessionManagerStorageKeys.scopeNames.key, null);
 
     _key = null;
     _authInfo.value = null;
@@ -132,10 +131,14 @@ class SessionManager extends AuthenticationKeyManager {
 typedef AuthInfo = ({UuidValue authUserId, Set<String> scopeNames});
 
 @internal
-abstract class SessionManagerStorageKeys {
-  static const sessionKeyStorageKey = 'serverpod_auth_session.sessionKey';
-  static const authUserIdStorageKey = 'serverpod_auth_session.authUserId';
-  static const scopeNamesStorageKey = 'serverpod_auth_session.scopeNames';
+enum SessionManagerStorageKeys {
+  sessionKey('serverpod_auth_session.sessionKey'),
+  authUserId('serverpod_auth_session.authUserId'),
+  scopeNames('serverpod_auth_session.scopeNames');
+
+  const SessionManagerStorageKeys(this.key);
+
+  final String key;
 }
 
 /// Error to be thrown when a `SessionManager` is initialized multiple times.
