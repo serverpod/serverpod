@@ -6,5 +6,5 @@ abstract class KeyValueStorage {
   FutureOr<String?> get(String key);
 
   /// Sets [key] to the new [value].
-  FutureOr set(String key, String? value);
+  FutureOr<void> set(String key, String? value);
 }
