@@ -1,8 +1,6 @@
 /// These helpers are for internal framework use only.
 library;
 
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -16,10 +14,10 @@ DiagnosticEventContext contextFromServer(Server server) {
 }
 
 /// Creates a new [ClientCallOpContext] given a [Server]
-/// and an [HttpRequest].
-ClientCallOpContext contextFromHttpRequest(
+/// and an [Request].
+ClientCallOpContext contextFromRequest(
   Server server,
-  HttpRequest httpRequest, [
+  Request request, [
   OperationType? operationType,
 ]) {
   return ClientCallOpContext(
@@ -29,32 +27,28 @@ ClientCallOpContext contextFromHttpRequest(
     operationType: operationType,
     sessionId: null,
     userAuthInfo: null,
-    connectionInfo: httpRequest.connectionInfo?.toConnectionInfo() ??
-        ConnectionInfo.empty(),
-    uri: httpRequest.uri,
+    clientIpAddress: request.clientIpAddress,
+    uri: request.requestedUri,
   );
 }
 
 /// Creates a new [OperationEventContext] given a [Session]
-/// and an [HttpRequest] if available.
+/// and an [Request] if available.
 OperationEventContext contextFromSession(
   Session session, {
-  HttpRequest? httpRequest,
+  Request? request,
 }) {
   return switch (session) {
     FutureCallSession futureCall => _fromFutureCall(
         futureCall,
       ),
-    WebCallSession webCall => _fromWebCall(
-        webCall,
-        httpRequest: httpRequest,
-      ),
+    WebCallSession webCall => _fromWebCall(webCall, request),
     MethodCallSession methodCall => _fromMethodCall(
         methodCall,
       ),
     MethodStreamSession methodStream => _fromMethodStream(
         methodStream,
-        httpRequest: httpRequest,
+        request: request,
       ),
     StreamingSession streaming => _fromStreaming(
         streaming,
@@ -84,17 +78,17 @@ FutureCallOpContext _fromFutureCall(
     );
 
 WebCallOpContext _fromWebCall(
-  WebCallSession session, {
-  HttpRequest? httpRequest,
-}) =>
+  WebCallSession session,
+  Request? request,
+) =>
     WebCallOpContext(
       serverName: session.server.name,
       serverId: session.server.serverId,
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(httpRequest?.connectionInfo),
-      uri: httpRequest?.uri ?? Uri.http('', session.endpoint),
+      clientIpAddress: request?.clientIpAddress,
+      uri: request?.requestedUri ?? Uri.http('', session.endpoint),
     );
 
 MethodCallOpContext _fromMethodCall(
@@ -106,15 +100,16 @@ MethodCallOpContext _fromMethodCall(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(session.httpRequest.connectionInfo),
-      uri: session.uri,
+      clientIpAddress: session.clientIpAddress,
+      uri: session
+          .uri, // MethodCallSession has its own uri field, which is used here.
       endpoint: session.endpoint,
       methodName: session.method,
     );
 
 StreamOpContext _fromMethodStream(
   MethodStreamSession session, {
-  HttpRequest? httpRequest,
+  Request? request,
 }) =>
     StreamOpContext(
       serverName: session.server.name,
@@ -122,8 +117,8 @@ StreamOpContext _fromMethodStream(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: _safeHttpToConnInfo(httpRequest?.connectionInfo),
-      uri: httpRequest?.uri ?? Uri.http('localhost'),
+      clientIpAddress: request?.clientIpAddress,
+      uri: request?.requestedUri ?? Uri.http('localhost'),
       endpoint: session.endpoint,
       methodName: session.method,
       streamConnectionId: session.connectionId,
@@ -138,13 +133,9 @@ StreamOpContext _fromStreaming(
       serverRunMode: session.server.runMode,
       userAuthInfo: session.authInfoOrNull,
       sessionId: session.sessionId,
-      connectionInfo: session.httpRequest.connectionInfo?.toConnectionInfo() ??
-          ConnectionInfo.empty(),
-      uri: session.httpRequest.uri,
+      clientIpAddress: session.clientIpAddress,
+      uri: session.request.requestedUri,
       endpoint: session.endpoint,
       methodName: '-',
       streamConnectionId: null,
     );
-
-ConnectionInfo _safeHttpToConnInfo(HttpConnectionInfo? connectionInfo) =>
-    connectionInfo?.toConnectionInfo() ?? ConnectionInfo.empty();

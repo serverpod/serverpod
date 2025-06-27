@@ -529,7 +529,7 @@ class InvalidEndpointMethodTypeException extends EndpointDispatchException {
 /// The input parameters were invalid.
 class InvalidParametersException extends EndpointDispatchException {
   @override
-  String message = 'Invalid parameters';
+  final String message;
 
   /// Creates a new [InvalidParametersException].
   InvalidParametersException(this.message);
