@@ -81,6 +81,7 @@ declare -a flutter_paths=(
   "examples/chat/chat_flutter"
   "packages/serverpod_flutter"
   "templates/serverpod_templates/projectname_flutter"
+  "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter"
   "modules/serverpod_auth/serverpod_auth_shared_flutter"
   "modules/serverpod_auth/serverpod_auth_apple_flutter"
   "modules/serverpod_auth/serverpod_auth_google_flutter"
