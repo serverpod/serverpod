@@ -142,12 +142,12 @@ void main() {
     late TestStorage storage;
     late SessionManager sessionManager;
 
-    setUp(() {
-      storage = TestStorage()
-        ..set(
-          SessionManagerStorageKeys.sessionKey.key,
-          'some-session-key',
-        );
+    setUp(() async {
+      storage = TestStorage();
+      await storage.set(
+        SessionManagerStorageKeys.sessionKey.key,
+        'some-session-key',
+      );
 
       sessionManager = SessionManager(
         storage: storage,
@@ -218,12 +218,14 @@ class TestStorage extends KeyValueStorage {
   final values = <String, String>{};
 
   @override
-  String? get(String key) {
+  Future<String?> get(String key) async {
     return values[key];
   }
 
   @override
-  void set(String key, String? value) {
+  Future<void> set(String key, String? value) async {
+    await Future.delayed(const Duration(microseconds: 1));
+
     if (value == null) {
       values.remove(key);
     } else {
