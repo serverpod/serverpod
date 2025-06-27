@@ -76,17 +76,17 @@ class SessionManager extends AuthenticationKeyManager {
   Future<void> setLoggedIn(AuthSuccess authSuccess) async {
     _key = authSuccess.sessionKey;
 
-    _secureStorage.set(
+    await _secureStorage.set(
       SessionManagerStorageKeys.sessionKeyStorageKey,
       authSuccess.sessionKey,
     );
 
-    _storage.set(
+    await _storage.set(
       SessionManagerStorageKeys.authUserIdStorageKey,
       authSuccess.authUserId.uuid,
     );
 
-    _storage.set(
+    await _storage.set(
       SessionManagerStorageKeys.scopeNamesStorageKey,
       jsonEncode(authSuccess.scopeNames.toList()),
     );
