@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -46,17 +44,8 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   if (Features.enableDatabase) {
     try {
       var startTime = DateTime.now();
-      var rnd = Random().nextInt(1000000);
 
-      // Write entry
-      ReadWriteTestEntry? entry = ReadWriteTestEntry(
-        number: rnd,
-      );
-
-      entry = await ReadWriteTestEntry.db.insertRow(pod.internalSession, entry);
-
-      // Verify random number
-      dbHealthy = entry.number == rnd;
+      dbHealthy = await pod.internalSession.db.testConnection();
 
       dbResponseTime =
           DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
