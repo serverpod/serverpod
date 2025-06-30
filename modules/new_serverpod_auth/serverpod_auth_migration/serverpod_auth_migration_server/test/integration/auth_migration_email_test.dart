@@ -71,10 +71,6 @@ void main() {
         );
       });
 
-      tearDown(() {
-        AuthMigrationEmail.config = AuthMigrationConfig();
-      });
-
       test(
         'when running `migrateOnLogin` with the correct password, then it completes without error.',
         () async {
@@ -130,19 +126,58 @@ void main() {
       );
 
       test(
-        'when running `migrateWithoutPassword` with a throwing `userMigrationHook`, then it forwards the error and does not create an `AuthUser`.',
+        'when running `migrateWithoutPassword`, then it completes without error.',
         () async {
-          AuthMigrationEmail.config = AuthMigrationConfig(
-            userMigrationHook: (
-              final session, {
-              required final newAuthUserId,
-              required final oldUserId,
-              final transaction,
-            }) {
-              throw UnimplementedError();
-            },
+          await expectLater(
+            AuthMigrationEmail.migrateWithoutPassword(
+              session,
+              email: email,
+            ),
+            completes,
           );
+        },
+      );
+    },
+  );
 
+  withServerpod(
+    'Given a legacy `serverpod_auth` email-based user account and a throwing `userMigrationHook`,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'User@serverpod.DEV';
+      const password = 'Somepassword123!';
+
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        await legacy_auth.Emails.createUser(
+          session,
+          'user name',
+          // at this point `Emails` already expect lower-case addresses
+          email.toLowerCase(),
+          password,
+        );
+
+        AuthMigrationEmail.config = AuthMigrationConfig(
+          userMigrationHook: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) {
+            throw UnimplementedError();
+          },
+        );
+      });
+
+      tearDown(() {
+        AuthMigrationEmail.config = AuthMigrationConfig();
+      });
+
+      test(
+        'when running `migrateWithoutPassword`, then it forwards the error and does not create an `AuthUser`.',
+        () async {
           await expectLater(
             AuthMigrationEmail.migrateWithoutPassword(
               session,
@@ -156,19 +191,8 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with a throwing `userMigrationHook`, then it forwards the error and does not create an `AuthUser`.',
+        'when running `migrateOnLogin`, then it forwards the error and does not create an `AuthUser`.',
         () async {
-          AuthMigrationEmail.config = AuthMigrationConfig(
-            userMigrationHook: (
-              final session, {
-              required final newAuthUserId,
-              required final oldUserId,
-              final transaction,
-            }) {
-              throw UnimplementedError();
-            },
-          );
-
           await expectLater(
             AuthMigrationEmail.migrateOnLogin(
               session,
@@ -179,19 +203,6 @@ void main() {
           );
 
           expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
-        },
-      );
-
-      test(
-        'when running `migrateWithoutPassword`, then it completes without error.',
-        () async {
-          await expectLater(
-            AuthMigrationEmail.migrateWithoutPassword(
-              session,
-              email: email,
-            ),
-            completes,
-          );
         },
       );
     },
