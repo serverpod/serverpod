@@ -53,4 +53,11 @@ class Caches {
 
   /// Cache used to automatically save cachable database queries.
   LocalCache get query => _query;
+
+  /// Clears all caches.
+  Future<void> clear() async {
+    await _local.clear();
+    await _localPrio.clear();
+    await _query.clear();
+  }
 }
