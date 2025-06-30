@@ -13,7 +13,7 @@ import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
 /// `serverpod_auth_email_account`.
 abstract final class AuthMigrationEmail {
   /// The current configuration for the email authentication migration.
-  static AuthMigrationEmailConfig config = AuthMigrationEmailConfig();
+  static AuthMigrationConfig config = AuthMigrationConfig();
 
   /// Attempts to migrate the user and their email authentication to the new
   /// auth module.
@@ -92,7 +92,7 @@ abstract final class AuthMigrationEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final migratedUser = await _migrateUserIfNeeded(
+        final (migratedUser, didCreate) = await _migrateUserIfNeeded(
           session,
           userInfo,
           transaction: transaction,
@@ -105,6 +105,15 @@ abstract final class AuthMigrationEmail {
           password: password,
           transaction: transaction,
         );
+
+        if (didCreate) {
+          await config.userMigrationHook?.call(
+            session,
+            oldUserId: migratedUser.oldUserId,
+            newAuthUserId: migratedUser.newAuthUserId,
+            transaction: transaction,
+          );
+        }
       },
     );
   }
@@ -160,7 +169,7 @@ abstract final class AuthMigrationEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final migratedUser = await _migrateUserIfNeeded(
+        final (migratedUser, didCreate) = await _migrateUserIfNeeded(
           session,
           userInfo,
           transaction: transaction,
@@ -173,11 +182,21 @@ abstract final class AuthMigrationEmail {
           password: null,
           transaction: transaction,
         );
+
+        if (didCreate) {
+          await config.userMigrationHook?.call(
+            session,
+            oldUserId: migratedUser.oldUserId,
+            newAuthUserId: migratedUser.newAuthUserId,
+            transaction: transaction,
+          );
+        }
       },
     );
   }
 
-  static Future<MigratedUser> _migrateUserIfNeeded(
+  static Future<(MigratedUser migratedUser, bool didCreate)>
+      _migrateUserIfNeeded(
     final Session session,
     final legacy_auth.UserInfo userInfo, {
     required final Transaction transaction,
@@ -189,7 +208,7 @@ abstract final class AuthMigrationEmail {
     );
 
     if (migratedUser != null) {
-      return migratedUser;
+      return (migratedUser, false);
     }
 
     final authUser = await new_auth_user.AuthUsers.create(
@@ -208,10 +227,13 @@ abstract final class AuthMigrationEmail {
       );
     }
 
-    return MigratedUser.db.insertRow(
-      session,
-      MigratedUser(oldUserId: userInfo.id!, newAuthUserId: authUser.id),
-      transaction: transaction,
+    return (
+      await MigratedUser.db.insertRow(
+        session,
+        MigratedUser(oldUserId: userInfo.id!, newAuthUserId: authUser.id),
+        transaction: transaction,
+      ),
+      true,
     );
   }
 

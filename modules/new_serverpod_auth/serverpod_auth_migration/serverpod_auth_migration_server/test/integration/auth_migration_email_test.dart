@@ -141,6 +141,74 @@ void main() {
   );
 
   withServerpod(
+    'Given a legacy `serverpod_auth` email-based user account and a throwing `userMigrationHook`,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'User@serverpod.DEV';
+      const password = 'Somepassword123!';
+
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        await legacy_auth.Emails.createUser(
+          session,
+          'user name',
+          // at this point `Emails` already expect lower-case addresses
+          email.toLowerCase(),
+          password,
+        );
+
+        AuthMigrationEmail.config = AuthMigrationConfig(
+          userMigrationHook: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) {
+            throw UnimplementedError();
+          },
+        );
+      });
+
+      tearDown(() {
+        AuthMigrationEmail.config = AuthMigrationConfig();
+      });
+
+      test(
+        'when running `migrateWithoutPassword`, then it forwards the error and does not create an `AuthUser`.',
+        () async {
+          await expectLater(
+            AuthMigrationEmail.migrateWithoutPassword(
+              session,
+              email: email,
+            ),
+            throwsUnimplementedError,
+          );
+
+          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+        },
+      );
+
+      test(
+        'when running `migrateOnLogin`, then it forwards the error and does not create an `AuthUser`.',
+        () async {
+          await expectLater(
+            AuthMigrationEmail.migrateOnLogin(
+              session,
+              email: email,
+              password: password,
+            ),
+            throwsUnimplementedError,
+          );
+
+          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given a legacy `serverpod_auth` email-based user account which is blocked,',
     (final sessionBuilder, final endpoints) {
       const email = 'blocked@serverpod.dev';
@@ -198,9 +266,21 @@ void main() {
       late Session session;
       late legacy_auth.UserInfo userInfo;
       late UuidValue authUserId;
+      late ({int oldUserId, UuidValue newAuthUserId})? migratedUser;
 
       setUp(() async {
         session = sessionBuilder.build();
+
+        AuthMigrationEmail.config = AuthMigrationConfig(
+          userMigrationHook: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) async {
+            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
+          },
+        );
 
         userInfo = (await legacy_auth.Emails.createUser(
           session,
@@ -223,12 +303,31 @@ void main() {
             .authUserId;
       });
 
+      tearDown(() {
+        AuthMigrationEmail.config = AuthMigrationConfig();
+      });
+
       test(
         'when the migration is done, then no session has been created in the legacy system.',
         () async {
           expect(
             await legacy_auth.AuthKey.db.find(session),
             isEmpty,
+          );
+        },
+      );
+
+      test(
+        'when the migration is done, then the migration hook has been invoked.',
+        () async {
+          expect(
+            migratedUser?.oldUserId,
+            userInfo.id!,
+          );
+
+          expect(
+            migratedUser?.newAuthUserId,
+            authUserId,
           );
         },
       );
@@ -254,6 +353,25 @@ void main() {
             ),
             completes,
           );
+        },
+      );
+
+      test(
+        'when attempting to run `migrateOnLogin` again for that account, then does not invoke the migration hook again.',
+        () async {
+          expect(migratedUser, isNotNull);
+          migratedUser = null;
+
+          await expectLater(
+            AuthMigrationEmail.migrateOnLogin(
+              session,
+              email: email,
+              password: password,
+            ),
+            completes,
+          );
+
+          expect(migratedUser, isNull);
         },
       );
 
@@ -319,7 +437,7 @@ void main() {
           password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationEmailConfig(
+        AuthMigrationEmail.config = AuthMigrationConfig(
           importProfile: false,
         );
 
@@ -329,7 +447,7 @@ void main() {
           password: password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationEmailConfig();
+        AuthMigrationEmail.config = AuthMigrationConfig();
 
         authUserId = (await new_email_account.EmailAccounts.admin.findAccount(
           session,
@@ -372,7 +490,7 @@ void main() {
           password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationEmailConfig(
+        AuthMigrationEmail.config = AuthMigrationConfig(
           importProfile: false,
         );
 
@@ -381,7 +499,7 @@ void main() {
           email: email,
         );
 
-        AuthMigrationEmail.config = AuthMigrationEmailConfig();
+        AuthMigrationEmail.config = AuthMigrationConfig();
 
         authUserId = (await new_email_account.EmailAccounts.admin.findAccount(
           session,
@@ -415,8 +533,21 @@ void main() {
       late legacy_auth.UserInfo userInfo;
       late UuidValue authUserId;
 
+      late ({int oldUserId, UuidValue newAuthUserId})? migratedUser;
+
       setUp(() async {
         session = sessionBuilder.build();
+
+        AuthMigrationEmail.config = AuthMigrationConfig(
+          userMigrationHook: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) async {
+            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
+          },
+        );
 
         userInfo = (await legacy_auth.Emails.createUser(
           session,
@@ -438,12 +569,31 @@ void main() {
             .authUserId;
       });
 
+      tearDown(() {
+        AuthMigrationEmail.config = AuthMigrationConfig();
+      });
+
       test(
         'when the migration is done, then no session has been created in the legacy system.',
         () async {
           expect(
             await legacy_auth.AuthKey.db.find(session),
             isEmpty,
+          );
+        },
+      );
+
+      test(
+        'when the migration is done, then the migration hook has been invoked.',
+        () async {
+          expect(
+            migratedUser?.oldUserId,
+            userInfo.id!,
+          );
+
+          expect(
+            migratedUser?.newAuthUserId,
+            authUserId,
           );
         },
       );
@@ -542,6 +692,24 @@ void main() {
             ),
             completes,
           );
+        },
+      );
+
+      test(
+        'when attempting to run `migrateWithoutPassword` again for that account, then does not invoke the migration hook again.',
+        () async {
+          expect(migratedUser, isNotNull);
+          migratedUser = null;
+
+          await expectLater(
+            AuthMigrationEmail.migrateWithoutPassword(
+              session,
+              email: email,
+            ),
+            completes,
+          );
+
+          expect(migratedUser, isNull);
         },
       );
 
