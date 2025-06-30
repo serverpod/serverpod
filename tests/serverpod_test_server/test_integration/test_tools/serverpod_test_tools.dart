@@ -12094,6 +12094,227 @@ class _TestToolsEndpoint {
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
+
+  _i3.Future<void> putInLocalCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+    _i11.SimpleData data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'putInLocalCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'putInLocalCache',
+          parameters: _i1.testObjectToJson({
+            'key': key,
+            'data': data,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.SimpleData?> getFromLocalCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'getFromLocalCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'getFromLocalCache',
+          parameters: _i1.testObjectToJson({'key': key}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i11.SimpleData?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> putInLocalPrioCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+    _i11.SimpleData data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'putInLocalPrioCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'putInLocalPrioCache',
+          parameters: _i1.testObjectToJson({
+            'key': key,
+            'data': data,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.SimpleData?> getFromLocalPrioCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'getFromLocalPrioCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'getFromLocalPrioCache',
+          parameters: _i1.testObjectToJson({'key': key}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i11.SimpleData?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> putInQueryCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+    _i11.SimpleData data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'putInQueryCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'putInQueryCache',
+          parameters: _i1.testObjectToJson({
+            'key': key,
+            'data': data,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.SimpleData?> getFromQueryCache(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'getFromQueryCache',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'getFromQueryCache',
+          parameters: _i1.testObjectToJson({'key': key}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i11.SimpleData?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> putInLocalCacheWithGroup(
+    _i1.TestSessionBuilder sessionBuilder,
+    String key,
+    _i11.SimpleData data,
+    String group,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'putInLocalCacheWithGroup',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'putInLocalCacheWithGroup',
+          parameters: _i1.testObjectToJson({
+            'key': key,
+            'data': data,
+            'group': group,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _AuthenticatedTestToolsEndpoint {

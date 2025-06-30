@@ -342,6 +342,39 @@ class TestToolsEndpoint extends Endpoint {
 
     throw Exception();
   }
+
+  // Cache testing methods
+  Future<void> putInLocalCache(
+      Session session, String key, SimpleData data) async {
+    await session.caches.local.put(key, data);
+  }
+
+  Future<SimpleData?> getFromLocalCache(Session session, String key) async {
+    return await session.caches.local.get<SimpleData>(key);
+  }
+
+  Future<void> putInLocalPrioCache(
+      Session session, String key, SimpleData data) async {
+    await session.caches.localPrio.put(key, data);
+  }
+
+  Future<SimpleData?> getFromLocalPrioCache(Session session, String key) async {
+    return await session.caches.localPrio.get<SimpleData>(key);
+  }
+
+  Future<void> putInQueryCache(
+      Session session, String key, SimpleData data) async {
+    await session.caches.query.put(key, data);
+  }
+
+  Future<SimpleData?> getFromQueryCache(Session session, String key) async {
+    return await session.caches.query.get<SimpleData>(key);
+  }
+
+  Future<void> putInLocalCacheWithGroup(
+      Session session, String key, SimpleData data, String group) async {
+    await session.caches.local.put(key, data, group: group);
+  }
 }
 
 class AuthenticatedTestToolsEndpoint extends Endpoint {

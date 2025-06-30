@@ -7291,6 +7291,169 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['testTools'] as _i42.TestToolsEndpoint)
                   .addWillCloseListenerToSessionAndThrow(session),
         ),
+        'putInLocalCache': _i1.MethodConnector(
+          name: 'putInLocalCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i50.SimpleData>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .putInLocalCache(
+            session,
+            params['key'],
+            params['data'],
+          ),
+        ),
+        'getFromLocalCache': _i1.MethodConnector(
+          name: 'getFromLocalCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .getFromLocalCache(
+            session,
+            params['key'],
+          ),
+        ),
+        'putInLocalPrioCache': _i1.MethodConnector(
+          name: 'putInLocalPrioCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i50.SimpleData>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .putInLocalPrioCache(
+            session,
+            params['key'],
+            params['data'],
+          ),
+        ),
+        'getFromLocalPrioCache': _i1.MethodConnector(
+          name: 'getFromLocalPrioCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .getFromLocalPrioCache(
+            session,
+            params['key'],
+          ),
+        ),
+        'putInQueryCache': _i1.MethodConnector(
+          name: 'putInQueryCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i50.SimpleData>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .putInQueryCache(
+            session,
+            params['key'],
+            params['data'],
+          ),
+        ),
+        'getFromQueryCache': _i1.MethodConnector(
+          name: 'getFromQueryCache',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .getFromQueryCache(
+            session,
+            params['key'],
+          ),
+        ),
+        'putInLocalCacheWithGroup': _i1.MethodConnector(
+          name: 'putInLocalCacheWithGroup',
+          params: {
+            'key': _i1.ParameterDescription(
+              name: 'key',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i50.SimpleData>(),
+              nullable: false,
+            ),
+            'group': _i1.ParameterDescription(
+              name: 'group',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i42.TestToolsEndpoint)
+                  .putInLocalCacheWithGroup(
+            session,
+            params['key'],
+            params['data'],
+            params['group'],
+          ),
+        ),
         'returnsSessionIdFromStream': _i1.MethodStreamConnector(
           name: 'returnsSessionIdFromStream',
           params: {},
