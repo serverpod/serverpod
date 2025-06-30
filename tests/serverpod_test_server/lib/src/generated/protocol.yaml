@@ -417,6 +417,13 @@ testTools:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
   - addWillCloseListenerToSessionIntStreamMethodAndThrow:
+  - putInLocalCache:
+  - getFromLocalCache:
+  - putInLocalPrioCache:
+  - getFromLocalPrioCache:
+  - putInQueryCache:
+  - getFromQueryCache:
+  - putInLocalCacheWithGroup:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

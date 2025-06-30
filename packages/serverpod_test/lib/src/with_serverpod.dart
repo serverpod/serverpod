@@ -157,6 +157,10 @@ void Function(TestClosure<T>)
             await localTransactionManager.addSavepoint();
           }
 
+          await mainServerpodSession.caches.local.clear();
+          await mainServerpodSession.caches.localPrio.clear();
+          await mainServerpodSession.caches.query.clear();
+
           await GlobalStreamManager.closeAllStreams();
         });
 

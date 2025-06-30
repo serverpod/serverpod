@@ -3507,6 +3507,81 @@ class EndpointTestTools extends _i1.EndpointRef {
         {},
         {},
       );
+
+  _i2.Future<void> putInLocalCache(
+    String key,
+    _i10.SimpleData data,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'putInLocalCache',
+        {
+          'key': key,
+          'data': data,
+        },
+      );
+
+  _i2.Future<_i10.SimpleData?> getFromLocalCache(String key) =>
+      caller.callServerEndpoint<_i10.SimpleData?>(
+        'testTools',
+        'getFromLocalCache',
+        {'key': key},
+      );
+
+  _i2.Future<void> putInLocalPrioCache(
+    String key,
+    _i10.SimpleData data,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'putInLocalPrioCache',
+        {
+          'key': key,
+          'data': data,
+        },
+      );
+
+  _i2.Future<_i10.SimpleData?> getFromLocalPrioCache(String key) =>
+      caller.callServerEndpoint<_i10.SimpleData?>(
+        'testTools',
+        'getFromLocalPrioCache',
+        {'key': key},
+      );
+
+  _i2.Future<void> putInQueryCache(
+    String key,
+    _i10.SimpleData data,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'putInQueryCache',
+        {
+          'key': key,
+          'data': data,
+        },
+      );
+
+  _i2.Future<_i10.SimpleData?> getFromQueryCache(String key) =>
+      caller.callServerEndpoint<_i10.SimpleData?>(
+        'testTools',
+        'getFromQueryCache',
+        {'key': key},
+      );
+
+  _i2.Future<void> putInLocalCacheWithGroup(
+    String key,
+    _i10.SimpleData data,
+    String group,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'putInLocalCacheWithGroup',
+        {
+          'key': key,
+          'data': data,
+          'group': group,
+        },
+      );
 }
 
 /// {@category Endpoint}
