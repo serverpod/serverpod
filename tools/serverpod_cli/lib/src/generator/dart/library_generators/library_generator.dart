@@ -199,22 +199,13 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Object?')))
         ..body = Block.of([
-          const Code(
-            'String? className = super.getClassNameForObject(data);'
-            'if(className != null) return className;',
-          ),
+          // Check current protocol's classes first to ensure concrete types take precedence
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in unsealedModels)
+          for (var classInfo in unsealedModels.reversed)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
-          if (config.name != 'serverpod' && serverCode)
-            _buildGetClassNameForObjectDelegation(
-                serverpodProtocolUrl(serverCode), 'serverpod'),
-          for (var module in config.modules)
-            _buildGetClassNameForObjectDelegation(
-                module.dartImportUrl(serverCode), module.name),
           for (var containerType in nonModelStreamTypes)
             Block.of([
               const Code('if(data is '),
@@ -224,6 +215,18 @@ class LibraryGenerator {
                   'return \'${containerType.classNameWithGenericsForProtocol(modules: config.modules)}\';'),
               const Code('}'),
             ]),
+          // Check modules before falling back to super
+          if (config.name != 'serverpod' && serverCode)
+            _buildGetClassNameForObjectDelegation(
+                serverpodProtocolUrl(serverCode), 'serverpod'),
+          for (var module in config.modules)
+            _buildGetClassNameForObjectDelegation(
+                module.dartImportUrl(serverCode), module.name),
+          // Only fall back to super if no concrete type found
+          const Code(
+            'String? className = super.getClassNameForObject(data);'
+            'if(className != null) return className;',
+          ),
           const Code('return null;'),
         ])),
       Method((m) => m
