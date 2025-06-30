@@ -1,15 +1,14 @@
 // ignore_for_file: dead_code
 
 @Timeout(Duration(minutes: 1))
-@Skip('This is skipped due to flaky tests, issue to resolve this is tracked in '
-    'https://github.com/serverpod/serverpod/issues/3431')
+// Note, this test shall run non-concurrently,
+// which means the test tag 'integration' is not used.
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:serverpod_test/serverpod_test.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -46,9 +45,7 @@ void main() {
 
     var exitCode = await processOutput.process.exitCode;
     expect(exitCode, 0);
-  },
-      timeout: const Timeout(Duration(seconds: 60)),
-      tags: [defaultIntegrationTestTag]);
+  }, timeout: const Timeout(Duration(seconds: 60)));
 
   group('Given a running serverpod server', () {
     test(
@@ -221,7 +218,7 @@ void main() {
       );
       expect(exitCode, 130);
     }, skip: 'Dart HTTP server does not support this graceful shutdown');
-  }, tags: [defaultIntegrationTestTag]);
+  });
 }
 
 typedef ProcessOutput = ({
