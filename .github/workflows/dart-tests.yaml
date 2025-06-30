@@ -45,6 +45,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -64,6 +65,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -83,6 +85,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -103,6 +106,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Install dependencies
         run: bash util/pub_get_all
       - name: Run serverpod generate
@@ -119,6 +123,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
@@ -134,6 +139,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run unit tests
         run: bash util/run_tests_unit
 
@@ -160,6 +166,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - uses: browser-actions/setup-chrome@v1
       - name: Run unit tests
         run: >-
@@ -176,15 +183,13 @@ jobs:
       matrix:
         flutter-version: ['3.24.0', '3.32.1']
         os: [windows-latest, ubuntu-latest]
-        path:
-          [
-            'packages/serverpod_flutter',
-          ]
+        path: ['packages/serverpod_flutter']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run unit tests
         run: flutter test
         working-directory: ${{ matrix.path }}
@@ -200,6 +205,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run e2e tests
         run: util/run_tests_e2e
 
@@ -214,6 +220,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run e2e tests
         run: util/run_tests_e2e firefox
 
@@ -229,6 +236,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run integration tests
         run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
@@ -239,23 +247,25 @@ jobs:
     strategy:
       matrix:
         flutter-version: ['3.24.0', '3.32.1']
-        module: [
-          'tests/serverpod_test_module/serverpod_test_module_server',
-          'tests/serverpod_test_nonvector/serverpod_test_nonvector_server',
-          'tests/serverpod_new_auth_test/serverpod_new_auth_test_server',
-          'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
-          'modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server',
-          'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
-          'modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server',
-          'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
-          'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',
-          'modules/serverpod_auth/serverpod_auth_server'
-        ]
+        module:
+          [
+            'tests/serverpod_test_module/serverpod_test_module_server',
+            'tests/serverpod_test_nonvector/serverpod_test_nonvector_server',
+            'tests/serverpod_new_auth_test/serverpod_new_auth_test_server',
+            'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
+            'modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server',
+            'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
+            'modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server',
+            'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
+            'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',
+            'modules/serverpod_auth/serverpod_auth_server',
+          ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Start containers
         run: docker compose up --build -V -d
         working-directory: ${{ matrix.module }}
@@ -288,6 +298,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run integration tests
         run: util/run_tests_integration
 
@@ -302,6 +313,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run integration tests
         run: util/run_tests_integration_concurrently
 
@@ -319,6 +331,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -344,6 +357,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
 
@@ -361,6 +375,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -371,7 +386,7 @@ jobs:
           ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
 
           colima start
-      - name: Run unit tests 
+      - name: Run unit tests
         run: dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
@@ -391,5 +406,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
+          cache: true
       - name: Run version change test
         run: util/run_tests_version_change
