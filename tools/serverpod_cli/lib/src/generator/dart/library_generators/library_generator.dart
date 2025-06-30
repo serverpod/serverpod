@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
@@ -44,7 +45,8 @@ class LibraryGenerator {
 
     var unsealedModels = allModels
         .where((model) => !(model is ModelClassDefinition && model.isSealed))
-        .toList();
+        .toList()
+      ..sort(_byChildClassesBeforeParents);
 
     // exports
     library.directives.addAll([
@@ -1613,4 +1615,34 @@ extension on DatabaseDefinition {
       ...additionalTables,
     ]).code;
   }
+}
+
+/// Sorts child classes before their parents, such that serialization order is stable.
+int _byChildClassesBeforeParents(
+  SerializableModelDefinition a,
+  SerializableModelDefinition b,
+) {
+  if (a is! ModelClassDefinition || b is! ModelClassDefinition) {
+    return 0;
+  }
+
+  if (a.extendsClass != null && b.extendsClass == null) {
+    return -1;
+  }
+
+  if (a.extendsClass == null && b.extendsClass != null) {
+    return 1;
+  }
+
+  if (a.extendsClass is ResolvedInheritanceDefinition &&
+      (a.extendsClass as ResolvedInheritanceDefinition).classDefinition == b) {
+    return -1;
+  }
+
+  if (b.extendsClass is ResolvedInheritanceDefinition &&
+      (b.extendsClass as ResolvedInheritanceDefinition).classDefinition == a) {
+    return 1;
+  }
+
+  return 0;
 }
