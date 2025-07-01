@@ -3,7 +3,7 @@
 
 name: serverpod_auth_session_flutter
 description: Client-side companion for Serverpod servers using `serverpod_auth_session`.
-version: 2.9.0
+version: 2.9.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -16,13 +16,13 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.11.0
-  serverpod_auth_session_client: 2.9.0
+  serverpod_auth_session_client: 2.9.1
   shared_preferences: ^2.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 2.9.0
+  serverpod_lints: 2.9.1
 
 dependency_overrides:
   serverpod_client:

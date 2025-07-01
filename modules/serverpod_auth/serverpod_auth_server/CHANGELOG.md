@@ -1,3 +1,13 @@
+## 2.9.1
+- feat: Makes it possible to configure a default page for `SignInWithEmailDialog`.
+- feat: Adds lints to project template.
+- feat: Warns users about using outdated lock file.
+- fix: Updates UUID generator reference to use `serverpod` package instead of `uuid`.
+- fix: Clears cache in between test runs.
+- fix: Removes database write from read/write test.
+- fix: Fixes code generation for type definitions from other folders.
+- fix: Fixes `getClassNameForObject` method in subclasses.
+
 ## 2.9.0
 - feat: Adds support for `HalfVector`, `SparseVector` and `Bit` vector types in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
 - feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
