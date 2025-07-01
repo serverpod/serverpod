@@ -859,65 +859,47 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.EmailAccount) {
-      return 'EmailAccount';
-    }
-    if (data is _i5.EmailAccountFailedLoginAttempt) {
-      return 'EmailAccountFailedLoginAttempt';
-    }
-    if (data is _i6.EmailAccountPasswordResetAttempt) {
-      return 'EmailAccountPasswordResetAttempt';
-    }
-    if (data is _i7.EmailAccountPasswordResetRequest) {
-      return 'EmailAccountPasswordResetRequest';
-    }
-    if (data is _i8.EmailAccountPasswordResetRequestAttempt) {
-      return 'EmailAccountPasswordResetRequestAttempt';
-    }
-    if (data is _i9.EmailAccountRequest) {
-      return 'EmailAccountRequest';
-    }
-    if (data is _i10.EmailAccountRequestCompletionAttempt) {
-      return 'EmailAccountRequestCompletionAttempt';
-    }
-    if (data is _i11.EmailAccountLoginException) {
-      return 'EmailAccountLoginException';
-    }
-    if (data is _i12.EmailAccountLoginFailureReason) {
-      return 'EmailAccountLoginFailureReason';
-    }
-    if (data is _i13.EmailAccountPasswordPolicyViolationException) {
-      return 'EmailAccountPasswordPolicyViolationException';
-    }
-    if (data is _i14.EmailAccountPasswordResetRequestExpiredException) {
-      return 'EmailAccountPasswordResetRequestExpiredException';
-    }
-    if (data is _i15.EmailAccountPasswordResetRequestNotFoundException) {
-      return 'EmailAccountPasswordResetRequestNotFoundException';
-    }
-    if (data is _i16.EmailAccountPasswordResetRequestTooManyAttemptsException) {
-      return 'EmailAccountPasswordResetRequestTooManyAttemptsException';
-    }
-    if (data is _i17.EmailAccountPasswordResetRequestUnauthorizedException) {
-      return 'EmailAccountPasswordResetRequestUnauthorizedException';
-    }
-    if (data is _i18.EmailAccountPasswordResetTooManyAttemptsException) {
-      return 'EmailAccountPasswordResetTooManyAttemptsException';
-    }
-    if (data is _i19.EmailAccountRequestExpiredException) {
-      return 'EmailAccountRequestExpiredException';
-    }
-    if (data is _i20.EmailAccountRequestNotFoundException) {
-      return 'EmailAccountRequestNotFoundException';
-    }
-    if (data is _i21.EmailAccountRequestNotVerifiedException) {
-      return 'EmailAccountRequestNotVerifiedException';
-    }
-    if (data is _i22.EmailAccountRequestTooManyAttemptsException) {
-      return 'EmailAccountRequestTooManyAttemptsException';
-    }
-    if (data is _i23.EmailAccountRequestUnauthorizedException) {
-      return 'EmailAccountRequestUnauthorizedException';
+    switch (data) {
+      case _i4.EmailAccount():
+        return 'EmailAccount';
+      case _i5.EmailAccountFailedLoginAttempt():
+        return 'EmailAccountFailedLoginAttempt';
+      case _i6.EmailAccountPasswordResetAttempt():
+        return 'EmailAccountPasswordResetAttempt';
+      case _i7.EmailAccountPasswordResetRequest():
+        return 'EmailAccountPasswordResetRequest';
+      case _i8.EmailAccountPasswordResetRequestAttempt():
+        return 'EmailAccountPasswordResetRequestAttempt';
+      case _i9.EmailAccountRequest():
+        return 'EmailAccountRequest';
+      case _i10.EmailAccountRequestCompletionAttempt():
+        return 'EmailAccountRequestCompletionAttempt';
+      case _i11.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i12.EmailAccountLoginFailureReason():
+        return 'EmailAccountLoginFailureReason';
+      case _i13.EmailAccountPasswordPolicyViolationException():
+        return 'EmailAccountPasswordPolicyViolationException';
+      case _i14.EmailAccountPasswordResetRequestExpiredException():
+        return 'EmailAccountPasswordResetRequestExpiredException';
+      case _i15.EmailAccountPasswordResetRequestNotFoundException():
+        return 'EmailAccountPasswordResetRequestNotFoundException';
+      case _i16.EmailAccountPasswordResetRequestTooManyAttemptsException():
+        return 'EmailAccountPasswordResetRequestTooManyAttemptsException';
+      case _i17.EmailAccountPasswordResetRequestUnauthorizedException():
+        return 'EmailAccountPasswordResetRequestUnauthorizedException';
+      case _i18.EmailAccountPasswordResetTooManyAttemptsException():
+        return 'EmailAccountPasswordResetTooManyAttemptsException';
+      case _i19.EmailAccountRequestExpiredException():
+        return 'EmailAccountRequestExpiredException';
+      case _i20.EmailAccountRequestNotFoundException():
+        return 'EmailAccountRequestNotFoundException';
+      case _i21.EmailAccountRequestNotVerifiedException():
+        return 'EmailAccountRequestNotVerifiedException';
+      case _i22.EmailAccountRequestTooManyAttemptsException():
+        return 'EmailAccountRequestTooManyAttemptsException';
+      case _i23.EmailAccountRequestUnauthorizedException():
+        return 'EmailAccountRequestUnauthorizedException';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

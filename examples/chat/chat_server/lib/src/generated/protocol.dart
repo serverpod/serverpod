@@ -106,8 +106,9 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i5.Channel) {
-      return 'Channel';
+    switch (data) {
+      case _i5.Channel():
+        return 'Channel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

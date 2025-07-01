@@ -126,17 +126,15 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.AuthUser) {
-      return 'AuthUser';
-    }
-    if (data is _i4.AuthUserBlockedException) {
-      return 'AuthUserBlockedException';
-    }
-    if (data is _i5.AuthUserModel) {
-      return 'AuthUserModel';
-    }
-    if (data is _i6.AuthUserNotFoundException) {
-      return 'AuthUserNotFoundException';
+    switch (data) {
+      case _i3.AuthUser():
+        return 'AuthUser';
+      case _i4.AuthUserBlockedException():
+        return 'AuthUserBlockedException';
+      case _i5.AuthUserModel():
+        return 'AuthUserModel';
+      case _i6.AuthUserNotFoundException():
+        return 'AuthUserNotFoundException';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
