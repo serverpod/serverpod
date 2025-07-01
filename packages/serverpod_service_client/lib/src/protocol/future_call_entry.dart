@@ -20,7 +20,13 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     this.serializedObject,
     required this.serverId,
     this.identifier,
-  });
+    String? status,
+    int? retryCount,
+    this.lastError,
+    this.createdAt,
+    this.updatedAt,
+  })  : status = status ?? 'pending',
+        retryCount = retryCount ?? 0;
 
   factory FutureCallEntry({
     int? id,
@@ -29,6 +35,11 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    String? status,
+    int? retryCount,
+    String? lastError,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,6 +50,15 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,
+      status: jsonSerialization['status'] as String?,
+      retryCount: jsonSerialization['retryCount'] as int?,
+      lastError: jsonSerialization['lastError'] as String?,
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      updatedAt: jsonSerialization['updatedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
     );
   }
 
@@ -62,6 +82,21 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Current state of the job. Possible values: pending, running, completed, failed, paused, canceled.
+  String? status;
+
+  /// Number of times the job has been retried, either manually or programmatically.
+  int? retryCount;
+
+  /// Stores the error message from the last failed execution, if any.
+  String? lastError;
+
+  /// Timestamp of when the job was created.
+  DateTime? createdAt;
+
+  /// Timestamp of the last update to the job (status change, retry, error, etc.).
+  DateTime? updatedAt;
+
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -72,6 +107,11 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
     String? serializedObject,
     String? serverId,
     String? identifier,
+    String? status,
+    int? retryCount,
+    String? lastError,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -82,6 +122,11 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (status != null) 'status': status,
+      if (retryCount != null) 'retryCount': retryCount,
+      if (lastError != null) 'lastError': lastError,
+      if (createdAt != null) 'createdAt': createdAt?.toJson(),
+      if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
   }
 
@@ -101,6 +146,11 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    String? status,
+    int? retryCount,
+    String? lastError,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) : super._(
           id: id,
           name: name,
@@ -108,6 +158,11 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           serializedObject: serializedObject,
           serverId: serverId,
           identifier: identifier,
+          status: status,
+          retryCount: retryCount,
+          lastError: lastError,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
         );
 
   /// Returns a shallow copy of this [FutureCallEntry]
@@ -121,6 +176,11 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     Object? serializedObject = _Undefined,
     String? serverId,
     Object? identifier = _Undefined,
+    Object? status = _Undefined,
+    Object? retryCount = _Undefined,
+    Object? lastError = _Undefined,
+    Object? createdAt = _Undefined,
+    Object? updatedAt = _Undefined,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -131,6 +191,11 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
+      status: status is String? ? status : this.status,
+      retryCount: retryCount is int? ? retryCount : this.retryCount,
+      lastError: lastError is String? ? lastError : this.lastError,
+      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
+      updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
   }
 }

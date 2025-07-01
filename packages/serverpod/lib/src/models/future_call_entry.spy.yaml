@@ -18,6 +18,21 @@ fields:
   ### An optional identifier which can be used to cancel the call.
   identifier: String?
 
+  ### Current state of the job. Possible values: pending, running, completed, failed, paused, canceled.
+  status: String?, default = 'pending'
+
+  ### Number of times the job has been retried, either manually or programmatically.
+  retryCount: int?, default = 0
+
+  ### Stores the error message from the last failed execution, if any.
+  lastError: String?
+
+  ### Timestamp of when the job was created.
+  createdAt: DateTime?
+
+  ### Timestamp of the last update to the job (status change, retry, error, etc.).
+  updatedAt: DateTime?
+
 indexes:
   serverpod_future_call_time_idx:
     fields: time

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -139,6 +140,10 @@ class FutureCallManager {
       time: time,
       serverId: serverId,
       identifier: identifier,
+      status: 'pending',
+      retryCount: 0,
+      createdAt: DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
     );
 
     var session = _internalSession;
@@ -196,6 +201,10 @@ class FutureCallManager {
       }
 
       await futureCall.invoke(futureCallSession, object);
+      futureCallEntry.status = 'completed';
+      futureCallEntry.updatedAt = DateTime.now().toUtc();
+      futureCallEntry.lastError = '';
+      await FutureCallEntry.db.updateRow(futureCallSession, futureCallEntry);
       await futureCallSession.close();
     } catch (error, stackTrace) {
       _diagnosticsService.submitCallException(
@@ -204,6 +213,10 @@ class FutureCallManager {
         session: futureCallSession,
       );
 
+      futureCallEntry.status = 'failed';
+      futureCallEntry.updatedAt = DateTime.now().toUtc();
+      futureCallEntry.lastError = e.toString();
+      await FutureCallEntry.db.updateRow(futureCallSession, futureCallEntry);
       await futureCallSession.close(error: error, stackTrace: stackTrace);
     }
   }
