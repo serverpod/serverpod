@@ -1,0 +1,14 @@
+name: serverpod_job_dashboard_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod: 
+    path: /Users/macbookpro/Documents/ContributeFlutter/serverpod//packages/serverpod
+
+dev_dependencies:
+  lints: ^3.0.0

@@ -1,0 +1,45 @@
+# This is the configuration file for your production environment.
+# Typically, you will want to route the traffic through a load balancer
+# which adds SSL security through https. If you use Serverpod's standard
+# Terraform scripts to deploy your server, all you need to change in
+# this file is the examplepod.com domain name.
+
+# Configuration for the main API server.
+apiServer:
+  port: 8080
+  publicHost: api.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# Configuration for the Insights server.
+insightsServer:
+  port: 8081
+  publicHost: insights.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# Configuration for the web server.
+webServer:
+  port: 8082
+  publicHost: app.examplepod.com
+  publicPort: 443
+  publicScheme: https
+
+# This is the database setup for your servers. The default for the Google Cloud
+# Engine Terraform configuration is to connect on a private IP address.
+# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
+# connect on the public IP of the database e.g. database.examplepod.com.
+database:
+  host: database.private-production.examplepod.com
+  port: 5432
+  name: serverpod
+  user: postgres
+
+# This is the setup for Redis. The default for the Google Cloud Engine Terraform
+# configuration is to connect on a private IP address.
+# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
+# connect on the public IP of the database e.g. redis.examplepod.com.
+redis:
+  enabled: false
+  host: redis.private-production.examplepod.com
+  port: 6379
