@@ -181,6 +181,7 @@ class Users {
     }
     // Mark user as blocked in database
     userInfo.blocked = true;
+    // ignore: invalid_use_of_internal_member
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
@@ -203,6 +204,7 @@ class Users {
       throw 'userId $userId already unblocked';
     }
     userInfo.blocked = false;
+    // ignore: invalid_use_of_internal_member
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
   }

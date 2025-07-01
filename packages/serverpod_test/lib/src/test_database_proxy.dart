@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_internal_member
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
 import 'with_serverpod.dart';

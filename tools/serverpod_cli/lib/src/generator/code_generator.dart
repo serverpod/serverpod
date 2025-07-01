@@ -56,6 +56,7 @@ extension GenerateCode on Library {
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 $code
 ''');
