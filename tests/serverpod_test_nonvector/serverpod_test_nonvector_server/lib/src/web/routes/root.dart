@@ -6,6 +6,6 @@ import 'package:serverpod/serverpod.dart';
 class RouteRoot extends ComponentRoute {
   @override
   Future<Component> build(Session session, HttpRequest request) async {
-    return BuiltWithServerpodPage();
+    return BuiltWithServerpodPageComponent();
   }
 }

@@ -7,6 +7,6 @@ class RouteRoot extends ComponentRoute {
   @override
   Future<Component> build(
       final Session session, final HttpRequest request) async {
-    return BuiltWithServerpodPage();
+    return BuiltWithServerpodPageComponent();
   }
 }
