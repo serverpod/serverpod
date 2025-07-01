@@ -745,8 +745,17 @@ class Serverpod {
       }
 
       logVerbose('Verifying database integrity.');
-      await MigrationManager.verifyDatabaseIntegrity(internalSession);
+      final verified =
+          await MigrationManager.verifyDatabaseIntegrity(internalSession);
+      if (!verified) {
+        logVerbose('Database integrity verification failed.');
+        throw ExitException(1);
+      }
     } catch (e, stackTrace) {
+      if (e is ExitException) {
+        rethrow;
+      }
+
       _exitCode = 1;
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
