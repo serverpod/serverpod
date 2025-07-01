@@ -48,3 +48,4 @@ templates/serverpod_templates/modulename_server/test/integration/test_tools/
 .asdf
 .tool-versions
 .cursor
+.claude
