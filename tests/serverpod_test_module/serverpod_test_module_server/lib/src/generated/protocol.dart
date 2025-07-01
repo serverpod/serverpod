@@ -64,11 +64,11 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.ModuleClass) {
-      return 'ModuleClass';
-    }
-    if (data is _i4.MyModuleFeatureModel) {
-      return 'MyModuleFeatureModel';
+    switch (data) {
+      case _i3.ModuleClass():
+        return 'ModuleClass';
+      case _i4.MyModuleFeatureModel():
+        return 'MyModuleFeatureModel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

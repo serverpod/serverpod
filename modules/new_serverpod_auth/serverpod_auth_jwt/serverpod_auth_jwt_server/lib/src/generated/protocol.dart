@@ -218,26 +218,21 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.AuthenticationTokenInfo) {
-      return 'AuthenticationTokenInfo';
-    }
-    if (data is _i5.RefreshToken) {
-      return 'RefreshToken';
-    }
-    if (data is _i6.RefreshTokenExpiredException) {
-      return 'RefreshTokenExpiredException';
-    }
-    if (data is _i7.RefreshTokenInvalidSecretException) {
-      return 'RefreshTokenInvalidSecretException';
-    }
-    if (data is _i8.RefreshTokenMalformedException) {
-      return 'RefreshTokenMalformedException';
-    }
-    if (data is _i9.RefreshTokenNotFoundException) {
-      return 'RefreshTokenNotFoundException';
-    }
-    if (data is _i10.TokenPair) {
-      return 'TokenPair';
+    switch (data) {
+      case _i4.AuthenticationTokenInfo():
+        return 'AuthenticationTokenInfo';
+      case _i5.RefreshToken():
+        return 'RefreshToken';
+      case _i6.RefreshTokenExpiredException():
+        return 'RefreshTokenExpiredException';
+      case _i7.RefreshTokenInvalidSecretException():
+        return 'RefreshTokenInvalidSecretException';
+      case _i8.RefreshTokenMalformedException():
+        return 'RefreshTokenMalformedException';
+      case _i9.RefreshTokenNotFoundException():
+        return 'RefreshTokenNotFoundException';
+      case _i10.TokenPair():
+        return 'TokenPair';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

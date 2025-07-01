@@ -225,7 +225,7 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i3.$parentClassName)'),
+                .contains('case _i3.$parentClassName():'),
             isFalse,
           );
         });
@@ -234,7 +234,7 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i2.$childClassName)'),
+                .contains('case _i2.$childClassName():'),
             isTrue,
           );
         });
@@ -244,23 +244,22 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i2.$grandchildClassName)'),
+                .contains('case _i2.$grandchildClassName():'),
             isTrue,
           );
         });
 
-        test(
-            'that returns the $grandchildClassName before the $childClassName the top node alias',
+        test('that returns the $grandchildClassName before the $childClassName',
             () {
           final getClassNameForObjectMethodSource =
               getClassNameForObjectMethod!.toSource();
 
           expect(
             getClassNameForObjectMethodSource
-                .indexOf('if (data is _i2.$grandchildClassName)'),
+                .indexOf('case _i2.$grandchildClassName():'),
             lessThan(
               getClassNameForObjectMethodSource
-                  .indexOf('if (data is _i2.$childClassName)'),
+                  .indexOf('case _i2.$childClassName():'),
             ),
           );
         });

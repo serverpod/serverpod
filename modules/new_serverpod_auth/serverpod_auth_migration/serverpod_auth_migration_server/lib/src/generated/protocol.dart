@@ -161,8 +161,9 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i7.MigratedUser) {
-      return 'MigratedUser';
+    switch (data) {
+      case _i7.MigratedUser():
+        return 'MigratedUser';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

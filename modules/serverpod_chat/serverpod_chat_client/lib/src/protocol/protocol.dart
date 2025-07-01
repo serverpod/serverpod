@@ -147,38 +147,29 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.ChatJoinChannel) {
-      return 'ChatJoinChannel';
-    }
-    if (data is _i3.ChatJoinChannelFailed) {
-      return 'ChatJoinChannelFailed';
-    }
-    if (data is _i4.ChatJoinedChannel) {
-      return 'ChatJoinedChannel';
-    }
-    if (data is _i5.ChatLeaveChannel) {
-      return 'ChatLeaveChannel';
-    }
-    if (data is _i6.ChatMessage) {
-      return 'ChatMessage';
-    }
-    if (data is _i7.ChatMessageAttachment) {
-      return 'ChatMessageAttachment';
-    }
-    if (data is _i8.ChatMessageAttachmentUploadDescription) {
-      return 'ChatMessageAttachmentUploadDescription';
-    }
-    if (data is _i9.ChatMessageChunk) {
-      return 'ChatMessageChunk';
-    }
-    if (data is _i10.ChatMessagePost) {
-      return 'ChatMessagePost';
-    }
-    if (data is _i11.ChatReadMessage) {
-      return 'ChatReadMessage';
-    }
-    if (data is _i12.ChatRequestMessageChunk) {
-      return 'ChatRequestMessageChunk';
+    switch (data) {
+      case _i2.ChatJoinChannel():
+        return 'ChatJoinChannel';
+      case _i3.ChatJoinChannelFailed():
+        return 'ChatJoinChannelFailed';
+      case _i4.ChatJoinedChannel():
+        return 'ChatJoinedChannel';
+      case _i5.ChatLeaveChannel():
+        return 'ChatLeaveChannel';
+      case _i6.ChatMessage():
+        return 'ChatMessage';
+      case _i7.ChatMessageAttachment():
+        return 'ChatMessageAttachment';
+      case _i8.ChatMessageAttachmentUploadDescription():
+        return 'ChatMessageAttachmentUploadDescription';
+      case _i9.ChatMessageChunk():
+        return 'ChatMessageChunk';
+      case _i10.ChatMessagePost():
+        return 'ChatMessagePost';
+      case _i11.ChatReadMessage():
+        return 'ChatReadMessage';
+      case _i12.ChatRequestMessageChunk():
+        return 'ChatRequestMessageChunk';
     }
     className = _i13.Protocol().getClassNameForObject(data);
     if (className != null) {

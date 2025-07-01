@@ -153,47 +153,35 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.AppleAuthInfo) {
-      return 'AppleAuthInfo';
-    }
-    if (data is _i3.AuthKey) {
-      return 'AuthKey';
-    }
-    if (data is _i4.AuthenticationFailReason) {
-      return 'AuthenticationFailReason';
-    }
-    if (data is _i5.AuthenticationResponse) {
-      return 'AuthenticationResponse';
-    }
-    if (data is _i6.EmailAuth) {
-      return 'EmailAuth';
-    }
-    if (data is _i7.EmailCreateAccountRequest) {
-      return 'EmailCreateAccountRequest';
-    }
-    if (data is _i8.EmailFailedSignIn) {
-      return 'EmailFailedSignIn';
-    }
-    if (data is _i9.EmailPasswordReset) {
-      return 'EmailPasswordReset';
-    }
-    if (data is _i10.EmailReset) {
-      return 'EmailReset';
-    }
-    if (data is _i11.GoogleRefreshToken) {
-      return 'GoogleRefreshToken';
-    }
-    if (data is _i12.UserImage) {
-      return 'UserImage';
-    }
-    if (data is _i13.UserInfo) {
-      return 'UserInfo';
-    }
-    if (data is _i14.UserInfoPublic) {
-      return 'UserInfoPublic';
-    }
-    if (data is _i15.UserSettingsConfig) {
-      return 'UserSettingsConfig';
+    switch (data) {
+      case _i2.AppleAuthInfo():
+        return 'AppleAuthInfo';
+      case _i3.AuthKey():
+        return 'AuthKey';
+      case _i4.AuthenticationFailReason():
+        return 'AuthenticationFailReason';
+      case _i5.AuthenticationResponse():
+        return 'AuthenticationResponse';
+      case _i6.EmailAuth():
+        return 'EmailAuth';
+      case _i7.EmailCreateAccountRequest():
+        return 'EmailCreateAccountRequest';
+      case _i8.EmailFailedSignIn():
+        return 'EmailFailedSignIn';
+      case _i9.EmailPasswordReset():
+        return 'EmailPasswordReset';
+      case _i10.EmailReset():
+        return 'EmailReset';
+      case _i11.GoogleRefreshToken():
+        return 'GoogleRefreshToken';
+      case _i12.UserImage():
+        return 'UserImage';
+      case _i13.UserInfo():
+        return 'UserInfo';
+      case _i14.UserInfoPublic():
+        return 'UserInfoPublic';
+      case _i15.UserSettingsConfig():
+        return 'UserSettingsConfig';
     }
     return null;
   }
