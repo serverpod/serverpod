@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../widgets/simple_page.dart';
-import '../widgets/text.dart';
+import '../components/simple_page.dart';
+import '../components/text.dart';
 
 class RouteRoot extends ComponentRoute {
   @override
