@@ -1,6 +1,7 @@
 export 'src/authentication/authentication_info.dart';
 export 'src/authentication/scope.dart';
 export 'src/generated/server_health_metric.dart';
+export 'src/generated/future_call_entry.dart';
 export 'src/serialization/serialization_manager.dart';
 export 'src/server/endpoint.dart';
 export 'src/server/endpoint_dispatch.dart';
