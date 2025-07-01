@@ -1,13 +1,13 @@
 name: serverpod_auth_jwt_client
 description: Serverpod JWT authentication client module.
-version: 2.9.0
+version: 2.9.1
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod_auth_user_client: 2.9.0
-  serverpod_client: 2.9.0
+  serverpod_auth_user_client: 2.9.1
+  serverpod_client: 2.9.1
 
 dependency_overrides:
   serverpod_auth_user_client:
