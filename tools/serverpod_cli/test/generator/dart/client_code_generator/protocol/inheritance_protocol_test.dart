@@ -248,6 +248,22 @@ void main() {
             isTrue,
           );
         });
+
+        test(
+            'that returns the $grandchildClassName before the $childClassName the top node alias',
+            () {
+          final getClassNameForObjectMethodSource =
+              getClassNameForObjectMethod!.toSource();
+
+          expect(
+            getClassNameForObjectMethodSource
+                .indexOf('if (data is _i2.$grandchildClassName)'),
+            lessThan(
+              getClassNameForObjectMethodSource
+                  .indexOf('if (data is _i2.$childClassName)'),
+            ),
+          );
+        });
       });
 
       group('with a deserializeByClassName method', () {
