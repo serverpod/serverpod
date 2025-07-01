@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-class TextWidget extends Widget {
+class TextWidget extends WebWidget {
   TextWidget({
     required String text,
   }) : super(name: 'text') {

@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-class BuiltWithServerpodPage extends Widget {
+class BuiltWithServerpodPage extends WebWidget {
   BuiltWithServerpodPage() : super(name: 'built_with_serverpod') {
     values = {
       'served': DateTime.now(),

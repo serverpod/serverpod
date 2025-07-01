@@ -14,8 +14,8 @@ abstract class AbstractWidget {}
 /// on the value. The templates are loaded when the server starts. If you add
 /// new templates or modify existing templates, you will need to restart the
 /// server for them to take effect.
-class Widget extends AbstractWidget {
-  /// The name of the template used by this [Widget].
+class WebWidget extends AbstractWidget {
+  /// The name of the template used by this [WebWidget].
   final String name;
 
   /// The template used by this widget.
@@ -25,8 +25,8 @@ class Widget extends AbstractWidget {
   /// strings using the toString method of the values.
   Map<String, dynamic> values = {};
 
-  /// Creates a new [Widget].
-  Widget({
+  /// Creates a new [WebWidget].
+  WebWidget({
     required this.name,
   }) {
     var cachedTemplate = templates[name];
@@ -42,13 +42,13 @@ class Widget extends AbstractWidget {
   }
 }
 
-/// Combines a List of [Widget]s into a single widget.
-class WidgetList extends AbstractWidget {
+/// Combines a List of [WebWidget]s into a single widget.
+class WebWidgetList extends AbstractWidget {
   /// List of original widgets.
-  final List<Widget> widgets;
+  final List<WebWidget> widgets;
 
   /// Creates a new widget list.
-  WidgetList({required this.widgets});
+  WebWidgetList({required this.widgets});
 
   @override
   String toString() {
@@ -62,12 +62,12 @@ class WidgetList extends AbstractWidget {
 
 /// A widget that renders JSON output. The output will be the result of passing
 /// the provided [object] to [jsonEncode].
-class WidgetJson extends AbstractWidget {
+class WebJsonWidget extends AbstractWidget {
   /// The original object to be rendered as JSON.
   final dynamic object;
 
-  /// Creates a new [WidgetJson].
-  WidgetJson({required this.object});
+  /// Creates a new [WebJsonWidget].
+  WebJsonWidget({required this.object});
 
   @override
   String toString() {
@@ -76,12 +76,12 @@ class WidgetJson extends AbstractWidget {
 }
 
 /// A widget that renders a HTTP redirect to the provided [url].
-class WidgetRedirect extends AbstractWidget {
+class WebRouteRedirect extends AbstractWidget {
   /// The [url] to redirect to.
   final String url;
 
   /// Creates a new widget that renders a redirect.
-  WidgetRedirect({required this.url});
+  WebRouteRedirect({required this.url});
 
   @override
   String toString() {

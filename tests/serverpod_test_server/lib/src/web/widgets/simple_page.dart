@@ -1,9 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 
-class SimplePageWidget extends Widget {
+class SimplePageWidget extends WebWidget {
   SimplePageWidget({
     required String title,
-    required Widget body,
+    required WebWidget body,
   }) : super(name: 'simple_page') {
     values = {
       'title': title,

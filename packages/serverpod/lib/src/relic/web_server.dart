@@ -339,9 +339,9 @@ abstract class Route {
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
-/// Override the [build] method and return an appropriate [Widget].
+/// Override the [build] method and return an appropriate [WebWidget].
 abstract class WidgetRoute extends Route {
-  /// Override this method to build your web [Widget] from the current [session]
+  /// Override this method to build your web [WebWidget] from the current [session]
   /// and [request].
   Future<AbstractWidget> build(Session session, HttpRequest request);
 
@@ -349,9 +349,9 @@ abstract class WidgetRoute extends Route {
   Future<bool> handleCall(Session session, HttpRequest request) async {
     var widget = await build(session, request);
 
-    if (widget is WidgetJson) {
+    if (widget is WebJsonWidget) {
       request.response.headers.contentType = ContentType('application', 'json');
-    } else if (widget is WidgetRedirect) {
+    } else if (widget is WebRouteRedirect) {
       var uri = Uri.parse(widget.url);
       await request.response.redirect(uri);
       return true;
