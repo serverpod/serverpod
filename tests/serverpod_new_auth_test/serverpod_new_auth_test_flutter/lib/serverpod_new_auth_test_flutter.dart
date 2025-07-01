@@ -1,0 +1,1 @@
+library serverpod_new_auth_test_flutter;

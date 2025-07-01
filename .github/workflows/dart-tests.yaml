@@ -287,6 +287,47 @@ jobs:
         run: docker compose down -v
         working-directory: ${{ matrix.module }}
 
+  module_e2e_tests:
+    name: Module E2E tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+        module:
+          - server: tests/serverpod_new_auth_test/serverpod_new_auth_test_server
+            client: tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Start containers
+        run: docker compose up --build -V -d
+        working-directory: ${{ matrix.module.server }}
+      - name: Wait for services to be ready
+        run: |
+          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
+          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
+        working-directory: tests/docker/tests_integration
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: ${{ matrix.module.server }}
+      - name: Start server
+        run: dart run bin/main.dart --apply-migrations &
+        working-directory: ${{ matrix.module.server }}
+      - name: Wait for services to be ready
+        run: |
+          ./wait-for-it.sh localhost:8080 -t 60 -- echo "### Serverpod backend is UP at :8080"
+        working-directory: tests/docker/tests_integration
+      - name: Run E2E tests (concurrently)
+        run: flutter test --reporter=failures-only
+        working-directory: ${{ matrix.module.client }}
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
+        working-directory: ${{ matrix.module.server }}
+
   integration_test_server:
     name: Serverpod integration tests (server)
     runs-on: ubuntu-latest

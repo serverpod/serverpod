@@ -11,19 +11,20 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/email_account_endpoint.dart' as _i2;
-import '../endpoints/user_profile_endpoint.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
-import 'dart:typed_data' as _i5;
+import '../endpoints/session_test_endpoint.dart' as _i3;
+import '../endpoints/user_profile_endpoint.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
+import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as _i6;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i7;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i8;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i9;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i10;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -35,7 +36,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'emailAccount',
           null,
         ),
-      'userProfile': _i3.UserProfileEndpoint()
+      'sessionTest': _i3.SessionTestEndpoint()
+        ..initialize(
+          server,
+          'sessionTest',
+          null,
+        ),
+      'userProfile': _i4.UserProfileEndpoint()
         ..initialize(
           server,
           'userProfile',
@@ -100,7 +107,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'accountRequestId': _i1.ParameterDescription(
               name: 'accountRequestId',
-              type: _i1.getType<_i4.UuidValue>(),
+              type: _i1.getType<_i5.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -144,7 +151,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
-              type: _i1.getType<_i4.UuidValue>(),
+              type: _i1.getType<_i5.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -172,6 +179,60 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['sessionTest'] = _i1.EndpointConnector(
+      name: 'sessionTest',
+      endpoint: endpoints['sessionTest']!,
+      methodConnectors: {
+        'createTestUser': _i1.MethodConnector(
+          name: 'createTestUser',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+                  .createTestUser(session),
+        ),
+        'createSession': _i1.MethodConnector(
+          name: 'createSession',
+          params: {
+            'authUserId': _i1.ParameterDescription(
+              name: 'authUserId',
+              type: _i1.getType<_i5.UuidValue>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+                  .createSession(
+            session,
+            params['authUserId'],
+          ),
+        ),
+        'checkSession': _i1.MethodConnector(
+          name: 'checkSession',
+          params: {
+            'authUserId': _i1.ParameterDescription(
+              name: 'authUserId',
+              type: _i1.getType<_i5.UuidValue>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+                  .checkSession(
+            session,
+            params['authUserId'],
+          ),
+        ),
+      },
+    );
     connectors['userProfile'] = _i1.EndpointConnector(
       name: 'userProfile',
       endpoint: endpoints['userProfile']!,
@@ -183,7 +244,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i3.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
                   .get(session),
         ),
         'removeUserImage': _i1.MethodConnector(
@@ -193,7 +254,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i3.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
                   .removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
@@ -201,7 +262,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i5.ByteData>(),
+              type: _i1.getType<_i6.ByteData>(),
               nullable: false,
             )
           },
@@ -209,7 +270,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i3.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
                   .setUserImage(
             session,
             params['image'],
@@ -228,7 +289,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i3.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
                   .changeUserName(
             session,
             params['userName'],
@@ -247,7 +308,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i3.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
                   .changeFullName(
             session,
             params['fullName'],
@@ -255,15 +316,15 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_email'] = _i6.Endpoints()
+    modules['serverpod_auth_email'] = _i7.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i7.Endpoints()
+    modules['serverpod_auth_profile'] = _i8.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_email_account'] = _i8.Endpoints()
+    modules['serverpod_auth_email_account'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i9.Endpoints()
+    modules['serverpod_auth_session'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i10.Endpoints()
+    modules['serverpod_auth_user'] = _i11.Endpoints()
       ..initializeEndpoints(server);
   }
 }
