@@ -223,7 +223,7 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i3.$parentClassName)'),
+                .contains('case _i3.$parentClassName():'),
             isFalse,
           );
         });
@@ -232,7 +232,7 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i3.$childClassName)'),
+                .contains('case _i3.$childClassName():'),
             isTrue,
           );
         });
@@ -242,8 +242,23 @@ void main() {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
-                .contains('if (data is _i3.$grandchildClassName)'),
+                .contains('case _i3.$grandchildClassName():'),
             isTrue,
+          );
+        });
+
+        test('that returns the $grandchildClassName before the $childClassName',
+            () {
+          final getClassNameForObjectMethodSource =
+              getClassNameForObjectMethod!.toSource();
+
+          expect(
+            getClassNameForObjectMethodSource
+                .indexOf('case _i3.$grandchildClassName():'),
+            lessThan(
+              getClassNameForObjectMethodSource
+                  .indexOf('case _i3.$childClassName():'),
+            ),
           );
         });
       });

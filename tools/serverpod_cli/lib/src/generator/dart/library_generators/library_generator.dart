@@ -205,12 +205,18 @@ class LibraryGenerator {
             'String? className = super.getClassNameForObject(data);'
             'if(className != null) return className;',
           ),
-          for (var extraClass in config.extraClasses)
-            Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in unsealedModels)
-            Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
+          if (unsealedModels.isNotEmpty || config.extraClasses.isNotEmpty) ...[
+            const Code('switch (data) {'),
+            for (var extraClass in config.extraClasses)
+              Code.scope((a) =>
+                  'case ${a(extraClass.reference(serverCode, config: config))}():'
+                  '  return \'${extraClass.className}\';'),
+            for (var classInfo in unsealedModels)
+              Code.scope((a) =>
+                  'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}():'
+                  '  return \'${classInfo.className}\';'),
+            const Code('}'),
+          ],
           if (config.name != 'serverpod' && serverCode)
             _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode), 'serverpod'),
