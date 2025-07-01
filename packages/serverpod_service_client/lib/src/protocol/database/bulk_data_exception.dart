@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class BulkDataException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+abstract class BulkDataException
+    implements _i1.SerializableException, _i1.SerializableModel {
   BulkDataException._({
     required this.message,
     this.query,
@@ -22,15 +23,10 @@ abstract class BulkDataException extends _i1.SerializableEntity
     String? query,
   }) = _BulkDataExceptionImpl;
 
-  factory BulkDataException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory BulkDataException.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkDataException(
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      query:
-          serializationManager.deserialize<String?>(jsonSerialization['query']),
+      message: jsonSerialization['message'] as String,
+      query: jsonSerialization['query'] as String?,
     );
   }
 
@@ -38,6 +34,9 @@ abstract class BulkDataException extends _i1.SerializableEntity
 
   String? query;
 
+  /// Returns a shallow copy of this [BulkDataException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   BulkDataException copyWith({
     String? message,
     String? query,
@@ -46,8 +45,13 @@ abstract class BulkDataException extends _i1.SerializableEntity
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'query': query,
+      if (query != null) 'query': query,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -62,6 +66,9 @@ class _BulkDataExceptionImpl extends BulkDataException {
           query: query,
         );
 
+  /// Returns a shallow copy of this [BulkDataException]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   BulkDataException copyWith({
     String? message,

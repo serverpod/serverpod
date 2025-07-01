@@ -1,0 +1,63 @@
+{
+  "moduleName": "chat",
+  "tables": [
+    {
+      "name": "channel",
+      "dartName": "Channel",
+      "module": "chat",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('channel_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "channel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "channel_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    }
+  ],
+  "installedModules": [
+    {
+      "module": "serverpod_auth",
+      "version": "20240115074239642"
+    },
+    {
+      "module": "serverpod_chat",
+      "version": "20240115074243685"
+    },
+    {
+      "module": "serverpod",
+      "version": "20240115074235544"
+    }
+  ],
+  "migrationApiVersion": 1
+}

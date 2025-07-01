@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.SerializableEntity {
+abstract class MessageLogEntry implements _i1.SerializableModel {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -40,30 +41,19 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
     required int order,
   }) = _MessageLogEntryImpl;
 
-  factory MessageLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory MessageLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return MessageLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      messageId:
-          serializationManager.deserialize<int>(jsonSerialization['messageId']),
-      endpoint: serializationManager
-          .deserialize<String>(jsonSerialization['endpoint']),
-      messageName: serializationManager
-          .deserialize<String>(jsonSerialization['messageName']),
-      duration: serializationManager
-          .deserialize<double>(jsonSerialization['duration']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      serverId: jsonSerialization['serverId'] as String,
+      messageId: jsonSerialization['messageId'] as int,
+      endpoint: jsonSerialization['endpoint'] as String,
+      messageName: jsonSerialization['messageName'] as String,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      order: jsonSerialization['order'] as int,
     );
   }
 
@@ -81,7 +71,7 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -104,6 +94,9 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   /// Used for sorting the message log.
   int order;
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -120,18 +113,23 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -164,6 +162,9 @@ class _MessageLogEntryImpl extends MessageLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,

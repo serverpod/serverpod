@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-/// Message to notifiy the server that messages have been read.
-abstract class ChatReadMessage extends _i1.SerializableEntity {
+/// Message to notify the server that messages have been read.
+abstract class ChatReadMessage implements _i1.SerializableModel {
   ChatReadMessage._({
     this.id,
     required this.channel,
@@ -26,18 +27,12 @@ abstract class ChatReadMessage extends _i1.SerializableEntity {
     required int lastReadMessageId,
   }) = _ChatReadMessageImpl;
 
-  factory ChatReadMessage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatReadMessage.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatReadMessage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      lastReadMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastReadMessageId']),
+      id: jsonSerialization['id'] as int?,
+      channel: jsonSerialization['channel'] as String,
+      userId: jsonSerialization['userId'] as int,
+      lastReadMessageId: jsonSerialization['lastReadMessageId'] as int,
     );
   }
 
@@ -55,6 +50,9 @@ abstract class ChatReadMessage extends _i1.SerializableEntity {
   /// The id of the last read message.
   int lastReadMessageId;
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatReadMessage copyWith({
     int? id,
     String? channel,
@@ -64,11 +62,16 @@ abstract class ChatReadMessage extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -87,6 +90,9 @@ class _ChatReadMessageImpl extends ChatReadMessage {
           lastReadMessageId: lastReadMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatReadMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatReadMessage copyWith({
     Object? id = _Undefined,

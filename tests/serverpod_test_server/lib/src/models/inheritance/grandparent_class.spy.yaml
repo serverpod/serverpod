@@ -1,0 +1,3 @@
+class: GrandparentClass
+fields:
+    grandParentField: String

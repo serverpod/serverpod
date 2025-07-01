@@ -1,11 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
 
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -20,7 +21,7 @@ void main() {
 
   group('Given a class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
@@ -57,7 +58,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -131,6 +132,22 @@ void main() {
             isTrue,
             reason: 'Missing declaration for table method.');
       });
+
+      test('has table method generic to nullable int type.', () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          exampleIncludeClass,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.toString(),
+          'int?',
+          reason: 'Wrong generic type for table method.',
+        );
+      });
     },
         skip: maybeClassNamedExampleInclude == null
             ? 'Could not run test because ${testClassName}Include class was not found.'
@@ -193,6 +210,22 @@ void main() {
             isTrue,
             reason: 'Missing declaration for table method.');
       });
+
+      test('has table method generic to nullable int type.', () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          exampleIncludeListClass,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.toString(),
+          'int?',
+          reason: 'Wrong generic type for table method.',
+        );
+      });
     },
         skip: includeListClass == null
             ? 'Could not run test because ${testClassName}Include class was not found.'
@@ -203,7 +236,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)

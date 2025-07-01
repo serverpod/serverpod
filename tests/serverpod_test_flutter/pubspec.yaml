@@ -1,0 +1,38 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+publish_to: none
+
+name: serverpod_test_flutter
+version: 1.0.0
+description: Part of tests for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.24.2
+  serverpod_test_client:
+    path: ../serverpod_test_client
+  serverpod_auth_shared_flutter:
+    path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+
+flutter:
+  uses-material-design: true

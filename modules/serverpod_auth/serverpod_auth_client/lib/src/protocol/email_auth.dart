@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth extends _i1.SerializableEntity {
+abstract class EmailAuth implements _i1.SerializableModel {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -26,17 +27,12 @@ abstract class EmailAuth extends _i1.SerializableEntity {
     required String hash,
   }) = _EmailAuthImpl;
 
-  factory EmailAuth.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailAuth.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAuth(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      email: jsonSerialization['email'] as String,
+      hash: jsonSerialization['hash'] as String,
     );
   }
 
@@ -54,6 +50,9 @@ abstract class EmailAuth extends _i1.SerializableEntity {
   /// The hashed password of the user.
   String hash;
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -63,11 +62,16 @@ abstract class EmailAuth extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'email': email,
       'hash': hash,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -86,6 +90,9 @@ class _EmailAuthImpl extends EmailAuth {
           hash: hash,
         );
 
+  /// Returns a shallow copy of this [EmailAuth]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailAuth copyWith({
     Object? id = _Undefined,

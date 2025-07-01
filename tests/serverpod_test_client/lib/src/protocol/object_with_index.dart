@@ -1,16 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithIndex extends _i1.SerializableEntity {
+abstract class ObjectWithIndex implements _i1.SerializableModel {
   ObjectWithIndex._({
     this.id,
     required this.indexed,
@@ -23,16 +24,11 @@ abstract class ObjectWithIndex extends _i1.SerializableEntity {
     required int indexed2,
   }) = _ObjectWithIndexImpl;
 
-  factory ObjectWithIndex.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithIndex.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithIndex(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      indexed:
-          serializationManager.deserialize<int>(jsonSerialization['indexed']),
-      indexed2:
-          serializationManager.deserialize<int>(jsonSerialization['indexed2']),
+      id: jsonSerialization['id'] as int?,
+      indexed: jsonSerialization['indexed'] as int,
+      indexed2: jsonSerialization['indexed2'] as int,
     );
   }
 
@@ -45,6 +41,9 @@ abstract class ObjectWithIndex extends _i1.SerializableEntity {
 
   int indexed2;
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -53,10 +52,15 @@ abstract class ObjectWithIndex extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -73,6 +77,9 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
           indexed2: indexed2,
         );
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithIndex copyWith({
     Object? id = _Undefined,

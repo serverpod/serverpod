@@ -1,4 +1,0 @@
-class: BulkQueryColumnDescription
-fields:
-  name: String
-  table: String

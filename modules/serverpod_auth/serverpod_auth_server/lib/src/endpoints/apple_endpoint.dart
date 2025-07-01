@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
@@ -62,8 +63,15 @@ class AppleEndpoint extends Endpoint {
         failReason: AuthenticationFailReason.invalidCredentials,
       );
     }
-
-    if (userIdentifier != payload.jsonContent['sub']) {
+    var jsonContent = payload.jsonContent;
+    if (jsonContent is! Map<String, dynamic>) {
+      session.log('JWS payload not a JSON map object', level: LogLevel.error);
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
+    if (userIdentifier != jsonContent['sub']) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
@@ -71,7 +79,7 @@ class AppleEndpoint extends Endpoint {
     }
 
     session.log('checking email', level: LogLevel.debug);
-    if (email != null && email != payload.jsonContent['email']) {
+    if (email != null && email != jsonContent['email']) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
@@ -108,7 +116,12 @@ class AppleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    var authKey = await UserAuthentication.signInUser(
+      session,
+      userInfo.id!,
+      _authMethod,
+      scopes: userInfo.scopes,
+    );
 
     return AuthenticationResponse(
       success: true,

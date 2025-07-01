@@ -1,6 +1,6 @@
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:path/path.dart' as p;
 
 class EndpointDescriptionGenerator extends CodeGenerator {
   const EndpointDescriptionGenerator();
@@ -26,6 +26,10 @@ class EndpointDescriptionGenerator extends CodeGenerator {
       }
     }
 
-    return {p.join('generated', 'protocol.yaml'): out};
+    return {
+      p.joinAll([
+        ...config.generatedServerEndpointDescriptionFilePathParts,
+      ]): out
+    };
   }
 }

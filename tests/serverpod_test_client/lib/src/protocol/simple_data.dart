@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData extends _i1.SerializableEntity {
+abstract class SimpleData implements _i1.SerializableModel {
   SimpleData._({
     this.id,
     required this.num,
@@ -22,13 +23,10 @@ abstract class SimpleData extends _i1.SerializableEntity {
     required int num,
   }) = _SimpleDataImpl;
 
-  factory SimpleData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleData.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      num: serializationManager.deserialize<int>(jsonSerialization['num']),
+      id: jsonSerialization['id'] as int?,
+      num: jsonSerialization['num'] as int,
     );
   }
 
@@ -42,6 +40,9 @@ abstract class SimpleData extends _i1.SerializableEntity {
   /// Second Value Extra Text
   int num;
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleData copyWith({
     int? id,
     int? num,
@@ -49,9 +50,14 @@ abstract class SimpleData extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'num': num,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -66,6 +72,9 @@ class _SimpleDataImpl extends SimpleData {
           num: num,
         );
 
+  /// Returns a shallow copy of this [SimpleData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleData copyWith({
     Object? id = _Undefined,

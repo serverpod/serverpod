@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// All the types, that are possible for columns.
 /// Contains all the values of [TypeDefinition.databaseType]
-enum ColumnType with _i1.SerializableEntity {
+enum ColumnType implements _i1.SerializableModel {
   /// Dart type: [String]
   text,
 
@@ -42,35 +43,58 @@ enum ColumnType with _i1.SerializableEntity {
 
   /// Used for unknown types, that have never been
   /// used by Serverpod.
-  unknown;
+  unknown,
 
-  static ColumnType? fromJson(int index) {
+  /// Dart type: [Vector]
+  vector,
+
+  /// Dart type: [HalfVector]
+  halfvec,
+
+  /// Dart type: [SparseVector]
+  sparsevec,
+
+  /// Dart type: [Bit]
+  bit;
+
+  static ColumnType fromJson(int index) {
     switch (index) {
       case 0:
-        return text;
+        return ColumnType.text;
       case 1:
-        return boolean;
+        return ColumnType.boolean;
       case 2:
-        return integer;
+        return ColumnType.integer;
       case 3:
-        return doublePrecision;
+        return ColumnType.doublePrecision;
       case 4:
-        return timestampWithoutTimeZone;
+        return ColumnType.timestampWithoutTimeZone;
       case 5:
-        return bytea;
+        return ColumnType.bytea;
       case 6:
-        return bigint;
+        return ColumnType.bigint;
       case 7:
-        return uuid;
+        return ColumnType.uuid;
       case 8:
-        return json;
+        return ColumnType.json;
       case 9:
-        return unknown;
+        return ColumnType.unknown;
+      case 10:
+        return ColumnType.vector;
+      case 11:
+        return ColumnType.halfvec;
+      case 12:
+        return ColumnType.sparsevec;
+      case 13:
+        return ColumnType.bit;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "ColumnType"');
     }
   }
 
   @override
   int toJson() => index;
+  @override
+  String toString() => name;
 }

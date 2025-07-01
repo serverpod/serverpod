@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to request a new chunk of messages from the server.
-abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
+abstract class ChatRequestMessageChunk
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatRequestMessageChunk._({
     required this.channel,
     required this.lastMessageId,
@@ -23,14 +25,10 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
   }) = _ChatRequestMessageChunkImpl;
 
   factory ChatRequestMessageChunk.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ChatRequestMessageChunk(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      lastMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastMessageId']),
+      channel: jsonSerialization['channel'] as String,
+      lastMessageId: jsonSerialization['lastMessageId'] as int,
     );
   }
 
@@ -40,6 +38,9 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
   /// The id of the last read message.
   int lastMessageId;
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatRequestMessageChunk copyWith({
     String? channel,
     int? lastMessageId,
@@ -53,11 +54,16 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'channel': channel,
       'lastMessageId': lastMessageId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -70,6 +76,9 @@ class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
           lastMessageId: lastMessageId,
         );
 
+  /// Returns a shallow copy of this [ChatRequestMessageChunk]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatRequestMessageChunk copyWith({
     String? channel,

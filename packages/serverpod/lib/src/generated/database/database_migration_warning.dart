@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/database_migration_warning_type.dart' as _i2;
 
-abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
+abstract class DatabaseMigrationWarning
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseMigrationWarning._({
     required this.type,
     required this.message,
@@ -29,20 +31,16 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return DatabaseMigrationWarning(
-      type: serializationManager.deserialize<_i2.DatabaseMigrationWarningType>(
-          jsonSerialization['type']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      table:
-          serializationManager.deserialize<String>(jsonSerialization['table']),
-      columns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['columns']),
-      destrucive: serializationManager
-          .deserialize<bool>(jsonSerialization['destrucive']),
+      type: _i2.DatabaseMigrationWarningType.fromJson(
+          (jsonSerialization['type'] as String)),
+      message: jsonSerialization['message'] as String,
+      table: jsonSerialization['table'] as String,
+      columns: (jsonSerialization['columns'] as List)
+          .map((e) => e as String)
+          .toList(),
+      destrucive: jsonSerialization['destrucive'] as bool,
     );
   }
 
@@ -56,6 +54,9 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
 
   bool destrucive;
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
     String? message,
@@ -66,23 +67,28 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'message': message,
       'table': table,
-      'columns': columns,
+      'columns': columns.toJson(),
       'destrucive': destrucive,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'message': message,
       'table': table,
-      'columns': columns,
+      'columns': columns.toJson(),
       'destrucive': destrucive,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -101,6 +107,9 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
           destrucive: destrucive,
         );
 
+  /// Returns a shallow copy of this [DatabaseMigrationWarning]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseMigrationWarning copyWith({
     _i2.DatabaseMigrationWarningType? type,
@@ -113,7 +122,7 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
       type: type ?? this.type,
       message: message ?? this.message,
       table: table ?? this.table,
-      columns: columns ?? this.columns.clone(),
+      columns: columns ?? this.columns.map((e0) => e0).toList(),
       destrucive: destrucive ?? this.destrucive,
     );
   }

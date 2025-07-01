@@ -1,10 +1,11 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -19,7 +20,7 @@ void main() {
   group('Given a class with table name when generating code', () {
     var tableName = 'example_table';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
@@ -64,7 +65,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example_table')
@@ -164,13 +165,12 @@ void main() {
       });
 
       test(
-          'company method has the input params of session, example and company',
+          'company method has the input params of session, example, company and named param transaction',
           () {
         expect(
           companyMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Company company)',
-          ),
+              r'\(_i\d\.Session session, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -184,13 +184,12 @@ void main() {
       });
 
       test(
-          'the address method has the input params of session, example and address',
+          'the address method has the input params of session, example, address and named param transaction',
           () {
         expect(
           addressMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Address address)',
-          ),
+              r'\(_i\d\.Session session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: addressMethod == null);
 
@@ -264,10 +263,13 @@ void main() {
         expect(companyMethod, isNotNull, reason: 'Missing company method.');
       });
 
-      test('company method has the input params of session, example', () {
+      test(
+          'company method has the input params of session, example and named param transaction',
+          () {
         expect(
           companyMethod?.parameters?.toSource(),
-          '(_i1.Session session, Example example)',
+          matches(
+              r'\(_i\d\.Session session, Example example, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -316,7 +318,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -355,7 +357,7 @@ void main() {
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -404,7 +406,7 @@ void main() {
       () {
     var tableName = 'example_table';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .withObjectRelationField(

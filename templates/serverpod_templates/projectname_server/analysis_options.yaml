@@ -15,14 +15,15 @@ include: package:lints/recommended.yaml
 
 # Uncomment the following section to specify additional rules.
 
-# linter:
-#   rules:
-#     - camel_case_types
+linter:
+  rules:
+    unawaited_futures: true
+    avoid_print: true
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
-
+analyzer:
+  exclude:
+    - lib/src/generated/**
+    - test/integration/test_tools/serverpod_test_tools.dart
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints
 

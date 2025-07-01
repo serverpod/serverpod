@@ -40,6 +40,16 @@ void main() {
       expect(typesCopy.anInt, isNull);
       expect(types.anInt, 1);
     });
+
+    test(
+        'Given an object with a nullable record when copying the object setting it to null then the copy is null but not the original.',
+        () {
+      var types = Types(aRecord: ('hello', optionalUri: null));
+      var typesCopy = types.copyWith(aRecord: null);
+
+      expect(typesCopy.aRecord, isNull);
+      expect(types.aRecord, isNotNull);
+    });
   });
 
   group('mutability', () {
@@ -97,15 +107,80 @@ void main() {
     });
 
     test(
+        'Given an object with an BigInt and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var bigInt = BigInt.one;
+
+      var types = Types(aBigInt: bigInt);
+      var typesCopy = types.copyWith();
+      types.aBigInt = BigInt.two;
+
+      expect(
+        typesCopy.aBigInt,
+        BigInt.one,
+      );
+    });
+
+    test(
+        'Given an object with a Record and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var record = ('1', optionalUri: null);
+
+      var types = Types(aRecord: record);
+      var typesCopy = types.copyWith();
+      types.aRecord = ('2', optionalUri: null);
+
+      expect(
+        typesCopy.aRecord,
+        record,
+      );
+    });
+
+    test(
+        'Given an object with a Record containing a Map when mutating the Map of the original then the copy is unmodified because it has been deep-copied.',
+        () {
+      var types = TypesRecord(aMap: ({1: 2},));
+      var typesCopy = types.copyWith();
+
+      types.aMap!.$1.clear();
+
+      expect(
+        types.aMap?.$1,
+        isEmpty,
+      );
+      expect(
+        typesCopy.aMap?.$1,
+        equals({1: 2}),
+      );
+    });
+
+    test(
         'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
         () {
-      var uuid = UuidValue(Uuid.NAMESPACE_NIL);
+      // ignore: deprecated_member_use
+      var uuid = UuidValue.fromString(Uuid.NAMESPACE_NIL);
 
       var types = Types(aUuid: uuid);
       var typesCopy = types.copyWith();
-      types.aUuid = UuidValue(Uuid().v4());
+      types.aUuid = UuidValue.fromString(Uuid().v4());
 
-      expect(typesCopy.aUuid?.uuid, UuidValue(Uuid.NAMESPACE_NIL).uuid);
+      expect(
+        typesCopy.aUuid?.uuid,
+        // ignore: deprecated_member_use
+        UuidValue.fromString(Uuid.NAMESPACE_NIL).uuid,
+      );
+    });
+
+    test(
+        'Given an object with an Uri and a copy of that object when mutating the original then the copy is unmodified.',
+        () {
+      var uri = Uri.parse('https://serverpod.dev');
+
+      var types = Types(aUri: uri);
+      var typesCopy = types.copyWith();
+      types.aUri = Uri.parse('https://flutter.dev');
+
+      expect(typesCopy.aUri, uri);
     });
 
     test(
@@ -232,6 +307,98 @@ void main() {
       expect(mapDataCopy.data['a']?.id, null);
       expect(mapDataCopy.data['b']?.num, 2);
       expect(mapDataCopy.data['b']?.id, null);
+    });
+
+    group('Given an object with nested Lists and Maps when calling copyWith',
+        () {
+      var objectWithNestedObjects = ObjectWithObject(
+        data: SimpleData(num: 1),
+        dataList: [SimpleData(num: 2)],
+        listWithNullableData: [],
+        nestedDataListInMap: {
+          'firstKey': [
+            [
+              {111: SimpleData(num: 111)}
+            ],
+            [
+              {222: SimpleData(num: 222)}
+            ],
+          ],
+        },
+        nestedDataList: [
+          [SimpleData(num: 88), SimpleData(num: 99)],
+        ],
+        nestedDataMap: {
+          'firstKey': {
+            333: SimpleData(num: 333),
+          },
+        },
+      );
+
+      test('then a nested map is deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+        copy.nestedDataMap?['firstKey']?[333]?.num = 12345;
+
+        expect(objectWithNestedObjects.nestedDataMap?['firstKey']?[333]?.num,
+            equals(333));
+        expect(copy.nestedDataMap?['firstKey']?[333]?.num, equals(12345));
+      });
+
+      test('then a nested list is deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+        copy.nestedDataList?.first[1].num = 12345;
+
+        expect(copy.nestedDataList, hasLength(1));
+        expect(copy.nestedDataList?.first, hasLength(2));
+        expect(copy.nestedDataList?.first.first.num, equals(88));
+
+        expect(
+            objectWithNestedObjects.nestedDataList?.first[1].num, equals(99));
+        expect(copy.nestedDataList?.first[1].num, equals(12345));
+      });
+
+      test('then a nested list in a map is deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+        copy.nestedDataListInMap?['firstKey']?[1]?.first[222]?.num = 12345;
+
+        expect(copy.nestedDataListInMap?['firstKey'], hasLength(2));
+        expect(copy.nestedDataListInMap?['firstKey']?.first, hasLength(1));
+        expect(copy.nestedDataListInMap?['firstKey']?.first?.first[111]?.num,
+            equals(111));
+
+        expect(
+            objectWithNestedObjects
+                .nestedDataListInMap?['firstKey']?[1]?.first[222]?.num,
+            equals(222));
+        expect(copy.nestedDataListInMap?['firstKey']?[1]?.first[222]?.num,
+            equals(12345));
+      });
+    });
+
+    test(
+        'Given an object with an Enum in a nested List when calling copyWith then the Enum is copied',
+        () {
+      var objectWithEnum =
+          ObjectWithEnum(testEnum: TestEnum.two, nullableEnum: null, enumList: [
+        TestEnum.one,
+      ], nullableEnumList: [
+        TestEnum.one,
+        null,
+        TestEnum.three
+      ], enumListList: [
+        [TestEnum.one, TestEnum.two],
+        [TestEnum.two, TestEnum.one]
+      ]);
+
+      var copy = objectWithEnum.copyWith();
+      copy.enumListList[1] = [TestEnum.three];
+
+      expect(copy.enumListList, hasLength(2));
+      expect(copy.enumListList.first, equals([TestEnum.one, TestEnum.two]));
+
+      expect(
+          objectWithEnum.enumListList[1], equals([TestEnum.two, TestEnum.one]));
+      expect(copy.enumListList[1], equals([TestEnum.three]));
     });
   });
 }

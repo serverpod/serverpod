@@ -3,15 +3,25 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/cache/caches.dart';
+import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
-
-import '../cache/caches.dart';
+import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
 class Server {
+  // Map of [WebSocket] connected to the server.
+  // The key is a unique identifier for the connection.
+  // The value is a tuple of a [Future] that completes when the connection is
+  // closed and the [WebSocket] object.
+  final Map<String, (Future<void>, WebSocket)> _webSockets = {};
+
   /// The [Serverpod] managing the server.
   final Serverpod serverpod;
 
@@ -26,13 +36,27 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabasePoolManager databaseConfig;
+  final DatabasePoolManager? _databasePoolManager;
+
+  /// Creates a new [Database] object with a connection to the configured
+  /// database.
+  Database createDatabase(Session session) {
+    var databasePoolManager = _databasePoolManager;
+    if (databasePoolManager == null) {
+      throw ArgumentError('Database config not set');
+    }
+
+    return DatabaseConstructor.create(
+      session: session,
+      poolManager: databasePoolManager,
+    );
+  }
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler? authenticationHandler;
+  final AuthenticationHandler authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -41,7 +65,7 @@ class Server {
   final String name;
 
   /// Security context if the server is running over https.
-  final SecurityContext? securityContext;
+  final SecurityContext? _securityContext;
 
   /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
@@ -51,10 +75,16 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  late final HttpServer _httpServer;
+  HttpServer? _httpServer;
 
   /// The [HttpServer] responsible for handling calls.
-  HttpServer get httpServer => _httpServer;
+  HttpServer get httpServer {
+    var httpServer = _httpServer;
+    if (httpServer == null) {
+      throw StateError('httpServer not started');
+    }
+    return httpServer;
+  }
 
   /// Currently not in use.
   List<String>? whitelistedExternalCalls;
@@ -79,49 +109,52 @@ class Server {
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required this.databaseConfig,
+    required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    this.authenticationHandler,
+    required this.authenticationHandler,
     String? name,
     required this.caches,
-    this.securityContext,
+    SecurityContext? securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
-  }) : name = name ?? 'Server $serverId';
+  })  : name = name ?? 'Server $serverId',
+        _databasePoolManager = databasePoolManager,
+        _securityContext = securityContext;
 
   /// Starts the server.
-  Future<void> start() async {
-    if (securityContext != null) {
-      try {
-        var httpServer = await HttpServer.bindSecure(
-          InternetAddress.anyIPv6,
-          port,
-          securityContext!,
-        );
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
-    } else {
-      try {
-        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
+  /// Returns true if the server was started successfully.
+  Future<bool> start() async {
+    HttpServer httpServer;
+    try {
+      var context = _securityContext;
+      httpServer = await switch (context) {
+        SecurityContext() => HttpServer.bindSecure(
+            InternetAddress.anyIPv6,
+            port,
+            context,
+          ),
+        _ => HttpServer.bind(InternetAddress.anyIPv6, port),
+      };
+    } catch (e, stackTrace) {
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Failed to bind socket, port $port may already be in use.');
+      return false;
+    }
+
+    try {
+      _runServer(httpServer);
+    } catch (e, stackTrace) {
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. Failed to run server.');
+      return false;
     }
 
     _running = true;
     stdout.writeln('$name listening on port $port');
+    return _running;
   }
 
   void _runServer(HttpServer httpServer) async {
@@ -138,27 +171,36 @@ class Server {
           'received request: ${request.method} ${request.uri.path}',
         );
 
-        try {
-          _handleRequest(request);
-        } catch (e, stackTrace) {
-          stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.',
-          );
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
-        }
+        _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. httpSever.listen failed.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Internal server error. httpSever.listen failed.');
     }
 
     stdout.writeln('$name stopped');
   }
 
-  void _handleRequest(HttpRequest request) async {
+  void _handleRequestWithErrorBoundary(HttpRequest request) async {
+    // [Future.sync] ensures no synchronous error is accidentally thrown from the handler
+    // https://dart.dev/libraries/async/futures-error-handling#solution-using-future-sync-to-wrap-your-code
+    await Future.sync(() {
+      return _handleRequest(request);
+    }).catchError((e, stackTrace) async {
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Internal server error. _handleRequest failed with exception.',
+        httpRequest: request,
+      );
+
+      request.response.statusCode = HttpStatus.internalServerError;
+      return request.response.close();
+    });
+  }
+
+  //TODO: encode analyze
+  Future<void> _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
@@ -170,11 +212,15 @@ class Server {
 
     try {
       uri = request.requestedUri;
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        // TODO: Specific log for this?
-        stderr.writeln(
-            'Malformed call, invalid uri from ${request.connectionInfo!.remoteAddress.address}');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Malformed call, invalid uri from '
+              '${request.connectionInfo!.remoteAddress.address}',
+          httpRequest: request,
+        );
       }
 
       request.response.statusCode = HttpStatus.badRequest;
@@ -199,6 +245,7 @@ class Server {
       if (allOk) {
         request.response.writeln('OK ${DateTime.now().toUtc()}');
       } else {
+        request.response.statusCode = HttpStatus.serviceUnavailable;
         request.response.writeln('SADNESS ${DateTime.now().toUtc()}');
       }
       for (var issue in issues) {
@@ -208,9 +255,16 @@ class Server {
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
-      var webSocket = await WebSocketTransformer.upgrade(request);
-      webSocket.pingInterval = const Duration(seconds: 30);
-      unawaited(_handleWebsocket(webSocket, request));
+      await _dispatchWebSocketUpgradeRequest(
+        request,
+        EndpointWebsocketRequestHandler.handleWebsocket,
+      );
+      return;
+    } else if (uri.path == '/v1/websocket') {
+      await _dispatchWebSocketUpgradeRequest(
+        request,
+        MethodWebsocketRequestHandler.handleWebsocket,
+      );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
@@ -231,33 +285,27 @@ class Server {
       return;
     }
 
-    // TODO: Limit check external calls
-//    bool checkLength = true;
-//    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
-//      checkLength = false;
-//
-//    if (checkLength) {
-//      // Check size of the request
-//      int contentLength = request.contentLength;
-//      if (contentLength == -1 ||
-//          contentLength > serverpod.config.maxRequestSize) {
-//        if (serverpod.runtimeSettings.logMalformedCalls)
-//          logDebug('Malformed call, invalid content length ($contentLength): $uri');
-//        request.response.statusCode = HttpStatus.badRequest;
-//        request.response.close();
-//        return;
-//      }
-//    }
-
-    String? body;
+    String body;
     if (readBody) {
       try {
         body = await _readBody(request);
+      } on _RequestTooLargeException catch (e) {
+        if (serverpod.runtimeSettings.logMalformedCalls) {
+          // TODO: Log to database?
+          stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
+        }
+        request.response.statusCode = HttpStatus.requestEntityTooLarge;
+        request.response.write(e.errorDescription);
+        await request.response.close();
+        return;
       } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Internal server error. Failed to read body of request.',
+          httpRequest: request,
+        );
+
         request.response.statusCode = HttpStatus.badRequest;
         await request.response.close();
         return;
@@ -266,14 +314,26 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    var result = await _handleUriCall(uri, body, request);
 
-    if (result is ResultInvalidParams) {
+    if (result is ResultNoSuchEndpoint) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
+
+      request.response.statusCode = HttpStatus.notFound;
+      request.response.writeln(result.errorDescription);
+      await request.response.close();
+      return;
+    } else if (result is ResultInvalidParams) {
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        // TODO: Log to database?
+        stderr.writeln('Malformed call: $result');
+      }
+
       request.response.statusCode = HttpStatus.badRequest;
+      request.response.writeln(result.errorDescription);
       await request.response.close();
       return;
     } else if (result is ResultAuthenticationFailed) {
@@ -281,7 +341,11 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
       }
-      request.response.statusCode = HttpStatus.forbidden;
+
+      request.response.statusCode = switch (result.reason) {
+        AuthenticationFailureReason.unauthenticated => HttpStatus.unauthorized,
+        AuthenticationFailureReason.insufficientAccess => HttpStatus.forbidden,
+      };
       await request.response.close();
       return;
     } else if (result is ResultInternalServerError) {
@@ -292,13 +356,17 @@ class Server {
       return;
     } else if (result is ResultStatusCode) {
       request.response.statusCode = result.statusCode;
+      if (result.message != null) {
+        request.response.writeln(result.message);
+      }
       await request.response.close();
       return;
     } else if (result is ExceptionResult) {
       request.response.headers.contentType = ContentType.json;
-      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.statusCode = HttpStatus.badRequest;
 
-      var serializedModel = serializationManager.encodeWithType(result.model);
+      var serializedModel =
+          serializationManager.encodeWithTypeForProtocol(result.model);
       request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {
@@ -315,7 +383,9 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedModel = SerializationManager.encode(result.returnValue);
+        var serializedModel = SerializationManager.encodeForProtocol(
+          result.returnValue,
+        );
         request.response.write(serializedModel);
       }
       await request.response.close();
@@ -323,188 +393,280 @@ class Server {
     }
   }
 
-  Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > serverpod.config.maxRequestSize) return null;
-      data += segment;
+  Future<void> _dispatchWebSocketUpgradeRequest(
+    HttpRequest request,
+    Future<void> Function(
+      Server,
+      WebSocket,
+      HttpRequest,
+      void Function(),
+    ) requestHandler,
+  ) async {
+    WebSocket webSocket;
+    try {
+      webSocket = await WebSocketTransformer.upgrade(request);
+    } on WebSocketException catch (e, stackTrace) {
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Failed to upgrade connection to websocket.',
+        httpRequest: request,
+        operationType: OperationType.stream,
+      );
+      return;
     }
-    return const Utf8Decoder().convert(data);
+    webSocket.pingInterval = const Duration(seconds: 30);
+    var websocketKey = const Uuid().v4();
+    _webSockets[websocketKey] = (
+      requestHandler(
+        this,
+        webSocket,
+        request,
+        () => _webSockets.remove(websocketKey),
+      ),
+      webSocket
+    );
+  }
+
+  Future<String> _readBody(HttpRequest request) async {
+    var builder = BytesBuilder(copy: false);
+    var len = 0;
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    var tooLargeForSure = request.contentLength > maxRequestSize;
+    if (!tooLargeForSure) {
+      await for (var segment in request) {
+        if (tooLargeForSure) continue; // always drain request, if reading begun
+        len += segment.length;
+        tooLargeForSure = len > maxRequestSize;
+        builder.add(segment);
+      }
+    }
+    if (tooLargeForSure) {
+      // We defer raising the exception until we have drained the request stream
+      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
+      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
+      throw _RequestTooLargeException(maxRequestSize);
+    }
+    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Result> _handleUriCall(
-      Uri uri, String body, HttpRequest request) async {
-    var path = uri.path.substring(1);
-    return endpoints.handleUriCall(this, path, uri, body, request);
-  }
-
-  Future<void> _handleWebsocket(
-    WebSocket webSocket,
+    Uri uri,
+    String body,
     HttpRequest request,
   ) async {
+    var path = uri.pathSegments.join('/');
+    var endpointComponents = path.split('.');
+    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
+      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+    }
+
+    // Read query parameters
+    var queryParameters = <String, dynamic>{};
+    var isValidBody = body != 'null' && body.isNotEmpty;
+    if (isValidBody) {
+      try {
+        queryParameters = jsonDecode(body);
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
+    }
+
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+
+    String endpointName;
+    String methodName;
+
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var method = queryParameters['method'];
+      if (method is String) {
+        methodName = method;
+      } else {
+        return ResultInvalidParams(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
+
+    // Get the authentication key, if any
+    // If it is provided in the HTTP authorization header we use that,
+    // otherwise we look for it in the query parameters (the old method).
+    var authHeaderValue =
+        request.headers.value(HttpHeaders.authorizationHeader);
+    String? authenticationKey;
     try {
-      var session = StreamingSession(
-        server: this,
-        uri: request.uri,
-        httpRequest: request,
-        webSocket: webSocket,
+      authenticationKey = unwrapAuthHeaderValue(authHeaderValue);
+    } on AuthHeaderEncodingException catch (_) {
+      return ResultStatusCode(
+        400,
+        'Request has invalid "authorization" header: $authHeaderValue',
+      );
+    }
+    authenticationKey ??= queryParameters['auth'];
+
+    MethodCallSession? maybeSession;
+    try {
+      var methodCallContext = await endpoints.getMethodCallContext(
+        createSessionCallback: (connector) {
+          maybeSession = MethodCallSession(
+            server: this,
+            uri: uri,
+            body: body,
+            path: path,
+            httpRequest: request,
+            method: methodName,
+            endpoint: endpointName,
+            queryParameters: queryParameters,
+            authenticationKey: authenticationKey,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return maybeSession!;
+        },
+        endpointPath: endpointName,
+        methodName: methodName,
+        parameters: queryParameters,
+        serializationManager: serializationManager,
       );
 
-      for (var endpointConnector in endpoints.connectors.values) {
-        session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
-        await _callStreamOpened(session, endpointConnector.endpoint);
-      }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
-          await _callStreamOpened(session, endpointConnector.endpoint);
-        }
-      }
+      MethodCallSession? session = maybeSession;
+      if (session == null) {
+        serverpod.internalSubmitEvent(
+          ExceptionEvent(
+            Exception('Session was not created'),
+            StackTrace.current,
+          ),
+          space: OriginSpace.framework,
+          context: contextFromHttpRequest(this, request, OperationType.method),
+        );
 
-      dynamic error;
-      StackTrace? stackTrace;
+        return ResultInternalServerError(
+            'Session was not created', StackTrace.current, 0);
+      }
 
       try {
-        await for (String jsonData in webSocket) {
-          var data = jsonDecode(jsonData) as Map;
+        var result = await methodCallContext.method.call(
+          session,
+          methodCallContext.arguments,
+        );
 
-          // Handle control commands.
-          var command = data['command'] as String?;
-          if (command != null) {
-            var args = data['args'] as Map;
+        return ResultSuccess(
+          result,
+          sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+        );
+      } catch (e, stackTrace) {
+        // Note: In case of malformed argument, the method connector may throw,
+        // which may be argued is not an "application space" exception.
+        serverpod.internalSubmitEvent(
+          ExceptionEvent(e, stackTrace),
+          space: OriginSpace.application,
+          context: contextFromSession(session, httpRequest: request),
+        );
 
-            if (command == 'ping') {
-              webSocket.add(SerializationManager.encode({'command': 'pong'}));
-            } else if (command == 'auth') {
-              var authKey = args['key'] as String?;
-              session.updateAuthenticationKey(authKey);
-            }
-            continue;
-          }
-
-          // Handle messages passed to endpoints.
-          var endpointName = data['endpoint'] as String;
-          var serialization = data['object'] as Map<String, dynamic>;
-
-          var endpointConnector = endpoints.getConnectorByName(endpointName);
-          if (endpointConnector == null) {
-            throw Exception('Endpoint not found: $endpointName');
-          }
-
-          var authFailed = await endpoints.canUserAccessEndpoint(
-              session, endpointConnector.endpoint);
-
-          if (authFailed == null) {
-            // Process the message.
-            var startTime = DateTime.now();
-            dynamic messageError;
-            StackTrace? messageStackTrace;
-
-            SerializableEntity? message;
-            try {
-              session.sessionLogs.currentEndpoint = endpointName;
-
-              message =
-                  serializationManager.deserializeByClassName(serialization);
-
-              if (message == null) throw Exception('Streamed message was null');
-
-              await endpointConnector.endpoint
-                  .handleStreamMessage(session, message);
-            } catch (e, s) {
-              messageError = e;
-              messageStackTrace = s;
-            }
-
-            var duration =
-                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-            var logManager = session.serverpod.logManager;
-
-            var slow = duration >=
-                logManager
-                    .getLogSettingsForStreamingSession(
-                      endpoint: endpointName,
-                    )
-                    .slowSessionDuration;
-
-            var shouldLog = logManager.shouldLogMessage(
-              session: session,
-              endpoint: endpointName,
-              slow: slow,
-              failed: messageError != null,
-            );
-
-            if (shouldLog) {
-              var logEntry = MessageLogEntry(
-                sessionLogId: session.sessionLogs.temporarySessionId,
-                serverId: serverId,
-                messageId: session.currentMessageId,
-                endpoint: endpointName,
-                messageName: serialization['className'],
-                duration: duration,
-                order: session.sessionLogs.currentLogOrderId,
-                error: messageError?.toString(),
-                stackTrace: messageStackTrace?.toString(),
-                slow: slow,
-              );
-              unawaited(logManager.logMessage(session, logEntry));
-
-              session.sessionLogs.currentLogOrderId += 1;
-            }
-
-            session.currentMessageId += 1;
-          }
-        }
-      } catch (e, s) {
-        error = e;
-        stackTrace = s;
+        rethrow;
       }
-
-      // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in endpoints.connectors.values) {
-        await _callStreamClosed(session, endpointConnector.endpoint);
-      }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          await _callStreamClosed(session, endpointConnector.endpoint);
-        }
-      }
-      await session.close(error: error, stackTrace: stackTrace);
+    } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on InvalidEndpointMethodTypeException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on EndpointNotFoundException catch (e) {
+      return ResultNoSuchEndpoint(e.message);
+    } on NotAuthorizedException catch (e) {
+      return e.authenticationFailedResult;
+    } on InvalidParametersException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on SerializableException catch (exception) {
+      return ExceptionResult(model: exception);
+    } on Exception catch (e, stackTrace) {
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
     } catch (e, stackTrace) {
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      return;
-    }
-  }
-
-  Future<void> _callStreamOpened(
-      StreamingSession session, Endpoint endpoint) async {
-    try {
-      // TODO: We need to mark stream as accessbile (in endpoint?) and check
-      // future messages that are passed to this endpoint.
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
-      if (authFailed == null) await endpoint.streamOpened(session);
-    } catch (e) {
-      return;
-    }
-  }
-
-  Future<void> _callStreamClosed(
-      StreamingSession session, Endpoint endpoint) async {
-    try {
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
-      if (authFailed == null) await endpoint.streamClosed(session);
-    } catch (e) {
-      return;
+      // Something did not work out
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } finally {
+      await maybeSession?.close();
     }
   }
 
   /// Shuts the server down.
-  void shutdown() {
-    _httpServer.close();
+  /// Returns a [Future] that completes when the server is shut down.
+  Future<void> shutdown() async {
+    await _httpServer?.close();
+    var webSockets = _webSockets.values.toList();
+    List<Future<void>> webSocketCompletions = [];
+    for (var (webSocketCompletion, webSocket) in webSockets) {
+      webSocketCompletions.add(webSocketCompletion);
+      await webSocket.close();
+    }
+
+    // Wait for all WebSockets to close.
+    await Future.wait(webSocketCompletions);
+
     _running = false;
+  }
+
+  Future<void> _reportFrameworkException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+    HttpRequest? httpRequest,
+    OperationType? operationType,
+  }) async {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
+
+    var context = httpRequest != null
+        ? contextFromHttpRequest(this, httpRequest, operationType)
+        : contextFromServer(this);
+
+    serverpod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: context,
+    );
+  }
+}
+
+/// The result of a failed request to the server where the request size
+/// exceeds the maximum allowed limit.
+///
+/// This error provides details about the maximum allowed size, allowing the
+/// client to adjust their request accordingly.
+class _RequestTooLargeException implements Exception {
+  /// Maximum allowed request size in bytes.
+  final int maxSize;
+
+  /// Description of the error.
+  ///
+  /// Contains a human-readable explanation of the error, including the maximum
+  /// allowed size and the actual size of the request.
+  final String errorDescription;
+
+  /// Creates a new [ResultRequestTooLarge] object.
+  ///
+  /// - [maxSize]: The maximum allowed size for the request in bytes.
+  _RequestTooLargeException(this.maxSize)
+      : errorDescription =
+            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+
+  @override
+  String toString() {
+    return errorDescription;
   }
 }

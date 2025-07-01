@@ -1,0 +1,15 @@
+name: serverpod_auth_user_client
+description: Serverpod authentication user client module.
+version: SERVERPOD_VERSION
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization

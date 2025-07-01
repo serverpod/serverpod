@@ -1,18 +1,20 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/table_definition.dart' as _i2;
+import '../database/database_migration_version.dart' as _i3;
 
 /// Defines the structure of the database used by Serverpod.
-abstract class DatabaseDefinition extends _i1.SerializableEntity {
+abstract class DatabaseDefinition implements _i1.SerializableModel {
   DatabaseDefinition._({
     this.name,
     required this.moduleName,
@@ -25,26 +27,22 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersion> installedModules,
+    required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
-  factory DatabaseDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory DatabaseDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinition(
-      name:
-          serializationManager.deserialize<String?>(jsonSerialization['name']),
-      moduleName: serializationManager
-          .deserialize<String>(jsonSerialization['moduleName']),
-      tables: serializationManager
-          .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
-      installedModules:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>>(
-              jsonSerialization['installedModules']),
-      migrationApiVersion: serializationManager
-          .deserialize<int>(jsonSerialization['migrationApiVersion']),
+      name: jsonSerialization['name'] as String?,
+      moduleName: jsonSerialization['moduleName'] as String,
+      tables: (jsonSerialization['tables'] as List)
+          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      installedModules: (jsonSerialization['installedModules'] as List)
+          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
 
@@ -60,27 +58,36 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
 
   /// Modules installed in the database, together with their version. Only
   /// set if known.
-  List<_i2.DatabaseMigrationVersion> installedModules;
+  List<_i3.DatabaseMigrationVersion> installedModules;
 
   /// The version of the database definition.
   int migrationApiVersion;
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   DatabaseDefinition copyWith({
     String? name,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    List<_i3.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables,
-      'installedModules': installedModules,
+      'tables': tables.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules':
+          installedModules.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -91,7 +98,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersion> installedModules,
+    required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
           name: name,
@@ -101,19 +108,23 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
           migrationApiVersion: migrationApiVersion,
         );
 
+  /// Returns a shallow copy of this [DatabaseDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    List<_i3.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   }) {
     return DatabaseDefinition(
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
-      tables: tables ?? this.tables.clone(),
-      installedModules: installedModules ?? this.installedModules.clone(),
+      tables: tables ?? this.tables.map((e0) => e0.copyWith()).toList(),
+      installedModules: installedModules ??
+          this.installedModules.map((e0) => e0.copyWith()).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }

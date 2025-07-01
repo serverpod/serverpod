@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Authentication info for Sign in with Apple.
-abstract class AppleAuthInfo extends _i1.SerializableEntity {
+abstract class AppleAuthInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AppleAuthInfo._({
     required this.userIdentifier,
     this.email,
@@ -30,23 +32,14 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
     required String authorizationCode,
   }) = _AppleAuthInfoImpl;
 
-  factory AppleAuthInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory AppleAuthInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return AppleAuthInfo(
-      userIdentifier: serializationManager
-          .deserialize<String>(jsonSerialization['userIdentifier']),
-      email:
-          serializationManager.deserialize<String?>(jsonSerialization['email']),
-      fullName: serializationManager
-          .deserialize<String>(jsonSerialization['fullName']),
-      nickname: serializationManager
-          .deserialize<String>(jsonSerialization['nickname']),
-      identityToken: serializationManager
-          .deserialize<String>(jsonSerialization['identityToken']),
-      authorizationCode: serializationManager
-          .deserialize<String>(jsonSerialization['authorizationCode']),
+      userIdentifier: jsonSerialization['userIdentifier'] as String,
+      email: jsonSerialization['email'] as String?,
+      fullName: jsonSerialization['fullName'] as String,
+      nickname: jsonSerialization['nickname'] as String,
+      identityToken: jsonSerialization['identityToken'] as String,
+      authorizationCode: jsonSerialization['authorizationCode'] as String,
     );
   }
 
@@ -68,6 +61,9 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
   /// Authorization code associated with the sign in.
   String authorizationCode;
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   AppleAuthInfo copyWith({
     String? userIdentifier,
     String? email,
@@ -80,7 +76,7 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'userIdentifier': userIdentifier,
-      'email': email,
+      if (email != null) 'email': email,
       'fullName': fullName,
       'nickname': nickname,
       'identityToken': identityToken,
@@ -89,15 +85,20 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'userIdentifier': userIdentifier,
-      'email': email,
+      if (email != null) 'email': email,
       'fullName': fullName,
       'nickname': nickname,
       'identityToken': identityToken,
       'authorizationCode': authorizationCode,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -120,6 +121,9 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
           authorizationCode: authorizationCode,
         );
 
+  /// Returns a shallow copy of this [AppleAuthInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   AppleAuthInfo copyWith({
     String? userIdentifier,

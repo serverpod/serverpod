@@ -1,0 +1,30 @@
+# ATTENTION: Used by tests/serverpod_test_server/test_integration/test_tools/start_timeout_test/start_timeout_test.dart
+# to test the start timeout configuration in the test tools.
+apiServer:
+  port: 0
+  publicHost: serverpod_test_server
+  publicPort: 0
+  publicScheme: http
+
+insightsServer:
+  port: 0
+  publicHost: serverpod_test_server
+  publicPort: 0
+  publicScheme: http
+
+webServer:
+  port: 0
+  publicHost: serverpod_test_server
+  publicPort: 0
+  publicScheme: http
+
+database:
+  host: postgres
+  port: 1234 # invalid port
+  name: serverpod_test
+  user: postgres
+
+redis:
+  enabled: true
+  host: redis # invalid port
+  port: 1234

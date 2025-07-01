@@ -1,19 +1,21 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'chat_message_chunk.dart' as _i2;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 
 /// A message passed to a user when it joins a channel.
-abstract class ChatJoinedChannel extends _i1.SerializableEntity {
+abstract class ChatJoinedChannel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatJoinedChannel._({
     required this.channel,
     required this.initialMessageChunk,
@@ -28,20 +30,14 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity {
     required _i3.UserInfo userInfo,
   }) = _ChatJoinedChannelImpl;
 
-  factory ChatJoinedChannel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatJoinedChannel.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatJoinedChannel(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      initialMessageChunk:
-          serializationManager.deserialize<_i2.ChatMessageChunk>(
-              jsonSerialization['initialMessageChunk']),
-      lastReadMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastReadMessageId']),
-      userInfo: serializationManager
-          .deserialize<_i3.UserInfo>(jsonSerialization['userInfo']),
+      channel: jsonSerialization['channel'] as String,
+      initialMessageChunk: _i2.ChatMessageChunk.fromJson(
+          (jsonSerialization['initialMessageChunk'] as Map<String, dynamic>)),
+      lastReadMessageId: jsonSerialization['lastReadMessageId'] as int,
+      userInfo: _i3.UserInfo.fromJson(
+          (jsonSerialization['userInfo'] as Map<String, dynamic>)),
     );
   }
 
@@ -57,6 +53,9 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity {
   /// The user info of the user who joined the channel.
   _i3.UserInfo userInfo;
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatJoinedChannel copyWith({
     String? channel,
     _i2.ChatMessageChunk? initialMessageChunk,
@@ -67,20 +66,25 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk,
+      'initialMessageChunk': initialMessageChunk.toJson(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo,
+      'userInfo': userInfo.toJson(),
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk,
+      'initialMessageChunk': initialMessageChunk.toJsonForProtocol(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo,
+      'userInfo': userInfo.toJsonForProtocol(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -97,6 +101,9 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
           userInfo: userInfo,
         );
 
+  /// Returns a shallow copy of this [ChatJoinedChannel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatJoinedChannel copyWith({
     String? channel,

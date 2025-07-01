@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/many_to_many/student.dart' as _i2;
+import '../../models_with_relations/many_to_many/course.dart' as _i3;
 
-abstract class Enrollment extends _i1.SerializableEntity {
+abstract class Enrollment implements _i1.SerializableModel {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -25,23 +27,22 @@ abstract class Enrollment extends _i1.SerializableEntity {
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) = _EnrollmentImpl;
 
-  factory Enrollment.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
     return Enrollment(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      studentId:
-          serializationManager.deserialize<int>(jsonSerialization['studentId']),
-      student: serializationManager
-          .deserialize<_i2.Student?>(jsonSerialization['student']),
-      courseId:
-          serializationManager.deserialize<int>(jsonSerialization['courseId']),
-      course: serializationManager
-          .deserialize<_i2.Course?>(jsonSerialization['course']),
+      id: jsonSerialization['id'] as int?,
+      studentId: jsonSerialization['studentId'] as int,
+      student: jsonSerialization['student'] == null
+          ? null
+          : _i2.Student.fromJson(
+              (jsonSerialization['student'] as Map<String, dynamic>)),
+      courseId: jsonSerialization['courseId'] as int,
+      course: jsonSerialization['course'] == null
+          ? null
+          : _i3.Course.fromJson(
+              (jsonSerialization['course'] as Map<String, dynamic>)),
     );
   }
 
@@ -56,24 +57,32 @@ abstract class Enrollment extends _i1.SerializableEntity {
 
   int courseId;
 
-  _i2.Course? course;
+  _i3.Course? course;
 
+  /// Returns a shallow copy of this [Enrollment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
     _i2.Student? student,
     int? courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'studentId': studentId,
-      'student': student,
+      if (student != null) 'student': student?.toJson(),
       'courseId': courseId,
-      'course': course,
+      if (course != null) 'course': course?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -85,7 +94,7 @@ class _EnrollmentImpl extends Enrollment {
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) : super._(
           id: id,
           studentId: studentId,
@@ -94,6 +103,9 @@ class _EnrollmentImpl extends Enrollment {
           course: course,
         );
 
+  /// Returns a shallow copy of this [Enrollment]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,
@@ -107,7 +119,7 @@ class _EnrollmentImpl extends Enrollment {
       studentId: studentId ?? this.studentId,
       student: student is _i2.Student? ? student : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i2.Course? ? course : this.course?.copyWith(),
+      course: course is _i3.Course? ? course : this.course?.copyWith(),
     );
   }
 }

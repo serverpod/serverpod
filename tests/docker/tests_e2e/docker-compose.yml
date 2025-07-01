@@ -1,0 +1,26 @@
+services:
+  serverpod_test_server:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_e2e/Dockerfile-server
+    depends_on:
+      - 'postgres'
+      - 'redis'
+  tests:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_e2e/Dockerfile-tests
+    command: ${PLATFORM}
+    depends_on:
+      - 'serverpod_test_server'
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serverpod_test
+      POSTGRES_PASSWORD: password
+  redis:
+    image: redis:6.2.6
+    command: redis-server --requirepass password
+    environment:
+      - REDIS_REPLICATION_MODE=master

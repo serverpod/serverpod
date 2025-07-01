@@ -1,8 +1,10 @@
+import 'package:path/path.dart' as p;
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 
 /// A [CodeGenerator] that generates the client side dart code of a
 /// serverpod project.
@@ -19,14 +21,17 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    var clientClasses = models.where((element) => !element.serverOnly).toList();
+
+    var modelAllocatorContext =
+        ModelAllocatorContext.build(clientClasses, config);
+
     return {
-      for (var model in models)
-        if (!model.serverOnly)
-          p.joinAll([
-            ...config.generatedDartClientModelPathParts,
-            ...model.subDirParts,
-            '${model.fileName}.dart',
-          ]): clientSideGenerator.generateModelLibrary(model).generateCode(),
+      for (var entry in modelAllocatorContext.entries)
+        entry.model.getFullFilePath(config, serverCode: false):
+            clientSideGenerator
+                .generateModelLibrary(entry.model)
+                .generateCode(allocator: entry.allocator),
     };
   }
 

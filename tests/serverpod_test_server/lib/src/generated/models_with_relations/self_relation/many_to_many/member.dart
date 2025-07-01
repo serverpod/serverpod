@@ -1,23 +1,27 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
+    as _i2;
 
-abstract class Member extends _i1.TableRow {
+abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Member._({
-    int? id,
+    this.id,
     required this.name,
     this.blocking,
     this.blockedBy,
-  }) : super(id);
+  });
 
   factory Member({
     int? id,
@@ -26,23 +30,25 @@ abstract class Member extends _i1.TableRow {
     List<_i2.Blocking>? blockedBy,
   }) = _MemberImpl;
 
-  factory Member.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Member.fromJson(Map<String, dynamic> jsonSerialization) {
     return Member(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      blocking: serializationManager
-          .deserialize<List<_i2.Blocking>?>(jsonSerialization['blocking']),
-      blockedBy: serializationManager
-          .deserialize<List<_i2.Blocking>?>(jsonSerialization['blockedBy']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      blocking: (jsonSerialization['blocking'] as List?)
+          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      blockedBy: (jsonSerialization['blockedBy'] as List?)
+          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
   static final t = MemberTable();
 
   static const db = MemberRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -51,8 +57,11 @@ abstract class Member extends _i1.TableRow {
   List<_i2.Blocking>? blockedBy;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Member copyWith({
     int? id,
     String? name,
@@ -62,172 +71,26 @@ abstract class Member extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'blocking': blocking,
-      'blockedBy': blockedBy,
+      if (blocking != null)
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toJson()),
+      if (blockedBy != null)
+        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
+      if (blocking != null)
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (blockedBy != null)
+        'blockedBy':
+            blockedBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'name': name,
-      'blocking': blocking,
-      'blockedBy': blockedBy,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Member>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MemberTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    MemberInclude? include,
-  }) async {
-    return session.db.find<Member>(
-      where: where != null ? where(Member.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Member?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MemberTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    MemberInclude? include,
-  }) async {
-    return session.db.findSingleRow<Member>(
-      where: where != null ? where(Member.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Member?> findById(
-    _i1.Session session,
-    int id, {
-    MemberInclude? include,
-  }) async {
-    return session.db.findById<Member>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<MemberTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Member>(
-      where: where(Member.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Member row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Member row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Member row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MemberTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Member>(
-      where: where != null ? where(Member.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static MemberInclude include({
@@ -259,6 +122,11 @@ abstract class Member extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -276,6 +144,9 @@ class _MemberImpl extends Member {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Member]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Member copyWith({
     Object? id = _Undefined,
@@ -286,16 +157,17 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking:
-          blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
+      blocking: blocking is List<_i2.Blocking>?
+          ? blocking
+          : this.blocking?.map((e0) => e0.copyWith()).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.clone(),
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class MemberTable extends _i1.Table {
+class MemberTable extends _i1.Table<int?> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
     name = _i1.ColumnString(
       'name',
@@ -393,9 +265,6 @@ class MemberTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use MemberTable.t instead.')
-MemberTable tMember = MemberTable();
-
 class MemberInclude extends _i1.IncludeObject {
   MemberInclude._({
     _i2.BlockingIncludeList? blocking,
@@ -416,7 +285,7 @@ class MemberInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int?> get table => Member.t;
 }
 
 class MemberIncludeList extends _i1.IncludeList {
@@ -436,7 +305,7 @@ class MemberIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Member.t;
+  _i1.Table<int?> get table => Member.t;
 }
 
 class MemberRepository {
@@ -446,6 +315,28 @@ class MemberRepository {
 
   final attachRow = const MemberAttachRowRepository._();
 
+  /// Returns a list of [Member]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Member>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -457,7 +348,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.find<Member>(
+    return session.db.find<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -469,6 +360,23 @@ class MemberRepository {
     );
   }
 
+  /// Returns the first matching [Member] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Member?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
@@ -479,7 +387,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Member>(
+    return session.db.findFirstRow<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -490,107 +398,132 @@ class MemberRepository {
     );
   }
 
+  /// Finds a single [Member] by its [id] or null if no such row exists.
   Future<Member?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.findById<Member>(
+    return session.db.findById<Member>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
+  /// Inserts all [Member]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Member]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Member>> insert(
     _i1.Session session,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Member>(
+    return session.db.insert<Member>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [Member] and returns the inserted row.
+  ///
+  /// The returned [Member] will have its `id` field set.
   Future<Member> insertRow(
     _i1.Session session,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Member>(
+    return session.db.insertRow<Member>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [Member]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Member>> update(
     _i1.Session session,
     List<Member> rows, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Member>(
+    return session.db.update<Member>(
       rows,
       columns: columns?.call(Member.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [Member]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Member> updateRow(
     _i1.Session session,
     Member row, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Member>(
+    return session.db.updateRow<Member>(
       row,
       columns: columns?.call(Member.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [Member]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Member>> delete(
     _i1.Session session,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Member>(
+    return session.db.delete<Member>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [Member].
+  Future<Member> deleteRow(
     _i1.Session session,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Member>(
+    return session.db.deleteRow<Member>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<Member>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Member>(
+    return session.db.deleteWhere<Member>(
       where: where(Member.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Member>(
+    return session.db.count<Member>(
       where: where?.call(Member.t),
       limit: limit,
       transaction: transaction,
@@ -601,11 +534,14 @@ class MemberRepository {
 class MemberAttachRepository {
   const MemberAttachRepository._();
 
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -615,17 +551,21 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
-    await session.dbNext.update<_i2.Blocking>(
+    await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
+  /// Creates a relation between this [Member] and the given [Blocking]s
+  /// by setting each [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -635,9 +575,10 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedId: member.id)).toList();
-    await session.dbNext.update<_i2.Blocking>(
+    await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }
@@ -645,11 +586,14 @@ class MemberAttachRepository {
 class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedById` to refer to this [Member].
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -658,17 +602,21 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: member.id);
-    await session.dbNext.updateRow<_i2.Blocking>(
+    await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
+  /// Creates a relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedId` to refer to this [Member].
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -677,9 +625,10 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: member.id);
-    await session.dbNext.updateRow<_i2.Blocking>(
+    await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }

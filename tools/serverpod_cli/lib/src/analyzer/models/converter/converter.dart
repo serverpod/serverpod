@@ -1,24 +1,36 @@
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
-
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
+import 'package:yaml/yaml.dart';
 
 List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
 T convertToEnum<T extends Enum>({
-  required String? value,
+  required dynamic value,
   required T enumDefault,
   required List<T> enumValues,
 }) {
-  if (value == null) return enumDefault;
+  if (value is! String) return enumDefault;
 
   return enumValues.firstWhere(
     (v) => v.name.toLowerCase() == value.toLowerCase(),
     orElse: () => enumDefault,
+  );
+}
+
+T unsafeConvertToEnum<T extends Enum>({
+  required dynamic value,
+  required List<T> enumValues,
+}) {
+  if (value is! String) {
+    throw ArgumentError('Not a string: $value', 'value');
+  }
+
+  return enumValues.firstWhere(
+    (v) => v.name.toLowerCase() == value.toLowerCase(),
   );
 }
 
@@ -98,7 +110,7 @@ List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
   // Split on comma, but not if the comma is inside < > or ( )
-  return splitIgnoringBrackets(input);
+  return splitIgnoringBracketsAndBracesAndQuotes(input);
 }
 
 Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(

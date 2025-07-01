@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -14,11 +15,9 @@ import 'package:serverpod_auth_client/src/protocol/user_info.dart' as _i3;
 import 'package:serverpod_auth_client/src/protocol/authentication_response.dart'
     as _i4;
 import 'package:serverpod_auth_client/src/protocol/apple_auth_info.dart' as _i5;
-import 'package:serverpod_auth_client/src/protocol/email_password_reset.dart'
-    as _i6;
 import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
-    as _i7;
-import 'dart:typed_data' as _i8;
+    as _i6;
+import 'dart:typed_data' as _i7;
 
 /// Endpoint for handling admin functions.
 /// {@category Endpoint}
@@ -115,16 +114,6 @@ class EndpointEmail extends _i1.EndpointRef {
         'serverpod_auth.email',
         'initiatePasswordReset',
         {'email': email},
-      );
-
-  /// Verifies a password reset code, if successful returns an
-  /// [EmailPasswordReset] object, otherwise returns null.
-  _i2.Future<_i6.EmailPasswordReset?> verifyEmailPasswordReset(
-          String verificationCode) =>
-      caller.callServerEndpoint<_i6.EmailPasswordReset?>(
-        'serverpod_auth.email',
-        'verifyEmailPasswordReset',
-        {'verificationCode': verificationCode},
       );
 
   /// Resets a users password using the reset code.
@@ -237,10 +226,28 @@ class EndpointStatus extends _i1.EndpointRef {
         {},
       );
 
-  /// Signs out a user.
+  /// **[Deprecated]** Signs out a user from all devices.
+  /// Use `signOutDevice` to sign out a single device
+  /// or `signOutAllDevices` to sign out all devices.
+  @Deprecated(
+      'Use signOutDevice to sign out a single device or signOutAllDevices to sign out all devices. This method will be removed in future releases.')
   _i2.Future<void> signOut() => caller.callServerEndpoint<void>(
         'serverpod_auth.status',
         'signOut',
+        {},
+      );
+
+  /// Signs out a user from the current device.
+  _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
+        'serverpod_auth.status',
+        'signOutDevice',
+        {},
+      );
+
+  /// Signs out a user from all active devices.
+  _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
+        'serverpod_auth.status',
+        'signOutAllDevices',
         {},
       );
 
@@ -254,8 +261,8 @@ class EndpointStatus extends _i1.EndpointRef {
       );
 
   /// Gets the server configuration.
-  _i2.Future<_i7.UserSettingsConfig> getUserSettingsConfig() =>
-      caller.callServerEndpoint<_i7.UserSettingsConfig>(
+  _i2.Future<_i6.UserSettingsConfig> getUserSettingsConfig() =>
+      caller.callServerEndpoint<_i6.UserSettingsConfig>(
         'serverpod_auth.status',
         'getUserSettingsConfig',
         {},
@@ -279,7 +286,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<bool> setUserImage(_i8.ByteData image) =>
+  _i2.Future<bool> setUserImage(_i7.ByteData image) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'setUserImage',
@@ -292,6 +299,14 @@ class EndpointUser extends _i1.EndpointRef {
         'serverpod_auth.user',
         'changeUserName',
         {'userName': userName},
+      );
+
+  /// Changes the full name of a user.
+  _i2.Future<bool> changeFullName(String fullName) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.user',
+        'changeFullName',
+        {'fullName': fullName},
       );
 }
 

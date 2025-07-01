@@ -1,21 +1,23 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithIndex extends _i1.TableRow {
+abstract class ObjectWithIndex
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithIndex._({
-    int? id,
+    this.id,
     required this.indexed,
     required this.indexed2,
-  }) : super(id);
+  });
 
   factory ObjectWithIndex({
     int? id,
@@ -23,16 +25,11 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     required int indexed2,
   }) = _ObjectWithIndexImpl;
 
-  factory ObjectWithIndex.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithIndex.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithIndex(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      indexed:
-          serializationManager.deserialize<int>(jsonSerialization['indexed']),
-      indexed2:
-          serializationManager.deserialize<int>(jsonSerialization['indexed2']),
+      id: jsonSerialization['id'] as int?,
+      indexed: jsonSerialization['indexed'] as int,
+      indexed2: jsonSerialization['indexed2'] as int,
     );
   }
 
@@ -40,13 +37,19 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static const db = ObjectWithIndexRepository._();
 
+  @override
+  int? id;
+
   int indexed;
 
   int indexed2;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -55,166 +58,19 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'indexed':
-        indexed = value;
-        return;
-      case 'indexed2':
-        indexed2 = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ObjectWithIndex>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ObjectWithIndex?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ObjectWithIndex?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithIndex>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ObjectWithIndex>(
-      where: where(ObjectWithIndex.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ObjectWithIndex row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ObjectWithIndex row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ObjectWithIndex row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ObjectWithIndexInclude include() {
@@ -240,6 +96,11 @@ abstract class ObjectWithIndex extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -255,6 +116,9 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
           indexed2: indexed2,
         );
 
+  /// Returns a shallow copy of this [ObjectWithIndex]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithIndex copyWith({
     Object? id = _Undefined,
@@ -269,7 +133,7 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-class ObjectWithIndexTable extends _i1.Table {
+class ObjectWithIndexTable extends _i1.Table<int?> {
   ObjectWithIndexTable({super.tableRelation})
       : super(tableName: 'object_with_index') {
     indexed = _i1.ColumnInt(
@@ -294,9 +158,6 @@ class ObjectWithIndexTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ObjectWithIndexTable.t instead.')
-ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
-
 class ObjectWithIndexInclude extends _i1.IncludeObject {
   ObjectWithIndexInclude._();
 
@@ -304,7 +165,7 @@ class ObjectWithIndexInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int?> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexIncludeList extends _i1.IncludeList {
@@ -324,12 +185,34 @@ class ObjectWithIndexIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table<int?> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexRepository {
   const ObjectWithIndexRepository._();
 
+  /// Returns a list of [ObjectWithIndex]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<ObjectWithIndex>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
@@ -340,7 +223,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithIndex>(
+    return session.db.find<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -351,6 +234,23 @@ class ObjectWithIndexRepository {
     );
   }
 
+  /// Returns the first matching [ObjectWithIndex] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<ObjectWithIndex?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
@@ -360,7 +260,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithIndex>(
+    return session.db.findFirstRow<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -370,105 +270,130 @@ class ObjectWithIndexRepository {
     );
   }
 
+  /// Finds a single [ObjectWithIndex] by its [id] or null if no such row exists.
   Future<ObjectWithIndex?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithIndex>(
+    return session.db.findById<ObjectWithIndex>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [ObjectWithIndex]s in the list and returns the inserted rows.
+  ///
+  /// The returned [ObjectWithIndex]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ObjectWithIndex>> insert(
     _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithIndex>(
+    return session.db.insert<ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [ObjectWithIndex] and returns the inserted row.
+  ///
+  /// The returned [ObjectWithIndex] will have its `id` field set.
   Future<ObjectWithIndex> insertRow(
     _i1.Session session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithIndex>(
+    return session.db.insertRow<ObjectWithIndex>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [ObjectWithIndex]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithIndex>> update(
     _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithIndex>(
+    return session.db.update<ObjectWithIndex>(
       rows,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [ObjectWithIndex]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithIndex> updateRow(
     _i1.Session session,
     ObjectWithIndex row, {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithIndex>(
+    return session.db.updateRow<ObjectWithIndex>(
       row,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [ObjectWithIndex]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<ObjectWithIndex>> delete(
     _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithIndex>(
+    return session.db.delete<ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [ObjectWithIndex].
+  Future<ObjectWithIndex> deleteRow(
     _i1.Session session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithIndex>(
+    return session.db.deleteRow<ObjectWithIndex>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<ObjectWithIndex>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithIndex>(
+    return session.db.deleteWhere<ObjectWithIndex>(
       where: where(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithIndex>(
+    return session.db.count<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       limit: limit,
       transaction: transaction,

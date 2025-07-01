@@ -1,13 +1,13 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 class AuthenticationEndpoint extends Endpoint {
   Future<void> removeAllUsers(Session session) async {
-    await session.dbNext.deleteWhere<UserInfo>(where: Constant.bool(true));
+    await session.db.deleteWhere<UserInfo>(where: Constant.bool(true));
   }
 
   Future<int> countUsers(Session session) async {
-    return await session.dbNext.count<UserInfo>();
+    return await session.db.count<UserInfo>();
   }
 
   Future<void> createUser(
@@ -29,8 +29,9 @@ class AuthenticationEndpoint extends Endpoint {
   Future<AuthenticationResponse> authenticate(
     Session session,
     String email,
-    String password,
-  ) async {
+    String password, [
+    List<String>? scopes,
+  ]) async {
     if (email == 'test@foo.bar' && password == 'password') {
       var userInfo = await Users.findUserByEmail(session, 'test@foo.bar');
       if (userInfo == null) {
@@ -39,7 +40,7 @@ class AuthenticationEndpoint extends Endpoint {
           email: email,
           userName: 'Test',
           created: DateTime.now(),
-          scopeNames: [],
+          scopeNames: scopes ?? [],
           blocked: false,
         );
         userInfo = await Users.createUser(session, userInfo);
@@ -47,7 +48,12 @@ class AuthenticationEndpoint extends Endpoint {
 
       if (userInfo == null) return AuthenticationResponse(success: false);
 
-      var authKey = await session.auth.signInUser(userInfo.id!, 'test');
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        'test',
+        scopes: scopes?.map((e) => Scope(e)).toSet() ?? const {},
+      );
       return AuthenticationResponse(
         success: true,
         keyId: authKey.id,
@@ -60,6 +66,15 @@ class AuthenticationEndpoint extends Endpoint {
   }
 
   Future<void> signOut(Session session) async {
-    await session.auth.signOutUser();
+    await UserAuthentication.signOutUser(session);
+  }
+
+  Future<void> updateScopes(
+    Session session,
+    int userId,
+    List<String> scopes,
+  ) async {
+    var newScopes = scopes.map((e) => Scope(e)).toSet();
+    await Users.updateUserScopes(session, userId, newScopes);
   }
 }

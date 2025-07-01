@@ -1,18 +1,20 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'cache_info.dart' as _i2;
 
 /// High level information about the caches.
-abstract class CachesInfo extends _i1.SerializableEntity {
+abstract class CachesInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CachesInfo._({
     required this.local,
     required this.localPrio,
@@ -25,17 +27,14 @@ abstract class CachesInfo extends _i1.SerializableEntity {
     required _i2.CacheInfo global,
   }) = _CachesInfoImpl;
 
-  factory CachesInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CachesInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CachesInfo(
-      local: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['local']),
-      localPrio: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['localPrio']),
-      global: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['global']),
+      local: _i2.CacheInfo.fromJson(
+          (jsonSerialization['local'] as Map<String, dynamic>)),
+      localPrio: _i2.CacheInfo.fromJson(
+          (jsonSerialization['localPrio'] as Map<String, dynamic>)),
+      global: _i2.CacheInfo.fromJson(
+          (jsonSerialization['global'] as Map<String, dynamic>)),
     );
   }
 
@@ -48,6 +47,9 @@ abstract class CachesInfo extends _i1.SerializableEntity {
   /// Information about the global cache.
   _i2.CacheInfo global;
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CachesInfo copyWith({
     _i2.CacheInfo? local,
     _i2.CacheInfo? localPrio,
@@ -56,19 +58,24 @@ abstract class CachesInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'local': local,
-      'localPrio': localPrio,
-      'global': global,
+      'local': local.toJson(),
+      'localPrio': localPrio.toJson(),
+      'global': global.toJson(),
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'local': local,
-      'localPrio': localPrio,
-      'global': global,
+      'local': local.toJsonForProtocol(),
+      'localPrio': localPrio.toJsonForProtocol(),
+      'global': global.toJsonForProtocol(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -83,6 +90,9 @@ class _CachesInfoImpl extends CachesInfo {
           global: global,
         );
 
+  /// Returns a shallow copy of this [CachesInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CachesInfo copyWith({
     _i2.CacheInfo? local,

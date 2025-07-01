@@ -1,0 +1,6 @@
+class: ModuleDatatype
+fields:
+  model: module:module:ModuleClass
+  list: List<module:module:ModuleClass>
+  map: Map<String, module:module:ModuleClass>
+  record: (module:module:ModuleClass,)?

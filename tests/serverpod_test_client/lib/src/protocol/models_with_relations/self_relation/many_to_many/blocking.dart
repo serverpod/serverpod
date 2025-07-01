@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/many_to_many/member.dart'
+    as _i2;
 
-abstract class Blocking extends _i1.SerializableEntity {
+abstract class Blocking implements _i1.SerializableModel {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -28,20 +30,19 @@ abstract class Blocking extends _i1.SerializableEntity {
     _i2.Member? blockedBy,
   }) = _BlockingImpl;
 
-  factory Blocking.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Blocking.fromJson(Map<String, dynamic> jsonSerialization) {
     return Blocking(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      blockedId:
-          serializationManager.deserialize<int>(jsonSerialization['blockedId']),
-      blocked: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blocked']),
-      blockedById: serializationManager
-          .deserialize<int>(jsonSerialization['blockedById']),
-      blockedBy: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blockedBy']),
+      id: jsonSerialization['id'] as int?,
+      blockedId: jsonSerialization['blockedId'] as int,
+      blocked: jsonSerialization['blocked'] == null
+          ? null
+          : _i2.Member.fromJson(
+              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+      blockedById: jsonSerialization['blockedById'] as int,
+      blockedBy: jsonSerialization['blockedBy'] == null
+          ? null
+          : _i2.Member.fromJson(
+              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
     );
   }
 
@@ -58,6 +59,9 @@ abstract class Blocking extends _i1.SerializableEntity {
 
   _i2.Member? blockedBy;
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
@@ -68,12 +72,17 @@ abstract class Blocking extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'blockedId': blockedId,
-      'blocked': blocked,
+      if (blocked != null) 'blocked': blocked?.toJson(),
       'blockedById': blockedById,
-      'blockedBy': blockedBy,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -94,6 +103,9 @@ class _BlockingImpl extends Blocking {
           blockedBy: blockedBy,
         );
 
+  /// Returns a shallow copy of this [Blocking]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,

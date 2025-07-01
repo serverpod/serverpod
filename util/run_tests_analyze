@@ -1,50 +1,101 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
+if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests_analyze"
     exit 1
 fi
 
-# Makes script exit on first non-zero error code
-set -e
 
-echo "### Running dart analyze"
-dart analyze --fatal-infos packages/serverpod
-dart analyze --fatal-infos packages/serverpod_client
-dart analyze --fatal-infos packages/serverpod_serialization
-dart analyze --fatal-infos packages/serverpod_service_client
-dart analyze --fatal-infos packages/serverpod_shared
-dart analyze --fatal-infos packages/serverpod_flutter
+LOG_LEVEL="--fatal-infos"
+for arg in "$@"
+do
+    # Check if the argument is the --allow-infos flag
+    # If it is, set the log level to --fatal-warnings instead of --fatal-infos
+    if [ "$arg" == "--allow-infos" ] ; then
+        LOG_LEVEL="--fatal-warnings"
+        break
+    elif [ "$arg" == "--allow-warnings" ] ; then
+        LOG_LEVEL="--no-fatal-warnings"
+        break
+    fi
+done
 
-dart analyze --fatal-infos examples/chat/chat_server
-dart analyze --fatal-infos examples/chat/chat_client
-dart analyze --fatal-infos examples/chat/chat_flutter
+declare -a projectPaths=(
+    "packages/serverpod"
+    "packages/serverpod_client"
+    "packages/serverpod_serialization"
+    "packages/serverpod_service_client"
+    "packages/serverpod_shared"
+    "packages/serverpod_flutter"
+    "packages/serverpod_test"
 
-dart analyze --fatal-infos tests/serverpod_test_server
-dart analyze --fatal-infos tests/serverpod_test_client
-dart analyze --fatal-infos tests/serverpod_test_module/serverpod_test_module_server
-dart analyze --fatal-infos tests/serverpod_test_module/serverpod_test_module_client
+    "examples/chat/chat_server"
+    "examples/chat/chat_client"
+    "examples/chat/chat_flutter"
 
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_server
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_client
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_shared_flutter
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_apple_flutter
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_google_flutter
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_email_flutter
-dart analyze --fatal-infos modules/serverpod_auth/serverpod_auth_firebase_flutter
+    "tests/serverpod_test_server"
+    "tests/serverpod_test_client"
+    "tests/serverpod_test_flutter"
+    "tests/serverpod_test_module/serverpod_test_module_server"
+    "tests/serverpod_test_module/serverpod_test_module_client"
+    "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+    "tests/serverpod_test_nonvector/serverpod_test_nonvector_client"
+    "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
+    "tests/serverpod_new_auth_test/serverpod_new_auth_test_client"
 
-dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_server
-dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_client
-dart analyze --fatal-infos modules/serverpod_chat/serverpod_chat_flutter
+    "modules/serverpod_auth/serverpod_auth_server"
+    "modules/serverpod_auth/serverpod_auth_client"
+    "modules/serverpod_auth/serverpod_auth_shared_flutter"
+    "modules/serverpod_auth/serverpod_auth_apple_flutter"
+    "modules/serverpod_auth/serverpod_auth_google_flutter"
+    "modules/serverpod_auth/serverpod_auth_email_flutter"
+    "modules/serverpod_auth/serverpod_auth_firebase_flutter"
 
-dart analyze --fatal-infos templates/serverpod_templates/projectname_flutter
-dart analyze --fatal-infos templates/serverpod_templates/projectname_client
-dart analyze --fatal-infos templates/serverpod_templates/projectname_server
-dart analyze --fatal-infos templates/serverpod_templates/modulename_client
-dart analyze --fatal-infos templates/serverpod_templates/modulename_server
+    "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server"
+    "modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client"
+    "modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server"
+    "modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_client"
+    "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server"
+    "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter"
+    "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client"
+    "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server"
+    "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client"
+    "modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server"
+    "modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server"
+    "modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server"
+    "modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client"
+    "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server"
+    "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_client"
 
-dart analyze --fatal-infos integrations/serverpod_cloud_storage_s3
-dart analyze --fatal-infos integrations/serverpod_cloud_storage_gcp
+    "modules/serverpod_chat/serverpod_chat_server"
+    "modules/serverpod_chat/serverpod_chat_client"
+    "modules/serverpod_chat/serverpod_chat_flutter"
 
-dart analyze --fatal-infos tools/serverpod_cli
+    "templates/serverpod_templates/projectname_flutter"
+    "templates/serverpod_templates/projectname_client"
+    "templates/serverpod_templates/projectname_server"
+    "templates/serverpod_templates/modulename_client"
+    "templates/serverpod_templates/modulename_server"
+
+    "integrations/serverpod_cloud_storage_s3"
+    "integrations/serverpod_cloud_storage_gcp"
+
+    "tools/serverpod_cli"
+)
+
+exit_code=0
+
+echo "### Running dart analyze with log level '$LOG_LEVEL'"
+for i in "${projectPaths[@]}"
+do
+   dart analyze $LOG_LEVEL $i
+
+   if [ $? != 0 ]; then
+     exit_code=1
+   fi
+done
+
+exit $exit_code

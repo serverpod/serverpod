@@ -24,9 +24,9 @@ jobs:
           submodules: recursive
 
       - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1.6.5
         with:
-          sdk: 3.0
+          sdk: 3.5
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

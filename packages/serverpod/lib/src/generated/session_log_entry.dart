@@ -1,19 +1,21 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.TableRow {
+abstract class SessionLogEntry
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   SessionLogEntry._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.time,
     this.module,
@@ -27,7 +29,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
     this.authenticatedUserId,
     this.isOpen,
     required this.touched,
-  }) : super(id);
+  });
 
   factory SessionLogEntry({
     int? id,
@@ -46,43 +48,31 @@ abstract class SessionLogEntry extends _i1.TableRow {
     required DateTime touched,
   }) = _SessionLogEntryImpl;
 
-  factory SessionLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      duration: serializationManager
-          .deserialize<double?>(jsonSerialization['duration']),
-      numQueries: serializationManager
-          .deserialize<int?>(jsonSerialization['numQueries']),
-      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      authenticatedUserId: serializationManager
-          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
-      isOpen:
-          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
-      touched: serializationManager
-          .deserialize<DateTime>(jsonSerialization['touched']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      module: jsonSerialization['module'] as String?,
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      duration: (jsonSerialization['duration'] as num?)?.toDouble(),
+      numQueries: jsonSerialization['numQueries'] as int?,
+      slow: jsonSerialization['slow'] as bool?,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
+      isOpen: jsonSerialization['isOpen'] as bool?,
+      touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
     );
   }
 
   static final t = SessionLogEntryTable();
 
   static const db = SessionLogEntryRepository._();
+
+  @override
+  int? id;
 
   /// The id of the server that handled this session.
   String serverId;
@@ -128,8 +118,11 @@ abstract class SessionLogEntry extends _i1.TableRow {
   DateTime touched;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -149,232 +142,43 @@ abstract class SessionLogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
+      'time': time.toJson(),
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (duration != null) 'duration': duration,
+      if (numQueries != null) 'numQueries': numQueries,
+      if (slow != null) 'slow': slow,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      if (authenticatedUserId != null)
+        'authenticatedUserId': authenticatedUserId,
+      if (isOpen != null) 'isOpen': isOpen,
+      'touched': touched.toJson(),
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
+      'time': time.toJson(),
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (duration != null) 'duration': duration,
+      if (numQueries != null) 'numQueries': numQueries,
+      if (slow != null) 'slow': slow,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      if (authenticatedUserId != null)
+        'authenticatedUserId': authenticatedUserId,
+      if (isOpen != null) 'isOpen': isOpen,
+      'touched': touched.toJson(),
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'module':
-        module = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'numQueries':
-        numQueries = value;
-        return;
-      case 'slow':
-        slow = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'authenticatedUserId':
-        authenticatedUserId = value;
-        return;
-      case 'isOpen':
-        isOpen = value;
-        return;
-      case 'touched':
-        touched = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<SessionLogEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<SessionLogEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<SessionLogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<SessionLogEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<SessionLogEntry>(
-      where: where(SessionLogEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static SessionLogEntryInclude include() {
@@ -399,6 +203,11 @@ abstract class SessionLogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(SessionLogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -437,6 +246,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,
@@ -475,7 +287,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
   }
 }
 
-class SessionLogEntryTable extends _i1.Table {
+class SessionLogEntryTable extends _i1.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_session_log') {
     serverId = _i1.ColumnString(
@@ -594,9 +406,6 @@ class SessionLogEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use SessionLogEntryTable.t instead.')
-SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
-
 class SessionLogEntryInclude extends _i1.IncludeObject {
   SessionLogEntryInclude._();
 
@@ -604,7 +413,7 @@ class SessionLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => SessionLogEntry.t;
+  _i1.Table<int?> get table => SessionLogEntry.t;
 }
 
 class SessionLogEntryIncludeList extends _i1.IncludeList {
@@ -624,12 +433,34 @@ class SessionLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => SessionLogEntry.t;
+  _i1.Table<int?> get table => SessionLogEntry.t;
 }
 
 class SessionLogEntryRepository {
   const SessionLogEntryRepository._();
 
+  /// Returns a list of [SessionLogEntry]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<SessionLogEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
@@ -640,7 +471,7 @@ class SessionLogEntryRepository {
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<SessionLogEntry>(
+    return session.db.find<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
@@ -651,6 +482,23 @@ class SessionLogEntryRepository {
     );
   }
 
+  /// Returns the first matching [SessionLogEntry] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<SessionLogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
@@ -660,7 +508,7 @@ class SessionLogEntryRepository {
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<SessionLogEntry>(
+    return session.db.findFirstRow<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
@@ -670,105 +518,130 @@ class SessionLogEntryRepository {
     );
   }
 
+  /// Finds a single [SessionLogEntry] by its [id] or null if no such row exists.
   Future<SessionLogEntry?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<SessionLogEntry>(
+    return session.db.findById<SessionLogEntry>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [SessionLogEntry]s in the list and returns the inserted rows.
+  ///
+  /// The returned [SessionLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<SessionLogEntry>> insert(
     _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<SessionLogEntry>(
+    return session.db.insert<SessionLogEntry>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [SessionLogEntry] and returns the inserted row.
+  ///
+  /// The returned [SessionLogEntry] will have its `id` field set.
   Future<SessionLogEntry> insertRow(
     _i1.Session session,
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<SessionLogEntry>(
+    return session.db.insertRow<SessionLogEntry>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [SessionLogEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<SessionLogEntry>> update(
     _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<SessionLogEntry>(
+    return session.db.update<SessionLogEntry>(
       rows,
       columns: columns?.call(SessionLogEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [SessionLogEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<SessionLogEntry> updateRow(
     _i1.Session session,
     SessionLogEntry row, {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<SessionLogEntry>(
+    return session.db.updateRow<SessionLogEntry>(
       row,
       columns: columns?.call(SessionLogEntry.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [SessionLogEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<SessionLogEntry>> delete(
     _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<SessionLogEntry>(
+    return session.db.delete<SessionLogEntry>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [SessionLogEntry].
+  Future<SessionLogEntry> deleteRow(
     _i1.Session session,
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<SessionLogEntry>(
+    return session.db.deleteRow<SessionLogEntry>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<SessionLogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<SessionLogEntry>(
+    return session.db.deleteWhere<SessionLogEntry>(
       where: where(SessionLogEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<SessionLogEntry>(
+    return session.db.count<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       limit: limit,
       transaction: transaction,

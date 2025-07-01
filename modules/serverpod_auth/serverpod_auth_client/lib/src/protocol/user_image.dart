@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a user image.
-abstract class UserImage extends _i1.SerializableEntity {
+abstract class UserImage implements _i1.SerializableModel {
   UserImage._({
     this.id,
     required this.userId,
@@ -26,17 +27,12 @@ abstract class UserImage extends _i1.SerializableEntity {
     required String url,
   }) = _UserImageImpl;
 
-  factory UserImage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserImage.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserImage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      version:
-          serializationManager.deserialize<int>(jsonSerialization['version']),
-      url: serializationManager.deserialize<String>(jsonSerialization['url']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      version: jsonSerialization['version'] as int,
+      url: jsonSerialization['url'] as String,
     );
   }
 
@@ -54,6 +50,9 @@ abstract class UserImage extends _i1.SerializableEntity {
   /// The URL to the image.
   String url;
 
+  /// Returns a shallow copy of this [UserImage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserImage copyWith({
     int? id,
     int? userId,
@@ -63,11 +62,16 @@ abstract class UserImage extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'version': version,
       'url': url,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -86,6 +90,9 @@ class _UserImageImpl extends UserImage {
           url: url,
         );
 
+  /// Returns a shallow copy of this [UserImage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserImage copyWith({
     Object? id = _Undefined,

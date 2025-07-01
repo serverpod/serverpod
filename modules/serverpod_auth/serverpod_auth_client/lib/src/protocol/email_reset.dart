@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for an email reset.
-abstract class EmailReset extends _i1.SerializableEntity {
+abstract class EmailReset implements _i1.SerializableModel {
   EmailReset._({
     this.id,
     required this.userId,
@@ -26,18 +27,13 @@ abstract class EmailReset extends _i1.SerializableEntity {
     required DateTime expiration,
   }) = _EmailResetImpl;
 
-  factory EmailReset.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailReset.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailReset(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
-      expiration: serializationManager
-          .deserialize<DateTime>(jsonSerialization['expiration']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      verificationCode: jsonSerialization['verificationCode'] as String,
+      expiration:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
     );
   }
 
@@ -55,6 +51,9 @@ abstract class EmailReset extends _i1.SerializableEntity {
   /// The expiration time for the password reset.
   DateTime expiration;
 
+  /// Returns a shallow copy of this [EmailReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -64,11 +63,16 @@ abstract class EmailReset extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -87,6 +91,9 @@ class _EmailResetImpl extends EmailReset {
           expiration: expiration,
         );
 
+  /// Returns a shallow copy of this [EmailReset]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailReset copyWith({
     Object? id = _Undefined,

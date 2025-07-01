@@ -1,242 +1,199 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
-import 'package:source_span/source_span.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:test/test.dart';
 
+Matcher isASpanWith(Object? Function(SourceSpanSeverityException) feature,
+    String description, Object? matcher) {
+  return isA<SourceSpanSeverityException>()
+      .having(feature, description, wrapMatcher(matcher));
+}
+
 void main() {
-  var testAssetsPath = p.join(
-    'test',
-    'integration',
-    'serverpod_packages_version_check',
-    'test_assets',
-  );
-  group('performServerpodPackagesAndCliVersionCheck', () {
-    group('With empty folder', () {
-      var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
-      setUp(() {
-        if (!emptyFolder.existsSync()) {
-          emptyFolder.createSync();
-        }
-      });
+  group('Given a pubspec.yaml', () {
+    group('with explicit serverpod package version', () {
+      late final explicitVersion = PubspecPlus.parse('''
+name: x
+dependencies:
+  serverpod_cloud_lints: 0.9.0 # ignored as this dependency is not relevant for codegen
+  serverpod_client: 1.1.0
+''');
 
-      tearDown(() {
-        if (emptyFolder.existsSync()) {
-          emptyFolder.deleteSync();
-        }
-      });
-
-      test('performServerpodPackagesAndCliVersionCheck()', () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+      test(
+          'when calling validateServerpodPackagesVersion with same version '
+          'then no warnings are returned', () {
+        var packageWarnings = validateServerpodPackagesVersion(
           Version(1, 1, 0),
-          emptyFolder,
+          explicitVersion,
         );
 
-        expect(packageWarnings.isEmpty, equals(true));
-      });
-    });
-
-    group('With explicit serverpod package version', () {
-      var explicitVersionPath =
-          Directory(p.join(testAssetsPath, 'explicit_1.1.0'));
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          Version(1, 1, 0),
-          explicitVersionPath,
-        );
-
-        expect(packageWarnings.isEmpty, equals(true));
+        expect(packageWarnings, isEmpty);
       });
 
-      test('performServerpodPackagesAndCliVersionCheck() with older version',
+      group('when calling validateServerpodPackagesVersion with older version',
           () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        late final packageWarnings = validateServerpodPackagesVersion(
           Version(1, 0, 0),
-          explicitVersionPath,
+          explicitVersion,
         );
 
-        expect(packageWarnings.length, equals(1));
-        expect(packageWarnings.first.message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
+        test('then one warning is returned with correct message', () {
+          expect(packageWarnings, [
+            isASpanWith((s) => s.message, 'message',
+                ServerpodPackagesVersionCheckWarnings.incompatibleVersion)
+          ]);
+        });
+
+        test('then one warning is returned with correct span text', () {
+          expect(packageWarnings,
+              [isASpanWith((s) => s.span?.text, 'span?.text', '1.1.0')]);
+        });
+
+        test('then one warning is returned with warning as severity', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.severity, 'severity', SourceSpanSeverity.warning),
+          ]);
+        });
       });
 
-      test('performServerpodPackagesAndCliVersionCheck() with newer version',
+      group('when calling validateServerpodPackagesVersion with newer version',
           () {
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        late final packageWarnings = validateServerpodPackagesVersion(
           Version(1, 2, 0),
-          explicitVersionPath,
+          explicitVersion,
         );
 
-        expect(packageWarnings.length, equals(1));
-        expect(packageWarnings.first.message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
+        test('then one warning is returned with correct message', () {
+          expect(packageWarnings, [
+            isASpanWith((s) => s.message, 'message',
+                ServerpodPackagesVersionCheckWarnings.incompatibleVersion)
+          ]);
+        });
+
+        test('then one warning is returned with correct span text', () {
+          expect(packageWarnings,
+              [isASpanWith((s) => s.span?.text, 'span?.text', '1.1.0')]);
+        });
+
+        test('then one warning is returned with severity warning', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.severity, 'severity', SourceSpanSeverity.warning),
+          ]);
+        });
       });
     });
 
-    group('With approximate serverpod package version', () {
-      var approximateVersionPath =
-          Directory(p.join(testAssetsPath, 'approximate_1.1.0'));
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
+    group('with approximate serverpod package version', () {
+      late final approximateVersion = PubspecPlus.parse('''
+name: x
+dependencies:
+  serverpod_cloud_lints: 0.9.0 # ignored as this dependency is not relevant for codegen
+  serverpod_client: ^1.1.0
+''');
+
+      group('when calling validateServerpodPackagesVersion matching version',
           () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        late final cliVersion = Version(1, 1, 0);
+        late final packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
-          approximateVersionPath,
+          approximateVersion,
         );
 
-        expect(packageWarnings.length, equals(1));
-        expect(
-            packageWarnings.first.message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
+        test('then one warning is returned with the correct message', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.message,
+                'message',
+                ServerpodPackagesVersionCheckWarnings.approximateVersion(
+                    cliVersion))
+          ]);
+        });
+
+        test('then one warning is returned with correct span text', () {
+          expect(packageWarnings, [
+            isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0'),
+          ]);
+        });
+
+        test('then one warning is returned with severity warning', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.severity, 'severity', SourceSpanSeverity.warning),
+          ]);
+        });
       });
 
-      test('performServerpodPackagesAndCliVersionCheck() with older version',
+      group('when calling validateServerpodPackagesVersion with older version',
           () {
-        var cliVersion = Version(1, 0, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        late final cliVersion = Version(1, 0, 0);
+        late final packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
-          approximateVersionPath,
+          approximateVersion,
         );
-
-        expect(packageWarnings.length, equals(2));
-        expect(packageWarnings[0].message,
-            ServerpodPackagesVersionCheckWarnings.incompatibleVersion);
-        expect(
-            packageWarnings[1].message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
-      });
-
-      test('performServerpodPackagesAndCliVersionCheck() with newer version',
-          () {
-        var cliVersion = Version(1, 2, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          approximateVersionPath,
-        );
-
-        expect(packageWarnings.length, equals(1));
-        expect(
-            packageWarnings.first.message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
-      });
-    });
-
-    group('With multiple pubspec files', () {
-      var testAssets = Directory(testAssetsPath);
-
-      void expectWarningTypes({
-        required Version cliVersion,
-        required List<SourceSpanException> packageWarnings,
-        required int expectedIncompatibleWarnings,
-        required int expectedApproximateVersionWarnings,
-      }) {
-        var actualIncompatibleWarnings = packageWarnings.where(
-          (warning) {
-            return warning.message ==
-                ServerpodPackagesVersionCheckWarnings.incompatibleVersion;
-          },
-        ).length;
-
-        var actualApproximateVersionWarnings = packageWarnings.where((warning) {
-          return warning.message ==
+        test('then two warnings are returned with correct messages', () {
+          expect(packageWarnings, [
+            isASpanWith(
+              (s) => s.message,
+              'message',
+              ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
+            ),
+            isASpanWith(
+              (s) => s.message,
+              'message',
               ServerpodPackagesVersionCheckWarnings.approximateVersion(
                 cliVersion,
-              );
-        }).length;
+              ),
+            )
+          ]);
+        });
 
-        expect(
-          actualIncompatibleWarnings,
-          equals(expectedIncompatibleWarnings),
-        );
-        expect(
-          actualApproximateVersionWarnings,
-          equals(expectedApproximateVersionWarnings),
-        );
-      }
+        test('then the span texts are correct', () {
+          expect(
+              packageWarnings,
+              everyElement(
+                  isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0')));
+        });
 
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          Version(1, 1, 0),
-          testAssets,
-        );
-
-        expect(packageWarnings.length, equals(1));
-        expect(
-            packageWarnings.first.message,
-            ServerpodPackagesVersionCheckWarnings.approximateVersion(
-                cliVersion));
+        test('then the severity is warning', () {
+          expect(
+              packageWarnings,
+              everyElement(isASpanWith(
+                  (s) => s.severity, 'severity', SourceSpanSeverity.warning)));
+        });
       });
 
-      test('performServerpodPackagesAndCliVersionCheck() with older version',
-          () {
-        var cliVersion = Version(1, 0, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          testAssets,
-        );
-
-        expect(packageWarnings.length, equals(3));
-        expectWarningTypes(
-          cliVersion: cliVersion,
-          packageWarnings: packageWarnings,
-          expectedIncompatibleWarnings: 2,
-          expectedApproximateVersionWarnings: 1,
-        );
-      });
-
-      test('performServerpodPackagesAndCliVersionCheck() with newer version',
+      group('when calling validateServerpodPackagesVersion with newer version',
           () {
         var cliVersion = Version(1, 2, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
+        var packageWarnings = validateServerpodPackagesVersion(
           cliVersion,
-          testAssets,
+          approximateVersion,
         );
 
-        expect(packageWarnings.length, equals(2));
-        expectWarningTypes(
-          cliVersion: cliVersion,
-          packageWarnings: packageWarnings,
-          expectedIncompatibleWarnings: 1,
-          expectedApproximateVersionWarnings: 1,
-        );
-      });
-    });
+        test('then one warning is returned with correct message', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.message,
+                'message',
+                ServerpodPackagesVersionCheckWarnings.approximateVersion(
+                    cliVersion))
+          ]);
+        });
 
-    group('With corrupted pubspec', () {
-      var corruptedPubspecPath =
-          Directory(p.join(testAssetsPath, 'corrupted_pubspec'));
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          corruptedPubspecPath,
-        );
+        test('then one warning is returned with correct span text', () {
+          expect(packageWarnings,
+              [isASpanWith((s) => s.span?.text, 'span?.text', '^1.1.0')]);
+        });
 
-        expect(packageWarnings.isEmpty, isTrue);
-      });
-    });
-
-    group('With approximate serverpod package version in vendor folder', () {
-      var vendorPubspecPath = Directory(p.join(testAssetsPath, 'vendor'));
-
-      test('performServerpodPackagesAndCliVersionCheck() with same version',
-          () {
-        var cliVersion = Version(1, 1, 0);
-        var packageWarnings = performServerpodPackagesAndCliVersionCheck(
-          cliVersion,
-          vendorPubspecPath,
-        );
-
-        expect(packageWarnings.isEmpty, isTrue);
+        test('then one warning is returned with severity warning', () {
+          expect(packageWarnings, [
+            isASpanWith(
+                (s) => s.severity, 'severity', SourceSpanSeverity.warning)
+          ]);
+        });
       });
     });
   });

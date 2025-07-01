@@ -1,0 +1,436 @@
+asyncTasks:
+  - insertRowToSimpleDataAfterDelay:
+  - throwExceptionAfterDelay:
+authentication:
+  - removeAllUsers:
+  - countUsers:
+  - createUser:
+  - authenticate:
+  - signOut:
+  - updateScopes:
+basicTypes:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+  - testByteData:
+  - testDuration:
+  - testUuid:
+  - testUri:
+  - testBigInt:
+basicTypesStreaming:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+  - testByteData:
+  - testDuration:
+  - testUuid:
+  - testUri:
+  - testBigInt:
+cloudStorage:
+  - reset:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
+s3CloudStorage:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
+customClassProtocol:
+  - getProtocolField:
+customTypes:
+  - returnCustomClass:
+  - returnCustomClassNullable:
+  - returnCustomClass2:
+  - returnCustomClass2Nullable:
+  - returnExternalCustomClass:
+  - returnExternalCustomClassNullable:
+  - returnFreezedCustomClass:
+  - returnFreezedCustomClassNullable:
+  - returnCustomClassWithoutProtocolSerialization:
+  - returnCustomClassWithProtocolSerialization:
+  - returnCustomClassWithProtocolSerializationMethod:
+basicDatabase:
+  - deleteAllSimpleTestData:
+  - deleteSimpleTestDataLessThan:
+  - findAndDeleteSimpleTestData:
+  - createSimpleTestData:
+  - findSimpleData:
+  - findFirstRowSimpleData:
+  - findByIdSimpleData:
+  - findSimpleDataRowsLessThan:
+  - insertRowSimpleData:
+  - updateRowSimpleData:
+  - deleteRowSimpleData:
+  - deleteWhereSimpleData:
+  - countSimpleData:
+  - insertTypes:
+  - updateTypes:
+  - countTypesRows:
+  - deleteAllInTypes:
+  - getTypes:
+  - getTypesRawQuery:
+  - storeObjectWithEnum:
+  - getObjectWithEnum:
+  - storeObjectWithObject:
+  - getObjectWithObject:
+  - deleteAll:
+  - testByteDataStore:
+transactionsDatabase:
+  - removeRow:
+  - updateInsertDelete:
+deprecation:
+  - setGlobalDouble:
+  - getGlobalDouble:
+diagnosticEventTest:
+  - submitExceptionEvent:
+echoRequest:
+  - echoAuthenticationKey:
+  - echoHttpHeader:
+emailAuthTestMethods:
+  - findVerificationCode:
+  - findResetCode:
+  - tearDown:
+  - createUser:
+loggedIn:
+myLoggedIn:
+  - echo:
+admin:
+myAdmin:
+  - echo:
+myConcreteAdmin:
+  - echo:
+exceptionTest:
+  - throwNormalException:
+  - throwExceptionWithData:
+  - workingWithoutException:
+failedCalls:
+  - failedCall:
+  - failedDatabaseQuery:
+  - failedDatabaseQueryCaughtException:
+  - slowCall:
+  - caughtException:
+fieldScopes:
+  - storeObject:
+  - retrieveObject:
+futureCalls:
+  - makeFutureCall:
+  - makeFutureCallThatThrows:
+listParameters:
+  - returnIntList:
+  - returnIntListList:
+  - returnIntListNullable:
+  - returnIntListNullableList:
+  - returnIntListListNullable:
+  - returnIntListNullableInts:
+  - returnNullableIntListNullableInts:
+  - returnDoubleList:
+  - returnDoubleListNullableDoubles:
+  - returnBoolList:
+  - returnBoolListNullableBools:
+  - returnStringList:
+  - returnStringListNullableStrings:
+  - returnDateTimeList:
+  - returnDateTimeListNullableDateTimes:
+  - returnByteDataList:
+  - returnByteDataListNullableByteDatas:
+  - returnSimpleDataList:
+  - returnSimpleDataListNullableSimpleData:
+  - returnSimpleDataListNullable:
+  - returnNullableSimpleDataListNullableSimpleData:
+  - returnDurationList:
+  - returnDurationListNullableDurations:
+logging:
+  - slowQueryMethod:
+  - queryMethod:
+  - failedQueryMethod:
+  - slowMethod:
+  - failingMethod:
+  - emptyMethod:
+  - log:
+  - logInfo:
+  - logDebugAndInfoAndError:
+  - twoQueries:
+  - streamEmpty:
+  - streamLogging:
+  - streamQueryLogging:
+  - streamException:
+streamLogging:
+streamQueryLogging:
+loggingDisabled:
+  - logInfo:
+mapParameters:
+  - returnIntMap:
+  - returnIntMapNullable:
+  - returnNestedIntMap:
+  - returnIntMapNullableInts:
+  - returnNullableIntMapNullableInts:
+  - returnIntIntMap:
+  - returnEnumIntMap:
+  - returnEnumMap:
+  - returnDoubleMap:
+  - returnDoubleMapNullableDoubles:
+  - returnBoolMap:
+  - returnBoolMapNullableBools:
+  - returnStringMap:
+  - returnStringMapNullableStrings:
+  - returnDateTimeMap:
+  - returnDateTimeMapNullableDateTimes:
+  - returnByteDataMap:
+  - returnByteDataMapNullableByteDatas:
+  - returnSimpleDataMap:
+  - returnSimpleDataMapNullableSimpleData:
+  - returnSimpleDataMapNullable:
+  - returnNullableSimpleDataMapNullableSimpleData:
+  - returnDurationMap:
+  - returnDurationMapNullableDurations:
+methodSignaturePermutations:
+  - echoPositionalArg:
+  - echoNamedArg:
+  - echoNullableNamedArg:
+  - echoOptionalArg:
+  - echoPositionalAndNamedArgs:
+  - echoPositionalAndNullableNamedArgs:
+  - echoPositionalAndOptionalArgs:
+  - echoNamedArgStream:
+  - echoNamedArgStreamAsFuture:
+  - echoPositionalArgStream:
+  - echoPositionalArgStreamAsFuture:
+methodStreaming:
+  - simpleStream:
+  - neverEndingStreamWithDelay:
+  - methodCallEndpoint:
+  - intReturnFromStream:
+  - nullableIntReturnFromStream:
+  - getBroadcastStream:
+  - wasBroadcastStreamCanceled:
+  - wasSessionWillCloseListenerCalled:
+  - intStreamFromValue:
+  - intEchoStream:
+  - dynamicEchoStream:
+  - nullableIntEchoStream:
+  - voidReturnAfterStream:
+  - multipleIntEchoStreams:
+  - directVoidReturnWithStreamInput:
+  - directOneIntReturnWithStreamInput:
+  - simpleInputReturnStream:
+  - simpleStreamWithParameter:
+  - simpleDataStream:
+  - simpleInOutDataStream:
+  - simpleListInOutIntStream:
+  - simpleListInOutDataStream:
+  - simpleListInOutOtherModuleTypeStream:
+  - simpleNullableListInOutNullableDataStream:
+  - simpleListInOutNullableDataStream:
+  - simpleSetInOutIntStream:
+  - simpleSetInOutDataStream:
+  - nestedSetInListInOutDataStream:
+  - simpleEndpoint:
+  - intParameter:
+  - doubleInputValue:
+  - delayedResponse:
+  - delayedStreamResponse:
+  - delayedNeverListenedInputStream:
+  - delayedPausedInputStream:
+  - completeAllDelayedResponses:
+  - inStreamThrowsException:
+  - inStreamThrowsSerializableException:
+  - outStreamThrowsException:
+  - outStreamThrowsSerializableException:
+  - throwsExceptionVoid:
+  - throwsSerializableExceptionVoid:
+  - throwsException:
+  - throwsSerializableException:
+  - throwsExceptionStream:
+  - exceptionThrownBeforeStreamReturn:
+  - exceptionThrownInStreamReturn:
+  - throwsSerializableExceptionStream:
+  - didInputStreamHaveError:
+  - didInputStreamHaveSerializableExceptionError:
+authenticatedMethodStreaming:
+  - simpleStream:
+  - intEchoStream:
+moduleEndpointSubclass:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointAdaptation:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointReduction:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleEndpointExtension:
+  - greet:
+  - ignoredMethod:
+  - echoString:
+  - echoRecord:
+  - echoContainer:
+  - echoModel:
+moduleSerialization:
+  - serializeModuleObject:
+  - modifyModuleObject:
+  - serializeNestedModuleObject:
+namedParameters:
+  - namedParametersMethod:
+  - namedParametersMethodEqualInts:
+optionalParameters:
+  - returnOptionalInt:
+recordParameters:
+  - returnRecordOfInt:
+  - returnNullableRecordOfInt:
+  - returnRecordOfNullableInt:
+  - returnNullableRecordOfNullableInt:
+  - streamNullableRecordOfNullableInt:
+  - returnIntStringRecord:
+  - returnNullableIntStringRecord:
+  - returnIntSimpleDataRecord:
+  - returnNullableIntSimpleDataRecord:
+  - returnNamedIntStringRecord:
+  - returnNamedNullableIntStringRecord:
+  - returnRecordOfNamedIntAndObject:
+  - returnNullableRecordOfNamedIntAndObject:
+  - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnRecordTypedef:
+  - returnNullableRecordTypedef:
+  - returnListOfIntSimpleDataRecord:
+  - returnListOfNullableIntSimpleDataRecord:
+  - returnSetOfIntSimpleDataRecord:
+  - returnSetOfNullableIntSimpleDataRecord:
+  - returnNullableSetOfIntSimpleDataRecord:
+  - returnStringMapOfIntSimpleDataRecord:
+  - returnStringMapOfNullableIntSimpleDataRecord:
+  - returnRecordMapOfIntSimpleDataRecord:
+  - returnStringMapOfListOfRecord:
+  - returnNestedNamedRecord:
+  - returnNestedNullableNamedRecord:
+  - returnNestedPositionalAndNamedRecord:
+  - returnListOfNestedPositionalAndNamedRecord:
+  - streamNullableListOfNullableNestedPositionalAndNamedRecord:
+  - echoModelClassWithRecordField:
+  - echoNullableModelClassWithRecordField:
+  - echoNullableModelClassWithRecordFieldFromExternalModule:
+  - streamOfModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordField:
+  - streamOfNullableModelClassWithRecordFieldFromExternalModule:
+  - recordParametersWithCustomNames:
+redis:
+  - setSimpleData:
+  - setSimpleDataWithLifetime:
+  - getSimpleData:
+  - deleteSimpleData:
+  - resetMessageCentralTest:
+  - listenToChannel:
+  - postToChannel:
+  - countSubscribedChannels:
+serverOnlyScopedFieldModel:
+  - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
+setParameters:
+  - returnIntSet:
+  - returnIntSetSet:
+  - returnIntListSet:
+  - returnIntSetNullable:
+  - returnIntSetNullableSet:
+  - returnIntSetSetNullable:
+  - returnIntSetNullableInts:
+  - returnNullableIntSetNullableInts:
+  - returnDoubleSet:
+  - returnDoubleSetNullableDoubles:
+  - returnBoolSet:
+  - returnBoolSetNullableBools:
+  - returnStringSet:
+  - returnStringSetNullableStrings:
+  - returnDateTimeSet:
+  - returnDateTimeSetNullableDateTimes:
+  - returnByteDataSet:
+  - returnByteDataSetNullableByteDatas:
+  - returnSimpleDataSet:
+  - returnSimpleDataSetNullableSimpleData:
+  - returnDurationSet:
+  - returnDurationSetNullableDurations:
+signInRequired:
+  - testMethod:
+adminScopeRequired:
+  - testMethod:
+simple:
+  - setGlobalInt:
+  - addToGlobalInt:
+  - getGlobalInt:
+  - hello:
+streaming:
+streamingLogging:
+subSubDirTest:
+  - testMethod:
+subDirTest:
+  - testMethod:
+testTools:
+  - returnsSessionId:
+  - returnsSessionEndpointAndMethod:
+  - returnsSessionIdFromStream:
+  - returnsSessionEndpointAndMethodFromStream:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - returnsSimpleDataListFromInputStream:
+  - returnsStreamFromInputStream:
+  - returnsSimpleDataStreamFromInputStream:
+  - postNumberToSharedStream:
+  - postNumberToSharedStreamAndReturnStream:
+  - listenForNumbersOnSharedStream:
+  - createSimpleData:
+  - getAllSimpleData:
+  - createSimpleDatasInsideTransactions:
+  - createSimpleDataAndThrowInsideTransaction:
+  - createSimpleDatasInParallelTransactionCalls:
+  - echoSimpleData:
+  - echoSimpleDatas:
+  - echoTypes:
+  - echoTypesList:
+  - echoModuleDatatype:
+  - streamModuleDatatype:
+  - echoModuleClass:
+  - streamModuleClass:
+  - echoRecord:
+  - echoRecords:
+  - recordEchoStream:
+  - listOfRecordEchoStream:
+  - nullableRecordEchoStream:
+  - nullableListOfRecordEchoStream:
+  - modelWithRecordsEchoStream:
+  - logMessageWithSession:
+  - addWillCloseListenerToSessionAndThrow:
+  - addWillCloseListenerToSessionIntStreamMethodAndThrow:
+  - putInLocalCache:
+  - getFromLocalCache:
+  - putInLocalPrioCache:
+  - getFromLocalPrioCache:
+  - putInQueryCache:
+  - getFromQueryCache:
+  - putInLocalCacheWithGroup:
+authenticatedTestTools:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - intEchoStream:
+upload:
+  - uploadByteData:
+myFeature:
+  - myFeatureMethod:
+  - myFeatureModel:

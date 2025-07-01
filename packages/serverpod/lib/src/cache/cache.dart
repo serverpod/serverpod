@@ -1,3 +1,4 @@
+import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -13,19 +14,24 @@ abstract class Cache {
   /// Creates a new [Cache] of the specified size.
   Cache(this.maxLocalEntries, this.serializationManager);
 
-  /// Stores a copy of a [SerializableEntity] in the cache using the specified
+  /// Stores a copy of a [SerializableModel] in the cache using the specified
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all models of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
-  Future<void> put(String key, SerializableEntity object,
+  Future<void> put(String key, SerializableModel object,
       {Duration? lifetime, String? group});
 
   /// Check if a valid cache for the specified key exists.
   Future<bool> containsKey(String key);
 
-  /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
+  /// Retrieves a cached [SerializableModel] using the specified [key]. If no
   /// matching object can be found, null is returned.
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]);
+  /// If no matching object can be found, the [CacheMissHandler] is used to
+  /// write a new object to the cache before it is returned.
+  Future<T?> get<T extends SerializableModel>(
+    String key, [
+    CacheMissHandler<T>? cacheMissHandler,
+  ]);
 
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);

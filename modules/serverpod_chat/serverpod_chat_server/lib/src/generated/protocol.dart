@@ -1,17 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
-library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
-
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'chat_join_channel.dart' as _i4;
 import 'chat_join_channel_failed.dart' as _i5;
 import 'chat_joined_channel.dart' as _i6;
@@ -23,7 +23,6 @@ import 'chat_message_chunk.dart' as _i11;
 import 'chat_message_post.dart' as _i12;
 import 'chat_read_message.dart' as _i13;
 import 'chat_request_message_chunk.dart' as _i14;
-import 'protocol.dart' as _i15;
 export 'chat_join_channel.dart';
 export 'chat_join_channel_failed.dart';
 export 'chat_joined_channel.dart';
@@ -41,8 +40,6 @@ class Protocol extends _i1.SerializationManagerServer {
 
   factory Protocol() => _instance;
 
-  static final Map<Type, _i1.constructor> customConstructors = {};
-
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
@@ -54,7 +51,7 @@ class Protocol extends _i1.SerializationManagerServer {
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'nextval(\'serverpod_chat_message_id_seq\'::regclass)',
@@ -79,7 +76,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'sender',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
@@ -135,7 +132,7 @@ class Protocol extends _i1.SerializationManagerServer {
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault:
@@ -149,13 +146,13 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'userId',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
           name: 'lastReadMessageId',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
@@ -204,125 +201,108 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (customConstructors.containsKey(t)) {
-      return customConstructors[t]!(data, this) as T;
-    }
     if (t == _i4.ChatJoinChannel) {
-      return _i4.ChatJoinChannel.fromJson(data, this) as T;
+      return _i4.ChatJoinChannel.fromJson(data) as T;
     }
     if (t == _i5.ChatJoinChannelFailed) {
-      return _i5.ChatJoinChannelFailed.fromJson(data, this) as T;
+      return _i5.ChatJoinChannelFailed.fromJson(data) as T;
     }
     if (t == _i6.ChatJoinedChannel) {
-      return _i6.ChatJoinedChannel.fromJson(data, this) as T;
+      return _i6.ChatJoinedChannel.fromJson(data) as T;
     }
     if (t == _i7.ChatLeaveChannel) {
-      return _i7.ChatLeaveChannel.fromJson(data, this) as T;
+      return _i7.ChatLeaveChannel.fromJson(data) as T;
     }
     if (t == _i8.ChatMessage) {
-      return _i8.ChatMessage.fromJson(data, this) as T;
+      return _i8.ChatMessage.fromJson(data) as T;
     }
     if (t == _i9.ChatMessageAttachment) {
-      return _i9.ChatMessageAttachment.fromJson(data, this) as T;
+      return _i9.ChatMessageAttachment.fromJson(data) as T;
     }
     if (t == _i10.ChatMessageAttachmentUploadDescription) {
-      return _i10.ChatMessageAttachmentUploadDescription.fromJson(data, this)
-          as T;
+      return _i10.ChatMessageAttachmentUploadDescription.fromJson(data) as T;
     }
     if (t == _i11.ChatMessageChunk) {
-      return _i11.ChatMessageChunk.fromJson(data, this) as T;
+      return _i11.ChatMessageChunk.fromJson(data) as T;
     }
     if (t == _i12.ChatMessagePost) {
-      return _i12.ChatMessagePost.fromJson(data, this) as T;
+      return _i12.ChatMessagePost.fromJson(data) as T;
     }
     if (t == _i13.ChatReadMessage) {
-      return _i13.ChatReadMessage.fromJson(data, this) as T;
+      return _i13.ChatReadMessage.fromJson(data) as T;
     }
     if (t == _i14.ChatRequestMessageChunk) {
-      return _i14.ChatRequestMessageChunk.fromJson(data, this) as T;
+      return _i14.ChatRequestMessageChunk.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.ChatJoinChannel?>()) {
-      return (data != null ? _i4.ChatJoinChannel.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i4.ChatJoinChannel.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i5.ChatJoinChannelFailed?>()) {
-      return (data != null
-          ? _i5.ChatJoinChannelFailed.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i5.ChatJoinChannelFailed.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i6.ChatJoinedChannel?>()) {
-      return (data != null ? _i6.ChatJoinedChannel.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i6.ChatJoinedChannel.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i7.ChatLeaveChannel?>()) {
-      return (data != null ? _i7.ChatLeaveChannel.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i7.ChatLeaveChannel.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i8.ChatMessage?>()) {
-      return (data != null ? _i8.ChatMessage.fromJson(data, this) : null) as T;
+      return (data != null ? _i8.ChatMessage.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i9.ChatMessageAttachment?>()) {
-      return (data != null
-          ? _i9.ChatMessageAttachment.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i9.ChatMessageAttachment.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i10.ChatMessageAttachmentUploadDescription?>()) {
       return (data != null
-          ? _i10.ChatMessageAttachmentUploadDescription.fromJson(data, this)
+          ? _i10.ChatMessageAttachmentUploadDescription.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i11.ChatMessageChunk?>()) {
-      return (data != null ? _i11.ChatMessageChunk.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i11.ChatMessageChunk.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i12.ChatMessagePost?>()) {
-      return (data != null ? _i12.ChatMessagePost.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i12.ChatMessagePost.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i13.ChatReadMessage?>()) {
-      return (data != null ? _i13.ChatReadMessage.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i13.ChatReadMessage.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i14.ChatRequestMessageChunk?>()) {
+      return (data != null ? _i14.ChatRequestMessageChunk.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
-          ? _i14.ChatRequestMessageChunk.fromJson(data, this)
+          ? (data as List)
+              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
+              .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i15.ChatMessageAttachment>?>()) {
+    if (t == List<_i8.ChatMessage>) {
+      return (data as List).map((e) => deserialize<_i8.ChatMessage>(e)).toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i15.ChatMessageAttachment>(e))
+              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
               .toList()
-          : null) as dynamic;
-    }
-    if (t == List<_i15.ChatMessage>) {
-      return (data as List)
-          .map((e) => deserialize<_i15.ChatMessage>(e))
-          .toList() as dynamic;
-    }
-    if (t == _i1.getType<List<_i15.ChatMessageAttachment>?>()) {
-      return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i15.ChatMessageAttachment>(e))
-              .toList()
-          : null) as dynamic;
+          : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    String? className;
-    className = _i3.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i4.ChatJoinChannel) {
       return 'ChatJoinChannel';
     }
@@ -356,48 +336,64 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i14.ChatRequestMessageChunk) {
       return 'ChatRequestMessageChunk';
     }
-    return super.getClassNameForObject(data);
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
-      return _i3.Protocol().deserializeByClassName(data);
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
     }
-    if (data['className'] == 'ChatJoinChannel') {
+    if (dataClassName == 'ChatJoinChannel') {
       return deserialize<_i4.ChatJoinChannel>(data['data']);
     }
-    if (data['className'] == 'ChatJoinChannelFailed') {
+    if (dataClassName == 'ChatJoinChannelFailed') {
       return deserialize<_i5.ChatJoinChannelFailed>(data['data']);
     }
-    if (data['className'] == 'ChatJoinedChannel') {
+    if (dataClassName == 'ChatJoinedChannel') {
       return deserialize<_i6.ChatJoinedChannel>(data['data']);
     }
-    if (data['className'] == 'ChatLeaveChannel') {
+    if (dataClassName == 'ChatLeaveChannel') {
       return deserialize<_i7.ChatLeaveChannel>(data['data']);
     }
-    if (data['className'] == 'ChatMessage') {
+    if (dataClassName == 'ChatMessage') {
       return deserialize<_i8.ChatMessage>(data['data']);
     }
-    if (data['className'] == 'ChatMessageAttachment') {
+    if (dataClassName == 'ChatMessageAttachment') {
       return deserialize<_i9.ChatMessageAttachment>(data['data']);
     }
-    if (data['className'] == 'ChatMessageAttachmentUploadDescription') {
+    if (dataClassName == 'ChatMessageAttachmentUploadDescription') {
       return deserialize<_i10.ChatMessageAttachmentUploadDescription>(
           data['data']);
     }
-    if (data['className'] == 'ChatMessageChunk') {
+    if (dataClassName == 'ChatMessageChunk') {
       return deserialize<_i11.ChatMessageChunk>(data['data']);
     }
-    if (data['className'] == 'ChatMessagePost') {
+    if (dataClassName == 'ChatMessagePost') {
       return deserialize<_i12.ChatMessagePost>(data['data']);
     }
-    if (data['className'] == 'ChatReadMessage') {
+    if (dataClassName == 'ChatReadMessage') {
       return deserialize<_i13.ChatReadMessage>(data['data']);
     }
-    if (data['className'] == 'ChatRequestMessageChunk') {
+    if (dataClassName == 'ChatRequestMessageChunk') {
       return deserialize<_i14.ChatRequestMessageChunk>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
+      return _i3.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

@@ -1,8 +1,11 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/endpoint_parameters_extension.dart';
+
 import 'package:serverpod_cli/src/generator/types.dart';
 
 abstract class EndpointParameterAnalyzer {
@@ -15,7 +18,8 @@ abstract class EndpointParameterAnalyzer {
     var positionalParameters = <ParameterDefinition>[];
     var namedParameters = <ParameterDefinition>[];
 
-    for (var parameter in parameters) {
+    var filteredParameters = parameters.withoutSessionParameter;
+    for (var parameter in filteredParameters) {
       var definition = ParameterDefinition(
         name: parameter.name,
         required: _isRequired(parameter),
@@ -42,18 +46,76 @@ abstract class EndpointParameterAnalyzer {
   static List<SourceSpanSeverityException> validate(
     List<ParameterElement> parameters,
   ) {
-    List<SourceSpanSeverityException> errors = [];
-    for (var parameter in parameters) {
+    List<SourceSpanSeverityException> exceptions = [];
+
+    if (!parameters.isFirstRequiredParameterSession) {
+      exceptions.add(
+        SourceSpanSeverityException(
+          'The first parameter of an endpoint method must be a required positional parameter of type "Session".',
+          parameters.first.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+      return exceptions;
+    }
+
+    if (parameters.isSessionParameterNullable) {
+      exceptions.add(
+        SourceSpanSeverityException(
+          'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.',
+          parameters.first.span,
+          severity: SourceSpanSeverity.hint,
+        ),
+      );
+    }
+
+    exceptions.addAll(parameters.map((parameter) {
+      var type = parameter.type;
+      if (type.isDartAsyncFuture) {
+        return SourceSpanSeverityException(
+          'The type "Future" is not a supported endpoint parameter type.',
+          parameter.span,
+        );
+      }
+
+      if (type.isDartAsyncStream && type is ParameterizedType) {
+        if (type.nullabilitySuffix != NullabilitySuffix.none) {
+          return SourceSpanSeverityException(
+            'Nullable parameters of the type "Stream" are not supported.',
+            parameter.span,
+          );
+        }
+
+        var typeArguments = type.typeArguments;
+        if (typeArguments.length != 1) {
+          // Streams only allow a single generic so this case is only here for safety.
+          return SourceSpanSeverityException(
+            'The type "Stream" must have exactly one type argument. E.g. Stream<String>.',
+            parameter.span,
+          );
+        }
+        var innerType = typeArguments[0];
+        if (innerType is VoidType) {
+          return SourceSpanSeverityException(
+            'The type "Stream" does not support void generic type.',
+            parameter.span,
+          );
+        }
+      }
+
       try {
         TypeDefinition.fromDartType(parameter.type);
       } on FromDartTypeClassNameException catch (e) {
-        errors.add(SourceSpanSeverityException(
+        return SourceSpanSeverityException(
           'The type "${e.type}" is not a supported endpoint parameter type.',
           parameter.span,
-        ));
+        );
       }
-    }
-    return errors;
+
+      return null;
+    }).whereType<SourceSpanSeverityException>());
+
+    return exceptions;
   }
 
   static bool _isRequired(ParameterElement parameter) {

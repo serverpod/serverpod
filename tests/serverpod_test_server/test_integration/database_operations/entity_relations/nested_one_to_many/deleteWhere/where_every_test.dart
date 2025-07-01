@@ -47,15 +47,17 @@ void main() async {
       // Attach Anna to Sharks
       await Team.db.attachRow.players(session, teams[2], players[3]);
 
-      var deletedArenaIds = await Arena.db.deleteWhere(
+      var deletedArenas = await Arena.db.deleteWhere(
         session,
         // Delete arenas where all players in the team have a name starting with 'a' or 'A'.
         where: (a) => a.team.players.every((p) => p.name.ilike('a%')),
       );
 
-      expect(deletedArenaIds, [
+      expect(deletedArenas, hasLength(1));
+      expect(
+        deletedArenas.firstOrNull?.id,
         arenas[2].id, // Shark Tank
-      ]);
+      );
     });
   });
 }

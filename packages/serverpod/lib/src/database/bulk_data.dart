@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
@@ -16,7 +15,7 @@ class DatabaseBulkData {
   static Future<BulkData> exportTableData({
     required Database database,
     required String table,
-    int lastId = 0,
+    Object? lastId,
     int limit = 100,
     Filter? filter,
   }) async {
@@ -34,10 +33,12 @@ class DatabaseBulkData {
       );
     }
 
-    if (!liveTableDefinition.like(targetTableDefinition)) {
+    var mismatches = liveTableDefinition.like(targetTableDefinition);
+    if (mismatches.isNotEmpty) {
       throw BulkDataException(
-        message: 'The "$table" table definition does not match the live '
-            'database.',
+        message:
+            'The "$table" table definition does not match the live database:\n'
+            '- ${mismatches.join('\n- ')}',
       );
     }
 
@@ -64,9 +65,11 @@ class DatabaseBulkData {
       );
     }
 
+    String strLastId = DatabasePoolManager.encoder.convert(lastId);
+
     List<List<dynamic>> data;
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
-        'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
+        'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
     } catch (e) {
@@ -116,7 +119,7 @@ class DatabaseBulkData {
     var result =
         await database.transaction<BulkQueryResult>((transaction) async {
       var startTime = DateTime.now();
-      PostgreSQLResult? result;
+      DatabaseResult? result;
       int numAffectedRows = 0;
 
       for (var query in queries) {
@@ -128,10 +131,9 @@ class DatabaseBulkData {
       var duration = DateTime.now().difference(startTime);
 
       return BulkQueryResult(
-        headers: result.columnDescriptions
+        headers: result.schema.columns
             .map((e) => BulkQueryColumnDescription(
-                  name: e.columnName,
-                  table: e.tableName,
+                  name: e.columnName ?? '',
                 ))
             .toList(),
         data: SerializationManager.encode(result),

@@ -1,19 +1,20 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_client/module.dart' as _i2;
-import 'protocol.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
+import 'chat_message_attachment.dart' as _i3;
 
 /// A chat message.
-abstract class ChatMessage extends _i1.SerializableEntity {
+abstract class ChatMessage implements _i1.SerializableModel {
   ChatMessage._({
     this.id,
     required this.channel,
@@ -40,30 +41,24 @@ abstract class ChatMessage extends _i1.SerializableEntity {
     List<_i3.ChatMessageAttachment>? attachments,
   }) = _ChatMessageImpl;
 
-  factory ChatMessage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatMessage.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      sender:
-          serializationManager.deserialize<int>(jsonSerialization['sender']),
-      senderInfo: serializationManager
-          .deserialize<_i2.UserInfoPublic?>(jsonSerialization['senderInfo']),
-      removed:
-          serializationManager.deserialize<bool>(jsonSerialization['removed']),
-      clientMessageId: serializationManager
-          .deserialize<int?>(jsonSerialization['clientMessageId']),
-      sent: serializationManager.deserialize<bool?>(jsonSerialization['sent']),
-      attachments:
-          serializationManager.deserialize<List<_i3.ChatMessageAttachment>?>(
-              jsonSerialization['attachments']),
+      id: jsonSerialization['id'] as int?,
+      channel: jsonSerialization['channel'] as String,
+      message: jsonSerialization['message'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      sender: jsonSerialization['sender'] as int,
+      senderInfo: jsonSerialization['senderInfo'] == null
+          ? null
+          : _i2.UserInfoPublic.fromJson(
+              (jsonSerialization['senderInfo'] as Map<String, dynamic>)),
+      removed: jsonSerialization['removed'] as bool,
+      clientMessageId: jsonSerialization['clientMessageId'] as int?,
+      sent: jsonSerialization['sent'] as bool?,
+      attachments: (jsonSerialization['attachments'] as List?)
+          ?.map((e) =>
+              _i3.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
@@ -99,6 +94,9 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   /// List of attachments associated with this message.
   List<_i3.ChatMessageAttachment>? attachments;
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessage copyWith({
     int? id,
     String? channel,
@@ -114,17 +112,23 @@ abstract class ChatMessage extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toJson(),
       'sender': sender,
-      'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
-      'clientMessageId': clientMessageId,
-      'sent': sent,
-      'attachments': attachments,
+      if (clientMessageId != null) 'clientMessageId': clientMessageId,
+      if (sent != null) 'sent': sent,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -155,6 +159,9 @@ class _ChatMessageImpl extends ChatMessage {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessage]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessage copyWith({
     Object? id = _Undefined,
@@ -183,7 +190,7 @@ class _ChatMessageImpl extends ChatMessage {
       sent: sent is bool? ? sent : this.sent,
       attachments: attachments is List<_i3.ChatMessageAttachment>?
           ? attachments
-          : this.attachments?.clone(),
+          : this.attachments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

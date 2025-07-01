@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'test_enum.dart' as _i2;
 
-abstract class ObjectWithEnum extends _i1.SerializableEntity {
+abstract class ObjectWithEnum implements _i1.SerializableModel {
   ObjectWithEnum._({
     this.id,
     required this.testEnum,
@@ -30,22 +31,24 @@ abstract class ObjectWithEnum extends _i1.SerializableEntity {
     required List<List<_i2.TestEnum>> enumListList,
   }) = _ObjectWithEnumImpl;
 
-  factory ObjectWithEnum.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithEnum.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithEnum(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      testEnum: serializationManager
-          .deserialize<_i2.TestEnum>(jsonSerialization['testEnum']),
-      nullableEnum: serializationManager
-          .deserialize<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
-      enumList: serializationManager
-          .deserialize<List<_i2.TestEnum>>(jsonSerialization['enumList']),
-      nullableEnumList: serializationManager.deserialize<List<_i2.TestEnum?>>(
-          jsonSerialization['nullableEnumList']),
-      enumListList: serializationManager.deserialize<List<List<_i2.TestEnum>>>(
-          jsonSerialization['enumListList']),
+      id: jsonSerialization['id'] as int?,
+      testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
+      nullableEnum: jsonSerialization['nullableEnum'] == null
+          ? null
+          : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
+      enumList: (jsonSerialization['enumList'] as List)
+          .map((e) => _i2.TestEnum.fromJson((e as int)))
+          .toList(),
+      nullableEnumList: (jsonSerialization['nullableEnumList'] as List)
+          .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
+          .toList(),
+      enumListList: (jsonSerialization['enumListList'] as List)
+          .map((e) => (e as List)
+              .map((e) => _i2.TestEnum.fromJson((e as int)))
+              .toList())
+          .toList(),
     );
   }
 
@@ -64,6 +67,9 @@ abstract class ObjectWithEnum extends _i1.SerializableEntity {
 
   List<List<_i2.TestEnum>> enumListList;
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
@@ -75,13 +81,20 @@ abstract class ObjectWithEnum extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
+      if (id != null) 'id': id,
+      'testEnum': testEnum.toJson(),
+      if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
+      'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
+      'nullableEnumList':
+          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'enumListList': enumListList.toJson(
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -104,6 +117,9 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
           enumListList: enumListList,
         );
 
+  /// Returns a shallow copy of this [ObjectWithEnum]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,
@@ -118,9 +134,11 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
       testEnum: testEnum ?? this.testEnum,
       nullableEnum:
           nullableEnum is _i2.TestEnum? ? nullableEnum : this.nullableEnum,
-      enumList: enumList ?? this.enumList.clone(),
-      nullableEnumList: nullableEnumList ?? this.nullableEnumList.clone(),
-      enumListList: enumListList ?? this.enumListList.clone(),
+      enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
+      nullableEnumList:
+          nullableEnumList ?? this.nullableEnumList.map((e0) => e0).toList(),
+      enumListList: enumListList ??
+          this.enumListList.map((e0) => e0.map((e1) => e1).toList()).toList(),
     );
   }
 }

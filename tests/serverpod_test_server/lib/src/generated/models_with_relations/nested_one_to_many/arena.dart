@@ -1,22 +1,25 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Arena extends _i1.TableRow {
+abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Arena._({
-    int? id,
+    this.id,
     required this.name,
     this.team,
-  }) : super(id);
+  });
 
   factory Arena({
     int? id,
@@ -24,15 +27,14 @@ abstract class Arena extends _i1.TableRow {
     _i2.Team? team,
   }) = _ArenaImpl;
 
-  factory Arena.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
     return Arena(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      team: serializationManager
-          .deserialize<_i2.Team?>(jsonSerialization['team']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      team: jsonSerialization['team'] == null
+          ? null
+          : _i2.Team.fromJson(
+              (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
 
@@ -40,13 +42,19 @@ abstract class Arena extends _i1.TableRow {
 
   static const db = ArenaRepository._();
 
+  @override
+  int? id;
+
   String name;
 
   _i2.Team? team;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Arena copyWith({
     int? id,
     String? name,
@@ -55,170 +63,19 @@ abstract class Arena extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
+      if (team != null) 'team': team?.toJsonForProtocol(),
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'name': name,
-      'team': team,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Arena>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    ArenaInclude? include,
-  }) async {
-    return session.db.find<Arena>(
-      where: where != null ? where(Arena.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Arena?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    ArenaInclude? include,
-  }) async {
-    return session.db.findSingleRow<Arena>(
-      where: where != null ? where(Arena.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Arena?> findById(
-    _i1.Session session,
-    int id, {
-    ArenaInclude? include,
-  }) async {
-    return session.db.findById<Arena>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ArenaTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Arena>(
-      where: where(Arena.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Arena row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Arena row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Arena row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Arena>(
-      where: where != null ? where(Arena.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ArenaInclude include({_i2.TeamInclude? team}) {
@@ -244,6 +101,11 @@ abstract class Arena extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -259,6 +121,9 @@ class _ArenaImpl extends Arena {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Arena]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,
@@ -273,7 +138,7 @@ class _ArenaImpl extends Arena {
   }
 }
 
-class ArenaTable extends _i1.Table {
+class ArenaTable extends _i1.Table<int?> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
     name = _i1.ColumnString(
       'name',
@@ -313,9 +178,6 @@ class ArenaTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use ArenaTable.t instead.')
-ArenaTable tArena = ArenaTable();
-
 class ArenaInclude extends _i1.IncludeObject {
   ArenaInclude._({_i2.TeamInclude? team}) {
     _team = team;
@@ -327,7 +189,7 @@ class ArenaInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int?> get table => Arena.t;
 }
 
 class ArenaIncludeList extends _i1.IncludeList {
@@ -347,7 +209,7 @@ class ArenaIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Arena.t;
+  _i1.Table<int?> get table => Arena.t;
 }
 
 class ArenaRepository {
@@ -357,6 +219,28 @@ class ArenaRepository {
 
   final detachRow = const ArenaDetachRowRepository._();
 
+  /// Returns a list of [Arena]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Arena>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -368,7 +252,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.dbNext.find<Arena>(
+    return session.db.find<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -380,6 +264,23 @@ class ArenaRepository {
     );
   }
 
+  /// Returns the first matching [Arena] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Arena?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
@@ -390,7 +291,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Arena>(
+    return session.db.findFirstRow<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
@@ -401,107 +302,132 @@ class ArenaRepository {
     );
   }
 
+  /// Finds a single [Arena] by its [id] or null if no such row exists.
   Future<Arena?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.dbNext.findById<Arena>(
+    return session.db.findById<Arena>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
+  /// Inserts all [Arena]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Arena]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Arena>> insert(
     _i1.Session session,
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Arena>(
+    return session.db.insert<Arena>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [Arena] and returns the inserted row.
+  ///
+  /// The returned [Arena] will have its `id` field set.
   Future<Arena> insertRow(
     _i1.Session session,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Arena>(
+    return session.db.insertRow<Arena>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [Arena]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Arena>> update(
     _i1.Session session,
     List<Arena> rows, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Arena>(
+    return session.db.update<Arena>(
       rows,
       columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [Arena]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Arena> updateRow(
     _i1.Session session,
     Arena row, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Arena>(
+    return session.db.updateRow<Arena>(
       row,
       columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [Arena]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Arena>> delete(
     _i1.Session session,
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Arena>(
+    return session.db.delete<Arena>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [Arena].
+  Future<Arena> deleteRow(
     _i1.Session session,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Arena>(
+    return session.db.deleteRow<Arena>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<Arena>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Arena>(
+    return session.db.deleteWhere<Arena>(
       where: where(Arena.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Arena>(
+    return session.db.count<Arena>(
       where: where?.call(Arena.t),
       limit: limit,
       transaction: transaction,
@@ -512,11 +438,14 @@ class ArenaRepository {
 class ArenaAttachRowRepository {
   const ArenaAttachRowRepository._();
 
+  /// Creates a relation between the given [Arena] and [Team]
+  /// by setting the [Arena]'s foreign key `id` to refer to the [Team].
   Future<void> team(
     _i1.Session session,
     Arena arena,
-    _i2.Team team,
-  ) async {
+    _i2.Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
     }
@@ -525,9 +454,10 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.dbNext.updateRow<_i2.Team>(
+    await session.db.updateRow<_i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction,
     );
   }
 }
@@ -535,10 +465,16 @@ class ArenaAttachRowRepository {
 class ArenaDetachRowRepository {
   const ArenaDetachRowRepository._();
 
+  /// Detaches the relation between this [Arena] and the [Team] set in `team`
+  /// by setting the [Arena]'s foreign key `id` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> team(
     _i1.Session session,
-    Arena arena,
-  ) async {
+    Arena arena, {
+    _i1.Transaction? transaction,
+  }) async {
     var $team = arena.team;
 
     if ($team == null) {
@@ -552,9 +488,10 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.dbNext.updateRow<_i2.Team>(
+    await session.db.updateRow<_i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction,
     );
   }
 }

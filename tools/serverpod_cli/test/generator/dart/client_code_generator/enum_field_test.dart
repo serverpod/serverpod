@@ -1,11 +1,11 @@
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/enum_definition_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -20,6 +20,7 @@ void main() {
     'protocol',
     'example.dart',
   );
+
   group('Given enum named Example serialized by index when generating code',
       () {
     var models = [
@@ -39,9 +40,9 @@ void main() {
       expect(codeMap[expectedFileName], contains('enum Example'));
     });
 
-    test('then generated enum inherits from SerializableEntity', () {
+    test('then generated enum implements SerializableModel', () {
       expect(codeMap[expectedFileName],
-          contains('enum Example with _i1.SerializableEntity {'));
+          contains('enum Example implements _i1.SerializableModel {'));
     });
 
     test('then generated enum imports client version of serverpod client', () {
@@ -53,7 +54,7 @@ void main() {
 
     test('then generated enum has static fromJson method', () {
       expect(codeMap[expectedFileName],
-          contains('static Example? fromJson(int index)'));
+          contains('static Example fromJson(int index)'));
     });
 
     test('then generated enum has toJson method', () {
@@ -77,7 +78,7 @@ void main() {
     );
     test('then generated enum has static fromJson method', () {
       expect(codeMap[expectedFileName],
-          contains('static Example? fromJson(String name)'));
+          contains('static Example fromJson(String name)'));
     });
 
     test('then generated enum has toJson method', () {
@@ -87,7 +88,39 @@ void main() {
     test('then generated enum has toString method', () {
       expect(
         codeMap[expectedFileName],
-        contains('String toString() => toJson();'),
+        contains('String toString() => name;'),
+      );
+    });
+  });
+
+  group('Given an enum with a value named "name" when generating code', () {
+    var models = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withValues([
+            ProtocolEnumValueDefinition('name', []),
+          ])
+          .withSerialized(EnumSerialization.byName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    test('then generated enum uses "this.name" in the toJson method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toJson() => this.name;'),
+      );
+    });
+
+    test('then generated enum uses "this.name" in the toString method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toString() => this.name;'),
       );
     });
   });

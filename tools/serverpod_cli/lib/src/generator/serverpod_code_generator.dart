@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class ServerpodCodeGenerator {
   static final List<CodeGenerator> _generators = [
@@ -26,9 +25,7 @@ abstract class ServerpodCodeGenerator {
   static Future<List<String>> generateSerializableModels({
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
-    required CodeGenerationCollector collector,
   }) async {
-    collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
         ...generator.generateSerializableModelsCode(
@@ -42,8 +39,6 @@ abstract class ServerpodCodeGenerator {
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
-
-        collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
         log.error('Failed to generate ${file.key}!');
         printInternalError(e, stackTrace);
@@ -60,9 +55,7 @@ abstract class ServerpodCodeGenerator {
   static Future<List<String>> generateProtocolDefinition({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
-    required CodeGenerationCollector collector,
   }) async {
-    collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
         ...generator.generateProtocolCode(
@@ -76,8 +69,6 @@ abstract class ServerpodCodeGenerator {
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
-
-        collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
         log.error('Failed to generate ${file.key}');
         printInternalError(e, stackTrace);
@@ -133,16 +124,16 @@ Future<void> _removeOldFilesInPath(
   log.debug('Remove old files from $directory');
   var fileList = await directory.list(recursive: true).toList();
 
-  for (var model in fileList) {
+  for (var file in fileList) {
     // Only check Dart files.
-    if (model is! File ||
-        !fileExtensions.any((extension) => model.path.endsWith(extension))) {
+    if (file is! File ||
+        !fileExtensions.any((extension) => file.path.endsWith(extension))) {
       continue;
     }
 
-    if (!keepPaths.contains(model.path)) {
-      log.debug('Remove: $model');
-      await model.delete();
+    if (!keepPaths.contains(file.path)) {
+      log.debug('Remove: $file');
+      await file.delete();
     }
   }
 }

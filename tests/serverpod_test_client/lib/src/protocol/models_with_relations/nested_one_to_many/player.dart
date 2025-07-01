@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Player extends _i1.SerializableEntity {
+abstract class Player implements _i1.SerializableModel {
   Player._({
     this.id,
     required this.name,
@@ -26,17 +27,15 @@ abstract class Player extends _i1.SerializableEntity {
     _i2.Team? team,
   }) = _PlayerImpl;
 
-  factory Player.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
     return Player(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      teamId:
-          serializationManager.deserialize<int?>(jsonSerialization['teamId']),
-      team: serializationManager
-          .deserialize<_i2.Team?>(jsonSerialization['team']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      teamId: jsonSerialization['teamId'] as int?,
+      team: jsonSerialization['team'] == null
+          ? null
+          : _i2.Team.fromJson(
+              (jsonSerialization['team'] as Map<String, dynamic>)),
     );
   }
 
@@ -51,6 +50,9 @@ abstract class Player extends _i1.SerializableEntity {
 
   _i2.Team? team;
 
+  /// Returns a shallow copy of this [Player]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Player copyWith({
     int? id,
     String? name,
@@ -60,11 +62,16 @@ abstract class Player extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'teamId': teamId,
-      'team': team,
+      if (teamId != null) 'teamId': teamId,
+      if (team != null) 'team': team?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -83,6 +90,9 @@ class _PlayerImpl extends Player {
           team: team,
         );
 
+  /// Returns a shallow copy of this [Player]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Player copyWith({
     Object? id = _Undefined,

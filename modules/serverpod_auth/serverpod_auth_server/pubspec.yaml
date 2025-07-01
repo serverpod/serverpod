@@ -1,29 +1,45 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 1.2.0-rc.1
+version: 2.9.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod: #1.2.0-rc.1
-    path: ../../../packages/serverpod
-  serverpod_serialization: #1.2.0-rc.1
-    path: ../../../packages/serverpod_serialization
+  serverpod: 2.9.0
+  serverpod_serialization: 2.9.0
+  serverpod_shared: 2.9.0
   crypto: ^3.0.2
-  email_validator: ^2.1.17
-  firebase_admin: ^0.2.0
-  googleapis: ^11.0.0
-  googleapis_auth: ^1.4.0
-  http: ">=0.13.0 <2.0.0"
+  email_validator: '>=2.1.17 <4.0.0'
+  openid_client: ^0.4.8
+  meta: ^1.11.0
+  googleapis: '>=11.0.0 <15.0.0'
+  googleapis_auth: '>=1.6.0 <3.0.0'
+  http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   jose: ^0.3.3
+  pointycastle: ^3.7.4
 
 dev_dependencies:
-  serverpod_lints: #1.2.0-rc.1
+  serverpod_lints: 2.9.0
+  test: ^1.24.2
+  serverpod_test: 2.9.0
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_lints:
     path: ../../../packages/serverpod_lints
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
+
+false_secrets:
+  - test/firebase/firebase_auth_mock.dart

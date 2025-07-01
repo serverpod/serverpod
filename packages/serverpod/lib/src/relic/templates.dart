@@ -11,9 +11,10 @@ class Templates {
   final Map<String, Template> _templates = {};
 
   /// Loads all templates from web/templates
-  Future<void> loadAll() async {
-    var dir = Directory('web/templates');
-    for (var entity in await dir.list().toList()) {
+  Future<void> loadAll(Directory templateDirectory) async {
+    if (!await templateDirectory.exists()) return;
+
+    for (var entity in await templateDirectory.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var name = basenameWithoutExtension(file.path);
@@ -31,4 +32,7 @@ class Templates {
   Template? operator [](String name) {
     return _templates[name];
   }
+
+  /// Returns true if no templates are loaded.
+  bool get isEmpty => _templates.isEmpty;
 }

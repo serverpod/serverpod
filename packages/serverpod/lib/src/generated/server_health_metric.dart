@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -13,16 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric extends _i1.TableRow {
+abstract class ServerHealthMetric
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ServerHealthMetric._({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
     required this.granularity,
-  }) : super(id);
+  });
 
   factory ServerHealthMetric({
     int? id,
@@ -34,29 +36,25 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     required int granularity,
   }) = _ServerHealthMetricImpl;
 
-  factory ServerHealthMetric.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ServerHealthMetric.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthMetric(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      timestamp: serializationManager
-          .deserialize<DateTime>(jsonSerialization['timestamp']),
-      isHealthy: serializationManager
-          .deserialize<bool>(jsonSerialization['isHealthy']),
-      value:
-          serializationManager.deserialize<double>(jsonSerialization['value']),
-      granularity: serializationManager
-          .deserialize<int>(jsonSerialization['granularity']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      serverId: jsonSerialization['serverId'] as String,
+      timestamp:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      isHealthy: jsonSerialization['isHealthy'] as bool,
+      value: (jsonSerialization['value'] as num).toDouble(),
+      granularity: jsonSerialization['granularity'] as int,
     );
   }
 
   static final t = ServerHealthMetricTable();
 
   static const db = ServerHealthMetricRepository._();
+
+  @override
+  int? id;
 
   /// The name of the metric.
   String name;
@@ -78,8 +76,11 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   int granularity;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -92,10 +93,10 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'isHealthy': isHealthy,
       'value': value,
       'granularity': granularity,
@@ -103,179 +104,16 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'isHealthy': isHealthy,
       'value': value,
       'granularity': granularity,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'name': name,
-      'serverId': serverId,
-      'timestamp': timestamp,
-      'isHealthy': isHealthy,
-      'value': value,
-      'granularity': granularity,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'timestamp':
-        timestamp = value;
-        return;
-      case 'isHealthy':
-        isHealthy = value;
-        return;
-      case 'value':
-        value = value;
-        return;
-      case 'granularity':
-        granularity = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ServerHealthMetric>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ServerHealthMetric?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ServerHealthMetric?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ServerHealthMetric>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ServerHealthMetric>(
-      where: where(ServerHealthMetric.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ServerHealthMetric row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ServerHealthMetric row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ServerHealthMetric row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ServerHealthMetric>(
-      where: where != null ? where(ServerHealthMetric.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ServerHealthMetricInclude include() {
@@ -301,6 +139,11 @@ abstract class ServerHealthMetric extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -324,6 +167,9 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthMetric]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,
@@ -346,7 +192,7 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
   }
 }
 
-class ServerHealthMetricTable extends _i1.Table {
+class ServerHealthMetricTable extends _i1.Table<int?> {
   ServerHealthMetricTable({super.tableRelation})
       : super(tableName: 'serverpod_health_metric') {
     name = _i1.ColumnString(
@@ -406,9 +252,6 @@ class ServerHealthMetricTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ServerHealthMetricTable.t instead.')
-ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
-
 class ServerHealthMetricInclude extends _i1.IncludeObject {
   ServerHealthMetricInclude._();
 
@@ -416,7 +259,7 @@ class ServerHealthMetricInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ServerHealthMetric.t;
+  _i1.Table<int?> get table => ServerHealthMetric.t;
 }
 
 class ServerHealthMetricIncludeList extends _i1.IncludeList {
@@ -436,12 +279,34 @@ class ServerHealthMetricIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => ServerHealthMetric.t;
+  _i1.Table<int?> get table => ServerHealthMetric.t;
 }
 
 class ServerHealthMetricRepository {
   const ServerHealthMetricRepository._();
 
+  /// Returns a list of [ServerHealthMetric]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<ServerHealthMetric>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
@@ -452,7 +317,7 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ServerHealthMetric>(
+    return session.db.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -463,6 +328,23 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Returns the first matching [ServerHealthMetric] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<ServerHealthMetric?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
@@ -472,7 +354,7 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ServerHealthMetric>(
+    return session.db.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -482,105 +364,130 @@ class ServerHealthMetricRepository {
     );
   }
 
+  /// Finds a single [ServerHealthMetric] by its [id] or null if no such row exists.
   Future<ServerHealthMetric?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ServerHealthMetric>(
+    return session.db.findById<ServerHealthMetric>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [ServerHealthMetric]s in the list and returns the inserted rows.
+  ///
+  /// The returned [ServerHealthMetric]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<ServerHealthMetric>> insert(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ServerHealthMetric>(
+    return session.db.insert<ServerHealthMetric>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [ServerHealthMetric] and returns the inserted row.
+  ///
+  /// The returned [ServerHealthMetric] will have its `id` field set.
   Future<ServerHealthMetric> insertRow(
     _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ServerHealthMetric>(
+    return session.db.insertRow<ServerHealthMetric>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [ServerHealthMetric]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ServerHealthMetric>> update(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ServerHealthMetric>(
+    return session.db.update<ServerHealthMetric>(
       rows,
       columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [ServerHealthMetric]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ServerHealthMetric> updateRow(
     _i1.Session session,
     ServerHealthMetric row, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ServerHealthMetric>(
+    return session.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [ServerHealthMetric]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<ServerHealthMetric>> delete(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ServerHealthMetric>(
+    return session.db.delete<ServerHealthMetric>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [ServerHealthMetric].
+  Future<ServerHealthMetric> deleteRow(
     _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ServerHealthMetric>(
+    return session.db.deleteRow<ServerHealthMetric>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<ServerHealthMetric>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ServerHealthMetric>(
+    return session.db.deleteWhere<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ServerHealthMetric>(
+    return session.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
       transaction: transaction,

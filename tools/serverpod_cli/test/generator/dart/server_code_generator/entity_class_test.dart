@@ -1,13 +1,15 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/exception_class_definition_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -22,18 +24,19 @@ void main() {
 
   group('Given empty class named $testClassName when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
     test('then generated class imports server version of serverpod.', () {
       expect(
@@ -45,7 +48,8 @@ void main() {
           reason: 'Missing import of package:serverpod/serverpod.dart');
     });
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -58,14 +62,24 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableModel.', () {
+      test('implements SerializableModel.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
-              name: 'SerializableEntity',
+              name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing implements clause for SerializableModel.');
+      });
+
+      test('implements ProtocolSerialization.', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization');
       });
 
       test('has a fromJson factory.', () {
@@ -88,33 +102,35 @@ void main() {
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has a allToJson method.', () {
+      test('has a toJsonForProtocol method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'allToJson',
+              name: 'toJsonForProtocol',
             ),
             isTrue,
-            reason: 'Missing declaration for allToJson method.');
+            reason: 'Missing declaration for toJsonForProtocol method.');
       });
-    }, skip: maybeClassNamedExample == null);
+    });
   });
 
   group('Given a class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -128,14 +144,35 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from TableRow.', () {
+      test('implements TableRow.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
               name: 'TableRow',
             ),
             isTrue,
             reason: 'Missing extends clause for TableRow.');
+      });
+
+      test('has TableRow implements generic to the default id type int.', () {
+        var typeName = maybeClassNamedExample!.implementsClause?.interfaces
+            .first.typeArguments?.arguments.first as NamedType?;
+
+        expect(
+          typeName?.name2.toString(),
+          'int',
+          reason: 'Wrong generic type for TableRow.',
+        );
+      });
+
+      test('implements ProtocolSerialization', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization.');
       });
 
       group('has a constructor', () {
@@ -147,12 +184,8 @@ void main() {
           expect(constructor, isNotNull, reason: 'No private constructor');
         });
 
-        test('with id param', () {
-          expect(constructor?.parameters.toSource(), '({int? id})');
-        });
-
-        test('passing id to super', () {
-          expect(constructor?.initializers.first.toSource(), 'super(id)');
+        test('initializing id in initializer list', () {
+          expect(constructor?.parameters.toSource(), '({this.id})');
         });
       });
 
@@ -179,122 +212,45 @@ void main() {
             reason: 'Missing declaration for table method.');
       });
 
-      test('is NOT generated with id field.', () {
+      test(
+          'has Table generic to the default id type int as table getter return type.',
+          () {
+        var maybeTableGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'table',
+        );
+
+        var typeArguments = maybeTableGetter?.returnType as NamedType?;
+        var genericType = typeArguments?.typeArguments?.arguments.first;
+
+        expect(
+          (genericType as NamedType?)?.name2.toString(),
+          'int',
+          reason: 'Wrong generic type for Table getter.',
+        );
+      });
+
+      test('is generated with id field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'id',
             ),
-            isFalse,
-            reason: 'Declaration for id field should not be generated.');
+            isTrue,
+            reason: 'Declaration for id field should be generated.');
       });
 
-      test('has a toJsonForDatabase method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'toJsonForDatabase',
-            ),
-            isTrue,
-            reason: 'Missing declaration for toJsonForDatabase method.');
-      });
+      test('has type of the id field default to int.', () {
+        var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExample!,
+          name: 'id',
+        );
 
-      test('has a setColumn method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'setColumn',
-            ),
-            isTrue,
-            reason: 'Missing declaration for setColumn method.');
-      });
-
-      test('has a static find method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'find',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static find method.');
-      });
-
-      test('has a static findSingleRow method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'findSingleRow',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static findSingleRow method.');
-      });
-
-      test('has a findById static method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'findById',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static findById method.');
-      });
-
-      test('has a static delete method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'delete',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static delete method.');
-      });
-
-      test('has a static deleteRow method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'deleteRow',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration static deleteRow method.');
-      });
-
-      test('has a static update method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'update',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static update method.');
-      });
-
-      test('has a static insert method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'insert',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static insert method.');
-      });
-
-      test('has a static count method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'count',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static count method.');
+          (maybeIdField?.fields.type as NamedType).name2.toString(),
+          'int',
+          reason: 'Wrong type for the id field.',
+        );
       });
 
       test('has a static include method.', () {
@@ -318,25 +274,27 @@ void main() {
             isTrue,
             reason: 'Missing declaration for static includeList method.');
       });
-    }, skip: maybeClassNamedExample == null);
+    });
   });
 
   group('Given a class with a none nullable field when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String')
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -352,39 +310,39 @@ void main() {
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
-      test('has that class variable.', () {
+      test('has that class variable as a mutable field.', () {
         expect(
           CompilationUnitHelpers.hasFieldDeclaration(
             maybeClassNamedExample!,
             name: 'title',
             type: 'String',
+            isFinal: false,
           ),
           isTrue,
           reason: 'Missing declaration for title field.',
         );
       });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+    });
   });
 
   group('Given a class with a nullable field when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String', nullable: true)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -411,17 +369,14 @@ void main() {
           reason: 'Missing declaration for title field.',
         );
       });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+    });
   });
 
   group(
       'Given a class with a non persistent field with scope all when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -434,13 +389,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -456,9 +413,6 @@ void main() {
             isTrue,
             reason: 'Missing declaration for title field');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -466,7 +420,7 @@ void main() {
       'Given a class with a non persistent field with scope serverOnly when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -480,13 +434,15 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -502,9 +458,6 @@ void main() {
             isTrue,
             reason: 'Missing declaration for title field.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -512,7 +465,7 @@ void main() {
       'Given a class with a non persistent field with scope none when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
@@ -526,15 +479,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: testClassName);
     test(
       'then a class is NOT generated with that class variable.',
       () {
@@ -544,29 +498,27 @@ void main() {
             isFalse,
             reason: 'Found declaration for field that should not exist.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
   group('Given exception class when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ExceptionClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .withIsException(true)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -581,9 +533,6 @@ void main() {
             isTrue,
             reason: 'Class should implement SerializableException.');
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -592,7 +541,7 @@ void main() {
       () {
     var fieldName = 'implicit_field';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -607,14 +556,16 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
@@ -625,58 +576,43 @@ void main() {
         test('is generated with field as hidden class variable.', () {
           expect(
               CompilationUnitHelpers.hasFieldDeclaration(
-                  maybeClassNamedExample!,
-                  name: '_$fieldName',
-                  type: 'String?'),
+                maybeClassNamedExample!,
+                name: '_$fieldName',
+                type: 'String?',
+                isFinal: true,
+              ),
               isTrue,
               reason: 'Field declaration missing for $fieldName.');
         });
 
-        test('has a toJsonForDatabase that uses hidden class variable.', () {
-          var maybeToJsonForDatabase =
-              CompilationUnitHelpers.tryFindMethodDeclaration(
+        test('has a toJson that uses hidden class variable.', () {
+          var maybeToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
-            name: 'toJsonForDatabase',
+            name: 'toJson',
           );
 
-          expect(maybeToJsonForDatabase, isNotNull,
-              reason: 'Missing declaration for toJsonForDatabase method.');
-          expect(maybeToJsonForDatabase!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
-              reason:
-                  'Missing use of hidden class variable in toJsonForDatabase method.');
-        });
-
-        test('has a allToJson that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
-            maybeClassNamedExample!,
-            name: 'allToJson',
-          );
-
-          expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for allToJson method.');
-          expect(maybeAllToJson!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
+          expect(maybeToJson, isNotNull,
+              reason: 'Missing declaration for toJson method.');
+          expect(
+              maybeToJson!.toSource(), contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
         });
 
-        test('has a setColumn that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+        test('then constructor initializes private field with null', () {
+          var maybeConstructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
             maybeClassNamedExample!,
-            name: 'setColumn',
+            name: '_',
           );
 
-          expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for setColumn method.');
-          expect(maybeAllToJson!.toSource(), contains('_$fieldName = value'),
-              reason:
-                  'Missing use of hidden class variable in setColumn method.');
+          expect(
+            maybeConstructor?.toSource(),
+            contains('_$fieldName = null'),
+            reason: 'Missing initialization of private field in constructor.',
+          );
         });
       },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
     );
   });
 
@@ -685,7 +621,7 @@ void main() {
     () {
       var fieldName = '_implicit_field';
       var models = [
-        ClassDefinitionBuilder()
+        ModelClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withTableName(tableName)
@@ -700,15 +636,15 @@ void main() {
             .build()
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late final codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit =
+      late final compilationUnit =
           parseString(content: codeMap[expectedFilePath]!).unit;
 
-      var maybeClassNamedExample =
+      late final maybeClassNamedExample =
           CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: testClassName,
@@ -725,9 +661,6 @@ void main() {
               isTrue,
               reason: 'Field declaration missing for $fieldName.');
         },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false,
       );
     },
   );

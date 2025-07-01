@@ -1,0 +1,28 @@
+apiServer:
+  port: 8080
+  publicHost: serverpod_test_server
+  publicPort: 8080
+  publicScheme: http
+
+insightsServer:
+  port: 8081
+  publicHost: serverpod_test_server
+  publicPort: 8081
+  publicScheme: http
+
+webServer:
+  port: 8082
+  publicHost: serverpod_test_server
+  publicPort: 8082
+  publicScheme: http
+
+database:
+  host: localhost
+  port: 9090
+  name: serverpod_test_module_test
+  user: postgres
+
+redis:
+  enabled: false
+  host: localhost
+  port: 9091

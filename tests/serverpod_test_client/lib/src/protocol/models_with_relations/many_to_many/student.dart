@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
-abstract class Student extends _i1.SerializableEntity {
+abstract class Student implements _i1.SerializableModel {
   Student._({
     this.id,
     required this.name,
@@ -24,15 +25,13 @@ abstract class Student extends _i1.SerializableEntity {
     List<_i2.Enrollment>? enrollments,
   }) = _StudentImpl;
 
-  factory Student.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Student.fromJson(Map<String, dynamic> jsonSerialization) {
     return Student(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      enrollments: serializationManager
-          .deserialize<List<_i2.Enrollment>?>(jsonSerialization['enrollments']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      enrollments: (jsonSerialization['enrollments'] as List?)
+          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
@@ -45,6 +44,9 @@ abstract class Student extends _i1.SerializableEntity {
 
   List<_i2.Enrollment>? enrollments;
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Student copyWith({
     int? id,
     String? name,
@@ -53,10 +55,16 @@ abstract class Student extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'enrollments': enrollments,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -73,6 +81,9 @@ class _StudentImpl extends Student {
           enrollments: enrollments,
         );
 
+  /// Returns a shallow copy of this [Student]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Student copyWith({
     Object? id = _Undefined,
@@ -84,7 +95,7 @@ class _StudentImpl extends Student {
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.Enrollment>?
           ? enrollments
-          : this.enrollments?.clone(),
+          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

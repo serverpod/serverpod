@@ -1,25 +1,32 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_chat_server
 description: Serverpod chat server module.
-version: VERSION
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod
-  serverpod_auth_server: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../serverpod_auth/serverpod_auth_server
-  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod_serialization/
-  http: ">=0.13.0 <2.0.0"
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
+  serverpod_serialization: SERVERPOD_VERSION
+  http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   path: ^1.8.2
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_lints: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../serverpod_auth/serverpod_auth_server
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization/
+  serverpod_lints:
     path: ../../../packages/serverpod_lints
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

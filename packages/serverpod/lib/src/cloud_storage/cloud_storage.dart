@@ -17,7 +17,7 @@ abstract class CloudStorage {
   String storageId;
 
   /// Creates a [CloudStorage] with the specified [storageId]. By default,
-  /// two storages are used by Serverepod `public` and `private`. The public
+  /// two storages are used by Serverpod `public` and `private`. The public
   /// should be accessible to everyone (usually through a web interface),
   /// while the private is accessed internally only.
   CloudStorage(this.storageId);
@@ -70,6 +70,7 @@ abstract class CloudStorage {
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
   });
 
   /// Call this method once a direct file upload is completed. Failure to call

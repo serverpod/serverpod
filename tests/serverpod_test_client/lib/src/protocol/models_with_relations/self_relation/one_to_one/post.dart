@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/one_to_one/post.dart'
+    as _i2;
 
-abstract class Post extends _i1.SerializableEntity {
+abstract class Post implements _i1.SerializableModel {
   Post._({
     this.id,
     required this.content,
@@ -28,20 +30,19 @@ abstract class Post extends _i1.SerializableEntity {
     _i2.Post? next,
   }) = _PostImpl;
 
-  factory Post.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
     return Post(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      content: serializationManager
-          .deserialize<String>(jsonSerialization['content']),
-      previous: serializationManager
-          .deserialize<_i2.Post?>(jsonSerialization['previous']),
-      nextId:
-          serializationManager.deserialize<int?>(jsonSerialization['nextId']),
-      next: serializationManager
-          .deserialize<_i2.Post?>(jsonSerialization['next']),
+      id: jsonSerialization['id'] as int?,
+      content: jsonSerialization['content'] as String,
+      previous: jsonSerialization['previous'] == null
+          ? null
+          : _i2.Post.fromJson(
+              (jsonSerialization['previous'] as Map<String, dynamic>)),
+      nextId: jsonSerialization['nextId'] as int?,
+      next: jsonSerialization['next'] == null
+          ? null
+          : _i2.Post.fromJson(
+              (jsonSerialization['next'] as Map<String, dynamic>)),
     );
   }
 
@@ -58,6 +59,9 @@ abstract class Post extends _i1.SerializableEntity {
 
   _i2.Post? next;
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Post copyWith({
     int? id,
     String? content,
@@ -68,12 +72,17 @@ abstract class Post extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'content': content,
-      'previous': previous,
-      'nextId': nextId,
-      'next': next,
+      if (previous != null) 'previous': previous?.toJson(),
+      if (nextId != null) 'nextId': nextId,
+      if (next != null) 'next': next?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -94,6 +103,9 @@ class _PostImpl extends Post {
           next: next,
         );
 
+  /// Returns a shallow copy of this [Post]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,

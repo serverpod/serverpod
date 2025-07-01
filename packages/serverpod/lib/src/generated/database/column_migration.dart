@@ -1,16 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ColumnMigration extends _i1.SerializableEntity {
+abstract class ColumnMigration
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ColumnMigration._({
     required this.columnName,
     required this.addNullable,
@@ -27,21 +29,13 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
     String? newDefault,
   }) = _ColumnMigrationImpl;
 
-  factory ColumnMigration.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ColumnMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnMigration(
-      columnName: serializationManager
-          .deserialize<String>(jsonSerialization['columnName']),
-      addNullable: serializationManager
-          .deserialize<bool>(jsonSerialization['addNullable']),
-      removeNullable: serializationManager
-          .deserialize<bool>(jsonSerialization['removeNullable']),
-      changeDefault: serializationManager
-          .deserialize<bool>(jsonSerialization['changeDefault']),
-      newDefault: serializationManager
-          .deserialize<String?>(jsonSerialization['newDefault']),
+      columnName: jsonSerialization['columnName'] as String,
+      addNullable: jsonSerialization['addNullable'] as bool,
+      removeNullable: jsonSerialization['removeNullable'] as bool,
+      changeDefault: jsonSerialization['changeDefault'] as bool,
+      newDefault: jsonSerialization['newDefault'] as String?,
     );
   }
 
@@ -55,6 +49,9 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
 
   String? newDefault;
 
+  /// Returns a shallow copy of this [ColumnMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ColumnMigration copyWith({
     String? columnName,
     bool? addNullable,
@@ -69,19 +66,24 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
       'addNullable': addNullable,
       'removeNullable': removeNullable,
       'changeDefault': changeDefault,
-      'newDefault': newDefault,
+      if (newDefault != null) 'newDefault': newDefault,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,
       'changeDefault': changeDefault,
-      'newDefault': newDefault,
+      if (newDefault != null) 'newDefault': newDefault,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -102,6 +104,9 @@ class _ColumnMigrationImpl extends ColumnMigration {
           newDefault: newDefault,
         );
 
+  /// Returns a shallow copy of this [ColumnMigration]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ColumnMigration copyWith({
     String? columnName,

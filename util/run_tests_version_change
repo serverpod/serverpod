@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_version_change"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+echo "### Incrementing major version in SERVERPOD_VERSION"
+if [ ! -f SERVERPOD_VERSION ]; then
+    echo "Error: SERVERPOD_VERSION file not found in the root of the repository"
+    exit 1
+fi
+
+current_version=$(cat SERVERPOD_VERSION)
+IFS='.' read -r major minor patch <<< "$current_version"
+new_major=$((major + 1))
+new_version="${new_major}.0.0"
+echo "$new_version" > SERVERPOD_VERSION
+echo "Updated SERVERPOD_VERSION to $new_version"
+echo ""
+
+export SERVERPOD_HOME=$(pwd)
+echo "### Serverpod home: $SERVERPOD_HOME"
+
+echo "### Running update pubspecs"
+util/update_pubspecs
+
+echo "### Running pub get all"
+util/pub_get_all

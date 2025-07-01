@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_level.dart' as _i2;
 
 /// Log settings for the server.
-abstract class LogSettings extends _i1.SerializableEntity {
+abstract class LogSettings implements _i1.SerializableModel {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -39,31 +40,21 @@ abstract class LogSettings extends _i1.SerializableEntity {
     required double slowQueryDuration,
   }) = _LogSettingsImpl;
 
-  factory LogSettings.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettings(
-      logLevel: serializationManager
-          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
-      logAllSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logAllSessions']),
-      logAllQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logAllQueries']),
-      logSlowSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logSlowSessions']),
-      logStreamingSessionsContinuously: serializationManager.deserialize<bool>(
-          jsonSerialization['logStreamingSessionsContinuously']),
-      logSlowQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logSlowQueries']),
-      logFailedSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logFailedSessions']),
-      logFailedQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logFailedQueries']),
-      slowSessionDuration: serializationManager
-          .deserialize<double>(jsonSerialization['slowSessionDuration']),
-      slowQueryDuration: serializationManager
-          .deserialize<double>(jsonSerialization['slowQueryDuration']),
+      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      logAllSessions: jsonSerialization['logAllSessions'] as bool,
+      logAllQueries: jsonSerialization['logAllQueries'] as bool,
+      logSlowSessions: jsonSerialization['logSlowSessions'] as bool,
+      logStreamingSessionsContinuously:
+          jsonSerialization['logStreamingSessionsContinuously'] as bool,
+      logSlowQueries: jsonSerialization['logSlowQueries'] as bool,
+      logFailedSessions: jsonSerialization['logFailedSessions'] as bool,
+      logFailedQueries: jsonSerialization['logFailedQueries'] as bool,
+      slowSessionDuration:
+          (jsonSerialization['slowSessionDuration'] as num).toDouble(),
+      slowQueryDuration:
+          (jsonSerialization['slowQueryDuration'] as num).toDouble(),
     );
   }
 
@@ -98,6 +89,9 @@ abstract class LogSettings extends _i1.SerializableEntity {
   /// The duration in seconds for a query to be considered slow.
   double slowQueryDuration;
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogSettings copyWith({
     _i2.LogLevel? logLevel,
     bool? logAllSessions,
@@ -113,7 +107,7 @@ abstract class LogSettings extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'logLevel': logLevel,
+      'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
       'logSlowSessions': logSlowSessions,
@@ -124,6 +118,11 @@ abstract class LogSettings extends _i1.SerializableEntity {
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -152,6 +151,9 @@ class _LogSettingsImpl extends LogSettings {
           slowQueryDuration: slowQueryDuration,
         );
 
+  /// Returns a shallow copy of this [LogSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogSettings copyWith({
     _i2.LogLevel? logLevel,

@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/endpoint_validation_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
-const pathToServerpod = '../../../../../../../../packages/serverpod';
+import '../../../../test_util/endpoint_validation_helpers.dart';
+
+const pathToServerpodRoot = '../../../../../../../..';
 var testProjectDirectory = Directory(path.joinAll([
   'test',
   'integration',
@@ -20,7 +21,7 @@ var testProjectDirectory = Directory(path.joinAll([
 
 void main() {
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpod);
+    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
@@ -190,6 +191,75 @@ class ExampleEndpointValid extends Endpoint {
           'review and correct the syntax errors.',
         ),
       );
+    });
+
+    test('then one endpoint definitions is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+  });
+
+  group('Given an invalid dart file without an endpoint definition', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var invalidDartFile =
+          File(path.join(testDirectory.path, 'my_class.dart'));
+      invalidDartFile.createSync(recursive: true);
+      // Class is missing closing brackets
+      invalidDartFile.writeAsStringSync('''
+class InvalidClass {
+
+
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+  });
+
+  group(
+      'Given an invalid dart file without an endpoint definition and a valid endpoint definition file',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var invalidDartFile =
+          File(path.join(testDirectory.path, 'my_class.dart'));
+      invalidDartFile.createSync(recursive: true);
+      // Class is missing closing brackets
+      invalidDartFile.writeAsStringSync('''
+class InvalidClass {
+
+
+''');
+      var secondEndpointFile =
+          File(path.join(testDirectory.path, 'valid_endpoint.dart'));
+      secondEndpointFile.createSync(recursive: true);
+      secondEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpointValid extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then one endpoint definitions is created.', () {

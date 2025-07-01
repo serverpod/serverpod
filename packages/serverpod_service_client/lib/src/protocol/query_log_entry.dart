@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.SerializableEntity {
+abstract class QueryLogEntry implements _i1.SerializableModel {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -40,30 +41,19 @@ abstract class QueryLogEntry extends _i1.SerializableEntity {
     required int order,
   }) = _QueryLogEntryImpl;
 
-  factory QueryLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory QueryLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return QueryLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      messageId: serializationManager
-          .deserialize<int?>(jsonSerialization['messageId']),
-      query:
-          serializationManager.deserialize<String>(jsonSerialization['query']),
-      duration: serializationManager
-          .deserialize<double>(jsonSerialization['duration']),
-      numRows:
-          serializationManager.deserialize<int?>(jsonSerialization['numRows']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      messageId: jsonSerialization['messageId'] as int?,
+      query: jsonSerialization['query'] as String,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
+      numRows: jsonSerialization['numRows'] as int?,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      order: jsonSerialization['order'] as int,
     );
   }
 
@@ -104,6 +94,9 @@ abstract class QueryLogEntry extends _i1.SerializableEntity {
   /// used for sorting the query log.
   int order;
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   QueryLogEntry copyWith({
     int? id,
     String? serverId,
@@ -120,18 +113,23 @@ abstract class QueryLogEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
+      if (messageId != null) 'messageId': messageId,
       'query': query,
       'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -164,6 +162,9 @@ class _QueryLogEntryImpl extends QueryLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [QueryLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   QueryLogEntry copyWith({
     Object? id = _Undefined,

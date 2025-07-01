@@ -23,12 +23,13 @@ void main() async {
           Cat(name: 'Kitten3', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none(),
         );
 
-        expect(deletedCatIds, hasLength(3));
+        expect(deletedCats, hasLength(3));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(deletedCatIds, containsAll(kittens.map((e) => e.id)));
       },
     );
@@ -44,12 +45,13 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none((t) => t.name.ilike('smul%')),
         );
 
-        expect(deletedCatIds, hasLength(2));
+        expect(deletedCats, hasLength(2));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(deletedCatIds, containsAll(kittens.map((e) => e.id)));
       },
     );
@@ -65,12 +67,13 @@ void main() async {
           Cat(name: 'Kitten2', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none() | t.name.equals('Zelda'),
         );
 
-        expect(deletedCatIds, hasLength(3));
+        expect(deletedCats, hasLength(3));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(
           deletedCatIds,
           containsAll([zelda.id, kittens.first.id!, kittens.last.id!]),
@@ -89,14 +92,15 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none(
             (o) => o.name.ilike('kitt%') | o.name.ilike('smul%'),
           ),
         );
 
-        expect(deletedCatIds, hasLength(2));
+        expect(deletedCats, hasLength(2));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(deletedCatIds, containsAll(kittens.map((e) => e.id)));
       },
     );
@@ -112,14 +116,15 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) =>
               t.kittens.none((o) => o.name.ilike('kitt%')) &
               t.kittens.none((o) => o.name.ilike('smul%')),
         );
 
-        expect(deletedCatIds, hasLength(2));
+        expect(deletedCats, hasLength(2));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(deletedCatIds, containsAll(kittens.map((e) => e.id)));
       },
     );
@@ -146,12 +151,13 @@ void main() async {
           Cat(name: 'Kitten2', motherId: kittens.first.id),
         );
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none((o) => o.kittens.none()),
         );
 
-        expect(deletedCatIds, hasLength(3));
+        expect(deletedCats, hasLength(3));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(
           deletedCatIds,
           containsAll([zelda.id!, kittens.last.id!, kitten2.id!]),
@@ -175,14 +181,15 @@ void main() async {
           Cat(name: 'Kitten2', motherId: kittens.first.id),
         );
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.none(
             (o) => o.kittens.none((o) => o.name.ilike('kitt%')),
           ),
         );
 
-        expect(deletedCatIds, hasLength(3));
+        expect(deletedCats, hasLength(3));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(
           deletedCatIds,
           containsAll([zelda.id!, kittens.last.id!, kitten2.id!]),

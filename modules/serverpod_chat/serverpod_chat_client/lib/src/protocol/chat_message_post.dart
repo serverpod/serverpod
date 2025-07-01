@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'chat_message_attachment.dart' as _i2;
 
 /// A chat message post request.
-abstract class ChatMessagePost extends _i1.SerializableEntity {
+abstract class ChatMessagePost implements _i1.SerializableModel {
   ChatMessagePost._({
     required this.channel,
     required this.message,
@@ -27,20 +28,15 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
     List<_i2.ChatMessageAttachment>? attachments,
   }) = _ChatMessagePostImpl;
 
-  factory ChatMessagePost.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatMessagePost.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessagePost(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      clientMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['clientMessageId']),
-      attachments:
-          serializationManager.deserialize<List<_i2.ChatMessageAttachment>?>(
-              jsonSerialization['attachments']),
+      channel: jsonSerialization['channel'] as String,
+      message: jsonSerialization['message'] as String,
+      clientMessageId: jsonSerialization['clientMessageId'] as int,
+      attachments: (jsonSerialization['attachments'] as List?)
+          ?.map((e) =>
+              _i2.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
@@ -56,6 +52,9 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
   /// List of attachments associated with this message.
   List<_i2.ChatMessageAttachment>? attachments;
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ChatMessagePost copyWith({
     String? channel,
     String? message,
@@ -68,8 +67,14 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -88,6 +93,9 @@ class _ChatMessagePostImpl extends ChatMessagePost {
           attachments: attachments,
         );
 
+  /// Returns a shallow copy of this [ChatMessagePost]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ChatMessagePost copyWith({
     String? channel,
@@ -101,7 +109,7 @@ class _ChatMessagePostImpl extends ChatMessagePost {
       clientMessageId: clientMessageId ?? this.clientMessageId,
       attachments: attachments is List<_i2.ChatMessageAttachment>?
           ? attachments
-          : this.attachments?.clone(),
+          : this.attachments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

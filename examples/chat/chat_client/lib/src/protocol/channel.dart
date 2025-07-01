@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel extends _i1.SerializableEntity {
+abstract class Channel implements _i1.SerializableModel {
   Channel._({
     this.id,
     required this.name,
@@ -24,15 +25,11 @@ abstract class Channel extends _i1.SerializableEntity {
     required String channel,
   }) = _ChannelImpl;
 
-  factory Channel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
     return Channel(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      channel: jsonSerialization['channel'] as String,
     );
   }
 
@@ -47,6 +44,9 @@ abstract class Channel extends _i1.SerializableEntity {
   /// The id of the channel.
   String channel;
 
+  /// Returns a shallow copy of this [Channel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Channel copyWith({
     int? id,
     String? name,
@@ -55,10 +55,15 @@ abstract class Channel extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'channel': channel,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -75,6 +80,9 @@ class _ChannelImpl extends Channel {
           channel: channel,
         );
 
+  /// Returns a shallow copy of this [Channel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Channel copyWith({
     Object? id = _Undefined,

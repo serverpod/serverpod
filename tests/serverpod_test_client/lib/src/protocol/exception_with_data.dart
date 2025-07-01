@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ExceptionWithData extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+abstract class ExceptionWithData
+    implements _i1.SerializableException, _i1.SerializableModel {
   ExceptionWithData._({
     required this.message,
     required this.creationDate,
@@ -26,19 +27,15 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
     int? someNullableField,
   }) = _ExceptionWithDataImpl;
 
-  factory ExceptionWithData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      creationDate: serializationManager
-          .deserialize<DateTime>(jsonSerialization['creationDate']),
-      errorFields: serializationManager
-          .deserialize<List<String>>(jsonSerialization['errorFields']),
-      someNullableField: serializationManager
-          .deserialize<int?>(jsonSerialization['someNullableField']),
+      message: jsonSerialization['message'] as String,
+      creationDate:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['creationDate']),
+      errorFields: (jsonSerialization['errorFields'] as List)
+          .map((e) => e as String)
+          .toList(),
+      someNullableField: jsonSerialization['someNullableField'] as int?,
     );
   }
 
@@ -50,6 +47,9 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
 
   int? someNullableField;
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
@@ -60,10 +60,15 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'creationDate': creationDate,
-      'errorFields': errorFields,
-      'someNullableField': someNullableField,
+      'creationDate': creationDate.toJson(),
+      'errorFields': errorFields.toJson(),
+      if (someNullableField != null) 'someNullableField': someNullableField,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -82,6 +87,9 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
           someNullableField: someNullableField,
         );
 
+  /// Returns a shallow copy of this [ExceptionWithData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ExceptionWithData copyWith({
     String? message,
@@ -92,7 +100,7 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
     return ExceptionWithData(
       message: message ?? this.message,
       creationDate: creationDate ?? this.creationDate,
-      errorFields: errorFields ?? this.errorFields.clone(),
+      errorFields: errorFields ?? this.errorFields.map((e0) => e0).toList(),
       someNullableField: someNullableField is int?
           ? someNullableField
           : this.someNullableField,

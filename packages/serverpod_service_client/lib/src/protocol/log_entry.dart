@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_level.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry extends _i1.SerializableEntity {
+abstract class LogEntry implements _i1.SerializableModel {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -41,31 +42,19 @@ abstract class LogEntry extends _i1.SerializableEntity {
     required int order,
   }) = _LogEntryImpl;
 
-  factory LogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      messageId: serializationManager
-          .deserialize<int?>(jsonSerialization['messageId']),
-      reference: serializationManager
-          .deserialize<String?>(jsonSerialization['reference']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      logLevel: serializationManager
-          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      messageId: jsonSerialization['messageId'] as int?,
+      reference: jsonSerialization['reference'] as String?,
+      serverId: jsonSerialization['serverId'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      message: jsonSerialization['message'] as String,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      order: jsonSerialization['order'] as int,
     );
   }
 
@@ -86,7 +75,7 @@ abstract class LogEntry extends _i1.SerializableEntity {
   /// The id of the server which created this log entry.
   String serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   DateTime time;
 
   /// The log level of this entry.
@@ -104,6 +93,9 @@ abstract class LogEntry extends _i1.SerializableEntity {
   /// The order of this log entry, used for sorting.
   int order;
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -120,18 +112,23 @@ abstract class LogEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
+      if (messageId != null) 'messageId': messageId,
+      if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -164,6 +161,9 @@ class _LogEntryImpl extends LogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [LogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogEntry copyWith({
     Object? id = _Undefined,

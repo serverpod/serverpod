@@ -1,22 +1,45 @@
-import 'dart:convert';
+import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_legacy.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/protocol.dart';
+import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
-import '../authentication/util.dart';
 import '../cache/caches.dart';
-import '../database/database.dart';
-import '../generated/protocol.dart';
-import 'log_manager.dart';
+
+/// A listener that will be called when the session is about to close.
+typedef WillCloseListener = FutureOr<void> Function(Session session);
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-abstract class Session {
+abstract class Session implements DatabaseAccessor {
+  final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
+
+  /// Adds a listener that will be called when the session is about to close.
+  /// The listener should return a [FutureOr] that completes when the listener
+  /// is done.
+  ///
+  /// The listener will be called in the order they were added.
+  void addWillCloseListener(WillCloseListener listener) {
+    _willCloseListeners.add(listener);
+  }
+
+  /// Removes a listener that will be called when the session is about to close.
+  void removeWillCloseListener(WillCloseListener listener) {
+    _willCloseListeners.remove(listener);
+  }
+
+  /// The id of the session.
+  final UuidValue sessionId;
+
   /// The [Server] that created the session.
   final Server server;
 
@@ -28,37 +51,63 @@ abstract class Session {
   /// The time the session object was created.
   DateTime get startTime => _startTime;
 
-  /// Log messages saved during the session.
-  @internal
-  late final SessionLogEntryCache sessionLogs;
+  int? _messageId;
 
-  int? _authenticatedUser;
-  Set<Scope>? _scopes;
+  AuthenticationInfo? _authenticated;
+
+  /// Updates the authentication information for the session.
+  /// This is typically done by the [Server] when the user is authenticated.
+  /// Using this method modifies the authenticated user for this session.
+  void updateAuthenticated(AuthenticationInfo? info) {
+    _initialized = true;
+    _authenticated = info;
+  }
+
+  /// The authentication information for the session.
+  /// This will be null if the session is not authenticated.
+  Future<AuthenticationInfo?> get authenticated async {
+    if (!_initialized) await _initialize();
+    return _authenticated;
+  }
+
+  /// Returns true if the user is signed in.
+  Future<bool> get isUserSignedIn async {
+    return (await authenticated) != null;
+  }
+
+  String? _authenticationKey;
+
+  /// The authentication key used to authenticate the session.
+  String? get authenticationKey => _authenticationKey;
 
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
 
   /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  late final DatabaseLegacy db;
+  Database? _db;
 
-  /// Access to the database. Replaces db in the future.
-  late final Database dbNext;
+  /// Optional transaction to use for all database queries.
+  /// Only exists to support the serverpod_test package.
+  @override
+  @visibleForTesting
+  Transaction? get transaction => null;
 
-  String? _authenticationKey;
-
-  /// The authentication key passed from the client.
-  String? get authenticationKey => _authenticationKey;
+  /// Access to the database.
+  @override
+  Database get db {
+    var database = _db;
+    if (database == null) {
+      throw Exception('Database is not available in this session.');
+    }
+    return database;
+  }
 
   /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
 
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> get passwords => server.passwords;
-
-  /// Methods related to user authentication.
-  late final UserAuthetication auth;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
@@ -73,50 +122,97 @@ abstract class Session {
   /// enabled but it will be disabled for internal sessions used by Serverpod.
   final bool enableLogging;
 
+  late final SessionLogManager? _logManager;
+
+  /// Endpoint that triggered this session.
+  final String endpoint;
+
+  /// Method that triggered this session, if any.
+  final String? method;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
+    UuidValue? sessionId,
     required this.server,
     String? authenticationKey,
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
-  }) {
+    required this.endpoint,
+    int? messageId,
+    this.method,
+  })  : _authenticationKey = authenticationKey,
+        _messageId = messageId,
+        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
-    auth = UserAuthetication._(this);
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    // ignore: deprecated_member_use_from_same_package
-    db = DatabaseLegacy(session: this);
-    dbNext = Database(session: this);
+    if (Features.enableDatabase) {
+      _db = server.createDatabase(this);
+    }
 
-    sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
-    sessionLogs.temporarySessionId =
-        serverpod.logManager.nextTemporarySessionId();
+    if (enableLogging) {
+      var logWriter = _createLogWriter(
+        this,
+        server.serverpod.logSettingsManager,
+      );
+      _logManager = SessionLogManager(
+        logWriter,
+        session: this,
+        settingsForSession: (Session session) => server
+            .serverpod.logSettingsManager
+            .getLogSettingsForSession(session),
+        disableLoggingSlowSessions: _isLongLived(this),
+        serverId: server.serverId,
+      );
+    } else {
+      _logManager = null;
+    }
+  }
+
+  LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
+    var logSettings = settings.getLogSettingsForSession(session);
+
+    var logWriters = <LogWriter>[];
+
+    if (Features.enablePersistentLogging) {
+      logWriters.add(
+        DatabaseLogWriter(
+          logWriterSession: session.serverpod.internalSession,
+        ),
+      );
+    }
+
+    if (Features.enableConsoleLogging) {
+      var logFormat = session.serverpod.config.sessionLogs.consoleLogFormat;
+      var consoleLogger = switch (logFormat) {
+        ConsoleLogFormat.json => JsonStdOutLogWriter(session),
+        ConsoleLogFormat.text => TextStdOutLogWriter(session),
+      };
+      logWriters.add(consoleLogger);
+    }
+
+    if ((_isLongLived(session)) &&
+        logSettings.logStreamingSessionsContinuously) {
+      return MultipleLogWriter(logWriters);
+    }
+
+    return MultipleLogWriter(
+      logWriters.map((writer) => CachedLogWriter(writer)).toList(),
+    );
   }
 
   bool _initialized = false;
 
   Future<void> _initialize() async {
-    if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
-          await server.authenticationHandler!(this, _authenticationKey!);
-      _scopes = authenticationInfo?.scopes;
-      _authenticatedUser = authenticationInfo?.authenticatedUserId;
+    var authKey = _authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
+
     _initialized = true;
-  }
-
-  /// Returns the scopes associated with an authenticated user.
-  Future<Set<Scope>?> get scopes async {
-    if (!_initialized) await _initialize();
-    return _scopes;
-  }
-
-  /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await auth.authenticatedUserId) != null;
   }
 
   /// Returns the duration this session has been open.
@@ -137,13 +233,27 @@ abstract class Session {
     if (_closed) return null;
     _closed = true;
 
+    var willCloseListeners = _willCloseListeners.toList();
+    _willCloseListeners.clear();
+
+    for (var listener in willCloseListeners) {
+      await listener(this);
+    }
+
     try {
+      if (_logManager == null && error != null) {
+        serverpod.logVerbose(error.toString());
+        if (stackTrace != null) {
+          serverpod.logVerbose(stackTrace.toString());
+        }
+      }
+
       server.messageCentral.removeListenersForSession(this);
-      return await server.serverpod.logManager.finalizeSessionLog(
+      return await _logManager?.finalizeLog(
         this,
-        exception: error == null ? null : '$error',
+        exception: error?.toString(),
         stackTrace: stackTrace,
-        authenticatedUserId: _authenticatedUser,
+        authenticatedUserId: _authenticated?.userIdentifier,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -160,42 +270,18 @@ abstract class Session {
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    assert(
-      !_closed,
-      'Session is closed, and logging can no longer be performed.',
-    );
-
-    int? messageId;
-    if (this is StreamingSession) {
-      messageId = (this as StreamingSession).currentMessageId;
+    if (_closed) {
+      throw StateError(
+        'Session is closed, and logging can no longer be performed.',
+      );
     }
 
-    var entry = LogEntry(
-      sessionLogId: sessionLogs.temporarySessionId,
-      serverId: server.serverId,
-      messageId: messageId,
-      logLevel: level ?? LogLevel.info,
+    _logManager?.logEntry(
       message: message,
-      time: DateTime.now(),
-      error: exception != null ? '$exception' : null,
-      stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.currentLogOrderId,
+      level: level ?? LogLevel.info,
+      error: exception?.toString(),
+      stackTrace: stackTrace,
     );
-
-    sessionLogs.currentLogOrderId += 1;
-
-    if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
-
-    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
-      return;
-    }
-
-    // Called asynchronously.
-    serverpod.logManager.logEntry(this, entry);
   }
 }
 
@@ -208,7 +294,7 @@ class InternalSession extends Session {
   InternalSession({
     required super.server,
     super.enableLogging = true,
-  });
+  }) : super(endpoint: 'InternalSession');
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -222,13 +308,21 @@ class MethodCallSession extends Session {
   final String body;
 
   /// Query parameters of the server call.
-  late final Map<String, dynamic> queryParameters;
+  final Map<String, dynamic> queryParameters;
 
-  /// The name of the called [Endpoint].
-  late final String endpointName;
+  final String _method;
 
   /// The name of the method that is being called.
-  late final String methodName;
+  @override
+  String get method => _method;
+
+  /// The name of the method that is being called.
+  @Deprecated('Use method instead')
+  String get methodName => _method;
+
+  /// The name of the endpoint that is being called.
+  @Deprecated('Use endpoint instead')
+  String get endpointName => endpoint;
 
   /// The [HttpRequest] associated with the call.
   final HttpRequest httpRequest;
@@ -240,42 +334,51 @@ class MethodCallSession extends Session {
     required this.body,
     required String path,
     required this.httpRequest,
-    String? authenticationKey,
+    required super.endpoint,
+    required String method,
+    required this.queryParameters,
+    required super.authenticationKey,
     super.enableLogging = true,
-  }) {
-    // Read query parameters
-    var queryParameters = <String, dynamic>{};
-    if (body != '' && body != 'null') {
-      queryParameters = jsonDecode(body).cast<String, dynamic>();
-    }
+  })  : _method = method,
+        super(method: method);
+}
 
-    // Add query parameters from uri
-    queryParameters.addAll(uri.queryParameters);
-    this.queryParameters = queryParameters;
+/// When a request is made to the web server a [WebCallSession] object is
+/// created. It contains all data associated with the current connection and
+/// provides easy access to the database.
+class WebCallSession extends Session {
+  /// Creates a new [Session] for a method call to an endpoint.
+  WebCallSession({
+    required super.server,
+    required super.endpoint,
+    required super.authenticationKey,
+    super.enableLogging = true,
+  });
+}
 
-    if (path.contains('/')) {
-      // Using the new path format (for OpenAPI)
-      var pathComponents = path.split('/');
-      endpointName = pathComponents[0];
-      methodName = pathComponents[1];
-    } else {
-      // Using the standard format with query parameters
-      endpointName = path;
-      var methodName = queryParameters['method'];
-      if (methodName == null && path == 'webserver') {
-        this.methodName = '';
-      } else if (methodName != null) {
-        this.methodName = methodName;
-      } else {
-        throw FormatException(
-          'No method name specified in call to $endpointName',
-        );
-      }
-    }
+/// When a connection is made to the [Server] to an endpoint method that uses a
+/// stream [MethodStreamSession] object is created. It contains all data
+/// associated with the current connection and provides easy access to the
+/// database.
+class MethodStreamSession extends Session {
+  /// The connection id that uniquely identifies the stream.
+  final UuidValue connectionId;
 
-    // Get the the authentication key, if any
-    _authenticationKey = authenticationKey ?? queryParameters['auth'];
-  }
+  final String _method;
+
+  @override
+  String get method => _method;
+
+  /// Creates a new [MethodStreamSession].
+  MethodStreamSession({
+    required super.server,
+    required super.enableLogging,
+    required super.authenticationKey,
+    required super.endpoint,
+    required String method,
+    required this.connectionId,
+  })  : _method = method,
+        super(method: method);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -297,9 +400,17 @@ class StreamingSession extends Session {
   /// Set if there is an open session log.
   int? sessionLogId;
 
-  /// The id of the current incoming message being processed. Increments by 1
-  /// for each message passed to an endpoint for processing.
-  int currentMessageId = 0;
+  String _endpoint;
+
+  /// The name of the endpoint that is being called.
+  set endpoint(String endpoint) => _endpoint = endpoint;
+
+  @override
+  String get endpoint => _endpoint;
+
+  /// The name of the endpoint that is being called.
+  @Deprecated('Use endpoint instead')
+  String get endpointName => _endpoint;
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
@@ -307,21 +418,24 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
+    super.endpoint = 'StreamingSession',
     super.enableLogging = true,
-  }) {
+  })  : _endpoint = endpoint,
+        super(messageId: 0) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    // Get the the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
+    // Get the authentication key, if any
+    _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
   }
 
   /// Updates the authentication key for the streaming session.
   @internal
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
+    _initialized = false;
   }
 }
 
@@ -336,61 +450,7 @@ class FutureCallSession extends Session {
     required super.server,
     required this.futureCallName,
     super.enableLogging = true,
-  });
-}
-
-/// Collects methods for authenticating users.
-class UserAuthetication {
-  final Session _session;
-
-  UserAuthetication._(this._session);
-
-  /// Returns the id of an authenticated user or null if the user isn't signed
-  /// in.
-  Future<int?> get authenticatedUserId async {
-    if (!_session._initialized) await _session._initialize();
-    return _session._authenticatedUser;
-  }
-
-  /// Signs in an user to the server. The user should have been authenticated
-  /// before signing them in. Send the AuthKey.id and key to the client and
-  /// use that to authenticate in future calls. In most cases, it's more
-  /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
-
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
-      if (scope.name != null) scopeNames.add(scope.name!);
-    }
-
-    var authKey = AuthKey(
-      userId: userId,
-      hash: hash,
-      key: key,
-      scopeNames: scopeNames,
-      method: method,
-    );
-
-    _session._authenticatedUser = userId;
-    var result = await AuthKey.db.insertRow(_session, authKey);
-    return result.copyWith(key: key);
-  }
-
-  /// Signs out a user from the server and deletes all authentication keys.
-  /// This means that the user will be signed out from all connected devices.
-  Future<void> signOutUser({int? userId}) async {
-    userId ??= await authenticatedUserId;
-    if (userId == null) return;
-
-    await _session.dbNext
-        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
-    _session._authenticatedUser = null;
-  }
+  }) : super(endpoint: 'FutureCall', method: futureCallName);
 }
 
 /// Collects methods for accessing cloud storage.
@@ -541,16 +601,111 @@ class MessageCentralAccess {
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
   /// message will be posted to all servers in the cluster, otherwise it will
-  /// only be posted locally on the current server.
-  void postMessage(
+  /// only be posted locally on the current server. Returns true if the message
+  /// was successfully posted.
+  ///
+  /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  Future<bool> postMessage(
     String channelName,
-    SerializableEntity message, {
+    SerializableModel message, {
     bool global = false,
-  }) {
-    _session.server.messageCentral.postMessage(
-      channelName,
+  }) =>
+      _session.server.messageCentral.postMessage(
+        channelName,
+        message,
+        global: global,
+      );
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(String channelName) =>
+      _session.server.messageCentral.createStream<T>(_session, channelName);
+
+  /// Broadcasts revoked authentication events to the Serverpod framework.
+  /// This message ensures authenticated connections to the user are closed.
+  ///
+  /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
+  /// user.
+  ///
+  /// The [message] must be of type [RevokedAuthenticationUser],
+  /// [RevokedAuthenticationAuthId], or [RevokedAuthenticationScope].
+  ///
+  /// [RevokedAuthenticationUser] is used to communicate that all the user's
+  /// authentication is revoked.
+  ///
+  /// [RevokedAuthenticationAuthId] is used to communicate that a specific
+  /// authentication id has been revoked for a user.
+  ///
+  /// [RevokedAuthenticationScope] is used to communicate that a specific
+  /// scope or scopes have been revoked for the user.
+  Future<bool> authenticationRevoked(
+    // Uses `Object` to avoid breaking change, but should switch to `String` (mirroring `AuthenticationInfo.userIdentifier`) in the future
+    Object userIdentifier,
+    SerializableModel message,
+  ) async {
+    if (message is! RevokedAuthenticationUser &&
+        message is! RevokedAuthenticationAuthId &&
+        message is! RevokedAuthenticationScope) {
+      throw ArgumentError(
+        'Message must be of type RevokedAuthenticationUser, '
+        'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
+      );
+    }
+
+    try {
+      return await _session.server.messageCentral.postMessage(
+        MessageCentralServerpodChannels.revokedAuthentication(
+            userIdentifier.toString()),
+        message,
+        global: true,
+      );
+    } on StateError catch (_) {
+      // Throws StateError if Redis is not enabled that is ignored.
+    }
+
+    // If Redis is not enabled, send the message locally.
+    return _session.server.messageCentral.postMessage(
+      MessageCentralServerpodChannels.revokedAuthentication(
+          userIdentifier.toString()),
       message,
-      global: global,
+      global: false,
     );
   }
 }
+
+/// Internal methods for [Session].
+/// This is used to provide access to internal methods that should not be
+/// accessed from outside the library.
+extension SessionInternalMethods on Session {
+  /// Returns the [LogManager] for the session.
+  SessionLogManager? get logManager => _logManager;
+
+  /// The authentication information for the session, if set.
+  /// This will be null if the session is not authenticated or not initialized.
+  AuthenticationInfo? get authInfoOrNull {
+    return _authenticated;
+  }
+
+  /// Returns the next message id for the session.
+  int? get messageId => _messageId;
+
+  /// Returns the next message id for the session.
+  int nextMessageId() {
+    var id = _messageId ?? 0;
+    _messageId = id + 1;
+
+    return id;
+  }
+}
+
+/// Returns true if the session is expected to be alive for an extended
+/// period of time.
+bool _isLongLived(Session session) =>
+    session is StreamingSession || session is MethodStreamSession;

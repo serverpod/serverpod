@@ -1,0 +1,5 @@
+class: ScopeServerOnlyField
+fields:
+  allScope: Types?
+  serverOnlyScope: Types?, scope = serverOnly
+  nested: ScopeServerOnlyField?

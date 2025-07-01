@@ -16,7 +16,7 @@ class ManyRelationBuilder {
   ManyRelation build() {
     return ManyRelation(
       tableWithRelations: _table,
-      table: Table(
+      table: Table<int?>(
         tableName: _table.tableName,
         tableRelation: _table.tableRelation!.lastRelation,
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 import 'auth.dart';
@@ -19,12 +19,21 @@ class SignInWithAppleButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
+  /// The text widget's label
+  ///
+  /// Be sure to respect the Apple branding guidelines: https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple#Creating-a-custom-Sign-in-with-Apple-button
+  /// Or your app may be rejected.
+  ///
+  /// Default to `Sign in with Apple`
+  final String? label;
+
   /// Creates a new Sign in with Google button.
   const SignInWithAppleButton({
     required this.caller,
     this.onSignedIn,
     this.onFailure,
     this.style,
+    this.label,
     super.key,
   });
 
@@ -46,7 +55,7 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
           ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
-        // dismissable.
+        // dismissible.
         showLoadingBarrier(context: context);
         var navigator = Navigator.of(context, rootNavigator: true);
 
@@ -66,8 +75,8 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
             // Pop the loading barrier
             navigator.pop());
       },
-      label: const Text('Sign in with Apple'),
-      icon: const Icon(MdiIcons.apple),
+      label: Text(widget.label ?? 'Sign in with Apple'),
+      icon: Icon(MdiIcons.apple),
     );
   }
 }

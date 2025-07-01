@@ -1,0 +1,64 @@
+name: Feature Request
+description: Suggest a new feature for Serverpod.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        When suggesting a feature, please read this complete form and fill in all the fields to ensure we understand your idea thoroughly!
+
+  - type: textarea
+    id: problem-to-solve
+    attributes:
+      label: Problem to Solve
+      description: What problem are you trying to solve with this feature?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What is your proposed solution? Add as much detail as possible, including code examples or references.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: How would this feature be used in a real-world scenario? Provide an example if possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Are there any alternative solutions or features you've considered? If so, what are they?
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Share any additional context or information about the feature.
+
+  - type: dropdown
+    id: experience
+    attributes:
+      label: How experienced are you with this library?
+      multiple: false
+      description: This helps us understand where in the user journey this issue might arise.
+      options:
+        - Beginner - Just getting started with this library
+        - Intermediate - Familiar with the basics or have used it in a few projects
+        - Expert - Experienced and comfortable with using this library in complex projects
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Are you interested in working on a PR for this?
+      options:
+        - label: I want to work on this

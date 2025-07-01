@@ -6,12 +6,16 @@ on:
       - main
       - dev
       - tests
-      - stable-1.0
-      - stable-1.1
+      - stable-*
   pull_request:
     branches:
       - main
       - dev
+      - stable-*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   dart_format:
@@ -19,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ['3.0.0']
+        dart-version: ['3.5.0']
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
@@ -30,99 +34,288 @@ jobs:
 
   dart_analyze:
     name: dart analyze
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0']
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Install dependencies
-        run: util/pub_get_all
-      - name: Analyze
-        run: util/run_tests_analyze
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Run lint
+        run: melos lint_strict
+
+  dart_analyze_latest:
+    name: dart analyze latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.32.1']
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Run lint
+        run: melos lint
+
+  dart_analyze_downgrade:
+    name: dart analyze downgrade
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Downgrade dependencies
+        run: melos downgrade
+      - name: Run lint
+        run: melos lint_loose
 
   serverpod_generate:
     name: serverpod generate
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install dependencies
+        run: bash util/pub_get_all
       - name: Run serverpod generate
-        run: util/run_tests_serverpod_generate
+        run: bash util/run_tests_serverpod_generate
 
   update_pubspecs:
     name: update pubspecs
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run serverpod update pubspecs
-        run: util/run_tests_update_pubspecs
+        run: bash util/run_tests_update_pubspecs
 
-  unit_tests:
-    name: Unit tests
+  unit_io_tests:
+    name: Unit tests IO
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
         os: [windows-latest, ubuntu-latest]
-        path:
-          [
-            "tools/serverpod_cli",
-            "packages/serverpod",
-            "packages/serverpod_serialization",
-            "tests/serverpod_test_client",
-            "tests/serverpod_test_server",
-          ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run unit tests
-        run: dart test
+        run: bash util/run_tests_unit
+
+  unit_web_tests:
+    name: Unit tests Web
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - compiler: dart2js
+          - os: ubuntu-latest
+            platform: chrome
+          - os: windows-latest
+            platform: edge
+          - flutter-version: '3.32.1'
+            platform: chrome
+            compiler: dart2wasm
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - uses: browser-actions/setup-chrome@v1
+      - name: Run unit tests
+        run: >-
+          dart test
+          --platform=${{ matrix.platform }}
+          --compiler=${{ matrix.compiler }}
+          --reporter=failures-only
+        working-directory: packages/serverpod_client
+
+  flutter_unit_tests:
+    name: Flutter unit tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+        os: [windows-latest, ubuntu-latest]
+        path: ['packages/serverpod_flutter']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run unit tests
+        run: flutter test
         working-directory: ${{ matrix.path }}
 
-  single_server_tests:
-    name: Serverpod tests
+  e2e_io_tests:
+    name: Serverpod E2E IO tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Run single server tests
-        run: util/run_tests_single_server
+          cache: true
+      - name: Run e2e tests
+        run: util/run_tests_e2e
+
+  e2e_web_tests:
+    name: Serverpod E2E web tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run e2e tests
+        run: util/run_tests_e2e firefox
 
   integration_tests:
     name: Serverpod integration tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
+        path: ['packages/serverpod_shared']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run integration tests
+        run: dart test test_integration --reporter=failures-only
+        working-directory: ${{ matrix.path }}
+
+  module_integration_tests:
+    name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+        module:
+          [
+            'tests/serverpod_test_module/serverpod_test_module_server',
+            'tests/serverpod_test_nonvector/serverpod_test_nonvector_server',
+            'tests/serverpod_new_auth_test/serverpod_new_auth_test_server',
+            'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
+            'modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server',
+            'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
+            'modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server',
+            'modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server',
+            'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',
+            'modules/serverpod_auth/serverpod_auth_server',
+          ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Start containers
+        run: docker compose up --build -V -d
+        working-directory: ${{ matrix.module }}
+      - name: Wait for services to be ready
+        run: |
+          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
+          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
+        working-directory: tests/docker/tests_integration
+      - name: Run integration tests (concurrently)
+        run: dart test -t integration -x concurrency_one --reporter=failures-only || [ $? -eq 79 ]
+        working-directory: ${{ matrix.module }}
+      - name: Run integration tests (sequentially)
+        if: always()
+        # Exit code `79` means that no tests were found for the tags
+        run: dart test -t integration -t concurrency_one --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
+        working-directory: ${{ matrix.module }}
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
+        working-directory: ${{ matrix.module }}
+
+  integration_test_server:
+    name: Serverpod integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run integration tests
         run: util/run_tests_integration
+
+  integration_test_server_concurrent:
+    name: Serverpod concurrent integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.24.0', '3.32.1']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run integration tests
+        run: util/run_tests_integration_concurrently
 
   bootstrap_tests:
     name: Bootstrap tests
@@ -130,14 +323,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
-        os: [ubuntu-latest]
-        path: ["tests/bootstrap_project"]
+        flutter-version: ['3.24.0', '3.32.1']
+        os: [windows-latest, ubuntu-latest]
+        path: ['tests/bootstrap_project']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -149,7 +343,7 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test --concurrency=1
+        run: dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
@@ -157,12 +351,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
 
@@ -172,14 +367,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.24.0', '3.32.1']
         os: [ubuntu-latest]
-        path: ["tools/serverpod_cli/test_e2e"]
+        path: ['tests/serverpod_cli_e2e_test']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -191,5 +387,25 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test --concurrency=1
+        run: dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
+
+  integration_test_flutter:
+    name: Serverpod integration tests (flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run integration tests in Docker
+        run: util/run_tests_flutter_integration
+
+  version_change_test:
+    name: Version change test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+      - name: Run version change test
+        run: util/run_tests_version_change

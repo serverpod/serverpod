@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:super_string/super_string.dart';
 
@@ -18,6 +18,7 @@ class BuildRepositoryClass {
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
+    TypeReference idTypeReference,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
@@ -65,7 +66,7 @@ class BuildRepositoryClass {
         ..methods.addAll([
           _buildFindMethod(className, relationFields),
           _buildFindFirstRow(className, relationFields),
-          _buildFindByIdMethod(className, relationFields),
+          _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
           _buildUpdateMethod(className),
@@ -209,6 +210,29 @@ class BuildRepositoryClass {
   Method _buildFindMethod(String className,
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..docs.add('''
+/// Returns a list of [$className]s matching the given query parameters.
+///
+/// Use [where] to specify which items to include in the return value.
+/// If none is specified, all items will be returned.
+///
+/// To specify the order of the items use [orderBy] or [orderByList]
+/// when sorting by multiple columns.
+///
+/// The maximum number of items can be set by [limit]. If no limit is set,
+/// all items matching the query will be returned.
+///
+/// [offset] defines how many items to skip, after which [limit] (or all)
+/// items are read from the database.
+///
+/// ```dart
+/// var persons = await Persons.db.find(
+///   session,
+///   where: (t) => t.lastName.equals('Jones'),
+///   orderBy: (t) => t.firstName,
+///   limit: 100,
+/// );
+/// ```''')
       ..name = 'find'
       ..returns = TypeReference(
         (r) => r
@@ -278,7 +302,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('find')
           .call([], {
             'where': refer('where').nullSafeProperty('call').call(
@@ -307,6 +331,24 @@ class BuildRepositoryClass {
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
+      ..docs.add('''
+/// Returns the first matching [$className] matching the given query parameters.
+///
+/// Use [where] to specify which items to include in the return value.
+/// If none is specified, all items will be returned.
+///
+/// To specify the order use [orderBy] or [orderByList]
+/// when sorting by multiple columns.
+///
+/// [offset] defines how many items to skip, after which the next one will be picked.
+///
+/// ```dart
+/// var youngestPerson = await Persons.db.findFirstRow(
+///   session,
+///   where: (t) => t.lastName.equals('Jones'),
+///   orderBy: (t) => t.age,
+/// );
+/// ```''')
       ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
@@ -366,7 +408,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('findFirstRow')
           .call(
             [],
@@ -391,9 +433,15 @@ class BuildRepositoryClass {
           .statement);
   }
 
-  Method _buildFindByIdMethod(String className,
-      Iterable<SerializableModelFieldDefinition> objectRelationFields) {
+  Method _buildFindByIdMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+    TypeReference idTypeReference,
+  ) {
     return Method((m) => m
+      ..docs.add(
+        '/// Finds a single [$className] by its [id] or null if no such row exists.',
+      )
       ..name = 'findById'
       ..returns = TypeReference(
         (r) => r
@@ -409,7 +457,7 @@ class BuildRepositoryClass {
           ..type = refer('Session', 'package:serverpod/serverpod.dart')
           ..name = 'session'),
         Parameter((p) => p
-          ..type = refer('int')
+          ..type = idTypeReference.rebuild((u) => u.isNullable = false)
           ..name = 'id'),
       ])
       ..optionalParameters.addAll([
@@ -430,7 +478,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('findById')
           .call(
             [refer('id')],
@@ -447,6 +495,13 @@ class BuildRepositoryClass {
   Method _buildInsertMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Inserts all [$className]s in the list and returns the inserted rows.
+///
+/// The returned [$className]s will have their `id` fields set.
+///
+/// This is an atomic operation, meaning that if one of the rows fails to
+/// insert, none of the rows will be inserted.''')
         ..name = 'insert'
         ..returns = TypeReference(
           (r) => r
@@ -472,7 +527,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('insert')
             .call([
               refer('rows')
@@ -489,6 +544,10 @@ class BuildRepositoryClass {
   Method _buildInsertRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Inserts a single [$className] and returns the inserted row.
+///
+/// The returned [$className] will have its `id` field set.''')
         ..name = 'insertRow'
         ..returns = TypeReference(
           (r) => r
@@ -514,7 +573,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('insertRow')
             .call([
               refer('row')
@@ -531,6 +590,12 @@ class BuildRepositoryClass {
   Method _buildUpdateMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Updates all [$className]s in the list and returns the updated rows. If
+/// [columns] is provided, only those columns will be updated. Defaults to
+/// all columns.
+/// This is an atomic operation, meaning that if one of the rows fails to
+/// update, none of the rows will be updated.''')
         ..name = 'update'
         ..returns = TypeReference(
           (r) => r
@@ -563,7 +628,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('update')
             .call([
               refer('rows')
@@ -583,6 +648,10 @@ class BuildRepositoryClass {
   Method _buildUpdateRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Updates a single [$className]. The row needs to have its id set.
+/// Optionally, a list of [columns] can be provided to only update those
+/// columns. Defaults to all columns.''')
         ..name = 'updateRow'
         ..returns = TypeReference(
           (r) => r
@@ -615,7 +684,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('updateRow')
             .call([
               refer('row')
@@ -635,11 +704,23 @@ class BuildRepositoryClass {
   Method _buildDeleteMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Deletes all [$className]s in the list and returns the deleted rows.
+/// This is an atomic operation, meaning that if one of the rows fail to
+/// be deleted, none of the rows will be deleted.''')
         ..name = 'delete'
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('List<int>'))),
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = 'List'
+                ..types.add(
+                  TypeReference(
+                    (r) => r..symbol = className,
+                  ),
+                ),
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -660,7 +741,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('delete')
             .call([
               refer('rows')
@@ -677,11 +758,14 @@ class BuildRepositoryClass {
   Method _buildDeleteRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('/// Deletes a single [$className].')
         ..name = 'deleteRow'
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('int'))),
+            ..types.add(TypeReference(
+              (r) => r..symbol = className,
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -702,7 +786,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('deleteRow')
             .call([
               refer('row')
@@ -719,11 +803,20 @@ class BuildRepositoryClass {
   Method _buildDeleteWhereMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('/// Deletes all rows matching the [where] expression.')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('List<int>'))),
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = 'List'
+                ..types.add(
+                  TypeReference(
+                    (r) => r..symbol = className,
+                  ),
+                ),
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -750,7 +843,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('deleteWhere')
             .call([], {
               'where': refer('where').call([refer(className).property('t')]),
@@ -766,6 +859,9 @@ class BuildRepositoryClass {
   Method _buildCountMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add('''
+/// Counts the number of rows matching the [where] expression. If omitted,
+/// will return the count of all rows in the table.''')
         ..name = 'count'
         ..returns = TypeReference(
           (r) => r
@@ -801,7 +897,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('count')
             .call([], {
               'where': refer('where').nullSafeProperty('call').call(
@@ -861,7 +957,8 @@ class BuildRepositoryClass {
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var fieldName = firstGeneric.className.camelCase;
       var otherClassFieldName =
           fieldName == classFieldName ? 'nested$className' : fieldName;
 
@@ -875,6 +972,9 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
+        ..docs.add('''
+/// Creates a relation between this [$className] and the given [${firstGeneric.className}]s
+/// by setting each [${firstGeneric.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -897,8 +997,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachImplementationBlockImplicitListRelation(
@@ -925,11 +1034,12 @@ class BuildRepositoryClass {
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var fieldName = firstGeneric.className.camelCase;
       var otherClassFieldName =
           fieldName == classFieldName ? 'nested$className' : fieldName;
 
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -939,6 +1049,9 @@ class BuildRepositoryClass {
       var relation = field.relation as ListRelationDefinition;
 
       methodBuilder
+        ..docs.add('''
+/// Creates a relation between this [$className] and the given [${firstGeneric.className}]
+/// by setting the [${firstGeneric.className}]'s foreign key `${relation.foreignFieldName}` to refer to this [$className].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -956,8 +1069,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachRowImplementationBlockImplicit(
@@ -997,6 +1119,9 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add('''
+/// Creates a relation between the given [$className] and [${field.type.className}]
+/// by setting the [$className]'s foreign key `${relation.fieldName}` to refer to the [${field.type.className}].''')
         ..returns = refer('Future<void>')
         ..name = field.name
         ..requiredParameters.addAll([
@@ -1014,8 +1139,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
             ? _buildAttachRowImplementationBlockExplicit(
@@ -1188,11 +1322,12 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
-      var classFieldName = field.type.generics.first.className;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var classFieldName = firstGeneric.className;
+      var fieldName = firstGeneric.className.camelCase;
 
       var relation = field.relation as ListRelationDefinition;
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1200,6 +1335,12 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the given [$classFieldName]
+/// by setting the [$classFieldName]'s foreign key `${relation.foreignFieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1217,8 +1358,17 @@ class BuildRepositoryClass {
                 config: config,
               );
             refer(classFieldName, 'package:serverpod/serverpod.dart');
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1246,11 +1396,12 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
-      var classFieldName = field.type.generics.first.className;
-      var fieldName = field.type.generics.first.className.camelCase;
+      var firstGeneric = field.type.generics.first;
+      var classFieldName = firstGeneric.className;
+      var fieldName = firstGeneric.className.camelCase;
 
       var relation = field.relation as ListRelationDefinition;
-      var foreignType = field.type.generics.first.reference(
+      var foreignType = firstGeneric.reference(
         serverCode,
         nullable: false,
         subDirParts: classDefinition.subDirParts,
@@ -1258,6 +1409,12 @@ class BuildRepositoryClass {
       );
 
       methodBuilder
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the given [$classFieldName]
+/// by setting the [$classFieldName]'s foreign key `${relation.foreignFieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1274,8 +1431,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1297,16 +1463,24 @@ class BuildRepositoryClass {
     });
   }
 
-  Method _buildDetachRowFromObjectRelationField(String className,
-      SerializableModelFieldDefinition field, ClassDefinition classDefinition) {
+  Method _buildDetachRowFromObjectRelationField(
+    String className,
+    SerializableModelFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
     return Method((methodBuilder) {
       var classFieldName = className.toCamelCase(isLowerCamelCase: true);
       var fieldName = field.name;
 
-      var relation = field.relation;
-      (relation as ObjectRelationDefinition);
+      var relation = field.relation as ObjectRelationDefinition;
 
       methodBuilder
+        ..docs.add('''
+/// Detaches the relation between this [$className] and the [${field.type.className}] set in `${field.name}`
+/// by setting the [$className]'s foreign key `${relation.fieldName}` to `null`.
+///
+/// This removes the association between the two models without deleting
+/// the related record.''')
         ..name = field.name
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
@@ -1318,8 +1492,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = classFieldName
               ..type = refer(className);
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
@@ -1338,7 +1521,8 @@ class BuildRepositoryClass {
                   nullable: false,
                   subDirParts: classDefinition.subDirParts,
                   config: config,
-                ));
+                ),
+              );
       const Code('');
     });
   }
@@ -1705,14 +1889,15 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.addAll([
             refer('session')
-                .property('dbNext')
+                .property('db')
                 .property(property)
                 .call([
                   refer(localCopyVariable)
                 ], {
                   'columns': literalList(
                     [classReference.property('t').property(fieldName)],
-                  )
+                  ),
+                  'transaction': refer('transaction'),
                 }, [
                   classReference,
                 ])

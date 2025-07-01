@@ -1,10 +1,11 @@
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
+
+import '../../test_util/builders/endpoint_definition_builder.dart';
+import '../../test_util/builders/generator_config_builder.dart';
+import '../../test_util/builders/method_definition_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -12,6 +13,8 @@ const generator = EndpointDescriptionGenerator();
 
 void main() {
   var expectedFileName = path.join(
+    'lib',
+    'src',
     'generated',
     'protocol.yaml',
   );
@@ -93,7 +96,9 @@ example2:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],
@@ -122,8 +127,12 @@ example:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
-          MethodDefinitionBuilder().withName('method2').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder()
+              .withName('method2')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],
@@ -153,8 +162,12 @@ example:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
-          MethodDefinitionBuilder().withName('method2').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder()
+              .withName('method2')
+              .buildMethodCallDefinition(),
         ]).build(),
         EndpointDefinitionBuilder()
             .withClassName('ExampleEndpoint2')
@@ -164,7 +177,9 @@ example:
             .withClassName('ExampleEndpoint3')
             .withName('example3')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],

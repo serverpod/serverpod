@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import 'pgvector.dart';
+
 /// Adds clone method that create a deep copy of a ByteData.
 extension CloneByteData on ByteData {
   /// Creates a deep copy of the ByteData, mutations to the original will
@@ -15,40 +17,57 @@ extension CloneByteData on ByteData {
   }
 }
 
-/// Adds clone method that create a deep copy of a list.
-extension CloneList on List {
-  /// Creates a deep copy of the List, mutations to the original will
+/// Adds clone method that create a deep copy of a ByteData.
+extension CloneVector on Vector {
+  /// Creates a deep copy of the Vector, mutations to the original will
   /// not affect the copy.
-  List<T> clone<T>() {
-    return map((e) => _guardedCopyWith(e)).whereType<T>().toList();
+  Vector clone() {
+    return Vector.fromBinary(toBinary());
   }
 }
 
-/// Adds clone method that create a deep copy of a map.
-extension CloneMap on Map {
-  /// Creates a deep copy of the Map, mutations to the original will
+/// Adds clone method that create a deep copy of a HalfVector.
+extension CloneHalfVector on HalfVector {
+  /// Creates a deep copy of the HalfVector, mutations to the original will
   /// not affect the copy.
-  Map<K, V> clone<K, V>() {
-    return map(
-      (key, value) => MapEntry(_guardedCopyWith(key), _guardedCopyWith(value)),
-    ).cast<K, V>();
+  HalfVector clone() {
+    return HalfVector.fromBinary(toBinary());
+  }
+}
+
+/// Adds clone method that create a deep copy of a SparseVector.
+extension CloneSparseVector on SparseVector {
+  /// Creates a deep copy of the SparseVector, mutations to the original will
+  /// not affect the copy.
+  SparseVector clone() {
+    return SparseVector.fromBinary(toBinary());
+  }
+}
+
+/// Adds clone method that create a deep copy of a Bit vector.
+extension CloneBit on Bit {
+  /// Creates a deep copy of the Bit vector, mutations to the original will
+  /// not affect the copy.
+  Bit clone() {
+    return Bit.fromBinary(toBinary());
   }
 }
 
 /// List of types that are not mutable and therefore do not need to be
 /// copied or handled in a copyWith method.
-final noneMutableTypeNames =
-    _noneMutableTypes.map((t) => t.toString()).toList();
+final nonMutableTypeNames = _nonMutableTypes.map((t) => t.toString()).toList();
 
 /// List of types that has a clone method extension and therefore can be
 /// copied by calling clone().
-const clonableTypeNames = [
+const hasCloneExtensionTypes = [
   'ByteData',
-  'List',
-  'Map',
+  'Vector',
+  'HalfVector',
+  'SparseVector',
+  'Bit',
 ];
 
-const _noneMutableTypes = [
+const _nonMutableTypes = [
   Null,
   String,
   int,
@@ -57,24 +76,6 @@ const _noneMutableTypes = [
   DateTime,
   Duration,
   UuidValue,
+  Uri,
+  BigInt,
 ];
-
-dynamic _guardedCopyWith(dynamic element) {
-  if (_noneMutableTypes.contains(element.runtimeType)) {
-    return element;
-  }
-
-  // Runtime type is never Enum but Enum is always inherited.
-  if (element is Enum) return element;
-
-  // Required as the extension with clone() is not found otherwise.
-  if (element is ByteData) return element.clone();
-  if (element is List) return element.clone();
-  if (element is Map) return element.clone();
-
-  try {
-    return element.copyWith();
-  } on NoSuchMethodError {
-    throw 'No copyWith method found on ${element.runtimeType}';
-  }
-}

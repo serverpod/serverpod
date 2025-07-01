@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod_client/serverpod_client.dart';
-import 'package:system_resources/system_resources.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:system_resources/system_resources.dart';
 
 /// Performs health checks on the server once a minute, typically this class
 /// is managed internally by Serverpod. Writes results to the database.
@@ -18,10 +19,11 @@ class HealthCheckManager {
 
   /// Called when health checks have been completed, if the server is
   /// running in [ServerpodRole.maintenance] mode.
-  final VoidCallback onCompleted;
+  final void Function() onCompleted;
 
   bool _running = false;
   Timer? _timer;
+  Completer<void>? _pendingHealthCheck;
 
   /// Creates a new [HealthCheckManager].
   HealthCheckManager(this._pod, this.onCompleted);
@@ -29,28 +31,49 @@ class HealthCheckManager {
   /// Starts the health check manager.
   Future<void> start() async {
     _running = true;
+
     try {
       await SystemResources.init();
     } catch (e) {
       stderr.writeln(
-        'CPU and memory usage metrics are not supported on this platform.',
-      );
+          'WARNING: CPU and memory usage metrics are not supported on this platform.');
     }
+
     _scheduleNextCheck();
   }
 
   /// Stops the health check manager.
-  void stop() {
+  Future<void> stop() async {
     _running = false;
     _timer?.cancel();
+    await _pendingHealthCheck?.future;
   }
 
-  void _performHealthCheck() async {
-    if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+  Future<void> _performHealthCheck() async {
+    final completer = Completer<void>();
+    _pendingHealthCheck = completer;
+
+    try {
+      await _innerPerformHealthCheck();
+      completer.complete();
+    } catch (e, stackTrace) {
+      if (!(e is ExitException && e.exitCode == 0)) {
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error in health check',
+        );
+      }
+      completer.completeError(e, stackTrace);
+    }
+  }
+
+  Future<void> _innerPerformHealthCheck() async {
+    if (_pod.config.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
     }
 
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
     var numHealthChecks = 0;
 
     try {
@@ -69,8 +92,6 @@ class HealthCheckManager {
       // the same time. Doesn't cause any harm, but would be nice to fix.
     }
 
-    await session.close();
-
     await _pod.reloadRuntimeSettings();
 
     await _cleanUpClosedSessions();
@@ -79,9 +100,9 @@ class HealthCheckManager {
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.
-    if (_pod.commandLineArgs.role == ServerpodRole.monolith) {
+    if (_pod.config.role == ServerpodRole.monolith) {
       _scheduleNextCheck();
-    } else if (_pod.commandLineArgs.role == ServerpodRole.maintenance) {
+    } else if (_pod.config.role == ServerpodRole.maintenance) {
       onCompleted();
     }
   }
@@ -95,7 +116,7 @@ class HealthCheckManager {
   }
 
   Future<void> _cleanUpClosedSessions() async {
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
 
     try {
       var encoder = DatabasePoolManager.encoder;
@@ -110,23 +131,25 @@ class HealthCheckManager {
       // Touch all sessions that have been opened by this server.
       var touchQuery =
           'UPDATE serverpod_session_log SET touched = $now WHERE "serverId" = $serverId AND "isOpen" = TRUE AND "time" > $serverStartTime';
-      await session.dbNext.unsafeQuery(touchQuery);
+      await session.db.unsafeQuery(touchQuery);
 
       // Close sessions that haven't been touched in 3 minutes.
       var closeQuery =
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
-      await session.dbNext.unsafeQuery(closeQuery);
+      await session.db.unsafeQuery(closeQuery);
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to cleanup closed sessions: $e');
-      stderr.write('$stackTrace');
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Failed to cleanup closed sessions',
+      );
     }
-    await session.close();
   }
 
   Future<void> _optimizeHealthCheckData(int numHealthChecks) async {
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
     try {
-      // Optimize connection info entreis.
+      // Optimize connection info entries.
       var didOptimizeMinutes = await _optimizeConnectionInfoEntries(
         session,
         1,
@@ -158,10 +181,12 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
-      return;
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Failed to optimize health check data',
+      );
     }
-    await session.close();
   }
 
   Future<bool> _optimizeConnectionInfoEntries(
@@ -343,6 +368,29 @@ class HealthCheckManager {
     );
 
     return true;
+  }
+
+  void _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    String? message,
+  }) {
+    var now = DateTime.now().toUtc();
+    if (message != null) {
+      stderr.writeln('$now ERROR: $message');
+    }
+    stderr.writeln('$now ERROR: $e');
+    stderr.writeln('$stackTrace');
+
+    _pod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: OriginSpace.framework,
+      context: DiagnosticEventContext(
+        serverId: _pod.serverId,
+        serverRunMode: _pod.config.role.name,
+        serverName: '',
+      ),
+    );
   }
 }
 

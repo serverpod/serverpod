@@ -1,19 +1,20 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_settings.dart' as _i2;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
-abstract class LogSettingsOverride extends _i1.SerializableEntity {
+abstract class LogSettingsOverride implements _i1.SerializableModel {
   LogSettingsOverride._({
     this.module,
     this.endpoint,
@@ -28,19 +29,13 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
     required _i2.LogSettings logSettings,
   }) = _LogSettingsOverrideImpl;
 
-  factory LogSettingsOverride.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogSettingsOverride.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettingsOverride(
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      logSettings: serializationManager
-          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
+      module: jsonSerialization['module'] as String?,
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      logSettings: _i2.LogSettings.fromJson(
+          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
     );
   }
 
@@ -56,6 +51,9 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
   /// Log settings override.
   _i2.LogSettings logSettings;
 
+  /// Returns a shallow copy of this [LogSettingsOverride]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   LogSettingsOverride copyWith({
     String? module,
     String? endpoint,
@@ -65,11 +63,16 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'logSettings': logSettings,
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      'logSettings': logSettings.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -88,6 +91,9 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
           logSettings: logSettings,
         );
 
+  /// Returns a shallow copy of this [LogSettingsOverride]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   LogSettingsOverride copyWith({
     Object? module = _Undefined,

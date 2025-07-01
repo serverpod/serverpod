@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleDateTime extends _i1.SerializableEntity {
+abstract class SimpleDateTime implements _i1.SerializableModel {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -22,14 +23,11 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
     required DateTime dateTime,
   }) = _SimpleDateTimeImpl;
 
-  factory SimpleDateTime.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      dateTime: serializationManager
-          .deserialize<DateTime>(jsonSerialization['dateTime']),
+      id: jsonSerialization['id'] as int?,
+      dateTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['dateTime']),
     );
   }
 
@@ -41,6 +39,9 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -48,9 +49,14 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'dateTime': dateTime,
+      if (id != null) 'id': id,
+      'dateTime': dateTime.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -65,6 +71,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
           dateTime: dateTime,
         );
 
+  /// Returns a shallow copy of this [SimpleDateTime]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,

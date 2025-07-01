@@ -1,49 +1,48 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_settings.dart' as _i2;
+import 'log_settings_override.dart' as _i3;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow {
+abstract class RuntimeSettings
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   RuntimeSettings._({
-    int? id,
+    this.id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-  }) : super(id);
+  });
 
   factory RuntimeSettings({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) = _RuntimeSettingsImpl;
 
-  factory RuntimeSettings.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      logSettings: serializationManager
-          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
-      logSettingsOverrides:
-          serializationManager.deserialize<List<_i2.LogSettingsOverride>>(
-              jsonSerialization['logSettingsOverrides']),
-      logServiceCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logServiceCalls']),
-      logMalformedCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logMalformedCalls']),
+      id: jsonSerialization['id'] as int?,
+      logSettings: _i2.LogSettings.fromJson(
+          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
+      logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
+          .map((e) =>
+              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
+      logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
     );
   }
 
@@ -51,11 +50,14 @@ abstract class RuntimeSettings extends _i1.TableRow {
 
   static const db = RuntimeSettingsRepository._();
 
+  @override
+  int? id;
+
   /// Log settings.
   _i2.LogSettings logSettings;
 
   /// List of log setting overrides.
-  List<_i2.LogSettingsOverride> logSettingsOverrides;
+  List<_i3.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
@@ -64,190 +66,40 @@ abstract class RuntimeSettings extends _i1.TableRow {
   bool logMalformedCalls;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      if (id != null) 'id': id,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      if (id != null) 'id': id,
+      'logSettings': logSettings.toJsonForProtocol(),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+          valueToJson: (v) => v.toJsonForProtocol()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
-      'logServiceCalls': logServiceCalls,
-      'logMalformedCalls': logMalformedCalls,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'logSettings':
-        logSettings = value;
-        return;
-      case 'logSettingsOverrides':
-        logSettingsOverrides = value;
-        return;
-      case 'logServiceCalls':
-        logServiceCalls = value;
-        return;
-      case 'logMalformedCalls':
-        logMalformedCalls = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<RuntimeSettings>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<RuntimeSettings?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<RuntimeSettings?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<RuntimeSettings>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<RuntimeSettings>(
-      where: where(RuntimeSettings.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static RuntimeSettingsInclude include() {
@@ -273,6 +125,11 @@ abstract class RuntimeSettings extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -281,7 +138,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   _RuntimeSettingsImpl({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
@@ -292,26 +149,29 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
           logMalformedCalls: logMalformedCalls,
         );
 
+  /// Returns a shallow copy of this [RuntimeSettings]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   }) {
     return RuntimeSettings(
       id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
-      logSettingsOverrides:
-          logSettingsOverrides ?? this.logSettingsOverrides.clone(),
+      logSettingsOverrides: logSettingsOverrides ??
+          this.logSettingsOverrides.map((e0) => e0.copyWith()).toList(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
     );
   }
 }
 
-class RuntimeSettingsTable extends _i1.Table {
+class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
       : super(tableName: 'serverpod_runtime_settings') {
     logSettings = _i1.ColumnSerializable(
@@ -354,9 +214,6 @@ class RuntimeSettingsTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use RuntimeSettingsTable.t instead.')
-RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
-
 class RuntimeSettingsInclude extends _i1.IncludeObject {
   RuntimeSettingsInclude._();
 
@@ -364,7 +221,7 @@ class RuntimeSettingsInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => RuntimeSettings.t;
+  _i1.Table<int?> get table => RuntimeSettings.t;
 }
 
 class RuntimeSettingsIncludeList extends _i1.IncludeList {
@@ -384,12 +241,34 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RuntimeSettings.t;
+  _i1.Table<int?> get table => RuntimeSettings.t;
 }
 
 class RuntimeSettingsRepository {
   const RuntimeSettingsRepository._();
 
+  /// Returns a list of [RuntimeSettings]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<RuntimeSettings>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
@@ -400,7 +279,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<RuntimeSettings>(
+    return session.db.find<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -411,6 +290,23 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Returns the first matching [RuntimeSettings] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<RuntimeSettings?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
@@ -420,7 +316,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<RuntimeSettings>(
+    return session.db.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -430,105 +326,130 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Finds a single [RuntimeSettings] by its [id] or null if no such row exists.
   Future<RuntimeSettings?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<RuntimeSettings>(
+    return session.db.findById<RuntimeSettings>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [RuntimeSettings]s in the list and returns the inserted rows.
+  ///
+  /// The returned [RuntimeSettings]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RuntimeSettings>> insert(
     _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<RuntimeSettings>(
+    return session.db.insert<RuntimeSettings>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [RuntimeSettings] and returns the inserted row.
+  ///
+  /// The returned [RuntimeSettings] will have its `id` field set.
   Future<RuntimeSettings> insertRow(
     _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<RuntimeSettings>(
+    return session.db.insertRow<RuntimeSettings>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [RuntimeSettings]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RuntimeSettings>> update(
     _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<RuntimeSettings>(
+    return session.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [RuntimeSettings]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RuntimeSettings> updateRow(
     _i1.Session session,
     RuntimeSettings row, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<RuntimeSettings>(
+    return session.db.updateRow<RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [RuntimeSettings]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<RuntimeSettings>> delete(
     _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<RuntimeSettings>(
+    return session.db.delete<RuntimeSettings>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [RuntimeSettings].
+  Future<RuntimeSettings> deleteRow(
     _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<RuntimeSettings>(
+    return session.db.deleteRow<RuntimeSettings>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<RuntimeSettings>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<RuntimeSettings>(
+    return session.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<RuntimeSettings>(
+    return session.db.count<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
       transaction: transaction,

@@ -1,5 +1,7 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../generated/protocol.dart';
 
@@ -10,29 +12,36 @@ class Users {
     Session session,
     UserInfo userInfo, [
     String? authMethod,
+    UserInfoCreationCallback? onUserWillBeCreatedOverride,
+    UserInfoUpdateCallback? onUserCreatedOverride,
   ]) async {
-    if (AuthConfig.current.onUserWillBeCreated != null) {
-      var approved = await AuthConfig.current.onUserWillBeCreated!(
-        session,
-        userInfo,
-        authMethod,
-      );
-      if (!approved) return null;
-    }
+    bool approved = switch (onUserWillBeCreatedOverride) {
+      null => await AuthConfig.current.onUserWillBeCreated?.call(
+            session,
+            userInfo,
+            authMethod,
+          ) ??
+          true,
+      _ => await onUserWillBeCreatedOverride.call(session, userInfo, authMethod)
+    };
+    if (!approved) return null;
 
     userInfo = await UserInfo.db.insertRow(session, userInfo);
-    if (userInfo.id != null) {
-      if (AuthConfig.current.onUserCreated != null) {
-        await AuthConfig.current.onUserCreated!(session, userInfo);
-      }
-      return userInfo;
+
+    if (onUserCreatedOverride == null) {
+      await AuthConfig.current.onUserCreated?.call(session, userInfo);
+    } else {
+      await onUserCreatedOverride(session, userInfo);
     }
-    return null;
+
+    return userInfo;
   }
 
   /// Finds a user by its email address. Returns null if no user is found.
   static Future<UserInfo?> findUserByEmail(
-      Session session, String email) async {
+    Session session,
+    String email,
+  ) async {
     return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.email.equals(email),
@@ -43,7 +52,9 @@ class Users {
   /// email address. For Apple sign ins, this is a unique identifying string.
   /// Returns null if no user is found.
   static Future<UserInfo?> findUserByIdentifier(
-      Session session, String identifier) async {
+    Session session,
+    String identifier,
+  ) async {
     return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.userIdentifier.equals(identifier),
@@ -79,11 +90,34 @@ class Users {
 
   /// Updates a users name, returns null if unsuccessful.
   static Future<UserInfo?> changeUserName(
-      Session session, int userId, String newUserName) async {
+    Session session,
+    int userId,
+    String newUserName,
+  ) async {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
     userInfo.userName = newUserName;
+    await UserInfo.db.updateRow(session, userInfo);
+
+    if (AuthConfig.current.onUserUpdated != null) {
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
+
+    await invalidateCacheForUser(session, userId);
+    return userInfo;
+  }
+
+  /// Updates a users name, returns null if unsuccessful.
+  static Future<UserInfo?> changeFullName(
+    Session session,
+    int userId,
+    String newFullName,
+  ) async {
+    var userInfo = await findUserByUserId(session, userId, useCache: false);
+    if (userInfo == null) return null;
+
+    userInfo.fullName = newFullName;
     await UserInfo.db.updateRow(session, userInfo);
 
     if (AuthConfig.current.onUserUpdated != null) {
@@ -103,20 +137,30 @@ class Users {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
-    var scopeStrs = <String>[];
-    for (var scope in newScopes) {
-      if (scope.name != null) scopeStrs.add(scope.name!);
-    }
+    var removedScopes = userInfo.scopes.difference(newScopes);
+    var scopeStrs = newScopes.map((s) => s.name).whereType<String>().toList();
     userInfo.scopeNames = scopeStrs;
     await UserInfo.db.updateRow(session, userInfo);
 
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
-    await session.dbNext.unsafeQuery(
+    await session.db.unsafeQuery(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
+
+    var scopesHaveBeenRevoked = removedScopes.isNotEmpty;
+    if (scopesHaveBeenRevoked) {
+      var removedScopesList =
+          removedScopes.map((s) => s.name).whereType<String>().toList();
+      await session.messages.authenticationRevoked(
+        userId,
+        RevokedAuthenticationScope(
+          scopes: removedScopesList,
+        ),
+      );
     }
 
     await invalidateCacheForUser(session, userId);
@@ -125,7 +169,10 @@ class Users {
 
   /// Marks a user as blocked so that they can't log in, and invalidates the
   /// cache for the user, and signs the user out.
-  static Future<void> blockUser(Session session, int userId) async {
+  static Future<void> blockUser(
+    Session session,
+    int userId,
+  ) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -134,14 +181,21 @@ class Users {
     }
     // Mark user as blocked in database
     userInfo.blocked = true;
-    await session.dbNext.updateRow(userInfo);
+    await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await session.auth.signOutUser(userId: userId);
+    await UserAuthentication.signOutUser(
+      session,
+      userId: userId,
+    );
   }
 
-  /// Unblocks a user so that they can log in again.
-  static Future<void> unblockUser(Session session, int userId) async {
+  /// Unblocks a user so that they can log in again, and invalidates the cache
+  /// for the user so that they can be blocked again
+  static Future<void> unblockUser(
+    Session session,
+    int userId,
+  ) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -149,13 +203,16 @@ class Users {
       throw 'userId $userId already unblocked';
     }
     userInfo.blocked = false;
-    await session.dbNext.updateRow(userInfo);
+    await session.db.updateRow(userInfo);
+    await invalidateCacheForUser(session, userId);
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user info
   /// is fetched it's fresh from the database.
   static Future<void> invalidateCacheForUser(
-      Session session, int userId) async {
+    Session session,
+    int userId,
+  ) async {
     var cacheKey = 'serverpod_auth_userinfo_$userId';
     await session.caches.local.invalidateKey(cacheKey);
   }
@@ -172,10 +229,29 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the name of this user, returns true if successful.
-  Future<bool> changeUserName(Session session, String newUserName) async {
-    if (id == null) return false;
+  Future<bool> changeUserName(
+    Session session,
+    String newUserName,
+  ) async {
+    var userId = id;
+    if (userId == null) return false;
 
-    var updatedUser = await Users.changeUserName(session, id!, newUserName);
+    var updatedUser = await Users.changeUserName(session, userId, newUserName);
+    if (updatedUser == null) return false;
+
+    userName = newUserName;
+    return true;
+  }
+
+  /// Updates the full name of this user, returns true if successful.
+  Future<bool> changeFullName(
+    Session session,
+    String newUserName,
+  ) async {
+    var userId = id;
+    if (userId == null) return false;
+
+    var updatedUser = await Users.changeFullName(session, userId, newUserName);
     if (updatedUser == null) return false;
 
     userName = newUserName;
@@ -192,7 +268,10 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the scopes for a user, returns true if successful.
-  Future<bool> updateScopes(Session session, Set<Scope> newScopes) async {
+  Future<bool> updateScopes(
+    Session session,
+    Set<Scope> newScopes,
+  ) async {
     if (id == null) return false;
 
     var updatedUser = await Users.updateUserScopes(session, id!, newScopes);

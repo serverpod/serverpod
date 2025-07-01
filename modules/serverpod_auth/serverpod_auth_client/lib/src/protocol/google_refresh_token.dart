@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-abstract class GoogleRefreshToken extends _i1.SerializableEntity {
+abstract class GoogleRefreshToken implements _i1.SerializableModel {
   GoogleRefreshToken._({
     this.id,
     required this.userId,
@@ -24,16 +25,11 @@ abstract class GoogleRefreshToken extends _i1.SerializableEntity {
     required String refreshToken,
   }) = _GoogleRefreshTokenImpl;
 
-  factory GoogleRefreshToken.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory GoogleRefreshToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return GoogleRefreshToken(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      refreshToken: serializationManager
-          .deserialize<String>(jsonSerialization['refreshToken']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      refreshToken: jsonSerialization['refreshToken'] as String,
     );
   }
 
@@ -45,9 +41,12 @@ abstract class GoogleRefreshToken extends _i1.SerializableEntity {
   /// The user id associated with the token.
   int userId;
 
-  /// The token iteself.
+  /// The token itself.
   String refreshToken;
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -56,10 +55,15 @@ abstract class GoogleRefreshToken extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -76,6 +80,9 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
           refreshToken: refreshToken,
         );
 
+  /// Returns a shallow copy of this [GoogleRefreshToken]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   GoogleRefreshToken copyWith({
     Object? id = _Undefined,

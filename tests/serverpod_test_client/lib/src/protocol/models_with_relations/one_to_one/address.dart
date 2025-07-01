@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 
-abstract class Address extends _i1.SerializableEntity {
+abstract class Address implements _i1.SerializableModel {
   Address._({
     this.id,
     required this.street,
@@ -26,18 +27,15 @@ abstract class Address extends _i1.SerializableEntity {
     _i2.Citizen? inhabitant,
   }) = _AddressImpl;
 
-  factory Address.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Address.fromJson(Map<String, dynamic> jsonSerialization) {
     return Address(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      street:
-          serializationManager.deserialize<String>(jsonSerialization['street']),
-      inhabitantId: serializationManager
-          .deserialize<int?>(jsonSerialization['inhabitantId']),
-      inhabitant: serializationManager
-          .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
+      id: jsonSerialization['id'] as int?,
+      street: jsonSerialization['street'] as String,
+      inhabitantId: jsonSerialization['inhabitantId'] as int?,
+      inhabitant: jsonSerialization['inhabitant'] == null
+          ? null
+          : _i2.Citizen.fromJson(
+              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
     );
   }
 
@@ -52,6 +50,9 @@ abstract class Address extends _i1.SerializableEntity {
 
   _i2.Citizen? inhabitant;
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Address copyWith({
     int? id,
     String? street,
@@ -61,11 +62,16 @@ abstract class Address extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'street': street,
-      'inhabitantId': inhabitantId,
-      'inhabitant': inhabitant,
+      if (inhabitantId != null) 'inhabitantId': inhabitantId,
+      if (inhabitant != null) 'inhabitant': inhabitant?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -84,6 +90,9 @@ class _AddressImpl extends Address {
           inhabitant: inhabitant,
         );
 
+  /// Returns a shallow copy of this [Address]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,

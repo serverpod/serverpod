@@ -1,16 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithUuid extends _i1.SerializableEntity {
+abstract class ObjectWithUuid implements _i1.SerializableModel {
   ObjectWithUuid._({
     this.id,
     required this.uuid,
@@ -23,16 +24,14 @@ abstract class ObjectWithUuid extends _i1.SerializableEntity {
     _i1.UuidValue? uuidNullable,
   }) = _ObjectWithUuidImpl;
 
-  factory ObjectWithUuid.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithUuid(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      uuid: serializationManager
-          .deserialize<_i1.UuidValue>(jsonSerialization['uuid']),
-      uuidNullable: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['uuidNullable']),
+      id: jsonSerialization['id'] as int?,
+      uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
+      uuidNullable: jsonSerialization['uuidNullable'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidNullable']),
     );
   }
 
@@ -45,6 +44,9 @@ abstract class ObjectWithUuid extends _i1.SerializableEntity {
 
   _i1.UuidValue? uuidNullable;
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -53,10 +55,15 @@ abstract class ObjectWithUuid extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'uuid': uuid,
-      'uuidNullable': uuidNullable,
+      if (id != null) 'id': id,
+      'uuid': uuid.toJson(),
+      if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -73,6 +80,9 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
           uuidNullable: uuidNullable,
         );
 
+  /// Returns a shallow copy of this [ObjectWithUuid]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithUuid copyWith({
     Object? id = _Undefined,

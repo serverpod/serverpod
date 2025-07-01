@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnDateTime', () {
     var columnName = 'age';
-    var column = ColumnDateTime(columnName, Table(tableName: 'test'));
+    var column = ColumnDateTime(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
@@ -69,6 +69,14 @@ void main() {
       });
 
       test(
+          'when checking if expression is in empty value set then output is FALSE expression.',
+          () {
+        var comparisonExpression = column.inSet(<DateTime>{});
+
+        expect(comparisonExpression.toString(), 'FALSE');
+      });
+
+      test(
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
         var comparisonExpression = column.notInSet(<DateTime>{
@@ -79,6 +87,17 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'"1991-05-28T00:00:00.000Z"\', \'"1991-05-29T00:00:00.000Z"\', \'"1991-05-30T00:00:00.000Z"\') OR $column IS NULL)');
+      });
+
+      test(
+          'when checking if expression is NOT in empty value set then output is TRUE expression.',
+          () {
+        var comparisonExpression = column.notInSet(<DateTime>{});
+
+        expect(
+          comparisonExpression.toString(),
+          'TRUE',
+        );
       });
     });
 
@@ -129,12 +148,18 @@ void main() {
       });
 
       test(
-          'when greater than compared to unhandled type then output is escaped operator expression.',
+          'when greater than compared to unhandled type then argument error is thrown.',
           () {
-        var comparisonExpression = column > 'string is unhandled';
-
-        expect(comparisonExpression.toString(),
-            '$column > \'string is unhandled\'');
+        expect(
+          () => column > 'string is unhandled',
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message,
+              'message',
+              'Invalid type for comparison: String, allowed types are Expression, DateTime or Column',
+            ),
+          ),
+        );
       });
 
       test(
@@ -163,12 +188,18 @@ void main() {
       });
 
       test(
-          'when greater or equal than compared to unhandled type then output is escaped operator expression.',
+          'when greater or equal than compared to unhandled type then argument error is thrown.',
           () {
-        var comparisonExpression = column >= 'string is unhandled';
-
-        expect(comparisonExpression.toString(),
-            '$column >= \'string is unhandled\'');
+        expect(
+          () => column >= 'string is unhandled',
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message,
+              'message',
+              'Invalid type for comparison: String, allowed types are Expression, DateTime or Column',
+            ),
+          ),
+        );
       });
 
       test(
@@ -197,12 +228,18 @@ void main() {
       });
 
       test(
-          'when less than compared to unhandled type then output is escaped operator expression.',
+          'when less than compared to unhandled type then argument error is thrown.',
           () {
-        var comparisonExpression = column < 'string is unhandled';
-
-        expect(comparisonExpression.toString(),
-            '$column < \'string is unhandled\'');
+        expect(
+          () => column < 'string is unhandled',
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message,
+              'message',
+              'Invalid type for comparison: String, allowed types are Expression, DateTime or Column',
+            ),
+          ),
+        );
       });
 
       test(
@@ -231,12 +268,18 @@ void main() {
       });
 
       test(
-          'when less or equal than compared to unhandled type then output is escaped operator expression.',
+          'when less or equal than compared to unhandled type then argument error is thrown.',
           () {
-        var comparisonExpression = column <= 'string is unhandled';
-
-        expect(comparisonExpression.toString(),
-            '$column <= \'string is unhandled\'');
+        expect(
+          () => column <= 'string is unhandled',
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message,
+              'message',
+              'Invalid type for comparison: String, allowed types are Expression, DateTime or Column',
+            ),
+          ),
+        );
       });
     });
   });

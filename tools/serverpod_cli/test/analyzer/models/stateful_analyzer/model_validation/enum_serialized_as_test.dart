@@ -1,11 +1,15 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
+
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   group('Given a valid enum definition when validating', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
@@ -19,7 +23,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -50,7 +55,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -81,7 +87,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -112,7 +119,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     analyzer.validateAll();
 
@@ -147,6 +155,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       modelSources,
       onErrorsCollector(collector),
     );
@@ -164,7 +173,7 @@ void main() {
 
     test('then the field type is serialized as an int', () {
       expect(
-        definition.fields.first.type.serializeEnum,
+        definition.fields.first.type.enumDefinition?.serialized,
         EnumSerialization.byIndex,
       );
     });
@@ -194,6 +203,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       modelSources,
       onErrorsCollector(collector),
     );
@@ -211,7 +221,7 @@ void main() {
 
     test('then the field type is serialized as a String', () {
       expect(
-        definition.fields.first.type.serializeEnum,
+        definition.fields.first.type.enumDefinition?.serialized,
         EnumSerialization.byName,
       );
     });

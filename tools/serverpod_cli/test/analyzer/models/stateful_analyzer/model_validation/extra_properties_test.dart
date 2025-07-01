@@ -1,10 +1,15 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
+
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   group('serverOnly property tests', () {
     test(
         'Given a class defined to serverOnly, then the serverOnly property is set to true.',
@@ -20,7 +25,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(modelSources).validateAll();
+      var models = StatefulAnalyzer(config, modelSources).validateAll();
 
       expect(models.first.serverOnly, isTrue);
     });
@@ -39,7 +44,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(modelSources).validateAll();
+      var models = StatefulAnalyzer(config, modelSources).validateAll();
 
       expect(models.first.serverOnly, isFalse);
     });
@@ -57,7 +62,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(modelSources).validateAll();
+      var models = StatefulAnalyzer(config, modelSources).validateAll();
 
       expect(models.first.serverOnly, isFalse);
     });
@@ -77,7 +82,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -105,7 +110,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -120,6 +125,30 @@ void main() {
   });
 
   group('table property tests', () {
+    group('Given an empty class with a table defined', () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
+
+      var model = models.first as ModelClassDefinition;
+      test('then the table is set in the definition', () {
+        expect(model.tableName, 'example');
+      });
+      test('then the id field is added', () {
+        expect(model.fields, hasLength(1));
+        expect(model.fields.first.name, 'id');
+      });
+    });
     test(
         'Given a class with a table defined, then the tableName is set in the definition.',
         () {
@@ -135,10 +164,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models = StatefulAnalyzer(modelSources, onErrorsCollector(collector))
-          .validateAll();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
 
-      var model = models.first as ClassDefinition;
+      var model = models.first as ModelClassDefinition;
       expect(model.tableName, 'example');
     });
 
@@ -157,7 +187,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -190,7 +220,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -222,7 +252,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -262,7 +292,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -278,6 +308,41 @@ void main() {
         );
       },
     );
+
+    test(
+        'Given a class with a table defined but without the database feature enabled then an error is given.',
+        () {
+      var config = GeneratorConfigBuilder().withEnabledFeatures([]).build();
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(
+        error.message,
+        contains(
+            'The "table" property cannot be used when the database feature is disabled.'),
+      );
+
+      expect(error.severity, SourceSpanSeverity.warning);
+    });
   });
 
   group('Invalid properties', () {
@@ -296,7 +361,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -308,7 +373,8 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.',
+          contains(
+              'The "invalidProperty" property is not allowed for class type. Valid keys are'),
         );
       },
     );
@@ -331,7 +397,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -364,7 +430,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
             .validateAll();
 
         expect(
@@ -376,7 +442,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "table" property is not allowed for enum type. Valid keys are {enum, serialized, serverOnly, values}.',
+          'The "table" property is not allowed for enum type. Valid keys are {enum, serialized, default, serverOnly, values}.',
         );
       },
     );

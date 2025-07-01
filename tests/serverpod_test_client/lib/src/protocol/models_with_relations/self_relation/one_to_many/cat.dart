@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
+    as _i2;
 
-abstract class Cat extends _i1.SerializableEntity {
+abstract class Cat implements _i1.SerializableModel {
   Cat._({
     this.id,
     required this.name,
@@ -28,19 +30,18 @@ abstract class Cat extends _i1.SerializableEntity {
     List<_i2.Cat>? kittens,
   }) = _CatImpl;
 
-  factory Cat.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Cat.fromJson(Map<String, dynamic> jsonSerialization) {
     return Cat(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      motherId:
-          serializationManager.deserialize<int?>(jsonSerialization['motherId']),
-      mother: serializationManager
-          .deserialize<_i2.Cat?>(jsonSerialization['mother']),
-      kittens: serializationManager
-          .deserialize<List<_i2.Cat>?>(jsonSerialization['kittens']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      motherId: jsonSerialization['motherId'] as int?,
+      mother: jsonSerialization['mother'] == null
+          ? null
+          : _i2.Cat.fromJson(
+              (jsonSerialization['mother'] as Map<String, dynamic>)),
+      kittens: (jsonSerialization['kittens'] as List?)
+          ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 
@@ -57,6 +58,9 @@ abstract class Cat extends _i1.SerializableEntity {
 
   List<_i2.Cat>? kittens;
 
+  /// Returns a shallow copy of this [Cat]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Cat copyWith({
     int? id,
     String? name,
@@ -67,12 +71,18 @@ abstract class Cat extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'motherId': motherId,
-      'mother': mother,
-      'kittens': kittens,
+      if (motherId != null) 'motherId': motherId,
+      if (mother != null) 'mother': mother?.toJson(),
+      if (kittens != null)
+        'kittens': kittens?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -93,6 +103,9 @@ class _CatImpl extends Cat {
           kittens: kittens,
         );
 
+  /// Returns a shallow copy of this [Cat]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Cat copyWith({
     Object? id = _Undefined,
@@ -106,7 +119,9 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>? ? kittens : this.kittens?.clone(),
+      kittens: kittens is List<_i2.Cat>?
+          ? kittens
+          : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

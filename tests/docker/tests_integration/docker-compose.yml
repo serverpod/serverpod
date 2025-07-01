@@ -1,15 +1,24 @@
-version: '3.7'
-
 services:
-  tests:
+  serverpod_test_server:
     build:
       context: ../../..
       dockerfile: tests/docker/tests_integration/Dockerfile
     depends_on:
       - 'postgres'
       - 'redis'
+    profiles:
+      - concurrency_one
+  serverpod_test_server_concurrent_tests:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_integration/concurrent.Dockerfile
+    depends_on:
+      - 'postgres'
+      - 'redis'
+    profiles:
+      - concurrent
   postgres:
-    image: postgres:14.1
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test

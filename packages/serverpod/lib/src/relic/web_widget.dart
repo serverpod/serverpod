@@ -29,9 +29,11 @@ class Widget extends AbstractWidget {
   Widget({
     required this.name,
   }) {
-    assert(templates[name] != null,
-        'Template $name.html missing for $runtimeType');
-    template = templates[name]!;
+    var cachedTemplate = templates[name];
+    if (cachedTemplate == null) {
+      throw StateError('Template $name.html missing for $runtimeType');
+    }
+    template = cachedTemplate;
   }
 
   @override

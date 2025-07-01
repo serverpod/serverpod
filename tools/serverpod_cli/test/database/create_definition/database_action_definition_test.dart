@@ -1,17 +1,18 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/builders/foreign_relation_definition_builder.dart';
+import '../../test_util/builders/model_class_definition_builder.dart';
+import '../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
   test(
       'Given a class definition with a table, then generate a table with that name.',
       () {
     var field = FieldDefinitionBuilder().withPrimaryKey().build();
-    var model = ClassDefinitionBuilder()
+    var model = ModelClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)
         .build();
@@ -37,11 +38,11 @@ void main() {
 
     var field = FieldDefinitionBuilder()
         .withName('parentId')
-        .withIdType(true)
+        .withIdType(isNullable: true)
         .withRelation(relation)
         .build();
 
-    var model = ClassDefinitionBuilder()
+    var model = ModelClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)
         .build();

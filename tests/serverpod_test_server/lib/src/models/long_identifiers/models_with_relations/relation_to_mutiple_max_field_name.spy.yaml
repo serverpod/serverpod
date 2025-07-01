@@ -1,0 +1,5 @@
+class: RelationToMultipleMaxFieldName
+table: relation_to_multiple_max_field_name
+fields:
+    name: String
+    multipleMaxFieldNames: List<MultipleMaxFieldName>?, relation

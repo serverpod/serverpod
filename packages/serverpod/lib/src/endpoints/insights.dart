@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:postgres/postgres.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
@@ -38,7 +37,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.dbNext.deleteWhere<SessionLogEntry>(
+    await session.db.deleteWhere<SessionLogEntry>(
       where: Constant.bool(true),
     );
   }
@@ -78,33 +77,39 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.dbNext.find<SessionLogEntry>(
+    var rows = await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
       orderDescending: true,
-    ))
-        .cast<SessionLogEntry>();
+    );
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var logRows = await session.dbNext.find<LogEntry>(
+      var futureLogRows = session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: LogEntry.t.order,
       );
 
-      var queryRows = await session.dbNext.find<QueryLogEntry>(
+      var futureQueryRows = session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: QueryLogEntry.t.order,
       );
 
-      var messageRows = await session.dbNext.find<MessageLogEntry>(
+      var futureMessageRows = session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: MessageLogEntry.t.order,
       );
+
+      var logRows = await futureLogRows;
+      var queryRows = await futureQueryRows;
+      var messageRows = await futureMessageRows;
 
       sessionLogInfo.add(
         SessionLogInfo(
           sessionLogEntry: logEntry,
-          logs: logRows.cast<LogEntry>(),
-          queries: queryRows.cast<QueryLogEntry>(),
+          logs: logRows,
+          queries: queryRows,
           messages: messageRows,
         ),
       );
@@ -116,9 +121,7 @@ class InsightsEndpoint extends Endpoint {
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
       Session session, int? numEntries, SessionLogFilter? filter) async {
-    var logs = session.serverpod.logManager
-        .getOpenSessionLogs(numEntries ?? 100, filter);
-    return SessionLogResult(sessionLog: logs);
+    return SessionLogResult(sessionLog: []);
   }
 
   /// Retrieve information about the state of the caches on this server.
@@ -207,10 +210,7 @@ class InsightsEndpoint extends Endpoint {
   /// - [getTargetTableDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
     // Get database definition of the live database.
-    var databaseDefinition = await DatabaseAnalyzer.analyze(session.dbNext);
-
-    // Make sure that the migration manager is up-to-date.
-    await session.serverpod.migrationManager.initialize(session);
+    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
 
     return databaseDefinition;
   }
@@ -224,7 +224,9 @@ class InsightsEndpoint extends Endpoint {
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
 
-    var versions = MigrationVersions.listVersions();
+    var versions = MigrationVersions.listVersions(
+      projectDirectory: Directory.current,
+    );
 
     var latestAvailableMigrations = <DatabaseMigrationVersion>[];
     if (versions.isNotEmpty) {
@@ -258,7 +260,7 @@ class InsightsEndpoint extends Endpoint {
   }) async {
     try {
       return DatabaseBulkData.exportTableData(
-        database: session.dbNext,
+        database: session.db,
         table: table,
         lastId: startingId,
         limit: limit,
@@ -279,12 +281,12 @@ class InsightsEndpoint extends Endpoint {
   ) async {
     try {
       var result = await DatabaseBulkData.executeQueries(
-        database: session.dbNext,
+        database: session.db,
         queries: queries,
       );
       return result;
     } catch (e) {
-      if (e is PostgreSQLException) {
+      if (e is DatabaseException) {
         throw BulkDataException(
           message: 'Failed to execute query: ${e.message}',
         );
@@ -302,7 +304,7 @@ class InsightsEndpoint extends Endpoint {
     required String table,
   }) async {
     return DatabaseBulkData.approximateRowCount(
-      database: session.dbNext,
+      database: session.db,
       table: table,
     );
   }
@@ -310,7 +312,7 @@ class InsightsEndpoint extends Endpoint {
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
     try {
-      return await session.dbNext.unsafeExecute(sql);
+      return await session.db.unsafeExecute(sql);
     } catch (e) {
       throw ServerpodSqlException(
         message: '$e',

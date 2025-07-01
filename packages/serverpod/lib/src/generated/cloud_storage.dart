@@ -1,27 +1,29 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry extends _i1.TableRow {
+abstract class CloudStorageEntry
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CloudStorageEntry._({
-    int? id,
+    this.id,
     required this.storageId,
     required this.path,
     required this.addedTime,
     this.expiration,
     required this.byteData,
     required this.verified,
-  }) : super(id);
+  });
 
   factory CloudStorageEntry({
     int? id,
@@ -33,29 +35,28 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     required bool verified,
   }) = _CloudStorageEntryImpl;
 
-  factory CloudStorageEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CloudStorageEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return CloudStorageEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      storageId: serializationManager
-          .deserialize<String>(jsonSerialization['storageId']),
-      path: serializationManager.deserialize<String>(jsonSerialization['path']),
-      addedTime: serializationManager
-          .deserialize<DateTime>(jsonSerialization['addedTime']),
-      expiration: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['expiration']),
-      byteData: serializationManager
-          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
-      verified:
-          serializationManager.deserialize<bool>(jsonSerialization['verified']),
+      id: jsonSerialization['id'] as int?,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
+      addedTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      expiration: jsonSerialization['expiration'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      verified: jsonSerialization['verified'] as bool,
     );
   }
 
   static final t = CloudStorageEntryTable();
 
   static const db = CloudStorageEntryRepository._();
+
+  @override
+  int? id;
 
   /// The storageId, typically `public` or `private`.
   String storageId;
@@ -76,8 +77,11 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   bool verified;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -90,190 +94,27 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
       'verified': verified,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
       'verified': verified,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'storageId': storageId,
-      'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
-      'verified': verified,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'storageId':
-        storageId = value;
-        return;
-      case 'path':
-        path = value;
-        return;
-      case 'addedTime':
-        addedTime = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      case 'byteData':
-        byteData = value;
-        return;
-      case 'verified':
-        verified = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<CloudStorageEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<CloudStorageEntry>(
-      where: where != null ? where(CloudStorageEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<CloudStorageEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<CloudStorageEntry>(
-      where: where != null ? where(CloudStorageEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<CloudStorageEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<CloudStorageEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<CloudStorageEntry>(
-      where: where(CloudStorageEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    CloudStorageEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    CloudStorageEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    CloudStorageEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<CloudStorageEntry>(
-      where: where != null ? where(CloudStorageEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static CloudStorageEntryInclude include() {
@@ -299,6 +140,11 @@ abstract class CloudStorageEntry extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -322,6 +168,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
           verified: verified,
         );
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,
@@ -344,7 +193,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
-class CloudStorageEntryTable extends _i1.Table {
+class CloudStorageEntryTable extends _i1.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
@@ -403,9 +252,6 @@ class CloudStorageEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use CloudStorageEntryTable.t instead.')
-CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
-
 class CloudStorageEntryInclude extends _i1.IncludeObject {
   CloudStorageEntryInclude._();
 
@@ -413,7 +259,7 @@ class CloudStorageEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int?> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryIncludeList extends _i1.IncludeList {
@@ -433,12 +279,34 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => CloudStorageEntry.t;
+  _i1.Table<int?> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryRepository {
   const CloudStorageEntryRepository._();
 
+  /// Returns a list of [CloudStorageEntry]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<CloudStorageEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
@@ -449,7 +317,7 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<CloudStorageEntry>(
+    return session.db.find<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -460,6 +328,23 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Returns the first matching [CloudStorageEntry] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<CloudStorageEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
@@ -469,7 +354,7 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<CloudStorageEntry>(
+    return session.db.findFirstRow<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
@@ -479,105 +364,130 @@ class CloudStorageEntryRepository {
     );
   }
 
+  /// Finds a single [CloudStorageEntry] by its [id] or null if no such row exists.
   Future<CloudStorageEntry?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<CloudStorageEntry>(
+    return session.db.findById<CloudStorageEntry>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [CloudStorageEntry]s in the list and returns the inserted rows.
+  ///
+  /// The returned [CloudStorageEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<CloudStorageEntry>> insert(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<CloudStorageEntry>(
+    return session.db.insert<CloudStorageEntry>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [CloudStorageEntry] and returns the inserted row.
+  ///
+  /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry> insertRow(
     _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<CloudStorageEntry>(
+    return session.db.insertRow<CloudStorageEntry>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [CloudStorageEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<CloudStorageEntry>> update(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<CloudStorageEntry>(
+    return session.db.update<CloudStorageEntry>(
       rows,
       columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [CloudStorageEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<CloudStorageEntry> updateRow(
     _i1.Session session,
     CloudStorageEntry row, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<CloudStorageEntry>(
+    return session.db.updateRow<CloudStorageEntry>(
       row,
       columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [CloudStorageEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<CloudStorageEntry>> delete(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<CloudStorageEntry>(
+    return session.db.delete<CloudStorageEntry>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [CloudStorageEntry].
+  Future<CloudStorageEntry> deleteRow(
     _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<CloudStorageEntry>(
+    return session.db.deleteRow<CloudStorageEntry>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<CloudStorageEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<CloudStorageEntry>(
+    return session.db.deleteWhere<CloudStorageEntry>(
       where: where(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<CloudStorageEntry>(
+    return session.db.count<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       limit: limit,
       transaction: transaction,

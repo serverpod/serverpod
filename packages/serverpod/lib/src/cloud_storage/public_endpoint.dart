@@ -8,6 +8,7 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 const _endpointName = 'serverpod_cloud_storage';
 
 /// Endpoint for the default public [DatabaseCloudStorage].
+@doNotGenerate
 class CloudStoragePublicEndpoint extends Endpoint {
   @override
   bool get sendByteDataAsRaw => true;
@@ -50,19 +51,19 @@ class CloudStoragePublicEndpoint extends Endpoint {
     return file;
   }
 
-  /// Uploads a file to the the public database cloud storage.
+  /// Uploads a file to the public database cloud storage.
   Future<bool> upload(MethodCallSession session, String storageId, String path,
       String key) async {
     // Confirm that we are allowed to do the upload
     var uploadInfo =
-        await session.dbNext.findFirstRow<CloudStorageDirectUploadEntry>(
+        await session.db.findFirstRow<CloudStorageDirectUploadEntry>(
       where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
           CloudStorageDirectUploadEntry.t.path.equals(path),
     );
 
     if (uploadInfo == null) return false;
 
-    await session.dbNext.deleteRow(uploadInfo);
+    await session.db.deleteRow(uploadInfo);
 
     if (uploadInfo.authKey != key) return false;
 

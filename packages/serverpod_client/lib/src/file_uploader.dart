@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-/// The file uploader uploads files to Serverpods cloud storage. On the server
+/// The file uploader uploads files to Serverpod's cloud storage. On the server
 /// you can setup a custom storage service, such as S3 or Google Cloud. To
 /// directly upload a file, you first need to retrieve an upload description
 /// from your server. After the file is uploaded, make sure to notify the server
@@ -21,79 +22,61 @@ class FileUploader {
   /// Uploads a file contained by a [ByteData] object, returns true if
   /// successful.
   Future<bool> uploadByteData(ByteData byteData) async {
-    var stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
-    return upload(stream, byteData.lengthInBytes);
+    var stream = http.ByteStream.fromBytes(Uint8List.sublistView(byteData));
+    return _upload(stream, byteData.lengthInBytes);
   }
 
-  /// Uploads a file from a [Stream], returns true if successful.
-  Future<bool> upload(Stream<List<int>> stream, int length) async {
+  /// Uploads a file from a [Stream], returns true if successful. The [length]
+  /// of the stream is optional, but if it's not provided for a multipart upload,
+  /// the entire file will be buffered in memory.
+  Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
+      _upload(stream.toByteStream(), length);
+
+  Future<bool> _upload(http.ByteStream stream, int? length) async {
     if (_attemptedUpload) {
       throw Exception(
           'Data has already been uploaded using this FileUploader.');
     }
     _attemptedUpload = true;
 
-    if (_uploadDescription.type == _UploadType.binary) {
-      try {
-        var result = await http.post(
-          _uploadDescription.url,
-          body: await _readStreamData(stream),
-          headers: {
+    try {
+      switch (_uploadDescription.type) {
+        case _UploadType.binary:
+          final request = http.StreamedRequest('POST', _uploadDescription.url);
+          request.headers.addAll({
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
-          },
-        );
-        return result.statusCode == 200;
-      } catch (e) {
-        return false;
+          });
+          request.contentLength = length;
+          unawaited(stream.pipe(request.sink));
+
+          var response = await request.send();
+
+          return response.statusCode == 200;
+
+        case _UploadType.multipart:
+          var multipartFile = switch (length) {
+            null => http.MultipartFile.fromBytes(
+                _uploadDescription.field!, await stream.toBytes(),
+                filename: _uploadDescription.fileName),
+            _ => http.MultipartFile(_uploadDescription.field!, stream, length,
+                filename: _uploadDescription.fileName),
+          };
+
+          var request = http.MultipartRequest('POST', _uploadDescription.url);
+          request.files.add(multipartFile);
+          for (var key in _uploadDescription.requestFields.keys) {
+            request.fields[key] = _uploadDescription.requestFields[key]!;
+          }
+
+          var response = await request.send();
+
+          return response.statusCode == 204;
       }
-    } else if (_uploadDescription.type == _UploadType.multipart) {
-      // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
-      // final length = await file.length();
-
-      // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
-      // final length = await data.lengthInBytes;
-
-      var request = http.MultipartRequest('POST', _uploadDescription.url);
-      var multipartFile = http.MultipartFile(
-          _uploadDescription.field!, stream, length,
-          filename: _uploadDescription.fileName);
-
-      request.files.add(multipartFile);
-      for (var key in _uploadDescription.requestFields.keys) {
-        request.fields[key] = _uploadDescription.requestFields[key]!;
-      }
-
-      try {
-        var result = await request.send();
-        // var body = await _readBody(result.stream);
-        // print('body: $body');
-        return result.statusCode == 204;
-      } catch (e) {
-        return false;
-      }
+    } catch (e) {
+      // TODO: Shouldn't we log something here?
+      return false;
     }
-    throw UnimplementedError('Unknown upload type');
-  }
-
-  // Future<String?> _readBody(http.ByteStream stream) async {
-  //   // TODO: Find more efficient solution?
-  //   var len = 0;
-  //   var data = <int>[];
-  //   await for (var segment in stream) {
-  //     len += segment.length;
-  //     data += segment;
-  //   }
-  //   return Utf8Decoder().convert(data);
-  // }
-
-  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
-    // TODO: Find more efficient solution?
-    var data = <int>[];
-    await for (var segment in stream) {
-      data += segment;
-    }
-    return data;
   }
 }
 
@@ -111,6 +94,9 @@ class _UploadDescription {
 
   _UploadDescription(String description) {
     var data = jsonDecode(description);
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('Description not a JSON (map) object');
+    }
     if (data['type'] == 'binary') {
       type = _UploadType.binary;
     } else if (data['type'] == 'multipart') {
@@ -126,5 +112,13 @@ class _UploadDescription {
       fileName = data['file-name'];
       requestFields = (data['request-fields'] as Map).cast<String, String>();
     }
+  }
+}
+
+extension on Stream<List<int>> {
+  http.ByteStream toByteStream() {
+    final self = this;
+    if (self is http.ByteStream) return self;
+    return http.ByteStream(self);
   }
 }

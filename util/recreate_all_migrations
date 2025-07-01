@@ -1,15 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
+if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/pub_get_all"
+    echo "I.e. util/recreate_all_migrations"
     exit 1
 fi
 
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
-MIGRATION_DIR=generated/migration/migrations
+MIGRATION_DIR=migrations
 
 echo "pub get cli"
 cd $CLI_DIR
@@ -26,6 +26,41 @@ dart $CLI create-migration --no-analytics
 
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_user_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_session_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_profile_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_jwt_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_migration_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_google_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\nserverpod_auth_email_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
@@ -48,6 +83,16 @@ rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
 
+echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
+echo "\ntests/serverpod_new_auth_test/serverpod_new_auth_test_server"
+cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
+rm -r $MIGRATION_DIR
+dart $CLI create-migration --no-analytics
+
 # Examples
 
 echo "examples/chat/chat_server"
@@ -60,5 +105,3 @@ echo "examples/auth_example/auth_example_server"
 cd $BASE/examples/auth_example/auth_example_server
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
-
-

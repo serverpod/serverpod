@@ -1,4 +1,14 @@
-#!/bin/sh
+#!/bin/bash
+
+# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
+# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+
+checkLastExitCode() {
+  local last_exit_code=$?
+  if [ $last_exit_code -ne 0 ]; then
+    exit $last_exit_code
+  fi
+}
 
 # Wait for database to be up (timeout after 60 seconds)
 echo "### Wait for Postgres"
@@ -16,4 +26,6 @@ pwd
 dart bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
-dart test test_integration --concurrency=1
+echo "### Running tests"
+dart test test_integration -x integration --concurrency=1 --reporter=failures-only
+checkLastExitCode

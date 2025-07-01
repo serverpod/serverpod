@@ -1,0 +1,37 @@
+# TEMPLATE
+
+name: serverpod_auth_jwt_server
+description: Serverpod JWT authentication server module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  clock: ^1.1.1
+  dart_jsonwebtoken: ^3.1.0
+  meta: ^1.11.0
+  pointycastle: ^3.7.4
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: SERVERPOD_VERSION
+  test: ^1.24.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_user_server:
+    path: ../../../new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

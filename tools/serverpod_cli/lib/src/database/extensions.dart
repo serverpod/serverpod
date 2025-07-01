@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -69,10 +70,7 @@ extension TableComparisons on TableDefinition {
 
   bool like(TableDefinition other) {
     var diff = generateTableMigration(this, other, []);
-    return diff != null &&
-        diff.isEmpty &&
-        other.name == name &&
-        other.schema == schema;
+    return diff != null && diff.isEmpty && other.name == name;
   }
 }
 
@@ -85,9 +83,10 @@ extension ColumnComparisons on ColumnDefinition {
     }
 
     return (other.isNullable == isNullable &&
-        other.columnType == columnType &&
+        other.columnType.like(columnType) &&
         other.name == name &&
-        other.columnDefault == columnDefault);
+        other.columnDefault == columnDefault &&
+        other.vectorDimension == vectorDimension);
   }
 
   bool canMigrateTo(ColumnDefinition other) {
@@ -102,7 +101,8 @@ extension ColumnComparisons on ColumnDefinition {
   }
 
   bool get canBeCreatedInTableMigration {
-    return isNullable || columnDefault != null;
+    return (isNullable || columnDefault != null) &&
+        name != defaultPrimaryKeyName;
   }
 }
 
@@ -127,7 +127,22 @@ extension IndexComparisons on IndexDefinition {
         other.indexName == indexName &&
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
-        other.type == type;
+        other.type == type &&
+        other.vectorDistanceFunction == vectorDistanceFunction &&
+        other.vectorColumnType == vectorColumnType &&
+        _parametersMapEquals(other.parameters);
+  }
+
+  bool _parametersMapEquals(Map<String, String>? other) {
+    final parameters = this.parameters;
+    if (parameters == null && other == null) return true;
+    if (parameters == null || other == null) return false;
+    if (parameters.length != other.length) return false;
+
+    for (var key in {...parameters.keys, ...other.keys}) {
+      if (parameters[key] != other[key]) return false;
+    }
+    return true;
   }
 }
 
@@ -162,14 +177,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     var cOnDelete = other.onDelete == onDelete;
     var cOnUpdate = (other.onUpdate ?? dKA) == (onUpdate ?? dKA);
     var cReferenceTable = other.referenceTable == referenceTable;
-    var cReferenceSchema = other.referenceTableSchema == referenceTableSchema;
 
-    return cName &&
-        cMatchType &&
-        cOnDelete &&
-        cOnUpdate &&
-        cReferenceTable &&
-        cReferenceSchema;
+    return cName && cMatchType && cOnDelete && cOnUpdate && cReferenceTable;
   }
 }
 
@@ -191,17 +200,20 @@ extension TableDiffComparisons on TableMigration {
   }
 }
 
+extension TableDefinitionExtension on TableDefinition {
+  bool get isManaged => managed != false;
+}
+
 //
 // SQL generation
 //
-
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
     String out = '';
 
     var tableCreation = '';
     var foreignRelations = '';
-    for (var table in tables) {
+    for (var table in tables.where((table) => table.isManaged)) {
       tableCreation += '--\n';
       tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
       tableCreation += '--\n';
@@ -217,6 +229,20 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    // Must be declared before any table creation.
+    if (tables.any((t) => t.columns.any((c) => c.isVectorColumn))) {
+      out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    // Must be declared at the beginning for the function to be available.
+    if (tables.any(
+      (t) => t.columns.any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7),
+    )) {
+      out += _sqlUuidGenerateV7FunctionDeclaration();
+      out += '\n';
+    }
 
     // Create tables
     out += tableCreation;
@@ -243,11 +269,15 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 }
 
 extension TableDefinitionPgSqlGeneration on TableDefinition {
-  String tableCreationToPgsql() {
+  String tableCreationToPgsql({bool ifNotExists = false}) {
     String out = '';
 
     // Table
-    out += 'CREATE TABLE "$name" (\n';
+    if (ifNotExists) {
+      out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
+    } else {
+      out += 'CREATE TABLE "$name" (\n';
+    }
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
@@ -271,7 +301,7 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
       out += '\n';
       out += '-- Indexes\n';
       for (var index in indexesExceptId) {
-        out += index.toPgSql(tableName: name);
+        out += index.toPgSql(tableName: name, ifNotExists: ifNotExists);
       }
     }
 
@@ -297,20 +327,23 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
+  /// Whether the column is the default primary key column.
+  bool get isIdColumn => name == defaultPrimaryKeyName;
+
+  /// Whether the column is a primary key of type int serial.
+  bool get isIntSerialIdColumn =>
+      isIdColumn &&
+      (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
+      (columnDefault?.startsWith('nextval') ?? false);
+
+  /// Whether the column is of a vector type.
+  bool get isVectorColumn =>
+      columnType == ColumnType.vector ||
+      columnType == ColumnType.halfvec ||
+      columnType == ColumnType.sparsevec ||
+      columnType == ColumnType.bit;
+
   String toPgSqlFragment() {
-    String out = '';
-
-    if (name == 'id') {
-      // The id column is special.
-      assert(isNullable == false);
-      assert(
-        columnType == ColumnType.integer || columnType == ColumnType.bigint,
-      );
-      // TODO: Migrate to bigserial / bigint
-      return '"id" serial PRIMARY KEY';
-    }
-
-    var nullable = isNullable ? '' : ' NOT NULL';
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -340,26 +373,70 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.uuid:
         type = 'uuid';
         break;
+      case ColumnType.vector:
+        type = 'vector(${vectorDimension!})';
+        break;
+      case ColumnType.halfvec:
+        type = 'halfvec(${vectorDimension!})';
+        break;
+      case ColumnType.sparsevec:
+        type = 'sparsevec(${vectorDimension!})';
+        break;
+      case ColumnType.bit:
+        type = 'bit(${vectorDimension!})';
+        break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
     }
 
-    out += '"$name" $type$nullable';
-    return out;
+    var nullable = isNullable ? '' : ' NOT NULL';
+    var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
+
+    // The id column is special.
+    if (isIdColumn) {
+      if (isNullable) {
+        throw const FormatException('The id column must be non-nullable');
+      }
+
+      if (isIntSerialIdColumn) {
+        type = 'bigserial';
+        defaultValue = '';
+      }
+
+      type = '$type PRIMARY KEY';
+      nullable = '';
+    }
+
+    return '"$name" $type$nullable$defaultValue';
   }
 }
 
 extension IndexDefinitionPgSqlGeneration on IndexDefinition {
   String toPgSql({
     required String tableName,
+    bool ifNotExists = false,
   }) {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
+    var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
-    out += 'CREATE$uniqueStr INDEX "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')});\n';
+    String distanceStr = '';
+    String pgvectorParams = '';
+
+    if (type == 'hnsw' || type == 'ivfflat') {
+      var prefix = vectorColumnType?.name;
+      distanceStr = ' ${vectorDistanceFunction!.asDistanceFunction(prefix!)}';
+
+      var paramStrings = parameters?.entries.map((e) => '${e.key}=${e.value}');
+      pgvectorParams = (paramStrings?.isNotEmpty == true)
+          ? ' WITH (${paramStrings!.join(', ')})'
+          : '';
+    }
+
+    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
 
     return out;
   }
@@ -371,12 +448,12 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
   }) {
     var out = '';
 
-    var refColumsFmt = referenceColumns.map((e) => '"$e"');
+    var refColumnsFmt = referenceColumns.map((e) => '"$e"');
 
     out += 'ALTER TABLE ONLY "$tableName"\n';
     out += '    ADD CONSTRAINT "$constraintName"\n';
     out += '    FOREIGN KEY("${columns.join(', ')}")\n';
-    out += '    REFERENCES "$referenceTable"(${refColumsFmt.join(', ')})';
+    out += '    REFERENCES "$referenceTable"(${refColumnsFmt.join(', ')})';
 
     String? delete = onDelete?.toPgSqlAction();
     if (delete != null) {
@@ -423,6 +500,31 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
+
+    // Must be declared before any table creation.
+    if (actions.any((e) =>
+        (e.createTable != null &&
+            e.createTable!.columns.any((c) => c.isVectorColumn)) ||
+        (e.alterTable != null &&
+            e.alterTable!.addColumns.any((c) => c.isVectorColumn)))) {
+      out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    // Must be declared at the beginning for the function to be available.
+    // Only add the function if it is used by any column on the migration.
+    if (actions.any((e) =>
+        (e.createTable != null &&
+            e.createTable!.columns
+                .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7)) ||
+        (e.alterTable != null &&
+            (e.alterTable!.addColumns
+                    .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7) ||
+                e.alterTable!.modifyColumns
+                    .any((c) => c.newDefault == pgsqlFunctionRandomUuidV7))))) {
+      out += _sqlUuidGenerateV7FunctionDeclaration();
+      out += '\n';
+    }
 
     var foreignKeyActions = '';
     for (var action in actions) {
@@ -474,6 +576,12 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += createTable!.tableCreationToPgsql();
         break;
+      case DatabaseMigrationActionType.createTableIfNotExists:
+        out += '--\n';
+        out += '-- ACTION CREATE TABLE IF NOT EXISTS\n';
+        out += '--\n';
+        out += createTable!.tableCreationToPgsql(ifNotExists: true);
+        break;
       case DatabaseMigrationActionType.alterTable:
         out += '--\n';
         out += '-- ACTION ALTER TABLE\n';
@@ -488,14 +596,17 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
   String foreignRelationToSql() {
     var out = '';
 
-    if (createTable == null) return out;
+    var noForeignKeys = (createTable?.foreignKeys.isEmpty ?? true) &&
+        (alterTable?.addForeignKeys.isEmpty ?? true);
 
-    if (createTable!.foreignKeys.isEmpty) return out;
+    if (noForeignKeys) return out;
 
     out += '--\n';
     out += '-- ACTION CREATE FOREIGN KEY\n';
     out += '--\n';
-    out += createTable!.foreignRelationToPgsql();
+
+    out += createTable?.foreignRelationToPgsql() ?? '';
+    out += alterTable?.foreignRelationToSql() ?? '';
 
     return out;
   }
@@ -535,10 +646,18 @@ extension TableMigrationPgSqlGenerator on TableMigration {
       out += addIndex.toPgSql(tableName: name);
     }
 
-    // Add foreign keys
+    return out;
+  }
+
+  String foreignRelationToSql() {
+    var out = '';
+
+    if (addForeignKeys.isEmpty) return out;
+
     for (var addKey in addForeignKeys) {
       out += addKey.toPgSql(tableName: name);
     }
+
     return out;
   }
 }
@@ -599,4 +718,107 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   out += '\n';
 
   return out;
+}
+
+String _sqlCreateVectorExtensionIfAvailable() {
+  return '--'
+      '\n-- CREATE VECTOR EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
+const pgsqlFunctionRandomUuidV7 = 'gen_random_uuid_v7()';
+
+/// Add a function to generate v7 UUIDs in the database. The function name was
+/// chosen close to the current `gen_random_uuid()` function in Postgres. The
+/// function is implemented according to the RFC 9562 and uses only Postgres
+/// native functions (no need for extensions).
+///
+String _sqlUuidGenerateV7FunctionDeclaration() {
+  /*
+   * This function is licensed under the MIT License.
+   * Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74
+   *
+   * The scope of the below license ("Software") is limited to the function
+   * `gen_random_uuid_v7` implementation, which is a derivative work of the
+   * original `uuid_generate_v7` function. The license does not apply to any
+   * other part of the codebase.
+   *
+   * Copyright 2023 Kyle Hubert <kjmph@users.noreply.github.com>
+   *
+   * Permission is hereby granted, free of charge, to any person
+   * obtaining a copy of this software and associated documentation files
+   * (the "Software"), to deal in the Software without restriction,
+   * including without limitation the rights to use, copy, modify, merge,
+   * publish, distribute, sublicense, and/or sell copies of the Software,
+   * and to permit persons to whom the Software is furnished to do so,
+   * subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be
+   * included in all copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+   * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+   * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+   * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+   * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+   */
+  return '--'
+      '\n-- Function: $pgsqlFunctionRandomUuidV7'
+      '\n-- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74'
+      '\n-- License: MIT (copyright notice included on the generator source code).'
+      '\n--'
+      '\ncreate or replace function $pgsqlFunctionRandomUuidV7'
+      '\nreturns uuid'
+      '\nas \$\$'
+      '\nbegin'
+      '\n  -- use random v4 uuid as starting point (which has the same variant we need)'
+      '\n  -- then overlay timestamp'
+      '\n  -- then set version 7 by flipping the 2 and 1 bit in the version 4 string'
+      '\n  return encode('
+      '\n    set_bit('
+      '\n      set_bit('
+      '\n        overlay(uuid_send(gen_random_uuid())'
+      '\n                placing substring(int8send(floor(extract(epoch from clock_timestamp()) * 1000)::bigint) from 3)'
+      '\n                from 1 for 6'
+      '\n        ),'
+      '\n        52, 1'
+      '\n      ),'
+      '\n      53, 1'
+      '\n    ),'
+      "\n    'hex')::uuid;"
+      '\nend'
+      '\n\$\$'
+      '\nlanguage plpgsql'
+      '\nvolatile;'
+      '\n';
+}
+
+extension ColumnTypeComparison on ColumnType {
+  bool like(ColumnType other) {
+    // Integer and bigint are considered the same type.
+    if (this == ColumnType.integer || this == ColumnType.bigint) {
+      return other == ColumnType.integer || other == ColumnType.bigint;
+    }
+
+    return this == other;
+  }
+}
+
+extension VectorIndexDistanceFunction on VectorDistanceFunction {
+  String asDistanceFunction([String vectorType = 'vector']) {
+    var funcCode = (this == VectorDistanceFunction.innerProduct) ? 'ip' : name;
+    return '${vectorType}_${funcCode}_ops';
+  }
 }

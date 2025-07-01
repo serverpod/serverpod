@@ -1,0 +1,6 @@
+class: TownInt
+table: town_int
+fields:
+  id: int?, defaultPersist=serial
+  name: String
+  mayor: CitizenInt?, relation(optional)

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
@@ -8,18 +9,18 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
-import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
     required this.projectName,
   });
+
   final Directory directory;
   final String projectName;
 
@@ -65,10 +66,10 @@ class MigrationGenerator {
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(
       config,
     );
-    var modelDefinitions = StatefulAnalyzer(models, (uri, collector) {
+    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
       collector.printErrors();
 
-      if (collector.hasSeverErrors) {
+      if (collector.hasSevereErrors) {
         throw GenerateMigrationDatabaseDefinitionException();
       }
     }).validateAll();
@@ -80,7 +81,7 @@ class MigrationGenerator {
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
-      config.modulesAll,
+      config.modulesDependent,
       directory,
     );
 
@@ -110,7 +111,9 @@ class MigrationGenerator {
     }
 
     if (migration.isEmpty && !force) {
-      log.info('No changes detected.');
+      log.info(
+        'No changes detected. Use --force to create an empty migration.',
+      );
       return null;
     }
 
@@ -141,12 +144,9 @@ class MigrationGenerator {
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
-    List<ModuleConfig> allModules,
+    List<ModuleConfig> modules,
     Directory projectFolder,
   ) async {
-    var modules =
-        allModules.where((module) => module.name != projectName).toList();
-
     var versions = await _loadMigrationVersionsFromModules(
       modules,
       directory: projectFolder,
@@ -206,7 +206,9 @@ class MigrationGenerator {
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
-      log.info('No changes detected.');
+      log.info(
+        'No changes detected. Use --force to create an empty repair migration.',
+      );
       return null;
     }
 
@@ -321,35 +323,23 @@ class MigrationGenerator {
     List<ModuleConfig> modules, {
     required Directory directory,
   }) async {
-    var modulePaths = await locateAllModulePaths(
-      directory: directory,
-    );
-
     var selectedModules = modules.where(
       (module) => module.migrationVersions.isNotEmpty,
     );
 
-    var selectedPaths = modulePaths.where(
-      (modulePath) {
-        var moduleName = _extractModuleNameFromPath(modulePath);
-        return selectedModules.any((module) => module.name == moduleName);
-      },
-    );
-
     var moduleMigrationVersions = <MigrationVersion>[];
 
-    for (var modulePath in selectedPaths) {
-      var moduleName = _extractModuleNameFromPath(modulePath);
-
-      var versionName = selectedModules
-          .firstWhere((e) => e.name == moduleName)
-          .migrationVersions
-          .last;
+    for (var module in selectedModules) {
+      var versionName = module.migrationVersions.last;
+      var uri = Uri(
+        scheme: 'file', // assuming the module is local
+        pathSegments: module.serverPackageDirectoryPathParts,
+      );
 
       var migrationVersion = await MigrationVersion.load(
-        moduleName: moduleName,
+        moduleName: module.name,
         versionName: versionName,
-        projectDirectory: Directory.fromUri(modulePath),
+        projectDirectory: Directory.fromUri(uri),
       );
       moduleMigrationVersions.add(migrationVersion);
     }
@@ -383,11 +373,6 @@ class MigrationGenerator {
       installedModules: installedModules,
       migrationApiVersion: databaseDefinitionProject.migrationApiVersion,
     );
-  }
-
-  String _extractModuleNameFromPath(Uri path) {
-    var packageName = path.pathSegments.last;
-    return moduleNameFromServerPackageName(packageName);
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {

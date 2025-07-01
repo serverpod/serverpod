@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/endpoint_validation_helpers.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
-const pathToServerpod = '../../../../../../../../packages/serverpod';
+import '../../../../test_util/endpoint_validation_helpers.dart';
+
+const pathToServerpodRoot = '../../../../../../../..';
 var testProjectDirectory = Directory(path.joinAll([
   'test',
   'integration',
@@ -20,7 +21,7 @@ var testProjectDirectory = Directory(path.joinAll([
 
 void main() {
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpod);
+    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
@@ -130,10 +131,16 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition has expected subDirParts.', () {
-      var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
-      expect(subDirParts, hasLength(1));
-      expect(subDirParts?.first, 'subdirectory');
+    test('then endpoint definition has expected file path.', () {
+      var filePath = endpointDefinitions.firstOrNull?.filePath;
+      expect(
+          filePath,
+          path.join(
+            Directory.current.path,
+            testDirectory.path,
+            'subdirectory',
+            'endpoint.dart',
+          ));
     });
   });
 

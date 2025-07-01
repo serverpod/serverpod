@@ -1,9 +1,35 @@
-import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'dart:async';
 
-class GeneratePubspecsCommand extends ServerpodCommand {
+import 'package:cli_tools/config.dart';
+import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+
+enum GeneratePubspecsOption<V> implements OptionDefinition<V> {
+  version(StringOption(
+    argName: 'version',
+    mandatory: true,
+  )),
+  dartVersion(StringOption(
+    argName: 'dart-version',
+    mandatory: true,
+  )),
+  flutterVersion(StringOption(
+    argName: 'flutter-version',
+    mandatory: true,
+  )),
+  mode(StringOption(
+    argName: 'mode',
+    defaultsTo: 'development',
+    allowedValues: ['development', 'production'],
+  ));
+
+  const GeneratePubspecsOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+class GeneratePubspecsCommand extends ServerpodCommand<GeneratePubspecsOption> {
   @override
   final name = 'generate-pubspecs';
 
@@ -13,21 +39,23 @@ class GeneratePubspecsCommand extends ServerpodCommand {
   @override
   bool get hidden => true;
 
-  GeneratePubspecsCommand() {
-    argParser.addOption('version', defaultsTo: 'X');
-    argParser.addOption(
-      'mode',
-      defaultsTo: 'development',
-      allowed: ['development', 'production'],
-    );
-  }
+  GeneratePubspecsCommand() : super(options: GeneratePubspecsOption.values);
 
   @override
-  void run() {
-    if (argResults!['version'] == 'X') {
-      log.error('--version is not specified');
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
-    }
-    performGeneratePubspecs(argResults!['version'], argResults!['mode']);
+  FutureOr<void>? runWithConfig(
+    Configuration<GeneratePubspecsOption> commandConfig,
+  ) {
+    var version = commandConfig.value(GeneratePubspecsOption.version);
+    var dartVersion = commandConfig.value(GeneratePubspecsOption.dartVersion);
+    var flutterVersion =
+        commandConfig.value(GeneratePubspecsOption.flutterVersion);
+    var mode = commandConfig.value(GeneratePubspecsOption.mode);
+
+    performGeneratePubspecs(
+      version: version,
+      dartVersion: dartVersion,
+      flutterVersion: flutterVersion,
+      mode: mode,
+    );
   }
 }

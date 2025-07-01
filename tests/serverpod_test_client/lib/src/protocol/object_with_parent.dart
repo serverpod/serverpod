@@ -1,16 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithParent extends _i1.SerializableEntity {
+abstract class ObjectWithParent implements _i1.SerializableModel {
   ObjectWithParent._({
     this.id,
     required this.other,
@@ -21,13 +22,10 @@ abstract class ObjectWithParent extends _i1.SerializableEntity {
     required int other,
   }) = _ObjectWithParentImpl;
 
-  factory ObjectWithParent.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithParent.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithParent(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      other: serializationManager.deserialize<int>(jsonSerialization['other']),
+      id: jsonSerialization['id'] as int?,
+      other: jsonSerialization['other'] as int,
     );
   }
 
@@ -38,6 +36,9 @@ abstract class ObjectWithParent extends _i1.SerializableEntity {
 
   int other;
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ObjectWithParent copyWith({
     int? id,
     int? other,
@@ -45,9 +46,14 @@ abstract class ObjectWithParent extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'other': other,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -62,6 +68,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
           other: other,
         );
 
+  /// Returns a shallow copy of this [ObjectWithParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ObjectWithParent copyWith({
     Object? id = _Undefined,

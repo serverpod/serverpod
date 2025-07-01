@@ -1,0 +1,4 @@
+class: ScopeServerOnlyFieldChild
+extends: ScopeServerOnlyField
+fields:
+    childFoo: String

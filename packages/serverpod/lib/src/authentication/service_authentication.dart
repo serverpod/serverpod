@@ -10,6 +10,10 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(
     // var name = parts[0];
     var secret = parts[1];
 
+    if (session.server.serverpod.config.serviceSecret == null) {
+      return null;
+    }
+
     if (secret == session.server.serverpod.config.serviceSecret) {
       return AuthenticationInfo(0, <Scope>{Scope.none});
     }

@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../models_with_list_relations/person.dart' as _i2;
+import '../models_with_list_relations/city.dart' as _i3;
 
-abstract class Organization extends _i1.SerializableEntity {
+abstract class Organization implements _i1.SerializableModel {
   Organization._({
     this.id,
     required this.name,
@@ -25,22 +27,21 @@ abstract class Organization extends _i1.SerializableEntity {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) = _OrganizationImpl;
 
-  factory Organization.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
     return Organization(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      people: serializationManager
-          .deserialize<List<_i2.Person>?>(jsonSerialization['people']),
-      cityId:
-          serializationManager.deserialize<int?>(jsonSerialization['cityId']),
-      city: serializationManager
-          .deserialize<_i2.City?>(jsonSerialization['city']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      people: (jsonSerialization['people'] as List?)
+          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      cityId: jsonSerialization['cityId'] as int?,
+      city: jsonSerialization['city'] == null
+          ? null
+          : _i3.City.fromJson(
+              (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
 
@@ -55,24 +56,33 @@ abstract class Organization extends _i1.SerializableEntity {
 
   int? cityId;
 
-  _i2.City? city;
+  _i3.City? city;
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Organization copyWith({
     int? id,
     String? name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'people': people,
-      'cityId': cityId,
-      'city': city,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJson()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -84,7 +94,7 @@ class _OrganizationImpl extends Organization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) : super._(
           id: id,
           name: name,
@@ -93,6 +103,9 @@ class _OrganizationImpl extends Organization {
           city: city,
         );
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,
@@ -104,9 +117,11 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>? ? people : this.people?.clone(),
+      people: people is List<_i2.Person>?
+          ? people
+          : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.City? ? city : this.city?.copyWith(),
+      city: city is _i3.City? ? city : this.city?.copyWith(),
     );
   }
 }

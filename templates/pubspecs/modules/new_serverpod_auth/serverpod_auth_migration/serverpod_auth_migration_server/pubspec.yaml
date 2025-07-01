@@ -1,0 +1,42 @@
+# TEMPLATE
+
+name: serverpod_auth_migration_server
+description: Serverpod authentication migration server module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_email_account_server: SERVERPOD_VERSION
+  serverpod_auth_profile_server: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
+  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: SERVERPOD_VERSION
+  test: ^1.24.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_email_account_server:
+    path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
+  serverpod_auth_profile_server:
+    path: ../../serverpod_auth_profile/serverpod_auth_profile_server
+  serverpod_auth_server:
+    path: ../../../serverpod_auth/serverpod_auth_server
+  serverpod_auth_user_server:
+    path: ../../serverpod_auth_user/serverpod_auth_user_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

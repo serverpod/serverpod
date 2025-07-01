@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry extends _i1.SerializableEntity {
+abstract class CloudStorageEntry implements _i1.SerializableModel {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -33,23 +34,19 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
     required bool verified,
   }) = _CloudStorageEntryImpl;
 
-  factory CloudStorageEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CloudStorageEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return CloudStorageEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      storageId: serializationManager
-          .deserialize<String>(jsonSerialization['storageId']),
-      path: serializationManager.deserialize<String>(jsonSerialization['path']),
-      addedTime: serializationManager
-          .deserialize<DateTime>(jsonSerialization['addedTime']),
-      expiration: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['expiration']),
-      byteData: serializationManager
-          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
-      verified:
-          serializationManager.deserialize<bool>(jsonSerialization['verified']),
+      id: jsonSerialization['id'] as int?,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
+      addedTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      expiration: jsonSerialization['expiration'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      verified: jsonSerialization['verified'] as bool,
     );
   }
 
@@ -76,6 +73,9 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
   /// True if the file has been verified as uploaded.
   bool verified;
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -88,14 +88,19 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
       'verified': verified,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -120,6 +125,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
           verified: verified,
         );
 
+  /// Returns a shallow copy of this [CloudStorageEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,

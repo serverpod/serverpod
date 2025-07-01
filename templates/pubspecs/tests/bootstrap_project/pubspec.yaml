@@ -1,0 +1,33 @@
+publish_to: none
+
+name: bootstrap_project
+version: 1.0.0
+description: Bootstrapping test for Serverpod projects.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+dependencies:
+  http: '>=1.1.0 <2.0.0'
+  serverpod: SERVERPOD_VERSION
+  uuid: ^4.1.0
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: ^1.24.2
+  path: ^1.8.2
+  serverpod_cli: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_cli:
+    path: ../../tools/serverpod_cli
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client

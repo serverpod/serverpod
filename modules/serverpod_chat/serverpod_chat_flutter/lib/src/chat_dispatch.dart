@@ -1,7 +1,7 @@
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 
 /// Callback for received chat messages.
-typedef ChatMessageListener = void Function(SerializableEntity message);
+typedef ChatMessageListener = void Function(SerializableModel message);
 
 /// The [ChatDispatch] receives chat related messages from the server and
 /// passes them on to the correct [ChatController].
@@ -26,7 +26,7 @@ class ChatDispatch {
     _handleStreamMessages();
   }
 
-  /// Adds a listener to a specifiec chat channel. It's only allowed to add one
+  /// Adds a listener to a specific chat channel. It's only allowed to add one
   /// listener per channel.
   void addListener(String channel, ChatMessageListener listener,
       {String? unauthenticatedUserName}) {
@@ -60,7 +60,7 @@ class ChatDispatch {
     }
   }
 
-  void _routeMessageToChannel(String channel, SerializableEntity message) {
+  void _routeMessageToChannel(String channel, SerializableModel message) {
     var listener = _listeners[channel];
     if (listener != null) {
       listener(message);

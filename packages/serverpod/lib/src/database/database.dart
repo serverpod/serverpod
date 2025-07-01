@@ -1,14 +1,29 @@
 import 'dart:async';
-import 'dart:typed_data';
 
-import 'package:postgres/postgres.dart';
-import 'package:retry/retry.dart';
-import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/database_result.dart';
+import 'package:serverpod/src/database/concepts/includes.dart';
+import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
-import 'database_connection.dart';
-import 'expressions.dart';
-import 'table.dart';
+import 'adapters/postgres/database_connection.dart';
+import 'concepts/expressions.dart';
+import 'concepts/table.dart';
+
+/// Extension to only expose the [Database] constructor
+/// internally within the Serverpod package.
+extension DatabaseConstructor on Database {
+  /// Creates a new [Database] object.
+  static Database create({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  }) {
+    return Database._(session: session, poolManager: poolManager);
+  }
+}
 
 /// Provides easy access to the database in relation to the current [Session].
 class Database {
@@ -18,14 +33,25 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session})
-      : _session = session,
-        _databaseConnection = DatabaseConnection(session.server.databaseConfig);
+  Database._({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  })  : _session = session,
+        _databaseConnection = DatabaseConnection(poolManager);
 
-  /// Find a list of [TableRow]s from a table, using the provided [where]
-  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
-  /// multiple columns, user [orderByList]. If [where] is omitted, all rows in
-  /// the table will be returned.
+  /// Returns a list of [TableRow]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after with [limit] (or all)
+  /// items are read from the database.
   Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -44,12 +70,21 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
 
-  /// Find a single [TableRow] from a table, using the provided [where]
+  /// Returns the first matching [TableRow] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -66,29 +101,33 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
 
-  /// Find a single [TableRow] by its [id] or null if no such row exists. It's
+  /// Finds a single [TableRow] by its [id] or null if no such row exists. It's
   /// often useful to cast the object returned.
   ///
-  ///     var myRow = session.db.findById<MyClass>(myId);
+  /// ```dart
+  /// var myRow = session.db.findById<MyClass>(myId);
+  /// ```
   Future<T?> findById<T extends TableRow>(
-    int id, {
+    Object id, {
     Transaction? transaction,
     Include? include,
   }) async {
     return _databaseConnection.findById<T>(
       _session,
       id,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
 
-  /// Update all [TableRow]s in the list and returns the updated rows. If
+  /// Updates all [TableRow]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fail to
@@ -102,7 +141,8 @@ class Database {
       _session,
       rows,
       columns: columns,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -118,12 +158,13 @@ class Database {
       _session,
       row,
       columns: columns,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Inserts all [TableRow]s in the list and returns the inserted rows.
-  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
@@ -132,7 +173,8 @@ class Database {
     return _databaseConnection.insert<T>(
       _session,
       rows,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -144,45 +186,49 @@ class Database {
     return _databaseConnection.insertRow<T>(
       _session,
       row,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
-  /// Deletes all [TableRow]s in the list and returns the deleted ids.
-  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// Deletes all [TableRow]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.
-  Future<List<int>> delete<T extends TableRow>(
+  Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
   }) async {
     return _databaseConnection.delete<T>(
       _session,
       rows,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Deletes a single [TableRow].
-  Future<int> deleteRow<T extends TableRow>(
+  Future<T> deleteRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
   }) async {
     return await _databaseConnection.deleteRow<T>(
       _session,
       row,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<int>> deleteWhere<T extends TableRow>({
+  Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {
     return _databaseConnection.deleteWhere<T>(
       _session,
       where,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -198,109 +244,105 @@ class Database {
       _session,
       where: where,
       limit: limit,
-      transaction: transaction,
-    );
-  }
-
-  /// Stores a file in the database, specifically using the
-  /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(
-    String storageId,
-    String path,
-    ByteData byteData,
-    DateTime? expiration,
-    bool verified,
-  ) async {
-    return await _databaseConnection.legacy.storeFile(
-        storageId, path, byteData, expiration, verified,
-        session: _session);
-  }
-
-  /// Retrieves a file stored in the database or null if it doesn't exist,
-  /// specifically using the serverpod_cloud_storage table. Used by the the
-  /// [DatabaseCloudStorage].
-  Future<ByteData?> retrieveFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy
-        .retrieveFile(storageId, path, session: _session);
-  }
-
-  /// Verifies that a file has been successfully uploaded.
-  Future<bool> verifyFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy.verifyFile(
-      storageId,
-      path,
-      session: _session,
-    );
-  }
-
-  /// Executes a single SQL query. A [List] of rows represented of a [Map] with
-  /// the table name and value is another [Map] with the keys as column names and
-  /// the value as the contents of the column.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<List<Map<String, Map<String, dynamic>>>> unsafeQueryMappedResults(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-  }) async {
-    return _databaseConnection.mappedResultsQuery(
-      _session,
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<PostgreSQLResult> unsafeQuery(
+  ///
+  /// You are responsible to sanitize the query to avoid SQL injection. Always
+  /// use QueryParameters for passing values to SQL queries.
+  Future<DatabaseResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.query(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+      parameters: parameters,
     );
   }
 
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
-  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// You are responsible to sanitize the query to avoid SQL injection. Always
+  /// use QueryParameters for passing values to SQL queries.
   Future<int> unsafeExecute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.execute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+      parameters: parameters,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// A [List] of rows represented of another [List] with columns will be
+  /// returned.
+  ///
+  /// The simple query protocol does not support parameter binding.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<DatabaseResult> unsafeSimpleQuery(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleQuery(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// Returns the number of rows that were affected by the query.
+  ///
+  /// The simple query protocol does not support parameter binding.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<int> unsafeSimpleExecute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleExecute(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Executes a [Transaction].
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
-    RetryOptions? retryOptions,
-    FutureOr<R> Function()? orElse,
-    FutureOr<bool> Function(Exception exception)? retryIf,
+    TransactionSettings? settings,
   }) async {
     return await _databaseConnection.transaction(
       transactionFunction,
-      retryOptions: retryOptions,
-      orElse: orElse,
-      retryIf: retryIf,
+      settings: settings ?? const TransactionSettings(),
+      session: _session,
     );
   }
 

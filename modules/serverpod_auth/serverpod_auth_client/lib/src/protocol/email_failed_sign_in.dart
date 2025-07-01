@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-abstract class EmailFailedSignIn extends _i1.SerializableEntity {
+abstract class EmailFailedSignIn implements _i1.SerializableModel {
   EmailFailedSignIn._({
     this.id,
     required this.email,
@@ -27,18 +28,12 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
     required String ipAddress,
   }) = _EmailFailedSignInImpl;
 
-  factory EmailFailedSignIn.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailFailedSignIn.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailFailedSignIn(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      ipAddress: serializationManager
-          .deserialize<String>(jsonSerialization['ipAddress']),
+      id: jsonSerialization['id'] as int?,
+      email: jsonSerialization['email'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }
 
@@ -56,6 +51,9 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
   /// The IP address of the sign in attempt.
   String ipAddress;
 
+  /// Returns a shallow copy of this [EmailFailedSignIn]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailFailedSignIn copyWith({
     int? id,
     String? email,
@@ -65,11 +63,16 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'email': email,
-      'time': time,
+      'time': time.toJson(),
       'ipAddress': ipAddress,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -88,6 +91,9 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
           ipAddress: ipAddress,
         );
 
+  /// Returns a shallow copy of this [EmailFailedSignIn]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailFailedSignIn copyWith({
     Object? id = _Undefined,

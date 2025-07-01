@@ -1,22 +1,41 @@
 import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
+Stream<int> streamBytes() async* {
+  int i = 0;
+  while (true) yield i++ % 256;
+}
+
+extension<T> on Stream<T> {
+  Stream<List<T>> inChunksOf(int chunkSize) async* {
+    var chunk = <T>[];
+    await for (final e in this) {
+      chunk.add(e);
+      if (chunk.length >= chunkSize) {
+        yield chunk;
+        chunk = <T>[]; // new
+      }
+    }
+  }
+}
+
 ByteData createByteData(int len) {
   var ints = Uint8List(len);
   for (var i = 0; i < len; i++) {
-    ints[i] = i % len;
+    ints[i] = i % 256;
   }
   return ByteData.view(ints.buffer);
 }
 
 bool verifyByteData(ByteData byteData) {
   var ints = byteData.buffer.asUint8List();
-  for (var i in ints) {
-    if (ints[i] != i % byteData.lengthInBytes) return false;
+  for (var i = 0; i < ints.length; i++) {
+    if (ints[i] != i % 256) return false;
   }
   return true;
 }
@@ -106,8 +125,7 @@ void main() {
       var url = Uri.parse(
           '${serverUrl}serverpod_cloud_storage?method=file&foo=testdir/myfile2.bin');
       var response = await http.get(url);
-      // TODO: Actual response should probably be 400 (see server todo with verification of parameters).
-      expect(response.statusCode, equals(500));
+      expect(response.statusCode, equals(400));
     });
 
     test('Attempt retrieve file through URL with invalid method', () async {
@@ -139,7 +157,7 @@ void main() {
       expect(exists, false);
     });
 
-    test('Direct file upload', () async {
+    test('Direct file upload (ByteData)', () async {
       var uploadDescription = await client.cloudStorage
           .getDirectFilePostUrl('testdir/directupload.bin');
       expect(uploadDescription, isNotNull);
@@ -155,11 +173,52 @@ void main() {
       expect(verified, equals(true));
     });
 
-    test('Retrieve directly uploaded file', () async {
+    test('Retrieve directly uploaded file (ByteData)', () async {
       var byteData = await client.cloudStorage
           .retrievePublicFile('testdir/directupload.bin');
       expect(byteData!.lengthInBytes, equals(1024));
       expect(verifyByteData(byteData), equals(true));
+    });
+
+    test('Direct file upload (Stream<List<int>>)', () async {
+      var uploadDescription = await client.cloudStorage
+          .getDirectFilePostUrl('testdir/directupload_stream_binary.bin');
+      expect(uploadDescription, isNotNull);
+
+      var uploader = FileUploader(uploadDescription!);
+      var result =
+          await uploader.upload(streamBytes().take(512).inChunksOf(64));
+
+      expect(result, equals(true));
+
+      var verified = await client.cloudStorage
+          .verifyDirectFileUpload('testdir/directupload_stream_binary.bin');
+      expect(verified, equals(true));
+
+      var retrievedByteData = await client.cloudStorage
+          .retrievePublicFile('testdir/directupload_stream_binary.bin');
+      expect(retrievedByteData!.lengthInBytes, equals(512));
+      expect(verifyByteData(retrievedByteData), equals(true));
+    });
+
+    test('Attempt to upload twice with the same FileUploader', () async {
+      var uploadDescription = await client.cloudStorage
+          .getDirectFilePostUrl('testdir/directupload_duplicate.bin');
+      expect(uploadDescription, isNotNull);
+      var byteData = createByteData(100);
+
+      var uploader = FileUploader(uploadDescription!);
+      var result = await uploader.uploadByteData(byteData);
+      expect(result, equals(true));
+
+      expect(
+        () async => await uploader.uploadByteData(byteData),
+        throwsA(isA<Exception>().having(
+          (e) => e.toString(),
+          'message',
+          contains('Data has already been uploaded using this FileUploader.'),
+        )),
+      );
     });
   });
 }

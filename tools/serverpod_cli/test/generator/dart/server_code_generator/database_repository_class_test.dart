@@ -1,10 +1,11 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -20,7 +21,7 @@ void main() {
   group('Given a class with table name when generating code', () {
     var tableName = 'example_table';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
@@ -486,7 +487,7 @@ void main() {
         test('that returns a future with the base class', () {
           expect(
             deleteMethod?.returnType?.toSource(),
-            contains('Future<List<int>>'),
+            contains('Future<List<$testClassName>>'),
           );
         });
 
@@ -535,7 +536,7 @@ void main() {
 
           expect(
             deleteRowMethod?.returnType?.toSource(),
-            contains('int'),
+            contains(testClassName),
           );
         });
 
@@ -584,7 +585,7 @@ void main() {
 
           expect(
             deleteWhereMethod?.returnType?.toSource(),
-            contains('List<int>'),
+            contains('List<$testClassName>'),
           );
         });
 

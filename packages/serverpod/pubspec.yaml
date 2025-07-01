@@ -1,9 +1,8 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod
-version: 1.2.0-rc.1
+version: 2.9.0
 description: Serverpod is an open-source, scalable app server, written in Dart for the Flutter community.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -18,34 +17,35 @@ topics:
   - database
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  args: ^2.4.0
+  args: ^2.7.0
   collection: ^1.17.1
   crypto: ^3.0.2
-  http: ">=0.13.0 <2.0.0"
-  meta: ^1.8.0
+  http: '>=1.1.0 <2.0.0'
+  meta: ^1.11.0
   mustache_template: ^2.0.0
   path: ^1.8.2
-  postgres: ^2.6.1
+  postgres: ^3.4.0
   redis: ^4.0.0
   retry: ^3.1.1
   synchronized: ^3.1.0
-  postgres_pool: ^2.1.6
   system_resources: ^1.6.0
-  vm_service: ^13.0.0
-  yaml: ^3.1.1
-  serverpod_shared: #1.2.0-rc.1
-    path: ../serverpod_shared
-  serverpod_serialization: #1.2.0-rc.1
-    path: ../serverpod_serialization
-  serverpod_service_client: #1.2.0-rc.1
-    path: ../serverpod_service_client
-  serverpod_client: #1.2.0-rc.1
-    path: ../serverpod_client
+  vm_service: '>=13.0.0 <16.0.0'
+  yaml: ^3.1.2
+  serverpod_shared: 2.9.0
+  serverpod_serialization: 2.9.0
+  uuid: ^4.1.0
 
 dev_dependencies:
   test: ^1.24.2
-  serverpod_lints: #1.2.0-rc.1
+  serverpod_lints: 2.9.0
+
+dependency_overrides:
+  serverpod_shared:
+    path: ../serverpod_shared
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_lints:
     path: ../serverpod_lints

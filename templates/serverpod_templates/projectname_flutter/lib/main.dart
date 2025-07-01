@@ -2,15 +2,30 @@ import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-// Sets up a singleton client object that can be used to talk to the server from
-// anywhere in our app. The client is generated from your server code.
-// The client is set up to connect to a Serverpod running on a local server on
-// the default port. You will need to modify this to connect to staging or
-// production servers.
-var client = Client('http://$localhost:8080/')
-  ..connectivityMonitor = FlutterConnectivityMonitor();
+/// Sets up a global client object that can be used to talk to the server from
+/// anywhere in our app. The client is generated from your server code
+/// and is set up to connect to a Serverpod running on a local server on
+/// the default port. You will need to modify this to connect to staging or
+/// production servers.
+/// In a larger app, you may want to use the dependency injection of your choice
+/// instead of using a global client object. This is just a simple example.
+late final Client client;
+
+late String serverUrl;
 
 void main() {
+  // When you are running the app on a physical device, you need to set the
+  // server URL to the IP address of your computer. You can find the IP
+  // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
+  // You can set the variable when running or building your app like this:
+  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
+  const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
+  final serverUrl =
+      serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
+
+  client = Client(serverUrl)
+    ..connectivityMonitor = FlutterConnectivityMonitor();
+
   runApp(const MyApp());
 }
 
@@ -21,9 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Serverpod Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
@@ -39,22 +52,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  // These fields hold the last result or error message that we've received from
-  // the server or null if no result exists yet.
+  /// Holds the last result or null if no result exists yet.
   String? _resultMessage;
+
+  /// Holds the last error message that we've received from the server or null
+  /// if no error exists yet.
   String? _errorMessage;
 
   final _textEditingController = TextEditingController();
 
-  // Calls the `hello` method of the `example` endpoint. Will set either the
-  // `_resultMessage` or `_errorMessage` field, depending on if the call
-  // is successful.
+  /// Calls the `hello` method of the `greeting` endpoint. Will set either the
+  /// `_resultMessage` or `_errorMessage` field, depending on if the call
+  /// is successful.
   void _callHello() async {
     try {
-      final result = await client.example.hello(_textEditingController.text);
+      final result = await client.greeting.hello(_textEditingController.text);
       setState(() {
         _errorMessage = null;
-        _resultMessage = result;
+        _resultMessage = result.message;
       });
     } catch (e) {
       setState(() {
@@ -66,9 +81,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -77,9 +90,7 @@ class MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.only(bottom: 16.0),
               child: TextField(
                 controller: _textEditingController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter your name',
-                ),
+                decoration: const InputDecoration(hintText: 'Enter your name'),
               ),
             ),
             Padding(
@@ -89,7 +100,7 @@ class MyHomePageState extends State<MyHomePage> {
                 child: const Text('Send to Server'),
               ),
             ),
-            _ResultDisplay(
+            ResultDisplay(
               resultMessage: _resultMessage,
               errorMessage: _errorMessage,
             ),
@@ -100,16 +111,13 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// _ResultDisplays shows the result of the call. Either the returned result from
-// the `example.hello` endpoint method or an error message.
-class _ResultDisplay extends StatelessWidget {
+/// ResultDisplays shows the result of the call. Either the returned result
+/// from the `example.greeting` endpoint method or an error message.
+class ResultDisplay extends StatelessWidget {
   final String? resultMessage;
   final String? errorMessage;
 
-  const _ResultDisplay({
-    this.resultMessage,
-    this.errorMessage,
-  });
+  const ResultDisplay({super.key, this.resultMessage, this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -126,11 +134,11 @@ class _ResultDisplay extends StatelessWidget {
       text = 'No server response yet.';
     }
 
-    return Container(
-      height: 50,
-      color: backgroundColor,
-      child: Center(
-        child: Text(text),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 50),
+      child: Container(
+        color: backgroundColor,
+        child: Center(child: Text(text)),
       ),
     );
   }

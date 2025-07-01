@@ -1,6 +1,7 @@
+import 'dart:io';
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import 'user_images.dart';
 
@@ -32,6 +33,28 @@ typedef SendPasswordResetEmailCallback = Future<bool> Function(
 /// Callback for emailing validation codes at account setup.
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
+
+/// Callback for generation of the hash password
+typedef PasswordHashGenerator = Future<String> Function(String password);
+
+/// Callback to validate the hash used by [PasswordHashGenerator]
+typedef PasswordHashValidator = Future<bool> Function(
+  String password,
+  String email,
+  String hash, {
+  void Function({required String passwordHash, required String storedHash})?
+      onValidationFailure,
+  void Function(Object e)? onError,
+});
+
+/// Enum to define the sign-out behavior for the legacy sign out endpoint.
+enum SignOutBehavior {
+  /// Sign out the user from all active devices.
+  allDevices,
+
+  /// Sign out the user from the current device only.
+  currentDevice,
+}
 
 /// Configuration options for the Auth module.
 class AuthConfig {
@@ -109,7 +132,11 @@ class AuthConfig {
   /// Called when a user should be sent a validation code on account setup.
   final SendValidationEmailCallback? sendValidationEmail;
 
-  /// The time for password resets to be valid. Default is one day.
+  /// The length of the validation code used in the authentication process.
+  /// This value determines the number of digits in the validation code. Default is 8.
+  final int validationCodeLength;
+
+  /// The time for password resets to be valid. Default is 15 minutes.
   final Duration passwordResetExpirationTime;
 
   /// True if the server should use the accounts email address as part of the
@@ -127,6 +154,23 @@ class AuthConfig {
   /// The minimum length of passwords when signing up with email.
   /// Default is 8 characters.
   final int minPasswordLength;
+
+  /// True if unsecure random number generation is allowed. If set to false, an
+  /// error will be thrown if the platform does not support secure random number
+  /// generation.
+  final bool allowUnsecureRandom;
+
+  /// Create a custom hash for the password
+  final PasswordHashGenerator passwordHashGenerator;
+
+  /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
+  final PasswordHashValidator passwordHashValidator;
+
+  /// Defines the legacy sign-out behavior for users.
+  ///
+  /// - [SignOutBehavior.allDevices]: Users will be signed out from all active devices.
+  /// - [SignOutBehavior.currentDevice]: Users will be signed out from the current device only.
+  final SignOutBehavior legacyUserSignOutBehavior;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
@@ -150,11 +194,30 @@ class AuthConfig {
     this.onUserUpdated,
     this.sendPasswordResetEmail,
     this.sendValidationEmail,
-    this.passwordResetExpirationTime = const Duration(hours: 24),
+    this.validationCodeLength = 8,
+    this.passwordResetExpirationTime = const Duration(minutes: 15),
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =
         'config/firebase_service_account_key.json',
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
-  });
+    this.allowUnsecureRandom = false,
+    this.passwordHashGenerator = defaultGeneratePasswordHash,
+    this.passwordHashValidator = defaultValidatePasswordHash,
+    this.legacyUserSignOutBehavior = SignOutBehavior.allDevices,
+  }) {
+    if (validationCodeLength < 8) {
+      stderr.writeln(
+        'WARNING: Validation code length is less than 8. This makes the validation code more susceptible to brute force attacks.',
+      );
+    }
+
+    if (validationCodeLength < 4) {
+      throw ArgumentError.value(
+        validationCodeLength,
+        'validationCodeLength',
+        'must be at least 4',
+      );
+    }
+  }
 }

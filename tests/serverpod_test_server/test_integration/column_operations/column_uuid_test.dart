@@ -4,8 +4,8 @@ import 'package:test/test.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
-final firstUuid = UuidValue('6948DF80-14BD-4E04-8842-7668D9C001F5');
-final secondUuid = UuidValue('4B8302DA-21AD-401F-AF45-1DFD956B80B5');
+final firstUuid = UuidValue.fromString('6948DF80-14BD-4E04-8842-7668D9C001F5');
+final secondUuid = UuidValue.fromString('4B8302DA-21AD-401F-AF45-1DFD956B80B5');
 
 Future<void> _createTestDatabase(Session session) async {
   await Types.db.insert(session, [
@@ -86,6 +86,16 @@ void main() async {
       expect(result.length, 2);
     });
 
+    test('when filtering using empty inSet then no rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid.inSet({}),
+      );
+
+      expect(result, isEmpty);
+    });
+
     test('when filtering using notInSet then matching row is returned.',
         () async {
       var result = await Types.db.find(
@@ -94,6 +104,64 @@ void main() async {
       );
 
       expect(result.length, 2);
+    });
+
+    test('when filtering using empty notInSet then no rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid.notInSet({}),
+      );
+
+      expect(result.length, 3);
+    });
+
+    test(
+        'when filtering using "greater than" then lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid > secondUuid,
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aUuid, firstUuid);
+    });
+
+    test(
+        'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid >= secondUuid,
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
+    });
+
+    test(
+        'when filtering using "less than" then lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid < firstUuid,
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aUuid, secondUuid);
+    });
+
+    test(
+        'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid <= firstUuid,
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
     });
   });
 }

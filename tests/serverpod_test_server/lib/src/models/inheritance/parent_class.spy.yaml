@@ -1,0 +1,5 @@
+class: ParentClass
+extends: GrandparentClass
+table: parent_class_table
+fields: 
+    parentField: String

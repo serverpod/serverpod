@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
-abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
+abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -29,18 +30,14 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   }) = _CloudStorageDirectUploadEntryImpl;
 
   factory CloudStorageDirectUploadEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return CloudStorageDirectUploadEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      storageId: serializationManager
-          .deserialize<String>(jsonSerialization['storageId']),
-      path: serializationManager.deserialize<String>(jsonSerialization['path']),
-      expiration: serializationManager
-          .deserialize<DateTime>(jsonSerialization['expiration']),
-      authKey: serializationManager
-          .deserialize<String>(jsonSerialization['authKey']),
+      id: jsonSerialization['id'] as int?,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
+      expiration:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      authKey: jsonSerialization['authKey'] as String,
     );
   }
 
@@ -61,6 +58,9 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   /// Access key for retrieving a private file.
   String authKey;
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -71,12 +71,17 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
       'authKey': authKey,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -97,6 +102,9 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
           authKey: authKey,
         );
 
+  /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,

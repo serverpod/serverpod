@@ -5,7 +5,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import '../business/user_images.dart';
 
@@ -17,25 +17,52 @@ class UserEndpoint extends Endpoint {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<bool> removeUserImage(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
+    if (!AuthConfig.current.userCanEditUserImage) {
+      return false;
+    }
+
+    var userId = (await session.authenticated)?.userId;
     return await UserImages.setDefaultUserImage(session, userId!);
   }
 
   /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(Session session, ByteData image) async {
-    var userId = await session.auth.authenticatedUserId;
+    if (!AuthConfig.current.userCanEditUserImage) {
+      return false;
+    }
+
+    var userId = (await session.authenticated)?.userId;
     return await UserImages.setUserImageFromBytes(
         session, userId!, image.buffer.asUint8List());
   }
 
   /// Changes the name of a user.
   Future<bool> changeUserName(Session session, String userName) async {
+    if (!AuthConfig.current.userCanEditUserName) {
+      return false;
+    }
+
     userName = userName.trim();
     if (userName == '') return false;
 
-    var userId = await session.auth.authenticatedUserId;
+    var userId = (await session.authenticated)?.userId;
     if (userId == null) return false;
 
     return (await Users.changeUserName(session, userId, userName)) != null;
+  }
+
+  /// Changes the full name of a user.
+  Future<bool> changeFullName(Session session, String fullName) async {
+    if (!AuthConfig.current.userCanEditFullName) {
+      return false;
+    }
+
+    fullName = fullName.trim();
+    if (fullName == '') return false;
+
+    var userId = (await session.authenticated)?.userId;
+    if (userId == null) return false;
+
+    return (await Users.changeFullName(session, userId, fullName)) != null;
   }
 }

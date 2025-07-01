@@ -1,0 +1,11 @@
+module:
+  - hello:
+  - modifyModuleObject:
+streaming:
+  - wasStreamOpenCalled:
+  - wasStreamClosedCalled:
+  - intEchoStream:
+  - simpleInputReturnStream:
+myModuleFeature:
+  - myFeatureMethod:
+  - myFeatureModel:

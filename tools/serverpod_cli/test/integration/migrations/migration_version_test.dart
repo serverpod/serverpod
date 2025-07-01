@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/test_util/builders/migration_version_builder.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/builders/migration_version_builder.dart';
 
 void main() {
   var testAssetsPath =
@@ -24,8 +25,6 @@ void main() {
     var versionName = '00000000000000';
     var versionDirectory = Directory(path.join(
       tempDirectory.path,
-      'generated',
-      'migration',
       'migrations',
       versionName,
     ));

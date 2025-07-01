@@ -1,46 +1,50 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../models_with_list_relations/person.dart' as _i2;
+import '../models_with_list_relations/city.dart' as _i3;
 
-abstract class Organization extends _i1.TableRow {
+abstract class Organization
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Organization._({
-    int? id,
+    this.id,
     required this.name,
     this.people,
     this.cityId,
     this.city,
-  }) : super(id);
+  });
 
   factory Organization({
     int? id,
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) = _OrganizationImpl;
 
-  factory Organization.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
     return Organization(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      people: serializationManager
-          .deserialize<List<_i2.Person>?>(jsonSerialization['people']),
-      cityId:
-          serializationManager.deserialize<int?>(jsonSerialization['cityId']),
-      city: serializationManager
-          .deserialize<_i2.City?>(jsonSerialization['city']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      people: (jsonSerialization['people'] as List?)
+          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      cityId: jsonSerialization['cityId'] as int?,
+      city: jsonSerialization['city'] == null
+          ? null
+          : _i3.City.fromJson(
+              (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
 
@@ -48,204 +52,57 @@ abstract class Organization extends _i1.TableRow {
 
   static const db = OrganizationRepository._();
 
+  @override
+  int? id;
+
   String name;
 
   List<_i2.Person>? people;
 
   int? cityId;
 
-  _i2.City? city;
+  _i3.City? city;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   Organization copyWith({
     int? id,
     String? name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'people': people,
-      'cityId': cityId,
-      'city': city,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJson()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJson(),
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'cityId': cityId,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJsonForProtocol(),
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'name': name,
-      'people': people,
-      'cityId': cityId,
-      'city': city,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'cityId':
-        cityId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Organization>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrganizationInclude? include,
-  }) async {
-    return session.db.find<Organization>(
-      where: where != null ? where(Organization.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Organization?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrganizationInclude? include,
-  }) async {
-    return session.db.findSingleRow<Organization>(
-      where: where != null ? where(Organization.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Organization?> findById(
-    _i1.Session session,
-    int id, {
-    OrganizationInclude? include,
-  }) async {
-    return session.db.findById<Organization>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<OrganizationTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Organization>(
-      where: where(Organization.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Organization row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Organization row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Organization row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Organization>(
-      where: where != null ? where(Organization.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static OrganizationInclude include({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     return OrganizationInclude._(
       people: people,
@@ -272,6 +129,11 @@ abstract class Organization extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -282,7 +144,7 @@ class _OrganizationImpl extends Organization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) : super._(
           id: id,
           name: name,
@@ -291,6 +153,9 @@ class _OrganizationImpl extends Organization {
           city: city,
         );
 
+  /// Returns a shallow copy of this [Organization]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,
@@ -302,14 +167,16 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>? ? people : this.people?.clone(),
+      people: people is List<_i2.Person>?
+          ? people
+          : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.City? ? city : this.city?.copyWith(),
+      city: city is _i3.City? ? city : this.city?.copyWith(),
     );
   }
 }
 
-class OrganizationTable extends _i1.Table {
+class OrganizationTable extends _i1.Table<int?> {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     name = _i1.ColumnString(
       'name',
@@ -329,7 +196,7 @@ class OrganizationTable extends _i1.Table {
 
   late final _i1.ColumnInt cityId;
 
-  _i2.CityTable? _city;
+  _i3.CityTable? _city;
 
   _i2.PersonTable get __people {
     if (___people != null) return ___people!;
@@ -344,15 +211,15 @@ class OrganizationTable extends _i1.Table {
     return ___people!;
   }
 
-  _i2.CityTable get city {
+  _i3.CityTable get city {
     if (_city != null) return _city!;
     _city = _i1.createRelationTable(
       relationFieldName: 'city',
       field: Organization.t.cityId,
-      foreignField: _i2.City.t.id,
+      foreignField: _i3.City.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CityTable(tableRelation: foreignTableRelation),
+          _i3.CityTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
@@ -394,13 +261,10 @@ class OrganizationTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use OrganizationTable.t instead.')
-OrganizationTable tOrganization = OrganizationTable();
-
 class OrganizationInclude extends _i1.IncludeObject {
   OrganizationInclude._({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     _people = people;
     _city = city;
@@ -408,7 +272,7 @@ class OrganizationInclude extends _i1.IncludeObject {
 
   _i2.PersonIncludeList? _people;
 
-  _i2.CityInclude? _city;
+  _i3.CityInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -417,7 +281,7 @@ class OrganizationInclude extends _i1.IncludeObject {
       };
 
   @override
-  _i1.Table get table => Organization.t;
+  _i1.Table<int?> get table => Organization.t;
 }
 
 class OrganizationIncludeList extends _i1.IncludeList {
@@ -437,7 +301,7 @@ class OrganizationIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => Organization.t;
+  _i1.Table<int?> get table => Organization.t;
 }
 
 class OrganizationRepository {
@@ -451,6 +315,28 @@ class OrganizationRepository {
 
   final detachRow = const OrganizationDetachRowRepository._();
 
+  /// Returns a list of [Organization]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Organization>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
@@ -462,7 +348,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.dbNext.find<Organization>(
+    return session.db.find<Organization>(
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -474,6 +360,23 @@ class OrganizationRepository {
     );
   }
 
+  /// Returns the first matching [Organization] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Organization?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
@@ -484,7 +387,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Organization>(
+    return session.db.findFirstRow<Organization>(
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
@@ -495,107 +398,132 @@ class OrganizationRepository {
     );
   }
 
+  /// Finds a single [Organization] by its [id] or null if no such row exists.
   Future<Organization?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.dbNext.findById<Organization>(
+    return session.db.findById<Organization>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
+  /// Inserts all [Organization]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Organization]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<Organization>> insert(
     _i1.Session session,
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Organization>(
+    return session.db.insert<Organization>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [Organization] and returns the inserted row.
+  ///
+  /// The returned [Organization] will have its `id` field set.
   Future<Organization> insertRow(
     _i1.Session session,
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Organization>(
+    return session.db.insertRow<Organization>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [Organization]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<Organization>> update(
     _i1.Session session,
     List<Organization> rows, {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Organization>(
+    return session.db.update<Organization>(
       rows,
       columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [Organization]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<Organization> updateRow(
     _i1.Session session,
     Organization row, {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Organization>(
+    return session.db.updateRow<Organization>(
       row,
       columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [Organization]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Organization>> delete(
     _i1.Session session,
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Organization>(
+    return session.db.delete<Organization>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [Organization].
+  Future<Organization> deleteRow(
     _i1.Session session,
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Organization>(
+    return session.db.deleteRow<Organization>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<Organization>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Organization>(
+    return session.db.deleteWhere<Organization>(
       where: where(Organization.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Organization>(
+    return session.db.count<Organization>(
       where: where?.call(Organization.t),
       limit: limit,
       transaction: transaction,
@@ -606,11 +534,14 @@ class OrganizationRepository {
 class OrganizationAttachRepository {
   const OrganizationAttachRepository._();
 
+  /// Creates a relation between this [Organization] and the given [Person]s
+  /// by setting each [Person]'s foreign key `organizationId` to refer to this [Organization].
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -620,9 +551,10 @@ class OrganizationAttachRepository {
 
     var $person =
         person.map((e) => e.copyWith(organizationId: organization.id)).toList();
-    await session.dbNext.update<_i2.Person>(
+    await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -630,11 +562,14 @@ class OrganizationAttachRepository {
 class OrganizationAttachRowRepository {
   const OrganizationAttachRowRepository._();
 
+  /// Creates a relation between the given [Organization] and [City]
+  /// by setting the [Organization]'s foreign key `cityId` to refer to the [City].
   Future<void> city(
     _i1.Session session,
     Organization organization,
-    _i2.City city,
-  ) async {
+    _i3.City city, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -643,17 +578,21 @@ class OrganizationAttachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: city.id);
-    await session.dbNext.updateRow<Organization>(
+    await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
+  /// Creates a relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to refer to this [Organization].
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -662,9 +601,10 @@ class OrganizationAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
-    await session.dbNext.updateRow<_i2.Person>(
+    await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -672,18 +612,25 @@ class OrganizationAttachRowRepository {
 class OrganizationDetachRepository {
   const OrganizationDetachRepository._();
 
+  /// Detaches the relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> people(
     _i1.Session session,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
 
     var $person = person.map((e) => e.copyWith(organizationId: null)).toList();
-    await session.dbNext.update<_i2.Person>(
+    await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -691,33 +638,47 @@ class OrganizationDetachRepository {
 class OrganizationDetachRowRepository {
   const OrganizationDetachRowRepository._();
 
+  /// Detaches the relation between this [Organization] and the [City] set in `city`
+  /// by setting the [Organization]'s foreign key `cityId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> city(
     _i1.Session session,
-    Organization organization,
-  ) async {
+    Organization organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
 
     var $organization = organization.copyWith(cityId: null);
-    await session.dbNext.updateRow<Organization>(
+    await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
+  /// Detaches the relation between this [Organization] and the given [Person]
+  /// by setting the [Person]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
   Future<void> people(
     _i1.Session session,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
 
     var $person = person.copyWith(organizationId: null);
-    await session.dbNext.updateRow<_i2.Person>(
+    await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }

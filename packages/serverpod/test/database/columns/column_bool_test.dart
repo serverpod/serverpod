@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnBool', () {
     var columnName = 'production';
-    var column = ColumnBool(columnName, Table(tableName: 'test'));
+    var column = ColumnBool(columnName, Table<int?>(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
@@ -63,12 +63,28 @@ void main() {
       });
 
       test(
+          'when checking if expression is in empty value set then output is FALSE expression.',
+          () {
+        var comparisonExpression = column.inSet(<bool>{});
+
+        expect(comparisonExpression.toString(), 'FALSE');
+      });
+
+      test(
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
         var comparisonExpression = column.notInSet(<bool>{true, false});
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (true, false) OR $column IS NULL)');
+      });
+
+      test(
+          'when checking if expression is NOT in empty value set then output is TRUE expression.',
+          () {
+        var comparisonExpression = column.notInSet(<bool>{});
+
+        expect(comparisonExpression.toString(), 'TRUE');
       });
     });
   });

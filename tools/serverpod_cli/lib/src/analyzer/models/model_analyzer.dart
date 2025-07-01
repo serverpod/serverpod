@@ -1,21 +1,23 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/entity_dependency_resolver.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
+import 'package:serverpod_cli/src/analyzer/models/model_parser/model_parser.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/model_validator.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
-import 'package:serverpod_cli/src/util/yaml_docs.dart';
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/model_parser/model_parser.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(Uri path) {
   var fileName = path.pathSegments.last;
@@ -34,10 +36,9 @@ class SerializableModelAnalyzer {
     Keyword.enumType,
   };
 
-  /// Best effort attempt to extract an model definition from a yaml file.
+  /// Best effort attempt to extract a model definition from a yaml file.
   static SerializableModelDefinition? extractModelDefinition(
-    ModelSource modelSource,
-  ) {
+      ModelSource modelSource, List<TypeDefinition> extraClasses) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
       modelSource.yamlSourceUri,
     );
@@ -58,20 +59,22 @@ class SerializableModelAnalyzer {
 
     switch (definitionType) {
       case Keyword.classType:
-        return ModelParser.serializeClassFile(
+        return ModelParser.serializeModelClassFile(
           Keyword.classType,
           modelSource,
           outFileName,
           documentContents,
           docsExtractor,
+          extraClasses,
         );
       case Keyword.exceptionType:
-        return ModelParser.serializeClassFile(
+        return ModelParser.serializeExceptionClassFile(
           Keyword.exceptionType,
           modelSource,
           outFileName,
           documentContents,
           docsExtractor,
+          extraClasses,
         );
       case Keyword.enumType:
         return ModelParser.serializeEnumFile(
@@ -96,11 +99,12 @@ class SerializableModelAnalyzer {
 
   /// Validates a yaml file against an expected syntax for model files.
   static void validateYamlDefinition(
+    GeneratorConfig config,
     String yaml,
     Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableModelDefinition? model,
-    List<SerializableModelDefinition>? models,
+    ParsedModelsCollection parsedModels,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);
@@ -133,13 +137,18 @@ class SerializableModelAnalyzer {
     if (definitionType == null) return;
 
     var restrictions = Restrictions(
+      config: config,
       documentType: definitionType,
       documentContents: documentContents,
       documentDefinition: model,
-      // TODO: move instance creation of EntityRelations to StatefulAnalyzer
-      // to resolve n-squared time complexity.
-      modelRelations: models != null ? ModelRelations(models) : null,
+      parsedModels: parsedModels,
     );
+
+    var generateCollisionErrors = validateDuplicateFileName(
+      documentContents,
+      restrictions,
+    );
+    collector.addErrors(generateCollisionErrors);
 
     Set<ValidateNode> documentStructure;
     switch (definitionType) {

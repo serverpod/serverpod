@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 
 import 'definitions.dart';
 
@@ -18,17 +19,42 @@ import 'definitions.dart';
 class EndpointsAnalyzer {
   final AnalysisContextCollection collection;
 
+  final String absoluteIncludedPaths;
+
   /// Create a new [EndpointsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
-  /// provided [endpointDirectory].
-  EndpointsAnalyzer(Directory endpointDirectory)
+  /// provided [directory].
+  EndpointsAnalyzer(Directory directory)
       : collection = AnalysisContextCollection(
-          includedPaths: [endpointDirectory.absolute.path],
+          includedPaths: [directory.absolute.path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
-        );
+        ),
+        absoluteIncludedPaths = directory.absolute.path;
+
+  Set<EndpointDefinition> _endpointDefinitions = {};
+
+  /// Inform the analyzer that the provided [filePaths] have been updated.
+  ///
+  /// This will trigger a re-analysis of the files and return true if the
+  /// updated files should trigger a code generation.
+  Future<bool> updateFileContexts(Set<String> filePaths) async {
+    await _refreshContextForFiles(filePaths);
+
+    var oldDefinitionsLength = _endpointDefinitions.length;
+    await analyze(collector: CodeGenerationCollector());
+
+    if (_endpointDefinitions.length != oldDefinitionsLength) {
+      return true;
+    }
+
+    return filePaths.any((e) => _isEndpointFile(File(e)));
+  }
 
   /// Analyze all files in the [AnalysisContextCollection].
-  /// Use [changedFiles] to mark files, that need reloading.
+  ///
+  /// [changedFiles] is an optional list of files that should have their context
+  /// refreshed before analysis. This is useful when only a subset of files have
+  /// changed since [updateFileContexts] was last called.
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
@@ -36,7 +62,15 @@ class EndpointsAnalyzer {
     await _refreshContextForFiles(changedFiles);
 
     var endpointDefs = <EndpointDefinition>[];
-    await for (var (library, filePath, rootPath) in _libraries) {
+
+    List<(ResolvedLibraryResult, String)> validLibraries = [];
+    Map<String, int> endpointClassMap = {};
+    await for (var (library, filePath) in _libraries) {
+      var endpointClasses = _getEndpointClasses(library);
+      if (endpointClasses.isEmpty) {
+        continue;
+      }
+
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
         collector.addError(
@@ -52,20 +86,42 @@ class EndpointsAnalyzer {
         continue;
       }
 
-      var validationErrors = _validateLibrary(library, filePath);
-      collector.addErrors(validationErrors.values.expand((e) => e).toList());
+      for (var endpointClass in endpointClasses) {
+        var className = endpointClass.name;
+        endpointClassMap.update(
+          className,
+          (value) => value + 1,
+          ifAbsent: () => 1,
+        );
+      }
 
-      endpointDefs.addAll(
-        _parseLibrary(
-          library,
-          collector,
-          filePath,
-          rootPath,
-          validationErrors,
-        ),
-      );
+      validLibraries.add((library, filePath));
     }
 
+    var duplicateEndpointClasses = endpointClassMap.entries
+        .where((entry) => entry.value > 1)
+        .map((entry) => entry.key)
+        .toSet();
+
+    for (var (library, filePath) in validLibraries) {
+      var severityExceptions = _validateLibrary(
+        library,
+        filePath,
+        duplicateEndpointClasses,
+      );
+      collector.addErrors(severityExceptions.values.expand((e) => e).toList());
+
+      var failingExceptions = _filterNoFailExceptions(severityExceptions);
+
+      endpointDefs.addAll(_parseLibrary(
+        library,
+        collector,
+        filePath,
+        failingExceptions,
+      ));
+    }
+
+    _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
   }
 
@@ -91,7 +147,6 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     CodeAnalysisCollector collector,
     String filePath,
-    String rootPath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
     var topElements = library.element.topLevelElements;
@@ -104,12 +159,10 @@ class EndpointsAnalyzer {
 
     var endpointDefs = <EndpointDefinition>[];
     for (var classElement in endpointClasses) {
-      var endpointMethods = classElement.methods
-          .where(EndpointMethodAnalyzer.isEndpointMethod)
-          .where((methodElement) => !validationErrors.containsKey(
-                EndpointMethodAnalyzer.elementNamespace(
-                    classElement, methodElement, filePath),
-              ));
+      var endpointMethods = classElement.collectionEndpointMethods(
+        validationErrors: validationErrors,
+        filePath: filePath,
+      );
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
@@ -125,7 +178,6 @@ class EndpointsAnalyzer {
         classElement,
         methodDefs,
         filePath,
-        rootPath,
       );
 
       endpointDefs.add(endpointDefinition);
@@ -146,18 +198,30 @@ class EndpointsAnalyzer {
     }
   }
 
+  bool _isEndpointFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+
+    var contents = file.readAsStringSync();
+    if (!contents.contains('extends Endpoint')) return false;
+
+    return true;
+  }
+
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
     ResolvedLibraryResult library,
     String filePath,
+    Set<String> duplicatedClasses,
   ) {
-    var topElements = library.element.topLevelElements;
-    var classElements = topElements.whereType<ClassElement>();
-    var endpointClasses =
-        classElements.where(EndpointClassAnalyzer.isEndpointClass);
+    var endpointClasses = _getEndpointClasses(library);
 
     var validationErrors = <String, List<SourceSpanSeverityException>>{};
     for (var classElement in endpointClasses) {
-      var errors = EndpointClassAnalyzer.validate(classElement);
+      var errors = EndpointClassAnalyzer.validate(
+        classElement,
+        duplicatedClasses,
+      );
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
           classElement,
@@ -183,7 +247,7 @@ class EndpointsAnalyzer {
     return validationErrors;
   }
 
-  Stream<(ResolvedLibraryResult, String, String)> get _libraries async* {
+  Stream<(ResolvedLibraryResult, String)> get _libraries async* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
@@ -193,9 +257,78 @@ class EndpointsAnalyzer {
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
         if (library is ResolvedLibraryResult) {
-          yield (library, filePath, context.contextRoot.root.path);
+          yield (library, filePath);
         }
       }
     }
+  }
+
+  Iterable<ClassElement> _getEndpointClasses(ResolvedLibraryResult library) {
+    var topElements = library.element.topLevelElements;
+    return topElements
+        .whereType<ClassElement>()
+        .where(EndpointClassAnalyzer.isEndpointClass);
+  }
+
+  Map<String, List<SourceSpanSeverityException>> _filterNoFailExceptions(
+    Map<String, List<SourceSpanSeverityException>> validationErrors,
+  ) {
+    var noFailSeverities = [SourceSpanSeverity.hint, SourceSpanSeverity.info];
+
+    var failingErrors = validationErrors.map((key, exceptions) {
+      var failingExceptions = exceptions
+          .where((exception) => !noFailSeverities.contains(exception.severity))
+          .toList();
+
+      return MapEntry(key, failingExceptions);
+    });
+
+    failingErrors.removeWhere((key, exceptions) => exceptions.isEmpty);
+
+    return failingErrors;
+  }
+}
+
+extension on ClassElement {
+  /// Returns all endpoints methods from the class.
+  ///
+  /// Those defined directly on the class, as well as those inherited from the base classes.
+  List<MethodElement> collectionEndpointMethods({
+    required Map<String, List<SourceSpanSeverityException>> validationErrors,
+    required String filePath,
+  }) {
+    var endPointMethods = <MethodElement>[];
+    var handledMethods = <String>{};
+
+    for (final method in methods) {
+      if (EndpointMethodAnalyzer.isEndpointMethod(method) &&
+          !validationErrors.containsKey(
+            EndpointMethodAnalyzer.elementNamespace(this, method, filePath),
+          )) {
+        endPointMethods.add(method);
+      }
+
+      handledMethods.add(method.name);
+    }
+
+    var inheritedMethods = allSupertypes
+        .map((s) => s.element)
+        .whereType<ClassElement>()
+        .where(EndpointClassAnalyzer.isEndpointInterface)
+        .expand((s) => s.methods);
+
+    for (var method in inheritedMethods) {
+      if (handledMethods.contains(method.name)) {
+        continue;
+      }
+
+      if (EndpointMethodAnalyzer.isEndpointMethod(method)) {
+        endPointMethods.add(method);
+      }
+
+      handledMethods.add(method.name);
+    }
+
+    return endPointMethods;
   }
 }

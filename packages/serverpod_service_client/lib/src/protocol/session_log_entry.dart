@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.SerializableEntity {
+abstract class SessionLogEntry implements _i1.SerializableModel {
   SessionLogEntry._({
     this.id,
     required this.serverId,
@@ -46,37 +47,22 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
     required DateTime touched,
   }) = _SessionLogEntryImpl;
 
-  factory SessionLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      duration: serializationManager
-          .deserialize<double?>(jsonSerialization['duration']),
-      numQueries: serializationManager
-          .deserialize<int?>(jsonSerialization['numQueries']),
-      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      authenticatedUserId: serializationManager
-          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
-      isOpen:
-          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
-      touched: serializationManager
-          .deserialize<DateTime>(jsonSerialization['touched']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      module: jsonSerialization['module'] as String?,
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      duration: (jsonSerialization['duration'] as num?)?.toDouble(),
+      numQueries: jsonSerialization['numQueries'] as int?,
+      slow: jsonSerialization['slow'] as bool?,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
+      isOpen: jsonSerialization['isOpen'] as bool?,
+      touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
     );
   }
 
@@ -128,6 +114,9 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
   /// Timestamp of the last time this record was modified.
   DateTime touched;
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -147,21 +136,27 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
+      'time': time.toJson(),
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (duration != null) 'duration': duration,
+      if (numQueries != null) 'numQueries': numQueries,
+      if (slow != null) 'slow': slow,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      if (authenticatedUserId != null)
+        'authenticatedUserId': authenticatedUserId,
+      if (isOpen != null) 'isOpen': isOpen,
+      'touched': touched.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -200,6 +195,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           touched: touched,
         );
 
+  /// Returns a shallow copy of this [SessionLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,

@@ -1,18 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
+abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -30,18 +31,13 @@ abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
   }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return EmailCreateAccountRequest(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
+      id: jsonSerialization['id'] as int?,
+      userName: jsonSerialization['userName'] as String,
+      email: jsonSerialization['email'] as String,
+      hash: jsonSerialization['hash'] as String,
+      verificationCode: jsonSerialization['verificationCode'] as String,
     );
   }
 
@@ -62,6 +58,9 @@ abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
   /// The verification code sent to the user.
   String verificationCode;
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
@@ -72,12 +71,17 @@ abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,
       'verificationCode': verificationCode,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -98,6 +102,9 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
           verificationCode: verificationCode,
         );
 
+  /// Returns a shallow copy of this [EmailCreateAccountRequest]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   EmailCreateAccountRequest copyWith({
     Object? id = _Undefined,

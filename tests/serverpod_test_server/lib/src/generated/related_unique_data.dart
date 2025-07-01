@@ -1,23 +1,27 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'unique_data.dart' as _i2;
 
-abstract class RelatedUniqueData extends _i1.TableRow {
+abstract class RelatedUniqueData
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   RelatedUniqueData._({
-    int? id,
+    this.id,
     required this.uniqueDataId,
     this.uniqueData,
     required this.number,
-  }) : super(id);
+  });
 
   factory RelatedUniqueData({
     int? id,
@@ -26,24 +30,24 @@ abstract class RelatedUniqueData extends _i1.TableRow {
     required int number,
   }) = _RelatedUniqueDataImpl;
 
-  factory RelatedUniqueData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory RelatedUniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return RelatedUniqueData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      uniqueDataId: serializationManager
-          .deserialize<int>(jsonSerialization['uniqueDataId']),
-      uniqueData: serializationManager
-          .deserialize<_i2.UniqueData?>(jsonSerialization['uniqueData']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
+      id: jsonSerialization['id'] as int?,
+      uniqueDataId: jsonSerialization['uniqueDataId'] as int,
+      uniqueData: jsonSerialization['uniqueData'] == null
+          ? null
+          : _i2.UniqueData.fromJson(
+              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
+      number: jsonSerialization['number'] as int,
     );
   }
 
   static final t = RelatedUniqueDataTable();
 
   static const db = RelatedUniqueDataRepository._();
+
+  @override
+  int? id;
 
   int uniqueDataId;
 
@@ -52,8 +56,11 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   int number;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [RelatedUniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
@@ -63,176 +70,21 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      'uniqueData': uniqueData,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
       'number': number,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
       'number': number,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'uniqueDataId': uniqueDataId,
-      'uniqueData': uniqueData,
-      'number': number,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'uniqueDataId':
-        uniqueDataId = value;
-        return;
-      case 'number':
-        number = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<RelatedUniqueData>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.find<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<RelatedUniqueData?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.findSingleRow<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<RelatedUniqueData?> findById(
-    _i1.Session session,
-    int id, {
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.findById<RelatedUniqueData>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<RelatedUniqueData>(
-      where: where(RelatedUniqueData.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
@@ -258,6 +110,11 @@ abstract class RelatedUniqueData extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -275,6 +132,9 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
           number: number,
         );
 
+  /// Returns a shallow copy of this [RelatedUniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
@@ -293,7 +153,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   }
 }
 
-class RelatedUniqueDataTable extends _i1.Table {
+class RelatedUniqueDataTable extends _i1.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
       : super(tableName: 'related_unique_data') {
     uniqueDataId = _i1.ColumnInt(
@@ -341,9 +201,6 @@ class RelatedUniqueDataTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use RelatedUniqueDataTable.t instead.')
-RelatedUniqueDataTable tRelatedUniqueData = RelatedUniqueDataTable();
-
 class RelatedUniqueDataInclude extends _i1.IncludeObject {
   RelatedUniqueDataInclude._({_i2.UniqueDataInclude? uniqueData}) {
     _uniqueData = uniqueData;
@@ -355,7 +212,7 @@ class RelatedUniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int?> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataIncludeList extends _i1.IncludeList {
@@ -375,7 +232,7 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => RelatedUniqueData.t;
+  _i1.Table<int?> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataRepository {
@@ -383,6 +240,28 @@ class RelatedUniqueDataRepository {
 
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
+  /// Returns a list of [RelatedUniqueData]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -394,7 +273,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.find<RelatedUniqueData>(
+    return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -406,6 +285,23 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Returns the first matching [RelatedUniqueData] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -416,7 +312,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<RelatedUniqueData>(
+    return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -427,107 +323,132 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Finds a single [RelatedUniqueData] by its [id] or null if no such row exists.
   Future<RelatedUniqueData?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findById<RelatedUniqueData>(
+    return session.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
+  /// Inserts all [RelatedUniqueData]s in the list and returns the inserted rows.
+  ///
+  /// The returned [RelatedUniqueData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<RelatedUniqueData>> insert(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<RelatedUniqueData>(
+    return session.db.insert<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [RelatedUniqueData] and returns the inserted row.
+  ///
+  /// The returned [RelatedUniqueData] will have its `id` field set.
   Future<RelatedUniqueData> insertRow(
     _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<RelatedUniqueData>(
+    return session.db.insertRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [RelatedUniqueData]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<RelatedUniqueData>> update(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<RelatedUniqueData>(
+    return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [RelatedUniqueData]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<RelatedUniqueData> updateRow(
     _i1.Session session,
     RelatedUniqueData row, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<RelatedUniqueData>(
+    return session.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [RelatedUniqueData]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<RelatedUniqueData>> delete(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<RelatedUniqueData>(
+    return session.db.delete<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [RelatedUniqueData].
+  Future<RelatedUniqueData> deleteRow(
     _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<RelatedUniqueData>(
+    return session.db.deleteRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<RelatedUniqueData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<RelatedUniqueData>(
+    return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<RelatedUniqueData>(
+    return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -538,11 +459,14 @@ class RelatedUniqueDataRepository {
 class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
+  /// Creates a relation between the given [RelatedUniqueData] and [UniqueData]
+  /// by setting the [RelatedUniqueData]'s foreign key `uniqueDataId` to refer to the [UniqueData].
   Future<void> uniqueData(
     _i1.Session session,
     RelatedUniqueData relatedUniqueData,
-    _i2.UniqueData uniqueData,
-  ) async {
+    _i2.UniqueData uniqueData, {
+    _i1.Transaction? transaction,
+  }) async {
     if (relatedUniqueData.id == null) {
       throw ArgumentError.notNull('relatedUniqueData.id');
     }
@@ -552,9 +476,10 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await session.dbNext.updateRow<RelatedUniqueData>(
+    await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
+      transaction: transaction,
     );
   }
 }

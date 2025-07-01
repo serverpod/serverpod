@@ -1,19 +1,21 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow {
+abstract class MessageLogEntry
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   MessageLogEntry._({
-    int? id,
+    this.id,
     required this.sessionLogId,
     required this.serverId,
     required this.messageId,
@@ -24,7 +26,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) : super(id);
+  });
 
   factory MessageLogEntry({
     int? id,
@@ -40,36 +42,28 @@ abstract class MessageLogEntry extends _i1.TableRow {
     required int order,
   }) = _MessageLogEntryImpl;
 
-  factory MessageLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory MessageLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return MessageLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      messageId:
-          serializationManager.deserialize<int>(jsonSerialization['messageId']),
-      endpoint: serializationManager
-          .deserialize<String>(jsonSerialization['endpoint']),
-      messageName: serializationManager
-          .deserialize<String>(jsonSerialization['messageName']),
-      duration: serializationManager
-          .deserialize<double>(jsonSerialization['duration']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      serverId: jsonSerialization['serverId'] as String,
+      messageId: jsonSerialization['messageId'] as int,
+      endpoint: jsonSerialization['endpoint'] as String,
+      messageName: jsonSerialization['messageName'] as String,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      order: jsonSerialization['order'] as int,
     );
   }
 
   static final t = MessageLogEntryTable();
 
   static const db = MessageLogEntryRepository._();
+
+  @override
+  int? id;
 
   /// Id of the session this entry is associated with.
   int sessionLogId;
@@ -80,7 +74,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -104,8 +98,11 @@ abstract class MessageLogEntry extends _i1.TableRow {
   int order;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -122,214 +119,35 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'sessionLogId': sessionLogId,
-      'serverId': serverId,
-      'messageId': messageId,
-      'endpoint': endpoint,
-      'messageName': messageName,
-      'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
-      'slow': slow,
-      'order': order,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'sessionLogId':
-        sessionLogId = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'messageId':
-        messageId = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'messageName':
-        messageName = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'slow':
-        slow = value;
-        return;
-      case 'order':
-        order = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<MessageLogEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<MessageLogEntry>(
-      where: where != null ? where(MessageLogEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<MessageLogEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<MessageLogEntry>(
-      where: where != null ? where(MessageLogEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<MessageLogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<MessageLogEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<MessageLogEntry>(
-      where: where(MessageLogEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    MessageLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    MessageLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    MessageLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<MessageLogEntry>(
-      where: where != null ? where(MessageLogEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static MessageLogEntryInclude include() {
@@ -354,6 +172,11 @@ abstract class MessageLogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -386,6 +209,9 @@ class _MessageLogEntryImpl extends MessageLogEntry {
           order: order,
         );
 
+  /// Returns a shallow copy of this [MessageLogEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,
@@ -416,7 +242,7 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
-class MessageLogEntryTable extends _i1.Table {
+class MessageLogEntryTable extends _i1.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_message_log') {
     sessionLogId = _i1.ColumnInt(
@@ -470,7 +296,7 @@ class MessageLogEntryTable extends _i1.Table {
   /// The id of the message this entry is associated with.
   late final _i1.ColumnInt messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   late final _i1.ColumnString endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -509,9 +335,6 @@ class MessageLogEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use MessageLogEntryTable.t instead.')
-MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
-
 class MessageLogEntryInclude extends _i1.IncludeObject {
   MessageLogEntryInclude._();
 
@@ -519,7 +342,7 @@ class MessageLogEntryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int?> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryIncludeList extends _i1.IncludeList {
@@ -539,12 +362,34 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MessageLogEntry.t;
+  _i1.Table<int?> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryRepository {
   const MessageLogEntryRepository._();
 
+  /// Returns a list of [MessageLogEntry]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<MessageLogEntry>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
@@ -555,7 +400,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<MessageLogEntry>(
+    return session.db.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -566,6 +411,23 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Returns the first matching [MessageLogEntry] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<MessageLogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
@@ -575,7 +437,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<MessageLogEntry>(
+    return session.db.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -585,105 +447,130 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Finds a single [MessageLogEntry] by its [id] or null if no such row exists.
   Future<MessageLogEntry?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<MessageLogEntry>(
+    return session.db.findById<MessageLogEntry>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [MessageLogEntry]s in the list and returns the inserted rows.
+  ///
+  /// The returned [MessageLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<MessageLogEntry>> insert(
     _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<MessageLogEntry>(
+    return session.db.insert<MessageLogEntry>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [MessageLogEntry] and returns the inserted row.
+  ///
+  /// The returned [MessageLogEntry] will have its `id` field set.
   Future<MessageLogEntry> insertRow(
     _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<MessageLogEntry>(
+    return session.db.insertRow<MessageLogEntry>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [MessageLogEntry]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<MessageLogEntry>> update(
     _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<MessageLogEntry>(
+    return session.db.update<MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [MessageLogEntry]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<MessageLogEntry> updateRow(
     _i1.Session session,
     MessageLogEntry row, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<MessageLogEntry>(
+    return session.db.updateRow<MessageLogEntry>(
       row,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [MessageLogEntry]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<MessageLogEntry>> delete(
     _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<MessageLogEntry>(
+    return session.db.delete<MessageLogEntry>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [MessageLogEntry].
+  Future<MessageLogEntry> deleteRow(
     _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<MessageLogEntry>(
+    return session.db.deleteRow<MessageLogEntry>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<MessageLogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<MessageLogEntry>(
+    return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<MessageLogEntry>(
+    return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
       transaction: transaction,

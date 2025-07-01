@@ -12,14 +12,14 @@ void main() {
         () {
       var files = findPubspecsFiles(testAssetsPath);
 
-      expect(files.length, equals(1));
+      expect(files.length, equals(2));
     });
 
     test(
         '.findPubspecFiles() recursively tries to find pubspec file placed in ignored folder',
         () {
       var files = findPubspecsFiles(testAssetsPath,
-          ignorePaths: ['conditionally_ignored']);
+          ignorePaths: ['conditionally_ignored', 'pubspec_parse']);
 
       expect(files.length, equals(0));
     });
@@ -71,6 +71,20 @@ void main() {
       var result = shouldBeIgnored(path, ignorePaths);
 
       expect(result, isFalse);
+    });
+  });
+
+  group('parsePubspec', () {
+    test('success when parsing valid pubspec file', () {
+      var file =
+          File(p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec.yaml'));
+      expect(() => parsePubspec(file), returnsNormally);
+    });
+
+    test('throw exception when parsing invalid pubspec file', () {
+      var file = File(
+          p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec_invalid.yaml'));
+      expect(() => parsePubspec(file), throwsException);
     });
   });
 }

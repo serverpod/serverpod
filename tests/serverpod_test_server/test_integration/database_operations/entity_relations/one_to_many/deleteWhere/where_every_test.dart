@@ -31,15 +31,17 @@ void main() async {
         Order(description: 'Prem: Order 5', customerId: customers[2].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every order has a description starting with 'prem'.
         where: (c) => c.orders.every((o) => o.description.ilike('prem%')),
       );
 
-      expect(deletedCustomerIds, [
+      expect(deletedCustomers, hasLength(1));
+      expect(
+        deletedCustomers.firstOrNull?.id,
         customers[2].id, // Viktor
-      ]);
+      );
     });
 
     test(
@@ -60,7 +62,7 @@ void main() async {
         Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every order has a description starting with 'prem' or customer name is 'Viktor'
         where: (c) =>
@@ -68,7 +70,8 @@ void main() async {
             c.name.equals('Isak'),
       );
 
-      expect(deletedCustomerIds, hasLength(2));
+      expect(deletedCustomers, hasLength(2));
+      var deletedCustomerIds = deletedCustomers.map((c) => c.id).toList();
       expect(
           deletedCustomerIds,
           containsAll([
@@ -95,7 +98,7 @@ void main() async {
         Order(description: 'Basic: Order 5', customerId: customers[2].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every order has a description starting with 'prem'
         // or 'basic'.
@@ -103,9 +106,11 @@ void main() async {
             o.description.ilike('prem%') | o.description.ilike('basic%')),
       );
 
-      expect(deletedCustomerIds, [
+      expect(deletedCustomers, hasLength(1));
+      expect(
+        deletedCustomers.firstOrNull?.id,
         customers[2].id, // Viktor
-      ]);
+      );
     });
 
     test(
@@ -130,7 +135,7 @@ void main() async {
         Order(description: 'Basic: Order 7', customerId: customers[2].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every order has a description starting with 'prem'
         // or every order has a description starting with 'basic'.
@@ -139,7 +144,8 @@ void main() async {
             c.orders.every((o) => o.description.ilike('basic%')),
       );
 
-      expect(deletedCustomerIds, hasLength(2));
+      expect(deletedCustomers, hasLength(2));
+      var deletedCustomerIds = deletedCustomers.map((c) => c.id).toList();
       expect(
           deletedCustomerIds,
           containsAll([
@@ -198,14 +204,15 @@ void main() async {
         Comment(description: 'Del: Comment 14', orderId: orders[4].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every comment for every order starts with del.
         where: (c) => c.orders
             .every((o) => o.comments.every((c) => c.description.ilike('del%'))),
       );
 
-      expect(deletedCustomerIds, hasLength(2));
+      expect(deletedCustomers, hasLength(2));
+      var deletedCustomerIds = deletedCustomers.map((c) => c.id).toList();
       expect(deletedCustomerIds, [
         customers[0].id, // Alex
         customers[2].id, // Viktor
@@ -249,7 +256,7 @@ void main() async {
         Comment(description: 'Del: Comment 9', orderId: orders[3].id!),
       ]);
 
-      var deletedCustomerIds = await Customer.db.deleteWhere(
+      var deletedCustomers = await Customer.db.deleteWhere(
         session,
         // All customers where every comment for every order starts with 'del' or every order starts with 'prem'.
         where: (c) => c.orders.every((o) =>
@@ -257,7 +264,8 @@ void main() async {
             o.description.ilike('prem%')),
       );
 
-      expect(deletedCustomerIds, hasLength(2));
+      expect(deletedCustomers, hasLength(2));
+      var deletedCustomerIds = deletedCustomers.map((c) => c.id).toList();
       expect(
           deletedCustomerIds,
           containsAll([

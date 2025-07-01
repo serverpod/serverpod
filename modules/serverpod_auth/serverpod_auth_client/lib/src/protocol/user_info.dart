@@ -1,25 +1,26 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
-/// itself as it may contain sensative information, such as the users email.
+/// itself as it may contain sensitive information, such as the users email.
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo extends _i1.SerializableEntity {
+abstract class UserInfo implements _i1.SerializableModel {
   UserInfo._({
     this.id,
     required this.userIdentifier,
-    required this.userName,
+    this.userName,
     this.fullName,
     this.email,
     required this.created,
@@ -31,7 +32,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
   factory UserInfo({
     int? id,
     required String userIdentifier,
-    required String userName,
+    String? userName,
     String? fullName,
     String? email,
     required DateTime created,
@@ -40,28 +41,19 @@ abstract class UserInfo extends _i1.SerializableEntity {
     required bool blocked,
   }) = _UserInfoImpl;
 
-  factory UserInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userIdentifier: serializationManager
-          .deserialize<String>(jsonSerialization['userIdentifier']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      fullName: serializationManager
-          .deserialize<String?>(jsonSerialization['fullName']),
-      email:
-          serializationManager.deserialize<String?>(jsonSerialization['email']),
-      created: serializationManager
-          .deserialize<DateTime>(jsonSerialization['created']),
-      imageUrl: serializationManager
-          .deserialize<String?>(jsonSerialization['imageUrl']),
-      scopeNames: serializationManager
-          .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      blocked:
-          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
+      id: jsonSerialization['id'] as int?,
+      userIdentifier: jsonSerialization['userIdentifier'] as String,
+      userName: jsonSerialization['userName'] as String?,
+      fullName: jsonSerialization['fullName'] as String?,
+      email: jsonSerialization['email'] as String?,
+      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      imageUrl: jsonSerialization['imageUrl'] as String?,
+      scopeNames: (jsonSerialization['scopeNames'] as List)
+          .map((e) => e as String)
+          .toList(),
+      blocked: jsonSerialization['blocked'] as bool,
     );
   }
 
@@ -75,7 +67,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
   String userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  String userName;
+  String? userName;
 
   /// The full name of the user.
   String? fullName;
@@ -95,6 +87,9 @@ abstract class UserInfo extends _i1.SerializableEntity {
   /// True if the user is blocked from signing in.
   bool blocked;
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -109,16 +104,21 @@ abstract class UserInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
-      'userName': userName,
-      'fullName': fullName,
-      'email': email,
-      'created': created,
-      'imageUrl': imageUrl,
-      'scopeNames': scopeNames,
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+      'created': created.toJson(),
+      if (imageUrl != null) 'imageUrl': imageUrl,
+      'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -128,7 +128,7 @@ class _UserInfoImpl extends UserInfo {
   _UserInfoImpl({
     int? id,
     required String userIdentifier,
-    required String userName,
+    String? userName,
     String? fullName,
     String? email,
     required DateTime created,
@@ -147,11 +147,14 @@ class _UserInfoImpl extends UserInfo {
           blocked: blocked,
         );
 
+  /// Returns a shallow copy of this [UserInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,
     String? userIdentifier,
-    String? userName,
+    Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
     DateTime? created,
@@ -162,12 +165,12 @@ class _UserInfoImpl extends UserInfo {
     return UserInfo(
       id: id is int? ? id : this.id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
-      userName: userName ?? this.userName,
+      userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
-      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toList(),
       blocked: blocked ?? this.blocked,
     );
   }

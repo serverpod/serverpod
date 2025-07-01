@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// A code generator is responsible for generating the code for the target
 /// language.
@@ -11,8 +11,8 @@ abstract class CodeGenerator {
 
   /// Generates the content of files that only depend the [SerializableModel].
   ///
-  /// Returns a map where they key is the path of the file and the the value is
-  /// the files content.
+  /// Returns a map where they key is the path of the file and the value is
+  /// the file's content.
   ///
   /// Relative paths start at the server package directory.
   ///
@@ -25,8 +25,8 @@ abstract class CodeGenerator {
   /// Generate the content of files that depend on the entire
   /// [ProtocolDefinition].
   ///
-  /// Returns a map where they key is the path of the file and the the value is
-  /// the files content.
+  /// Returns a map where they key is the path of the file and the value is
+  /// the file's content.
   ///
   /// Relative paths start at the server package directory.
   ///
@@ -39,18 +39,23 @@ abstract class CodeGenerator {
 }
 
 extension GenerateCode on Library {
-  String generateCode() {
-    var code = accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString();
+  String generateCode({Allocator? allocator}) {
+    var code = accept(DartEmitter(
+      useNullSafetySyntax: true,
+      allocator: allocator ?? Allocator.simplePrefixing(),
+    )).toString();
+
     try {
       return DartFormatter().format('''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 $code
 ''');

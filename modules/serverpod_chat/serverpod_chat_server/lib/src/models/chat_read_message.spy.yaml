@@ -1,0 +1,16 @@
+### Message to notify the server that messages have been read.
+class: ChatReadMessage
+table: serverpod_chat_read_message
+fields:
+  ### The channel this that has been read.
+  channel: String
+
+  ### The id of the user that read the messages.
+  userId: int
+
+  ### The id of the last read message.
+  lastReadMessageId: int
+indexes:
+  serverpod_chat_read_message_channel_user_idx:
+    fields: channel, userId
+    unique: true

@@ -1,21 +1,23 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UniqueData extends _i1.TableRow {
+abstract class UniqueData
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   UniqueData._({
-    int? id,
+    this.id,
     required this.number,
     required this.email,
-  }) : super(id);
+  });
 
   factory UniqueData({
     int? id,
@@ -23,16 +25,11 @@ abstract class UniqueData extends _i1.TableRow {
     required String email,
   }) = _UniqueDataImpl;
 
-  factory UniqueData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UniqueData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
+      id: jsonSerialization['id'] as int?,
+      number: jsonSerialization['number'] as int,
+      email: jsonSerialization['email'] as String,
     );
   }
 
@@ -40,13 +37,19 @@ abstract class UniqueData extends _i1.TableRow {
 
   static const db = UniqueDataRepository._();
 
+  @override
+  int? id;
+
   int number;
 
   String email;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UniqueData copyWith({
     int? id,
     int? number,
@@ -55,166 +58,19 @@ abstract class UniqueData extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'number': number,
       'email': email,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'number': number,
       'email': email,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'number': number,
-      'email': email,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'number':
-        number = value;
-        return;
-      case 'email':
-        email = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UniqueData>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UniqueDataTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UniqueData?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UniqueDataTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UniqueData?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<UniqueData>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UniqueDataTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<UniqueData>(
-      where: where(UniqueData.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    UniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    UniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    UniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UniqueDataTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static UniqueDataInclude include() {
@@ -240,6 +96,11 @@ abstract class UniqueData extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -255,6 +116,9 @@ class _UniqueDataImpl extends UniqueData {
           email: email,
         );
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UniqueData copyWith({
     Object? id = _Undefined,
@@ -269,7 +133,7 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
-class UniqueDataTable extends _i1.Table {
+class UniqueDataTable extends _i1.Table<int?> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
     number = _i1.ColumnInt(
       'number',
@@ -293,9 +157,6 @@ class UniqueDataTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use UniqueDataTable.t instead.')
-UniqueDataTable tUniqueData = UniqueDataTable();
-
 class UniqueDataInclude extends _i1.IncludeObject {
   UniqueDataInclude._();
 
@@ -303,7 +164,7 @@ class UniqueDataInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int?> get table => UniqueData.t;
 }
 
 class UniqueDataIncludeList extends _i1.IncludeList {
@@ -323,12 +184,34 @@ class UniqueDataIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table<int?> get table => UniqueData.t;
 }
 
 class UniqueDataRepository {
   const UniqueDataRepository._();
 
+  /// Returns a list of [UniqueData]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<UniqueData>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
@@ -339,7 +222,7 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<UniqueData>(
+    return session.db.find<UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -350,6 +233,23 @@ class UniqueDataRepository {
     );
   }
 
+  /// Returns the first matching [UniqueData] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<UniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
@@ -359,7 +259,7 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<UniqueData>(
+    return session.db.findFirstRow<UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
@@ -369,105 +269,130 @@ class UniqueDataRepository {
     );
   }
 
+  /// Finds a single [UniqueData] by its [id] or null if no such row exists.
   Future<UniqueData?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<UniqueData>(
+    return session.db.findById<UniqueData>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [UniqueData]s in the list and returns the inserted rows.
+  ///
+  /// The returned [UniqueData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<UniqueData>> insert(
     _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UniqueData>(
+    return session.db.insert<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [UniqueData] and returns the inserted row.
+  ///
+  /// The returned [UniqueData] will have its `id` field set.
   Future<UniqueData> insertRow(
     _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UniqueData>(
+    return session.db.insertRow<UniqueData>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [UniqueData]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<UniqueData>> update(
     _i1.Session session,
     List<UniqueData> rows, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UniqueData>(
+    return session.db.update<UniqueData>(
       rows,
       columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [UniqueData]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<UniqueData> updateRow(
     _i1.Session session,
     UniqueData row, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UniqueData>(
+    return session.db.updateRow<UniqueData>(
       row,
       columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [UniqueData]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<UniqueData>> delete(
     _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UniqueData>(
+    return session.db.delete<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [UniqueData].
+  Future<UniqueData> deleteRow(
     _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UniqueData>(
+    return session.db.deleteRow<UniqueData>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<UniqueData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UniqueData>(
+    return session.db.deleteWhere<UniqueData>(
       where: where(UniqueData.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UniqueData>(
+    return session.db.count<UniqueData>(
       where: where?.call(UniqueData.t),
       limit: limit,
       transaction: transaction,

@@ -1,49 +1,31 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
-import 'package:args/command_runner.dart';
+import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/analytics/analytics.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-abstract class GlobalFlags {
-  static const quiet = 'quiet';
-  static const quietAbbr = 'q';
-  static const verbose = 'verbose';
-  static const verboseAbbr = 'v';
-  static const analytics = 'analytics';
-  static const analyticsAbbr = 'a';
-}
-
-typedef LoggerInit = void Function(LogLevel);
-typedef PreCommandEnvironmentCheck = Future<void> Function();
+import '../commands/version.dart' show VersionCommand;
 
 Future<void> _preCommandEnvironmentChecks() async {
-  if (Platform.isWindows) {
-    log.warning(
-        'Windows is not officially supported yet. Things may or may not work '
-        'as expected.');
-  }
-
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
-    throw ExitException();
+    throw ExitException.error();
   }
   if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
-    throw ExitException();
+    throw ExitException.error();
   }
 
   if (!loadEnvironmentVars()) {
-    throw ExitException();
+    throw ExitException.error();
   }
 
   // Make sure all necessary downloads are installed
@@ -52,145 +34,135 @@ Future<void> _preCommandEnvironmentChecks() async {
       await resourceManager.installTemplates();
     } catch (e) {
       log.error('Failed to download templates.');
-      throw ExitException();
+      throw ExitException.error();
     }
 
     if (!resourceManager.isTemplatesInstalled) {
       log.error(
           'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      throw ExitException();
+      throw ExitException.error();
     }
   }
 }
 
-class ServerpodCommandRunner extends CommandRunner {
-  final Analytics _analytics;
+Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
+  if (runner._productionMode) {
+    await promptToUpdateIfNeeded(runner._cliVersion);
+  } else {
+    log.debug(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    log.debug('SERVERPOD_HOME is set to $serverpodHome');
+
+    if (!resourceManager.isTemplatesInstalled) {
+      log.warning('Could not find templates.');
+    }
+  }
+}
+
+Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
+  await _preCommandEnvironmentChecks();
+  await _preCommandPrints(runner as ServerpodCommandRunner);
+}
+
+class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   final bool _productionMode;
   final Version _cliVersion;
-  final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
 
-  ServerpodCommandRunner({
-    required Analytics analytics,
+  ServerpodCommandRunner(
+    super.executableName,
+    super.description, {
     required bool productionMode,
     required Version cliVersion,
-    required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
-    required String executableName,
-    required String description,
-  })  : _analytics = analytics,
-        _productionMode = productionMode,
+    super.messageOutput,
+    super.onBeforeRunCommand,
+    super.setLogLevel,
+    super.onAnalyticsEvent,
+  })  : _productionMode = productionMode,
         _cliVersion = cliVersion,
-        _onPreCommandEnvironmentCheck = onPreCommandEnvironmentCheck,
-        super(executableName, description) {
-    argParser.addFlag(
-      GlobalFlags.quiet,
-      abbr: GlobalFlags.quietAbbr,
-      defaultsTo: false,
-      negatable: false,
-      help: 'Suppress all serverpod cli output. Is overridden by '
-          ' -v, --verbose.',
+        super(globalOptions: GlobalOption.values);
+
+  @override
+  Future<void> runCommand(ArgResults topLevelResults) async {
+    if (globalConfiguration.value(GlobalOption.version)) {
+      await commands['version']?.run();
+    }
+
+    var experimentalFeatures = globalConfiguration.value(
+      GlobalOption.experimentalFeatures,
     );
 
-    argParser.addFlag(
-      GlobalFlags.verbose,
-      abbr: GlobalFlags.verboseAbbr,
-      defaultsTo: false,
-      negatable: false,
-      help: 'Prints additional information useful for development. '
-          'Overrides --q, --quiet.',
-    );
+    for (var feature in experimentalFeatures) {
+      log.info('Enabling experimental feature: ${feature.name}.');
+    }
+    CommandLineExperimentalFeatures.initialize(experimentalFeatures);
 
-    argParser.addFlag(
-      GlobalFlags.analytics,
-      abbr: GlobalFlags.analyticsAbbr,
-      defaultsTo: true,
-      negatable: true,
-      help: 'Toggles if analytics data is sent to Serverpod. ',
-    );
+    await super.runCommand(topLevelResults);
   }
 
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,
     bool productionMode,
     Version cliVersion, {
-    PreCommandEnvironmentCheck onPreCommandEnvironmentCheck =
-        _preCommandEnvironmentChecks,
+    OnBeforeRunCommand onBeforeRunCommand = _serverpodOnBeforeRunCommand,
   }) {
     return ServerpodCommandRunner(
-      analytics: analytics,
+      'serverpod',
+      'Manage your serverpod app development',
+      messageOutput: MessageOutput(
+        usageLogger: log.info,
+      ),
+      setLogLevel: _configureLogLevel,
+      onBeforeRunCommand: onBeforeRunCommand,
+      onAnalyticsEvent: (String event) => analytics.track(event: event),
       productionMode: productionMode,
       cliVersion: cliVersion,
-      onPreCommandEnvironmentCheck: onPreCommandEnvironmentCheck,
-      executableName: 'serverpod',
-      description: 'Manage your serverpod app development',
     );
   }
 
-  @override
-  ArgResults parse(Iterable<String> args) {
-    try {
-      return super.parse(args);
-    } on UsageException catch (e) {
-      _analytics.track(event: 'invalid');
-      log.error(e.toString(), type: const RawLogType());
-      throw ExitException(ExitCodeType.commandNotFound);
-    }
-  }
-
-  @override
-  Future<void> runCommand(ArgResults topLevelResults) async {
-    _setLogLevel(topLevelResults);
-    _analytics.enabled = topLevelResults[GlobalFlags.analytics];
-
-    await _onPreCommandEnvironmentCheck();
-    await _preCommandPrints();
-
-    try {
-      await super.runCommand(topLevelResults);
-      if (topLevelResults.command == null) {
-        _analytics.track(event: 'help');
-      } else {
-        _analytics.track(event: topLevelResults.command!.name!);
-      }
-    } on UsageException catch (e) {
-      log.error(e.toString(), type: const RawLogType());
-      _analytics.track(event: 'invalid');
-      throw ExitException(ExitCodeType.commandNotFound);
-    }
-  }
-
-  @override
-  void printUsage() {
-    log.info(usage, type: const RawLogType());
-  }
-
-  @override
-  ArgParser get argParser => _argParser;
-  final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
-
-  void _setLogLevel(ArgResults topLevelResults) {
+  static void _configureLogLevel({
+    required CommandRunnerLogLevel parsedLogLevel,
+    String? commandName,
+  }) {
     var logLevel = LogLevel.info;
 
-    if (topLevelResults[GlobalFlags.verbose]) {
+    if (parsedLogLevel == CommandRunnerLogLevel.verbose) {
       logLevel = LogLevel.debug;
-    } else if (topLevelResults[GlobalFlags.quiet]) {
+    } else if (parsedLogLevel == CommandRunnerLogLevel.quiet) {
+      logLevel = LogLevel.nothing;
+    } else if (commandName == LanguageServerCommand.commandName) {
       logLevel = LogLevel.nothing;
     }
 
     log.logLevel = logLevel;
   }
+}
 
-  Future<void> _preCommandPrints() async {
-    if (_productionMode) {
-      await promptToUpdateIfNeeded(_cliVersion);
-    } else {
-      log.debug(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      log.debug('SERVERPOD_HOME is set to $serverpodHome');
+/// The global configuration options for the Serverpod CLI.
+enum GlobalOption<V> implements OptionDefinition<V> {
+  quiet(BetterCommandRunnerFlags.quietOption),
+  verbose(BetterCommandRunnerFlags.verboseOption),
+  analytics(BetterCommandRunnerFlags.analyticsOption),
+  version(
+    FlagOption(
+      argName: 'version',
+      helpText: VersionCommand.usageDescription,
+      negatable: false,
+      defaultsTo: false,
+    ),
+  ),
+  experimentalFeatures(
+    MultiOption<ExperimentalFeature>(
+      multiParser: MultiParser(EnumParser(ExperimentalFeature.values)),
+      argName: 'experimental-features',
+      defaultsTo: [],
+      helpText:
+          'Enable experimental features. Experimental features might be removed at any time.',
+    ),
+  );
 
-      if (!resourceManager.isTemplatesInstalled) {
-        log.warning('Could not find templates.');
-      }
-    }
-  }
+  const GlobalOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
 }

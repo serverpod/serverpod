@@ -1,0 +1,19 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+publish_to: none
+
+name: serverpod_new_auth_test_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod_client: 2.9.0
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

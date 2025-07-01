@@ -1,11 +1,14 @@
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../test_util/builders/model_source_builder.dart';
+
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   test(
     'Given an enum without a values property, then collect an error that the values property is required.',
     () {
@@ -18,7 +21,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -45,7 +48,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -74,7 +77,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -103,7 +106,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -118,7 +121,35 @@ void main() {
   );
 
   test(
-    'Given an enum with an invalid enum string structure, then collect an error that the string must follow the required syntax.',
+    'Given an enum with an empty enum string structure, then collect that values must be strings',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          enum: ExampleEnum
+          values:
+            - 
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(error.message, 'The "values" property must be a list of strings.');
+    },
+  );
+
+  test(
+    'Given an enum with an dash in the enum string structure, then collect an error that the string must follow the required syntax.',
     () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -131,7 +162,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -141,7 +172,63 @@ void main() {
       );
 
       var error = collector.errors.first;
-      expect(error.message, 'Enum values must be lowerCamelCase.');
+      expect(error.message, 'Enum values must be valid dart enums.');
+    },
+  );
+
+  test(
+    'Given an enum with a dot in enum string structure, then collect an error that the string must follow the required syntax.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          enum: ExampleEnum
+          values:
+            - Invalid.Value
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(error.message, 'Enum values must be valid dart enums.');
+    },
+  );
+
+  test(
+    'Given an enum starting with numbers in the enum string structure, then collect an error that the string must follow the required syntax.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          enum: ExampleEnum
+          values:
+            - 123Invalid
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(error.message, 'Enum values must be valid dart enums.');
     },
   );
 
@@ -160,7 +247,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -191,7 +278,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -214,7 +301,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -223,8 +311,31 @@ void main() {
     );
   });
 
-  test('Given a value with snake_case value, an error of info level is given.',
+  test(
+      'Given a value with numbers at the end of the value then no errors are generated.',
       () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+        enum: ExampleEnum
+        values:
+          - enum123
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors.',
+    );
+  });
+
+  test('Given a value with snake_case value then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -236,22 +347,17 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error with info.',
+      isEmpty,
+      reason: 'Expected no errors.',
     );
-
-    var error = collector.errors.first as SourceSpanSeverityException;
-    expect(error.message, 'Enum values should be lowerCamelCase.');
-
-    expect(error.severity, SourceSpanSeverity.info);
   });
 
-  test('Given a value with PascalCase value, an error of info level is given.',
-      () {
+  test('Given a value with PascalCase value then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -263,22 +369,40 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error with info.',
+      isEmpty,
+      reason: 'Expected no errors.',
     );
-
-    var error = collector.errors.first as SourceSpanSeverityException;
-    expect(error.message, 'Enum values should be lowerCamelCase.');
-
-    expect(error.severity, SourceSpanSeverity.info);
   });
 
-  test('Given a value with UPPERCASE value, an error of info level is given.',
+  test('Given a value starting with an _ value then no errors are generated.',
       () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+        enum: ExampleEnum
+        values:
+          - _private
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors.',
+    );
+  });
+
+  test('Given a value with UPPERCASE value then no errors are generated.', () {
     var modelSources = [
       ModelSourceBuilder().withYaml('''
 enum: ExampleEnum
@@ -288,18 +412,14 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error with info.',
+      isEmpty,
+      reason: 'Expected no errors.',
     );
-
-    var error = collector.errors.first as SourceSpanSeverityException;
-    expect(error.message, 'Enum values should be lowerCamelCase.');
-
-    expect(error.severity, SourceSpanSeverity.info);
   });
 
   test(
@@ -317,7 +437,8 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 

@@ -1,0 +1,10 @@
+include: package:serverpod_lints/public.yaml
+
+linter:
+  rules:
+    public_member_api_docs: false
+
+analyzer:
+  exclude:
+    - lib/src/generated/**
+    - test/integration/test_tools/serverpod_test_tools.dart

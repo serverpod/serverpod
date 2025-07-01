@@ -1,0 +1,5 @@
+class: EnumDefaultPersist
+table: enum_default_persist
+fields:
+  byNameEnumDefaultPersist: ByNameEnum?, defaultPersist=byName1
+  byIndexEnumDefaultPersist: ByIndexEnum?, defaultPersist=byIndex1

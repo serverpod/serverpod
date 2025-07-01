@@ -1,0 +1,48 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_nonvector_server
+version: 1.0.0
+description: Non-vector project test server for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod: SERVERPOD_VERSION
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: '^1.24.2'
+  serverpod_test: SERVERPOD_VERSION
+  serverpod_service_client: SERVERPOD_VERSION
+  serverpod_test_server:
+    path: ../../serverpod_test_server
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_test_client:
+    path: ../../serverpod_test_client
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_cloud_storage_s3:
+    path: ../../../integrations/serverpod_cloud_storage_s3
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_auth_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_cli:
+    path: ../../../tools/serverpod_cli

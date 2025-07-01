@@ -1,0 +1,15 @@
+{
+  "moduleName": "serverpod_auth_google_account",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20240516151843329"
+    },
+    {
+      "module": "serverpod_auth_user",
+      "version": "20250506070330492"
+    }
+  ],
+  "migrationApiVersion": 1
+}

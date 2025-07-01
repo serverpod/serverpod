@@ -5,6 +5,10 @@ import 'package:path/path.dart' as path;
 abstract class DatabaseConstants {
   /// Current version of the migration api.
   static const migrationApiVersion = 1;
+
+  /// The maximum length of a identifiers and key words in Postgres.
+  /// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  static const pgsqlMaxNameLimitation = 63;
 }
 
 /// Migration constants used by the serverpod framework.
@@ -22,13 +26,11 @@ abstract class MigrationConstants {
 
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(
-          _migrationDirectory(serverRootDirectory).path, 'migrations'));
+      Directory(path.join(serverRootDirectory.path, 'migrations'));
 
   /// Directory where repair migrations are stored.
   static Directory repairMigrationDirectory(Directory serverRootDirectory) =>
-      Directory(
-          path.join(_migrationDirectory(serverRootDirectory).path, 'repair'));
+      Directory(path.join(serverRootDirectory.path, 'repair-migration'));
 
   /// File path where the database definition is stored.
   static File databaseDefinitionSQLPath(
@@ -79,13 +81,32 @@ abstract class MigrationConstants {
         migrationVersionDirectory(serverRootDirectory, version).path,
         'migration.json',
       ));
-
-  static Directory _migrationDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(serverRootDirectory.path, 'generated', 'migration'));
 }
 
 /// Serverpod URL constants used by the serverpod framework.
 abstract class ServerpodUrlConstants {
   /// URL to the serverpod documentation.
   static const String serverpodDocumentation = 'https://docs.serverpod.dev';
+}
+
+/// Constants representing the keys used to access command line arguments from
+/// the map returned by [CommandLineArgs.toMap()].
+abstract class CliArgsConstants {
+  /// Key for the run mode (development, staging, production, test).
+  static const runMode = 'runMode';
+
+  /// Key for the server role (monolith, serverless, maintenance).
+  static const role = 'role';
+
+  /// Key for the logging mode (normal, verbose).
+  static const loggingMode = 'loggingMode';
+
+  /// Key for the server ID.
+  static const serverId = 'serverId';
+
+  /// Key for whether to apply database migrations.
+  static const applyMigrations = 'applyMigrations';
+
+  /// Key for whether to apply database repair migration.
+  static const applyRepairMigration = 'applyRepairMigration';
 }

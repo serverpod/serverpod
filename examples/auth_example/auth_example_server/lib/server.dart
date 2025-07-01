@@ -2,7 +2,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:serverpod/serverpod.dart';
 
-import 'package:serverpod_auth_server/module.dart' as auth;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
 import 'package:auth_example_server/src/web/routes/root.dart';
 
@@ -19,6 +19,7 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
+    authenticationHandler: auth.authenticationHandler,
   );
 
   // If you are using any future calls, they need to be registered here.

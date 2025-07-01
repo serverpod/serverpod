@@ -1,0 +1,42 @@
+### Pending email account registration.
+###
+### There is no user ID stored with the request.
+### If an existing user should be assigned to this specific request,
+### store that with the request's `id` and link them up during registration.
+class: EmailAccountRequest
+serverOnly: true
+table: serverpod_auth_email_account_request
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The time when this authentication was created.
+  created: DateTime, default=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The hashed password of the user.
+  ###
+  ### Obtained in conjunction with [passwordSalt].
+  passwordHash: ByteData
+
+  ### The salt used for creating the [passwordHash].
+  passwordSalt: ByteData
+
+  ### The hash of the verification code sent to the user.
+  verificationCodeHash: ByteData
+
+  ### The salt used to compute the [verificationCodeHash].
+  verificationCodeSalt: ByteData
+
+  ### Time at which the email address has been verified, or `null` if it did not happen yet.
+  ###
+  ### The requets can only be turned into an account if this is non-`null`.
+  verifiedAt: DateTime?
+
+indexes:
+  serverpod_auth_email_account_request_email:
+    fields: email
+    unique: true

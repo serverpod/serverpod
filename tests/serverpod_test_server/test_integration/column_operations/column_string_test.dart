@@ -83,6 +83,16 @@ void main() async {
       expect(result.length, 2);
     });
 
+    test('when filtering using empty inSet then no rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString.inSet({}),
+      );
+
+      expect(result, isEmpty);
+    });
+
     test('when filtering using notInSet then matching row is returned.',
         () async {
       var result = await Types.db.find(
@@ -91,6 +101,16 @@ void main() async {
       );
 
       expect(result.length, 2);
+    });
+
+    test('when filtering using empty notInSet then all rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString.notInSet({}),
+      );
+
+      expect(result.length, 3);
     });
 
     test('when filtering using like then matching row is returned.', () async {
@@ -129,6 +149,54 @@ void main() async {
       );
 
       expect(result, hasLength(2));
+    });
+
+    test(
+        'when filtering using "greater than" then lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString > 'one',
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aString, 'two');
+    });
+
+    test(
+        'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString >= 'one',
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aString).toSet(), {'one', 'two'});
+    });
+
+    test(
+        'when filtering using "less than" then lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString < 'two',
+      );
+
+      expect(result.length, 1);
+      expect(result.first.aString, 'one');
+    });
+
+    test(
+        'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aString <= 'two',
+      );
+
+      expect(result.length, 2);
+      expect(result.map((e) => e.aString).toSet(), {'one', 'two'});
     });
   });
 }

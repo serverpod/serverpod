@@ -1,12 +1,18 @@
 type: server
 
 client_package_path: ../serverpod_test_client
+server_test_tools_path: test_integration/test_tools
 
 modules:
   serverpod_test_module:
     nickname: module
 
 extraClasses:
-  - project:src/custom_classes.dart:CustomClass
+  - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClass
+  - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClass2
+  - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClassWithoutProtocolSerialization
+  - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClassWithProtocolSerialization
+  - package:serverpod_test_shared/serverpod_test_shared.dart:CustomClassWithProtocolSerializationMethod
+  - package:serverpod_test_shared/serverpod_test_shared.dart:ProtocolCustomClass
   - package:serverpod_test_shared/serverpod_test_shared.dart:ExternalCustomClass
   - package:serverpod_test_shared/serverpod_test_shared.dart:FreezedCustomClass

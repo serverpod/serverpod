@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
 
+var _moduleName = 'serverpod_test';
+
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
     required List<Map<String, String>> migrationProtocols,
@@ -53,6 +55,7 @@ abstract class MigrationTestUtils {
         if (force) '--force',
         '--verbose',
         '--no-analytics',
+        '--experimental-features=all',
       ],
     );
 
@@ -201,6 +204,10 @@ abstract class MigrationTestUtils {
     return repairMigrationFiles.first as File;
   }
 
+  static void setModuleName(String moduleName) {
+    _moduleName = moduleName;
+  }
+
   static Directory _migrationProtocolTestDirectory() => Directory(path.join(
         Directory.current.path,
         'lib',
@@ -209,19 +216,13 @@ abstract class MigrationTestUtils {
         'migration_test_protocol_files',
       ));
 
-  static Directory _migrationDirectory() => Directory(path.join(
-        Directory.current.path,
-        'generated',
-        'migration',
-      ));
-
   static Directory _repairMigrationDirectory() => Directory(path.join(
-        _migrationDirectory().path,
-        'repair',
+        Directory.current.path,
+        'repair-migration',
       ));
 
   static Directory _migrationsProjectDirectory() => Directory(path.join(
-        _migrationDirectory().path,
+        Directory.current.path,
         'migrations',
       ));
 
@@ -249,7 +250,7 @@ abstract class MigrationTestUtils {
     await serviceClient.insights.executeSql('''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '$latestMigration', now())
+    VALUES ('$_moduleName', '$latestMigration', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
 ''');

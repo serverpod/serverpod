@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The log filter is used when searching for specific log entries.
-abstract class SessionLogFilter extends _i1.SerializableEntity {
+abstract class SessionLogFilter implements _i1.SerializableModel {
   SessionLogFilter._({
     this.endpoint,
     this.method,
@@ -32,22 +33,15 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
     int? lastSessionLogId,
   }) = _SessionLogFilterImpl;
 
-  factory SessionLogFilter.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogFilter.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogFilter(
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      futureCall: serializationManager
-          .deserialize<String?>(jsonSerialization['futureCall']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      error: serializationManager.deserialize<bool>(jsonSerialization['error']),
-      open: serializationManager.deserialize<bool>(jsonSerialization['open']),
-      lastSessionLogId: serializationManager
-          .deserialize<int?>(jsonSerialization['lastSessionLogId']),
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      futureCall: jsonSerialization['futureCall'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      error: jsonSerialization['error'] as bool,
+      open: jsonSerialization['open'] as bool,
+      lastSessionLogId: jsonSerialization['lastSessionLogId'] as int?,
     );
   }
 
@@ -72,6 +66,9 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
   /// Last session id to start the list of logs from. Used for pagination.
   int? lastSessionLogId;
 
+  /// Returns a shallow copy of this [SessionLogFilter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   SessionLogFilter copyWith({
     String? endpoint,
     String? method,
@@ -84,14 +81,19 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'endpoint': endpoint,
-      'method': method,
-      'futureCall': futureCall,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (futureCall != null) 'futureCall': futureCall,
       'slow': slow,
       'error': error,
       'open': open,
-      'lastSessionLogId': lastSessionLogId,
+      if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -116,6 +118,9 @@ class _SessionLogFilterImpl extends SessionLogFilter {
           lastSessionLogId: lastSessionLogId,
         );
 
+  /// Returns a shallow copy of this [SessionLogFilter]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   SessionLogFilter copyWith({
     Object? endpoint = _Undefined,

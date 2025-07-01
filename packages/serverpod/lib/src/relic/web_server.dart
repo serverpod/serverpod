@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -15,18 +19,27 @@ class WebServer {
   /// The port the webserver is running on.
   late final int _port;
 
-  /// The hostname of the webserver.
-  late final String _hostname;
-
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
+
+  /// Security context if the web server is running over https.
+  final SecurityContext? _securityContext;
 
   /// Creates a new webserver.
   WebServer({
     required this.serverpod,
-  }) : serverId = serverpod.serverId {
-    _port = serverpod.config.webServer.port;
-    _hostname = serverpod.config.webServer.publicHost;
+    SecurityContext? securityContext,
+  })  : serverId = serverpod.serverId,
+        _securityContext = securityContext {
+    var config = serverpod.config.webServer;
+
+    if (config == null) {
+      throw StateError(
+        'No web server configuration found in Serverpod unable to create the WebServer.',
+      );
+    }
+
+    _port = config.port;
   }
 
   bool _running = false;
@@ -47,41 +60,67 @@ class WebServer {
   }
 
   /// Starts the webserver.
-  Future<void> start() async {
-    await templates.loadAll();
+  /// Returns true if the webserver was started successfully.
+  Future<bool> start() async {
+    var templatesDirectory = Directory(path.joinAll(['web', 'templates']));
+    await templates.loadAll(templatesDirectory);
+    if (templates.isEmpty) {
+      logDebug(
+          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+    }
+
+    try {
+      var context = _securityContext;
+      _httpServer = await switch (context) {
+        SecurityContext() => HttpServer.bindSecure(
+            InternetAddress.anyIPv6,
+            _port,
+            context,
+          ),
+        _ => HttpServer.bind(
+            InternetAddress.anyIPv6,
+            _port,
+          ),
+      };
+    } catch (e, stackTrace) {
+      await _reportException(e, stackTrace,
+          message: 'Failed to bind socket, '
+              'port $_port may already be in use.');
+
+      return false;
+    }
+    httpServer.autoCompress = true;
 
     runZonedGuarded(
       _start,
-      (e, stackTrace) {
+      (e, stackTrace) async {
         // Last resort error handling
-        stdout.writeln('${DateTime.now()} Relic zoned error: $e');
-        stdout.writeln('$stackTrace');
+
+        await _reportException(e, stackTrace, message: 'Relic zoned error');
       },
     );
+
+    return true;
   }
 
   void _start() async {
-    var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
-    _httpServer = httpServer;
-    httpServer.autoCompress = true;
-
-    stdout.writeln('Webserver listening on port $_port');
+    logInfo('Webserver listening on port $_port');
 
     try {
       await for (var request in httpServer) {
         try {
           _handleRequest(request);
         } catch (e, stackTrace) {
-          logError(e, stackTrace: stackTrace);
+          await _reportException(e, stackTrace, httpRequest: request);
         }
       }
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(e, stackTrace);
     }
   }
 
   void _handleRequest(HttpRequest request) async {
-    if (serverpod.runMode == 'production') {
+    if (serverpod.runMode == ServerpodRunMode.production) {
       request.response.headers.add('Strict-Transport-Security',
           'max-age=63072000; includeSubDomains; preload');
     }
@@ -98,14 +137,6 @@ class WebServer {
       return;
     }
 
-    if (uri.host != _hostname) {
-      var redirect = uri.replace(host: _hostname);
-      request.response.headers.add('Location', redirect.toString());
-      request.response.statusCode = HttpStatus.movedPermanently;
-      await request.response.close();
-      return;
-    }
-
     String? authenticationKey;
     for (var cookie in request.cookies) {
       if (cookie.name == 'auth') {
@@ -113,17 +144,14 @@ class WebServer {
       }
     }
 
-    // TODO: Fix body
-    var session = MethodCallSession(
-      server: serverpod.server,
-      uri: uri,
-      path: 'webserver',
-      body: '',
-      authenticationKey: authenticationKey,
-      httpRequest: request,
-    );
+    var queryParameters = request.uri.queryParameters;
+    authenticationKey ??= queryParameters['auth'];
 
-//    print('Getting path: ${uri.path}');
+    WebCallSession session = WebCallSession(
+      server: serverpod.server,
+      endpoint: uri.path,
+      authenticationKey: authenticationKey,
+    );
 
     // Check routes
     for (var route in routes) {
@@ -150,30 +178,75 @@ class WebServer {
       var found = await route.handleCall(session, request);
       return found;
     } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
+      await _reportException(
+        e,
+        stackTrace,
+        space: OriginSpace.application,
+        session: session,
+        httpRequest: request,
+      );
 
       request.response.statusCode = HttpStatus.internalServerError;
-      request.response.write('$e');
+      request.response.write('Internal Server Error');
+
       await request.response.close();
     }
     return true;
   }
 
-  /// Logs an error to stderr.
-  void logError(var e, {StackTrace? stackTrace}) {
-    stderr.writeln('ERROR: $e');
-    stderr.writeln('$stackTrace');
+  Future<void> _reportException(
+    Object e,
+    StackTrace stackTrace, {
+    OriginSpace space = OriginSpace.framework,
+    String? message,
+    Session? session,
+    HttpRequest? httpRequest,
+  }) async {
+    logError(
+      message != null ? '$message $e' : e,
+      stackTrace: stackTrace,
+    );
+
+    var context = session != null
+        ? contextFromSession(session, httpRequest: httpRequest)
+        : httpRequest != null
+            ? contextFromHttpRequest(
+                serverpod.server, httpRequest, OperationType.web)
+            : contextFromServer(serverpod.server);
+
+    serverpod.internalSubmitEvent(
+      ExceptionEvent(e, stackTrace, message: message),
+      space: space,
+      context: context,
+    );
   }
 
-  /// Logs a message to stdout.
+  /// Logs an error to stderr.
+  void logError(Object e, {StackTrace? stackTrace}) {
+    var now = DateTime.now().toUtc();
+    stderr.writeln('$now WebServer ERROR: $e');
+    if (stackTrace != null) {
+      stderr.writeln('$stackTrace');
+    }
+  }
+
+  /// Logs an info message to stdout.
+  void logInfo(String msg) {
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer  INFO: $msg');
+  }
+
+  /// Logs a debug message to stdout.
   void logDebug(String msg) {
-    stdout.writeln(msg);
+    var now = DateTime.now().toUtc();
+    stdout.writeln('$now WebServer DEBUG: $msg');
   }
 
   /// Stops the webserver.
-  void stop() {
-    if (_httpServer != null) {
-      _httpServer!.close();
+  Future<void> stop() async {
+    var localHttpServer = _httpServer;
+    if (localHttpServer != null) {
+      await localHttpServer.close();
     }
     _running = false;
   }
@@ -206,7 +279,7 @@ abstract class Route {
     headers.contentType = ContentType('text', 'html', charset: 'utf-8');
   }
 
-  /// Handles a call to this route. This method is repsonsible for setting
+  /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
   /// `request.response`.
   Future<bool> handleCall(Session session, HttpRequest request);
@@ -252,21 +325,20 @@ abstract class Route {
   }
 
   static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
+    var builder = BytesBuilder();
     var len = 0;
-    var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
       if (len > 10240) {
         return null;
       }
-      data += segment;
+      builder.add(segment);
     }
-    return const Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(builder.toBytes());
   }
 }
 
-/// A [WidgetRoute] is the most convienient way to create routes in your server.
+/// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [Widget].
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web [Widget] from the current [session]

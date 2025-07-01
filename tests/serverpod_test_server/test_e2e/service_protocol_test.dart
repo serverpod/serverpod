@@ -2,19 +2,17 @@ import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
-import 'package:serverpod_test_server/test_util/service_key_manager.dart';
+import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 import 'package:test/test.dart';
-
-Future<void> setupTestData(Client client) async {
-  await client.basicDatabaseLegacy.deleteAllSimpleTestData();
-  await client.basicDatabaseLegacy.createSimpleTestData(100);
-}
 
 void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
     serviceServerUrl,
-    authenticationKeyManager: ServiceKeyManager('0', 'password'),
+    authenticationKeyManager: TestServiceKeyManager(
+      '0',
+      'super_SECRET_password',
+    ),
   );
 
   group('Health metrics', () {
@@ -163,7 +161,8 @@ void main() {
     });
 
     test('Transaction query log', () async {
-      await setupTestData(client);
+      await client.basicDatabase.deleteAllSimpleTestData();
+      await client.basicDatabase.createSimpleTestData(100);
       await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
       await Future.delayed(const Duration(seconds: 1));
 
@@ -292,7 +291,7 @@ void main() {
       }
 
       // This test failed some times due to some kind of race condition.
-      // Idealy we would not use a hard coded delay here.
+      // Ideally we would not use a hard coded delay here.
       // Ticket: https://github.com/serverpod/serverpod/issues/773
       await Future.delayed(const Duration(seconds: 5));
 
@@ -431,7 +430,7 @@ void main() {
             .map((c) => c.dartType)
             .toList();
 
-        expect(columns, hasLength(7));
+        expect(columns, hasLength(10));
         expect(
             columns,
             containsAll([
@@ -442,6 +441,9 @@ void main() {
               'List<protocol:SimpleData>?',
               'List<protocol:SimpleData?>',
               'List<protocol:SimpleData?>?',
+              'List<List<protocol:SimpleData>>?',
+              'Map<String,List<List<Map<int,protocol:SimpleData>>?>>?',
+              'Map<String,Map<int,protocol:SimpleData>>?',
             ]));
 
         var columnsWithScopes = tableDefinitions
@@ -466,9 +468,9 @@ void main() {
   });
 
   group('File retrieval', () {
-    test('Fetch generated/protocol.yaml file', () async {
-      var file =
-          await serviceClient.insights.fetchFile('generated/protocol.yaml');
+    test('Fetch lib/src/generated/protocol.yaml file', () async {
+      var file = await serviceClient.insights
+          .fetchFile('lib/src/generated/protocol.yaml');
       expect(file, isNotNull);
       expect(file.length, greaterThan(0));
     });
@@ -501,7 +503,7 @@ extension on service.TableDefinition {
     expect(name, definition.name);
     expect(schema, definition.schema);
 
-    if (definition.managed ?? false) {
+    if (definition.managed != false) {
       expect(tableSpace, definition.tableSpace);
 
       expect(columns, hasLength(definition.columns.length));

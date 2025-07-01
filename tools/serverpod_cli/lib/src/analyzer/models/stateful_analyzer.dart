@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
@@ -9,12 +10,18 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 };
 
 class StatefulAnalyzer {
+  final GeneratorConfig config;
   final Map<String, _ModelState> _modelStates = {};
-  List<SerializableModelDefinition> _models = [];
+
+  /// Returns true if any of the models have severe errors.
+  bool get hasSevereErrors => _modelStates.values.any(
+        (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
+      );
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   StatefulAnalyzer(
+    this.config,
     List<ModelSource> sources, [
     Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
@@ -27,10 +34,18 @@ class StatefulAnalyzer {
     _onErrorsChangedNotifier = onErrorsChangedNotifier;
   }
 
-  /// Returns all valid models in the state.
-  List<SerializableModelDefinition> get _validModels => _modelStates.values
+  /// Returns all valid models in the state that are part of the project.
+  List<SerializableModelDefinition> get _validProjectModels => _modelStates
+      .values
       .where(
-          (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
+          (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors))
+      .where((state) => state.source.moduleAlias == defaultModuleAlias)
+      .map((state) => state.model)
+      .whereType<SerializableModelDefinition>()
+      .toList();
+
+  /// Returns all models in the state.
+  List<SerializableModelDefinition> get _models => _modelStates.values
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
@@ -56,9 +71,6 @@ class StatefulAnalyzer {
   /// guarantee that all related errors are cleared.
   void removeYamlModel(Uri modelUri) {
     _modelStates.remove(modelUri.path);
-    _models.removeWhere(
-      (model) => model.sourceFileName == modelUri.path,
-    );
   }
 
   /// Runs the validation on all models in the state. If no models are
@@ -67,7 +79,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> validateAll() {
     _updateAllModels();
     _validateAllModels();
-    return _validModels;
+    return _validProjectModels;
   }
 
   /// Runs the validation on a single model. The model must exist in the
@@ -75,66 +87,59 @@ class StatefulAnalyzer {
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableModelDefinition> validateModel(String yaml, Uri uri) {
     var state = _modelStates[uri.path];
-    if (state == null) return _models;
+    if (state == null) return _validProjectModels;
 
     state.source.yaml = yaml;
 
-    var doc = SerializableModelAnalyzer.extractModelDefinition(state.source);
+    var doc = SerializableModelAnalyzer.extractModelDefinition(
+      state.source,
+      config.extraClasses,
+    );
     state.model = doc;
-    if (doc != null) {
-      _upsertModel(doc, uri);
-    }
+
+    // Can be optimized to only resolve the model we know has changed.
+    SerializableModelAnalyzer.resolveModelDependencies(_models);
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels();
-    return _validModels;
+    return _validProjectModels;
   }
 
   void _updateAllModels() {
     for (var state in _modelStates.values) {
       var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
+        config.extraClasses,
       );
       state.model = model;
     }
 
-    _models = _modelStates.values
-        .map((state) => state.model)
-        .whereType<SerializableModelDefinition>()
-        .toList();
-
-    SerializableModelAnalyzer.resolveModelDependencies(_models);
-  }
-
-  void _upsertModel(
-    SerializableModelDefinition model,
-    Uri uri,
-  ) {
-    var index = _models.indexWhere(
-      (element) => element.sourceFileName == uri.path,
-    );
-    if (index == -1) {
-      _models.add(model);
-    } else {
-      _models[index] = model;
-    }
-
-    // Can be optimized to only resolve the model we know has changed.
     SerializableModelAnalyzer.resolveModelDependencies(_models);
   }
 
   void _validateAllModels() {
-    for (var state in _modelStates.values) {
+    var modelsToValidate = _modelStates.values
+        .where((state) => state.source.moduleAlias == defaultModuleAlias);
+    var modelsWithDocumentPath = _modelStates.values
+        .map((state) =>
+            (documentPath: state.source.yamlSourceUri.path, model: state.model))
+        .whereType<ModelWithDocumentPath>()
+        .toList();
+
+    var parsedModels = ParsedModelsCollection(modelsWithDocumentPath);
+
+    for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
       SerializableModelAnalyzer.validateYamlDefinition(
+        config,
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,
         state.model,
-        _models,
+        parsedModels,
       );
 
-      if (collector.hasSeverErrors) {
+      if (collector.hasSevereErrors) {
         state.errors = collector.errors;
       } else {
         state.errors = [];

@@ -1,18 +1,21 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/foreign_key_action.dart' as _i2;
+import '../database/foreign_key_match_type.dart' as _i3;
 
 /// Represents a foreign key.
-abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
+abstract class ForeignKeyDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,
@@ -32,30 +35,33 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
     required List<String> referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ForeignKeyDefinition(
-      constraintName: serializationManager
-          .deserialize<String>(jsonSerialization['constraintName']),
-      columns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['columns']),
-      referenceTable: serializationManager
-          .deserialize<String>(jsonSerialization['referenceTable']),
-      referenceTableSchema: serializationManager
-          .deserialize<String>(jsonSerialization['referenceTableSchema']),
-      referenceColumns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['referenceColumns']),
-      onUpdate: serializationManager
-          .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onUpdate']),
-      onDelete: serializationManager
-          .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onDelete']),
-      matchType: serializationManager.deserialize<_i2.ForeignKeyMatchType?>(
-          jsonSerialization['matchType']),
+      constraintName: jsonSerialization['constraintName'] as String,
+      columns: (jsonSerialization['columns'] as List)
+          .map((e) => e as String)
+          .toList(),
+      referenceTable: jsonSerialization['referenceTable'] as String,
+      referenceTableSchema: jsonSerialization['referenceTableSchema'] as String,
+      referenceColumns: (jsonSerialization['referenceColumns'] as List)
+          .map((e) => e as String)
+          .toList(),
+      onUpdate: jsonSerialization['onUpdate'] == null
+          ? null
+          : _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onUpdate'] as int)),
+      onDelete: jsonSerialization['onDelete'] == null
+          ? null
+          : _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onDelete'] as int)),
+      matchType: jsonSerialization['matchType'] == null
+          ? null
+          : _i3.ForeignKeyMatchType.fromJson(
+              (jsonSerialization['matchType'] as int)),
     );
   }
 
@@ -81,8 +87,11 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
   _i2.ForeignKeyAction? onDelete;
 
   /// The match type of the foreign key
-  _i2.ForeignKeyMatchType? matchType;
+  _i3.ForeignKeyMatchType? matchType;
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
@@ -91,34 +100,39 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
     List<String>? referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'constraintName': constraintName,
-      'columns': columns,
+      'columns': columns.toJson(),
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
-      'referenceColumns': referenceColumns,
-      'onUpdate': onUpdate,
-      'onDelete': onDelete,
-      'matchType': matchType,
+      'referenceColumns': referenceColumns.toJson(),
+      if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
+      if (onDelete != null) 'onDelete': onDelete?.toJson(),
+      if (matchType != null) 'matchType': matchType?.toJson(),
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'constraintName': constraintName,
-      'columns': columns,
+      'columns': columns.toJson(),
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
-      'referenceColumns': referenceColumns,
-      'onUpdate': onUpdate,
-      'onDelete': onDelete,
-      'matchType': matchType,
+      'referenceColumns': referenceColumns.toJson(),
+      if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
+      if (onDelete != null) 'onDelete': onDelete?.toJson(),
+      if (matchType != null) 'matchType': matchType?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -133,7 +147,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     required List<String> referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   }) : super._(
           constraintName: constraintName,
           columns: columns,
@@ -145,6 +159,9 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
           matchType: matchType,
         );
 
+  /// Returns a shallow copy of this [ForeignKeyDefinition]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ForeignKeyDefinition copyWith({
     String? constraintName,
@@ -158,14 +175,15 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
   }) {
     return ForeignKeyDefinition(
       constraintName: constraintName ?? this.constraintName,
-      columns: columns ?? this.columns.clone(),
+      columns: columns ?? this.columns.map((e0) => e0).toList(),
       referenceTable: referenceTable ?? this.referenceTable,
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
-      referenceColumns: referenceColumns ?? this.referenceColumns.clone(),
+      referenceColumns:
+          referenceColumns ?? this.referenceColumns.map((e0) => e0).toList(),
       onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
       onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
       matchType:
-          matchType is _i2.ForeignKeyMatchType? ? matchType : this.matchType,
+          matchType is _i3.ForeignKeyMatchType? ? matchType : this.matchType,
     );
   }
 }

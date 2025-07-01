@@ -1,0 +1,11 @@
+class: AuthSuccess
+fields:
+  sessionKey: String
+
+  ### The [AuthUser] this session belongs to.
+  authUserId: UuidValue
+
+  ### The scopes this session provides access to.
+  ###
+  ### These are not connected to the [authUser], and can for example represent a subset of their permissions.
+  scopeNames: Set<String>

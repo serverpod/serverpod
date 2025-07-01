@@ -1,13 +1,13 @@
-import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
+
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/compilation_unit_matcher.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -23,7 +23,7 @@ void main() {
       'Given a class with no fields that should persist but is scoped too none then no implicit class is generated.',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -35,20 +35,14 @@ void main() {
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var compilationUnit = parseCode(codeMap[expectedFilePath]!);
 
-    expect(
-      CompilationUnitHelpers.hasClassDeclaration(
-        compilationUnit,
-        name: '${testClassName}Implicit',
-      ),
-      isFalse,
-    );
+    expect(compilationUnit, isNot(containsClass('${testClassName}Implicit')));
   });
   group('Given a class with a field that should persist but is scoped too none',
       () {
-    var models = [
-      ClassDefinitionBuilder()
+    late final models = [
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -62,90 +56,114 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseCode(codeMap[expectedFilePath]!);
 
-    var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Implicit',
-    );
+    var implicitClassName = '${testClassName}Implicit';
+
     test('then an implicit class is generated', () {
-      expect(implicitClass, isNotNull);
+      expect(compilationUnit, containsClass(implicitClassName));
     });
 
-    group('then the implicit class has the field', () {
-      var field = CompilationUnitHelpers.tryFindFieldDeclaration(
-        implicitClass!,
-        name: '\$_name',
+    test('then the implicit class overrides the field from inherited class',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName).withField(
+          '_name',
+          isNullable: true,
+          isFinal: true,
+          isOverride: true,
+        ),
       );
-      test('defined', () {
-        expect(field, isNotNull);
-      });
-
-      test('with the type set to nullable int', () {
-        expect(field?.toSource(), 'String? \$_name;');
-      });
-    }, skip: implicitClass == null);
-
-    group('then a private constructor', () {
-      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        implicitClass!,
-        name: '_',
-      );
-
-      test('is defined', () {
-        expect(constructor, isNotNull);
-      });
-
-      test('with the params from the original class and the additional fields',
-          () {
-        expect(
-          constructor?.parameters.toSource(),
-          '({int? id, required bool extra, this.\$_name})',
-        );
-      });
-
-      test('with a call to super with the og params', () {
-        expect(
-          constructor?.initializers.first.toSource(),
-          'super(id: id, extra: extra)',
-        );
-      });
-
-      test('then an override allToJson method is defined', () {
-        var method = CompilationUnitHelpers.tryFindMethodDeclaration(
-            implicitClass,
-            name: 'allToJson');
-
-        expect(method, isNotNull);
-        expect(method?.returnType?.toSource(), 'Map<String, dynamic>');
-      });
     });
 
-    group('then a factory constructor without a name', () {
-      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        implicitClass!,
-        name: null,
+    test('then implicit class has a private constructor', () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName).withNamedConstructor('_'),
       );
-      test('is defined', () {
-        expect(constructor, isNotNull);
-      });
+    });
 
-      test('is a factory', () {
-        expect(constructor?.factoryKeyword, isNotNull);
-      });
+    test(
+        'then implicit class has private constructor that takes private field prefixed with "\$"',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withTypedParameter('\$_name', 'String?'),
+      );
+    });
 
-      test('with the params from the original class and the additional fields',
-          () {
-        expect(
-          constructor?.parameters.toSource(),
-          '($testClassName ${testClassName.camelCase}, {String? \$_name})',
-        );
-      });
+    test(
+        'then implicit class has private constructor with initializer for private fields from prefixed with "\$"',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withFieldInitializer('_name')
+            .withArgument('\$_name'),
+      );
+    });
+
+    test(
+        'then implicit class has private constructor with parameters from original class',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withTypedParameter('extra', 'bool', isRequired: true),
+      );
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withTypedParameter('id', 'int?'),
+      );
+    });
+
+    test(
+        'then implicit class constructor has super initializer named parameters from original class',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withSuperInitializer()
+            .withNamedArgument('id', 'id'),
+      );
+
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withNamedConstructor('_')
+            .withSuperInitializer()
+            .withNamedArgument('extra', 'extra'),
+      );
+    });
+
+    test(
+        'then an unnamed factory constructor with params from original class and additional fields is defined',
+        () {
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withUnnamedConstructor(isFactory: true)
+            .withTypedParameter(testClassName.camelCase, testClassName),
+      );
+      expect(
+        compilationUnit,
+        containsClass(implicitClassName)
+            .withUnnamedConstructor(isFactory: true)
+            .withTypedParameter('\$_name', 'String?'),
+      );
     });
   });
 
@@ -153,7 +171,7 @@ void main() {
       'Given a class with two fields that should persist but is scoped too none',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
@@ -172,79 +190,74 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late var compilationUnit = parseCode(codeMap[expectedFilePath]!);
 
-    var implicitClass = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Implicit',
-    );
-
-    group('then the implicit class has the field name', () {
-      var field = CompilationUnitHelpers.tryFindFieldDeclaration(
-        implicitClass!,
-        name: '\$_firstName',
+    test(
+        'then the implicit class has the field name with type set to nullable String',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit').withField(
+          '_firstName',
+          isNullable: true,
+          isOverride: true,
+          type: 'String',
+        ),
       );
-      test('defined', () {
-        expect(field, isNotNull);
-      });
-
-      test('with the type set to nullable int', () {
-        expect(field?.toSource(), 'String? \$_firstName;');
-      });
-    }, skip: implicitClass == null);
-
-    group('then the implicit class has the field age', () {
-      var field = CompilationUnitHelpers.tryFindFieldDeclaration(
-        implicitClass!,
-        name: '\$_age',
-      );
-      test('defined', () {
-        expect(field, isNotNull);
-      });
-
-      test('with the type set to nullable int', () {
-        expect(field?.toSource(), 'int? \$_age;');
-      });
-    }, skip: implicitClass == null);
-
-    group('then a private constructor', () {
-      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        implicitClass!,
-        name: '_',
-      );
-
-      test('is defined', () {
-        expect(constructor, isNotNull);
-      });
-
-      test('with the params from the original class and the additional fields',
-          () {
-        expect(
-          constructor?.parameters.toSource(),
-          '({int? id, this.\$_firstName, this.\$_age})',
-        );
-      });
-
-      test('with a call to super with the og params', () {
-        expect(
-          constructor?.initializers.first.toSource(),
-          'super(id: id)',
-        );
-      });
     });
 
-    test('then an override allToJson method is defined', () {
-      var method = CompilationUnitHelpers.tryFindMethodDeclaration(
-          implicitClass!,
-          name: 'allToJson');
+    test(
+        'then the implicit class has the field age with type set to nullable int',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit').withField(
+          '_age',
+          isNullable: true,
+          isOverride: true,
+          type: 'int',
+        ),
+      );
+    });
 
-      expect(method, isNotNull);
-      expect(method?.returnType?.toSource(), 'Map<String, dynamic>');
-    }, skip: implicitClass == null);
+    test(
+        'then the implicit class has a private constructor with params from the original class and the additional fields',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit')
+            .withNamedConstructor('_')
+            .withTypedParameter('id', 'int?'),
+      );
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit')
+            .withNamedConstructor('_')
+            .withTypedParameter('\$_firstName', 'String?'),
+      );
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit')
+            .withNamedConstructor('_')
+            .withTypedParameter('\$_age', 'int?'),
+      );
+    });
+
+    test(
+        'then the implicit class has private constructor with call to super with og parameters',
+        () {
+      expect(
+        compilationUnit,
+        containsClass('${testClassName}Implicit')
+            .withNamedConstructor('_')
+            .withSuperInitializer()
+            .withNamedArgument('id', 'id'),
+      );
+    });
   });
 }

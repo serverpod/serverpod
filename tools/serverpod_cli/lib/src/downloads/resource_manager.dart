@@ -1,33 +1,20 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:cli_tools/cli_tools.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:uuid/uuid.dart';
-
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:uuid/uuid.dart';
 
 final resourceManager = ResourceManager();
 
 class ResourceManager {
-  Directory get homeDirectory {
-    var envVars = Platform.environment;
-
-    if (Platform.isWindows) {
-      return Directory(envVars['UserProfile']!);
-    } else if (Platform.isLinux || Platform.isMacOS) {
-      return Directory(envVars['HOME']!);
-    }
-    throw (Exception('Unsupported platform.'));
-  }
-
   Directory get localStorageDirectory =>
-      Directory(p.join(homeDirectory.path, '.serverpod'));
+      Directory(p.join(LocalStorageManager.homeDirectory.path, '.serverpod'));
 
   Directory get versionedDir =>
       Directory(p.join(localStorageDirectory.path, templateVersion));
@@ -61,53 +48,47 @@ class ResourceManager {
   }
 
   Future<void> storeLatestCliVersion(
-    CliVersionData cliVersionData, {
+    PackageVersionData cliVersionData, {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var latestCliVersionFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.latestVersionFilePath,
-    ));
 
     try {
-      if (!latestCliVersionFile.existsSync()) {
-        latestCliVersionFile.createSync(recursive: true);
-      }
-
-      var json = jsonEncode(cliVersionData);
-
-      latestCliVersionFile.writeAsStringSync(json);
+      await LocalStorageManager.storeJsonFile(
+        fileName: ResourceManagerConstants.latestVersionFilePath,
+        json: cliVersionData.toJson(),
+        localStoragePath: localStoragePath,
+      );
     } catch (e) {
-      // Failed to write latest cli version to file.
+      // Failed to store latest cli version to file.
+      // Silently ignore since users can't do anything about it.
     }
   }
 
-  Future<CliVersionData?> tryFetchLatestCliVersion({
+  Future<PackageVersionData?> tryFetchLatestCliVersion({
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var latestCliVersionFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.latestVersionFilePath,
-    ));
 
-    try {
-      if (latestCliVersionFile.existsSync()) {
-        var json = jsonDecode(latestCliVersionFile.readAsStringSync());
-        return CliVersionData.fromJson(json);
+    void deleteFile(File file) {
+      try {
+        file.deleteSync();
+      } catch (_) {
+        // Failed to delete file.
+        // Silently ignore since users can't do anything about it.
       }
-    } catch (e) {
-      // Failed to read latest cli version from file.
     }
 
-    // If the file exists it might be corrupted so we delete it.
-    if (latestCliVersionFile.existsSync()) {
-      try {
-        latestCliVersionFile.deleteSync();
-      } catch (e) {
-        // Failed to delete file
-      }
+    try {
+      return await LocalStorageManager.tryFetchAndDeserializeJsonFile(
+        fileName: ResourceManagerConstants.latestVersionFilePath,
+        localStoragePath: localStoragePath,
+        fromJson: PackageVersionData.fromJson,
+      );
+    } on ReadException catch (e) {
+      deleteFile(e.file);
+    } on DeserializationException catch (e) {
+      deleteFile(e.file);
     }
 
     return null;
@@ -132,6 +113,10 @@ class ResourceManager {
     // var outFile = File(p.join(versionedDir.path, 'serverpod_templates.tar.gz'));
     // outFile.writeAsBytesSync(data);
 
+    // Const constructor was introduced in version 4.0.0 of archive package.
+    // At the time this was written, that version was 2 days old and we don't
+    // want to force a constraint on the package for this.
+    // ignore: prefer_const_constructors
     var unzipped = GZipDecoder().decodeBytes(data);
     var archive = TarDecoder().decodeBytes(unzipped);
 
@@ -147,21 +132,4 @@ class ResourceManager {
     }
     log.info('Download complete.');
   }
-}
-
-class CliVersionData {
-  Version version;
-  DateTime validUntil;
-
-  CliVersionData(this.version, this.validUntil);
-
-  factory CliVersionData.fromJson(Map<String, dynamic> json) => CliVersionData(
-        Version.parse(json['version']),
-        DateTime.fromMillisecondsSinceEpoch(json['valid_until']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        'version': version.toString(),
-        'valid_until': validUntil.millisecondsSinceEpoch
-      };
 }

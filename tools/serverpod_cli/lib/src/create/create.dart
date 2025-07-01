@@ -1,29 +1,25 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/downloads/resource_manager.dart';
+import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
-import 'package:serverpod_cli/src/util/constants.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
+import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../downloads/resource_manager.dart';
-import '../generated/version.dart';
-import '../util/command_line_tools.dart';
 import 'copier.dart';
-import 'port_checker.dart';
-
-const _defaultPorts = <String, int>{
-  'Serverpod API': 8080,
-  'Serverpod insights API': 8081,
-  'Serverpod Relic web server': 8082,
-  'PostgreSQL server': 8090,
-  'Redis server': 8091,
-};
 
 enum ServerpodTemplateType {
+  mini('mini'),
   server('server'),
   module('module');
 
@@ -45,6 +41,12 @@ Future<bool> performCreate(
   ServerpodTemplateType template,
   bool force,
 ) async {
+  // If the name is a dot, we are upgrading an existing project
+  // Instead of creating a new one, we try to upgrade the current directory.
+  if (name == '.') {
+    return await _performUpgrade(template);
+  }
+
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
     log.error(
@@ -53,93 +55,6 @@ Future<bool> performCreate(
     );
     return false;
   }
-  // Check we are set to create a new project
-  var usedPorts = <String, int>{};
-  for (var serverDescription in _defaultPorts.keys) {
-    var port = _defaultPorts[serverDescription]!;
-
-    var available = await isNetworkPortAvailable(port);
-    if (!available) {
-      usedPorts[serverDescription] = port;
-    }
-  }
-  var portsAvailable = usedPorts.isEmpty;
-
-  // Check that docker is installed
-  var dockerConfigured = await CommandLineTools.existsCommand(
-        'docker',
-        ['--version'],
-      ) &&
-      await CommandLineTools.isDockerRunning();
-
-  var isDockerVolumeAvailable = await CommandLineTools.isDockerVolumeAvailable(
-    name,
-  );
-
-  if ((!portsAvailable || !dockerConfigured || !isDockerVolumeAvailable) &&
-      template == ServerpodTemplateType.server &&
-      !force) {
-    var strIssue =
-        'There are some issues with your setup that will prevent your Serverpod'
-        ' project from running out of the box and without further '
-        'configuration. You can still create this project by passing -f to '
-        '"serverpod create" and manually configure your Serverpod.';
-    var strIssuePorts =
-        'One or more network ports Serverpod want to use are not available. The'
-        ' most likely reason is that you have another Serverpod project'
-        ' running, but it can also be another service.';
-    var strIssueDocker =
-        'You do not have Docker installed or it is not running. Serverpod uses '
-        'Docker to run Postgres and Redis. It\'s recommended that you install '
-        'Docker Desktop from https://www.docker.com/get-started but you can '
-        'also install and configure Postgres and Redis manually and run this '
-        'command with the -f flag added.';
-    var strIssueDockerVolume =
-        'A docker volume with the name "${SetupConstants.dockerVolumeName(name)}" already exists. '
-        'Create a project with a different name or remove the volume before running the create command again.';
-
-    log.error(strIssue);
-
-    if (!portsAvailable) {
-      log.error(
-        strIssuePorts,
-        newParagraph: true,
-      );
-      log.error(
-        'Ports in use:',
-        newParagraph: true,
-      );
-      for (var serverDescription in usedPorts.keys) {
-        var port = usedPorts[serverDescription]!;
-        log.error(
-          '$port: $serverDescription',
-          type: TextLogType.bullet,
-        );
-      }
-    }
-    if (!dockerConfigured) {
-      log.error(
-        strIssueDocker,
-        newParagraph: true,
-      );
-    }
-
-    if (!isDockerVolumeAvailable) {
-      log.error(
-        strIssueDockerVolume,
-        newParagraph: true,
-      );
-    }
-
-    return false;
-  }
-
-  var dbPassword = generateRandomString();
-  var dbProductionPassword = generateRandomString();
-  var dbStagingPassword = generateRandomString();
-
-  var awsName = name.replaceAll('_', '-');
-  var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
   var serverpodDirs = ServerpodDirectories(
     projectDir: Directory(p.join(Directory.current.path, name)),
@@ -150,14 +65,14 @@ Future<bool> performCreate(
     return false;
   }
 
-  if (template == ServerpodTemplateType.server) {
-    log.info(
-      'Creating Serverpod project "$name".',
-      type: TextLogType.init,
-    );
-  } else if (template == ServerpodTemplateType.module) {
+  if (template == ServerpodTemplateType.module) {
     log.info(
       'Creating Serverpod module "$name".',
+      type: TextLogType.init,
+    );
+  } else {
+    log.info(
+      'Creating Serverpod project "$name".',
       type: TextLogType.init,
     );
   }
@@ -171,75 +86,198 @@ Future<bool> performCreate(
     newParagraph: true,
   );
 
-  if (template == ServerpodTemplateType.server) {
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.mini) {
     success &= await log.progress(
       'Writing project files.',
       () async {
         _copyServerTemplates(
           serverpodDirs,
           name: name,
-          awsName: awsName,
-          randomAwsId: randomAwsId,
-          dbPassword: dbPassword,
-          dbProductionPassword: dbProductionPassword,
-          dbStagingPassword: dbStagingPassword,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
     );
-
-    success &= await log.progress('Getting server package dependencies.', () {
-      return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-    });
-    success &= await log.progress('Getting client package dependencies.', () {
-      return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
-    });
-    success &=
-        await log.progress('Getting Flutter app package dependencies.', () {
-      return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
-    });
-
-    if (dockerConfigured) {
-      success &= await log.progress('Creating default database migration.', () {
-        return DatabaseSetup.createDefaultMigration(
-          serverpodDirs.serverDir,
-          name,
-        );
-      });
-
-      success &=
-          await log.progress('Downloading and configuring Docker image.', () {
-        return DatabaseSetup.applyDefaultMigration(
-          serverpodDirs.serverDir,
-        );
-      });
-    }
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
         'Writing project files.',
         () => Future(() {
-              _copyModuleTemplates(serverpodDirs, name: name);
+              _copyModuleTemplates(
+                serverpodDirs,
+                name: name,
+                customServerpodPath: productionMode ? null : serverpodHome,
+              );
               return true;
             }));
   }
 
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+      'Writing additional project files.',
+      () async {
+        _copyServerUpgrade(
+          serverpodDirs,
+          name: name,
+        );
+        return true;
+      },
+    );
+  }
+
+  success &= await log.progress('Getting server package dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+  });
+
+  success &= await log.progress('Getting client package dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+  });
+
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.mini) {
+    success &=
+        await log.progress('Getting Flutter app package dependencies.', () {
+      return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+    });
+    await log.progress('Updating Flutter app MacOS entitlements.', () {
+      return EntitlementsModifier.addNetworkToEntitlements(
+          serverpodDirs.flutterDir);
+    });
+  }
+
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+  });
+
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.module) {
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDirs.serverDir,
+        name,
+      );
+    });
+  }
+
   if (success || force) {
     log.info(
-      'Serverpod created.',
+      'Serverpod project created.',
       newParagraph: true,
       type: TextLogType.success,
     );
 
-    if (dockerConfigured && template == ServerpodTemplateType.server) {
+    if (template == ServerpodTemplateType.server) {
       _logStartInstructions(name);
+    } else if (template == ServerpodTemplateType.mini) {
+      _logMiniStartInstructions(name);
     }
   }
 
   return success;
 }
 
-void _logStartInstructions(name) {
+Future<bool> _performUpgrade(ServerpodTemplateType template) async {
+  if (template != ServerpodTemplateType.server) {
+    log.error(
+      'The upgrade command can only be used with server templates.',
+    );
+    return false;
+  }
+
+  var serverDir = findServerDirectory(Directory.current);
+  if (serverDir == null) {
+    log.error(
+      'Could not find a Serverpod project in the current directory.',
+    );
+    return false;
+  }
+
+  var name = await getProjectName(serverDir);
+  if (name == null) {
+    log.error(
+      'Could not find a project name in the pubspec.yaml file.',
+    );
+    return false;
+  }
+
+  var serverpodDir = ServerpodDirectories(
+    name: name,
+    projectDir: serverDir.parent,
+  );
+
+  var success = true;
+  success &= await log.progress(
+    'Upgrading project.',
+    () async {
+      _copyServerUpgrade(
+        serverpodDir,
+        name: name,
+        skipMain: true,
+      );
+      return true;
+    },
+  );
+
+  success &= await log.progress('Running serverpod generator', () async {
+    return await GenerateFiles.generateFiles(serverpodDir.serverDir);
+  });
+
+  success &= await log.progress('Creating default database migration.', () {
+    return DatabaseSetup.createDefaultMigration(
+      serverpodDir.serverDir,
+      name,
+    );
+  });
+
+  if (success) {
+    log.info(
+      'Serverpod project upgraded.',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
+
+    _logStartInstructions(name);
+  }
+
+  return success;
+}
+
+void _logMiniStartInstructions(String name) {
+  log.info(
+    'All setup. You are ready to rock! 🥳',
+    type: TextLogType.header,
+  );
+  log.info(
+    'Start your Serverpod by running:',
+    type: TextLogType.header,
+  );
+
+  if (Platform.isWindows) {
+    log.info(
+      'cd .\\${p.join(name, '${name}_server')}\\',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      'dart .\\bin\\main.dart',
+      type: TextLogType.command,
+    );
+  } else {
+    log.info(
+      'cd ${p.join(name, '${name}_server')}',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      'dart bin/main.dart',
+      type: TextLogType.command,
+    );
+  }
+
+  log.info(' ');
+}
+
+void _logStartInstructions(String name) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -260,7 +298,7 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
     log.info(
-      'dart .\\bin\\main.dart',
+      'dart .\\bin\\main.dart --apply-migrations',
       type: TextLogType.command,
     );
   } else {
@@ -274,7 +312,7 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
     log.info(
-      'dart bin/main.dart',
+      'dart bin/main.dart --apply-migrations',
       type: TextLogType.command,
     );
   }
@@ -318,185 +356,82 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-void _copyServerTemplates(
+void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
-  required String awsName,
-  required String randomAwsId,
-  required String dbPassword,
-  required String dbProductionPassword,
-  required String dbStagingPassword,
-  String? customServerpodPath,
+  bool skipMain = false,
 }) {
-  log.debug('Copying server files');
+  var awsName = name.replaceAll('_', '-');
+  var randomAwsId = math.Random.secure().nextInt(10000000).toString();
+
+  log.debug('Copying upgrade files.', newParagraph: true);
   var copier = Copier(
-    srcDir: Directory(
-        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
-    dstDir: serverpodDirs.serverDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'awsname',
-        replacement: awsName,
-      ),
-      Replacement(
-        slotName: 'randomawsid',
-        replacement: randomAwsId,
-      ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
-      Replacement(
-        slotName: 'SERVICE_SECRET_DEVELOPMENT',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'SERVICE_SECRET_STAGING',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'SERVICE_SECRET_PRODUCTION',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'DB_PASSWORD',
-        replacement: dbPassword,
-      ),
-      Replacement(
-        slotName: 'DB_PRODUCTION_PASSWORD',
-        replacement: dbProductionPassword,
-      ),
-      Replacement(
-        slotName: 'DB_STAGING_PASSWORD',
-        replacement: dbStagingPassword,
-      ),
-      Replacement(
-        slotName: 'REDIS_PASSWORD',
-        replacement: generateRandomString(),
-      ),
-      if (customServerpodPath != null)
+      srcDir: Directory(p.join(resourceManager.templateDirectory.path,
+          'projectname_server_upgrade')),
+      dstDir: serverpodDirs.serverDir,
+      replacements: [
         Replacement(
-          slotName: 'path: ../../../packages/serverpod',
-          replacement: 'path: $customServerpodPath/packages/serverpod',
+          slotName: 'projectname',
+          replacement: name,
         ),
-    ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'gitignore',
-        replacement: '.gitignore',
-      ),
-      Replacement(
-        slotName: 'gcloudignore',
-        replacement: '.gcloudignore',
-      ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
-    ],
-    ignoreFileNames: ['pubspec.lock'],
-  );
-  copier.copyFiles();
-
-  log.debug('Copying client files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(
-        p.join(resourceManager.templateDirectory.path, 'projectname_client')),
-    dstDir: serverpodDirs.clientDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
-      if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod_client',
-          replacement: 'path: $customServerpodPath/packages/serverpod_client',
+          slotName: 'awsname',
+          replacement: awsName,
         ),
-    ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'gitignore',
-        replacement: '.gitignore',
-      ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
-    ],
-    ignoreFileNames: ['pubspec.lock'],
-  );
-  copier.copyFiles();
-
-  log.debug('Copying Flutter files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(
-        p.join(resourceManager.templateDirectory.path, 'projectname_flutter')),
-    dstDir: serverpodDirs.flutterDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
-      if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod_flutter',
-          replacement: 'path: $customServerpodPath/packages/serverpod_flutter',
+          slotName: 'randomawsid',
+          replacement: randomAwsId,
         ),
-    ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'gitignore',
-        replacement: '.gitignore',
-      ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null)
-        'path: ../../../packages/serverpod_flutter',
-    ],
-    ignoreFileNames: [
-      'pubspec.lock',
-      'ios',
-      'android',
-      'web',
-      'macos',
-      'build',
-    ],
-  );
+        Replacement(
+          slotName: 'SERVICE_SECRET_DEVELOPMENT',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_TEST',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_STAGING',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_PRODUCTION',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_TEST_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_PRODUCTION_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_STAGING_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'REDIS_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'REDIS_TEST_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+      ],
+      fileNameReplacements: [
+        Replacement(
+          slotName: 'gcloudignore',
+          replacement: '.gcloudignore',
+        ),
+      ],
+      ignoreFileNames: [
+        if (skipMain) 'server.dart'
+      ]);
   copier.copyFiles();
 
   log.debug('Copying .github files', newParagraph: true);
@@ -522,9 +457,113 @@ void _copyServerTemplates(
   copier.copyFiles();
 }
 
+void _copyServerTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  String? customServerpodPath,
+}) {
+  log.debug('Copying server files');
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying client files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_client')),
+    dstDir: serverpodDirs.clientDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying Flutter files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_flutter')),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    ignoreFileNames: [
+      'pubspec.lock',
+      'ios',
+      'android',
+      'web',
+      'macos',
+      'build',
+    ],
+  );
+  copier.copyFiles();
+}
+
 void _copyModuleTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  String? customServerpodPath,
 }) {
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
@@ -536,14 +575,11 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: templateVersion,
-      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -555,7 +591,6 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    removePrefixes: ['path'],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
@@ -570,14 +605,11 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: templateVersion,
-      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -589,7 +621,6 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    removePrefixes: ['path'],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();

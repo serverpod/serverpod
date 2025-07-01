@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
@@ -51,17 +51,6 @@ class SessionManager with ChangeNotifier {
   /// currently signed in.
   UserInfo? get signedInUser => _signedInUser;
 
-  @Deprecated('Use setSignedInUser instead.')
-  set signedInUser(UserInfo? userInfo) {
-    _signedInUser = userInfo;
-    // TODO: Avoid doing asynchronously.
-    keyManager.get().then((String? key) async {
-      await caller.client.updateStreamingConnectionAuthenticationKey(key);
-    });
-    _storeSharedPrefs();
-    notifyListeners();
-  }
-
   /// Registers the signed in user, updates the [keyManager], and upgrades the
   /// streaming connection if it is open.
   Future<void> registerSignedInUser(
@@ -94,15 +83,24 @@ class SessionManager with ChangeNotifier {
     return refreshSession();
   }
 
-  /// Signs the user out from all connected devices. Returns true if successful.
-  Future<bool> signOut() async {
+  /// Signs the user out from their devices.
+  /// If [allDevices] is true, signs out from all devices; otherwise, signs out from the current device only.
+  /// Returns true if the sign-out is successful.
+  Future<bool> _signOut({
+    required bool allDevices,
+  }) async {
     if (!isSignedIn) return true;
 
     try {
-      await caller.status.signOut();
+      if (allDevices) {
+        await caller.status.signOutAllDevices();
+      } else {
+        await caller.status.signOutDevice();
+      }
       await caller.client.updateStreamingConnectionAuthenticationKey(null);
 
       _signedInUser = null;
+      await _storeSharedPrefs();
       await keyManager.remove();
 
       notifyListeners();
@@ -110,6 +108,27 @@ class SessionManager with ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  /// **[Deprecated]** Signs the user out from all connected devices.
+  /// Use `signOutDevice` for the current device or `signOutAllDevices` for all devices.
+  /// Returns true if successful.
+  @Deprecated(
+      'Use signOutDevice for the current device or signOutAllDevices for all devices. This method will be removed in future releases.')
+  Future<bool> signOut() async {
+    return _signOut(allDevices: true);
+  }
+
+  /// Signs the user out from all connected devices.
+  /// Returns true if successful.
+  Future<bool> signOutAllDevices() async {
+    return _signOut(allDevices: true);
+  }
+
+  /// Signs the user out from the current device.
+  /// Returns true if successful.
+  Future<bool> signOutDevice() async {
+    return _signOut(allDevices: false);
   }
 
   /// Verify the current sign in status with the server and update the UserInfo.

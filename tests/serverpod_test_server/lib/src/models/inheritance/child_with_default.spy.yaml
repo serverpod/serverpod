@@ -1,0 +1,5 @@
+class: ChildWithDefault
+extends: ParentWithDefault
+fields:
+    age: int
+    childDefault: int, default=-1

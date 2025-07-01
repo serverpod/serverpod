@@ -1,13 +1,13 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -21,20 +21,21 @@ void main() {
   var tableName = 'example_table';
   group('Given a class with table name when generating code', () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var maybeClassNamedExampleTable =
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -56,6 +57,15 @@ void main() {
             ),
             isTrue,
             reason: 'Missing extends clause for Table.');
+      });
+
+      test('has Table extends generic to the default id type int.', () {
+        expect(
+            maybeClassNamedExampleTable!
+                .extendsClause?.superclass.typeArguments?.arguments.first
+                .toString(),
+            'int?',
+            reason: 'Missing generic to default id type int.');
       });
 
       test(
@@ -103,14 +113,14 @@ void main() {
             isFalse,
             reason: 'Declaration for id field should not be generated.');
       });
-    }, skip: maybeClassNamedExampleTable == null);
+    });
   });
 
   group(
       'Given a class with table name and persistent field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -125,13 +135,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -160,17 +171,14 @@ void main() {
             isTrue,
             reason: 'Missing title field in columns.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found'
-            : false);
+    });
   });
 
   group(
       'Given a class with table name and NON persistent field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -185,13 +193,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -222,17 +231,14 @@ void main() {
             isTrue,
             reason: 'Should not include field in columns.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -240,13 +246,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -262,17 +269,14 @@ void main() {
           ),
           isTrue,
           reason: 'Missing declaration for getRelationTable method.');
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
       'Given a class with table name and persistent field with scope none when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -287,13 +291,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -331,17 +336,24 @@ void main() {
           contains('\$_fieldName'),
           reason: '"\$_fieldName" is missing in constructor getter.',
         );
-      },
-          skip: maybeClassNamedExampleTable == null
-              ? 'Could not run test because ${testClassName}Table class was not found.'
-              : false);
+      });
+
+      test('has managedColumns override for columns', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'managedColumns',
+            ),
+            isTrue,
+            reason: 'Missing declaration for managedColumns override.');
+      });
     });
   });
   group(
       'Given a class with table name and object relation field when generating code',
       () {
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -349,13 +361,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
             name: '${testClassName}Table');
 
@@ -379,10 +392,7 @@ void main() {
             isTrue,
             reason: 'Missing declaration for relation table getter.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 
   group(
@@ -391,7 +401,7 @@ void main() {
     var relationFieldName = 'employees';
     var objectRelationType = 'Citizen';
     var models = [
-      ClassDefinitionBuilder()
+      ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
@@ -400,13 +410,14 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late final codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}Table',
@@ -458,9 +469,6 @@ void main() {
             reason:
                 'Missing declaration for __$relationFieldName many relation getter.');
       });
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
+    });
   });
 }

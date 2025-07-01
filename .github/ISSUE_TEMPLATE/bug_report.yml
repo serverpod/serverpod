@@ -1,0 +1,72 @@
+name: Bug Report
+description: Report a bug or unexpected behavior you encountered. 
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        When reporting a bug, please complete this template thoroughly to help us address the issue effectively!
+
+  - type: textarea
+    id: description-of-bug
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: To reproduce 
+      description: Steps to reproduce the behavior.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expectation
+    attributes:
+      label: Expected behavior 
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: library-version 
+    attributes:
+      label: Library version 
+      description: Library and dart version where the bug was found.
+    validations:
+      required: true
+
+  - type: textarea
+    id: platforms
+    attributes:
+      label: Platform information
+      description: Information about the platform where the bug was found.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Share any additional context or information about the bug.
+
+  - type: dropdown
+    id: experience
+    attributes:
+      label: How experienced are you with this library?
+      multiple: false
+      description: This helps us understand where in the user journey this issue might arise.
+      options:
+        - Beginner - Just getting started with this library
+        - Intermediate - Familiar with the basics or have used it in a few projects
+        - Expert - Experienced and comfortable with using this library in complex projects
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Are you interested in working on a PR for this?
+      options:
+        - label: I want to work on this

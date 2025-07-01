@@ -1,10 +1,23 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
+
+/// Channels that are listened to by the Serverpod Framework.
+abstract class MessageCentralServerpodChannels {
+  /// Used to revoke authentication tokens.
+  /// The message should be of type [RevokedAuthenticationUser],
+  /// [RevokedAuthenticationAuthId] or [RevokedAuthenticationScope].
+  /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
+  /// user.
+  static String revokedAuthentication(Object userIdentifier) =>
+      '_serverpod_revoked_authentication_$userIdentifier';
+}
 
 // TODO: Support for server clusters.
 
 /// The callback used by listeners of the [MessageCentral].
 typedef MessageCentralListenerCallback = void Function(
-    SerializableEntity message);
+    SerializableModel message);
 
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
@@ -15,33 +28,40 @@ class MessageCentral {
   final _sessionToChannelNamesLookup = <Session, Set<String>>{};
   final _sessionToCallbacksLookup =
       <Session, Set<MessageCentralListenerCallback>>{};
+  final _sessionToCleanupCallbacksLookup = <Session, Set<Function()>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
   /// can be provided, in which case the message is sent only to that specific
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
-  void postMessage(
+  ///
+  /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  Future<bool> postMessage(
     String channelName,
-    SerializableEntity message, {
+    SerializableModel message, {
     bool global = false,
-  }) {
+  }) async {
     if (global) {
       // Send to Redis
-      assert(
-        Serverpod.instance.redisController != null,
-        'Redis needs to be enabled to use this method',
-      );
       var data =
           Serverpod.instance.serializationManager.encodeWithType(message);
-      Serverpod.instance.redisController!.publish(channelName, data);
+      var redisController = Serverpod.instance.redisController;
+      if (redisController == null) {
+        throw StateError('Redis needs to be enabled to use this method');
+      }
+
+      return await redisController.publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];
-      if (channel == null) return;
+      if (channel == null) return true;
 
-      for (var callback in channel) {
+      for (var callback in channel.toList()) {
         callback(message);
       }
+      return true;
     }
   }
 
@@ -95,7 +115,7 @@ class MessageCentral {
     if (messageObj == null) {
       return;
     }
-    postMessage(channelName, messageObj as SerializableEntity, global: false);
+    postMessage(channelName, messageObj as SerializableModel, global: false);
   }
 
   /// Removes a listener from a named channel.
@@ -161,5 +181,65 @@ class MessageCentral {
         session.serverpod.redisController!.unsubscribe(channelName);
       }
     }
+
+    _executeCleanupCallbacks(session);
+  }
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(
+    Session session,
+    String channelName,
+  ) {
+    var controller = StreamController<T>();
+    void addToStream(dynamic message) {
+      try {
+        controller.add(message as T);
+      } catch (e) {
+        controller.addError(e);
+      }
+    }
+
+    addListener(session, channelName, addToStream);
+    _addCleanupCallback(session, controller.close);
+
+    controller.onCancel = () {
+      _removeCleanupCallback(session, controller.close);
+      removeListener(session, channelName, addToStream);
+    };
+
+    return controller.stream;
+  }
+
+  void _addCleanupCallback(Session session, Function() callback) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) {
+      callbacks = {};
+      _sessionToCleanupCallbacksLookup[session] = callbacks;
+    }
+    callbacks.add(callback);
+  }
+
+  void _removeCleanupCallback(Session session, Function() callback) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) return;
+
+    callbacks.remove(callback);
+  }
+
+  void _executeCleanupCallbacks(Session session) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) return;
+
+    for (var callback in callbacks) {
+      callback();
+    }
+
+    _sessionToCleanupCallbacksLookup.remove(session);
   }
 }

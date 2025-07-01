@@ -1,9 +1,10 @@
-import 'package:serverpod/src/database/columns.dart';
-import 'package:serverpod/src/database/expressions.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/expressions.dart';
+import 'package:serverpod/src/database/concepts/table.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var testTable = Table(tableName: 'test');
+  var testTable = Table<int?>(tableName: 'test');
   group('Given one expression', () {
     var expressionString = 'true = true';
     var expression = Expression(expressionString);
@@ -284,7 +285,7 @@ void main() {
     Expression expression = firstColumn.equals('test 1') &
         (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
-    group('when retrieveing columns', () {
+    group('when retrieving columns', () {
       List<Column> columns = expression.columns;
 
       test('then all columns are represented.', () {

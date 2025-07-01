@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Makes script exit on first non-zero error code
 set -e
 
 echo "### Run serverpod generate test"
 echo "### If this test fails, make sure that you have run serverpod generate"
-echo "### on all packages with util/generate_all"
+echo "### on all packages with util/run_tests_serverpod_generate"
 
 # Install the serverpod command
 echo "### Installing CLI tools"
@@ -24,8 +24,6 @@ cd tools/serverpod_cli
 dart pub global activate -s path .
 
 cd $SERVERPOD_HOME
-
-util/pub_get_all
 
 util/generate_all
 

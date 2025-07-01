@@ -1,17 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides high level information about a cache.
-abstract class CacheInfo extends _i1.SerializableEntity {
+abstract class CacheInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CacheInfo._({
     required this.numEntries,
     required this.maxEntries,
@@ -24,17 +26,13 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     List<String>? keys,
   }) = _CacheInfoImpl;
 
-  factory CacheInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CacheInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CacheInfo(
-      numEntries: serializationManager
-          .deserialize<int>(jsonSerialization['numEntries']),
-      maxEntries: serializationManager
-          .deserialize<int>(jsonSerialization['maxEntries']),
-      keys: serializationManager
-          .deserialize<List<String>?>(jsonSerialization['keys']),
+      numEntries: jsonSerialization['numEntries'] as int,
+      maxEntries: jsonSerialization['maxEntries'] as int,
+      keys: (jsonSerialization['keys'] as List?)
+          ?.map((e) => e as String)
+          .toList(),
     );
   }
 
@@ -47,6 +45,9 @@ abstract class CacheInfo extends _i1.SerializableEntity {
   /// Optional list of keys used by the cache.
   List<String>? keys;
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   CacheInfo copyWith({
     int? numEntries,
     int? maxEntries,
@@ -57,17 +58,22 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
-      'keys': keys,
+      if (keys != null) 'keys': keys?.toJson(),
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
-      'keys': keys,
+      if (keys != null) 'keys': keys?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -84,6 +90,9 @@ class _CacheInfoImpl extends CacheInfo {
           keys: keys,
         );
 
+  /// Returns a shallow copy of this [CacheInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   CacheInfo copyWith({
     int? numEntries,
@@ -93,7 +102,7 @@ class _CacheInfoImpl extends CacheInfo {
     return CacheInfo(
       numEntries: numEntries ?? this.numEntries,
       maxEntries: maxEntries ?? this.maxEntries,
-      keys: keys is List<String>? ? keys : this.keys?.clone(),
+      keys: keys is List<String>? ? keys : this.keys?.map((e0) => e0).toList(),
     );
   }
 }

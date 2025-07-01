@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+
+import '../../test_util/builders/generator_config_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
@@ -42,7 +43,7 @@ void main() {
         expect(
           generator.repairMigration(
             runMode:
-                CreateRepairMigrationCommand.runModes.first /* development */,
+                CreateRepairMigrationOption.runModes.first /* development */,
             force: false,
           ),
           throwsA(isA<MigrationVersionLoadException>()

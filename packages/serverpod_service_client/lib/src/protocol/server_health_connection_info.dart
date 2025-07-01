@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -13,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
+abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -35,22 +36,16 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ServerHealthConnectionInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      timestamp: serializationManager
-          .deserialize<DateTime>(jsonSerialization['timestamp']),
-      active:
-          serializationManager.deserialize<int>(jsonSerialization['active']),
-      closing:
-          serializationManager.deserialize<int>(jsonSerialization['closing']),
-      idle: serializationManager.deserialize<int>(jsonSerialization['idle']),
-      granularity: serializationManager
-          .deserialize<int>(jsonSerialization['granularity']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      timestamp:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      active: jsonSerialization['active'] as int,
+      closing: jsonSerialization['closing'] as int,
+      idle: jsonSerialization['idle'] as int,
+      granularity: jsonSerialization['granularity'] as int,
     );
   }
 
@@ -78,6 +73,9 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -90,14 +88,19 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'active': active,
       'closing': closing,
       'idle': idle,
       'granularity': granularity,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -122,6 +125,9 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
           granularity: granularity,
         );
 
+  /// Returns a shallow copy of this [ServerHealthConnectionInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,

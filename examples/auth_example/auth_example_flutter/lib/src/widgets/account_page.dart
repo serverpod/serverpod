@@ -17,14 +17,14 @@ class AccountPage extends StatelessWidget {
             userInfo: sessionManager.signedInUser,
             size: 42,
           ),
-          title: Text(sessionManager.signedInUser!.userName),
+          title: Text(sessionManager.signedInUser!.userName ?? ''),
           subtitle: Text(sessionManager.signedInUser!.email ?? ''),
         ),
         Padding(
           padding: const EdgeInsets.all(16),
           child: ElevatedButton(
             onPressed: () {
-              sessionManager.signOut();
+              sessionManager.signOutDevice();
             },
             child: const Text('Sign out'),
           ),

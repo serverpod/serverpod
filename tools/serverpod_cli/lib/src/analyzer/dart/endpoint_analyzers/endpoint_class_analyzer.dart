@@ -1,7 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/element_ignore_endpoint_extension.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -10,12 +11,10 @@ abstract class EndpointClassAnalyzer {
     ClassElement element,
     List<MethodDefinition> methodDefinitions,
     String filePath,
-    String rootPath,
   ) {
     var className = element.name;
     var endpointName = _formatEndpointName(className);
     var classDocumentationComment = element.documentationComment;
-    var subDirectoryParts = _getSubdirectoryParts(filePath, rootPath);
 
     return EndpointDefinition(
       name: endpointName,
@@ -23,7 +22,6 @@ abstract class EndpointClassAnalyzer {
       className: className,
       methods: methodDefinitions,
       filePath: filePath,
-      subDirParts: subDirectoryParts,
     );
   }
 
@@ -32,19 +30,46 @@ abstract class EndpointClassAnalyzer {
     return '{$filePath}_${element.name}';
   }
 
-  /// Returns true if the [ClassElement] is an endpoint class that should
+  /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
-    if (element.supertype?.element.name != 'Endpoint') return false;
+    if (!element.isConstructable) return false;
 
-    return true;
+    if (element.markedAsIgnored) return false;
+
+    return isEndpointInterface(element);
+  }
+
+  /// Returns `true` if the class extends the Serverpod `Endpoint` base class.
+  ///
+  /// The class itself might still need to be ignored as an endpoint, because
+  /// it could be marked `abstract` or `@doNotGenerate`.
+  ///
+  /// To check whether and endpoint class should actually be implemented
+  /// by the server use [isEndpointClass].
+  static bool isEndpointInterface(ClassElement element) {
+    return element.allSupertypes.any((s) => s.element.name == 'Endpoint');
   }
 
   /// Validates the [ClassElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     ClassElement classElement,
+    Set<String> duplicateClasses,
   ) {
-    return [];
+    List<SourceSpanSeverityException> errors = [];
+
+    if (duplicateClasses.contains(classElement.name)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Multiple endpoint definitions for ${classElement.name} exists. '
+          'Please provide a unique name for each endpoint class.',
+          classElement.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   static String _formatEndpointName(String className) {
@@ -57,22 +82,5 @@ abstract class EndpointClassAnalyzer {
     }
 
     return endpointName;
-  }
-
-  static List<String> _getSubdirectoryParts(String filePath, String rootPath) {
-    // Get the subdirectory of the filePath by removing the first elements
-    // of the root path and the file path as long as they match.
-    var rootPathParts = path.split(rootPath);
-    var fileDirPathParts = path.split(path.dirname(filePath));
-    while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
-      if (rootPathParts.first == fileDirPathParts.first) {
-        rootPathParts.removeAt(0);
-        fileDirPathParts.removeAt(0);
-      } else {
-        break;
-      }
-    }
-
-    return fileDirPathParts;
   }
 }

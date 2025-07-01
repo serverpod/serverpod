@@ -1,17 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry extends _i1.SerializableEntity {
+abstract class FutureCallEntry implements _i1.SerializableModel {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -30,21 +31,14 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
     String? identifier,
   }) = _FutureCallEntryImpl;
 
-  factory FutureCallEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return FutureCallEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      serializedObject: serializationManager
-          .deserialize<String?>(jsonSerialization['serializedObject']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      identifier: serializationManager
-          .deserialize<String?>(jsonSerialization['identifier']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      serializedObject: jsonSerialization['serializedObject'] as String?,
+      serverId: jsonSerialization['serverId'] as String,
+      identifier: jsonSerialization['identifier'] as String?,
     );
   }
 
@@ -68,6 +62,9 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -79,13 +76,18 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'time': time,
-      'serializedObject': serializedObject,
+      'time': time.toJson(),
+      if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
-      'identifier': identifier,
+      if (identifier != null) 'identifier': identifier,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -108,6 +110,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           identifier: identifier,
         );
 
+  /// Returns a shallow copy of this [FutureCallEntry]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   FutureCallEntry copyWith({
     Object? id = _Undefined,

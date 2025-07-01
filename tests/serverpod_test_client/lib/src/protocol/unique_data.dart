@@ -1,16 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UniqueData extends _i1.SerializableEntity {
+abstract class UniqueData implements _i1.SerializableModel {
   UniqueData._({
     this.id,
     required this.number,
@@ -23,16 +24,11 @@ abstract class UniqueData extends _i1.SerializableEntity {
     required String email,
   }) = _UniqueDataImpl;
 
-  factory UniqueData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UniqueData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
+      id: jsonSerialization['id'] as int?,
+      number: jsonSerialization['number'] as int,
+      email: jsonSerialization['email'] as String,
     );
   }
 
@@ -45,6 +41,9 @@ abstract class UniqueData extends _i1.SerializableEntity {
 
   String email;
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   UniqueData copyWith({
     int? id,
     int? number,
@@ -53,10 +52,15 @@ abstract class UniqueData extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'number': number,
       'email': email,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -73,6 +77,9 @@ class _UniqueDataImpl extends UniqueData {
           email: email,
         );
 
+  /// Returns a shallow copy of this [UniqueData]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   UniqueData copyWith({
     Object? id = _Undefined,

@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_module_server/module.dart' as module;
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
+    as module;
 
 import '../generated/module_datatype.dart';
 

@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_auth_client/module.dart' as auth;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as auth;
 
 /// Callback for when a message is received from the server. If [addedByUser] is
 /// true, the message was added by the current user.
@@ -14,7 +14,7 @@ typedef ChatControllerReceivedMessageCallback = void Function(
 
 /// Handles all interaction with a chat channel.
 class ChatController {
-  /// The identifiying channel name of chat this controller is handling.
+  /// The identifying channel name of chat this controller is handling.
   late final String channel;
 
   /// Reference to the module.
@@ -26,7 +26,7 @@ class ChatController {
   /// True if the chat is ephemeral and shouldn't be saved to the database.
   final bool ephemeral;
 
-  /// Name of an autheticated user.
+  /// Name of an authenticated user.
   final String? unauthenticatedUserName;
 
   /// Reference to the dispatch that handles multiple chat channels.
@@ -116,7 +116,7 @@ class ChatController {
     _connectionStatusListeners.clear();
   }
 
-  void _handleServerMessage(SerializableEntity serverMessage) {
+  void _handleServerMessage(SerializableModel serverMessage) {
     if (serverMessage is ChatMessage) {
       if (ephemeral && serverMessage.id == null) {
         serverMessage.id = ++_ephemeralMessageId;
@@ -316,7 +316,7 @@ class ChatController {
     }
   }
 
-  // Listeners for recevied message chunks
+  // Listeners for received message chunks
 
   /// Adds a listener for received chunks of messages.
   void addReceivedMessageChunkListener(VoidCallback listener) {

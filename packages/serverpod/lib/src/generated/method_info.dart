@@ -1,22 +1,24 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo extends _i1.TableRow {
+abstract class MethodInfo
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   MethodInfo._({
-    int? id,
+    this.id,
     required this.endpoint,
     required this.method,
-  }) : super(id);
+  });
 
   factory MethodInfo({
     int? id,
@@ -24,22 +26,20 @@ abstract class MethodInfo extends _i1.TableRow {
     required String method,
   }) = _MethodInfoImpl;
 
-  factory MethodInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory MethodInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return MethodInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      endpoint: serializationManager
-          .deserialize<String>(jsonSerialization['endpoint']),
-      method:
-          serializationManager.deserialize<String>(jsonSerialization['method']),
+      id: jsonSerialization['id'] as int?,
+      endpoint: jsonSerialization['endpoint'] as String,
+      method: jsonSerialization['method'] as String,
     );
   }
 
   static final t = MethodInfoTable();
 
   static const db = MethodInfoRepository._();
+
+  @override
+  int? id;
 
   /// The endpoint of this method.
   String endpoint;
@@ -48,8 +48,11 @@ abstract class MethodInfo extends _i1.TableRow {
   String method;
 
   @override
-  _i1.Table get table => t;
+  _i1.Table<int?> get table => t;
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   MethodInfo copyWith({
     int? id,
     String? endpoint,
@@ -58,166 +61,19 @@ abstract class MethodInfo extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'endpoint': endpoint,
       'method': method,
     };
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'endpoint': endpoint,
       'method': method,
     };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      'id': id,
-      'endpoint': endpoint,
-      'method': method,
-    };
-  }
-
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<MethodInfo>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<MethodInfo>(
-      where: where != null ? where(MethodInfo.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<MethodInfo?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<MethodInfo>(
-      where: where != null ? where(MethodInfo.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<MethodInfo?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<MethodInfo>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<MethodInfo>(
-      where: where(MethodInfo.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    MethodInfo row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    MethodInfo row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    MethodInfo row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<MethodInfo>(
-      where: where != null ? where(MethodInfo.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static MethodInfoInclude include() {
@@ -243,6 +99,11 @@ abstract class MethodInfo extends _i1.TableRow {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}
@@ -258,6 +119,9 @@ class _MethodInfoImpl extends MethodInfo {
           method: method,
         );
 
+  /// Returns a shallow copy of this [MethodInfo]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
   @override
   MethodInfo copyWith({
     Object? id = _Undefined,
@@ -272,7 +136,7 @@ class _MethodInfoImpl extends MethodInfo {
   }
 }
 
-class MethodInfoTable extends _i1.Table {
+class MethodInfoTable extends _i1.Table<int?> {
   MethodInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_method') {
     endpoint = _i1.ColumnString(
@@ -299,9 +163,6 @@ class MethodInfoTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use MethodInfoTable.t instead.')
-MethodInfoTable tMethodInfo = MethodInfoTable();
-
 class MethodInfoInclude extends _i1.IncludeObject {
   MethodInfoInclude._();
 
@@ -309,7 +170,7 @@ class MethodInfoInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => MethodInfo.t;
+  _i1.Table<int?> get table => MethodInfo.t;
 }
 
 class MethodInfoIncludeList extends _i1.IncludeList {
@@ -329,12 +190,34 @@ class MethodInfoIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table get table => MethodInfo.t;
+  _i1.Table<int?> get table => MethodInfo.t;
 }
 
 class MethodInfoRepository {
   const MethodInfoRepository._();
 
+  /// Returns a list of [MethodInfo]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<MethodInfo>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -345,7 +228,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<MethodInfo>(
+    return session.db.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -356,6 +239,23 @@ class MethodInfoRepository {
     );
   }
 
+  /// Returns the first matching [MethodInfo] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<MethodInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -365,7 +265,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<MethodInfo>(
+    return session.db.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -375,105 +275,130 @@ class MethodInfoRepository {
     );
   }
 
+  /// Finds a single [MethodInfo] by its [id] or null if no such row exists.
   Future<MethodInfo?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<MethodInfo>(
+    return session.db.findById<MethodInfo>(
       id,
       transaction: transaction,
     );
   }
 
+  /// Inserts all [MethodInfo]s in the list and returns the inserted rows.
+  ///
+  /// The returned [MethodInfo]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
   Future<List<MethodInfo>> insert(
     _i1.Session session,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<MethodInfo>(
+    return session.db.insert<MethodInfo>(
       rows,
       transaction: transaction,
     );
   }
 
+  /// Inserts a single [MethodInfo] and returns the inserted row.
+  ///
+  /// The returned [MethodInfo] will have its `id` field set.
   Future<MethodInfo> insertRow(
     _i1.Session session,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<MethodInfo>(
+    return session.db.insertRow<MethodInfo>(
       row,
       transaction: transaction,
     );
   }
 
+  /// Updates all [MethodInfo]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<MethodInfo>> update(
     _i1.Session session,
     List<MethodInfo> rows, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<MethodInfo>(
+    return session.db.update<MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }
 
+  /// Updates a single [MethodInfo]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<MethodInfo> updateRow(
     _i1.Session session,
     MethodInfo row, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<MethodInfo>(
+    return session.db.updateRow<MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }
 
-  Future<List<int>> delete(
+  /// Deletes all [MethodInfo]s in the list and returns the deleted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<MethodInfo>> delete(
     _i1.Session session,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<MethodInfo>(
+    return session.db.delete<MethodInfo>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<int> deleteRow(
+  /// Deletes a single [MethodInfo].
+  Future<MethodInfo> deleteRow(
     _i1.Session session,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<MethodInfo>(
+    return session.db.deleteRow<MethodInfo>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<int>> deleteWhere(
+  /// Deletes all rows matching the [where] expression.
+  Future<List<MethodInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<MethodInfo>(
+    return session.db.deleteWhere<MethodInfo>(
       where: where(MethodInfo.t),
       transaction: transaction,
     );
   }
 
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<MethodInfo>(
+    return session.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
       transaction: transaction,
