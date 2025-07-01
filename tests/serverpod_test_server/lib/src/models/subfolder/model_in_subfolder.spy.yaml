@@ -1,0 +1,14 @@
+# Test that all import paths are generated properly
+class: ModelInSubfolder
+fields:
+  classField: Nullability?
+  enumField: TestEnumStringified?
+  enumListField: List<TestEnumStringified>?
+  enumRecordField: (TestEnumStringified,)?
+  enumRecordListField: List<(TestEnumStringified,)>?
+  moduleClassRecordField: (module:module:ModuleClass,)?
+  classRecordField: (Nullability,)?
+  enumNamedRecordField: ({TestEnumStringified value})?
+  enumNamedRecordListField: List<({TestEnumStringified value})>?
+  moduleClassNamedRecordField: ({module:module:ModuleClass value})?
+  classNamedRecordField: ({Nullability value})?
