@@ -5,7 +5,7 @@ import 'dart:convert';
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
 /// cases.
-abstract class AbstractWidget {}
+abstract class AbstractComponent {}
 
 /// A widget based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
@@ -14,8 +14,8 @@ abstract class AbstractWidget {}
 /// on the value. The templates are loaded when the server starts. If you add
 /// new templates or modify existing templates, you will need to restart the
 /// server for them to take effect.
-class WebWidget extends AbstractWidget {
-  /// The name of the template used by this [WebWidget].
+class Component extends AbstractComponent {
+  /// The name of the template used by this [Component].
   final String name;
 
   /// The template used by this widget.
@@ -25,8 +25,8 @@ class WebWidget extends AbstractWidget {
   /// strings using the toString method of the values.
   Map<String, dynamic> values = {};
 
-  /// Creates a new [WebWidget].
-  WebWidget({
+  /// Creates a new [Component].
+  Component({
     required this.name,
   }) {
     var cachedTemplate = templates[name];
@@ -42,13 +42,13 @@ class WebWidget extends AbstractWidget {
   }
 }
 
-/// Combines a List of [WebWidget]s into a single widget.
-class WebWidgetList extends AbstractWidget {
+/// Combines a List of [Component]s into a single widget.
+class ListComponent extends AbstractComponent {
   /// List of original widgets.
-  final List<WebWidget> widgets;
+  final List<Component> widgets;
 
   /// Creates a new widget list.
-  WebWidgetList({required this.widgets});
+  ListComponent({required this.widgets});
 
   @override
   String toString() {
@@ -62,12 +62,12 @@ class WebWidgetList extends AbstractWidget {
 
 /// A widget that renders JSON output. The output will be the result of passing
 /// the provided [object] to [jsonEncode].
-class WebJsonWidget extends AbstractWidget {
+class JsonComponent extends AbstractComponent {
   /// The original object to be rendered as JSON.
   final dynamic object;
 
-  /// Creates a new [WebJsonWidget].
-  WebJsonWidget({required this.object});
+  /// Creates a new [JsonComponent].
+  JsonComponent({required this.object});
 
   @override
   String toString() {
@@ -76,12 +76,12 @@ class WebJsonWidget extends AbstractWidget {
 }
 
 /// A widget that renders a HTTP redirect to the provided [url].
-class WebRouteRedirect extends AbstractWidget {
+class RedirectComponent extends AbstractComponent {
   /// The [url] to redirect to.
   final String url;
 
   /// Creates a new widget that renders a redirect.
-  WebRouteRedirect({required this.url});
+  RedirectComponent({required this.url});
 
   @override
   String toString() {

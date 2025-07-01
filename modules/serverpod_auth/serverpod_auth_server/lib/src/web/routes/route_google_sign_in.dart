@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/src/web/widgets/google_sign_in_redirect_page_widget.dart';
+import 'package:serverpod_auth_server/src/web/components/google_sign_in_redirect_page_component.dart';
 
 /// A route that redirects the user back to the client after signing in with Google.
 /// The redirect includes the auth code that will automatically be picked up by the
 /// serverpod_auth_google_flutter package.
-class RouteGoogleSignIn extends WidgetRoute {
+class RouteGoogleSignIn extends ComponentRoute {
   @override
-  Future<AbstractWidget> build(Session session, HttpRequest request) async {
-    return GoogleSignInRedirectPageWidget();
+  Future<AbstractComponent> build(Session session, HttpRequest request) async {
+    return GoogleSignInRedirectPageComponent();
   }
 }
