@@ -470,7 +470,9 @@ Expression _buildRecordTypeFromJson(
         .call(
           [valueExpression.asA(refer('Map<String, dynamic>'))],
           {},
-          [type.reference(serverCode, config: config)],
+          [
+            type.reference(serverCode, config: config, subDirParts: subDirParts)
+          ],
         )
         .code,
   ]));

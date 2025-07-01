@@ -1,5 +1,5 @@
-import 'dart:core';
 import 'dart:core' as d;
+import 'dart:core';
 
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -270,17 +270,20 @@ class TypeDefinition {
   }) {
     if (isRecordType) {
       return code_builder.RecordType((b) {
-        b.positionalFieldTypes.addAll(
-          generics
-              .where((f) => f.recordFieldName == null)
-              .map((f) => f.reference(serverCode, config: config)),
-        );
+        b.positionalFieldTypes.addAll([
+          for (final f in positionalRecordFields)
+            f.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            ),
+        ]);
 
         b.namedFieldTypes.addAll({
-          for (var namedField
-              in generics.where((f) => f.recordFieldName != null))
+          for (final namedField in namedRecordFields)
             namedField.recordFieldName!: namedField.reference(
               serverCode,
+              subDirParts: subDirParts,
               config: config,
             ),
         });
@@ -442,11 +445,6 @@ class TypeDefinition {
     required GeneratorConfig config,
   }) {
     if (isRecordType) {
-      var positionalFields =
-          generics.where((f) => f.recordFieldName == null).toList();
-      var namedFields =
-          generics.where((f) => f.recordFieldName != null).toList();
-
       return [
         MapEntry(
           refer('getType', serverpodUrl(serverCode))
@@ -455,7 +453,8 @@ class TypeDefinition {
             [
               if (nullable) const Code(' (data == null) ? null as T : '),
               const Code('('),
-              for (final (i, positionalField) in positionalFields.indexed) ...[
+              for (final (i, positionalField)
+                  in positionalRecordFields.indexed) ...[
                 if (positionalField.nullable)
                   Code(
                       "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
@@ -471,20 +470,20 @@ class TypeDefinition {
                 const Code(')'),
                 const Code(','),
               ],
-              if (namedFields.isNotEmpty) ...[
-                for (final (i, namedField) in namedFields.indexed) ...[
+              if (namedRecordFields.isNotEmpty) ...[
+                for (final (i, namedField) in namedRecordFields.indexed) ...[
                   Code(namedField.recordFieldName!),
                   const Code(':'),
                   if (namedField.nullable)
                     Code(
-                        "((data ${i == 0 && positionalFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
+                        "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
                   const Code('deserialize<'),
                   namedField
                       .reference(serverCode, config: config, nullable: false)
                       .code,
                   const Code('>('),
                   if (i == 0 &&
-                      positionalFields.isEmpty &&
+                      positionalRecordFields.isEmpty &&
                       !namedField.nullable)
                     Code(
                         "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
@@ -702,18 +701,15 @@ class TypeDefinition {
   @override
   String toString() {
     if (isRecordType) {
-      var positionalFields =
-          generics.where((f) => f.recordFieldName == null).toList();
-      var namedFields =
-          generics.where((f) => f.recordFieldName != null).toList();
-
       return [
         '(',
-        positionalFields.map((t) => t.toString()).join(', '),
-        if (positionalFields.isNotEmpty || positionalFields.length == 1) ',',
-        if (namedFields.isNotEmpty) ...[
+        positionalRecordFields.map((t) => t.toString()).join(', '),
+        if (positionalRecordFields.isNotEmpty ||
+            positionalRecordFields.length == 1)
+          ',',
+        if (namedRecordFields.isNotEmpty) ...[
           ' {',
-          namedFields.map((f) => '$f ${f.recordFieldName!}').join(', '),
+          namedRecordFields.map((f) => '$f ${f.recordFieldName!}').join(', '),
           '}',
         ],
         ')',
@@ -1072,5 +1068,17 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     }
 
     return namedFields;
+  }
+}
+
+extension on TypeDefinition {
+  Iterable<TypeDefinition> get positionalRecordFields {
+    assert(isRecordType);
+    return generics.where((f) => f.recordFieldName == null).toList();
+  }
+
+  Iterable<TypeDefinition> get namedRecordFields {
+    assert(isRecordType);
+    return generics.where((f) => f.recordFieldName != null).toList();
   }
 }

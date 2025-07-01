@@ -17,3 +17,5 @@ fields:
   aList: List<List<Types>>?
   aRecord: List<(int,)>?
   aNullableRecord: List<(int,)?>?
+  anEnumRecord: List<(TestEnum,)>?
+  anEnum2Record: List<(TestEnumStringified,)>?
