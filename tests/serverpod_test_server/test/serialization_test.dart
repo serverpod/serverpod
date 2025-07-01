@@ -435,4 +435,24 @@ void main() {
     // ensure this can be encoded as well
     expect(jsonEncode(jsonList), isNotEmpty);
   });
+
+  test(
+      'Given a leaf class in a hierarchy, when serializing it, then all its values are restored on decode.',
+      () {
+    final object = server.ParentClass(
+      grandParentField: 'grand parent value',
+      parentField: 'parent value',
+    );
+
+    var encodedString = server.Protocol().encodeWithType(object);
+    var decodedObject = server.Protocol().decodeWithType(encodedString);
+
+    expect(
+      decodedObject,
+      isA<server.ParentClass>()
+          .having((c) => c.grandParentField, 'grandParentField',
+              'grand parent value')
+          .having((c) => c.parentField, 'parentField', 'parent value'),
+    );
+  });
 }

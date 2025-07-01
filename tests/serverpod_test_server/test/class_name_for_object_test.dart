@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart'
     as auth_client;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -72,6 +73,35 @@ void main() {
 
     expect(serverName, 'List<serverpod_auth.UserInfo>');
     expect(clientName, serverName);
+  });
+
+  test(
+      'Given a hierarchy of model classes, when "getClassNameForObject" is called, then both server and client generate the same string for each class.',
+      () {
+    final modelClassesWithname = <String,
+        (SerializableModel clientModel, SerializableModel serverModel)>{
+      'GrandparentClass': (
+        client.GrandparentClass(grandParentField: ''),
+        server.GrandparentClass(grandParentField: ''),
+      ),
+      'ParentClass': (
+        client.ParentClass(grandParentField: '', parentField: ''),
+        server.ParentClass(grandParentField: '', parentField: ''),
+      ),
+      'ChildClass': (
+        client.ChildClass(grandParentField: '', parentField: '', childField: 0),
+        server.ChildClass(grandParentField: '', parentField: '', childField: 0),
+      ),
+    };
+
+    for (final MapEntry(key: className, value: cases)
+        in modelClassesWithname.entries) {
+      var clientName = clientProtocol.getClassNameForObject(cases.$1);
+      var serverName = serverProtocol.getClassNameForObject(cases.$2);
+
+      expect(serverName, className);
+      expect(clientName, serverName);
+    }
   });
 
   test(

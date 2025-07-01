@@ -11,7 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'authentication/revoked_authentication_auth_id.dart' as _i3;
+import 'database/database_migration_action_type.dart' as _i3;
 import 'authentication/revoked_authentication_scope.dart' as _i4;
 import 'authentication/revoked_authentication_user.dart' as _i5;
 import 'cache_info.dart' as _i6;
@@ -31,7 +31,7 @@ import 'database/database_definition.dart' as _i19;
 import 'database/database_definitions.dart' as _i20;
 import 'database/database_migration.dart' as _i21;
 import 'database/database_migration_action.dart' as _i22;
-import 'database/database_migration_action_type.dart' as _i23;
+import 'authentication/revoked_authentication_auth_id.dart' as _i23;
 import 'database/database_migration_version.dart' as _i24;
 import 'database/database_migration_warning.dart' as _i25;
 import 'database/database_migration_warning_type.dart' as _i26;
@@ -49,7 +49,7 @@ import 'database/table_definition.dart' as _i37;
 import 'database/table_migration.dart' as _i38;
 import 'database/vector_distance_function.dart' as _i39;
 import 'distributed_cache_entry.dart' as _i40;
-import 'exceptions/access_denied.dart' as _i41;
+import 'session_log_result.dart' as _i41;
 import 'exceptions/file_not_found.dart' as _i42;
 import 'future_call_entry.dart' as _i43;
 import 'log_entry.dart' as _i44;
@@ -69,7 +69,7 @@ import 'serverpod_sql_exception.dart' as _i57;
 import 'session_log_entry.dart' as _i58;
 import 'session_log_filter.dart' as _i59;
 import 'session_log_info.dart' as _i60;
-import 'session_log_result.dart' as _i61;
+import 'exceptions/access_denied.dart' as _i61;
 import 'package:serverpod/src/generated/database/table_definition.dart' as _i62;
 export 'authentication/revoked_authentication_auth_id.dart';
 export 'authentication/revoked_authentication_scope.dart';
@@ -1309,8 +1309,8 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.RevokedAuthenticationAuthId) {
-      return _i3.RevokedAuthenticationAuthId.fromJson(data) as T;
+    if (t == _i3.DatabaseMigrationActionType) {
+      return _i3.DatabaseMigrationActionType.fromJson(data) as T;
     }
     if (t == _i4.RevokedAuthenticationScope) {
       return _i4.RevokedAuthenticationScope.fromJson(data) as T;
@@ -1369,8 +1369,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i22.DatabaseMigrationAction) {
       return _i22.DatabaseMigrationAction.fromJson(data) as T;
     }
-    if (t == _i23.DatabaseMigrationActionType) {
-      return _i23.DatabaseMigrationActionType.fromJson(data) as T;
+    if (t == _i23.RevokedAuthenticationAuthId) {
+      return _i23.RevokedAuthenticationAuthId.fromJson(data) as T;
     }
     if (t == _i24.DatabaseMigrationVersion) {
       return _i24.DatabaseMigrationVersion.fromJson(data) as T;
@@ -1423,8 +1423,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i40.DistributedCacheEntry) {
       return _i40.DistributedCacheEntry.fromJson(data) as T;
     }
-    if (t == _i41.AccessDeniedException) {
-      return _i41.AccessDeniedException.fromJson(data) as T;
+    if (t == _i41.SessionLogResult) {
+      return _i41.SessionLogResult.fromJson(data) as T;
     }
     if (t == _i42.FileNotFoundException) {
       return _i42.FileNotFoundException.fromJson(data) as T;
@@ -1483,12 +1483,12 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i60.SessionLogInfo) {
       return _i60.SessionLogInfo.fromJson(data) as T;
     }
-    if (t == _i61.SessionLogResult) {
-      return _i61.SessionLogResult.fromJson(data) as T;
+    if (t == _i61.AccessDeniedException) {
+      return _i61.AccessDeniedException.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.RevokedAuthenticationAuthId?>()) {
+    if (t == _i1.getType<_i3.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i3.RevokedAuthenticationAuthId.fromJson(data)
+          ? _i3.DatabaseMigrationActionType.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i4.RevokedAuthenticationScope?>()) {
@@ -1559,9 +1559,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i22.DatabaseMigrationAction.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.DatabaseMigrationActionType?>()) {
+    if (t == _i1.getType<_i23.RevokedAuthenticationAuthId?>()) {
       return (data != null
-          ? _i23.DatabaseMigrationActionType.fromJson(data)
+          ? _i23.RevokedAuthenticationAuthId.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i24.DatabaseMigrationVersion?>()) {
@@ -1629,9 +1629,8 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i40.DistributedCacheEntry.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i41.AccessDeniedException?>()) {
-      return (data != null ? _i41.AccessDeniedException.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i41.SessionLogResult?>()) {
+      return (data != null ? _i41.SessionLogResult.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i42.FileNotFoundException?>()) {
       return (data != null ? _i42.FileNotFoundException.fromJson(data) : null)
@@ -1698,8 +1697,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i60.SessionLogInfo?>()) {
       return (data != null ? _i60.SessionLogInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i61.SessionLogResult?>()) {
-      return (data != null ? _i61.SessionLogResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i61.AccessDeniedException?>()) {
+      return (data != null ? _i61.AccessDeniedException.fromJson(data) : null)
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -1775,6 +1775,11 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i17.ColumnMigration>(e))
           .toList() as T;
     }
+    if (t == List<_i60.SessionLogInfo>) {
+      return (data as List)
+          .map((e) => deserialize<_i60.SessionLogInfo>(e))
+          .toList() as T;
+    }
     if (t == List<_i44.LogEntry>) {
       return (data as List).map((e) => deserialize<_i44.LogEntry>(e)).toList()
           as T;
@@ -1804,11 +1809,6 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i49.MessageLogEntry>(e))
           .toList() as T;
     }
-    if (t == List<_i60.SessionLogInfo>) {
-      return (data as List)
-          .map((e) => deserialize<_i60.SessionLogInfo>(e))
-          .toList() as T;
-    }
     if (t == List<_i62.TableDefinition>) {
       return (data as List)
           .map((e) => deserialize<_i62.TableDefinition>(e))
@@ -1824,8 +1824,8 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.RevokedAuthenticationAuthId) {
-      return 'RevokedAuthenticationAuthId';
+    if (data is _i3.DatabaseMigrationActionType) {
+      return 'DatabaseMigrationActionType';
     }
     if (data is _i4.RevokedAuthenticationScope) {
       return 'RevokedAuthenticationScope';
@@ -1884,8 +1884,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i22.DatabaseMigrationAction) {
       return 'DatabaseMigrationAction';
     }
-    if (data is _i23.DatabaseMigrationActionType) {
-      return 'DatabaseMigrationActionType';
+    if (data is _i23.RevokedAuthenticationAuthId) {
+      return 'RevokedAuthenticationAuthId';
     }
     if (data is _i24.DatabaseMigrationVersion) {
       return 'DatabaseMigrationVersion';
@@ -1938,8 +1938,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i40.DistributedCacheEntry) {
       return 'DistributedCacheEntry';
     }
-    if (data is _i41.AccessDeniedException) {
-      return 'AccessDeniedException';
+    if (data is _i41.SessionLogResult) {
+      return 'SessionLogResult';
     }
     if (data is _i42.FileNotFoundException) {
       return 'FileNotFoundException';
@@ -1998,8 +1998,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i60.SessionLogInfo) {
       return 'SessionLogInfo';
     }
-    if (data is _i61.SessionLogResult) {
-      return 'SessionLogResult';
+    if (data is _i61.AccessDeniedException) {
+      return 'AccessDeniedException';
     }
     return null;
   }
@@ -2010,8 +2010,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'RevokedAuthenticationAuthId') {
-      return deserialize<_i3.RevokedAuthenticationAuthId>(data['data']);
+    if (dataClassName == 'DatabaseMigrationActionType') {
+      return deserialize<_i3.DatabaseMigrationActionType>(data['data']);
     }
     if (dataClassName == 'RevokedAuthenticationScope') {
       return deserialize<_i4.RevokedAuthenticationScope>(data['data']);
@@ -2070,8 +2070,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DatabaseMigrationAction') {
       return deserialize<_i22.DatabaseMigrationAction>(data['data']);
     }
-    if (dataClassName == 'DatabaseMigrationActionType') {
-      return deserialize<_i23.DatabaseMigrationActionType>(data['data']);
+    if (dataClassName == 'RevokedAuthenticationAuthId') {
+      return deserialize<_i23.RevokedAuthenticationAuthId>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationVersion') {
       return deserialize<_i24.DatabaseMigrationVersion>(data['data']);
@@ -2124,8 +2124,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DistributedCacheEntry') {
       return deserialize<_i40.DistributedCacheEntry>(data['data']);
     }
-    if (dataClassName == 'AccessDeniedException') {
-      return deserialize<_i41.AccessDeniedException>(data['data']);
+    if (dataClassName == 'SessionLogResult') {
+      return deserialize<_i41.SessionLogResult>(data['data']);
     }
     if (dataClassName == 'FileNotFoundException') {
       return deserialize<_i42.FileNotFoundException>(data['data']);
@@ -2184,8 +2184,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'SessionLogInfo') {
       return deserialize<_i60.SessionLogInfo>(data['data']);
     }
-    if (dataClassName == 'SessionLogResult') {
-      return deserialize<_i61.SessionLogResult>(data['data']);
+    if (dataClassName == 'AccessDeniedException') {
+      return deserialize<_i61.AccessDeniedException>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
