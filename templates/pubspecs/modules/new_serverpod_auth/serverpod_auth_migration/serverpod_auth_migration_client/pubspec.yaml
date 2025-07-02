@@ -12,10 +12,10 @@ dependencies:
 dependency_overrides:
   serverpod_auth_client:
     path: ../../../serverpod_auth/serverpod_auth_client
-  serverpod_auth_user_client:
-    path: ../../serverpod_auth_user/serverpod_auth_user_client
   serverpod_auth_email_account_client:
     path: ../../serverpod_auth_email_account/serverpod_auth_email_account_client
+  serverpod_auth_user_client:
+    path: ../../serverpod_auth_user/serverpod_auth_user_client
   serverpod_client:
     path: ../../../../packages/serverpod_client
   serverpod_serialization:

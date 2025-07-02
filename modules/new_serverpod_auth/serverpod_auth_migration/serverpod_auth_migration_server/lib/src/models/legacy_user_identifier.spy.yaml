@@ -1,0 +1,18 @@
+class: LegacyUserIdentifier
+serverOnly: true
+table: serverpod_auth_migration_legacy_user_identifier
+fields:
+  ### The [AuthUser] this identifier belongs to
+  newAuthUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### Unique identifier of the user, may contain different information depending
+  ### on how the user was created.
+  ###
+  ### From the import we don't know whether this came from Apple/Google/Firebase
+  ### and thus we have to match them on each incoming request.
+  userIdentifier: String
+
+indexes:
+  serverpod_auth_migration_legacy_user_identifier_user_identifier:
+    fields: userIdentifier
+    unique: true

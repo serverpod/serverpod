@@ -10,9 +10,14 @@ environment:
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION
+  serverpod_auth_migration_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+  serverpod_auth_migration_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
+  serverpod_auth_user_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client

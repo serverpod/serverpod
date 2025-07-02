@@ -10,15 +10,18 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
+  meta: ^1.11.0
   serverpod: 2.9.1
   serverpod_auth_email_account_server: 2.9.1
+  serverpod_auth_email_server: 2.9.1
   serverpod_auth_profile_server: 2.9.1
   serverpod_auth_server: 2.9.1
+  serverpod_auth_session_server: 2.9.1
   serverpod_auth_user_server: 2.9.1
   serverpod_shared: 2.9.1
 
 dev_dependencies:
-  lints: '>=3.0.0 <7.0.0'
+  lints: ">=3.0.0 <7.0.0"
   serverpod_test: 2.9.1
   test: ^1.24.2
 
@@ -27,10 +30,14 @@ dependency_overrides:
     path: ../../../../packages/serverpod
   serverpod_auth_email_account_server:
     path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
+  serverpod_auth_email_server:
+    path: ../../serverpod_auth_email/serverpod_auth_email_server
   serverpod_auth_profile_server:
     path: ../../serverpod_auth_profile/serverpod_auth_profile_server
   serverpod_auth_server:
     path: ../../../serverpod_auth/serverpod_auth_server
+  serverpod_auth_session_server:
+    path: ../../serverpod_auth_session/serverpod_auth_session_server
   serverpod_auth_user_server:
     path: ../../serverpod_auth_user/serverpod_auth_user_server
   serverpod_lints:

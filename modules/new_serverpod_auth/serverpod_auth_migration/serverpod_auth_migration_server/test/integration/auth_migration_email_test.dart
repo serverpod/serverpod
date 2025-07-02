@@ -1,6 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
+import 'package:serverpod_auth_email_account_server/src/generated/email_account.dart'
+    as new_email_account_db;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as new_profile;
@@ -23,10 +25,10 @@ void main() {
       });
 
       test(
-        'when attempting to run `migrateOnLogin` for a non-existent account, then it completes without error.',
+        'when attempting to run `migrateWithPassword` for a non-existent account, then it completes without error.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: '404@serverpod.dev',
               password: 'thepassword!',
@@ -72,10 +74,10 @@ void main() {
       });
 
       test(
-        'when running `migrateOnLogin` with the correct password, then it completes without error.',
+        'when running `migrateWithPassword` with the correct password, then it completes without error.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: password,
@@ -86,9 +88,9 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with the correct password, then it imports the user.',
+        'when running `migrateWithPassword` with the correct password, then it imports the user.',
         () async {
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: password,
@@ -99,10 +101,10 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with an incorrect password, then it completes without error.',
+        'when running `migrateWithPassword` with an incorrect password, then it completes without error.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: 'some other password',
@@ -113,15 +115,18 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with an incorrect password, then it does not import the user.',
+        'when running `migrateWithPassword` with an incorrect password, then it does import the user with an empty password.',
         () async {
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: 'some other password',
           );
 
-          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+          expect(await new_auth_user.AuthUser.db.find(session), hasLength(1));
+          final emailAccount =
+              (await new_email_account_db.EmailAccount.db.find(session)).single;
+          expect(emailAccount.passwordHash.lengthInBytes, 0);
         },
       );
 
@@ -159,7 +164,7 @@ void main() {
           password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationConfig(
+        AuthMigrations.config = AuthMigrationConfig(
           userMigrationHook: (
             final session, {
             required final newAuthUserId,
@@ -172,7 +177,7 @@ void main() {
       });
 
       tearDown(() {
-        AuthMigrationEmail.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig();
       });
 
       test(
@@ -191,10 +196,10 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin`, then it forwards the error and does not create an `AuthUser`.',
+        'when running `migrateWithPassword`, then it forwards the error and does not create an `AuthUser`.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: password,
@@ -229,15 +234,20 @@ void main() {
       });
 
       test(
-        'when running `migrateOnLogin` with the correct password, then it does not import the user.',
+        'when running `migrateWithPassword` with the correct password, then it is imported without a password and its blocked status retained.',
         () async {
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: password,
           );
 
-          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+          final authUser =
+              (await new_auth_user.AuthUser.db.find(session)).single;
+          expect(authUser.blocked, isTrue);
+          final emailAccount =
+              (await new_email_account_db.EmailAccount.db.find(session)).single;
+          expect(emailAccount.passwordHash.lengthInBytes, 0);
         },
       );
 
@@ -258,7 +268,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a legacy `serverpod_auth` email-based user account that has been migrated using `migrateOnLogin`,',
+    'Given a legacy `serverpod_auth` email-based user account that has been migrated using `migrateWithPassword`,',
     (final sessionBuilder, final endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
@@ -271,7 +281,7 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        AuthMigrationEmail.config = AuthMigrationConfig(
+        AuthMigrations.config = AuthMigrationConfig(
           userMigrationHook: (
             final session, {
             required final newAuthUserId,
@@ -290,7 +300,7 @@ void main() {
           password,
         ))!;
 
-        await AuthMigrationEmail.migrateOnLogin(
+        await AuthMigrationEmail.migrateWithPassword(
           session,
           email: email,
           password: password,
@@ -304,7 +314,7 @@ void main() {
       });
 
       tearDown(() {
-        AuthMigrationEmail.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig();
       });
 
       test(
@@ -343,10 +353,10 @@ void main() {
       );
 
       test(
-        'when attempting to run `migrateOnLogin` again for that account, then it completes without error.',
+        'when attempting to run `migrateWithPassword` again for that account, then it completes without error.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: password,
@@ -357,13 +367,13 @@ void main() {
       );
 
       test(
-        'when attempting to run `migrateOnLogin` again for that account, then does not invoke the migration hook again.',
+        'when attempting to run `migrateWithPassword` again for that account, then does not invoke the migration hook again.',
         () async {
           expect(migratedUser, isNotNull);
           migratedUser = null;
 
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: password,
@@ -419,7 +429,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a legacy `serverpod_auth` email-based user account that has been migrated using `migrateOnLogin` and `importProfile: false`,',
+    'Given a legacy `serverpod_auth` email-based user account that has been migrated using `migrateWithPassword` and `importProfile: false`,',
     (final sessionBuilder, final endpoints) {
       const email = 'foo@serverpod.dev';
       const password = 'Somepassword123!';
@@ -437,17 +447,17 @@ void main() {
           password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationConfig(
+        AuthMigrations.config = AuthMigrationConfig(
           importProfile: false,
         );
 
-        await AuthMigrationEmail.migrateOnLogin(
+        await AuthMigrationEmail.migrateWithPassword(
           session,
           email: email,
           password: password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig();
 
         authUserId = (await new_email_account.EmailAccounts.admin.findAccount(
           session,
@@ -490,7 +500,7 @@ void main() {
           password,
         );
 
-        AuthMigrationEmail.config = AuthMigrationConfig(
+        AuthMigrations.config = AuthMigrationConfig(
           importProfile: false,
         );
 
@@ -499,7 +509,7 @@ void main() {
           email: email,
         );
 
-        AuthMigrationEmail.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig();
 
         authUserId = (await new_email_account.EmailAccounts.admin.findAccount(
           session,
@@ -538,7 +548,7 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        AuthMigrationEmail.config = AuthMigrationConfig(
+        AuthMigrations.config = AuthMigrationConfig(
           userMigrationHook: (
             final session, {
             required final newAuthUserId,
@@ -570,7 +580,7 @@ void main() {
       });
 
       tearDown(() {
-        AuthMigrationEmail.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig();
       });
 
       test(
@@ -609,10 +619,10 @@ void main() {
       );
 
       test(
-        'when attempting to run `migrateOnLogin` for that account, then it completes without error.',
+        'when attempting to run `migrateWithPassword` for that account, then it completes without error.',
         () async {
           await expectLater(
-            AuthMigrationEmail.migrateOnLogin(
+            AuthMigrationEmail.migrateWithPassword(
               session,
               email: email,
               password: password,
@@ -623,9 +633,9 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with the correct password, then no session is created in the legacy system.',
+        'when running `migrateWithPassword` with the correct password, then no session is created in the legacy system.',
         () async {
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: password,
@@ -639,9 +649,9 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with the correct password, then this password can be used for the login.',
+        'when running `migrateWithPassword` with the correct password, then this password can be used for the login.',
         () async {
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: password,
@@ -660,11 +670,11 @@ void main() {
       );
 
       test(
-        'when running `migrateOnLogin` with a wrong password, then this password can not be used for the login.',
+        'when running `migrateWithPassword` with a wrong password, then this password can not be used for the login.',
         () async {
           const wrongPassword = 'asdf456789!';
 
-          await AuthMigrationEmail.migrateOnLogin(
+          await AuthMigrationEmail.migrateWithPassword(
             session,
             email: email,
             password: wrongPassword,
