@@ -9,7 +9,7 @@ const _endpointName = 'serverpod_cloud_storage';
 @doNotGenerate
 class CloudStoragePublicEndpoint extends Endpoint {
   @override
-  bool get sendByteDataAsRaw => true;
+  bool get sendAsRaw => true;
 
   /// Retrieves a file from the public database cloud storage.
   Future<ByteData?> file(MethodCallSession session, String path) async {

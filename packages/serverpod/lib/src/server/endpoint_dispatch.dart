@@ -432,11 +432,11 @@ final class ResultSuccess extends Result {
   /// The returned value of a successful [Endpoint] method call.
   final dynamic returnValue;
 
-  /// True if [ByteData] should not be embedded in API serialization.
-  final bool sendByteDataAsRaw;
+  /// True if [returnValue] should not be embedded in API serialization.
+  final bool sendAsRaw;
 
   /// Creates a new successful result with a value.
-  ResultSuccess(this.returnValue, {this.sendByteDataAsRaw = false});
+  ResultSuccess(this.returnValue, {this.sendAsRaw = false});
 }
 
 /// The result of a failed [Endpoint] method call where the parameters where not

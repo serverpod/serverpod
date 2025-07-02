@@ -324,23 +324,36 @@ class Server {
           headers: headers,
         );
       case ResultSuccess():
-        final Body responseBody;
-        if (result.sendByteDataAsRaw && result.returnValue is ByteData?) {
-          var byteData = result.returnValue as ByteData?;
-          responseBody = byteData != null
-              ? Body.fromData(byteData.buffer.asUint8List())
-              : Body.empty();
-        } else {
-          var serializedModel = SerializationManager.encodeForProtocol(
-            result.returnValue,
-          );
-          responseBody =
-              Body.fromString(serializedModel, mimeType: MimeType.json);
-          // MimeType.json should set Content-Type. If charset needed and not set by MimeType:
-          // currentHeadersMap['Content-Type'] = ['application/json; char–set=utf-8'];
+        var value = result.returnValue;
+        if (result.sendAsRaw) {
+          switch (value) {
+            case String():
+              value = Body.fromString(value);
+              continue body;
+            case Stream<Uint8List>():
+              value = Body.fromDataStream(value);
+              continue body;
+            case ByteData():
+              value = Uint8List.sublistView(value);
+              continue bytes;
+            bytes:
+            case Uint8List():
+              value = Body.fromData(value);
+              continue body;
+            body:
+            case Body():
+              value = Response.ok(body: value, headers: headers);
+              continue response;
+            response:
+            case Response():
+              return value;
+          }
         }
         return Response.ok(
-          body: responseBody,
+          body: Body.fromString(
+            SerializationManager.encodeForProtocol(value),
+            mimeType: MimeType.json,
+          ),
           headers: headers,
         );
     }
@@ -515,7 +528,7 @@ class Server {
 
         return ResultSuccess(
           result,
-          sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+          sendAsRaw: methodCallContext.endpoint.sendAsRaw,
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
