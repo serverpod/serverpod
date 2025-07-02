@@ -179,7 +179,7 @@ void main() {
             webServer: securityContext,
           ),
         );
-        serverpod.webServer.addRoute(RouteRoot(), '/');
+        serverpod.webServer.addRoute(RootRoute(), '/');
         await serverpod.start();
       });
 
@@ -219,7 +219,7 @@ void main() {
         securityContext = _createSecurityContext();
         serverpod = IntegrationTestServer.create();
 
-        serverpod.webServer.addRoute(RouteRoot(), '/');
+        serverpod.webServer.addRoute(RootRoute(), '/');
         await serverpod.start();
       });
 

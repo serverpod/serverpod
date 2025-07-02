@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_new_auth_test_server/src/web/widgets/built_with_serverpod_page.dart';
+import 'package:serverpod_new_auth_test_server/src/web/components/built_with_serverpod_page.dart';
 
-class RouteRoot extends WidgetRoute {
+class RootRoute extends ComponentRoute {
   @override
-  Future<Widget> build(final Session session, final HttpRequest request) async {
-    return BuiltWithServerpodPage();
+  Future<Component> build(
+      final Session session, final HttpRequest request) async {
+    return BuiltWithServerpodPageComponent();
   }
 }

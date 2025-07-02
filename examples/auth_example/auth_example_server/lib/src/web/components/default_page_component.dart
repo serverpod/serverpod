@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
-class DefaultPageWidget extends Widget {
-  DefaultPageWidget() : super(name: 'default') {
+class DefaultPageComponent extends Component {
+  DefaultPageComponent() : super(name: 'default') {
     values = {
       'served': DateTime.now(),
       'runmode': Serverpod.instance.runMode,

@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../widgets/simple_page.dart';
-import '../widgets/text.dart';
+import '../components/simple_page.dart';
+import '../components/text.dart';
 
-class RouteRoot extends WidgetRoute {
+class RootRoute extends ComponentRoute {
   @override
-  Future<Widget> build(Session session, HttpRequest request) async {
-    return SimplePageWidget(
+  Future<Component> build(Session session, HttpRequest request) async {
+    return SimplePageComponent(
       title: 'My Root Page',
-      body: TextWidget(text: 'Hello world'),
+      body: TextComponent(text: 'Hello world'),
     );
   }
 }

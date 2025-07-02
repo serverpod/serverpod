@@ -264,7 +264,7 @@ enum RouteMethod {
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [HttpRequest] object. You override [Route], or more likely it's subclass
-/// [WidgetRoute] to create your own custom routes in your server.
+/// [ComponentRoute] to create your own custom routes in your server.
 abstract class Route {
   /// The method this route will respond to, i.e. HTTP get or post.
   final RouteMethod method;
@@ -338,20 +338,20 @@ abstract class Route {
   }
 }
 
-/// A [WidgetRoute] is the most convenient way to create routes in your server.
-/// Override the [build] method and return an appropriate [Widget].
-abstract class WidgetRoute extends Route {
-  /// Override this method to build your web [Widget] from the current [session]
+/// A [ComponentRoute] is the most convenient way to create routes in your server.
+/// Override the [build] method and return an appropriate [Component].
+abstract class ComponentRoute extends Route {
+  /// Override this method to build your web [Component] from the current [session]
   /// and [request].
-  Future<AbstractWidget> build(Session session, HttpRequest request);
+  Future<AbstractComponent> build(Session session, HttpRequest request);
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
     var widget = await build(session, request);
 
-    if (widget is WidgetJson) {
+    if (widget is JsonComponent) {
       request.response.headers.contentType = ContentType('application', 'json');
-    } else if (widget is WidgetRedirect) {
+    } else if (widget is RedirectComponent) {
       var uri = Uri.parse(widget.url);
       await request.response.redirect(uri);
       return true;

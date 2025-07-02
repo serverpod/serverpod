@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:auth_example_server/src/web/widgets/default_page_widget.dart';
+import 'package:auth_example_server/src/web/components/default_page_component.dart';
 import 'package:serverpod/serverpod.dart';
 
-class RouteRoot extends WidgetRoute {
+class RootRoute extends ComponentRoute {
   @override
-  Future<Widget> build(Session session, HttpRequest request) async {
-    return DefaultPageWidget();
+  Future<Component> build(Session session, HttpRequest request) async {
+    return DefaultPageComponent();
   }
 }
