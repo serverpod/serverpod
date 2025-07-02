@@ -19,11 +19,14 @@ import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart
 import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_email_client/serverpod_auth_email_client.dart'
     as _i7;
-import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
+import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i8;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
     as _i9;
-import 'protocol.dart' as _i10;
+import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+    as _i10;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i11;
+import 'protocol.dart' as _i12;
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
@@ -191,21 +194,27 @@ class EndpointUserProfile extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_email = _i7.Caller(client);
+    serverpod_auth_migration = _i8.Caller(client);
     serverpod_auth_profile = _i5.Caller(client);
-    serverpod_auth_email_account = _i8.Caller(client);
+    serverpod_auth_email_account = _i9.Caller(client);
     serverpod_auth_session = _i3.Caller(client);
-    serverpod_auth_user = _i9.Caller(client);
+    serverpod_auth_user = _i10.Caller(client);
+    auth = _i11.Caller(client);
   }
 
   late final _i7.Caller serverpod_auth_email;
 
+  late final _i8.Caller serverpod_auth_migration;
+
   late final _i5.Caller serverpod_auth_profile;
 
-  late final _i8.Caller serverpod_auth_email_account;
+  late final _i9.Caller serverpod_auth_email_account;
 
   late final _i3.Caller serverpod_auth_session;
 
-  late final _i9.Caller serverpod_auth_user;
+  late final _i10.Caller serverpod_auth_user;
+
+  late final _i11.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -224,7 +233,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i10.Protocol(),
+          _i12.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -258,9 +267,11 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
         'serverpod_auth_email': modules.serverpod_auth_email,
+        'serverpod_auth_migration': modules.serverpod_auth_migration,
         'serverpod_auth_profile': modules.serverpod_auth_profile,
         'serverpod_auth_email_account': modules.serverpod_auth_email_account,
         'serverpod_auth_session': modules.serverpod_auth_session,
         'serverpod_auth_user': modules.serverpod_auth_user,
+        'auth': modules.auth,
       };
 }

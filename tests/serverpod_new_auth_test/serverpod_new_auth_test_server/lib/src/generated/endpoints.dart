@@ -17,14 +17,17 @@ import 'package:uuid/uuid_value.dart' as _i5;
 import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
     as _i7;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i8;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i9;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i10;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i11;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i12;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -318,13 +321,16 @@ class Endpoints extends _i1.EndpointDispatch {
     );
     modules['serverpod_auth_email'] = _i7.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i8.Endpoints()
+    modules['serverpod_auth_migration'] = _i8.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_email_account'] = _i9.Endpoints()
+    modules['serverpod_auth_profile'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i10.Endpoints()
+    modules['serverpod_auth_email_account'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i11.Endpoints()
+    modules['serverpod_auth_session'] = _i11.Endpoints()
       ..initializeEndpoints(server);
+    modules['serverpod_auth_user'] = _i12.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
   }
 }

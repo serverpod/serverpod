@@ -13,12 +13,18 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i3;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
     as _i4;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+    as _i5;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i7;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i6;
-import 'migrated_user.dart' as _i7;
+    as _i8;
+import 'legacy_user_identifier.dart' as _i9;
+import 'migrated_user.dart' as _i10;
+export 'legacy_user_identifier.dart';
 export 'migrated_user.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -29,6 +35,77 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'serverpod_auth_migration_legacy_user_identifier',
+      dartName: 'LegacyUserIdentifier',
+      schema: 'public',
+      module: 'serverpod_auth_migration',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_auth_migration_legacy_user_identifier_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'newAuthUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName:
+              'serverpod_auth_migration_legacy_user_identifier_fk_0',
+          columns: ['newAuthUserId'],
+          referenceTable: 'serverpod_auth_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_migration_legacy_user_identifier_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName:
+              'serverpod_auth_migration_legacy_user_identifier_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     _i2.TableDefinition(
       name: 'serverpod_auth_migration_migrated_user',
       dartName: 'MigratedUser',
@@ -125,6 +202,8 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i4.Protocol.targetTableDefinitions,
     ..._i5.Protocol.targetTableDefinitions,
     ..._i6.Protocol.targetTableDefinitions,
+    ..._i7.Protocol.targetTableDefinitions,
+    ..._i8.Protocol.targetTableDefinitions,
   ];
 
   @override
@@ -133,11 +212,18 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i7.MigratedUser) {
-      return _i7.MigratedUser.fromJson(data) as T;
+    if (t == _i9.LegacyUserIdentifier) {
+      return _i9.LegacyUserIdentifier.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i7.MigratedUser?>()) {
-      return (data != null ? _i7.MigratedUser.fromJson(data) : null) as T;
+    if (t == _i10.MigratedUser) {
+      return _i10.MigratedUser.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i9.LegacyUserIdentifier?>()) {
+      return (data != null ? _i9.LegacyUserIdentifier.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i10.MigratedUser?>()) {
+      return (data != null ? _i10.MigratedUser.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -152,6 +238,12 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i6.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
+      return _i7.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i8.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
@@ -162,7 +254,9 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i7.MigratedUser():
+      case _i9.LegacyUserIdentifier():
+        return 'LegacyUserIdentifier';
+      case _i10.MigratedUser():
         return 'MigratedUser';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -175,13 +269,21 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_profile.$className';
+      return 'serverpod_auth_email.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return 'serverpod_auth_profile.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i7.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_session.$className';
+    }
+    className = _i8.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_user.$className';
     }
@@ -194,8 +296,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'LegacyUserIdentifier') {
+      return deserialize<_i9.LegacyUserIdentifier>(data['data']);
+    }
     if (dataClassName == 'MigratedUser') {
-      return deserialize<_i7.MigratedUser>(data['data']);
+      return deserialize<_i10.MigratedUser>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -205,17 +310,25 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(29);
       return _i3.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_email.')) {
+      data['className'] = dataClassName.substring(21);
+      return _i4.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth_profile.')) {
       data['className'] = dataClassName.substring(23);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _i6.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_session.')) {
+      data['className'] = dataClassName.substring(23);
+      return _i7.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
-      return _i6.Protocol().deserializeByClassName(data);
+      return _i8.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -247,14 +360,28 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     {
+      var table = _i7.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i8.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i7.MigratedUser:
-        return _i7.MigratedUser.t;
+      case _i9.LegacyUserIdentifier:
+        return _i9.LegacyUserIdentifier.t;
+      case _i10.MigratedUser:
+        return _i10.MigratedUser.t;
     }
     return null;
   }
