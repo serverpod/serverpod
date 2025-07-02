@@ -2,8 +2,25 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+import 'package:path/path.dart' as p;
 
 const _endpointName = 'serverpod_cloud_storage';
+
+// TODO: Add more content type mappings.
+const _mimeTypeMapping = <String, MimeType>{
+  '.js': MimeType.javascript,
+  '.json': MimeType.json,
+  '.wsam': MimeType('application', 'wasm'),
+  '.css': MimeType.css,
+  '.png': MimeType('image', 'png'),
+  '.jpg': MimeType('image', 'jpeg'),
+  '.jpeg': MimeType('image', 'jpeg'),
+  '.svg': MimeType('image', 'svg+xml'),
+  '.ttf': MimeType('application', 'x-font-ttf'),
+  '.woff': MimeType('application', 'x-font-woff'),
+  '.mp3': MimeType('audio', 'mpeg'),
+  '.pdf': MimeType.pdf,
+};
 
 /// Endpoint for the default public [DatabaseCloudStorage].
 @doNotGenerate
@@ -12,34 +29,20 @@ class CloudStoragePublicEndpoint extends Endpoint {
   bool get sendAsRaw => true;
 
   /// Retrieves a file from the public database cloud storage.
-  Future<ByteData?> file(MethodCallSession session, String path) async {
+  Future<Body?> file(MethodCallSession session, String path) async {
     // Fetch the file from storage.
     var file =
         await session.storage.retrieveFile(storageId: 'public', path: path);
 
-    // Set the response code
     if (file == null) {
       throw EndpointNotFoundException('File not found: $path');
     }
 
-    // TODO: Support more extension types.
-    // Content-Type headers are usually set by Server.dart or by returning a specific
-    // Response object. Endpoint methods returning ByteData with sendByteDataAsRaw=true
-    // will typically have Content-Type set by the server, often to application/octet-stream.
-    // The custom logic below is removed for now.
-    // var extension = p.extension(path);
-    // extension = extension.toLowerCase();
-    // if (extension == '.js') {
-    // } else if (extension == '.css') {
-    // } else if (extension == '.png') {
-    // } else if (extension == '.jpg') {
-    // } else if (extension == '.svg') {
-    // } else if (extension == '.ttf') {
-    // } else if (extension == '.woff') {
-    // }
-
-    // Retrieve the file from storage and return it.
-    return file;
+    final extension = p.extension(path).toLowerCase();
+    return Body.fromData(
+      Uint8List.sublistView(file),
+      mimeType: _mimeTypeMapping[extension] ?? MimeType.octetStream,
+    );
   }
 
   /// Uploads a file to the public database cloud storage.
