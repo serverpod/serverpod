@@ -9,7 +9,7 @@ import 'package:serverpod/serverpod.dart';
 const _mimeTypeMapping = <String, MimeType>{
   '.js': MimeType.javascript,
   '.json': MimeType.json,
-  '.wsam': MimeType('application', 'wasm'),
+  '.wasm': MimeType('application', 'wasm'),
   '.css': MimeType.css,
   '.png': MimeType('image', 'png'),
   '.jpg': MimeType('image', 'jpeg'),

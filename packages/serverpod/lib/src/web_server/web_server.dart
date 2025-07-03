@@ -73,14 +73,13 @@ class WebServer {
         port,
         context: context,
       );
+      _running = true;
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
           message: 'Failed to bind socket, '
               'port $port may already be in use.');
-
-      return false;
     }
-    return true;
+    return _running;
   }
 
   FutureOr<HandledContext> _handleRequest(NewContext context) async {

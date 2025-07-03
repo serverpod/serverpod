@@ -10,7 +10,7 @@ const _endpointName = 'serverpod_cloud_storage';
 const _mimeTypeMapping = <String, MimeType>{
   '.js': MimeType.javascript,
   '.json': MimeType.json,
-  '.wsam': MimeType('application', 'wasm'),
+  '.wasm': MimeType('application', 'wasm'),
   '.css': MimeType.css,
   '.png': MimeType('image', 'png'),
   '.jpg': MimeType('image', 'jpeg'),
@@ -64,7 +64,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
     var body = await _readBinaryBody(session.request);
     if (body == null) return false;
 
-    var byteData = ByteData.view(Uint8List.fromList(body).buffer);
+    var byteData = ByteData.view(body.buffer);
 
     var storage = server.serverpod.storage[storageId];
     if (storage == null) return false;
@@ -79,7 +79,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
     return true;
   }
 
-  Future<List<int>?> _readBinaryBody(Request request) async {
+  Future<Uint8List?> _readBinaryBody(Request request) async {
     // TODO: Find more efficient solution?
     int len = 0;
     var builder = BytesBuilder();

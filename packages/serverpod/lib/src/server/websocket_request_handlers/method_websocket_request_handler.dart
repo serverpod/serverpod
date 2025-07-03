@@ -505,7 +505,7 @@ class _WebSocketIntermediary {
       return switch (data) {
         String s => _webSocket.sendText(s),
         Uint8List b => _webSocket.sendBytes(b),
-        _ => throw ArgumentError.notNull,
+        _ => throw ArgumentError.notNull('data'),
       };
     } catch (e, stackTrace) {
       stderr.writeln(
