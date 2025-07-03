@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' hide X509Certificate;
+import 'dart:io' as io;
 import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
@@ -66,7 +66,7 @@ class Server {
   final String name;
 
   /// Security context if the server is running over https.
-  final SecurityContext? _securityContext;
+  final io.SecurityContext? _securityContext;
 
   /// Responsible for dispatching calls to the correct [Endpoint] methods.
   final EndpointDispatch endpoints;
@@ -76,6 +76,7 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
+  io.HttpServer? _ioServer;
   RelicServer? _relicServer;
 
   /// Currently not in use.
@@ -107,7 +108,7 @@ class Server {
     required this.authenticationHandler,
     String? name,
     required this.caches,
-    SecurityContext? securityContext,
+    io.SecurityContext? securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
@@ -120,12 +121,15 @@ class Server {
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     try {
-      _relicServer = await serve(
-        _relicRequestHandler,
-        InternetAddress.anyIPv6,
-        port,
-        context: _securityContext, // serve uses 'context' for SecurityContext
+      final ioServer = await bindHttpServer(
+        io.InternetAddress.anyIPv6,
+        port: port,
+        context: _securityContext,
       );
+      final server = RelicServer(IOAdapter(ioServer));
+      await server.mountAndStart(_relicRequestHandler);
+      _ioServer = ioServer;
+      _relicServer = server;
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
           message: 'Failed to bind socket, port $port may already be in use.');
@@ -133,10 +137,8 @@ class Server {
     }
 
     _running = true;
-    stdout.writeln(
-        '$name listening on port $port at ${InternetAddress.anyIPv6.address}');
     serverpod.logVerbose(
-      'Server started on ${InternetAddress.anyIPv6.address}:$port',
+      'Server started on port: $port',
     );
     return _running;
   }
@@ -197,7 +199,7 @@ class Server {
       }
 
       var response = Response(
-        allOk ? HttpStatus.ok : HttpStatus.serviceUnavailable,
+        allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
         body: Body.fromString(responseBuffer.toString()),
         headers: headers,
       );
@@ -237,10 +239,10 @@ class Server {
       } on _RequestTooLargeException catch (e) {
         if (serverpod.runtimeSettings.logMalformedCalls) {
           // TODO: Log to database?
-          stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
+          io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
         return context.withResponse(Response(
-          HttpStatus.requestEntityTooLarge,
+          io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
           headers: headers,
         ));
@@ -274,7 +276,7 @@ class Server {
     };
     if (error != null) {
       // TODO: Log to database?
-      stderr.writeln('$error: $result');
+      io.stderr.writeln('$error: $result');
     }
   }
 
@@ -293,9 +295,9 @@ class Server {
       case ResultAuthenticationFailed():
         var authFailedStatusCode = switch (result.reason) {
           AuthenticationFailureReason.unauthenticated =>
-            HttpStatus.unauthorized,
+            io.HttpStatus.unauthorized,
           AuthenticationFailureReason.insufficientAccess =>
-            HttpStatus.forbidden,
+            io.HttpStatus.forbidden,
         };
         return Response(
           authFailedStatusCode,
@@ -318,8 +320,7 @@ class Server {
       case ExceptionResult():
         var serializedModel =
             serializationManager.encodeWithTypeForProtocol(result.model);
-        return Response(
-          HttpStatus.badRequest,
+        return Response.badRequest(
           body: Body.fromString(serializedModel, mimeType: MimeType.json),
           headers: headers,
         );
@@ -582,7 +583,7 @@ class Server {
 
     // Wait for all WebSockets to close.
     await Future.wait(webSocketCompletions);
-
+    await _ioServer?.close(force: true);
     _running = false;
   }
 
@@ -595,10 +596,10 @@ class Server {
   }) async {
     var now = DateTime.now().toUtc();
     if (message != null) {
-      stderr.writeln('$now ERROR: $message');
+      io.stderr.writeln('$now ERROR: $message');
     }
-    stderr.writeln('$now ERROR: $e');
-    stderr.writeln('$stackTrace');
+    io.stderr.writeln('$now ERROR: $e');
+    io.stderr.writeln('$stackTrace');
 
     var context = request != null
         ? contextFromRequest(this, request, operationType)
@@ -638,4 +639,12 @@ class _RequestTooLargeException implements Exception {
   String toString() {
     return errorDescription;
   }
+}
+
+// ignore: public_member_api_docs
+extension ServerInternalMethods on Server {
+  /// Returns the underlying [io.HttpServer] instance.
+  ///
+  /// This method is not intended for public use.
+  io.HttpServer? get ioServer => _ioServer;
 }

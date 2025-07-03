@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/server.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
@@ -58,6 +61,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     }
   }
 
+  final connectionsInfo =
+      pod.server.ioServer?.connectionsInfo() ?? HttpConnectionsInfo();
+
   return ServerHealthResult(
     metrics: [
       if (dbHealthy != null)
@@ -92,9 +98,9 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
       ServerHealthConnectionInfo(
         serverId: pod.serverId,
         timestamp: timestamp,
-        active: 0, // Placeholder, was: connectionsInfo.active
-        closing: 0, // Placeholder, was: connectionsInfo.closing
-        idle: 0, // Placeholder, was: connectionsInfo.idle
+        active: connectionsInfo.active,
+        closing: connectionsInfo.closing,
+        idle: connectionsInfo.idle,
         granularity: 1,
       )
     ],

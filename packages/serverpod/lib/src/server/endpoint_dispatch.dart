@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
