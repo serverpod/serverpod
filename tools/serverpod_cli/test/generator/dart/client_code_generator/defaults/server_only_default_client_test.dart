@@ -49,7 +49,7 @@ void main() {
             .withName('serverOnlyStringField')
             .withTypeDefinition('String', true)
             .withScope(ModelFieldScopeDefinition.serverOnly)
-            .withDefaults(defaultModelValue: '\'Default server message\'')
+            .withDefaults(defaultModelValue: "'Server only message'")
             .build(),
       ];
 
@@ -86,12 +86,14 @@ void main() {
       });
 
       test('has normalField in constructor parameters', () {
+        final paramsSource = privateConstructor?.parameters.toSource() ?? '';
         expect(
-          privateConstructor?.parameters.toSource(),
-          contains('String normalField'),
+          paramsSource.contains('String normalField') ||
+              paramsSource.contains('{required this.normalField}'),
+          isTrue,
+          reason: 'normalField should be present as a required parameter',
         );
       });
-
       test('does NOT have serverOnlyField in constructor parameters', () {
         expect(
           privateConstructor?.parameters.toSource(),

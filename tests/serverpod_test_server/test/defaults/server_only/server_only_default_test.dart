@@ -1,3 +1,4 @@
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() async {
@@ -5,20 +6,47 @@ void main() async {
     "Given a class with serverOnly scoped fields with default values",
     () {
       test(
-        'when an object is created without specifying serverOnly field, then the default value is used',
+        'when a ServerOnlyDefault object is created on server, then serverOnly fields have default values',
         () {
-          // This test would need a corresponding model in the test protocol
-          // For now, this is a placeholder showing the structure
-          expect(true, isTrue); // Placeholder
+          var serverObject = ServerOnlyDefault(
+            normalField: 'test value',
+          );
+
+          expect(serverObject.normalField, 'test value');
+          expect(serverObject.serverOnlyField, -1);
+          expect(serverObject.serverOnlyStringField, 'Server only message');
         },
       );
 
       test(
-        'when an object is created with a specific serverOnly field value, then that value is used',
+        'when serverOnly field values are explicitly provided, then those values are used',
         () {
-          // This test would need a corresponding model in the test protocol
-          // For now, this is a placeholder showing the structure
-          expect(true, isTrue); // Placeholder
+          var serverObject = ServerOnlyDefault(
+            normalField: 'test value',
+            serverOnlyField: 42,
+            serverOnlyStringField: 'Custom message',
+          );
+
+          expect(serverObject.normalField, 'test value');
+          expect(serverObject.serverOnlyField, 42);
+          expect(serverObject.serverOnlyStringField, 'Custom message');
+        },
+      );
+
+      test(
+        'when creating object with copyWith, then serverOnly defaults are preserved',
+        () {
+          var original = ServerOnlyDefault(
+            normalField: 'original',
+          );
+
+          var copied = original.copyWith(
+            normalField: 'updated',
+          );
+
+          expect(copied.normalField, 'updated');
+          expect(copied.serverOnlyField, -1);
+          expect(copied.serverOnlyStringField, 'Server only message');
         },
       );
     },

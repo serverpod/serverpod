@@ -87,13 +87,15 @@ void main() {
 
       test('does NOT have serverErrorCode field initializer', () {
         var initializerSources = privateConstructor?.initializers
-            .map((init) => init.toSource())
-            .toList() ?? [];
-        
+                .map((init) => init.toSource())
+                .toList() ??
+            [];
+
         expect(
           initializerSources,
           isNot(contains(contains('serverErrorCode'))),
-          reason: 'serverOnly field should not have initializer in client exception',
+          reason:
+              'serverOnly field should not have initializer in client exception',
         );
       });
     });
