@@ -1,7 +1,7 @@
 class: ChangedIdTypeSelf
 table: changed_id_type_self
 fields:
-  id: UuidValue, defaultModel=random
+  id: UuidValue?, defaultModel=random
   name: String
   previous: ChangedIdTypeSelf?, relation(name=changed_id_next_previous)
   nextId: UuidValue?
