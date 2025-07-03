@@ -11,10 +11,11 @@ environment:
 dependencies:
   serverpod: SERVERPOD_VERSION
   serverpod_auth_email_server: SERVERPOD_VERSION
+  serverpod_auth_migration_server: SERVERPOD_VERSION
   serverpod_auth_profile_server: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <7.0.0'
+  lints: ">=3.0.0 <7.0.0"
   serverpod_auth_email_account_server: SERVERPOD_VERSION
   serverpod_auth_session_server: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
@@ -28,8 +29,12 @@ dependency_overrides:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
   serverpod_auth_email_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
+  serverpod_auth_migration_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
   serverpod_auth_profile_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server
+  serverpod_auth_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_server
   serverpod_auth_session_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server
   serverpod_auth_user_server:

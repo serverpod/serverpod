@@ -1,20 +1,13 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
-import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
-    as new_profile;
+import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as new_auth_user;
 
 /// Helper functions to migrate email accounts from `serverpod_auth` to
 /// `serverpod_auth_email_account`.
 abstract final class AuthMigrationEmail {
-  /// The current configuration for the email authentication migration.
-  static AuthMigrationConfig config = AuthMigrationConfig();
-
   /// Attempts to migrate the user and their email authentication to the new
   /// auth module.
   ///
@@ -28,6 +21,9 @@ abstract final class AuthMigrationEmail {
   /// If the credentials are valid in the old system and the user has already
   /// been migrated (for another authentication method), then only the email
   /// authentication will be added for that user.
+  /// If the email is registered in the old system, but the password is not
+  /// correct, then an email authentication without a set password will be
+  /// created in the new system.
   ///
   /// The password policy for new registrations will not be applied to migrated
   /// accounts.
@@ -35,7 +31,7 @@ abstract final class AuthMigrationEmail {
   /// This method is intended to be used before the login is attempted in the
   /// new module, so it should be added in the `login` endpoint as the first
   /// step.
-  static Future<void> migrateOnLogin(
+  static Future<void> migrateWithPassword(
     final Session session, {
     required String email,
     required final String password,
@@ -60,6 +56,10 @@ abstract final class AuthMigrationEmail {
     );
 
     if (!authenticationResult.success) {
+      // Attempt migration without password, such that a caller will not conclude
+      // that no account exists, in which case they might create a conflicting one.
+      await migrateWithoutPassword(session, email: email);
+
       // A login will of course fail in the new auth provider, but we don't want
       // to preempt any throttling or logging, and thus let it continue.
       return;
@@ -92,28 +92,18 @@ abstract final class AuthMigrationEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final (migratedUser, didCreate) = await _migrateUserIfNeeded(
+        await migrateUserIfNeeded(
           session,
           userInfo,
           transaction: transaction,
         );
 
-        await new_email_account.EmailAccounts.admin.createEmailAuthentication(
+        await new_email_account.EmailAccounts.admin.setPassword(
           session,
-          authUserId: migratedUser.newAuthUserId,
           email: email,
           password: password,
           transaction: transaction,
         );
-
-        if (didCreate) {
-          await config.userMigrationHook?.call(
-            session,
-            oldUserId: migratedUser.oldUserId,
-            newAuthUserId: migratedUser.newAuthUserId,
-            transaction: transaction,
-          );
-        }
       },
     );
   }
@@ -169,108 +159,12 @@ abstract final class AuthMigrationEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final (migratedUser, didCreate) = await _migrateUserIfNeeded(
+        await migrateUserIfNeeded(
           session,
           userInfo,
           transaction: transaction,
         );
-
-        await new_email_account.EmailAccounts.admin.createEmailAuthentication(
-          session,
-          authUserId: migratedUser.newAuthUserId,
-          email: email,
-          password: null,
-          transaction: transaction,
-        );
-
-        if (didCreate) {
-          await config.userMigrationHook?.call(
-            session,
-            oldUserId: migratedUser.oldUserId,
-            newAuthUserId: migratedUser.newAuthUserId,
-            transaction: transaction,
-          );
-        }
       },
     );
-  }
-
-  static Future<(MigratedUser migratedUser, bool didCreate)>
-      _migrateUserIfNeeded(
-    final Session session,
-    final legacy_auth.UserInfo userInfo, {
-    required final Transaction transaction,
-  }) async {
-    final migratedUser = await MigratedUser.db.findById(
-      session,
-      userInfo.id!,
-      transaction: transaction,
-    );
-
-    if (migratedUser != null) {
-      return (migratedUser, false);
-    }
-
-    final authUser = await new_auth_user.AuthUsers.create(
-      session,
-      blocked: userInfo.blocked,
-      scopes: userInfo.scopes,
-      transaction: transaction,
-    );
-
-    if (config.importProfile) {
-      await _importProfile(
-        session,
-        authUser.id,
-        userInfo,
-        transaction: transaction,
-      );
-    }
-
-    return (
-      await MigratedUser.db.insertRow(
-        session,
-        MigratedUser(oldUserId: userInfo.id!, newAuthUserId: authUser.id),
-        transaction: transaction,
-      ),
-      true,
-    );
-  }
-
-  static Future<void> _importProfile(
-    final Session session,
-    final UuidValue authUserId,
-    final legacy_auth.UserInfo userInfo, {
-    required final Transaction? transaction,
-  }) async {
-    await new_profile.UserProfiles.createUserProfile(
-      session,
-      authUserId,
-      new_profile.UserProfileData(
-        userName: userInfo.userName,
-        fullName: userInfo.fullName,
-        email: userInfo.email,
-      ),
-      transaction: transaction,
-    );
-
-    final profileImageUrl =
-        userInfo.imageUrl != null ? Uri.tryParse(userInfo.imageUrl!) : null;
-    if (profileImageUrl != null) {
-      try {
-        await new_profile.UserProfiles.setUserImageFromUrl(
-          session,
-          authUserId,
-          profileImageUrl,
-          transaction: transaction,
-        );
-      } catch (e, stackTrace) {
-        session.log(
-          'Failed to load user image from "$profileImageUrl"',
-          level: LogLevel.error,
-          stackTrace: stackTrace,
-        );
-      }
-    }
   }
 }

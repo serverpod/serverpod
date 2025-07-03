@@ -3,6 +3,18 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_migration_legacy_user_identifier" (
+    "id" bigserial PRIMARY KEY,
+    "newAuthUserId" uuid NOT NULL,
+    "userIdentifier" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_migration_legacy_user_identifier_user_identifier" ON "serverpod_auth_migration_legacy_user_identifier" USING btree ("userIdentifier");
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_auth_migration_migrated_user" (
     "id" bigserial PRIMARY KEY,
     "oldUserId" bigint NOT NULL,
@@ -462,12 +474,38 @@ CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_session" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
+    "sessionKeyHash" bytea NOT NULL,
+    "sessionKeySalt" bytea NOT NULL,
+    "method" text NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_auth_user" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "created" timestamp without time zone NOT NULL,
     "scopeNames" json NOT NULL,
     "blocked" boolean NOT NULL
 );
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_migration_legacy_user_identifier"
+    ADD CONSTRAINT "serverpod_auth_migration_legacy_user_identifier_fk_0"
+    FOREIGN KEY("newAuthUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 --
 -- ACTION CREATE FOREIGN KEY
@@ -581,14 +619,24 @@ ALTER TABLE ONLY "serverpod_auth_profile_user_profile_image"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_session"
+    ADD CONSTRAINT "serverpod_auth_session_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20250617075139838', now())
+    VALUES ('serverpod_auth_migration', '20250702121757983', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250617075139838', "timestamp" = now();
+    DO UPDATE SET "version" = '20250702121757983', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -607,6 +655,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20250606090748154', "timestamp" = now();
 
 --
+-- MIGRATION VERSION FOR serverpod_auth_email
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_email', '20250611073844715', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250611073844715', "timestamp" = now();
+
+--
 -- MIGRATION VERSION FOR serverpod_auth_profile
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
@@ -621,6 +677,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod_auth', '20240520102713718', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20240520102713718', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_session
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_user

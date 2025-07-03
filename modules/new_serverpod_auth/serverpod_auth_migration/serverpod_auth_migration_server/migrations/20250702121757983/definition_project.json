@@ -2,6 +2,75 @@
   "moduleName": "serverpod_auth_migration",
   "tables": [
     {
+      "name": "serverpod_auth_migration_legacy_user_identifier",
+      "dartName": "LegacyUserIdentifier",
+      "module": "serverpod_auth_migration",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('serverpod_auth_migration_legacy_user_identifier_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "newAuthUserId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "userIdentifier",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "serverpod_auth_migration_legacy_user_identifier_fk_0",
+          "columns": [
+            "newAuthUserId"
+          ],
+          "referenceTable": "serverpod_auth_user",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "serverpod_auth_migration_legacy_user_identifier_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        },
+        {
+          "indexName": "serverpod_auth_migration_legacy_user_identifier_user_identifier",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "userIdentifier"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "serverpod_auth_migration_migrated_user",
       "dartName": "MigratedUser",
       "module": "serverpod_auth_migration",
@@ -106,12 +175,20 @@
       "version": "20250606090748154"
     },
     {
+      "module": "serverpod_auth_email",
+      "version": "20250611073844715"
+    },
+    {
       "module": "serverpod_auth_profile",
       "version": "20250519092101868"
     },
     {
       "module": "serverpod_auth",
       "version": "20240520102713718"
+    },
+    {
+      "module": "serverpod_auth_session",
+      "version": "20250611085050241"
     },
     {
       "module": "serverpod_auth_user",
