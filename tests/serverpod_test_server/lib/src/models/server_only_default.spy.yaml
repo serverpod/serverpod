@@ -1,0 +1,5 @@
+class: ServerOnlyDefault
+fields:
+  normalField: String
+  serverOnlyField: int?, scope=serverOnly, default=-1
+  serverOnlyStringField: String?, scope=serverOnly, default='Server only message'
