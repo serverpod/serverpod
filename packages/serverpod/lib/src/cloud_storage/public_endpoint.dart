@@ -64,7 +64,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
     var body = await _readBinaryBody(session.request);
     if (body == null) return false;
 
-    var byteData = ByteData.view(body.buffer);
+    var byteData = ByteData.sublistView(body);
 
     var storage = server.serverpod.storage[storageId];
     if (storage == null) return false;
@@ -80,16 +80,15 @@ class CloudStoragePublicEndpoint extends Endpoint {
   }
 
   Future<Uint8List?> _readBinaryBody(Request request) async {
-    // TODO: Find more efficient solution?
     int len = 0;
-    var builder = BytesBuilder();
+    var builder = BytesBuilder(copy: false);
 
     await for (var chunk in request.read()) {
       len += chunk.length;
       if (len > server.serverpod.config.maxRequestSize) return null;
       builder.add(chunk);
     }
-    return builder.toBytes();
+    return builder.takeBytes();
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an
