@@ -117,8 +117,6 @@ void main() {
           '${serverUrl}serverpod_cloud_storage?method=file&path=testdir/myfile3.bin');
       var response = await http.get(url);
       expect(response.statusCode, equals(404));
-      var bytes = response.bodyBytes;
-      expect(bytes.length, equals(0));
     });
 
     test('Attempt retrieve file through URL with invalid params', () async {

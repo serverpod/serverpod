@@ -15,9 +15,11 @@ dependencies:
   serverpod_serialization: 2.9.1
   http: '>=1.1.0 <2.0.0'
   meta: ^1.11.0
+  web_socket: ^1.0.0
   web_socket_channel: '>=2.4.0 <4.0.0'
 
 dev_dependencies:
+  relic: ^0.4.1
   serverpod_lints: 2.9.1
   test: ^1.24.2
 

@@ -621,9 +621,7 @@ extension on Session {
   String get remoteIpAddress {
     final session = this;
 
-    return session is MethodCallSession
-        ? session.httpRequest.remoteIpAddress
-        : '';
+    return session is MethodCallSession ? session.request.remoteInfo : '';
   }
 }
 

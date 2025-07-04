@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:relic/relic.dart';
+import 'package:relic/io_adapter.dart';
 
 /// A function that can be called to stop the server.
 typedef CloseServerCallback = Future<void> Function();
@@ -13,7 +15,7 @@ abstract class TestWebSocketServer {
   ///
   /// Returns a function that can be called to stop the server.
   static Future<CloseServerCallback> startServer({
-    required void Function(WebSocket webSocket) webSocketHandler,
+    required void Function(RelicWebSocket webSocket) webSocketHandler,
     void Function(Uri webSocketHost)? onConnected,
   }) async {
     var server = await _startServer(
@@ -24,41 +26,27 @@ abstract class TestWebSocketServer {
     return server.close;
   }
 
-  static Future<HttpServer> _startServer(
+  static Future<RelicServer> _startServer(
     void Function(Uri webSocketHost)? onConnected,
-    void Function(WebSocket webSocket) webSocketHandler,
+    void Function(RelicWebSocket webSocket) webSocketHandler,
   ) async {
-    var server = await HttpServer.bind(
-      InternetAddress.loopbackIPv4,
-      0 /* Pick an available port */,
-    );
+    FutureOr<HandledContext> requestHandler(NewContext context) async {
+      return context.connect(webSocketHandler);
+    }
 
-    var webSocketHost = Uri.http('${server.address.host}:${server.port}');
-    webSocketHost = webSocketHost.replace(scheme: 'ws');
+    final adapter = IOAdapter(await HttpServer.bind(
+      InternetAddress.loopbackIPv4,
+      0, // Pick an available port
+    ));
+    final server = RelicServer(
+      adapter,
+    );
+    await server.mountAndStart(requestHandler);
+
+    var webSocketHost =
+        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${adapter.port}');
     onConnected?.call(webSocketHost);
 
-    unawaited(
-      _listenForMessages(
-        server: server,
-        webSocketHandler: webSocketHandler,
-      ),
-    );
-
     return server;
-  }
-
-  static Future<void> _listenForMessages({
-    required HttpServer server,
-    required void Function(WebSocket webSocket) webSocketHandler,
-  }) async {
-    await for (var request in server) {
-      if (WebSocketTransformer.isUpgradeRequest(request)) {
-        await WebSocketTransformer.upgrade(request).then(webSocketHandler);
-      } else {
-        var response = request.response;
-        response.statusCode = HttpStatus.upgradeRequired;
-        await response.close();
-      }
-    }
   }
 }
