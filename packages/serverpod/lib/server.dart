@@ -7,7 +7,7 @@ export 'src/server/endpoint_dispatch.dart';
 export 'src/server/future_call_manager/future_call.dart';
 export 'src/server/message_central.dart';
 export 'src/server/run_mode.dart';
-export 'src/server/server.dart';
+export 'src/server/server.dart' hide ServerInternalMethods;
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;

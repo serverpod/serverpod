@@ -6,14 +6,14 @@ import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:serverpod_client/src/util/lock.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 /// Manages the connection to the server for method streams.
 @internal
 final class ClientMethodStreamManager {
   /// The WebSocket channel used to communicate with the server.
   /// If null, no connection is open.
-  WebSocketChannel? _webSocket;
+  WebSocket? _webSocket;
 
   /// Completer that is completed when the WebSocket listener is done.
   Completer _webSocketListenerCompleter = Completer()..complete();
@@ -62,7 +62,7 @@ final class ClientMethodStreamManager {
       var webSocket = _webSocket;
       _webSocket = null;
       await _closeAllStreams(error);
-      await webSocket?.sink.close();
+      await webSocket?.close();
       await _webSocketListenerCompleter.future;
     });
   }
@@ -429,11 +429,14 @@ final class ClientMethodStreamManager {
     await _closeControllers([inboundStreamContext.controller]);
   }
 
-  Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
+  Future<void> _listenToWebSocketStream(WebSocket webSocket) async {
     _webSocketListenerCompleter = Completer();
     MethodStreamException closeException = const WebSocketClosedException();
     try {
-      await for (String jsonData in webSocket.stream) {
+      await for (final event in webSocket.events) {
+        if (event is! TextDataReceived) continue;
+        final jsonData = event.text;
+
         if (!_handshakeComplete.isCompleted) {
           _handshakeComplete.complete();
         }
@@ -489,7 +492,7 @@ final class ClientMethodStreamManager {
       closeException = WebSocketListenException(e, s);
 
       /// Attempt to send close message to server if connection is still open.
-      await webSocket.sink.close();
+      await webSocket.close();
     } finally {
       _cancelConnectionTimer();
       _webSocketListenerCompleter.complete();
@@ -503,16 +506,14 @@ final class ClientMethodStreamManager {
     await _lock.synchronized(() async {
       if (_webSocket != null) return;
 
-      var webSocket = WebSocketChannel.connect(_webSocketHost);
-
-      await webSocket.ready.onError((e, s) {
+      var webSocket = await WebSocket.connect(_webSocketHost).onError((e, s) {
         throw WebSocketConnectException(e, s);
       });
 
-      webSocket.sink.add(PingCommand.buildMessage());
+      webSocket.sendText(PingCommand.buildMessage());
       _connectionTimer = Timer(_connectionTimeout, () {
         if (!_handshakeComplete.isCompleted) {
-          webSocket.sink.close();
+          webSocket.close();
           _handshakeComplete.completeError('');
         }
       });
@@ -534,7 +535,7 @@ final class ClientMethodStreamManager {
       );
     }
 
-    webSocket.sink.add(message);
+    webSocket.sendText(message);
   }
 }
 

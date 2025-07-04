@@ -1,4 +1,4 @@
-import 'package:serverpod/relic.dart';
+import 'package:serverpod/web_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Toggles for enabling and disabling features in the server.
@@ -27,7 +27,7 @@ class Features {
 
   /// Returns true if the web server is enabled.
   static bool enableWebServer([WebServer? server]) {
-    if (server != null && server.routes.isEmpty) return false;
+    if (server != null && server.router.isEmpty) return false;
     return _instance._config.webServer != null;
   }
 

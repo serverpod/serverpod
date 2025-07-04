@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -5,19 +6,19 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Add more content type mappings.
-final _contentTypeMapping = <String, ContentType>{
-  '.js': ContentType('text', 'javascript'),
-  '.json': ContentType('application', 'json'),
-  '.wsam': ContentType('application', 'wasm'),
-  '.css': ContentType('text', 'css'),
-  '.png': ContentType('image', 'png'),
-  '.jpg': ContentType('image', 'jpeg'),
-  '.jpeg': ContentType('image', 'jpeg'),
-  '.svg': ContentType('image', 'svg+xml'),
-  '.ttf': ContentType('application', 'x-font-ttf'),
-  '.woff': ContentType('application', 'x-font-woff'),
-  '.mp3': ContentType('audio', 'mpeg'),
-  '.pdf': ContentType('application', 'pdf'),
+const _mimeTypeMapping = <String, MimeType>{
+  '.js': MimeType.javascript,
+  '.json': MimeType.json,
+  '.wasm': MimeType('application', 'wasm'),
+  '.css': MimeType.css,
+  '.png': MimeType('image', 'png'),
+  '.jpg': MimeType('image', 'jpeg'),
+  '.jpeg': MimeType('image', 'jpeg'),
+  '.svg': MimeType('image', 'svg+xml'),
+  '.ttf': MimeType('application', 'x-font-ttf'),
+  '.woff': MimeType('application', 'x-font-woff'),
+  '.mp3': MimeType('audio', 'mpeg'),
+  '.pdf': MimeType.pdf,
 };
 
 /// A path pattern to match, and the max age that paths that match the pattern
@@ -86,7 +87,11 @@ class RouteStaticDirectory extends Route {
   }
 
   @override
-  Future<bool> handleCall(Session session, HttpRequest request) async {
+  FutureOr<HandledContext> handleCall(
+    Session session,
+    NewContext context,
+  ) async {
+    final request = context.request;
     var path = Uri.decodeFull(request.requestedUri.path);
 
     var rootPath = serveAsRootPath;
@@ -101,7 +106,7 @@ class RouteStaticDirectory extends Route {
       var extension = p.extension(path);
 
       var baseParts = base.split('@');
-      if (baseParts.length > 1 && baseParts.last.startsWith('v')) {
+      if (baseParts.last.startsWith('v')) {
         baseParts.removeLast();
       }
       base = baseParts.join('@');
@@ -120,12 +125,17 @@ class RouteStaticDirectory extends Route {
         path = p.join(dir, base + extension);
       }
 
-      // Set content type.
-      extension = extension.toLowerCase();
-      var contentType = _contentTypeMapping[extension];
-      if (contentType != null) {
-        request.response.headers.contentType = contentType;
+      var filePath = path.startsWith('/') ? path.substring(1) : path;
+      filePath = 'web/$filePath';
+
+      final file = File(filePath);
+      if (!await file.exists()) {
+        return context.withResponse(Response.notFound());
       }
+
+      // Set mime-type.
+      extension = extension.toLowerCase();
+      var mimeType = _mimeTypeMapping[extension];
 
       // Get the max age for the path
       var pathCacheMaxAge = _pathCachePatterns
@@ -135,25 +145,21 @@ class RouteStaticDirectory extends Route {
           PathCacheMaxAge.oneYear;
 
       // Set Cache-Control header
-      request.response.headers.set(
-        'Cache-Control',
-        pathCacheMaxAge == PathCacheMaxAge.noCache
-            // Don't cache this path
-            ? 'max-age=0, s-maxage=0, no-cache, no-store'
-            // Cache for the specified amount of time, or the default
-            // of one year if no pattern matched
-            : 'max-age=${pathCacheMaxAge.inSeconds}',
+      final headers = Headers.build((mh) => mh.cacheControl =
+          pathCacheMaxAge == PathCacheMaxAge.noCache
+              // Don't cache this path
+              ? CacheControlHeader(
+                  maxAge: 0, sMaxAge: 0, noCache: true, noStore: true)
+              : CacheControlHeader(maxAge: pathCacheMaxAge.inSeconds));
+
+      final body = Body.fromDataStream(
+        file.openRead().cast(),
+        mimeType: mimeType,
       );
-
-      var filePath = path.startsWith('/') ? path.substring(1) : path;
-      filePath = 'web/$filePath';
-
-      var fileContents = await File(filePath).readAsBytes();
-      request.response.add(fileContents);
-      return true;
+      return context.withResponse(Response.ok(body: body, headers: headers));
     } catch (e) {
       // Couldn't find or load file.
-      return false;
+      rethrow;
     }
   }
 }

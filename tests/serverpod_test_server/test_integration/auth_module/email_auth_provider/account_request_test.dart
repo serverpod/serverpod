@@ -36,9 +36,7 @@ void main() async {
     });
   });
 
-  withServerpod(
-      'Given existing account request'
-      'when creating account with incorrect validation code', (
+  withServerpod('Given existing account request', (
     sessionBuilder,
     _,
   ) {

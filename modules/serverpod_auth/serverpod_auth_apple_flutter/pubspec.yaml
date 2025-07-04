@@ -15,7 +15,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_design_icons_flutter: ">=6.0.0 < 8.0.0"
+  material_design_icons_flutter: '>=6.0.0 <8.0.0'
   serverpod_auth_client: 2.9.1
   serverpod_auth_shared_flutter: 2.9.1
   sign_in_with_apple: '>=6.0.0 <8.0.0'

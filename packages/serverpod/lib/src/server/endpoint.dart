@@ -42,12 +42,12 @@ abstract class Endpoint {
   /// override to change.
   bool get logSessions => true;
 
-  /// If true, returned [ByteData] from methods will be sent sent to the client
+  /// If true, returned value from methods will be sent sent to the client
   /// as raw data without any formatting. One use case is to return data through
   /// a non-api call. Defaults to false, override to change. If used, the
   /// endpoint method is responsible for correctly setting the contentType of
   /// the http response (defaults to `text/plain`).
-  bool get sendByteDataAsRaw => false;
+  bool get sendAsRaw => false;
 
   final Map<Session, dynamic> _userObjects = {};
 
@@ -92,6 +92,6 @@ abstract class Endpoint {
     };
 
     var payload = SerializationManager.encodeForProtocol(data);
-    session.webSocket.add(payload);
+    session.webSocket.sendText(payload);
   }
 }

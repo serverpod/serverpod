@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 import 'serverpod_client_shared_private.dart';
 
@@ -75,7 +75,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   late final ServerpodClientRequestDelegate _requestDelegate;
 
-  WebSocketChannel? _webSocket;
+  WebSocket? _webSocket;
 
   Timer? _connectionTimer;
 
@@ -265,10 +265,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Sends a message to the servers WebSocket stream. Typically, this method
   /// shouldn't be called directly, instead use [sendToStream].
   Future<void> _sendRawWebSocketMessage(String message) async {
-    if (_webSocket == null) {
+    final ws = _webSocket;
+    if (ws == null) {
       throw const ServerpodClientException('WebSocket is not connected', 0);
     }
-    _webSocket!.sink.add(message);
+    ws.sendText(message);
   }
 
   Future<void> _sendSerializableObjectToStream(
@@ -324,8 +325,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       // Connect to the server.
       _firstMessageReceived = false;
       var host = await _webSocketHostWithAuth;
-      _webSocket = WebSocketChannel.connect(Uri.parse(host));
-      await _webSocket?.ready;
+      _webSocket = await WebSocket.connect(Uri.parse(host));
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
@@ -337,7 +337,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       // within the timeout period.
       _connectionTimer = Timer(streamingConnectionTimeout, () async {
         if (!_firstMessageReceived) {
-          await _webSocket?.sink.close();
+          await _webSocket?.close();
           _webSocket = null;
           _cancelConnectionTimer();
           _notifyWebSocketConnectionStatusListeners();
@@ -371,7 +371,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Closes the streaming connection if it is open.
   Future<void> closeStreamingConnection() async {
-    await _webSocket?.sink.close();
+    await _webSocket?.close();
     _webSocket = null;
     _cancelConnectionTimer();
 
@@ -387,8 +387,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (_webSocket == null) return;
 
     try {
-      await for (String message in _webSocket!.stream) {
-        _handleRawWebSocketMessage(message);
+      await for (final message in _webSocket!.events) {
+        if (message is! TextDataReceived) continue;
+        _handleRawWebSocketMessage(message.text);
         if (!_firstMessageReceived) {
           _firstMessageReceived = true;
           _notifyWebSocketConnectionStatusListeners();

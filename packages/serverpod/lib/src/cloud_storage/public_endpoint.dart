@@ -1,54 +1,48 @@
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+import 'package:path/path.dart' as p;
 
 const _endpointName = 'serverpod_cloud_storage';
+
+// TODO: Add more content type mappings.
+const _mimeTypeMapping = <String, MimeType>{
+  '.js': MimeType.javascript,
+  '.json': MimeType.json,
+  '.wasm': MimeType('application', 'wasm'),
+  '.css': MimeType.css,
+  '.png': MimeType('image', 'png'),
+  '.jpg': MimeType('image', 'jpeg'),
+  '.jpeg': MimeType('image', 'jpeg'),
+  '.svg': MimeType('image', 'svg+xml'),
+  '.ttf': MimeType('application', 'x-font-ttf'),
+  '.woff': MimeType('application', 'x-font-woff'),
+  '.mp3': MimeType('audio', 'mpeg'),
+  '.pdf': MimeType.pdf,
+};
 
 /// Endpoint for the default public [DatabaseCloudStorage].
 @doNotGenerate
 class CloudStoragePublicEndpoint extends Endpoint {
   @override
-  bool get sendByteDataAsRaw => true;
+  bool get sendAsRaw => true;
 
   /// Retrieves a file from the public database cloud storage.
-  Future<ByteData?> file(MethodCallSession session, String path) async {
-    var response = session.httpRequest.response;
-
+  Future<Body?> file(MethodCallSession session, String path) async {
     // Fetch the file from storage.
     var file =
         await session.storage.retrieveFile(storageId: 'public', path: path);
 
-    // Set the response code
     if (file == null) {
-      response.statusCode = HttpStatus.notFound;
-      return null;
+      throw EndpointNotFoundException('File not found: $path');
     }
 
-    // TODO: Support more extension types.
-
-    var extension = p.extension(path);
-    extension = extension.toLowerCase();
-    if (extension == '.js') {
-      response.headers.contentType = ContentType('text', 'javascript');
-    } else if (extension == '.css') {
-      response.headers.contentType = ContentType('text', 'css');
-    } else if (extension == '.png') {
-      response.headers.contentType = ContentType('image', 'png');
-    } else if (extension == '.jpg') {
-      response.headers.contentType = ContentType('image', 'jpeg');
-    } else if (extension == '.svg') {
-      response.headers.contentType = ContentType('image', 'svg+xml');
-    } else if (extension == '.ttf') {
-      response.headers.contentType = ContentType('application', 'x-font-ttf');
-    } else if (extension == '.woff') {
-      response.headers.contentType = ContentType('application', 'x-font-woff');
-    }
-
-    // Retrieve the file from storage and return it.
-    return file;
+    final extension = p.extension(path).toLowerCase();
+    return Body.fromData(
+      Uint8List.sublistView(file),
+      mimeType: _mimeTypeMapping[extension] ?? MimeType.octetStream,
+    );
   }
 
   /// Uploads a file to the public database cloud storage.
@@ -67,10 +61,10 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     if (uploadInfo.authKey != key) return false;
 
-    var body = await _readBinaryBody(session.httpRequest);
+    var body = await _readBinaryBody(session.request);
     if (body == null) return false;
 
-    var byteData = ByteData.view(Uint8List.fromList(body).buffer);
+    var byteData = ByteData.sublistView(body);
 
     var storage = server.serverpod.storage[storageId];
     if (storage == null) return false;
@@ -85,17 +79,16 @@ class CloudStoragePublicEndpoint extends Endpoint {
     return true;
   }
 
-  Future<List<int>?> _readBinaryBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
+  Future<Uint8List?> _readBinaryBody(Request request) async {
+    int len = 0;
+    var builder = BytesBuilder(copy: false);
 
-    await for (var segment in request) {
-      len += segment.length;
+    await for (var chunk in request.read()) {
+      len += chunk.length;
       if (len > server.serverpod.config.maxRequestSize) return null;
-      data += segment;
+      builder.add(chunk);
     }
-    return data;
+    return builder.takeBytes();
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an

@@ -29,6 +29,7 @@ dependencies:
   path: ^1.8.2
   postgres: ^3.4.0
   redis: ^4.0.0
+  relic: ^0.4.1
   retry: ^3.1.1
   synchronized: ^3.1.0
   system_resources: ^1.6.0
@@ -37,6 +38,7 @@ dependencies:
   serverpod_shared: 2.9.1
   serverpod_serialization: 2.9.1
   uuid: ^4.1.0
+  web_socket: ^1.0.0
 
 dev_dependencies:
   test: ^1.24.2
