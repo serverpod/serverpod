@@ -17,7 +17,7 @@ class AsyncTasksEndpoint extends Endpoint {
     var data = SimpleData(
       num: num,
     );
-    await session.db.insertRow(data);
+    await SimpleData.db.insertRow(session, data);
   }
 
   Future<void> throwExceptionAfterDelay(Session session, int seconds) async {

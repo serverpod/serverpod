@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -52,6 +53,7 @@ class Database {
   ///
   /// [offset] defines how many items to skip, after with [limit] (or all)
   /// items are read from the database.
+  @internal
   Future<List<T>> find<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -85,6 +87,7 @@ class Database {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  @internal
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -113,6 +116,7 @@ class Database {
   /// ```dart
   /// var myRow = session.db.findById<MyClass>(myId);
   /// ```
+  @internal
   Future<T?> findById<T extends TableRow>(
     Object id, {
     Transaction? transaction,
@@ -132,6 +136,7 @@ class Database {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// update, none of the rows will be updated.
+  @internal
   Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
     List<Column>? columns,
@@ -149,6 +154,7 @@ class Database {
   /// Updates a single [TableRow]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
+  @internal
   Future<T> updateRow<T extends TableRow>(
     T row, {
     List<Column>? columns,
@@ -166,6 +172,7 @@ class Database {
   /// Inserts all [TableRow]s in the list and returns the inserted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  @internal
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
@@ -179,6 +186,7 @@ class Database {
   }
 
   /// Inserts a single [TableRow] and returns the inserted row.
+  @internal
   Future<T> insertRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
@@ -194,6 +202,7 @@ class Database {
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.
+  @internal
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
@@ -207,6 +216,7 @@ class Database {
   }
 
   /// Deletes a single [TableRow].
+  @internal
   Future<T> deleteRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
@@ -220,6 +230,7 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
+  @internal
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
@@ -234,6 +245,7 @@ class Database {
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
+  @internal
   Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -349,6 +361,7 @@ class Database {
   /// Tests the database connection.
   /// Returns true if the connection is working.
   /// Throws an exception if the connection is not working.
+  @internal
   Future<bool> testConnection() {
     return _databaseConnection.testConnection();
   }
