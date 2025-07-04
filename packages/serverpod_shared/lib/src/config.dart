@@ -436,7 +436,10 @@ class DatabaseConfig {
 
     var password = passwords[ServerpodPassword.databasePassword.configKey];
     if (password == null) {
-      throw Exception('Missing database password.');
+      throw DatabasePasswordMissingException(
+        ServerpodPassword.databasePassword.configKey,
+        'SERVERPOD_PASSWORD_database',
+      );
     }
 
     return DatabaseConfig(
@@ -510,12 +513,20 @@ class RedisConfig {
       name,
     );
 
+    var password = passwords[ServerpodPassword.redisPassword.configKey];
+    if (password == null) {
+      throw RedisPasswordMissingException(
+        ServerpodPassword.redisPassword.configKey,
+        'SERVERPOD_PASSWORD_redis',
+      );
+    }
+
     return RedisConfig(
       enabled: redisSetup[ServerpodEnv.redisEnabled.configKey] ?? false,
       host: redisSetup[ServerpodEnv.redisHost.configKey],
       port: redisSetup[ServerpodEnv.redisPort.configKey],
       user: redisSetup[ServerpodEnv.redisUser.configKey],
-      password: passwords[ServerpodPassword.redisPassword.configKey],
+      password: password,
       requireSsl: redisSetup[ServerpodEnv.redisRequireSsl.configKey] ?? false,
     );
   }

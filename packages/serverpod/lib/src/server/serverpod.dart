@@ -374,11 +374,21 @@ class Serverpod {
           config: config,
           experimentalFeatures: experimentalFeatures,
         ) {
-    _initializeServerpod(
-      args,
-      config: config,
-      experimentalFeatures: experimentalFeatures,
-    );
+    try {
+      _initializeServerpod(
+        args,
+        config: config,
+        experimentalFeatures: experimentalFeatures,
+      );
+    } on ExitException catch (e) {
+      if (e.message.isNotEmpty) {
+        stderr.writeln(e.message);
+      }
+      exit(e.exitCode);
+    } catch (e, stackTrace) {
+      _reportException(e, stackTrace, message: 'Error initializing Serverpod');
+      throw ExitException(1, 'Serverpod initialization failed: $e');
+    }
   }
 
   void _initializeServerpod(
@@ -401,14 +411,17 @@ class Serverpod {
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    // Load config
-    this.config = config?.copyWith(runMode: runMode) ??
-        ServerpodConfig.load(
-          runMode,
-          _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
-          _passwords,
-          commandLineArgs: _commandLineArgs.toMap(),
-        );
+    try {
+      this.config = config?.copyWith(runMode: runMode) ??
+          ServerpodConfig.load(
+            runMode,
+            _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
+            _passwords,
+            commandLineArgs: _commandLineArgs.toMap(),
+          );
+    } on PasswordMissingException catch (e) {
+      throw ExitException(1, e.message);
+    }
 
     stdout.writeln(_getCommandLineArgsString());
 
