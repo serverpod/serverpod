@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 
@@ -16,8 +17,7 @@ class PasswordManager {
     required this.runMode,
   });
 
-  /// Load all passwords for the current run mode from the supplied [Map],
-  /// or null if passwords fail to load.
+  /// Load all passwords for the current run mode from the supplied [Map].
   ///
   /// Passwords are be loaded in the following order:
   /// 1. Shared passwords from the config map
@@ -90,8 +90,7 @@ class PasswordManager {
     return extracted.cast<String, String>();
   }
 
-  /// Load all passwords for the current run mode, or null if passwords fail
-  /// to load.
+  /// Load all passwords for the current run mode.
   Map<String, String> loadPasswords([
     String passwordsFilePath = 'config/passwords.yaml',
   ]) {
