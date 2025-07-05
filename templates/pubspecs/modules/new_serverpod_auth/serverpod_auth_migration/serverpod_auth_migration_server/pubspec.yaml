@@ -11,6 +11,7 @@ environment:
 dependencies:
   meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
+  serverpod_auth_backwards_compatibility_server: SERVERPOD_VERSION
   serverpod_auth_email_account_server: SERVERPOD_VERSION
   serverpod_auth_email_server: SERVERPOD_VERSION
   serverpod_auth_profile_server: SERVERPOD_VERSION
@@ -27,6 +28,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_auth_backwards_compatibility_server:
+    path: ../../serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
   serverpod_auth_email_account_server:
     path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
   serverpod_auth_email_server:

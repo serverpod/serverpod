@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -16,7 +17,9 @@ abstract final class AuthMigrations {
   /// This is intended to be used to block access for migrated users on the
   /// legacy login/registration endpoints, and potentially even sessions.
   static Future<bool> isUserMigrated(
-      final Session session, final int userId) async {
+    final Session session,
+    final int userId,
+  ) async {
     return await getNewAuthUserId(session, userId) != null;
   }
 
@@ -49,29 +52,13 @@ abstract final class AuthMigrations {
       return newAuthInfo;
     }
 
-    final legacyAuthInfo = await legacy_auth.authenticationHandler(
+    final legacyAuthInfo =
+        await AuthBackwardsCompatibility.authenticationHandler(
       session,
       key,
     );
 
-    if (legacyAuthInfo == null) {
-      return null;
-    }
-
-    final newAuthUserId = await getNewAuthUserId(
-      session,
-      legacyAuthInfo.userId,
-    );
-
-    if (newAuthUserId == null) {
-      return legacyAuthInfo;
-    }
-
-    return AuthenticationInfo(
-      newAuthUserId,
-      legacyAuthInfo.scopes,
-      authId: legacyAuthInfo.authId,
-    );
+    return legacyAuthInfo;
   }
 
   /// Migrates the next batch of users and their authentication methods.

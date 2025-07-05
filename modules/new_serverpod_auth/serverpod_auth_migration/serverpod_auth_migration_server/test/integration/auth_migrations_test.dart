@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/email_account.dart'
     as new_email_account_db;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -178,22 +179,13 @@ void main() {
       test(
         'when checking the `LegacyUserIdentifier`, then it has been created with the lower-case email variant.',
         () async {
-          final legacyUserIdentifier =
-              await LegacyUserIdentifier.db.findFirstRow(
+          final authUserId = await AuthBackwardsCompatibility
+              .lookUpLegacyExternalUserIdentifier(
             session,
-            where: (final t) => t.newAuthUserId.equals(
-              migratedUsers.values.single,
-            ),
+            userIdentifier: email.toLowerCase(),
           );
 
-          expect(
-            legacyUserIdentifier,
-            isNotNull,
-          );
-          expect(
-            legacyUserIdentifier?.userIdentifier,
-            email.toLowerCase(),
-          );
+          expect(authUserId, migratedUsers.values.single);
         },
       );
 
@@ -378,22 +370,13 @@ void main() {
       test(
         'when checking the `LegacyUserIdentifier`, then it has been created with the external user ID.',
         () async {
-          final legacyUserIdentifier =
-              await LegacyUserIdentifier.db.findFirstRow(
+          final authUserId = await AuthBackwardsCompatibility
+              .lookUpLegacyExternalUserIdentifier(
             session,
-            where: (final t) => t.newAuthUserId.equals(
-              migratedUsers.values.single,
-            ),
+            userIdentifier: externalUserIdentifier,
           );
 
-          expect(
-            legacyUserIdentifier,
-            isNotNull,
-          );
-          expect(
-            legacyUserIdentifier?.userIdentifier,
-            externalUserIdentifier,
-          );
+          expect(authUserId, migratedUsers.values.single);
         },
       );
 

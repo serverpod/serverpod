@@ -6,6 +6,9 @@ export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart'
     show
         Protocol,
+        EmailAccount,
+        EmailAccountInclude,
+        EmailAccountTable,
         EmailAccountLoginException,
         EmailAccountLoginFailureReason,
         EmailAccountPasswordPolicyViolationException,

@@ -234,7 +234,7 @@ void main() {
       });
 
       test(
-        'when running `migrateWithPassword` with the correct password, then it is imported without a password and its blocked status retained.',
+        "when running `migrateWithPassword` with the correct password, then the password is imported and the user's blocked status retained.",
         () async {
           await AuthMigrationEmail.migrateWithPassword(
             session,
@@ -247,7 +247,7 @@ void main() {
           expect(authUser.blocked, isTrue);
           final emailAccount =
               (await new_email_account_db.EmailAccount.db.find(session)).single;
-          expect(emailAccount.passwordHash.lengthInBytes, 0);
+          expect(emailAccount.passwordHash.lengthInBytes, greaterThan(0));
         },
       );
 
