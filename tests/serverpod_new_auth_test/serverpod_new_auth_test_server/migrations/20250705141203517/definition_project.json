@@ -12,7 +12,7 @@
     },
     {
       "module": "serverpod_auth_migration",
-      "version": "20250702121757983"
+      "version": "20250705132233496"
     },
     {
       "module": "serverpod_auth_profile",
@@ -29,6 +29,10 @@
     {
       "module": "serverpod_auth_user",
       "version": "20250506070330492"
+    },
+    {
+      "module": "serverpod_auth_backwards_compatibility",
+      "version": "20250705102555966"
     },
     {
       "module": "serverpod_auth",

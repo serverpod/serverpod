@@ -23,7 +23,9 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
     as _i7;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i8;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i9;
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
+    as _i9;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i10;
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -40,6 +42,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i7.Protocol.targetTableDefinitions,
     ..._i8.Protocol.targetTableDefinitions,
     ..._i9.Protocol.targetTableDefinitions,
+    ..._i10.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
@@ -69,6 +72,9 @@ class Protocol extends _i1.SerializationManagerServer {
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i9.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i10.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -110,6 +116,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i9.Protocol().getClassNameForObject(data);
     if (className != null) {
+      return 'serverpod_auth_backwards_compatibility.$className';
+    }
+    className = _i10.Protocol().getClassNameForObject(data);
+    if (className != null) {
       return 'serverpod_auth.$className';
     }
     return null;
@@ -149,9 +159,13 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(20);
       return _i8.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_backwards_compatibility.')) {
+      data['className'] = dataClassName.substring(39);
+      return _i9.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i9.Protocol().deserializeByClassName(data);
+      return _i10.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -196,6 +210,12 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     {
       var table = _i9.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i10.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }

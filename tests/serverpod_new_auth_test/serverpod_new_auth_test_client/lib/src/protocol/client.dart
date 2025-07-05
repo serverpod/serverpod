@@ -25,8 +25,10 @@ import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account
     as _i9;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
     as _i10;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i11;
-import 'protocol.dart' as _i12;
+import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_backwards_compatibility_client.dart'
+    as _i11;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i12;
+import 'protocol.dart' as _i13;
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
@@ -199,7 +201,8 @@ class Modules {
     serverpod_auth_email_account = _i9.Caller(client);
     serverpod_auth_session = _i3.Caller(client);
     serverpod_auth_user = _i10.Caller(client);
-    auth = _i11.Caller(client);
+    serverpod_auth_backwards_compatibility = _i11.Caller(client);
+    auth = _i12.Caller(client);
   }
 
   late final _i7.Caller serverpod_auth_email;
@@ -214,7 +217,9 @@ class Modules {
 
   late final _i10.Caller serverpod_auth_user;
 
-  late final _i11.Caller auth;
+  late final _i11.Caller serverpod_auth_backwards_compatibility;
+
+  late final _i12.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -233,7 +238,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i12.Protocol(),
+          _i13.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -272,6 +277,8 @@ class Client extends _i1.ServerpodClientShared {
         'serverpod_auth_email_account': modules.serverpod_auth_email_account,
         'serverpod_auth_session': modules.serverpod_auth_session,
         'serverpod_auth_user': modules.serverpod_auth_user,
+        'serverpod_auth_backwards_compatibility':
+            modules.serverpod_auth_backwards_compatibility,
         'auth': modules.auth,
       };
 }

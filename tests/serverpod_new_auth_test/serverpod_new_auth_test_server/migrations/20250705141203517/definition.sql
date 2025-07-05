@@ -207,18 +207,6 @@ CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USIN
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
 --
--- Class LegacyUserIdentifier as table serverpod_auth_migration_legacy_user_identifier
---
-CREATE TABLE "serverpod_auth_migration_legacy_user_identifier" (
-    "id" bigserial PRIMARY KEY,
-    "newAuthUserId" uuid NOT NULL,
-    "userIdentifier" text NOT NULL
-);
-
--- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_migration_legacy_user_identifier_user_identifier" ON "serverpod_auth_migration_legacy_user_identifier" USING btree ("userIdentifier");
-
---
 -- Class MigratedUser as table serverpod_auth_migration_migrated_user
 --
 CREATE TABLE "serverpod_auth_migration_migrated_user" (
@@ -386,6 +374,42 @@ CREATE TABLE "serverpod_auth_user" (
 );
 
 --
+-- Class LegacyEmailPassword as table serverpod_auth_backwards_compatibility_email_password
+--
+CREATE TABLE "serverpod_auth_backwards_compatibility_email_password" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "emailAccountId" uuid NOT NULL,
+    "hash" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_backwards_compatibility_email_password_account" ON "serverpod_auth_backwards_compatibility_email_password" USING btree ("emailAccountId");
+
+--
+-- Class LegacyExternalUserIdentifier as table serverpod_auth_backwards_compatibility_external_user_id
+--
+CREATE TABLE "serverpod_auth_backwards_compatibility_external_user_id" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "userIdentifier" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_backwards_compatibility_external_user_id_id" ON "serverpod_auth_backwards_compatibility_external_user_id" USING btree ("userIdentifier");
+
+--
+-- Class LegacySession as table serverpod_auth_backwards_compatibility_session
+--
+CREATE TABLE "serverpod_auth_backwards_compatibility_session" (
+    "id" bigserial PRIMARY KEY,
+    "authUserId" uuid NOT NULL,
+    "scopeNames" json NOT NULL,
+    "lastUsed" timestamp without time zone,
+    "hash" text NOT NULL,
+    "method" text NOT NULL
+);
+
+--
 -- Class AuthKey as table serverpod_auth_key
 --
 CREATE TABLE "serverpod_auth_key" (
@@ -528,16 +552,6 @@ ALTER TABLE ONLY "serverpod_query_log"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_migration_legacy_user_identifier" table
---
-ALTER TABLE ONLY "serverpod_auth_migration_legacy_user_identifier"
-    ADD CONSTRAINT "serverpod_auth_migration_legacy_user_identifier_fk_0"
-    FOREIGN KEY("newAuthUserId")
-    REFERENCES "serverpod_auth_user"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "serverpod_auth_migration_migrated_user" table
 --
 ALTER TABLE ONLY "serverpod_auth_migration_migrated_user"
@@ -629,14 +643,44 @@ ALTER TABLE ONLY "serverpod_auth_session"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+--
+-- Foreign relations for "serverpod_auth_backwards_compatibility_email_password" table
+--
+ALTER TABLE ONLY "serverpod_auth_backwards_compatibility_email_password"
+    ADD CONSTRAINT "serverpod_auth_backwards_compatibility_email_password_fk_0"
+    FOREIGN KEY("emailAccountId")
+    REFERENCES "serverpod_auth_email_account"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "serverpod_auth_backwards_compatibility_external_user_id" table
+--
+ALTER TABLE ONLY "serverpod_auth_backwards_compatibility_external_user_id"
+    ADD CONSTRAINT "serverpod_auth_backwards_compatibility_external_user_id_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "serverpod_auth_backwards_compatibility_session" table
+--
+ALTER TABLE ONLY "serverpod_auth_backwards_compatibility_session"
+    ADD CONSTRAINT "serverpod_auth_backwards_compatibility_session_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
 
 --
 -- MIGRATION VERSION FOR serverpod_new_auth_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_new_auth_test', '20250702121844487', now())
+    VALUES ('serverpod_new_auth_test', '20250705141203517', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250702121844487', "timestamp" = now();
+    DO UPDATE SET "version" = '20250705141203517', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -658,9 +702,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20250702121757983', now())
+    VALUES ('serverpod_auth_migration', '20250705132233496', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250702121757983', "timestamp" = now();
+    DO UPDATE SET "version" = '20250705132233496', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_profile
@@ -693,6 +737,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod_auth_user', '20250506070330492', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20250506070330492', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_backwards_compatibility
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_backwards_compatibility', '20250705102555966', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250705102555966', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

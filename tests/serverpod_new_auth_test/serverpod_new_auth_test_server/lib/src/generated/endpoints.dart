@@ -27,7 +27,9 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
     as _i11;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i12;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
+    as _i13;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i14;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -331,6 +333,8 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_user'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_backwards_compatibility'] = _i13.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i14.Endpoints()..initializeEndpoints(server);
   }
 }
