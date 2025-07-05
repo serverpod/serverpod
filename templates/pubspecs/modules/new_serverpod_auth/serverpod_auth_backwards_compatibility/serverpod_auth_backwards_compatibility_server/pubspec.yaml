@@ -9,7 +9,11 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  crypto: ^3.0.2
+  meta: ^1.11.0
+  pointycastle: ^3.7.4
   serverpod: SERVERPOD_VERSION
+  serverpod_auth_email_account_server: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
 
@@ -21,6 +25,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_auth_email_account_server:
+    path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
   serverpod_auth_user_server:
     path: ../../serverpod_auth_user/serverpod_auth_user_server
   serverpod_lints:

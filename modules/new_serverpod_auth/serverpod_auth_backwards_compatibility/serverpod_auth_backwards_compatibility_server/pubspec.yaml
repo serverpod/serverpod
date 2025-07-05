@@ -10,7 +10,11 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
+  crypto: ^3.0.2
+  meta: ^1.11.0
+  pointycastle: ^3.7.4
   serverpod: 2.9.1
+  serverpod_auth_email_account_server: 2.9.1
   serverpod_auth_user_server: 2.9.1
   serverpod_shared: 2.9.1
 
@@ -22,6 +26,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_auth_email_account_server:
+    path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
   serverpod_auth_user_server:
     path: ../../serverpod_auth_user/serverpod_auth_user_server
   serverpod_lints:
