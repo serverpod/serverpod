@@ -11,21 +11,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as _i3;
-import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
-    as _i4;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
-    as _i5;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
-    as _i6;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i7;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i8;
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
+    as _i3;
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+    as _i4;
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
+    as _i5;
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+    as _i6;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+    as _i8;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i9;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i10;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i10;
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -52,6 +52,9 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -92,35 +95,35 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_email.$className';
+      return 'serverpod_auth_backwards_compatibility.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_migration.$className';
+      return 'serverpod_auth_email.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_profile.$className';
+      return 'serverpod_auth_migration.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_email_account.$className';
+      return 'serverpod_auth_profile.$className';
     }
     className = _i7.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_session.$className';
+      return 'serverpod_auth.$className';
     }
     className = _i8.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_email_account.$className';
     }
     className = _i9.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_backwards_compatibility.$className';
+      return 'serverpod_auth_user.$className';
     }
     className = _i10.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return 'serverpod_auth_session.$className';
     }
     return null;
   }
@@ -135,36 +138,36 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_backwards_compatibility.')) {
+      data['className'] = dataClassName.substring(39);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth_email.')) {
       data['className'] = dataClassName.substring(21);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_migration.')) {
       data['className'] = dataClassName.substring(25);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_profile.')) {
       data['className'] = dataClassName.substring(23);
-      return _i5.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_email_account.')) {
-      data['className'] = dataClassName.substring(29);
       return _i6.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_session.')) {
-      data['className'] = dataClassName.substring(23);
-      return _i7.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
-      data['className'] = dataClassName.substring(20);
-      return _i8.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_backwards_compatibility.')) {
-      data['className'] = dataClassName.substring(39);
-      return _i9.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
+      return _i7.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_email_account.')) {
+      data['className'] = dataClassName.substring(29);
+      return _i8.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_user.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i9.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_session.')) {
+      data['className'] = dataClassName.substring(23);
       return _i10.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
