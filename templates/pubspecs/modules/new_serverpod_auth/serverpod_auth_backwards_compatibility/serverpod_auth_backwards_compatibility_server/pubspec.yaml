@@ -1,22 +1,21 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_auth_backwards_compatibility_server
 description: Serverpod authentication backwards compatibility server module.
-version: 2.9.1
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod: 2.9.1
-  serverpod_auth_user_server: 2.9.1
-  serverpod_shared: 2.9.1
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ">=3.0.0 <7.0.0"
-  serverpod_test: 2.9.1
+  serverpod_test: SERVERPOD_VERSION
   test: ^1.24.2
 
 dependency_overrides:

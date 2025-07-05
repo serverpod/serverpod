@@ -2,11 +2,11 @@ name: serverpod_auth_backwards_compatibility_client
 description: Serverpod authentication backwards compatibility client module.
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod_auth_user_client: 2.9.1
-  serverpod_client: 2.9.1
+  serverpod_auth_user_client: SERVERPOD_VERSION
+  serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_auth_user_client:
