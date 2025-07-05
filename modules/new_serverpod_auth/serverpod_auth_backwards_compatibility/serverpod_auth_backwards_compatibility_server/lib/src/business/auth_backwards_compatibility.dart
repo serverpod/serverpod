@@ -60,6 +60,19 @@ abstract final class AuthBackwardsCompatibility {
     );
   }
 
+  /// Removes the legacy password from the database.
+  static Future<void> clearLegacyPassword(
+    final Session session, {
+    required final UuidValue emailAccountId,
+    final Transaction? transaction,
+  }) async {
+    await LegacyEmailPassword.db.deleteWhere(
+      session,
+      where: (final t) => t.emailAccountId.equals(emailAccountId),
+      transaction: transaction,
+    );
+  }
+
   /// Imports a legacy session from `serverpod_auth` mapped to the new
   ///  `AuthUser`.
   ///

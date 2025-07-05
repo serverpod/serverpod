@@ -28,7 +28,14 @@ Future<bool> legacyEmailPasswordValidator(
           AuthBackwardsCompatibility.config.extraSaltyHash ? email : null,
       pepper: _LegacyEmailSecrets.pepper,
     ).validate(password);
-  } catch (e) {
+  } catch (e, stackTrace) {
+    session.log(
+      'Failed to check password against legacy system',
+      exception: e,
+      stackTrace: stackTrace,
+      level: LogLevel.error,
+    );
+
     return false;
   }
 }

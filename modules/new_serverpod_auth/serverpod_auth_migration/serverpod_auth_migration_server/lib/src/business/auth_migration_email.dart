@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
@@ -39,72 +40,52 @@ abstract final class AuthMigrationEmail {
   }) async {
     email = email.toLowerCase();
 
+    // Attempt migration without password, such that a caller will not conclude
+    // that no account exists, in which case they might create a conflicting one.
+    await migrateWithoutPassword(
+      session,
+      email: email,
+      transaction: transaction,
+    );
+
     final emailAccountInfo =
         await new_email_account.EmailAccounts.admin.findAccount(
       session,
       email: email,
       transaction: transaction,
     );
-    if (emailAccountInfo != null && emailAccountInfo.hasPassword) {
+
+    if (emailAccountInfo == null || emailAccountInfo.hasPassword) {
       return;
     }
 
-    final authenticationResult = await legacy_auth.Emails.authenticate(
+    final passwordIsValid =
+        await AuthBackwardsCompatibility.isLegacyPasswordValid(
       session,
-      email,
-      password,
+      email: email,
+      emailAccountId: emailAccountInfo.emailAccountId,
+      password: password,
+      transaction: transaction,
     );
 
-    if (!authenticationResult.success) {
-      // Attempt migration without password, such that a caller will not conclude
-      // that no account exists, in which case they might create a conflicting one.
-      await migrateWithoutPassword(session, email: email);
-
+    if (!passwordIsValid) {
       // A login will of course fail in the new auth provider, but we don't want
       // to preempt any throttling or logging, and thus let it continue.
       return;
     }
 
-    // Remove the authentication that was implicitly created upon successful
-    // login in the legacy module.
-    await legacy_auth.AuthKey.db.deleteWhere(
+    await AuthBackwardsCompatibility.clearLegacyPassword(
       session,
-      where: (final t) => t.id.equals(authenticationResult.keyId!),
-      transaction: transaction,
+      emailAccountId: emailAccountInfo.emailAccountId,
     );
 
-    if (emailAccountInfo != null && !emailAccountInfo.hasPassword) {
-      // The account was already migrated without a password, and now we need to
-      // set the password to the correct one from the old system.
-      await new_email_account.EmailAccounts.admin.setPassword(
-        session,
-        email: email,
-        password: password,
-        transaction: transaction,
-      );
-
-      return;
-    }
-
-    final userInfo = authenticationResult.userInfo!;
-
-    await DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        await migrateUserIfNeeded(
-          session,
-          userInfo,
-          transaction: transaction,
-        );
-
-        await new_email_account.EmailAccounts.admin.setPassword(
-          session,
-          email: email,
-          password: password,
-          transaction: transaction,
-        );
-      },
+    // The account was already migrated without a password, and now we need to
+    // set the password to the correct one from the old system.
+    await new_email_account.EmailAccounts.admin.setPassword(
+      session,
+      email: email,
+      password: password,
+      transaction: transaction,
     );
   }
 
