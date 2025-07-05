@@ -10,9 +10,11 @@ environment:
 
 dependencies:
   serverpod: SERVERPOD_VERSION
+  serverpod_auth_backwards_compatibility_server: SERVERPOD_VERSION
   serverpod_auth_email_server: SERVERPOD_VERSION
   serverpod_auth_migration_server: SERVERPOD_VERSION
   serverpod_auth_profile_server: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ">=3.0.0 <7.0.0"
