@@ -88,6 +88,7 @@ declare -a flutter_paths=(
   "modules/serverpod_auth/serverpod_auth_email_flutter"
   "modules/serverpod_auth/serverpod_auth_firebase_flutter"
   "modules/serverpod_chat/serverpod_chat_flutter"
+  "tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter"
   "tests/serverpod_test_flutter"
 )
 
