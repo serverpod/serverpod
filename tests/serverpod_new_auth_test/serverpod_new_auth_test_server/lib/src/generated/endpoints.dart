@@ -10,48 +10,230 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/email_account_endpoint.dart' as _i2;
-import '../endpoints/session_test_endpoint.dart' as _i3;
-import '../endpoints/user_profile_endpoint.dart' as _i4;
-import 'package:uuid/uuid_value.dart' as _i5;
-import 'dart:typed_data' as _i6;
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as _i7;
-import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
+import '../endpoints/email_account_backwards_compatibility_endpoint.dart'
+    as _i2;
+import '../endpoints/email_account_endpoint.dart' as _i3;
+import '../endpoints/session_test_endpoint.dart' as _i4;
+import '../endpoints/user_profile_endpoint.dart' as _i5;
+import 'package:uuid/uuid_value.dart' as _i6;
+import 'dart:typed_data' as _i7;
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
     as _i8;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
     as _i9;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i10;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i11;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i12;
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+    as _i13;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i12;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
+    as _i14;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'emailAccount': _i2.EmailAccountEndpoint()
+      'emailAccountBackwardsCompatibilityTest':
+          _i2.EmailAccountBackwardsCompatibilityTestEndpoint()
+            ..initialize(
+              server,
+              'emailAccountBackwardsCompatibilityTest',
+              null,
+            ),
+      'emailAccount': _i3.EmailAccountEndpoint()
         ..initialize(
           server,
           'emailAccount',
           null,
         ),
-      'sessionTest': _i3.SessionTestEndpoint()
+      'sessionTest': _i4.SessionTestEndpoint()
         ..initialize(
           server,
           'sessionTest',
           null,
         ),
-      'userProfile': _i4.UserProfileEndpoint()
+      'userProfile': _i5.UserProfileEndpoint()
         ..initialize(
           server,
           'userProfile',
           null,
         ),
     };
+    connectors['emailAccountBackwardsCompatibilityTest'] =
+        _i1.EndpointConnector(
+      name: 'emailAccountBackwardsCompatibilityTest',
+      endpoint: endpoints['emailAccountBackwardsCompatibilityTest']!,
+      methodConnectors: {
+        'createLegacyUser': _i1.MethodConnector(
+          name: 'createLegacyUser',
+          params: {
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .createLegacyUser(
+            session,
+            email: params['email'],
+            password: params['password'],
+          ),
+        ),
+        'createLegacySession': _i1.MethodConnector(
+          name: 'createLegacySession',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'scopes': _i1.ParameterDescription(
+              name: 'scopes',
+              type: _i1.getType<Set<String>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .createLegacySession(
+            session,
+            userId: params['userId'],
+            scopes: params['scopes'],
+          ),
+        ),
+        'migrateUserByEmail': _i1.MethodConnector(
+          name: 'migrateUserByEmail',
+          params: {
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .migrateUserByEmail(
+            session,
+            email: params['email'],
+            password: params['password'],
+          ),
+        ),
+        'getNewAuthUserId': _i1.MethodConnector(
+          name: 'getNewAuthUserId',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .getNewAuthUserId(
+            session,
+            userId: params['userId'],
+          ),
+        ),
+        'deleteLegacyAuthData': _i1.MethodConnector(
+          name: 'deleteLegacyAuthData',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .deleteLegacyAuthData(
+            session,
+            userId: params['userId'],
+          ),
+        ),
+        'backwardsCompatibleAuthSessionCheck': _i1.MethodConnector(
+          name: 'backwardsCompatibleAuthSessionCheck',
+          params: {
+            'sessionKey': _i1.ParameterDescription(
+              name: 'sessionKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .backwardsCompatibleAuthSessionCheck(
+            session,
+            sessionKey: params['sessionKey'],
+          ),
+        ),
+        'checkLegacyPassword': _i1.MethodConnector(
+          name: 'checkLegacyPassword',
+          params: {
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccountBackwardsCompatibilityTest']
+                      as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
+                  .checkLegacyPassword(
+            session,
+            email: params['email'],
+            password: params['password'],
+          ),
+        ),
+      },
+    );
     connectors['emailAccount'] = _i1.EndpointConnector(
       name: 'emailAccount',
       endpoint: endpoints['emailAccount']!,
@@ -74,7 +256,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAccount'] as _i2.EmailAccountEndpoint).login(
+              (endpoints['emailAccount'] as _i3.EmailAccountEndpoint).login(
             session,
             email: params['email'],
             password: params['password'],
@@ -98,7 +280,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAccount'] as _i2.EmailAccountEndpoint)
+              (endpoints['emailAccount'] as _i3.EmailAccountEndpoint)
                   .startRegistration(
             session,
             email: params['email'],
@@ -110,7 +292,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'accountRequestId': _i1.ParameterDescription(
               name: 'accountRequestId',
-              type: _i1.getType<_i5.UuidValue>(),
+              type: _i1.getType<_i6.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -123,7 +305,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAccount'] as _i2.EmailAccountEndpoint)
+              (endpoints['emailAccount'] as _i3.EmailAccountEndpoint)
                   .finishRegistration(
             session,
             accountRequestId: params['accountRequestId'],
@@ -143,7 +325,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAccount'] as _i2.EmailAccountEndpoint)
+              (endpoints['emailAccount'] as _i3.EmailAccountEndpoint)
                   .startPasswordReset(
             session,
             email: params['email'],
@@ -154,7 +336,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
-              type: _i1.getType<_i5.UuidValue>(),
+              type: _i1.getType<_i6.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -172,7 +354,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['emailAccount'] as _i2.EmailAccountEndpoint)
+              (endpoints['emailAccount'] as _i3.EmailAccountEndpoint)
                   .finishPasswordReset(
             session,
             passwordResetRequestId: params['passwordResetRequestId'],
@@ -193,7 +375,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i4.SessionTestEndpoint)
                   .createTestUser(session),
         ),
         'createSession': _i1.MethodConnector(
@@ -201,7 +383,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authUserId': _i1.ParameterDescription(
               name: 'authUserId',
-              type: _i1.getType<_i5.UuidValue>(),
+              type: _i1.getType<_i6.UuidValue>(),
               nullable: false,
             )
           },
@@ -209,7 +391,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i4.SessionTestEndpoint)
                   .createSession(
             session,
             params['authUserId'],
@@ -220,7 +402,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authUserId': _i1.ParameterDescription(
               name: 'authUserId',
-              type: _i1.getType<_i5.UuidValue>(),
+              type: _i1.getType<_i6.UuidValue>(),
               nullable: false,
             )
           },
@@ -228,7 +410,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i3.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i4.SessionTestEndpoint)
                   .checkSession(
             session,
             params['authUserId'],
@@ -247,7 +429,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i5.UserProfileEndpoint)
                   .get(session),
         ),
         'removeUserImage': _i1.MethodConnector(
@@ -257,7 +439,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i5.UserProfileEndpoint)
                   .removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
@@ -265,7 +447,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i6.ByteData>(),
+              type: _i1.getType<_i7.ByteData>(),
               nullable: false,
             )
           },
@@ -273,7 +455,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i5.UserProfileEndpoint)
                   .setUserImage(
             session,
             params['image'],
@@ -292,7 +474,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i5.UserProfileEndpoint)
                   .changeUserName(
             session,
             params['userName'],
@@ -311,7 +493,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i4.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i5.UserProfileEndpoint)
                   .changeFullName(
             session,
             params['fullName'],
@@ -319,18 +501,20 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_email'] = _i7.Endpoints()
+    modules['serverpod_auth_backwards_compatibility'] = _i8.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _i8.Endpoints()
+    modules['serverpod_auth_email'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i9.Endpoints()
+    modules['serverpod_auth_migration'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_email_account'] = _i10.Endpoints()
+    modules['serverpod_auth_profile'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i11.Endpoints()
+    modules['serverpod_auth'] = _i12.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_email_account'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i12.Endpoints()
+    modules['serverpod_auth_user'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_session'] = _i15.Endpoints()
+      ..initializeEndpoints(server);
   }
 }

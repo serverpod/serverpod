@@ -1,0 +1,26 @@
+class: LegacySession
+serverOnly: true
+table: serverpod_auth_backwards_compatibility_session
+fields:
+  # Uses `int` IDs to match the legacy behavior, which relies on look up by ID
+
+  ### The [AuthUser] this session belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The scopes this session provides access to.
+  scopeNames: Set<String>
+
+  ### The time when this access session was last used by a client.
+  ###
+  ### Operates only with minute resolution, to avoid excessive writes to the database.
+  ###
+  ### Unused sessions will have a value of `null`.
+  lastUsed: DateTime?
+
+  ### The hashed version of the key (as the legacy `AuthKey`)
+  hash: String
+
+  ### The method through which this session was created.
+  ###
+  ### This can be either an email or social login, a personal access token, service account etc.
+  method: String

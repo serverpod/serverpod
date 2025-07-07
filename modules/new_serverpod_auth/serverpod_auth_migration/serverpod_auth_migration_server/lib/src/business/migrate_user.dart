@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -56,6 +57,13 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     transaction: transaction,
   );
 
+  await _importSessions(
+    session,
+    oldUserId: userInfo.id!,
+    newAuthUserId: authUser.id,
+    transaction: transaction,
+  );
+
   if (AuthMigrations.config.importProfile) {
     await _importProfile(
       session,
@@ -93,29 +101,61 @@ Future<void> _importEmailAccounts(
     transaction: transaction,
   );
   for (final emailAuth in emailAuths) {
-    await new_email_account.EmailAccounts.admin.createEmailAuthentication(
+    final newEmailAccountId =
+        await new_email_account.EmailAccounts.admin.createEmailAuthentication(
       session,
       authUserId: newAuthUserId,
       email: emailAuth.email,
       password: null,
       transaction: transaction,
     );
+
+    await AuthBackwardsCompatibility.storeLegacyPassword(
+      session,
+      emailAccountId: newEmailAccountId,
+      passwordHash: emailAuth.hash,
+      transaction: transaction,
+    );
   }
 }
 
-Future<void> _importUserIdentifier(final Session session,
-    {required final legacy_auth.UserInfo userInfo,
-    required final UuidValue newAuthUserId,
-    required final Transaction transaction}) async {
+Future<void> _importSessions(
+  final Session session, {
+  required final int oldUserId,
+  required final UuidValue newAuthUserId,
+  required final Transaction transaction,
+}) async {
+  final authKeys = await legacy_auth.AuthKey.db.find(
+    session,
+    where: (final t) => t.userId.equals(oldUserId),
+    transaction: transaction,
+  );
+
+  for (final authKey in authKeys) {
+    await AuthBackwardsCompatibility.storeLegacySession(
+      session,
+      authUserId: newAuthUserId,
+      scopeNames: authKey.scopeNames,
+      sessionKeyHash: authKey.hash,
+      method: authKey.method,
+      transaction: transaction,
+    );
+  }
+}
+
+Future<void> _importUserIdentifier(
+  final Session session, {
+  required final legacy_auth.UserInfo userInfo,
+  required final UuidValue newAuthUserId,
+  required final Transaction transaction,
+}) async {
   // We have to always import the user identifier, even if it matches the email,
   // as the legacy Google sign-in was using the email instead a "user ID".
   if (userInfo.userIdentifier.isNotEmpty) {
-    await LegacyUserIdentifier.db.insertRow(
+    await AuthBackwardsCompatibility.storeLegacyExternalUserIdentifier(
       session,
-      LegacyUserIdentifier(
-        newAuthUserId: newAuthUserId,
-        userIdentifier: userInfo.userIdentifier,
-      ),
+      authUserId: newAuthUserId,
+      userIdentifier: userInfo.userIdentifier,
       transaction: transaction,
     );
   }
