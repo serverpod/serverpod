@@ -1,5 +1,7 @@
+import 'package:serverpod_shared/serverpod_shared.dart';
+
 /// Exception class for all password missing exceptions.
-base class PasswordMissingException implements Exception {
+base class PasswordMissingException extends ExitException {
   /// The name of the password that is missing.
   final String passwordName;
 
@@ -7,9 +9,10 @@ base class PasswordMissingException implements Exception {
   final String envVarName;
 
   /// Creates a new instance of [PasswordMissingException].
-  PasswordMissingException(this.passwordName, this.envVarName);
+  PasswordMissingException(this.passwordName, this.envVarName) : super(1);
 
   /// The user-friendly message of the exception.
+  @override
   String get message => 'Missing password for "$passwordName". '
       'Please check your config/passwords.yaml file or the '
       '$envVarName environment variable.\n'

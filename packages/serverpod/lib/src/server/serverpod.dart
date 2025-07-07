@@ -411,17 +411,13 @@ class Serverpod {
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    try {
-      this.config = config?.copyWith(runMode: runMode) ??
-          ServerpodConfig.load(
-            runMode,
-            _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
-            _passwords,
-            commandLineArgs: _commandLineArgs.toMap(),
-          );
-    } on PasswordMissingException catch (e) {
-      throw ExitException(1, e.message);
-    }
+    this.config = config?.copyWith(runMode: runMode) ??
+        ServerpodConfig.load(
+          runMode,
+          _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
+          _passwords,
+          commandLineArgs: _commandLineArgs.toMap(),
+        );
 
     stdout.writeln(_getCommandLineArgsString());
 
@@ -1235,18 +1231,6 @@ class ExperimentalApi {
       context: contextFromSession(session),
     );
   }
-}
-
-/// Exception used to signal a
-class ExitException implements Exception {
-  /// Creates an instance of [ExitException].
-  ExitException(this.exitCode, [this.message = '']);
-
-  /// The error message
-  final String message;
-
-  /// The exit code
-  final int exitCode;
 }
 
 /// Internal methods used by the Serverpod. These methods are not intended to
