@@ -675,7 +675,7 @@ class Serverpod {
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
     var appliedMigrations =
-        (config.applyMigrations | config.applyRepairMigration);
+        (config.applyMigrations || config.applyRepairMigration);
     if (config.role == ServerpodRole.monolith ||
         (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
       logVerbose('Starting maintenance tasks.');
