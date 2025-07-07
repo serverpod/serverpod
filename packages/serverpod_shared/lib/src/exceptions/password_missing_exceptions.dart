@@ -6,10 +6,10 @@ base class PasswordMissingException extends ExitException {
   final String passwordName;
 
   /// The name of the environment variable that is missing.
-  final String envVarName;
+  String get envVarName => 'SERVERPOD_PASSWORD_$passwordName';
 
   /// Creates a new instance of [PasswordMissingException].
-  PasswordMissingException(this.passwordName, this.envVarName) : super(1);
+  PasswordMissingException(this.passwordName) : super(1);
 
   /// The user-friendly message of the exception.
   @override

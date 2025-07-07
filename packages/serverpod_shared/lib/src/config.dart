@@ -438,7 +438,6 @@ class DatabaseConfig {
     if (password == null) {
       throw PasswordMissingException(
         ServerpodPassword.databasePassword.configKey,
-        'SERVERPOD_PASSWORD_database',
       );
     }
 
@@ -517,7 +516,6 @@ class RedisConfig {
     if (password == null) {
       throw PasswordMissingException(
         ServerpodPassword.redisPassword.configKey,
-        'SERVERPOD_PASSWORD_redis',
       );
     }
 
