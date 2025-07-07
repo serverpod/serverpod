@@ -387,7 +387,7 @@ class Serverpod {
       exit(e.exitCode);
     } catch (e, stackTrace) {
       _reportException(e, stackTrace, message: 'Error initializing Serverpod');
-      throw ExitException(1, 'Serverpod initialization failed: $e');
+      exit(1);
     }
   }
 
