@@ -58,7 +58,7 @@ database:
         loadYaml(serverpodConfig),
       ),
       throwsA(
-        isA<DatabasePasswordMissingException>()
+        isA<PasswordMissingException>()
             .having(
               (e) => e.passwordName,
               'passwordName',

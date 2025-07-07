@@ -436,7 +436,7 @@ class DatabaseConfig {
 
     var password = passwords[ServerpodPassword.databasePassword.configKey];
     if (password == null) {
-      throw DatabasePasswordMissingException(
+      throw PasswordMissingException(
         ServerpodPassword.databasePassword.configKey,
         'SERVERPOD_PASSWORD_database',
       );
@@ -515,7 +515,7 @@ class RedisConfig {
 
     var password = passwords[ServerpodPassword.redisPassword.configKey];
     if (password == null) {
-      throw RedisPasswordMissingException(
+      throw PasswordMissingException(
         ServerpodPassword.redisPassword.configKey,
         'SERVERPOD_PASSWORD_redis',
       );

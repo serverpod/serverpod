@@ -56,7 +56,7 @@ redis:
         loadYaml(serverpodConfig),
       ),
       throwsA(
-        isA<RedisPasswordMissingException>()
+        isA<PasswordMissingException>()
             .having(
               (e) => e.passwordName,
               'passwordName',

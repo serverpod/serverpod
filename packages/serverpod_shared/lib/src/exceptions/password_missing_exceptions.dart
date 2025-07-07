@@ -1,5 +1,5 @@
-/// Base class for all password missing exceptions.
-abstract class PasswordMissingException implements Exception {
+/// Exception class for all password missing exceptions.
+base class PasswordMissingException implements Exception {
   /// The name of the password that is missing.
   final String passwordName;
 
@@ -15,20 +15,7 @@ abstract class PasswordMissingException implements Exception {
       '$envVarName environment variable.';
 
   @override
-  String toString() => '$runtimeType: The password "$passwordName" or '
+  String toString() =>
+      'PasswordMissingException: The password "$passwordName" or '
       'the environment variable "$envVarName" is missing.';
-}
-
-/// Exception thrown when a database password is missing from the configuration
-/// or the environment variable.
-final class DatabasePasswordMissingException extends PasswordMissingException {
-  /// Creates a new instance of [DatabasePasswordMissingException].
-  DatabasePasswordMissingException(super.passwordName, super.envVarName);
-}
-
-/// Exception thrown when a Redis password is missing from the configuration
-/// or the environment variable.
-final class RedisPasswordMissingException extends PasswordMissingException {
-  /// Creates a new instance of [RedisPasswordMissingException].
-  RedisPasswordMissingException(super.passwordName, super.envVarName);
 }
