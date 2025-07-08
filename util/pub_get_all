@@ -81,6 +81,7 @@ declare -a dart_paths=(
 declare -a flutter_paths=(
   "examples/auth_example/auth_example_flutter"
   "examples/chat/chat_flutter"
+  "modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_flutter"
   "modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter"
   "modules/serverpod_auth/serverpod_auth_apple_flutter"
   "modules/serverpod_auth/serverpod_auth_email_flutter"
