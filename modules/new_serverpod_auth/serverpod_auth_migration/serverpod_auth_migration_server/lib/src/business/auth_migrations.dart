@@ -1,11 +1,8 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as new_session;
 
 /// Collection of helpers to migrate from `serverpod_auth` to the new packages.
 abstract final class AuthMigrations {
@@ -18,53 +15,38 @@ abstract final class AuthMigrations {
   /// legacy login/registration endpoints, and potentially even sessions.
   static Future<bool> isUserMigrated(
     final Session session,
-    final int userId,
-  ) async {
-    return await getNewAuthUserId(session, userId) != null;
+    final int userId, {
+    final Transaction? transaction,
+  }) async {
+    final authUserId = await getNewAuthUserId(
+      session,
+      userId,
+      transaction: transaction,
+    );
+
+    return authUserId != null;
   }
 
-  /// Returns the `AuthUser` id for a `UserInfo` which has already been migrated.
+  /// Returns the `AuthUser` id for a `UserInfo` if it has been migrated.
   static Future<UuidValue?> getNewAuthUserId(
     final Session session,
-    final int userId,
-  ) async {
+    final int userId, {
+    final Transaction? transaction,
+  }) async {
     final migratedUser = await MigratedUser.db.findFirstRow(
       session,
       where: (final t) => t.oldUserId.equals(userId),
+      transaction: transaction,
     );
 
     return migratedUser?.newAuthUserId;
   }
 
-  /// Authentication helper which supports both the new and old authentication.
-  ///
-  /// Unlike the stock `serverpod_auth` `authenticationHandler`, this will set
-  /// the new UUID `AuthUser` id for users which have been migrated. Thus they
-  /// can keep using their session even if the backend has been fully migrated
-  /// off of `int` user ID (but the table must not have been dropped of course).
-  static Future<AuthenticationInfo?> authenticationHandler(
-    final Session session,
-    final String key,
-  ) async {
-    final newAuthInfo =
-        await new_session.AuthSessions.authenticationHandler(session, key);
-    if (newAuthInfo != null) {
-      return newAuthInfo;
-    }
-
-    final legacyAuthInfo =
-        await AuthBackwardsCompatibility.authenticationHandler(
-      session,
-      key,
-    );
-
-    return legacyAuthInfo;
-  }
-
   /// Migrates the next batch of users and their authentication methods.
-  static Future<int> migrateNextUserBatch(
+  static Future<int> migrateUsers(
     final Session session, {
-    final int maxUsers = 100,
+    required final UserMigrationFunction? userMigration,
+    final int? maxUsers,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -76,7 +58,7 @@ abstract final class AuthMigrations {
           'WHERE NOT EXISTS ( '
           '  SELECT 1 FROM serverpod_auth_migration_migrated_user m WHERE u.id = m."oldUserId" '
           ') '
-          'LIMIT $maxUsers',
+          '${maxUsers != null ? 'LIMIT $maxUsers' : ''}',
           transaction: transaction,
         );
 
@@ -91,11 +73,20 @@ abstract final class AuthMigrations {
             transaction: transaction,
           ))!;
 
-          await migrateUserIfNeeded(
+          final (migratedUser, didCreate) = await migrateUserIfNeeded(
             session,
             userInfo,
             transaction: transaction,
           );
+
+          if (didCreate && userMigration != null) {
+            await userMigration(
+              session,
+              oldUserId: migratedUser.oldUserId,
+              newAuthUserId: migratedUser.newAuthUserId,
+              transaction: transaction,
+            );
+          }
         }
 
         return userIdsToMigrate.length;

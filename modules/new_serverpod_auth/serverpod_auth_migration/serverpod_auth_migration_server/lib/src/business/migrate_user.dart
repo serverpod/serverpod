@@ -57,12 +57,14 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     transaction: transaction,
   );
 
-  await _importSessions(
-    session,
-    oldUserId: userInfo.id!,
-    newAuthUserId: authUser.id,
-    transaction: transaction,
-  );
+  if (AuthMigrations.config.importSessions) {
+    await _importSessions(
+      session,
+      oldUserId: userInfo.id!,
+      newAuthUserId: authUser.id,
+      transaction: transaction,
+    );
+  }
 
   if (AuthMigrations.config.importProfile) {
     await _importProfile(
@@ -76,13 +78,6 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   migratedUser = await MigratedUser.db.insertRow(
     session,
     MigratedUser(oldUserId: userInfo.id!, newAuthUserId: authUser.id),
-    transaction: transaction,
-  );
-
-  await AuthMigrations.config.userMigrationHook?.call(
-    session,
-    oldUserId: userInfo.id!,
-    newAuthUserId: migratedUser.newAuthUserId,
     transaction: transaction,
   );
 
