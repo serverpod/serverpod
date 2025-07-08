@@ -6,6 +6,10 @@ export 'package:serverpod_shared/src/annotations.dart';
 // Config
 export 'package:serverpod_shared/src/config.dart';
 
+// Exceptions
+export 'package:serverpod_shared/src/exceptions/exit_exception.dart';
+export 'package:serverpod_shared/src/exceptions/password_missing_exceptions.dart';
+
 // Server
 export 'package:serverpod/server.dart';
 

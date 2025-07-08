@@ -57,11 +57,19 @@ database:
         passwords,
         loadYaml(serverpodConfig),
       ),
-      throwsA(isA<Exception>().having(
-        (e) => e.toString(),
-        'message',
-        equals('Exception: Missing database password.'),
-      )),
+      throwsA(
+        isA<PasswordMissingException>()
+            .having(
+              (e) => e.passwordName,
+              'passwordName',
+              equals('database'),
+            )
+            .having(
+              (e) => e.envVarName,
+              'envVarName',
+              equals('SERVERPOD_PASSWORD_database'),
+            ),
+      ),
     );
   });
 

@@ -374,11 +374,21 @@ class Serverpod {
           config: config,
           experimentalFeatures: experimentalFeatures,
         ) {
-    _initializeServerpod(
-      args,
-      config: config,
-      experimentalFeatures: experimentalFeatures,
-    );
+    try {
+      _initializeServerpod(
+        args,
+        config: config,
+        experimentalFeatures: experimentalFeatures,
+      );
+    } on ExitException catch (e) {
+      if (e.message.isNotEmpty) {
+        stderr.writeln(e.message);
+      }
+      exit(e.exitCode);
+    } catch (e, stackTrace) {
+      _reportException(e, stackTrace, message: 'Error initializing Serverpod');
+      exit(1);
+    }
   }
 
   void _initializeServerpod(
@@ -408,7 +418,6 @@ class Serverpod {
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    // Load config
     // Because `.copyWith` is not a real copyWith method (`null` is not a valid
     // value for any of the fields), this works due to CommandLineArgs.toMap()
     // returning a map with `null` values for any fields that were not provided.
@@ -1244,18 +1253,6 @@ class ExperimentalApi {
       context: contextFromSession(session),
     );
   }
-}
-
-/// Exception used to signal a
-class ExitException implements Exception {
-  /// Creates an instance of [ExitException].
-  ExitException(this.exitCode, [this.message = '']);
-
-  /// The error message
-  final String message;
-
-  /// The exit code
-  final int exitCode;
 }
 
 /// Internal methods used by the Serverpod. These methods are not intended to
