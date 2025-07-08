@@ -12,14 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  serverpod_auth_email_account_client:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client
-
-  serverpod_auth_session_flutter:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter
-
-  serverpod_new_auth_test_client:
-    path: ../serverpod_new_auth_test_client
+  serverpod_auth_backwards_compatibility_flutter: 2.9.1
+  serverpod_auth_client: 2.9.1
+  serverpod_auth_email_account_client: 2.9.1
+  serverpod_auth_session_flutter: 2.9.1
+  serverpod_auth_shared_flutter: 2.9.1
+  serverpod_new_auth_test_client: 2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -29,12 +27,18 @@ dev_dependencies:
 dependency_overrides:
   serverpod_auth_client:
     path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_auth_backwards_compatibility_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_client
+  serverpod_auth_backwards_compatibility_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_flutter
   serverpod_auth_session_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client
+  serverpod_auth_session_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter
   serverpod_auth_migration_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
   serverpod_auth_user_client:
@@ -45,6 +49,8 @@ dependency_overrides:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client
   serverpod_auth_email_account_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client
+  serverpod_new_auth_test_client:
+    path: ../serverpod_new_auth_test_client
   serverpod_lints:
     path: ../../../packages/serverpod_lints
   serverpod_serialization:

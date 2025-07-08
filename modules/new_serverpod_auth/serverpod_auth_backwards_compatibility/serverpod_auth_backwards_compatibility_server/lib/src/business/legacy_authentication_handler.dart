@@ -6,9 +6,11 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/protocol.dart';
 
-/// Authentication handler closely mirroring the behavior of `modules/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_handler.dart`
+/// Returns the `LegacySession` in case the session key can be properly validted.
+///
+/// Closely mirrors the behavior of `modules/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_handler.dart`
 @internal
-Future<AuthenticationInfo?> legacyAuthenticationHandler(
+Future<LegacySession?> resolveLegacySession(
   final Session session,
   final String key,
 ) async {
@@ -20,34 +22,17 @@ Future<AuthenticationInfo?> legacyAuthenticationHandler(
     if (keyId == null) return null;
     final secret = parts[1];
 
-    // Get the authentication key from the database
-    final tempSession = await session.serverpod.createSession(
-      enableLogging: false,
-    );
+    final legacySession = await LegacySession.db.findById(session, keyId);
 
-    final authKey = await LegacySession.db.findById(tempSession, keyId);
-    await tempSession.close();
-
-    if (authKey == null) return null;
+    if (legacySession == null) return null;
 
     // Hash the key from the user and check that it is what we expect
     final signInSalt = session.passwords['authKeySalt'] ?? _defaultAuthKeySalt;
     final expectedHash = _hashString(signInSalt, secret);
 
-    if (authKey.hash != expectedHash) return null;
+    if (legacySession.hash != expectedHash) return null;
 
-    // All looking bright, user is signed in
-
-    // Setup scopes
-    final scopes = <Scope>{
-      for (final scopeName in authKey.scopeNames) Scope(scopeName),
-    };
-
-    return AuthenticationInfo(
-      authKey.authUserId,
-      scopes,
-      authId: keyIdStr,
-    );
+    return legacySession;
   } catch (exception, stackTrace) {
     stderr.writeln('Failed authentication: $exception');
     stderr.writeln('$stackTrace');

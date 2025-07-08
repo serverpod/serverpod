@@ -10,13 +10,6 @@ fields:
   ### The scopes this session provides access to.
   scopeNames: Set<String>
 
-  ### The time when this access session was last used by a client.
-  ###
-  ### Operates only with minute resolution, to avoid excessive writes to the database.
-  ###
-  ### Unused sessions will have a value of `null`.
-  lastUsed: DateTime?
-
   ### The hashed version of the key (as the legacy `AuthKey`)
   hash: String
 

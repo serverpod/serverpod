@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
-import 'package:serverpod_auth_backwards_compatibility_server/src/business/legacy_authentication_handler.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/business/legacy_email_password_validator.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
@@ -153,14 +152,6 @@ abstract final class AuthBackwardsCompatibility {
       ),
       transaction: transaction,
     );
-  }
-
-  /// Check whether the `sessionKey` matches an imported legacy session.
-  static Future<AuthenticationInfo?> authenticationHandler(
-    final Session session,
-    final String sessionKey,
-  ) async {
-    return legacyAuthenticationHandler(session, sessionKey);
   }
 
   /// Imports a legacy (external) "user identifier".

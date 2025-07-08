@@ -77,17 +77,12 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     );
   }
 
-  /// Returns the new auth user ID of the session derived from the session key.
-  Future<UuidValue?> backwardsCompatibleAuthSessionCheck(
-    final Session session, {
-    required final String sessionKey,
-  }) async {
-    final authInfo = await AuthBackwardsCompatibility.authenticationHandler(
-      session,
-      sessionKey,
-    );
-
-    return authInfo?.userUuid;
+  /// Returns the user identifier associated with the session.
+  ///
+  /// Since the server runs with the backwards compatible auth handler, both
+  /// old session keys will work post migration.
+  Future<String?> sessionUserIdentifer(final Session session) async {
+    return (await session.authenticated)?.userIdentifier;
   }
 
   /// Returns the user ID of associated with the session derived from the session key

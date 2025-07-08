@@ -28,12 +28,6 @@ void main() {
         password: password,
       );
 
-      final authKey = await client.emailAccountBackwardsCompatibilityTest
-          .createLegacySession(
-        userId: userId,
-        scopes: {'test'},
-      );
-
       await client.emailAccountBackwardsCompatibilityTest.migrateUser(
         legacyUserId: userId,
         password: password,
@@ -42,14 +36,6 @@ void main() {
       final newAuthUserId =
           await client.emailAccountBackwardsCompatibilityTest.getNewAuthUserId(
         userId: userId,
-      );
-
-      expect(
-        await client.emailAccountBackwardsCompatibilityTest
-            .backwardsCompatibleAuthSessionCheck(
-          sessionKey: '${authKey.id!}:${authKey.key!}',
-        ),
-        newAuthUserId,
       );
 
       expect(

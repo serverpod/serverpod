@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
-import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart';
 import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart';
 import 'package:serverpod_auth_session_flutter/src/shared_preferences_key_value_storage.dart';
 
