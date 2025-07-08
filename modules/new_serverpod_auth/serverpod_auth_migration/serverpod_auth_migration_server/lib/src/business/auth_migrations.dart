@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
@@ -47,6 +48,7 @@ abstract final class AuthMigrations {
     final Session session, {
     required final UserMigrationFunction? userMigration,
     final int? maxUsers,
+    @visibleForTesting final int? legacyUserId,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -58,6 +60,7 @@ abstract final class AuthMigrations {
           'WHERE NOT EXISTS ( '
           '  SELECT 1 FROM serverpod_auth_migration_migrated_user m WHERE u.id = m."oldUserId" '
           ') '
+          '${legacyUserId != null ? 'AND u.id = $legacyUserId ' : ''}'
           '${maxUsers != null ? 'LIMIT $maxUsers' : ''}',
           transaction: transaction,
         );

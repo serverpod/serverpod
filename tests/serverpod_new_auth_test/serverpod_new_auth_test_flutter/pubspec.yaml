@@ -12,6 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  serverpod_auth_email_account_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client
+
   serverpod_auth_session_flutter:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_flutter
 
