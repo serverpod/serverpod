@@ -712,7 +712,7 @@ class Serverpod {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    bool verified = true;
+    bool verified;
 
     try {
       logVerbose('Initializing migration manager.');
