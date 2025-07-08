@@ -752,7 +752,6 @@ class Serverpod {
     } catch (e, stackTrace) {
       verified = false;
 
-      _exitCode = 1;
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
