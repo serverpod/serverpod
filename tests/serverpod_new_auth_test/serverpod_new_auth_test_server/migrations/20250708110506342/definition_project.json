@@ -7,6 +7,10 @@
       "version": "20240516151843329"
     },
     {
+      "module": "serverpod_auth_backwards_compatibility",
+      "version": "20250708110241098"
+    },
+    {
       "module": "serverpod_auth_email",
       "version": "20250611073844715"
     },
@@ -19,6 +23,10 @@
       "version": "20250519092101868"
     },
     {
+      "module": "serverpod_auth",
+      "version": "20240520102713718"
+    },
+    {
       "module": "serverpod_auth_email_account",
       "version": "20250606090748154"
     },
@@ -29,14 +37,6 @@
     {
       "module": "serverpod_auth_user",
       "version": "20250506070330492"
-    },
-    {
-      "module": "serverpod_auth_backwards_compatibility",
-      "version": "20250705102555966"
-    },
-    {
-      "module": "serverpod_auth",
-      "version": "20240520102713718"
     }
   ],
   "migrationApiVersion": 1

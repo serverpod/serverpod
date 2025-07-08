@@ -31,7 +31,6 @@ CREATE TABLE "serverpod_auth_backwards_compatibility_session" (
     "id" bigserial PRIMARY KEY,
     "authUserId" uuid NOT NULL,
     "scopeNames" json NOT NULL,
-    "lastUsed" timestamp without time zone,
     "hash" text NOT NULL,
     "method" text NOT NULL
 );
@@ -343,6 +342,22 @@ CREATE INDEX "serverpod_auth_email_account_request_completion_attempt_ip" ON "se
 CREATE INDEX "serverpod_auth_email_account_request_completion_attempt_at" ON "serverpod_auth_email_account_request_completion_attempt" USING btree ("attemptedAt");
 
 --
+-- Class AuthSession as table serverpod_auth_session
+--
+CREATE TABLE "serverpod_auth_session" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
+    "sessionKeyHash" bytea NOT NULL,
+    "sessionKeySalt" bytea NOT NULL,
+    "method" text NOT NULL
+);
+
+--
 -- Class AuthUser as table serverpod_auth_user
 --
 CREATE TABLE "serverpod_auth_user" (
@@ -452,14 +467,24 @@ ALTER TABLE ONLY "serverpod_auth_email_account_request_completion_attempt"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+--
+-- Foreign relations for "serverpod_auth_session" table
+--
+ALTER TABLE ONLY "serverpod_auth_session"
+    ADD CONSTRAINT "serverpod_auth_session_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_backwards_compatibility
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_backwards_compatibility', '20250705102555966', now())
+    VALUES ('serverpod_auth_backwards_compatibility', '20250708110241098', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250705102555966', "timestamp" = now();
+    DO UPDATE SET "version" = '20250708110241098', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -476,6 +501,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod_auth_email_account', '20250606090748154', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20250606090748154', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_session
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_user

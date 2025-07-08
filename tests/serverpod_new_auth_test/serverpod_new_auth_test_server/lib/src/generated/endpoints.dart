@@ -29,9 +29,9 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i14;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i15;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i15;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
     as _i16;
 
 class Endpoints extends _i1.EndpointDispatch {
@@ -194,25 +194,16 @@ class Endpoints extends _i1.EndpointDispatch {
             userId: params['userId'],
           ),
         ),
-        'backwardsCompatibleAuthSessionCheck': _i1.MethodConnector(
-          name: 'backwardsCompatibleAuthSessionCheck',
-          params: {
-            'sessionKey': _i1.ParameterDescription(
-              name: 'sessionKey',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
+        'sessionUserIdentifer': _i1.MethodConnector(
+          name: 'sessionUserIdentifer',
+          params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['emailAccountBackwardsCompatibilityTest']
                       as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
-                  .backwardsCompatibleAuthSessionCheck(
-            session,
-            sessionKey: params['sessionKey'],
-          ),
+                  .sessionUserIdentifer(session),
         ),
         'checkLegacyPassword': _i1.MethodConnector(
           name: 'checkLegacyPassword',
@@ -656,9 +647,9 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
     modules['serverpod_auth_email_account'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i15.Endpoints()
+    modules['serverpod_auth_session'] = _i15.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i16.Endpoints()
+    modules['serverpod_auth_user'] = _i16.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -93,13 +93,15 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
         {'userId': userId},
       );
 
-  /// Returns the new auth user ID of the session derived from the session key.
-  _i2.Future<_i4.UuidValue?> backwardsCompatibleAuthSessionCheck(
-          {required String sessionKey}) =>
-      caller.callServerEndpoint<_i4.UuidValue?>(
+  /// Returns the user identifier associated with the session.
+  ///
+  /// Since the server runs with the backwards compatible auth handler, both
+  /// old session keys will work post migration.
+  _i2.Future<String?> sessionUserIdentifer() =>
+      caller.callServerEndpoint<String?>(
         'emailAccountBackwardsCompatibilityTest',
-        'backwardsCompatibleAuthSessionCheck',
-        {'sessionKey': sessionKey},
+        'sessionUserIdentifer',
+        {},
       );
 
   /// Returns the user ID of associated with the session derived from the session key
@@ -373,8 +375,8 @@ class Modules {
     serverpod_auth_profile = _i6.Caller(client);
     auth = _i3.Caller(client);
     serverpod_auth_email_account = _i11.Caller(client);
-    serverpod_auth_user = _i12.Caller(client);
     serverpod_auth_session = _i5.Caller(client);
+    serverpod_auth_user = _i12.Caller(client);
   }
 
   late final _i8.Caller serverpod_auth_backwards_compatibility;
@@ -389,9 +391,9 @@ class Modules {
 
   late final _i11.Caller serverpod_auth_email_account;
 
-  late final _i12.Caller serverpod_auth_user;
-
   late final _i5.Caller serverpod_auth_session;
+
+  late final _i12.Caller serverpod_auth_user;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -462,7 +464,7 @@ class Client extends _i1.ServerpodClientShared {
         'serverpod_auth_profile': modules.serverpod_auth_profile,
         'auth': modules.auth,
         'serverpod_auth_email_account': modules.serverpod_auth_email_account,
-        'serverpod_auth_user': modules.serverpod_auth_user,
         'serverpod_auth_session': modules.serverpod_auth_session,
+        'serverpod_auth_user': modules.serverpod_auth_user,
       };
 }

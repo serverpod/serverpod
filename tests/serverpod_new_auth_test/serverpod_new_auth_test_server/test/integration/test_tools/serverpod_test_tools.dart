@@ -318,28 +318,26 @@ class _EmailAccountBackwardsCompatibilityTestEndpoint {
     });
   }
 
-  _i3.Future<_i5.UuidValue?> backwardsCompatibleAuthSessionCheck(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String sessionKey,
-  }) async {
+  _i3.Future<String?> sessionUserIdentifer(
+      _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'emailAccountBackwardsCompatibilityTest',
-        method: 'backwardsCompatibleAuthSessionCheck',
+        method: 'sessionUserIdentifer',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAccountBackwardsCompatibilityTest',
-          methodName: 'backwardsCompatibleAuthSessionCheck',
-          parameters: _i1.testObjectToJson({'sessionKey': sessionKey}),
+          methodName: 'sessionUserIdentifer',
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i5.UuidValue?>);
+        ) as _i3.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

@@ -4,7 +4,7 @@ emailAccountBackwardsCompatibilityTest:
   - migrateUser:
   - getNewAuthUserId:
   - deleteLegacyAuthData:
-  - backwardsCompatibleAuthSessionCheck:
+  - sessionUserIdentifer:
   - checkLegacyPassword:
 emailAccount:
   - login:

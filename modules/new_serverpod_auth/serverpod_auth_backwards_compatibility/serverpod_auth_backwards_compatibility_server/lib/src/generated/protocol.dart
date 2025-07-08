@@ -13,11 +13,13 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i3;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i4;
-import 'legacy_email_password.dart' as _i5;
-import 'legacy_external_user_identifier.dart' as _i6;
-import 'legacy_session.dart' as _i7;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i5;
+import 'legacy_email_password.dart' as _i6;
+import 'legacy_external_user_identifier.dart' as _i7;
+import 'legacy_session.dart' as _i8;
 export 'legacy_email_password.dart';
 export 'legacy_external_user_identifier.dart';
 export 'legacy_session.dart';
@@ -199,12 +201,6 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'Set<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'lastUsed',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-        ),
-        _i2.ColumnDefinition(
           name: 'hash',
           columnType: _i2.ColumnType.text,
           isNullable: false,
@@ -248,6 +244,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
+    ..._i5.Protocol.targetTableDefinitions,
   ];
 
   @override
@@ -256,26 +253,26 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i5.LegacyEmailPassword) {
-      return _i5.LegacyEmailPassword.fromJson(data) as T;
+    if (t == _i6.LegacyEmailPassword) {
+      return _i6.LegacyEmailPassword.fromJson(data) as T;
     }
-    if (t == _i6.LegacyExternalUserIdentifier) {
-      return _i6.LegacyExternalUserIdentifier.fromJson(data) as T;
+    if (t == _i7.LegacyExternalUserIdentifier) {
+      return _i7.LegacyExternalUserIdentifier.fromJson(data) as T;
     }
-    if (t == _i7.LegacySession) {
-      return _i7.LegacySession.fromJson(data) as T;
+    if (t == _i8.LegacySession) {
+      return _i8.LegacySession.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.LegacyEmailPassword?>()) {
-      return (data != null ? _i5.LegacyEmailPassword.fromJson(data) : null)
+    if (t == _i1.getType<_i6.LegacyEmailPassword?>()) {
+      return (data != null ? _i6.LegacyEmailPassword.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i6.LegacyExternalUserIdentifier?>()) {
+    if (t == _i1.getType<_i7.LegacyExternalUserIdentifier?>()) {
       return (data != null
-          ? _i6.LegacyExternalUserIdentifier.fromJson(data)
+          ? _i7.LegacyExternalUserIdentifier.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i7.LegacySession?>()) {
-      return (data != null ? _i7.LegacySession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.LegacySession?>()) {
+      return (data != null ? _i8.LegacySession.fromJson(data) : null) as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -285,6 +282,9 @@ class Protocol extends _i1.SerializationManagerServer {
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i4.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i5.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -297,11 +297,11 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i5.LegacyEmailPassword():
+      case _i6.LegacyEmailPassword():
         return 'LegacyEmailPassword';
-      case _i6.LegacyExternalUserIdentifier():
+      case _i7.LegacyExternalUserIdentifier():
         return 'LegacyExternalUserIdentifier';
-      case _i7.LegacySession():
+      case _i8.LegacySession():
         return 'LegacySession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -313,6 +313,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return 'serverpod_auth_email_account.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_session.$className';
+    }
+    className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_user.$className';
     }
@@ -326,13 +330,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'LegacyEmailPassword') {
-      return deserialize<_i5.LegacyEmailPassword>(data['data']);
+      return deserialize<_i6.LegacyEmailPassword>(data['data']);
     }
     if (dataClassName == 'LegacyExternalUserIdentifier') {
-      return deserialize<_i6.LegacyExternalUserIdentifier>(data['data']);
+      return deserialize<_i7.LegacyExternalUserIdentifier>(data['data']);
     }
     if (dataClassName == 'LegacySession') {
-      return deserialize<_i7.LegacySession>(data['data']);
+      return deserialize<_i8.LegacySession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -342,9 +346,13 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(29);
       return _i3.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_session.')) {
+      data['className'] = dataClassName.substring(23);
+      return _i4.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -364,18 +372,24 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     {
+      var table = _i5.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i5.LegacyEmailPassword:
-        return _i5.LegacyEmailPassword.t;
-      case _i6.LegacyExternalUserIdentifier:
-        return _i6.LegacyExternalUserIdentifier.t;
-      case _i7.LegacySession:
-        return _i7.LegacySession.t;
+      case _i6.LegacyEmailPassword:
+        return _i6.LegacyEmailPassword.t;
+      case _i7.LegacyExternalUserIdentifier:
+        return _i7.LegacyExternalUserIdentifier.t;
+      case _i8.LegacySession:
+        return _i8.LegacySession.t;
     }
     return null;
   }

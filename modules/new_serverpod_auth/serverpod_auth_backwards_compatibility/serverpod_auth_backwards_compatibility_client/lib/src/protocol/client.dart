@@ -10,10 +10,37 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'dart:async' as _i2;
+import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
+    as _i3;
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {}
+/// Enpoint to convert legacy sessions.
+/// {@category Endpoint}
+class EndpointSessionMigration extends _i1.EndpointRef {
+  EndpointSessionMigration(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {};
+  String get name => 'serverpod_auth_backwards_compatibility.sessionMigration';
+
+  /// Converts a legacy session into a `serverpod_auth_session` one.
+  _i2.Future<_i3.AuthSuccess?> convertSession({required String sessionKey}) =>
+      caller.callServerEndpoint<_i3.AuthSuccess?>(
+        'serverpod_auth_backwards_compatibility.sessionMigration',
+        'convertSession',
+        {'sessionKey': sessionKey},
+      );
+}
+
+class Caller extends _i1.ModuleEndpointCaller {
+  Caller(_i1.ServerpodClientShared client) : super(client) {
+    sessionMigration = EndpointSessionMigration(this);
+  }
+
+  late final EndpointSessionMigration sessionMigration;
+
+  @override
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'serverpod_auth_backwards_compatibility.sessionMigration':
+            sessionMigration
+      };
 }
