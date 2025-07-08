@@ -45,7 +45,7 @@ void run(List<String> args) async {
   ));
 
   // Add route to web server
-  pod.webServer.addRoute(RouteRoot(), '/');
+  pod.webServer.addRoute(RootRoute(), '/');
 
   // Start the server
   await pod.start();

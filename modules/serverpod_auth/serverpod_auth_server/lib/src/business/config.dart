@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
@@ -139,7 +140,7 @@ class AuthConfig {
   /// The time for password resets to be valid. Default is 15 minutes.
   final Duration passwordResetExpirationTime;
 
-  /// True if the server should use the accounts email address as part of the
+  /// True if the server should use the account's email address as part of the
   /// salt when storing password hashes (strongly recommended). Default is true.
   final bool extraSaltyHash;
 

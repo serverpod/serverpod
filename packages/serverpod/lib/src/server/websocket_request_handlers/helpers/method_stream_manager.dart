@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
@@ -140,7 +139,7 @@ class MethodStreamManager {
   static const Duration _closeTimeout = Duration(seconds: 6);
 
   /// The originating HTTP request.
-  final HttpRequest? httpRequest;
+  final Request? request;
 
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
@@ -151,7 +150,7 @@ class MethodStreamManager {
   final _OnInputStreamClosed? _onInputStreamClosed;
 
   MethodStreamManager({
-    required this.httpRequest,
+    required this.request,
     _OnInputStreamClosed? onInputStreamClosed,
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
@@ -518,7 +517,7 @@ class MethodStreamManager {
         space: OriginSpace.application,
         context: contextFromSession(
           session,
-          httpRequest: httpRequest,
+          request: request,
         ),
       );
 
@@ -591,7 +590,7 @@ class MethodStreamManager {
         space: OriginSpace.application,
         context: contextFromSession(
           session,
-          httpRequest: httpRequest,
+          request: request,
         ),
       );
 

@@ -630,173 +630,119 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.DatabaseMigrationVersion) {
-      return 'DatabaseMigrationVersion';
-    }
-    if (data is _i3.CachesInfo) {
-      return 'CachesInfo';
-    }
-    if (data is _i4.CloudStorageEntry) {
-      return 'CloudStorageEntry';
-    }
-    if (data is _i5.CloudStorageDirectUploadEntry) {
-      return 'CloudStorageDirectUploadEntry';
-    }
-    if (data is _i6.ClusterInfo) {
-      return 'ClusterInfo';
-    }
-    if (data is _i7.ClusterServerInfo) {
-      return 'ClusterServerInfo';
-    }
-    if (data is _i8.BulkData) {
-      return 'BulkData';
-    }
-    if (data is _i9.BulkDataException) {
-      return 'BulkDataException';
-    }
-    if (data is _i10.BulkQueryColumnDescription) {
-      return 'BulkQueryColumnDescription';
-    }
-    if (data is _i11.BulkQueryResult) {
-      return 'BulkQueryResult';
-    }
-    if (data is _i12.ColumnDefinition) {
-      return 'ColumnDefinition';
-    }
-    if (data is _i13.ColumnMigration) {
-      return 'ColumnMigration';
-    }
-    if (data is _i14.ColumnType) {
-      return 'ColumnType';
-    }
-    if (data is _i15.DatabaseDefinition) {
-      return 'DatabaseDefinition';
-    }
-    if (data is _i16.DatabaseDefinitions) {
-      return 'DatabaseDefinitions';
-    }
-    if (data is _i17.DatabaseMigration) {
-      return 'DatabaseMigration';
-    }
-    if (data is _i18.DatabaseMigrationAction) {
-      return 'DatabaseMigrationAction';
-    }
-    if (data is _i19.DatabaseMigrationActionType) {
-      return 'DatabaseMigrationActionType';
-    }
-    if (data is _i20.CacheInfo) {
-      return 'CacheInfo';
-    }
-    if (data is _i21.DatabaseMigrationWarning) {
-      return 'DatabaseMigrationWarning';
-    }
-    if (data is _i22.DatabaseMigrationWarningType) {
-      return 'DatabaseMigrationWarningType';
-    }
-    if (data is _i23.EnumSerialization) {
-      return 'EnumSerialization';
-    }
-    if (data is _i24.Filter) {
-      return 'Filter';
-    }
-    if (data is _i25.FilterConstraint) {
-      return 'FilterConstraint';
-    }
-    if (data is _i26.FilterConstraintType) {
-      return 'FilterConstraintType';
-    }
-    if (data is _i27.ForeignKeyAction) {
-      return 'ForeignKeyAction';
-    }
-    if (data is _i28.ForeignKeyDefinition) {
-      return 'ForeignKeyDefinition';
-    }
-    if (data is _i29.ForeignKeyMatchType) {
-      return 'ForeignKeyMatchType';
-    }
-    if (data is _i30.IndexDefinition) {
-      return 'IndexDefinition';
-    }
-    if (data is _i31.IndexElementDefinition) {
-      return 'IndexElementDefinition';
-    }
-    if (data is _i32.IndexElementDefinitionType) {
-      return 'IndexElementDefinitionType';
-    }
-    if (data is _i33.TableDefinition) {
-      return 'TableDefinition';
-    }
-    if (data is _i34.TableMigration) {
-      return 'TableMigration';
-    }
-    if (data is _i35.VectorDistanceFunction) {
-      return 'VectorDistanceFunction';
-    }
-    if (data is _i36.DistributedCacheEntry) {
-      return 'DistributedCacheEntry';
-    }
-    if (data is _i37.AccessDeniedException) {
-      return 'AccessDeniedException';
-    }
-    if (data is _i38.SessionLogResult) {
-      return 'SessionLogResult';
-    }
-    if (data is _i39.FutureCallEntry) {
-      return 'FutureCallEntry';
-    }
-    if (data is _i40.LogEntry) {
-      return 'LogEntry';
-    }
-    if (data is _i41.LogLevel) {
-      return 'LogLevel';
-    }
-    if (data is _i42.LogResult) {
-      return 'LogResult';
-    }
-    if (data is _i43.LogSettings) {
-      return 'LogSettings';
-    }
-    if (data is _i44.LogSettingsOverride) {
-      return 'LogSettingsOverride';
-    }
-    if (data is _i45.MessageLogEntry) {
-      return 'MessageLogEntry';
-    }
-    if (data is _i46.MethodInfo) {
-      return 'MethodInfo';
-    }
-    if (data is _i47.QueryLogEntry) {
-      return 'QueryLogEntry';
-    }
-    if (data is _i48.ReadWriteTestEntry) {
-      return 'ReadWriteTestEntry';
-    }
-    if (data is _i49.RuntimeSettings) {
-      return 'RuntimeSettings';
-    }
-    if (data is _i50.ServerHealthConnectionInfo) {
-      return 'ServerHealthConnectionInfo';
-    }
-    if (data is _i51.ServerHealthMetric) {
-      return 'ServerHealthMetric';
-    }
-    if (data is _i52.ServerHealthResult) {
-      return 'ServerHealthResult';
-    }
-    if (data is _i53.ServerpodSqlException) {
-      return 'ServerpodSqlException';
-    }
-    if (data is _i54.SessionLogEntry) {
-      return 'SessionLogEntry';
-    }
-    if (data is _i55.SessionLogFilter) {
-      return 'SessionLogFilter';
-    }
-    if (data is _i56.SessionLogInfo) {
-      return 'SessionLogInfo';
-    }
-    if (data is _i57.FileNotFoundException) {
-      return 'FileNotFoundException';
+    switch (data) {
+      case _i2.DatabaseMigrationVersion():
+        return 'DatabaseMigrationVersion';
+      case _i3.CachesInfo():
+        return 'CachesInfo';
+      case _i4.CloudStorageEntry():
+        return 'CloudStorageEntry';
+      case _i5.CloudStorageDirectUploadEntry():
+        return 'CloudStorageDirectUploadEntry';
+      case _i6.ClusterInfo():
+        return 'ClusterInfo';
+      case _i7.ClusterServerInfo():
+        return 'ClusterServerInfo';
+      case _i8.BulkData():
+        return 'BulkData';
+      case _i9.BulkDataException():
+        return 'BulkDataException';
+      case _i10.BulkQueryColumnDescription():
+        return 'BulkQueryColumnDescription';
+      case _i11.BulkQueryResult():
+        return 'BulkQueryResult';
+      case _i12.ColumnDefinition():
+        return 'ColumnDefinition';
+      case _i13.ColumnMigration():
+        return 'ColumnMigration';
+      case _i14.ColumnType():
+        return 'ColumnType';
+      case _i15.DatabaseDefinition():
+        return 'DatabaseDefinition';
+      case _i16.DatabaseDefinitions():
+        return 'DatabaseDefinitions';
+      case _i17.DatabaseMigration():
+        return 'DatabaseMigration';
+      case _i18.DatabaseMigrationAction():
+        return 'DatabaseMigrationAction';
+      case _i19.DatabaseMigrationActionType():
+        return 'DatabaseMigrationActionType';
+      case _i20.CacheInfo():
+        return 'CacheInfo';
+      case _i21.DatabaseMigrationWarning():
+        return 'DatabaseMigrationWarning';
+      case _i22.DatabaseMigrationWarningType():
+        return 'DatabaseMigrationWarningType';
+      case _i23.EnumSerialization():
+        return 'EnumSerialization';
+      case _i24.Filter():
+        return 'Filter';
+      case _i25.FilterConstraint():
+        return 'FilterConstraint';
+      case _i26.FilterConstraintType():
+        return 'FilterConstraintType';
+      case _i27.ForeignKeyAction():
+        return 'ForeignKeyAction';
+      case _i28.ForeignKeyDefinition():
+        return 'ForeignKeyDefinition';
+      case _i29.ForeignKeyMatchType():
+        return 'ForeignKeyMatchType';
+      case _i30.IndexDefinition():
+        return 'IndexDefinition';
+      case _i31.IndexElementDefinition():
+        return 'IndexElementDefinition';
+      case _i32.IndexElementDefinitionType():
+        return 'IndexElementDefinitionType';
+      case _i33.TableDefinition():
+        return 'TableDefinition';
+      case _i34.TableMigration():
+        return 'TableMigration';
+      case _i35.VectorDistanceFunction():
+        return 'VectorDistanceFunction';
+      case _i36.DistributedCacheEntry():
+        return 'DistributedCacheEntry';
+      case _i37.AccessDeniedException():
+        return 'AccessDeniedException';
+      case _i38.SessionLogResult():
+        return 'SessionLogResult';
+      case _i39.FutureCallEntry():
+        return 'FutureCallEntry';
+      case _i40.LogEntry():
+        return 'LogEntry';
+      case _i41.LogLevel():
+        return 'LogLevel';
+      case _i42.LogResult():
+        return 'LogResult';
+      case _i43.LogSettings():
+        return 'LogSettings';
+      case _i44.LogSettingsOverride():
+        return 'LogSettingsOverride';
+      case _i45.MessageLogEntry():
+        return 'MessageLogEntry';
+      case _i46.MethodInfo():
+        return 'MethodInfo';
+      case _i47.QueryLogEntry():
+        return 'QueryLogEntry';
+      case _i48.ReadWriteTestEntry():
+        return 'ReadWriteTestEntry';
+      case _i49.RuntimeSettings():
+        return 'RuntimeSettings';
+      case _i50.ServerHealthConnectionInfo():
+        return 'ServerHealthConnectionInfo';
+      case _i51.ServerHealthMetric():
+        return 'ServerHealthMetric';
+      case _i52.ServerHealthResult():
+        return 'ServerHealthResult';
+      case _i53.ServerpodSqlException():
+        return 'ServerpodSqlException';
+      case _i54.SessionLogEntry():
+        return 'SessionLogEntry';
+      case _i55.SessionLogFilter():
+        return 'SessionLogFilter';
+      case _i56.SessionLogInfo():
+        return 'SessionLogInfo';
+      case _i57.FileNotFoundException():
+        return 'FileNotFoundException';
     }
     return null;
   }

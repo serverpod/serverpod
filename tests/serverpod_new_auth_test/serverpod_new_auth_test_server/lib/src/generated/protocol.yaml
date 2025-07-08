@@ -1,9 +1,21 @@
+emailAccountBackwardsCompatibilityTest:
+  - createLegacyUser:
+  - createLegacySession:
+  - migrateUserByEmail:
+  - getNewAuthUserId:
+  - deleteLegacyAuthData:
+  - backwardsCompatibleAuthSessionCheck:
+  - checkLegacyPassword:
 emailAccount:
   - login:
   - startRegistration:
   - finishRegistration:
   - startPasswordReset:
   - finishPasswordReset:
+sessionTest:
+  - createTestUser:
+  - createSession:
+  - checkSession:
 userProfile:
   - get:
   - removeUserImage:

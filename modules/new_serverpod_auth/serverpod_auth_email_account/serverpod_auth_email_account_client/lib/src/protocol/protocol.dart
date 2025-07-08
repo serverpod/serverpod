@@ -191,44 +191,33 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.EmailAccountLoginException) {
-      return 'EmailAccountLoginException';
-    }
-    if (data is _i3.EmailAccountLoginFailureReason) {
-      return 'EmailAccountLoginFailureReason';
-    }
-    if (data is _i4.EmailAccountPasswordPolicyViolationException) {
-      return 'EmailAccountPasswordPolicyViolationException';
-    }
-    if (data is _i5.EmailAccountPasswordResetRequestExpiredException) {
-      return 'EmailAccountPasswordResetRequestExpiredException';
-    }
-    if (data is _i6.EmailAccountPasswordResetRequestNotFoundException) {
-      return 'EmailAccountPasswordResetRequestNotFoundException';
-    }
-    if (data is _i7.EmailAccountPasswordResetRequestTooManyAttemptsException) {
-      return 'EmailAccountPasswordResetRequestTooManyAttemptsException';
-    }
-    if (data is _i8.EmailAccountPasswordResetRequestUnauthorizedException) {
-      return 'EmailAccountPasswordResetRequestUnauthorizedException';
-    }
-    if (data is _i9.EmailAccountPasswordResetTooManyAttemptsException) {
-      return 'EmailAccountPasswordResetTooManyAttemptsException';
-    }
-    if (data is _i10.EmailAccountRequestExpiredException) {
-      return 'EmailAccountRequestExpiredException';
-    }
-    if (data is _i11.EmailAccountRequestNotFoundException) {
-      return 'EmailAccountRequestNotFoundException';
-    }
-    if (data is _i12.EmailAccountRequestNotVerifiedException) {
-      return 'EmailAccountRequestNotVerifiedException';
-    }
-    if (data is _i13.EmailAccountRequestTooManyAttemptsException) {
-      return 'EmailAccountRequestTooManyAttemptsException';
-    }
-    if (data is _i14.EmailAccountRequestUnauthorizedException) {
-      return 'EmailAccountRequestUnauthorizedException';
+    switch (data) {
+      case _i2.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i3.EmailAccountLoginFailureReason():
+        return 'EmailAccountLoginFailureReason';
+      case _i4.EmailAccountPasswordPolicyViolationException():
+        return 'EmailAccountPasswordPolicyViolationException';
+      case _i5.EmailAccountPasswordResetRequestExpiredException():
+        return 'EmailAccountPasswordResetRequestExpiredException';
+      case _i6.EmailAccountPasswordResetRequestNotFoundException():
+        return 'EmailAccountPasswordResetRequestNotFoundException';
+      case _i7.EmailAccountPasswordResetRequestTooManyAttemptsException():
+        return 'EmailAccountPasswordResetRequestTooManyAttemptsException';
+      case _i8.EmailAccountPasswordResetRequestUnauthorizedException():
+        return 'EmailAccountPasswordResetRequestUnauthorizedException';
+      case _i9.EmailAccountPasswordResetTooManyAttemptsException():
+        return 'EmailAccountPasswordResetTooManyAttemptsException';
+      case _i10.EmailAccountRequestExpiredException():
+        return 'EmailAccountRequestExpiredException';
+      case _i11.EmailAccountRequestNotFoundException():
+        return 'EmailAccountRequestNotFoundException';
+      case _i12.EmailAccountRequestNotVerifiedException():
+        return 'EmailAccountRequestNotVerifiedException';
+      case _i13.EmailAccountRequestTooManyAttemptsException():
+        return 'EmailAccountRequestTooManyAttemptsException';
+      case _i14.EmailAccountRequestUnauthorizedException():
+        return 'EmailAccountRequestUnauthorizedException';
     }
     className = _i15.Protocol().getClassNameForObject(data);
     if (className != null) {

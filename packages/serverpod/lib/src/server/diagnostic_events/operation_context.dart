@@ -3,7 +3,6 @@ import 'package:uuid/uuid_value.dart';
 import '../../authentication/authentication_info.dart';
 
 import 'event_handler.dart';
-import 'connection_info.dart';
 
 /// Represents the type of "operation" during which the event was caused.
 ///
@@ -96,8 +95,8 @@ final class FutureCallOpContext extends OperationEventContext {
 /// The context of a client call operation.
 /// Subclasses represent web, method, and method streaming calls.
 base class ClientCallOpContext extends OperationEventContext {
-  /// The client connection information.
-  final ConnectionInfo connectionInfo;
+  /// Information identifying the client caller.
+  final String? remoteInfo;
 
   /// The URI that the client invoked.
   final Uri uri;
@@ -110,7 +109,7 @@ base class ClientCallOpContext extends OperationEventContext {
     super.operationType,
     super.sessionId,
     super.userAuthInfo,
-    required this.connectionInfo,
+    this.remoteInfo,
     required this.uri,
   });
 
@@ -118,7 +117,7 @@ base class ClientCallOpContext extends OperationEventContext {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'connectionInfo': '$connectionInfo',
+      'remoteInfo': remoteInfo,
       'uri': '$uri',
     };
   }
@@ -133,7 +132,7 @@ final class WebCallOpContext extends ClientCallOpContext {
     required super.serverRunMode,
     required super.sessionId,
     super.userAuthInfo,
-    required super.connectionInfo,
+    super.remoteInfo,
     required super.uri,
   }) : super(operationType: OperationType.web);
 }
@@ -154,7 +153,7 @@ final class MethodCallOpContext extends ClientCallOpContext {
     super.operationType = OperationType.method,
     super.sessionId,
     super.userAuthInfo,
-    required super.connectionInfo,
+    super.remoteInfo,
     required super.uri,
     required this.endpoint,
     required this.methodName,
@@ -182,7 +181,7 @@ final class StreamOpContext extends MethodCallOpContext {
     required super.serverRunMode,
     required super.sessionId,
     super.userAuthInfo,
-    required super.connectionInfo,
+    super.remoteInfo,
     required super.uri,
     required super.endpoint,
     required super.methodName,

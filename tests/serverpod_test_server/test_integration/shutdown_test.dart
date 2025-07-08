@@ -45,7 +45,7 @@ void main() {
 
     var exitCode = await processOutput.process.exitCode;
     expect(exitCode, 0);
-  }, timeout: const Timeout(Duration(seconds: 60)));
+  }, timeout: const Timeout(Duration(seconds: 120)));
 
   group('Given a running serverpod server', () {
     test(

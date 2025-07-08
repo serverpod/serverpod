@@ -1413,7 +1413,8 @@ class SerializableModelLibraryGenerator {
       var classFields =
           fields.where((field) => !inheritedFields.contains(field)).toList();
 
-      var defaultValueFields = classFields.where((field) => field.hasDefaults);
+      var defaultValueFields = classFields.where(
+          (field) => field.hasDefaults && field.shouldIncludeField(serverCode));
       for (var field in defaultValueFields) {
         Code? defaultCode = _getDefaultValue(
           field,

@@ -254,17 +254,15 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.UserProfile) {
-      return 'UserProfile';
-    }
-    if (data is _i5.UserProfileData) {
-      return 'UserProfileData';
-    }
-    if (data is _i6.UserProfileImage) {
-      return 'UserProfileImage';
-    }
-    if (data is _i7.UserProfileModel) {
-      return 'UserProfileModel';
+    switch (data) {
+      case _i4.UserProfile():
+        return 'UserProfile';
+      case _i5.UserProfileData():
+        return 'UserProfileData';
+      case _i6.UserProfileImage():
+        return 'UserProfileImage';
+      case _i7.UserProfileModel():
+        return 'UserProfileModel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {

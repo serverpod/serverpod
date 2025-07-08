@@ -3,6 +3,8 @@ export 'src/config.dart';
 export 'src/constants.dart';
 export 'src/enums.dart';
 export 'src/environment_variables.dart';
+export 'src/exceptions/exit_exception.dart';
+export 'src/exceptions/password_missing_exceptions.dart';
 export 'src/method_streaming_exceptions.dart';
 export 'src/migration_exceptions.dart';
 export 'src/password_manager.dart';
