@@ -3,11 +3,13 @@ import 'package:serverpod_auth_backwards_compatibility_server/src/business/legac
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/legacy_session.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 
-/// Enpoint to convert legacy sessions.
+/// Endpoint to convert legacy sessions.
 class SessionMigrationEndpoint extends Endpoint {
   /// Converts a legacy session into a `serverpod_auth_session` one.
-  Future<AuthSuccess?> convertSession(final Session session,
-      {required final String sessionKey}) async {
+  Future<AuthSuccess?> convertSession(
+    final Session session, {
+    required final String sessionKey,
+  }) async {
     final legacySession = await resolveLegacySession(session, sessionKey);
 
     if (legacySession == null) {
