@@ -125,7 +125,7 @@ redis:
     expect(config.redis?.password, 'password');
     expect(config.redis?.user, isNull);
     expect(config.redis?.requireSsl, isFalse);
-    expect(config.redis?.enabled, isFalse);
+    expect(config.redis?.enabled, isTrue);
   });
 
   test(
@@ -390,6 +390,139 @@ redis:
 
     expect(config.redis?.user, equals('envuser'));
     expect(config.redis?.requireSsl, isTrue);
+    expect(config.redis?.enabled, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with redis configuration where enabled=false when loading from Map then redis configuration is null.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+redis:
+  host: localhost
+  port: 6379
+  enabled: false
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.redis, isNull);
+  });
+
+  test(
+      'Given a Serverpod config with redis configuration but SERVERPOD_REDIS_ENABLED=false in environment when loading from Map then redis configuration is null.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+redis:
+  host: localhost
+  port: 6379
+  enabled: true
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      loadYaml(serverpodConfig),
+      environment: {
+        'SERVERPOD_REDIS_ENABLED': 'false',
+      },
+    );
+
+    expect(config.redis, isNull);
+  });
+
+  test(
+      'Given a Serverpod config with redis configuration without the enabled field when loading from Map then redis configuration defaults to enabled.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+redis:
+  host: localhost
+  port: 6379
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.redis, isNotNull);
+    expect(config.redis?.enabled, isTrue);
+  });
+
+  test(
+      'Given a Serverpod config with redis configuration where enabled=false and no password provided when loading from Map then no PasswordMissingException is thrown and redis configuration is null.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+redis:
+  host: localhost
+  port: 6379
+  enabled: false
+''';
+
+    // This should not throw a PasswordMissingException
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords, // No redis password provided
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.redis, isNull);
+  });
+
+  test(
+      'Given a Serverpod config with redis configuration where enabled=true explicitly when loading from Map then redis configuration is created normally.',
+      () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+redis:
+  host: localhost
+  port: 6379
+  enabled: true
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.redis, isNotNull);
+    expect(config.redis?.host, 'localhost');
+    expect(config.redis?.port, 6379);
+    expect(config.redis?.password, 'password');
     expect(config.redis?.enabled, isTrue);
   });
 }

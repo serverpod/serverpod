@@ -177,7 +177,9 @@ class ServerpodConfig {
         : null;
 
     var redisConfig = _redisConfigMap(configMap, environment);
-    var redis = redisConfig != null
+    var redisEnabled = redisConfig != null &&
+        (redisConfig[ServerpodEnv.redisEnabled.configKey] ?? true);
+    var redis = redisEnabled
         ? RedisConfig._fromJson(
             redisConfig,
             passwords,
@@ -520,7 +522,7 @@ class RedisConfig {
     }
 
     return RedisConfig(
-      enabled: redisSetup[ServerpodEnv.redisEnabled.configKey] ?? false,
+      enabled: redisSetup[ServerpodEnv.redisEnabled.configKey] ?? true,
       host: redisSetup[ServerpodEnv.redisHost.configKey],
       port: redisSetup[ServerpodEnv.redisPort.configKey],
       user: redisSetup[ServerpodEnv.redisUser.configKey],
