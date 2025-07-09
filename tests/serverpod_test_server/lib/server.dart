@@ -15,6 +15,17 @@ void run(List<String> args) async {
     Protocol(),
     Endpoints(),
     authenticationHandler: auth.authenticationHandler,
+    config: ServerpodConfig(
+      apiServer: ServerConfig(
+        // TODO
+        port: port,
+        publicScheme: publicScheme,
+        publicHost: publicHost,
+        publicPort: publicPort,
+      ),
+      futureCallExecutionEnabled: false,
+      apiEndpointsEnabled: false,
+    ),
   );
 
   // Add future calls

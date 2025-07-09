@@ -72,6 +72,11 @@ class ServerpodConfig {
   /// True if future call execution should be disabled.
   final bool futureCallExecutionEnabled;
 
+  /// True if API endpoints are enabled.
+  ///
+  /// Defailts to `true`
+  final bool apiEndpointsEnabled;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -91,6 +96,7 @@ class ServerpodConfig {
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
+    this.apiEndpointsEnabled = true,
   }) : sessionLogs = sessionLogs ??
             SessionLogConfig.buildDefault(
               databaseEnabled: database != null,
