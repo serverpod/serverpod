@@ -19,11 +19,12 @@ import 'email_create_account_request.dart' as _i7;
 import 'email_failed_sign_in.dart' as _i8;
 import 'email_password_reset.dart' as _i9;
 import 'email_reset.dart' as _i10;
-import 'google_refresh_token.dart' as _i11;
-import 'user_image.dart' as _i12;
-import 'user_info.dart' as _i13;
-import 'user_info_public.dart' as _i14;
-import 'user_settings_config.dart' as _i15;
+import 'endpoint_disabled_exception.dart' as _i11;
+import 'google_refresh_token.dart' as _i12;
+import 'user_image.dart' as _i13;
+import 'user_info.dart' as _i14;
+import 'user_info_public.dart' as _i15;
+import 'user_settings_config.dart' as _i16;
 export 'apple_auth_info.dart';
 export 'auth_key.dart';
 export 'authentication_fail_reason.dart';
@@ -33,6 +34,7 @@ export 'email_create_account_request.dart';
 export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
+export 'endpoint_disabled_exception.dart';
 export 'google_refresh_token.dart';
 export 'user_image.dart';
 export 'user_info.dart';
@@ -80,20 +82,23 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i10.EmailReset) {
       return _i10.EmailReset.fromJson(data) as T;
     }
-    if (t == _i11.GoogleRefreshToken) {
-      return _i11.GoogleRefreshToken.fromJson(data) as T;
+    if (t == _i11.EndpointDisabledException) {
+      return _i11.EndpointDisabledException.fromJson(data) as T;
     }
-    if (t == _i12.UserImage) {
-      return _i12.UserImage.fromJson(data) as T;
+    if (t == _i12.GoogleRefreshToken) {
+      return _i12.GoogleRefreshToken.fromJson(data) as T;
     }
-    if (t == _i13.UserInfo) {
-      return _i13.UserInfo.fromJson(data) as T;
+    if (t == _i13.UserImage) {
+      return _i13.UserImage.fromJson(data) as T;
     }
-    if (t == _i14.UserInfoPublic) {
-      return _i14.UserInfoPublic.fromJson(data) as T;
+    if (t == _i14.UserInfo) {
+      return _i14.UserInfo.fromJson(data) as T;
     }
-    if (t == _i15.UserSettingsConfig) {
-      return _i15.UserSettingsConfig.fromJson(data) as T;
+    if (t == _i15.UserInfoPublic) {
+      return _i15.UserInfoPublic.fromJson(data) as T;
+    }
+    if (t == _i16.UserSettingsConfig) {
+      return _i16.UserSettingsConfig.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
       return (data != null ? _i2.AppleAuthInfo.fromJson(data) : null) as T;
@@ -126,21 +131,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i10.EmailReset?>()) {
       return (data != null ? _i10.EmailReset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.GoogleRefreshToken?>()) {
-      return (data != null ? _i11.GoogleRefreshToken.fromJson(data) : null)
+    if (t == _i1.getType<_i11.EndpointDisabledException?>()) {
+      return (data != null
+          ? _i11.EndpointDisabledException.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i12.GoogleRefreshToken?>()) {
+      return (data != null ? _i12.GoogleRefreshToken.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.UserImage?>()) {
-      return (data != null ? _i12.UserImage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.UserImage?>()) {
+      return (data != null ? _i13.UserImage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserInfo?>()) {
-      return (data != null ? _i13.UserInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.UserInfo?>()) {
+      return (data != null ? _i14.UserInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.UserInfoPublic?>()) {
-      return (data != null ? _i14.UserInfoPublic.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.UserInfoPublic?>()) {
+      return (data != null ? _i15.UserInfoPublic.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.UserSettingsConfig?>()) {
-      return (data != null ? _i15.UserSettingsConfig.fromJson(data) : null)
+    if (t == _i1.getType<_i16.UserSettingsConfig?>()) {
+      return (data != null ? _i16.UserSettingsConfig.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -172,15 +182,17 @@ class Protocol extends _i1.SerializationManager {
         return 'EmailPasswordReset';
       case _i10.EmailReset():
         return 'EmailReset';
-      case _i11.GoogleRefreshToken():
+      case _i11.EndpointDisabledException():
+        return 'EndpointDisabledException';
+      case _i12.GoogleRefreshToken():
         return 'GoogleRefreshToken';
-      case _i12.UserImage():
+      case _i13.UserImage():
         return 'UserImage';
-      case _i13.UserInfo():
+      case _i14.UserInfo():
         return 'UserInfo';
-      case _i14.UserInfoPublic():
+      case _i15.UserInfoPublic():
         return 'UserInfoPublic';
-      case _i15.UserSettingsConfig():
+      case _i16.UserSettingsConfig():
         return 'UserSettingsConfig';
     }
     return null;
@@ -219,20 +231,23 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'EmailReset') {
       return deserialize<_i10.EmailReset>(data['data']);
     }
+    if (dataClassName == 'EndpointDisabledException') {
+      return deserialize<_i11.EndpointDisabledException>(data['data']);
+    }
     if (dataClassName == 'GoogleRefreshToken') {
-      return deserialize<_i11.GoogleRefreshToken>(data['data']);
+      return deserialize<_i12.GoogleRefreshToken>(data['data']);
     }
     if (dataClassName == 'UserImage') {
-      return deserialize<_i12.UserImage>(data['data']);
+      return deserialize<_i13.UserImage>(data['data']);
     }
     if (dataClassName == 'UserInfo') {
-      return deserialize<_i13.UserInfo>(data['data']);
+      return deserialize<_i14.UserInfo>(data['data']);
     }
     if (dataClassName == 'UserInfoPublic') {
-      return deserialize<_i14.UserInfoPublic>(data['data']);
+      return deserialize<_i15.UserInfoPublic>(data['data']);
     }
     if (dataClassName == 'UserSettingsConfig') {
-      return deserialize<_i15.UserSettingsConfig>(data['data']);
+      return deserialize<_i16.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
