@@ -173,6 +173,17 @@ class AuthConfig {
   /// - [SignOutBehavior.currentDevice]: Users will be signed out from the current device only.
   final SignOutBehavior legacyUserSignOutBehavior;
 
+  /// Whether to disable all account creation and update endpoints.
+  ///
+  /// Settings this to `true` blocks all further logins and registrations,
+  /// as well as password changes.
+  ///
+  /// Since this package's endpoints can not be hidden, this can be used to at
+  /// least mark them inactive.
+  ///
+  /// Defaults to `false`.
+  final bool disableAccountEndpoints;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -206,6 +217,7 @@ class AuthConfig {
     this.passwordHashGenerator = defaultGeneratePasswordHash,
     this.passwordHashValidator = defaultValidatePasswordHash,
     this.legacyUserSignOutBehavior = SignOutBehavior.allDevices,
+    this.disableAccountEndpoints = false,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(

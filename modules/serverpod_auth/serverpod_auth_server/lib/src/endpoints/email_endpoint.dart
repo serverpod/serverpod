@@ -16,12 +16,23 @@ class EmailEndpoint extends Endpoint {
     String email,
     String password,
   ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     return Emails.authenticate(session, email, password);
   }
 
   /// Changes a users password.
   Future<bool> changePassword(
-      Session session, String oldPassword, String newPassword) async {
+    Session session,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     var userId = (await session.authenticated)?.userId;
     if (userId == null) return false;
 
@@ -31,12 +42,23 @@ class EmailEndpoint extends Endpoint {
   /// Initiates a password reset and sends an email with the reset code to the
   /// user.
   Future<bool> initiatePasswordReset(Session session, String email) {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     return Emails.initiatePasswordReset(session, email);
   }
 
   /// Resets a users password using the reset code.
   Future<bool> resetPassword(
-      Session session, String verificationCode, String password) {
+    Session session,
+    String verificationCode,
+    String password,
+  ) {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     return Emails.resetPassword(session, verificationCode, password);
   }
 
@@ -48,6 +70,10 @@ class EmailEndpoint extends Endpoint {
     String email,
     String password,
   ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     return await Emails.createAccountRequest(
       session,
       userName,
@@ -62,6 +88,10 @@ class EmailEndpoint extends Endpoint {
     String email,
     String verificationCode,
   ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     return await Emails.tryCreateAccount(
       session,
       email: email,

@@ -12,6 +12,10 @@ class FirebaseEndpoint extends Endpoint {
     Session session,
     String idToken,
   ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     FirebaseAuthManager authManager;
     session.log('Firebase authenticate', level: LogLevel.debug);
     try {

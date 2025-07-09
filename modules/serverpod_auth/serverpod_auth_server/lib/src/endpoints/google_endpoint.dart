@@ -28,6 +28,10 @@ class GoogleEndpoint extends Endpoint {
     String authenticationCode,
     String? redirectUri,
   ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     var clientSecret = GoogleAuth.clientSecret;
 
     if (clientSecret == null) {
@@ -127,7 +131,13 @@ class GoogleEndpoint extends Endpoint {
 
   /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
-      Session session, String idToken) async {
+    Session session,
+    String idToken,
+  ) async {
+    if (AuthConfig.current.disableAccountEndpoints) {
+      throw EndpointDisabledException();
+    }
+
     var clientSecret = GoogleAuth.clientSecret;
     if (clientSecret == null) {
       throw StateError('The server side Google client secret is not loaded.');
