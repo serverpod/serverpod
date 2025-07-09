@@ -15,8 +15,13 @@ class WebServer {
   /// The server id of this server.
   final String serverId;
 
-  /// The port the webserver is running on.
+  /// The port the webserver is configured to run on.
   late final int port;
+
+  /// The actual port the webserver is listening on, or null if not started.
+  int? get actualPort => _actualPort;
+
+  int? _actualPort;
 
   /// Router for handling incoming requests.
   final router = ServerpodRouter();
@@ -67,12 +72,14 @@ class WebServer {
 
     try {
       var context = _securityContext;
-      _server = await serve(
+      final server = await serve(
         _handleRequest,
         InternetAddress.anyIPv6,
         port,
         context: context,
       );
+      _server = server;
+      _actualPort = (server.adapter as IOAdapter).port;
       _running = true;
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
