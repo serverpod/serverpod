@@ -14,7 +14,7 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
     as _i3;
 
-/// Enpoint to convert legacy sessions.
+/// Endpoint to convert legacy sessions.
 /// {@category Endpoint}
 class EndpointSessionMigration extends _i1.EndpointRef {
   EndpointSessionMigration(_i1.EndpointCaller caller) : super(caller);
