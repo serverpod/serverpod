@@ -201,7 +201,7 @@ class PubspecLockParser {
         final path = descriptionYaml['path'] as String?;
 
         dependency = GitDependency(
-          Uri.parse(url),
+          _tryParseScpUri(url) ?? Uri.parse(url),
           ref: ref,
           path: path,
         );
@@ -277,4 +277,37 @@ class PubspecLockParser {
     }
     return counts;
   }
+}
+
+/// Supports URIs like `[user@]host.xz:path/to/repo.git/`
+/// See https://git-scm.com/docs/git-clone#_git_urls_a_id_urls_a
+// Same implementation as `package:pubspec_parse/src/dependency.dart`
+// We just did not want to rely on the package's internal file, as that might break in minor versions
+Uri? _tryParseScpUri(String value) {
+  final colonIndex = value.indexOf(':');
+
+  if (colonIndex < 0) {
+    return null;
+  } else if (colonIndex == value.indexOf('://')) {
+    // If the first colon is part of a scheme, it's not an scp-like URI
+    return null;
+  }
+  final slashIndex = value.indexOf('/');
+
+  if (slashIndex >= 0 && slashIndex < colonIndex) {
+    // Per docs: This syntax is only recognized if there are no slashes before
+    // the first colon. This helps differentiate a local path that contains a
+    // colon. For example the local path foo:bar could be specified as an
+    // absolute path or ./foo:bar to avoid being misinterpreted as an ssh url.
+    return null;
+  }
+
+  final atIndex = value.indexOf('@');
+  if (colonIndex > atIndex) {
+    final user = atIndex >= 0 ? value.substring(0, atIndex) : null;
+    final host = value.substring(atIndex + 1, colonIndex);
+    final path = value.substring(colonIndex + 1);
+    return Uri(scheme: 'ssh', userInfo: user, host: host, path: path);
+  }
+  return null;
 }

@@ -194,7 +194,7 @@ sdks:
     });
   });
 
-  group('Given a pubspec.lock with git dependencies', () {
+  group('Given a pubspec.lock with a HTTPS git dependency', () {
     const lockString = '''
 packages:
   my_git_package:
@@ -244,6 +244,64 @@ sdks:
       test('then gitPackages returns the git package', () {
         expect(parser.gitPackages, hasLength(1));
         expect(parser.gitPackages.first.name, 'my_git_package');
+      });
+    });
+  });
+
+  group('Given a pubspec.lock with a "SCP-like" git dependency', () {
+    const lockString = '''
+packages:
+  git_package:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "e68e4bbb0c27d3cca849ab082be89b9517293b6a"
+      resolved-ref: "e68e4bbb0c27d3cca849ab082be89b9517293b6a"
+      url: "git@github.com:user/project.git"
+    source: git
+    version: "0.4.3-dev.1"
+sdks:
+  dart: ">=3.0.0 <4.0.0"
+''';
+
+    group('when calling PubspecLockParser.parse', () {
+      late PubspecLockParser parser;
+      late LockedPackage package;
+
+      setUpAll(() {
+        parser = PubspecLockParser.parse(lockString);
+        package = parser.getPackage('git_package')!;
+      });
+
+      test('then package has correct source', () {
+        expect(package.source, PackageSource.git);
+      });
+
+      test('then package has GitDependency', () {
+        expect(package.dependency, isA<GitDependency>());
+      });
+
+      test('then GitDependency has correct url', () {
+        final gitDep = package.dependency as GitDependency;
+        expect(
+          gitDep.url,
+          Uri.parse('ssh://git@github.com/user/project.git'),
+        );
+      });
+
+      test('then GitDependency has correct ref', () {
+        final gitDep = package.dependency as GitDependency;
+        expect(gitDep.ref, 'e68e4bbb0c27d3cca849ab082be89b9517293b6a');
+      });
+
+      test('then GitDependency has correct path', () {
+        final gitDep = package.dependency as GitDependency;
+        expect(gitDep.path, '.');
+      });
+
+      test('then gitPackages returns the git package', () {
+        expect(parser.gitPackages, hasLength(1));
+        expect(parser.gitPackages.first.name, 'git_package');
       });
     });
   });
