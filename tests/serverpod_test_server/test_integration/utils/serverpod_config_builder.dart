@@ -241,7 +241,7 @@ class ServerpodConfigBuilder {
       applyMigrations: _applyMigrations,
       applyRepairMigration: _applyRepairMigration,
       maxRequestSize: _maxRequestSize,
-      apiServer: _apiServer ?? ServerpodConfig.createDefaultApiServer(),
+      apiServer: _apiServer ?? _createDefaultApiServer(),
       insightsServer: _insightsServer ?? _createDefaultInsightsServer(),
       webServer: _webServer ?? _createDefaultWebServer(),
       database: _database ?? DatabaseConfigBuilder().build(),
@@ -369,6 +369,13 @@ class ServerpodConfigBuilder {
     _futureCallExecutionEnabled = enabled;
     return this;
   }
+
+  ServerConfig _createDefaultApiServer() => ServerConfig(
+        port: 8080,
+        publicHost: 'localhost',
+        publicPort: 8080,
+        publicScheme: 'http',
+      );
 
   ServerConfig _createDefaultInsightsServer() => ServerConfig(
         port: 8081,

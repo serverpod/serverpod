@@ -11,6 +11,13 @@ const int _defaultMaxRequestSize = 524288;
 
 const String _developmentRunMode = 'development';
 
+ServerConfig _createDefaultApiServer() => ServerConfig(
+      port: 8080,
+      publicHost: 'localhost',
+      publicPort: 8080,
+      publicScheme: 'http',
+    );
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -100,17 +107,9 @@ class ServerpodConfig {
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
     return ServerpodConfig(
-      apiServer: createDefaultApiServer(),
+      apiServer: _createDefaultApiServer(),
     );
   }
-
-  /// Creates a default API server configuration.
-  static ServerConfig createDefaultApiServer() => ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      );
 
   /// Creates a new [ServerpodConfig] from a configuration Map.
   /// Expects the Map to match the specified run mode.
@@ -146,7 +145,7 @@ class ServerpodConfig {
             apiConfig,
             ServerpodConfigMap.apiServer,
           )
-        : createDefaultApiServer();
+        : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
     var insightsServer = insightsConfig != null
