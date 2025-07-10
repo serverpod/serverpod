@@ -412,7 +412,10 @@ class Serverpod {
       CliArgsConstants.applyRepairMigration: bool? applyRepairMigration,
     } = _commandLineArgs.toMap();
 
-    final runMode = _calculateRunMode(runModeFromCommandLine);
+    final runMode = _calculateRunMode(
+      runModeFromCommandLine: runModeFromCommandLine,
+      runModeFromConfig: config?.runMode,
+    );
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
@@ -814,9 +817,22 @@ class Serverpod {
     }
   }
 
-  String _calculateRunMode(String? runModeFromCommandLine) {
+  /// Calculates the run mode based on the command line arguments, the config,
+  /// and the environment variables.
+  ///
+  /// The command line arguments take precedence over the config and the environment variables.
+  /// The config takes precedence over the environment variables.
+  /// The environment variables take precedence over the config.
+  String _calculateRunMode({
+    String? runModeFromCommandLine,
+    String? runModeFromConfig,
+  }) {
     if (runModeFromCommandLine != null) {
       return runModeFromCommandLine;
+    }
+
+    if (runModeFromConfig != null) {
+      return runModeFromConfig;
     }
 
     final runModeFromEnv =

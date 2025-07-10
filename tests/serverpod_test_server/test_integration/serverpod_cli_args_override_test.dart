@@ -13,9 +13,8 @@ void main() {
     test(
         'when runMode is set to development in config and production in CLI args '
         'then server uses production mode', () {
-      final config = ServerpodConfigBuilder()
-          .withRunMode('development')
-          .build();
+      final config =
+          ServerpodConfigBuilder().withRunMode('development').build();
 
       final serverpod = Serverpod(
         ['--mode', 'production'],
@@ -30,9 +29,8 @@ void main() {
     test(
         'when serverId is set to config-server in config and cli-server in CLI args '
         'then server uses cli-server id', () {
-      final config = ServerpodConfigBuilder()
-          .withServerId('config-server')
-          .build();
+      final config =
+          ServerpodConfigBuilder().withServerId('config-server').build();
 
       final serverpod = Serverpod(
         ['--server-id', 'cli-server'],
@@ -67,9 +65,8 @@ void main() {
     test(
         'when role is set to monolith in config and maintenance in CLI args '
         'then server uses maintenance role', () {
-      final config = ServerpodConfigBuilder()
-          .withRole(ServerpodRole.monolith)
-          .build();
+      final config =
+          ServerpodConfigBuilder().withRole(ServerpodRole.monolith).build();
 
       final serverpod = Serverpod(
         ['--role', 'maintenance'],
@@ -84,9 +81,8 @@ void main() {
     test(
         'when applyMigrations is set to false in config and true in CLI args '
         'then server applies migrations', () {
-      final config = ServerpodConfigBuilder()
-          .withApplyMigrations(false)
-          .build();
+      final config =
+          ServerpodConfigBuilder().withApplyMigrations(false).build();
 
       final serverpod = Serverpod(
         ['--apply-migrations'],
@@ -101,9 +97,8 @@ void main() {
     test(
         'when applyRepairMigration is set to false in config and true in CLI args '
         'then server applies repair migration', () {
-      final config = ServerpodConfigBuilder()
-          .withApplyRepairMigration(false)
-          .build();
+      final config =
+          ServerpodConfigBuilder().withApplyRepairMigration(false).build();
 
       final serverpod = Serverpod(
         ['--apply-repair-migration'],
@@ -147,9 +142,8 @@ void main() {
     });
 
     test(
-        'when no CLI args are provided and only config is given '
-        'then server uses config values except runMode which defaults to development',
-        () {
+        'when runMode is set to staging in config and no CLI args are provided '
+        'then server uses staging mode', () {
       final config = ServerpodConfigBuilder()
           .withRunMode('staging')
           .withServerId('config-server')
@@ -166,7 +160,7 @@ void main() {
         config: config,
       );
 
-      expect(serverpod.config.runMode, equals('development'));
+      expect(serverpod.config.runMode, equals('staging'));
     });
 
     test(
@@ -192,5 +186,17 @@ void main() {
       expect(serverpod.config.serverId, equals('config-server'));
       expect(serverpod.config.applyMigrations, isTrue);
     });
+  });
+
+  test(
+      'Given no config, no CLI args, and no env variable are provided '
+      'then server defaults to development mode', () {
+    final serverpod = Serverpod(
+      [],
+      Protocol(),
+      Endpoints(),
+    );
+
+    expect(serverpod.config.runMode, equals('development'));
   });
 }
