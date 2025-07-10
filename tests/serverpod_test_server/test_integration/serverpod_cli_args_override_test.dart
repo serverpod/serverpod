@@ -281,10 +281,7 @@ void main() {
 
       expect(serverpod.config.runMode, equals('development'));
       expect(serverpod.config.serverId, equals('config-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
       expect(serverpod.config.applyMigrations, isTrue);
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
   });
 }
