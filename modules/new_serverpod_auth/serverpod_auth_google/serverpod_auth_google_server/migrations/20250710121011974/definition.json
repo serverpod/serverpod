@@ -1556,7 +1556,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_google",
-      "version": "20250710120445470"
+      "version": "20250710121011974"
     },
     {
       "module": "serverpod",
