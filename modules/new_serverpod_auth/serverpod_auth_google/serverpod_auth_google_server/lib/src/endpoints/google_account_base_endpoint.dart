@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart';
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
@@ -14,6 +15,18 @@ abstract class GoogleAccountBaseEndpoint extends Endpoint {
       session,
       idToken: idToken,
     );
+
+    if (account.authUserNewlyCreated) {
+      await UserProfiles.createUserProfile(
+        session,
+        account.authUserId,
+        UserProfileData(
+          fullName: account.details.fullName,
+          userName: account.details.name,
+          email: account.details.email,
+        ),
+      );
+    }
 
     return _createSession(session, account.authUserId);
   }
