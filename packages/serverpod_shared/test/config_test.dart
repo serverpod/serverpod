@@ -267,7 +267,7 @@ redis:
     expect(config.redis?.host, 'localhost');
     expect(config.redis?.port, 6379);
     expect(config.redis?.password, 'password');
-    expect(config.redis?.enabled, isFalse);
+    expect(config.redis?.enabled, isTrue);
     expect(config.redis?.requireSsl, isTrue);
   });
 
