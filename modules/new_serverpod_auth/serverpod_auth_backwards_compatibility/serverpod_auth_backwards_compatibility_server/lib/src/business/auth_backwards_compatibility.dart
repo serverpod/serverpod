@@ -4,6 +4,7 @@ import 'package:serverpod_auth_backwards_compatibility_server/src/business/legac
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
+import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart';
 
 /// Collections of helper functions to work with legacy authentication data.
 abstract final class AuthBackwardsCompatibility {
@@ -169,7 +170,10 @@ abstract final class AuthBackwardsCompatibility {
     );
   }
 
-  /// Looks up a legacy (external) "user identifier".
+  /// Looks up an imported "user identifier", returning the `AuthUser` id.
+  ///
+  /// The identifier could be from previous social logins via Apple, Firebase,
+  /// or Google, which were stored without a provider association.
   static Future<UuidValue?> lookUpLegacyExternalUserIdentifier(
     final Session session, {
     required final String userIdentifier,
@@ -182,5 +186,63 @@ abstract final class AuthBackwardsCompatibility {
     );
 
     return row?.authUserId;
+  }
+
+  /// Removes the legacy user identifier mapping.
+  static Future<void> clearLegacyExternalUserIdentifier(
+    final Session session, {
+    required final String userIdentifier,
+    final Transaction? transaction,
+  }) async {
+    await LegacyExternalUserIdentifier.db.deleteWhere(
+      session,
+      where: (final t) => t.userIdentifier.equals(userIdentifier),
+      transaction: transaction,
+    );
+  }
+
+  /// Imports an existing Google account if the user's external ID was already
+  /// linked in the legacy system.
+  ///
+  /// Else it does nothing.
+  static Future<void> importGoogleAccount(
+    final Session session, {
+    required final String idToken,
+    final Transaction? transaction,
+  }) async {
+    final accountDetails = await GoogleAccounts.admin.fetchAccountDetails(
+      session,
+      idToken: idToken,
+    );
+
+    final legacyUserIdentifier =
+        await LegacyExternalUserIdentifier.db.findFirstRow(
+      session,
+      where: (final t) => t.userIdentifier.equals(
+        accountDetails.userIdentifier,
+      ),
+      transaction: transaction,
+    );
+
+    if (legacyUserIdentifier != null) {
+      await DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (final transaction) async {
+          await GoogleAccounts.admin.linkGoogleAuthentication(
+            session,
+            authUserId: legacyUserIdentifier.authUserId,
+            accountDetails: accountDetails,
+            transaction: transaction,
+          );
+
+          await LegacyExternalUserIdentifier.db.deleteRow(
+            session,
+            legacyUserIdentifier,
+            transaction: transaction,
+          );
+        },
+      );
+    }
   }
 }

@@ -10,19 +10,32 @@ environment:
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION
+  serverpod_auth_client: SERVERPOD_VERSION
   serverpod_auth_migration_client: SERVERPOD_VERSION
+  serverpod_auth_email_client: SERVERPOD_VERSION
+  serverpod_auth_google_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
   serverpod_auth_backwards_compatibility_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_client
   serverpod_auth_email_account_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_client
+  serverpod_auth_email_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client
+  serverpod_auth_google_account_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_client
+  serverpod_auth_google_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_google/serverpod_auth_google_client
   serverpod_auth_migration_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
+  serverpod_auth_profile_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_client
   serverpod_auth_session_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client
   serverpod_auth_user_client:
