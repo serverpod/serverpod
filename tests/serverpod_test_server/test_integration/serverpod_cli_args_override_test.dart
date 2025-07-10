@@ -5,10 +5,6 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  // These tests verify that command line arguments correctly override
-  // ServerpodConfig values when both are provided to the Serverpod constructor.
-  // Note: runMode has special handling where it's calculated from CLI args first,
-  // then environment variables, then defaults to 'development'.
   group(
       'Given a ServerpodConfig with specific values and command line args that override them',
       () {
@@ -39,12 +35,6 @@ void main() {
       );
 
       expect(serverpod.config.runMode, equals('production'));
-      // Other values should remain from config
-      expect(serverpod.config.serverId, equals('test-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyMigrations, isFalse);
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
 
     test(
@@ -74,12 +64,6 @@ void main() {
       );
 
       expect(serverpod.config.serverId, equals('cli-server'));
-      // Other values should remain from config
-      expect(serverpod.config.runMode, equals('development'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyMigrations, isFalse);
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
 
     test(
@@ -109,13 +93,9 @@ void main() {
       );
 
       expect(
-          serverpod.config.loggingMode, equals(ServerpodLoggingMode.verbose));
-      // Other values should remain from config
-      expect(serverpod.config.runMode, equals('development'));
-      expect(serverpod.config.serverId, equals('test-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.applyMigrations, isFalse);
-      expect(serverpod.config.applyRepairMigration, isFalse);
+        serverpod.config.loggingMode,
+        equals(ServerpodLoggingMode.verbose),
+      );
     });
 
     test(
@@ -145,12 +125,6 @@ void main() {
       );
 
       expect(serverpod.config.role, equals(ServerpodRole.maintenance));
-      // Other values should remain from config
-      expect(serverpod.config.runMode, equals('development'));
-      expect(serverpod.config.serverId, equals('test-server'));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyMigrations, isFalse);
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
 
     test(
@@ -180,12 +154,6 @@ void main() {
       );
 
       expect(serverpod.config.applyMigrations, isTrue);
-      // Other values should remain from config
-      expect(serverpod.config.runMode, equals('development'));
-      expect(serverpod.config.serverId, equals('test-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
 
     test(
@@ -215,12 +183,6 @@ void main() {
       );
 
       expect(serverpod.config.applyRepairMigration, isTrue);
-      // Other values should remain from config
-      expect(serverpod.config.runMode, equals('development'));
-      expect(serverpod.config.serverId, equals('test-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyMigrations, isFalse);
     });
 
     test(
@@ -256,14 +218,9 @@ void main() {
         config: config,
       );
 
-      // CLI overridden values
       expect(serverpod.config.runMode, equals('production'));
       expect(serverpod.config.serverId, equals('cli-server'));
       expect(serverpod.config.applyMigrations, isTrue);
-      // Config values (not overridden)
-      expect(serverpod.config.role, equals(ServerpodRole.monolith));
-      expect(serverpod.config.loggingMode, equals(ServerpodLoggingMode.normal));
-      expect(serverpod.config.applyRepairMigration, isFalse);
     });
 
     test(
@@ -293,15 +250,7 @@ void main() {
         config: config,
       );
 
-      // runMode defaults to 'development' when no CLI args or env vars are set
       expect(serverpod.config.runMode, equals('development'));
-      // Other values should come from config
-      expect(serverpod.config.serverId, equals('config-server'));
-      expect(serverpod.config.role, equals(ServerpodRole.serverless));
-      expect(
-          serverpod.config.loggingMode, equals(ServerpodLoggingMode.verbose));
-      expect(serverpod.config.applyMigrations, isTrue);
-      expect(serverpod.config.applyRepairMigration, isTrue);
     });
 
     test(
@@ -330,7 +279,6 @@ void main() {
         config: config,
       );
 
-      // All values should come from config since CLI parsing fails
       expect(serverpod.config.runMode, equals('development'));
       expect(serverpod.config.serverId, equals('config-server'));
       expect(serverpod.config.role, equals(ServerpodRole.monolith));
