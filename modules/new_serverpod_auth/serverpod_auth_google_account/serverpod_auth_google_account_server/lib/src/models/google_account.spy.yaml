@@ -1,0 +1,28 @@
+### A fully configured Google account to be used for logins.
+class: GoogleAccount
+serverOnly: true
+table: serverpod_auth_google_account
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  created: DateTime, defaultModel=now
+
+  ### The verified email of the user, as received from Google.
+  ###
+  ### Logins all work through the [userIdentifier], but the email is retained
+  ### for consolidation look-ups.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The user identifier given by Google for this account.
+  userIdentifier: String
+
+indexes:
+  serverpod_auth_google_account_user_identifier:
+    fields: userIdentifier
+    unique: true
