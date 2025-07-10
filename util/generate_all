@@ -117,6 +117,10 @@ echo "\nserverpod_auth_google_account_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server
 dart $CLI generate --no-analytics --experimental-features=all
 
+echo "\nserverpod_auth_google_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_google/serverpod_auth_google_server
+dart $CLI generate --no-analytics --experimental-features=all
+
 echo "\nserverpod_auth_backwards_compatibility_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
 dart $CLI generate --no-analytics --experimental-features=all

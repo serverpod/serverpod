@@ -63,6 +63,8 @@ declare -a dart_paths=(
   "modules/new_serverpod_auth/serverpod_auth_apple/serverpod_auth_apple_server"
   "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_client"
   "modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server"
+  "modules/new_serverpod_auth/serverpod_auth_google/serverpod_auth_google_client"
+  "modules/new_serverpod_auth/serverpod_auth_google/serverpod_auth_google_server"
   "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_client"
   "modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server"
   "modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client"
