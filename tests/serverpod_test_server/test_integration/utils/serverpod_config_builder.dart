@@ -31,12 +31,16 @@ class ServerpodConfigBuilder {
       applyRepairMigration: _applyRepairMigration,
       maxRequestSize: _maxRequestSize,
       apiServer: _apiServer ?? ServerpodConfig.createDefaultApiServer(),
-      insightsServer: _insightsServer,
-      webServer: _webServer,
+      insightsServer: _insightsServer ?? _createDefaultInsightsServer(),
+      webServer: _webServer ?? _createDefaultWebServer(),
       database: _database,
       redis: _redis,
       serviceSecret: _serviceSecret,
-      sessionLogs: _sessionLogs,
+      sessionLogs: _sessionLogs ??
+          SessionLogConfig.buildDefault(
+            databaseEnabled: _database != null,
+            runMode: _runMode,
+          ),
       experimentalDiagnosticHandlerTimeout:
           _experimentalDiagnosticHandlerTimeout,
       futureCall: _futureCall,
@@ -129,4 +133,18 @@ class ServerpodConfigBuilder {
     _futureCallExecutionEnabled = enabled;
     return this;
   }
+
+  ServerConfig _createDefaultInsightsServer() => ServerConfig(
+        port: 8081,
+        publicHost: 'localhost',
+        publicPort: 8081,
+        publicScheme: 'http',
+      );
+
+  ServerConfig _createDefaultWebServer() => ServerConfig(
+        port: 8082,
+        publicHost: 'localhost',
+        publicPort: 8082,
+        publicScheme: 'http',
+      );
 }
