@@ -2,7 +2,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ServerpodConfigBuilder {
   String _runMode = 'development';
-  String _serverId = 'test-server';
+  String _serverId = 'default';
   ServerpodRole _role = ServerpodRole.monolith;
   ServerpodLoggingMode _loggingMode = ServerpodLoggingMode.normal;
   bool _applyMigrations = false;
@@ -11,6 +11,13 @@ class ServerpodConfigBuilder {
   ServerConfig? _apiServer;
   ServerConfig? _insightsServer;
   ServerConfig? _webServer;
+  DatabaseConfig? _database;
+  RedisConfig? _redis;
+  String? _serviceSecret;
+  SessionLogConfig? _sessionLogs;
+  Duration? _experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30);
+  FutureCallConfig _futureCall = const FutureCallConfig();
+  bool _futureCallExecutionEnabled = true;
 
   ServerpodConfigBuilder();
 
@@ -23,15 +30,17 @@ class ServerpodConfigBuilder {
       applyMigrations: _applyMigrations,
       applyRepairMigration: _applyRepairMigration,
       maxRequestSize: _maxRequestSize,
-      apiServer: _apiServer ??
-          ServerConfig(
-            port: 8080,
-            publicHost: 'localhost',
-            publicPort: 8080,
-            publicScheme: 'http',
-          ),
+      apiServer: _apiServer ?? ServerpodConfig.createDefaultApiServer(),
       insightsServer: _insightsServer,
       webServer: _webServer,
+      database: _database,
+      redis: _redis,
+      serviceSecret: _serviceSecret,
+      sessionLogs: _sessionLogs,
+      experimentalDiagnosticHandlerTimeout:
+          _experimentalDiagnosticHandlerTimeout,
+      futureCall: _futureCall,
+      futureCallExecutionEnabled: _futureCallExecutionEnabled,
     );
   }
 
@@ -82,6 +91,42 @@ class ServerpodConfigBuilder {
 
   ServerpodConfigBuilder withWebServer(ServerConfig? webServer) {
     _webServer = webServer;
+    return this;
+  }
+
+  ServerpodConfigBuilder withDatabase(DatabaseConfig? database) {
+    _database = database;
+    return this;
+  }
+
+  ServerpodConfigBuilder withRedis(RedisConfig? redis) {
+    _redis = redis;
+    return this;
+  }
+
+  ServerpodConfigBuilder withServiceSecret(String? serviceSecret) {
+    _serviceSecret = serviceSecret;
+    return this;
+  }
+
+  ServerpodConfigBuilder withSessionLogs(SessionLogConfig? sessionLogs) {
+    _sessionLogs = sessionLogs;
+    return this;
+  }
+
+  ServerpodConfigBuilder withExperimentalDiagnosticHandlerTimeout(
+      Duration? timeout) {
+    _experimentalDiagnosticHandlerTimeout = timeout;
+    return this;
+  }
+
+  ServerpodConfigBuilder withFutureCall(FutureCallConfig futureCall) {
+    _futureCall = futureCall;
+    return this;
+  }
+
+  ServerpodConfigBuilder withFutureCallExecutionEnabled(bool enabled) {
+    _futureCallExecutionEnabled = enabled;
     return this;
   }
 }
