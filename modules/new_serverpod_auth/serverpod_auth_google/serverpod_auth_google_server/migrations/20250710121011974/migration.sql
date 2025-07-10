@@ -355,9 +355,9 @@ ALTER TABLE ONLY "serverpod_auth_session"
 -- MIGRATION VERSION FOR serverpod_auth_google
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_google', '20250710120445470', now())
+    VALUES ('serverpod_auth_google', '20250710121011974', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250710120445470', "timestamp" = now();
+    DO UPDATE SET "version" = '20250710121011974', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
