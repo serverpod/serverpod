@@ -403,18 +403,43 @@ class Serverpod {
     // Read command line arguments.
     _commandLineArgs = CommandLineArgs(args);
 
+    final {
+      CliArgsConstants.runMode: String? runModeFromCommandLine,
+      CliArgsConstants.serverId: String? serverId,
+      CliArgsConstants.loggingMode: ServerpodLoggingMode? loggingMode,
+      CliArgsConstants.role: ServerpodRole? role,
+      CliArgsConstants.applyMigrations: bool? applyMigrations,
+      CliArgsConstants.applyRepairMigration: bool? applyRepairMigration,
+    } = _commandLineArgs.toMap();
+
     final runMode = _calculateRunMode(
-      _commandLineArgs.getRaw<String>(CliArgsConstants.runMode),
+      runModeFromCommandLine: runModeFromCommandLine,
+      runModeFromConfig: config?.runMode,
     );
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords();
 
-    this.config = config?.copyWith(runMode: runMode) ??
+    // Because `.copyWith` is not a real copyWith method (`null` is not a valid
+    // value for any of the fields), this works due to CommandLineArgs.toMap()
+    // returning a map with `null` values for any fields that were not provided.
+    // If we ever change the implementation of `.copyWith` with a real
+    // copyWith, this will break.
+    //
+    // This is a workaround to allow the command line arguments to override the
+    // config if the user provides a config object.
+    this.config = config?.copyWith(
+          runMode: runMode,
+          serverId: serverId,
+          loggingMode: loggingMode,
+          role: role,
+          applyMigrations: applyMigrations,
+          applyRepairMigration: applyRepairMigration,
+        ) ??
         ServerpodConfig.load(
           runMode,
-          _commandLineArgs.getRaw<String>(CliArgsConstants.serverId),
+          serverId,
           _passwords,
           commandLineArgs: _commandLineArgs.toMap(),
         );
@@ -684,7 +709,7 @@ class Serverpod {
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
     var appliedMigrations =
-        (config.applyMigrations | config.applyRepairMigration);
+        (config.applyMigrations || config.applyRepairMigration);
     if (config.role == ServerpodRole.monolith ||
         (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
       logVerbose('Starting maintenance tasks.');
@@ -792,9 +817,22 @@ class Serverpod {
     }
   }
 
-  String _calculateRunMode(String? runModeFromCommandLine) {
+  /// Calculates the run mode based on the command line arguments, the config,
+  /// and the environment variables.
+  ///
+  /// The command line arguments take precedence over the config and the environment variables.
+  /// The config takes precedence over the environment variables.
+  /// The environment variables take precedence over the config.
+  String _calculateRunMode({
+    String? runModeFromCommandLine,
+    String? runModeFromConfig,
+  }) {
     if (runModeFromCommandLine != null) {
       return runModeFromCommandLine;
+    }
+
+    if (runModeFromConfig != null) {
+      return runModeFromConfig;
     }
 
     final runModeFromEnv =
