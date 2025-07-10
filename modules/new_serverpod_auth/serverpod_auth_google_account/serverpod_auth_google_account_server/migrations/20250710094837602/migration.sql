@@ -3,6 +3,20 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_google_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "created" timestamp without time zone NOT NULL,
+    "email" text NOT NULL,
+    "userIdentifier" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_google_account_user_identifier" ON "serverpod_auth_google_account" USING btree ("userIdentifier");
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_cloud_storage" (
     "id" bigserial PRIMARY KEY,
     "storageId" text NOT NULL,
@@ -219,6 +233,16 @@ CREATE TABLE "serverpod_auth_user" (
 --
 -- ACTION CREATE FOREIGN KEY
 --
+ALTER TABLE ONLY "serverpod_auth_google_account"
+    ADD CONSTRAINT "serverpod_auth_google_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
 ALTER TABLE ONLY "serverpod_log"
     ADD CONSTRAINT "serverpod_log_fk_0"
     FOREIGN KEY("sessionLogId")
@@ -251,9 +275,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_google_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_google_account', '20250623140817592', now())
+    VALUES ('serverpod_auth_google_account', '20250710094837602', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250623140817592', "timestamp" = now();
+    DO UPDATE SET "version" = '20250710094837602', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
