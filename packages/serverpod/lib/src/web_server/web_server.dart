@@ -15,11 +15,11 @@ class WebServer {
   /// The server id of this server.
   final String serverId;
 
-  /// The port the webserver is configured to run on.
-  late final int port;
+  /// The configuration for this web server.
+  late final ServerConfig _config;
 
-  /// The actual port the webserver is listening on, or null if not started.
-  int? get actualPort => _actualPort;
+  /// The port the webserver is listening on, or null if not started.
+  int? get port => _actualPort;
 
   int? _actualPort;
 
@@ -45,7 +45,7 @@ class WebServer {
       );
     }
 
-    port = config.port;
+    _config = config;
   }
 
   bool _running = false;
@@ -75,7 +75,7 @@ class WebServer {
       final server = await serve(
         _handleRequest,
         InternetAddress.anyIPv6,
-        port,
+        _config.port,
         context: context,
       );
       _server = server;
