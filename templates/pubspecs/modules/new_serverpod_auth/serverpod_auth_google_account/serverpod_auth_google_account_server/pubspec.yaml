@@ -9,6 +9,10 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  googleapis: ">=11.0.0 <15.0.0"
+  googleapis_auth: ">=1.6.0 <3.0.0"
+  http: ">=1.1.0 <2.0.0"
+  meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
   serverpod_auth_user_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
