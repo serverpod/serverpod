@@ -1,0 +1,37 @@
+name: serverpod_auth_backwards_compatibility_flutter
+description: Serverpod authentication backwards compatibility Flutter client module.
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.11.0
+  serverpod_auth_session_client: 2.9.1
+  serverpod_auth_session_flutter: 2.9.1
+  serverpod_auth_backwards_compatibility_client: 2.9.1
+  shared_preferences: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: 2.9.1
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_auth_backwards_compatibility_client:
+    path: ../serverpod_auth_backwards_compatibility_client
+  serverpod_auth_email_account_client:
+    path: ../../serverpod_auth_email_account/serverpod_auth_email_account_client
+  serverpod_auth_session_client:
+    path: ../../serverpod_auth_session/serverpod_auth_session_client
+  serverpod_auth_session_flutter:
+    path: ../../serverpod_auth_session/serverpod_auth_session_flutter
+  serverpod_auth_user_client:
+    path: ../../serverpod_auth_user/serverpod_auth_user_client
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization

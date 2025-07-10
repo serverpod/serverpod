@@ -53,11 +53,12 @@ void main() {
       );
 
       test(
-        'when calling `migrateNextUserBatch`, then it completes.',
+        'when calling `migrateUsers`, then it completes.',
         () async {
           await expectLater(
-            AuthMigrations.migrateNextUserBatch(
+            AuthMigrations.migrateUsers(
               session,
+              userMigration: null,
               transaction: session.transaction,
             ),
             completes,
@@ -68,7 +69,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a legacy `serverpod_auth` email-based user account migrated with `migrateNextUserBatch`,',
+    'Given a legacy `serverpod_auth` email-based user account migrated with `migrateUsers`,',
     (final sessionBuilder, final endpoints) {
       const email = 'User@serverpod.DEV';
       const password = 'Somepassword123!';
@@ -80,17 +81,6 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        AuthMigrations.config = AuthMigrationConfig(
-          userMigrationHook: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            assert(migratedUsers[oldUserId] == null);
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
-        );
 
         userInfo = (await legacy_auth.Emails.createUser(
           session,
@@ -100,23 +90,32 @@ void main() {
           password,
         ))!;
 
-        await AuthMigrations.migrateNextUserBatch(
+        await AuthMigrations.migrateUsers(
           session,
+          userMigration: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) async {
+            assert(migratedUsers[oldUserId] == null);
+            migratedUsers[oldUserId] = newAuthUserId;
+          },
           transaction: session.transaction,
         );
       });
 
       tearDown(() {
-        AuthMigrations.config = AuthMigrationConfig();
         migratedUsers.clear();
       });
 
       test(
-        'when calling `migrateNextUserBatch` again, then it completes.',
+        'when calling `migrateUsers` again, then it completes.',
         () async {
           await expectLater(
-            AuthMigrations.migrateNextUserBatch(
+            AuthMigrations.migrateUsers(
               session,
+              userMigration: null,
               transaction: session.transaction,
             ),
             completes,
@@ -208,21 +207,21 @@ void main() {
     'Given five legacy `serverpod_auth` email-based user accounts,',
     (final sessionBuilder, final endpoints) {
       late Session session;
+      late UserMigrationFunction userMigration;
 
       final migratedUsers = <int, UuidValue>{};
 
       setUp(() async {
         session = sessionBuilder.build();
-        AuthMigrations.config = AuthMigrationConfig(
-          userMigrationHook: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
-        );
+
+        userMigration = (
+          final session, {
+          required final newAuthUserId,
+          required final oldUserId,
+          final transaction,
+        }) async {
+          migratedUsers[oldUserId] = newAuthUserId;
+        };
 
         for (var i = 0; i < 5; i++) {
           await legacy_auth.Emails.createUser(
@@ -235,16 +234,15 @@ void main() {
       });
 
       tearDown(() {
-        AuthMigrations.config = AuthMigrationConfig();
         migratedUsers.clear();
       });
 
       test(
-        'when calling `migrateNextUserBatch` successively, then accounts are migrated in the desired batch size.',
+        'when calling `migrateUsers` successively, then accounts are migrated in the desired batch size.',
         () async {
-          final migratedAccountsStep1 =
-              await AuthMigrations.migrateNextUserBatch(
+          final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
             session,
+            userMigration: userMigration,
             maxUsers: 2,
             transaction: session.transaction,
           );
@@ -252,9 +250,9 @@ void main() {
           expect(migratedUsers, hasLength(2));
           expect(await MigratedUser.db.count(session), 2);
 
-          final migratedAccountsStep2 =
-              await AuthMigrations.migrateNextUserBatch(
+          final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
             session,
+            userMigration: userMigration,
             maxUsers: 2,
             transaction: session.transaction,
           );
@@ -262,9 +260,9 @@ void main() {
           expect(migratedUsers, hasLength(4));
           expect(await MigratedUser.db.count(session), 4);
 
-          final migratedAccountsStep3 =
-              await AuthMigrations.migrateNextUserBatch(
+          final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
             session,
+            userMigration: userMigration,
             maxUsers: 2,
             transaction: session.transaction,
           );
@@ -277,7 +275,7 @@ void main() {
   );
 
   withServerpod(
-    'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateNextUserBatch`,',
+    'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateUsers`,',
     (final sessionBuilder, final endpoints) {
       const externalUserIdentifier = 'Apple-UserId-123';
 
@@ -288,17 +286,6 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        AuthMigrations.config = AuthMigrationConfig(
-          userMigrationHook: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            assert(migratedUsers[oldUserId] == null);
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
-        );
 
         userInfo = (await legacy_auth.Users.createUser(
           session,
@@ -316,14 +303,22 @@ void main() {
           null,
         ))!;
 
-        await AuthMigrations.migrateNextUserBatch(
+        await AuthMigrations.migrateUsers(
           session,
+          userMigration: (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) async {
+            assert(migratedUsers[oldUserId] == null);
+            migratedUsers[oldUserId] = newAuthUserId;
+          },
           transaction: session.transaction,
         );
       });
 
       tearDown(() {
-        AuthMigrations.config = AuthMigrationConfig();
         migratedUsers.clear();
       });
 

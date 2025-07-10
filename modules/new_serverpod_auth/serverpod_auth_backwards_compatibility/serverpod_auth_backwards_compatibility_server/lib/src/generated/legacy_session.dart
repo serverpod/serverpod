@@ -22,7 +22,6 @@ abstract class LegacySession
     required this.authUserId,
     this.authUser,
     required this.scopeNames,
-    this.lastUsed,
     required this.hash,
     required this.method,
   });
@@ -32,7 +31,6 @@ abstract class LegacySession
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    DateTime? lastUsed,
     required String hash,
     required String method,
   }) = _LegacySessionImpl;
@@ -49,9 +47,6 @@ abstract class LegacySession
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
-      lastUsed: jsonSerialization['lastUsed'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsed']),
       hash: jsonSerialization['hash'] as String,
       method: jsonSerialization['method'] as String,
     );
@@ -72,13 +67,6 @@ abstract class LegacySession
   /// The scopes this session provides access to.
   Set<String> scopeNames;
 
-  /// The time when this access session was last used by a client.
-  ///
-  /// Operates only with minute resolution, to avoid excessive writes to the database.
-  ///
-  /// Unused sessions will have a value of `null`.
-  DateTime? lastUsed;
-
   /// The hashed version of the key (as the legacy `AuthKey`)
   String hash;
 
@@ -98,7 +86,6 @@ abstract class LegacySession
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
     Set<String>? scopeNames,
-    DateTime? lastUsed,
     String? hash,
     String? method,
   });
@@ -109,7 +96,6 @@ abstract class LegacySession
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
       'scopeNames': scopeNames.toJson(),
-      if (lastUsed != null) 'lastUsed': lastUsed?.toJson(),
       'hash': hash,
       'method': method,
     };
@@ -158,7 +144,6 @@ class _LegacySessionImpl extends LegacySession {
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
-    DateTime? lastUsed,
     required String hash,
     required String method,
   }) : super._(
@@ -166,7 +151,6 @@ class _LegacySessionImpl extends LegacySession {
           authUserId: authUserId,
           authUser: authUser,
           scopeNames: scopeNames,
-          lastUsed: lastUsed,
           hash: hash,
           method: method,
         );
@@ -180,7 +164,6 @@ class _LegacySessionImpl extends LegacySession {
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
-    Object? lastUsed = _Undefined,
     String? hash,
     String? method,
   }) {
@@ -190,7 +173,6 @@ class _LegacySessionImpl extends LegacySession {
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      lastUsed: lastUsed is DateTime? ? lastUsed : this.lastUsed,
       hash: hash ?? this.hash,
       method: method ?? this.method,
     );
@@ -206,10 +188,6 @@ class LegacySessionTable extends _i1.Table<int?> {
     );
     scopeNames = _i1.ColumnSerializable(
       'scopeNames',
-      this,
-    );
-    lastUsed = _i1.ColumnDateTime(
-      'lastUsed',
       this,
     );
     hash = _i1.ColumnString(
@@ -229,13 +207,6 @@ class LegacySessionTable extends _i1.Table<int?> {
 
   /// The scopes this session provides access to.
   late final _i1.ColumnSerializable scopeNames;
-
-  /// The time when this access session was last used by a client.
-  ///
-  /// Operates only with minute resolution, to avoid excessive writes to the database.
-  ///
-  /// Unused sessions will have a value of `null`.
-  late final _i1.ColumnDateTime lastUsed;
 
   /// The hashed version of the key (as the legacy `AuthKey`)
   late final _i1.ColumnString hash;
@@ -263,7 +234,6 @@ class LegacySessionTable extends _i1.Table<int?> {
         id,
         authUserId,
         scopeNames,
-        lastUsed,
         hash,
         method,
       ];

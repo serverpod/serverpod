@@ -11,8 +11,12 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    final user =
-        await legacy_auth.Emails.createUser(session, email, email, password);
+    final user = await legacy_auth.Emails.createUser(
+      session,
+      email,
+      email,
+      password,
+    );
 
     return user!.id!;
   }
@@ -31,20 +35,17 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     );
   }
 
-  Future<void> migrateUserByEmail(
+  Future<void> migrateUser(
     final Session session, {
-    required final String email,
+    required final int legacyUserId,
     final String? password,
   }) async {
-    if (password != null) {
-      await AuthMigrationEmail.migrateWithPassword(
-        session,
-        email: email,
-        password: password,
-      );
-    } else {
-      await AuthMigrationEmail.migrateWithoutPassword(session, email: email);
-    }
+    await AuthMigrations.migrateUsers(
+      session,
+      userMigration: null,
+      // ignore: invalid_use_of_visible_for_testing_member
+      legacyUserId: legacyUserId,
+    );
   }
 
   /// Returns the new auth user ID.
@@ -76,17 +77,12 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     );
   }
 
-  /// Returns the new auth user ID of the session derived from the session key.
-  Future<UuidValue?> backwardsCompatibleAuthSessionCheck(
-    final Session session, {
-    required final String sessionKey,
-  }) async {
-    final authInfo = await AuthBackwardsCompatibility.authenticationHandler(
-      session,
-      sessionKey,
-    );
-
-    return authInfo?.userUuid;
+  /// Returns the user identifier associated with the session.
+  ///
+  /// Since the server runs with the backwards compatible auth handler, both
+  /// old session keys will work post migration.
+  Future<String?> sessionUserIdentifer(final Session session) async {
+    return (await session.authenticated)?.userIdentifier;
   }
 
   /// Returns the user ID of associated with the session derived from the session key
