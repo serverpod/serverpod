@@ -15,8 +15,13 @@ class WebServer {
   /// The server id of this server.
   final String serverId;
 
-  /// The port the webserver is running on.
-  late final int port;
+  /// The configuration for this web server.
+  late final ServerConfig _config;
+
+  /// The port the webserver is listening on, or null if not started.
+  int? get port => _actualPort;
+
+  int? _actualPort;
 
   /// Router for handling incoming requests.
   final router = ServerpodRouter();
@@ -40,7 +45,7 @@ class WebServer {
       );
     }
 
-    port = config.port;
+    _config = config;
   }
 
   bool _running = false;
@@ -67,12 +72,14 @@ class WebServer {
 
     try {
       var context = _securityContext;
-      _server = await serve(
+      final server = await serve(
         _handleRequest,
         InternetAddress.anyIPv6,
-        port,
+        _config.port,
         context: context,
       );
+      _server = server;
+      _actualPort = (server.adapter as IOAdapter).port;
       _running = true;
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
