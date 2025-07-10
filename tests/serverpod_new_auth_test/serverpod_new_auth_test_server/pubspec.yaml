@@ -13,6 +13,7 @@ dependencies:
   serverpod: 2.9.1
   serverpod_auth_backwards_compatibility_server: 2.9.1
   serverpod_auth_email_server: 2.9.1
+  serverpod_auth_google_server: 2.9.1
   serverpod_auth_migration_server: 2.9.1
   serverpod_auth_profile_server: 2.9.1
   serverpod_auth_server: 2.9.1
@@ -34,6 +35,10 @@ dependency_overrides:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
   serverpod_auth_email_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server
+  serverpod_auth_google_account_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server
+  serverpod_auth_google_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_google/serverpod_auth_google_server
   serverpod_auth_migration_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
   serverpod_auth_profile_server:
