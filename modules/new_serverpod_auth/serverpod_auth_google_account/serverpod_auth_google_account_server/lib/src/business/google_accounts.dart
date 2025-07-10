@@ -72,8 +72,10 @@ abstract final class GoogleAccounts {
 
     // Verify the ID token with Google's servers.
     final response = await http.get(
-      Uri.parse(
-        'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken',
+      Uri.https(
+        'www.googleapis.com',
+        '/oauth2/v3/tokeninfo',
+        {'id_token': idToken},
       ),
     );
 
