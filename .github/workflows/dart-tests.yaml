@@ -289,7 +289,7 @@ jobs:
         working-directory: ${{ matrix.module }}
 
   module_e2e_tests:
-    name: Module E2E tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
+    name: Module E2E tests in ${{ matrix.module.client }} with Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
