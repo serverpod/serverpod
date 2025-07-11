@@ -746,6 +746,8 @@ class Serverpod {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
+    bool verified;
+
     try {
       logVerbose('Initializing migration manager.');
       var migrationManager = MigrationManager(Directory.current);
@@ -779,11 +781,18 @@ class Serverpod {
       }
 
       logVerbose('Verifying database integrity.');
-      await MigrationManager.verifyDatabaseIntegrity(internalSession);
+      verified =
+          await MigrationManager.verifyDatabaseIntegrity(internalSession);
     } catch (e, stackTrace) {
-      _exitCode = 1;
+      verified = false;
+
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
+    }
+
+    if (!verified) {
+      logVerbose('Database integrity verification failed.');
+      throw ExitException(1);
     }
   }
 
