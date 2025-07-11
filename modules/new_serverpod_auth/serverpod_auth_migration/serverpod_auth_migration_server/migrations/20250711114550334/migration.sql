@@ -250,7 +250,6 @@ CREATE TABLE "serverpod_auth_backwards_compatibility_session" (
     "id" bigserial PRIMARY KEY,
     "authUserId" uuid NOT NULL,
     "scopeNames" json NOT NULL,
-    "lastUsed" timestamp without time zone,
     "hash" text NOT NULL,
     "method" text NOT NULL
 );
@@ -678,9 +677,9 @@ ALTER TABLE ONLY "serverpod_auth_session"
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20250705132233496', now())
+    VALUES ('serverpod_auth_migration', '20250711114550334', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250705132233496', "timestamp" = now();
+    DO UPDATE SET "version" = '20250711114550334', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -694,9 +693,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_backwards_compatibility
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_backwards_compatibility', '20250705102555966', now())
+    VALUES ('serverpod_auth_backwards_compatibility', '20250708110241098', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250705102555966', "timestamp" = now();
+    DO UPDATE SET "version" = '20250708110241098', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_email_account
