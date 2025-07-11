@@ -1445,12 +1445,6 @@
             "dartType": "Set<String>"
           },
           {
-            "name": "lastUsed",
-            "columnType": 4,
-            "isNullable": true,
-            "dartType": "DateTime?"
-          },
-          {
             "name": "hash",
             "columnType": 0,
             "isNullable": false,

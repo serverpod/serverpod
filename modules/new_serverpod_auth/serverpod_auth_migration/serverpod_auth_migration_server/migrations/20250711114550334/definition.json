@@ -1396,12 +1396,6 @@
           "dartType": "Set<String>"
         },
         {
-          "name": "lastUsed",
-          "columnType": 4,
-          "isNullable": true,
-          "dartType": "DateTime?"
-        },
-        {
           "name": "hash",
           "columnType": 0,
           "isNullable": false,
@@ -2909,7 +2903,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_migration",
-      "version": "20250705132233496"
+      "version": "20250711114550334"
     },
     {
       "module": "serverpod",
@@ -2917,7 +2911,7 @@
     },
     {
       "module": "serverpod_auth_backwards_compatibility",
-      "version": "20250705102555966"
+      "version": "20250708110241098"
     },
     {
       "module": "serverpod_auth_email_account",
