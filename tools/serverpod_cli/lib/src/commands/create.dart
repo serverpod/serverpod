@@ -1,5 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -87,6 +88,22 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
         'Use the --${CreateOption.force.option.argName} flag to force creation.',
       );
       throw ExitException.error();
+    }
+
+    // Make sure all necessary downloads are installed
+    if (!resourceManager.isTemplatesInstalled) {
+      try {
+        await resourceManager.installTemplates();
+      } catch (e) {
+        log.error('Failed to download templates.');
+        throw ExitException.error();
+      }
+
+      if (!resourceManager.isTemplatesInstalled) {
+        log.error(
+            'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
+        throw ExitException.error();
+      }
     }
 
     if (!await performCreate(name, template, force)) {
