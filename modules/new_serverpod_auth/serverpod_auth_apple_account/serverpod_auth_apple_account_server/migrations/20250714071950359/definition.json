@@ -1137,16 +1137,69 @@
         }
       ],
       "managed": true
+    },
+    {
+      "name": "serverpod_auth_user",
+      "dartName": "AuthUser",
+      "module": "serverpod_auth_user",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "gen_random_uuid()",
+          "dartType": "UuidValue?"
+        },
+        {
+          "name": "created",
+          "columnType": 4,
+          "isNullable": false,
+          "dartType": "DateTime"
+        },
+        {
+          "name": "scopeNames",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "Set<String>"
+        },
+        {
+          "name": "blocked",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "serverpod_auth_user_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
     }
   ],
   "installedModules": [
     {
       "module": "serverpod_auth_apple_account",
-      "version": "20250714065639571"
+      "version": "20250714071950359"
     },
     {
       "module": "serverpod",
       "version": "20240516151843329"
+    },
+    {
+      "module": "serverpod_auth_user",
+      "version": "20250506070330492"
     }
   ],
   "migrationApiVersion": 1

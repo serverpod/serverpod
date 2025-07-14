@@ -207,6 +207,16 @@ CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USIN
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
 --
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_user" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "created" timestamp without time zone NOT NULL,
+    "scopeNames" json NOT NULL,
+    "blocked" boolean NOT NULL
+);
+
+--
 -- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "serverpod_log"
@@ -241,9 +251,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_apple_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_apple_account', '20250714065639571', now())
+    VALUES ('serverpod_auth_apple_account', '20250714071950359', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250714065639571', "timestamp" = now();
+    DO UPDATE SET "version" = '20250714071950359', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -252,6 +262,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20240516151843329', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20240516151843329', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_user
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_user', '20250506070330492', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250506070330492', "timestamp" = now();
 
 
 COMMIT;
