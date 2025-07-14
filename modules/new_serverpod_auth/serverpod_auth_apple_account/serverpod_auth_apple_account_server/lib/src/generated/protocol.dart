@@ -11,7 +11,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'module_class.dart' as _i3;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i3;
+import 'module_class.dart' as _i4;
 export 'module_class.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -21,7 +23,9 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final List<_i2.TableDefinition> targetTableDefinitions = [];
+  static final List<_i2.TableDefinition> targetTableDefinitions = [
+    ..._i3.Protocol.targetTableDefinitions
+  ];
 
   @override
   T deserialize<T>(
@@ -29,12 +33,15 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.ModuleClass) {
-      return _i3.ModuleClass.fromJson(data) as T;
+    if (t == _i4.ModuleClass) {
+      return _i4.ModuleClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.ModuleClass?>()) {
-      return (data != null ? _i3.ModuleClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.ModuleClass?>()) {
+      return (data != null ? _i4.ModuleClass.fromJson(data) : null) as T;
     }
+    try {
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -46,12 +53,16 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i3.ModuleClass():
+      case _i4.ModuleClass():
         return 'ModuleClass';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_user.$className';
     }
     return null;
   }
@@ -63,17 +74,27 @@ class Protocol extends _i1.SerializationManagerServer {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'ModuleClass') {
-      return deserialize<_i3.ModuleClass>(data['data']);
+      return deserialize<_i4.ModuleClass>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_user.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i3.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   @override
   _i1.Table? getTableForType(Type t) {
+    {
+      var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
     {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
