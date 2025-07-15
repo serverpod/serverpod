@@ -15,6 +15,7 @@ dependencies:
   serverpod: 2.9.1
   serverpod_auth_user_server: 2.9.1
   serverpod_shared: 2.9.1
+  sign_in_with_apple_server: ^0.1.0
 
 dev_dependencies:
   lints: ">=3.0.0 <7.0.0"
