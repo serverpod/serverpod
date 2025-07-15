@@ -1,6 +1,26 @@
 BEGIN;
 
 --
+-- Class AppleAccount as table serverpod_auth_apple_account
+--
+CREATE TABLE "serverpod_auth_apple_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "userIdentifier" text NOT NULL,
+    "refreshToken" text NOT NULL,
+    "lastRefreshed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "authUserId" uuid NOT NULL,
+    "created" timestamp without time zone NOT NULL,
+    "email" text,
+    "isEmailVerified" boolean,
+    "isPrivateEmail" boolean,
+    "firstName" text,
+    "lastName" text
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_apple_account_identifier" ON "serverpod_auth_apple_account" USING btree ("userIdentifier");
+
+--
 -- Class CloudStorageEntry as table serverpod_cloud_storage
 --
 CREATE TABLE "serverpod_cloud_storage" (
@@ -217,6 +237,16 @@ CREATE TABLE "serverpod_auth_user" (
 );
 
 --
+-- Foreign relations for "serverpod_auth_apple_account" table
+--
+ALTER TABLE ONLY "serverpod_auth_apple_account"
+    ADD CONSTRAINT "serverpod_auth_apple_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "serverpod_log" table
 --
 ALTER TABLE ONLY "serverpod_log"
@@ -251,9 +281,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_apple_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_apple_account', '20250714071950359', now())
+    VALUES ('serverpod_auth_apple_account', '20250715133410884', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250714071950359', "timestamp" = now();
+    DO UPDATE SET "version" = '20250715133410884', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
