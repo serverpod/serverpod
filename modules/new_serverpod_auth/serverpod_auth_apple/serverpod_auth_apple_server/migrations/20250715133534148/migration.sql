@@ -209,6 +209,70 @@ CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_apple_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "userIdentifier" text NOT NULL,
+    "refreshToken" text NOT NULL,
+    "lastRefreshed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "authUserId" uuid NOT NULL,
+    "created" timestamp without time zone NOT NULL,
+    "email" text,
+    "isEmailVerified" boolean,
+    "isPrivateEmail" boolean,
+    "firstName" text,
+    "lastName" text
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_apple_account_identifier" ON "serverpod_auth_apple_account" USING btree ("userIdentifier");
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_profile_user_profile" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "userName" text,
+    "fullName" text,
+    "email" text,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "imageId" uuid
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_profile_user_profile_email_auth_user_id" ON "serverpod_auth_profile_user_profile" USING btree ("authUserId");
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_profile_user_profile_image" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "userProfileId" uuid NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "storageId" text NOT NULL,
+    "path" text NOT NULL,
+    "url" text NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_session" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
+    "sessionKeyHash" bytea NOT NULL,
+    "sessionKeySalt" bytea NOT NULL,
+    "method" text NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_auth_user" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "created" timestamp without time zone NOT NULL,
@@ -246,14 +310,60 @@ ALTER TABLE ONLY "serverpod_query_log"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_apple_account"
+    ADD CONSTRAINT "serverpod_auth_apple_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 --
--- MIGRATION VERSION FOR serverpod_auth_apple_account
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_profile_user_profile"
+    ADD CONSTRAINT "serverpod_auth_profile_user_profile_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "serverpod_auth_profile_user_profile"
+    ADD CONSTRAINT "serverpod_auth_profile_user_profile_fk_1"
+    FOREIGN KEY("imageId")
+    REFERENCES "serverpod_auth_profile_user_profile_image"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_profile_user_profile_image"
+    ADD CONSTRAINT "serverpod_auth_profile_user_profile_image_fk_0"
+    FOREIGN KEY("userProfileId")
+    REFERENCES "serverpod_auth_profile_user_profile"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "serverpod_auth_session"
+    ADD CONSTRAINT "serverpod_auth_session_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_apple
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_apple_account', '20250714071950359', now())
+    VALUES ('serverpod_auth_apple', '20250715133534148', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250714071950359', "timestamp" = now();
+    DO UPDATE SET "version" = '20250715133534148', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -262,6 +372,30 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20240516151843329', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20240516151843329', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_apple_account
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_apple_account', '20250715133410884', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250715133410884', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_profile
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_profile', '20250519092101868', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250519092101868', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_session
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_user
