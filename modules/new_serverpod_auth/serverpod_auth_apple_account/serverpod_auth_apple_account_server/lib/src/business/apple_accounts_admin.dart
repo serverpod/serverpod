@@ -44,6 +44,10 @@ final class AppleAccountsAdmin {
         transaction: transaction,
       );
 
+      if (appleAccounts.isEmpty) {
+        break;
+      }
+
       for (final appleAccount in appleAccounts) {
         try {
           // TODO: Get proper status from library in error cases.
