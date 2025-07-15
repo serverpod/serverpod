@@ -18,7 +18,7 @@ dependencies:
   serverpod_shared: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <7.0.0'
+  serverpod_lints: SERVERPOD_VERSION
   serverpod_test: SERVERPOD_VERSION
   test: ^1.24.2
 
