@@ -291,8 +291,7 @@ abstract class ComponentRoute extends Route {
       return context.withResponse(Response.seeOther(uri));
     }
 
-    final mimeType =
-        component is JsonComponent ? MimeType.json : MimeType.plainText;
+    final mimeType = component is JsonComponent ? MimeType.json : MimeType.html;
     return context.withResponse(Response.ok(
       body: Body.fromString(component.toString(), mimeType: mimeType),
     ));
