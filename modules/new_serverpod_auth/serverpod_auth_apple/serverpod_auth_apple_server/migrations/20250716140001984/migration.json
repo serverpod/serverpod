@@ -1204,6 +1204,12 @@
             "dartType": "String"
           },
           {
+            "name": "refreshTokenRequestedWithBundleIdentifier",
+            "columnType": 1,
+            "isNullable": false,
+            "dartType": "bool"
+          },
+          {
             "name": "lastRefreshed",
             "columnType": 4,
             "isNullable": false,
