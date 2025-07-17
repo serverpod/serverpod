@@ -57,6 +57,10 @@ abstract final class AppleAccounts {
       nonce: null,
     );
 
+    // TODO: Handle the edge-case where we already know the user, but they
+    //       disconnected and now "registered" again, in which case we need to
+    //       receive and store the new refresh token.
+
     var appleAccount = await AppleAccount.db.findFirstRow(
       session,
       where: (final t) => t.userIdentifier.equals(
@@ -69,6 +73,7 @@ abstract final class AppleAccounts {
     if (appleAccount == null) {
       final refreshToken = await _siwa.exchangeAuthorizationCode(
         authorizationCode,
+        useBundleIdentifier: isNativeApplePlatformSignIn,
       );
 
       await DatabaseUtil.runInTransactionOrSavepoint(
@@ -85,6 +90,8 @@ abstract final class AppleAccounts {
             AppleAccount(
               userIdentifier: verifiedIdentityToken.userId,
               refreshToken: refreshToken.refreshToken,
+              refreshTokenRequestedWithBundleIdentifier:
+                  isNativeApplePlatformSignIn,
               email: verifiedIdentityToken.email?.toLowerCase(),
               isEmailVerified: verifiedIdentityToken.emailVerified,
               isPrivateEmail: verifiedIdentityToken.isPrivateEmail,
