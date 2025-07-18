@@ -4,14 +4,111 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
-/// Endpoint for email based accounts
-abstract class EmailAccountEndpoint extends Endpoint {
-  static const String _method = 'email';
-
+/// Base endpoint for email-based accounts.
+///
+/// Uses `serverpod_auth_session` for session creation upon successful login,
+/// and `serverpod_auth_profile` to create profiles for new users upon
+/// registration.
+///
+/// Subclass this in your own application to expose an endpoint including all
+/// methods.
+/// Alternatively you can build up your own endpoint on top of the same business
+/// logic by using [EmailAccountImplementation].
+abstract class EmailAccountBaseEndpoint extends Endpoint {
+  /// {@template login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
+  /// In case an expected error occurs, this throws a
+  /// `EmailAccountLoginException`.
+  /// {@endtemplate}
   Future<AuthSuccess> login(
+    final Session session, {
+    required final String email,
+    required final String password,
+  }) async {
+    return EmailAccountImplementation.login(session,
+        email: email, password: password);
+  }
+
+  /// {@template start_registration}
+  /// Starts the registration for a new user account with an email-based login
+  /// associated to it.
+  ///
+  /// Upon successful completion of this method, an email will have been
+  /// sent to [email] with a verification link, which the user must open to
+  /// complete the registration.
+  /// {@endtemplate}
+  Future<void> startRegistration(
+    final Session session, {
+    required final String email,
+    required final String password,
+  }) async {
+    return EmailAccountImplementation.startRegistration(
+      session,
+      email: email,
+      password: password,
+    );
+  }
+
+  /// {@template finish_registration}
+  /// Completes a new account registration, creating a new auth user with a
+  /// profile and attaching the given email account to it.
+  /// {@endtemplate}
+  Future<AuthSuccess> finishRegistration(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
+  }) async {
+    return EmailAccountImplementation.finishRegistration(
+      session,
+      accountRequestId: accountRequestId,
+      verificationCode: verificationCode,
+    );
+  }
+
+  /// {@template start_password_reset}
+  /// Requests a password reset for [email].
+  /// {@endtemplate}
+  Future<void> startPasswordReset(
+    final Session session, {
+    required final String email,
+  }) async {
+    return EmailAccountImplementation.startPasswordReset(session, email: email);
+  }
+
+  /// {@template finish_password_reset}
+  /// Completes a password reset request by setting a new password.
+  ///
+  /// If the reset was successful, a new session key is returned.
+  ///
+  /// Destroys all active sessions of the user.
+  /// {@endtemplate}
+  Future<AuthSuccess> finishPasswordReset(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+    required final String newPassword,
+  }) async {
+    return EmailAccountImplementation.finishPasswordReset(
+      session,
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode,
+      newPassword: newPassword,
+    );
+  }
+}
+
+/// The default implementation for the email account endpoint methods.
+///
+/// All public methods in here can be safely exposed to end-user clients.
+///
+/// Uses `serverpod_auth_session` for session management and
+/// `serverpod_auth_profile` for user profiles.
+abstract class EmailAccountImplementation {
+  static const String _method = 'email';
+
+  /// {@macro login}
+  static Future<AuthSuccess> login(
     final Session session, {
     required final String email,
     required final String password,
@@ -25,11 +122,8 @@ abstract class EmailAccountEndpoint extends Endpoint {
     return _createSession(session, authUserId);
   }
 
-  /// Starts the registration for a new user account with an email-based login associated to it.
-  ///
-  /// Upon successful completion of this method, an email will have been
-  /// sent to [email] with a verification link, which the user must open to complete the registration.
-  Future<void> startRegistration(
+  /// {@macro start_registration}
+  static Future<void> startRegistration(
     final Session session, {
     required final String email,
     required final String password,
@@ -51,8 +145,8 @@ abstract class EmailAccountEndpoint extends Endpoint {
     }
   }
 
-  /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
-  Future<AuthSuccess> finishRegistration(
+  /// {@macro finish_registration}
+  static Future<AuthSuccess> finishRegistration(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
@@ -91,8 +185,8 @@ abstract class EmailAccountEndpoint extends Endpoint {
     });
   }
 
-  /// Requests a password reset for [email].
-  Future<void> startPasswordReset(
+  /// {@macro start_password_reset}
+  static Future<void> startPasswordReset(
     final Session session, {
     required final String email,
   }) async {
@@ -111,12 +205,8 @@ abstract class EmailAccountEndpoint extends Endpoint {
     }
   }
 
-  /// Completes a password reset request by setting a new password.
-  ///
-  /// If the reset was successful, a new session key is returned.
-  ///
-  /// Destroys all active sessions of the user.
-  Future<AuthSuccess> finishPasswordReset(
+  /// {@macro finish_password_reset}
+  static Future<AuthSuccess> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -137,7 +227,7 @@ abstract class EmailAccountEndpoint extends Endpoint {
     );
   }
 
-  Future<AuthSuccess> _createSession(
+  static Future<AuthSuccess> _createSession(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
