@@ -128,9 +128,12 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   @override
   String get name => 'emailAccount';
 
+  /// {@template login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
+  /// In case an expected error occurs, this throws a
+  /// `EmailAccountLoginException`.
+  /// {@endtemplate}
   _i2.Future<_i5.AuthSuccess> login({
     required String email,
     required String password,
@@ -144,10 +147,14 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// Starts the registration for a new user account with an email-based login associated to it.
+  /// {@template start_registration}
+  /// Starts the registration for a new user account with an email-based login
+  /// associated to it.
   ///
   /// Upon successful completion of this method, an email will have been
-  /// sent to [email] with a verification link, which the user must open to complete the registration.
+  /// sent to [email] with a verification link, which the user must open to
+  /// complete the registration.
+  /// {@endtemplate}
   _i2.Future<void> startRegistration({
     required String email,
     required String password,
@@ -161,7 +168,10 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
+  /// {@template finish_registration}
+  /// Completes a new account registration, creating a new auth user with a
+  /// profile and attaching the given email account to it.
+  /// {@endtemplate}
   _i2.Future<_i5.AuthSuccess> finishRegistration({
     required _i4.UuidValue accountRequestId,
     required String verificationCode,
@@ -175,7 +185,9 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
+  /// {@template start_password_reset}
   /// Requests a password reset for [email].
+  /// {@endtemplate}
   _i2.Future<void> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<void>(
         'emailAccount',
@@ -183,11 +195,13 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         {'email': email},
       );
 
+  /// {@template finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// If the reset was successful, a new session key is returned.
   ///
   /// Destroys all active sessions of the user.
+  /// {@endtemplate}
   _i2.Future<_i5.AuthSuccess> finishPasswordReset({
     required _i4.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -246,7 +260,10 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// Completes a new account registration, creating a new auth user with a profile and attaching the given email account to it.
+  /// {@template finish_registration}
+  /// Completes a new account registration, creating a new auth user with a
+  /// profile and attaching the given email account to it.
+  /// {@endtemplate}
   _i2.Future<_i5.AuthSuccess> finishRegistration({
     required _i4.UuidValue accountRequestId,
     required String verificationCode,
@@ -260,7 +277,9 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         },
       );
 
+  /// {@template start_password_reset}
   /// Requests a password reset for [email].
+  /// {@endtemplate}
   _i2.Future<void> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<void>(
         'passwordImportingEmailAccount',
@@ -268,11 +287,13 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         {'email': email},
       );
 
+  /// {@template finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// If the reset was successful, a new session key is returned.
   ///
   /// Destroys all active sessions of the user.
+  /// {@endtemplate}
   _i2.Future<_i5.AuthSuccess> finishPasswordReset({
     required _i4.UuidValue passwordResetRequestId,
     required String verificationCode,
