@@ -10,7 +10,7 @@ import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 ///
 /// Uses `serverpod_auth_session` for session management and
 /// `serverpod_auth_profile` for user profiles.
-abstract class EmailAccountImplementation {
+abstract class AuthEmail {
   static const String _method = 'email';
 
   /// {@macro email_account_base_endpoint.login}

@@ -10,8 +10,8 @@ import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 /// Subclass this in your own application to expose an endpoint including all
 /// methods.
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [EmailAccountImplementation].
-abstract class EmailAccountBaseEndpoint extends Endpoint {
+/// logic by using [AuthEmail].
+abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
@@ -23,7 +23,7 @@ abstract class EmailAccountBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return EmailAccountImplementation.login(
+    return AuthEmail.login(
       session,
       email: email,
       password: password,
@@ -43,7 +43,7 @@ abstract class EmailAccountBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return EmailAccountImplementation.startRegistration(
+    return AuthEmail.startRegistration(
       session,
       email: email,
       password: password,
@@ -59,7 +59,7 @@ abstract class EmailAccountBaseEndpoint extends Endpoint {
     required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
-    return EmailAccountImplementation.finishRegistration(
+    return AuthEmail.finishRegistration(
       session,
       accountRequestId: accountRequestId,
       verificationCode: verificationCode,
@@ -73,7 +73,7 @@ abstract class EmailAccountBaseEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    return EmailAccountImplementation.startPasswordReset(session, email: email);
+    return AuthEmail.startPasswordReset(session, email: email);
   }
 
   /// {@template email_account_base_endpoint.finish_password_reset}
@@ -89,7 +89,7 @@ abstract class EmailAccountBaseEndpoint extends Endpoint {
     required final String verificationCode,
     required final String newPassword,
   }) async {
-    return EmailAccountImplementation.finishPasswordReset(
+    return AuthEmail.finishPasswordReset(
       session,
       passwordResetRequestId: passwordResetRequestId,
       verificationCode: verificationCode,

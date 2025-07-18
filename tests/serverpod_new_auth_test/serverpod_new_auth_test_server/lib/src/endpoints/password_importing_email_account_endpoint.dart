@@ -1,16 +1,14 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as email_account;
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
-class PasswordImportingEmailAccountEndpoint
-    extends email_account.EmailAccountBaseEndpoint {
+class PasswordImportingEmailAccountEndpoint extends AuthEmailBaseEndpoint {
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
   @override
-  Future<email_account.AuthSuccess> login(
+  Future<AuthSuccess> login(
     final Session session, {
     required final String email,
     required final String password,

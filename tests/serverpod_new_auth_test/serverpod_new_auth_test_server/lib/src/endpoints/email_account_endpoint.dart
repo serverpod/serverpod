@@ -1,5 +1,4 @@
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as email_account;
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 
 /// Endpoint for email-based authentication.
-class EmailAccountEndpoint extends email_account.EmailAccountBaseEndpoint {}
+class EmailAccountEndpoint extends AuthEmailBaseEndpoint {}
