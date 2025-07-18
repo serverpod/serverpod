@@ -138,24 +138,11 @@ abstract class AuthEmail {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await AuthSessions.createSession(
+    return AuthSessions.createSession(
       session,
       authUserId: authUserId,
       method: _method,
-      scopes: authUser.scopes,
       transaction: transaction,
     );
-
-    return sessionKey;
   }
 }

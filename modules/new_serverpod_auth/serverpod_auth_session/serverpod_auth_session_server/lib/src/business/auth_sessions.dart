@@ -9,6 +9,7 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Management functions for [AuthSession]s.
@@ -142,16 +143,42 @@ abstract final class AuthSessions {
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
-    required final Set<Scope> scopes,
+
+    /// The scopes to apply to the session.
+    ///
+    /// By default forwards all of the [AuthUser]'s scopes to the session.
+    Set<Scope>? scopes,
 
     /// Fixed date at which the session expires.
-    /// If `null` the session will work until it's deleted or when it's been inactive for [expireAfterUnusedFor].
+    /// If `null` the session will work until it's deleted or when it's been
+    /// inactive for [expireAfterUnusedFor].
     final DateTime? expiresAt,
 
     /// Length of inactivity after which the session is no longer usable.
     final Duration? expireAfterUnusedFor,
+
+    /// Whether to skip the check if the user is blocked (in which case a
+    /// [AuthUserBlockedException] would be thrown).
+    ///
+    /// Should only to be used if the caller is sure that the user is not
+    /// blocked.
+    final bool skipUserBlockedChecked = false,
     final Transaction? transaction,
   }) async {
+    if (!skipUserBlockedChecked || scopes == null) {
+      final authUser = await AuthUsers.get(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
+
+      if (authUser.blocked && !skipUserBlockedChecked) {
+        throw AuthUserBlockedException();
+      }
+
+      scopes ??= authUser.scopes;
+    }
+
     final secret = generateRandomBytes(config.sessionKeySecretLength);
     final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 

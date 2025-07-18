@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_apple_account_server/serverpod_auth_apple_account_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Endpoint for handling Sign in with Apple.
 abstract class AppleAccountBaseEndpoint extends Endpoint {
@@ -70,24 +69,11 @@ abstract class AppleAccountBaseEndpoint extends Endpoint {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await AuthSessions.createSession(
+    return AuthSessions.createSession(
       session,
       authUserId: authUserId,
       method: _method,
-      scopes: authUser.scopes,
       transaction: transaction,
     );
-
-    return sessionKey;
   }
 }
