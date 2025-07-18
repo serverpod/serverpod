@@ -128,7 +128,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   @override
   String get name => 'emailAccount';
 
-  /// {@template login}
+  /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a
@@ -147,7 +147,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// {@template start_registration}
+  /// {@template email_account_base_endpoint.start_registration}
   /// Starts the registration for a new user account with an email-based login
   /// associated to it.
   ///
@@ -168,7 +168,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// {@template finish_registration}
+  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   /// {@endtemplate}
@@ -185,7 +185,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// {@template start_password_reset}
+  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   /// {@endtemplate}
   _i2.Future<void> startPasswordReset({required String email}) =>
@@ -195,7 +195,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
         {'email': email},
       );
 
-  /// {@template finish_password_reset}
+  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// If the reset was successful, a new session key is returned.
@@ -260,7 +260,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// {@template finish_registration}
+  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   /// {@endtemplate}
@@ -277,7 +277,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         },
       );
 
-  /// {@template start_password_reset}
+  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   /// {@endtemplate}
   _i2.Future<void> startPasswordReset({required String email}) =>
@@ -287,7 +287,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
         {'email': email},
       );
 
-  /// {@template finish_password_reset}
+  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// If the reset was successful, a new session key is returned.
