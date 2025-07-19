@@ -12,11 +12,6 @@
 /// 3. Deserialization code expects Lists and tries to cast with `(data as List)`
 /// 4. If data is an empty Map {} instead, the cast fails
 ///
-/// LOCATIONS:
-/// - Serialization: packages/serverpod_serialization/lib/src/extensions/serialization_extensions.dart:94-120
-/// - Code Generation: tools/serverpod_cli/lib/src/generator/types.dart:560-580
-/// - Generated Code: tests/serverpod_test_client/lib/src/protocol/protocol.dart:1694-1696
-///
 /// FIX REQUIRED:
 /// The generated deserialization code should check if data is a Map before casting as List,
 /// and return an empty Map in that case.
@@ -256,7 +251,6 @@ void main() {
         expect(result, {});
       });
 
-      //FAILS
       test(
           'Given an empty Map representing a Map<int, int> when deserializing directly then it should not throw a type cast error',
           () {
@@ -290,7 +284,6 @@ void main() {
         expect(result, {});
       });
 
-      //FAILS
       test(
           'Given an empty Map representing a Map<Types, String> when deserializing directly then it should not throw a type cast error',
           () {
@@ -399,7 +392,6 @@ void main() {
     });
 
     group('Edge Case Tests - The Actual Bug', () {
-      //FALIS
       test(
           'Given a Map<int, int> with empty data when deserializing from JSON that contains an empty Map instead of List then it should not throw a type cast error',
           () {
@@ -419,7 +411,6 @@ void main() {
         expect(typesMap.anIntKey, {});
       });
 
-      //FAILS
       test(
           'Given a Map<Types, String> with empty data when deserializing from JSON that contains an empty Map instead of List then it should not throw a type cast error',
           () {
@@ -434,7 +425,6 @@ void main() {
         expect(typesMap.anObjectKey, {});
       });
 
-      //FAILS
       test(
           'Given a Map<int, int> when deserializing from a malformed JSON that has empty Map instead of List then it should handle gracefully',
           () {
@@ -447,7 +437,6 @@ void main() {
         expect(result, {});
       });
 
-      //FAILS
       test(
           'Given a Map<Types, String> when deserializing from a malformed JSON that has empty Map instead of List then it should handle gracefully',
           () {
