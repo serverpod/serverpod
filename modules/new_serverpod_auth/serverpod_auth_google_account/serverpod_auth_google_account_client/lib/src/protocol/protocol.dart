@@ -11,8 +11,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'google_id_token_verification_exception.dart' as _i2;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
-    as _i2;
+    as _i3;
+export 'google_id_token_verification_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -28,8 +30,16 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
+    if (t == _i2.GoogleIdTokenVerificationException) {
+      return _i2.GoogleIdTokenVerificationException.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.GoogleIdTokenVerificationException?>()) {
+      return (data != null
+          ? _i2.GoogleIdTokenVerificationException.fromJson(data)
+          : null) as T;
+    }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
+      return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -38,7 +48,11 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    className = _i2.Protocol().getClassNameForObject(data);
+    switch (data) {
+      case _i2.GoogleIdTokenVerificationException():
+        return 'GoogleIdTokenVerificationException';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_user.$className';
     }
@@ -51,9 +65,12 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'GoogleIdTokenVerificationException') {
+      return deserialize<_i2.GoogleIdTokenVerificationException>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _i3.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
