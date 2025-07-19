@@ -1,5 +1,3 @@
-/// Tests for the Map serialization bug in Serverpod
-///
 /// BUG DESCRIPTION:
 /// When Maps with non-String keys contain empty data, they are serialized as empty Lists [].
 /// However, during deserialization, if the data is somehow an empty Map {} instead of a List,
