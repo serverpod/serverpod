@@ -1,4 +1,3 @@
-/// BUG DESCRIPTION:
 /// When Maps with non-String keys contain empty data, they are serialized as empty Lists [].
 /// However, during deserialization, if the data is somehow an empty Map {} instead of a List,
 /// the code tries to cast it with `(data as List)` which throws:
@@ -10,7 +9,7 @@
 /// 3. Deserialization code expects Lists and tries to cast with `(data as List)`
 /// 4. If data is an empty Map {} instead, the cast fails
 ///
-/// FIX REQUIRED:
+/// FIX:
 /// The generated deserialization code should check if data is a Map before casting as List,
 /// and return an empty Map in that case.
 ///
