@@ -3,7 +3,6 @@
 /// This script shows the exact error that occurs when trying to deserialize
 /// Maps with non-String keys that contain empty data.
 
-import 'dart:convert';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 void main() {
