@@ -76,26 +76,28 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
                 k as String,
                 (v as List)
                     .map((e) => (e as List?)
-                        ?.map((e) => (e as List).fold<Map<int, _i2.SimpleData>>(
-                            {},
-                            (t, e) => {
-                                  ...t,
-                                  e['k'] as int: _i2.SimpleData.fromJson(
-                                      (e['v'] as Map<String, dynamic>))
-                                }))
+                        ?.map((e) => (e is List ? (e as List) : const [])
+                            .fold<Map<int, _i2.SimpleData>>(
+                                {},
+                                (t, e) => {
+                                      ...t,
+                                      e['k'] as int: _i2.SimpleData.fromJson(
+                                          (e['v'] as Map<String, dynamic>))
+                                    }))
                         .toList())
                     .toList(),
               )),
       nestedDataMap:
           (jsonSerialization['nestedDataMap'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
-                (v as List).fold<Map<int, _i2.SimpleData>>(
-                    {},
-                    (t, e) => {
-                          ...t,
-                          e['k'] as int: _i2.SimpleData.fromJson(
-                              (e['v'] as Map<String, dynamic>))
-                        }),
+                (v is List ? (v as List) : const [])
+                    .fold<Map<int, _i2.SimpleData>>(
+                        {},
+                        (t, e) => {
+                              ...t,
+                              e['k'] as int: _i2.SimpleData.fromJson(
+                                  (e['v'] as Map<String, dynamic>))
+                            }),
               )),
     );
   }

@@ -122,8 +122,11 @@ abstract class ObjectWithMaps
                 k as String,
                 v == null ? null : _i1.UuidValueJsonExtension.fromJson(v),
               )),
-      intIntMap: (jsonSerialization['intIntMap'] as List).fold<Map<int, int>>(
-          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+      intIntMap: (jsonSerialization['intIntMap'] is List
+              ? (jsonSerialization['intIntMap'] as List)
+              : const [])
+          .fold<Map<int, int>>(
+              {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
     );
   }
 

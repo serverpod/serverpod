@@ -377,44 +377,71 @@ Expression _buildMapTypeFromJson(
 
   return CodeExpression(
     Block.of([
-      valueExpression
-          .asA(CodeExpression(Code('List${type.nullable ? '?' : ''}')))
-          .code,
-      Code('${type.nullable ? '?' : ''}.fold<Map<'),
-      type.generics.first
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code(','),
-      type.generics.last
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code('>>({}, (t, e) => {...t, '),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('k')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(':'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.last,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('v')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code('})'),
+      if (type.nullable) ...[
+        const Code('('),
+        valueExpression.code,
+        const Code(' is List ? '),
+        valueExpression.asA(const CodeExpression(Code('List?'))).code,
+        const Code(' : null)?.fold<Map<'),
+        type.generics.first
+            .reference(serverCode, subDirParts: subDirParts, config: config)
+            .code,
+        const Code(','),
+        type.generics.last
+            .reference(serverCode, subDirParts: subDirParts, config: config)
+            .code,
+        const Code('>>({}, (t, e) => {...t, '),
+        _buildFromJson(
+          jsonReference,
+          type.generics.first,
+          serverCode,
+          config,
+          mapExpression: refer('e').index(literalString('k')),
+          subDirParts: subDirParts,
+        ).code,
+        const Code(':'),
+        _buildFromJson(
+          jsonReference,
+          type.generics.last,
+          serverCode,
+          config,
+          mapExpression: refer('e').index(literalString('v')),
+          subDirParts: subDirParts,
+        ).code,
+        const Code('}) ?? {}'),
+      ] else ...[
+        const Code('('),
+        valueExpression.code,
+        const Code(' is List ? '),
+        valueExpression.asA(const CodeExpression(Code('List'))).code,
+        const Code(' : const []).fold<Map<'),
+        type.generics.first
+            .reference(serverCode, subDirParts: subDirParts, config: config)
+            .code,
+        const Code(','),
+        type.generics.last
+            .reference(serverCode, subDirParts: subDirParts, config: config)
+            .code,
+        const Code('>>({}, (t, e) => {...t, '),
+        _buildFromJson(
+          jsonReference,
+          type.generics.first,
+          serverCode,
+          config,
+          mapExpression: refer('e').index(literalString('k')),
+          subDirParts: subDirParts,
+        ).code,
+        const Code(':'),
+        _buildFromJson(
+          jsonReference,
+          type.generics.last,
+          serverCode,
+          config,
+          mapExpression: refer('e').index(literalString('v')),
+          subDirParts: subDirParts,
+        ).code,
+        const Code('})'),
+      ]
     ]),
   );
 }

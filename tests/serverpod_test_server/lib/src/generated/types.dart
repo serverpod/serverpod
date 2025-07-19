@@ -113,8 +113,12 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
               (jsonSerialization['aStringifiedEnum'] as String)),
       aList:
           (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
-      aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
-          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+      aMap: (jsonSerialization['aMap'] is List
+                  ? (jsonSerialization['aMap'] as List?)
+                  : null)
+              ?.fold<Map<int, int>>(
+                  {}, (t, e) => {...t, e['k'] as int: e['v'] as int}) ??
+          {},
       aSet: jsonSerialization['aSet'] == null
           ? null
           : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
