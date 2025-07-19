@@ -567,7 +567,7 @@ class TypeDefinition {
                     ? Block.of([
                         // using Code.scope only sets the generic to List
                         const Code('(data!=null?'
-                            'Map.fromEntries((data is List?(data as List):[]).map((e) =>'
+                            'Map.fromEntries((data is List ? data : []).map((e) =>'
                             'MapEntry(deserialize<'),
                         generics.first
                             .reference(serverCode, config: config)
@@ -578,7 +578,8 @@ class TypeDefinition {
                       ])
                     : Block.of([
                         // using Code.scope only sets the generic to List
-                        const Code('Map.fromEntries((data is List?(data as List):[]).map((e) =>'
+                        const Code(
+                            'Map.fromEntries((data is List ? data : []).map((e) =>'
                             'MapEntry(deserialize<'),
                         generics.first
                             .reference(serverCode, config: config)
