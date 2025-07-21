@@ -9,7 +9,7 @@ void main() {
     final authenticationInfo = AuthenticationInfo(authUserId, {});
 
     test('when reading the `userUuid` field, then the UUID is returned.', () {
-      expect(authenticationInfo.userUuid, authUserId);
+      expect(authenticationInfo.authUserId, authUserId);
     });
   });
 
@@ -18,7 +18,7 @@ void main() {
 
     test('when reading the `userUuid` field, then it throws.', () {
       expect(
-        () => authenticationInfo.userUuid,
+        () => authenticationInfo.authUserId,
         throwsFormatException,
       );
     });
