@@ -24,6 +24,6 @@ class SessionTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return (await session.authenticated)?.userUuid == authUserId;
+    return (await session.authenticated)?.authUserId == authUserId;
   }
 }

@@ -92,7 +92,7 @@ void main() {
       );
 
       expect(authInfo, isNotNull);
-      expect(authInfo!.userUuid, authUserId);
+      expect(authInfo!.authUserId, authUserId);
       expect(authInfo.scopes, {const Scope(scopeName)});
     });
 

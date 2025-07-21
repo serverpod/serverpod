@@ -72,7 +72,7 @@ void main() {
         );
 
         expect(
-          authInfo?.userUuid,
+          authInfo?.authUserId,
           authUserId,
         );
       },
@@ -188,7 +188,7 @@ void main() {
           );
 
           expect(
-            authInfo?.userUuid,
+            authInfo?.authUserId,
             authUserId,
           );
         },
@@ -245,7 +245,7 @@ void main() {
         );
 
         expect(
-          authInfo?.userUuid,
+          authInfo?.authUserId,
           authUserId,
         );
       },
@@ -265,7 +265,7 @@ void main() {
         );
 
         expect(
-          authInfoBeforeInitialExpiration?.userUuid,
+          authInfoBeforeInitialExpiration?.authUserId,
           authUserId,
         );
 
@@ -280,7 +280,7 @@ void main() {
         );
 
         expect(
-          authInfoAfterExtension?.userUuid,
+          authInfoAfterExtension?.authUserId,
           authUserId,
         );
       },
