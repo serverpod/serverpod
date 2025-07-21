@@ -18,13 +18,13 @@ abstract final class EmailAccounts {
   /// Collection of admin-related functions.
   static final admin = EmailAccountsAdmin._();
 
-  /// Returns the [AuthUser]'s ID upon successful login.
+  /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
   /// Throws [EmailAccountLoginException] for expected error cases.
   ///
-  /// In case of invalid credentials, the failed login attempt will be logged to
+  /// In case of invalid credentials, the failed attempt will be logged to
   /// the database outside of the [transaction] and can not be rolled back.
-  static Future<UuidValue> login(
+  static Future<UuidValue> authenticate(
     final Session session, {
     required String email,
     required final String password,

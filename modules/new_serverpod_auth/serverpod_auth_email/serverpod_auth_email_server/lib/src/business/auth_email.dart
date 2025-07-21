@@ -24,7 +24,7 @@ abstract class AuthEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final authUserId = await EmailAccounts.login(
+        final authUserId = await EmailAccounts.authenticate(
           session,
           email: email,
           password: password,
