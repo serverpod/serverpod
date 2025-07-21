@@ -120,7 +120,7 @@ void main() {
           );
 
           expect(
-            await EmailAccounts.login(
+            await EmailAccounts.authenticate(
               session,
               email: email,
               password: newPassword,
@@ -174,10 +174,10 @@ void main() {
       );
 
       test(
-        'when calling `EmailAccounts.login`, it works right away (without verification).',
+        'when calling `EmailAccounts.authenticate`, it works right away (without verification).',
         () async {
           expect(
-            await EmailAccounts.login(
+            await EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -319,7 +319,7 @@ void main() {
         session = sessionBuilder.build();
 
         try {
-          await EmailAccounts.login(
+          await EmailAccounts.authenticate(
             session,
             email: '404@serverpod.dev',
             password: 'Asdf123ll!',

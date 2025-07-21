@@ -268,10 +268,10 @@ void main() {
       );
 
       test(
-        'when attempting to log into the new system with the credentials, then that succeeds.',
+        'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await new_email_account.EmailAccounts.login(
+            await new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -463,7 +463,7 @@ void main() {
           );
 
           expect(
-            await new_email_account.EmailAccounts.login(
+            await new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -486,7 +486,7 @@ void main() {
           );
 
           await expectLater(
-            () => new_email_account.EmailAccounts.login(
+            () => new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               password: wrongPassword,
@@ -498,10 +498,10 @@ void main() {
       );
 
       test(
-        'when attempting to log into the new system with the credentials, then that fails (because the password has not been set).',
+        'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => new_email_account.EmailAccounts.login(
+            () => new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,

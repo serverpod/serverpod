@@ -35,9 +35,10 @@ void main() {
         await cleanUpEmailAccountDatabaseEntities(session);
       });
 
-      test('when logging in with the original credentials, then it succeeds.',
+      test(
+          'when authenticating with the original credentials, then it succeeds.',
           () async {
-        final loggedInUser = await EmailAccounts.login(
+        final loggedInUser = await EmailAccounts.authenticate(
           session,
           email: email,
           password: password,
@@ -47,9 +48,9 @@ void main() {
       });
 
       test(
-          'when logging in with the lower-case email variant of the credentials, then it succeeds.',
+          'when authenticating with the lower-case email variant of the credentials, then it succeeds.',
           () async {
-        final loggedInUser = await EmailAccounts.login(
+        final loggedInUser = await EmailAccounts.authenticate(
           session,
           email: email.toLowerCase(),
           password: password,
@@ -59,7 +60,7 @@ void main() {
       });
 
       test(
-          'when logging in with an invalid password, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
+          'when trying to authenticate with an invalid password, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           failedLoginRateLimit: (
@@ -69,7 +70,7 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.login(
+          () => EmailAccounts.authenticate(
             session,
             email: email,
             password: 'some other password',
@@ -82,7 +83,7 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.login(
+          () => EmailAccounts.authenticate(
             session,
             email: email,
             password: 'some other password',
@@ -108,7 +109,7 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.login(
+          () => EmailAccounts.authenticate(
             session,
             email: unknownEmail,
             password: 'some other password',
@@ -121,7 +122,7 @@ void main() {
         );
 
         await expectLater(
-          () => EmailAccounts.login(
+          () => EmailAccounts.authenticate(
             session,
             email: unknownEmail,
             password: 'some other password',

@@ -242,9 +242,10 @@ void main() {
         await cleanUpEmailAccountDatabaseEntities(session);
       });
 
-      test('when using the new credentials for the login, then it succeeds.',
+      test(
+          'when using the new credentials for an authentication, then it succeeds.',
           () async {
-        final userId = await EmailAccounts.login(
+        final userId = await EmailAccounts.authenticate(
           session,
           email: email,
           password: newPassword,
@@ -256,7 +257,7 @@ void main() {
       test('when using the old credentials for the login, then it fails.',
           () async {
         await expectLater(
-          () => EmailAccounts.login(
+          () => EmailAccounts.authenticate(
             session,
             email: email,
             password: oldPassword,
