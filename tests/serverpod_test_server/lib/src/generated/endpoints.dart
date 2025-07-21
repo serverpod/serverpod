@@ -3294,9 +3294,10 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['mapParameters'] as _i24.MapParametersEndpoint)
                   .returnIntIntMap(
-            session,
-            params['map'],
-          ),
+                    session,
+                    params['map'],
+                  )
+                  .then((map) => map.isEmpty ? [] : map),
         ),
         'returnEnumIntMap': _i1.MethodConnector(
           name: 'returnEnumIntMap',
@@ -3313,9 +3314,10 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['mapParameters'] as _i24.MapParametersEndpoint)
                   .returnEnumIntMap(
-            session,
-            params['map'],
-          ),
+                    session,
+                    params['map'],
+                  )
+                  .then((map) => map.isEmpty ? [] : map),
         ),
         'returnEnumMap': _i1.MethodConnector(
           name: 'returnEnumMap',

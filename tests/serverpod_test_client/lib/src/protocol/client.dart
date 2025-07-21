@@ -1440,7 +1440,7 @@ class EndpointMapParameters extends _i1.EndpointRef {
       caller.callServerEndpoint<Map<int, int>>(
         'mapParameters',
         'returnIntIntMap',
-        {'map': map},
+        {'map': map.isEmpty ? [] : map},
       );
 
   _i2.Future<Map<_i16.TestEnum, int>> returnEnumIntMap(
@@ -1448,7 +1448,7 @@ class EndpointMapParameters extends _i1.EndpointRef {
       caller.callServerEndpoint<Map<_i16.TestEnum, int>>(
         'mapParameters',
         'returnEnumIntMap',
-        {'map': map},
+        {'map': map.isEmpty ? [] : map},
       );
 
   _i2.Future<Map<String, _i16.TestEnum>> returnEnumMap(
