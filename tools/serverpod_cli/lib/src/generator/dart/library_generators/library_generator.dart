@@ -790,6 +790,33 @@ class LibraryGenerator {
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
     );
 
+    Spec handleParameter(ParameterDefinition parameterDef) {
+      if (parameterDef.type.isRecordType) {
+        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+      }
+
+      if (parameterDef.type.returnsRecordInContainer) {
+        return Block.of([
+          if (parameterDef.type.nullable)
+            Code('${parameterDef.name} == null ? null :'),
+          mapRecordContainingContainerToJsonRef
+              .call([refer(parameterDef.name)]).code,
+        ]);
+      }
+
+      if (parameterDef.type.isMapType &&
+          parameterDef.type.generics.first.className != 'String') {
+        return Block.of([
+          Code([
+            if (parameterDef.type.nullable) '${parameterDef.name} != null && ',
+            '${parameterDef.name}.isEmpty ? [] : ${parameterDef.name}'
+          ].join())
+        ]);
+      }
+
+      return refer(parameterDef.name);
+    }
+
     return refer('caller').property('callServerEndpoint').call([
       literalString('$modulePrefix${endpointDef.name}'),
       literalString(methodDef.name),
@@ -797,16 +824,7 @@ class LibraryGenerator {
         for (var parameterDef in params)
           // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
           // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
-          literalString(parameterDef.name): parameterDef.type.isRecordType
-              ? mapRecordToJsonRef.call([refer(parameterDef.name)]).code
-              : (parameterDef.type.returnsRecordInContainer
-                  ? Block.of([
-                      if (parameterDef.type.nullable)
-                        Code('${parameterDef.name} == null ? null :'),
-                      mapRecordContainingContainerToJsonRef
-                          .call([refer(parameterDef.name)]).code,
-                    ])
-                  : refer(parameterDef.name)),
+          literalString(parameterDef.name): handleParameter(parameterDef)
       })
     ], {}, [
       methodDef.returnType.generics.first.reference(false, config: config)
@@ -956,7 +974,7 @@ class LibraryGenerator {
                     param.name:
                         refer('params').index(literalString(param.name)),
                 })
-                .transformRecordReturnType(
+                .transformReturnType(
                   method.returnType,
                   serverCode: serverCode,
                   config: config,
@@ -1377,7 +1395,7 @@ Code _buildRecordEncode(
 }
 
 extension on Expression {
-  Expression transformRecordReturnType(
+  Expression transformReturnType(
     TypeDefinition returnType, {
     required bool serverCode,
     required GeneratorConfig config,
@@ -1405,9 +1423,7 @@ extension on Expression {
           ]),
         ),
       ]);
-    }
-
-    if (returnType.generics.isNotEmpty &&
+    } else if (returnType.generics.isNotEmpty &&
         returnType.generics.first.returnsRecordInContainer) {
       return property('then').call(
         [
@@ -1419,6 +1435,21 @@ extension on Expression {
               mapRecordContainingContainerToJsonRef.call([
                 refer('container'),
               ]).code,
+            ]),
+          ),
+        ],
+      );
+    } else if (returnType.generics.isNotEmpty &&
+        returnType.generics.first.isMapType &&
+        returnType.generics.first.generics.first.className != 'String') {
+      return property('then').call(
+        [
+          CodeExpression(
+            Block.of([
+              const Code('(map) => '),
+              if (returnType.generics.first.nullable)
+                const Code('map == null ? null : '),
+              const Code('map.isEmpty ? [] : map'),
             ]),
           ),
         ],
