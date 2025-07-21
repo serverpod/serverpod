@@ -18,14 +18,22 @@ abstract class AuthEmail {
     final Session session, {
     required final String email,
     required final String password,
+    final Transaction? transaction,
   }) async {
-    final authUserId = await EmailAccounts.login(
-      session,
-      email: email,
-      password: password,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final authUserId = await EmailAccounts.login(
+          session,
+          email: email,
+          password: password,
+          transaction: transaction,
+        );
 
-    return _createSession(session, authUserId);
+        return _createSession(session, authUserId, transaction: transaction);
+      },
+    );
   }
 
   /// {@macro email_account_base_endpoint.start_registration}
@@ -33,11 +41,13 @@ abstract class AuthEmail {
     final Session session, {
     required final String email,
     required final String password,
+    final Transaction? transaction,
   }) async {
     final result = await EmailAccounts.startAccountCreation(
       session,
       email: email,
       password: password,
+      transaction: transaction,
     );
 
     // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
@@ -56,49 +66,56 @@ abstract class AuthEmail {
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
+    final Transaction? transaction,
   }) async {
-    return session.db.transaction((final transaction) async {
-      final accountRequest = await EmailAccounts.verifyAccountCreation(
-        session,
-        accountRequestId: accountRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
-      );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final accountRequest = await EmailAccounts.verifyAccountCreation(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        );
 
-      final newUser = await AuthUsers.create(
-        session,
-        transaction: transaction,
-      );
-      final authUserId = newUser.id;
+        final newUser = await AuthUsers.create(
+          session,
+          transaction: transaction,
+        );
+        final authUserId = newUser.id;
 
-      await UserProfiles.createUserProfile(
-        session,
-        authUserId,
-        UserProfileData(
-          email: accountRequest.email,
-        ),
-        transaction: transaction,
-      );
+        await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(
+            email: accountRequest.email,
+          ),
+          transaction: transaction,
+        );
 
-      await EmailAccounts.completeAccountCreation(
-        session,
-        accountRequestId: accountRequestId,
-        authUserId: authUserId,
-        transaction: transaction,
-      );
+        await EmailAccounts.completeAccountCreation(
+          session,
+          accountRequestId: accountRequestId,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
 
-      return _createSession(session, authUserId, transaction: transaction);
-    });
+        return _createSession(session, authUserId, transaction: transaction);
+      },
+    );
   }
 
   /// {@macro email_account_base_endpoint.start_password_reset}
   static Future<void> startPasswordReset(
     final Session session, {
     required final String email,
+    final Transaction? transaction,
   }) async {
     final result = await EmailAccounts.startPasswordReset(
       session,
       email: email,
+      transaction: transaction,
     );
 
     // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
@@ -117,26 +134,39 @@ abstract class AuthEmail {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
     required final String newPassword,
+    final Transaction? transaction,
   }) async {
-    final authUserId = await EmailAccounts.completePasswordReset(
-      session,
-      passwordResetRequestId: passwordResetRequestId,
-      verificationCode: verificationCode,
-      newPassword: newPassword,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final authUserId = await EmailAccounts.completePasswordReset(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+          newPassword: newPassword,
+          transaction: transaction,
+        );
 
-    await AuthSessions.destroyAllSessions(session, authUserId: authUserId);
+        await AuthSessions.destroyAllSessions(
+          session,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
 
-    return _createSession(
-      session,
-      authUserId,
+        return _createSession(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+      },
     );
   }
 
   static Future<AuthSuccess> _createSession(
     final Session session,
     final UuidValue authUserId, {
-    final Transaction? transaction,
+    required final Transaction transaction,
   }) async {
     return AuthSessions.createSession(
       session,
