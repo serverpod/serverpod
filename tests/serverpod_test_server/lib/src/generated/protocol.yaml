@@ -177,6 +177,7 @@ mapParameters:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
   - returnIntIntMap:
+  - returnNestedIntIntMap:
   - returnEnumIntMap:
   - returnEnumMap:
   - returnDoubleMap:
@@ -301,11 +302,16 @@ recordParameters:
   - returnNullableIntStringRecord:
   - returnIntSimpleDataRecord:
   - returnNullableIntSimpleDataRecord:
+  - returnStringKeyedMapRecord:
+  - returnNonStringKeyedMapRecord:
+  - returnSetWithNestedRecordRecord:
   - returnNamedIntStringRecord:
   - returnNamedNullableIntStringRecord:
   - returnRecordOfNamedIntAndObject:
   - returnNullableRecordOfNamedIntAndObject:
   - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnNamedNonStringKeyedMapRecord:
+  - returnNamedSetWithNestedRecordRecord:
   - returnRecordTypedef:
   - returnNullableRecordTypedef:
   - returnListOfIntSimpleDataRecord:

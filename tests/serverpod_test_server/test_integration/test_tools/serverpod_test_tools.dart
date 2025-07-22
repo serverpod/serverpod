@@ -5148,7 +5148,8 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnIntIntMap',
-          parameters: _i1.testObjectToJson({'map': map.isEmpty ? [] : map}),
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -5157,6 +5158,36 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then((map) => _i17.Protocol().deserialize<Map<int, int>>(map));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<String, Map<int, int>>> returnNestedIntIntMap(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<String, Map<int, int>> map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'mapParameters',
+        method: 'returnNestedIntIntMap',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNestedIntIntMap',
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<Map<String, Map<int, int>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -5179,7 +5210,8 @@ class _MapParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'mapParameters',
           methodName: 'returnEnumIntMap',
-          parameters: _i1.testObjectToJson({'map': map.isEmpty ? [] : map}),
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -8721,6 +8753,105 @@ class _RecordParametersEndpoint {
     });
   }
 
+  _i3.Future<(Map<String, int>,)> returnStringKeyedMapRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (Map<String, int>,) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method: 'returnStringKeyedMapRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnStringKeyedMapRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i17.Protocol().deserialize<(Map<String, int>,)>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<(Map<int, int>,)> returnNonStringKeyedMapRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (Map<int, int>,) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method: 'returnNonStringKeyedMapRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNonStringKeyedMapRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i17.Protocol().deserialize<(Map<int, int>,)>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<(Set<(int,)>,)> returnSetWithNestedRecordRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (Set<(int,)>,) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method: 'returnSetWithNestedRecordRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnSetWithNestedRecordRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i17.Protocol().deserialize<(Set<(int,)>,)>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<({int number, String text})> returnNamedIntStringRecord(
     _i1.TestSessionBuilder sessionBuilder,
     ({int number, String text}) record,
@@ -8889,6 +9020,72 @@ class _RecordParametersEndpoint {
     });
   }
 
+  _i3.Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    ({Map<int, int> intIntMap}) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method: 'returnNamedNonStringKeyedMapRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNamedNonStringKeyedMapRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i17.Protocol()
+                .deserialize<({Map<int, int> intIntMap})>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<({Set<(bool,)> boolSet})> returnNamedSetWithNestedRecordRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    ({Set<(bool,)> boolSet}) record,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method: 'returnNamedSetWithNestedRecordRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName: 'returnNamedSetWithNestedRecordRecord',
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapRecordToJson(record)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) =>
+                _i17.Protocol().deserialize<({Set<(bool,)> boolSet})>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<(int, {_i11.SimpleData data})> returnRecordTypedef(
     _i1.TestSessionBuilder sessionBuilder,
     (int, {_i11.SimpleData data}) record,
@@ -8970,9 +9167,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'recordList': _i17.mapRecordContainingContainerToJson(recordList)
-          }),
+          parameters: _i1.testObjectToJson(
+              {'recordList': _i17.mapContainerToJson(recordList)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9005,8 +9201,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson(
-              {'record': _i17.mapRecordContainingContainerToJson(record)}),
+          parameters:
+              _i1.testObjectToJson({'record': _i17.mapContainerToJson(record)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9038,9 +9234,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson({
-            'recordSet': _i17.mapRecordContainingContainerToJson(recordSet)
-          }),
+          parameters: _i1.testObjectToJson(
+              {'recordSet': _i17.mapContainerToJson(recordSet)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9073,8 +9268,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson(
-              {'set': _i17.mapRecordContainingContainerToJson(set)}),
+          parameters:
+              _i1.testObjectToJson({'set': _i17.mapContainerToJson(set)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9108,9 +9303,8 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableSetOfIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'recordSet': recordSet == null
-                ? null
-                : _i17.mapRecordContainingContainerToJson(recordSet)
+            'recordSet':
+                recordSet == null ? null : _i17.mapContainerToJson(recordSet)
           }),
           serializationManager: _serializationManager,
         );
@@ -9144,8 +9338,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson(
-              {'map': _i17.mapRecordContainingContainerToJson(map)}),
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9178,8 +9372,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfNullableIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson(
-              {'map': _i17.mapRecordContainingContainerToJson(map)}),
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9212,8 +9406,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnRecordMapOfIntSimpleDataRecord',
-          parameters: _i1.testObjectToJson(
-              {'map': _i17.mapRecordContainingContainerToJson(map)}),
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9246,8 +9440,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfListOfRecord',
-          parameters: _i1.testObjectToJson(
-              {'input': _i17.mapRecordContainingContainerToJson(input)}),
+          parameters:
+              _i1.testObjectToJson({'input': _i17.mapContainerToJson(input)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9388,9 +9582,8 @@ class _RecordParametersEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNestedPositionalAndNamedRecord',
-          parameters: _i1.testObjectToJson({
-            'recordList': _i17.mapRecordContainingContainerToJson(recordList)
-          }),
+          parameters: _i1.testObjectToJson(
+              {'recordList': _i17.mapContainerToJson(recordList)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -9440,7 +9633,7 @@ class _RecordParametersEndpoint {
             'initialValue': initialValue == null
                 ? null
                 : _i21.jsonDecode(_i2.SerializationManager.encode(
-                    _i17.mapRecordContainingContainerToJson(initialValue)))
+                    _i17.mapContainerToJson(initialValue)))
           },
           requestedInputStreams: ['values'],
           serializationManager: _serializationManager,
@@ -11787,8 +11980,8 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'echoRecords',
-          parameters: _i1.testObjectToJson(
-              {'records': _i17.mapRecordContainingContainerToJson(records)}),
+          parameters: _i1
+              .testObjectToJson({'records': _i17.mapContainerToJson(records)}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -11875,7 +12068,7 @@ class _TestToolsEndpoint {
           methodName: 'listOfRecordEchoStream',
           arguments: {
             'initialValue': _i21.jsonDecode(_i2.SerializationManager.encode(
-                _i17.mapRecordContainingContainerToJson(initialValue)))
+                _i17.mapContainerToJson(initialValue)))
           },
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
@@ -11965,7 +12158,7 @@ class _TestToolsEndpoint {
             'initialValue': initialValue == null
                 ? null
                 : _i21.jsonDecode(_i2.SerializationManager.encode(
-                    _i17.mapRecordContainingContainerToJson(initialValue)))
+                    _i17.mapContainerToJson(initialValue)))
           },
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,

@@ -448,8 +448,7 @@ abstract class TypesMap implements _i1.SerializableModel {
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
             keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson())),
-      if (aRecordKey != null)
-        'aRecordKey': _i6.mapRecordContainingContainerToJson(aRecordKey!),
+      if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -483,13 +482,11 @@ abstract class TypesMap implements _i1.SerializableModel {
         'aListValue': aListValue?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
       if (aRecordValue != null)
-        'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
+        'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordValue!),
+        'aNullableRecordValue': _i6.mapContainerToJson(aNullableRecordValue!),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordKey!),
+        'aNullableRecordKey': _i6.mapContainerToJson(aNullableRecordKey!),
     };
   }
 
