@@ -44,9 +44,15 @@ final class AuthenticationTokensAdmin {
 
     final refreshTokens = await RefreshToken.db.find(
       session,
-      where: (final t) => (authUserId != null
-          ? t.authUserId.equals(authUserId)
-          : Constant.bool(true)),
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        return expression;
+      },
       limit: limit,
       offset: offset,
       orderBy: (final t) => t.id,
