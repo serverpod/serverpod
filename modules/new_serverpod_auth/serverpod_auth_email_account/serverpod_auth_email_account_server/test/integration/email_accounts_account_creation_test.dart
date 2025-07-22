@@ -235,6 +235,49 @@ void main() {
           throwsA(isA<EmailAccountRequestNotVerifiedException>()),
         );
       });
+
+      test(
+          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then the associated email is returned.',
+          () async {
+        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+          session,
+          accountRequestId: pendingAccountRequestId,
+        );
+
+        expect(
+          requestInfo?.email,
+          email.toLowerCase(),
+        );
+      });
+
+      test(
+          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it is not verified.',
+          () async {
+        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+          session,
+          accountRequestId: pendingAccountRequestId,
+        );
+
+        expect(
+          requestInfo?.isVerified,
+          isFalse,
+        );
+      });
+
+      test(
+          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest` after it has expired, then it returns `null`.',
+          () async {
+        final requestInfo = await withClock(
+          Clock.fixed(DateTime.now()
+              .add(EmailAccounts.config.registrationVerificationCodeLifetime)),
+          () => EmailAccounts.admin.findRegistrationRequest(
+            session,
+            accountRequestId: pendingAccountRequestId,
+          ),
+        );
+
+        expect(requestInfo, isNull);
+      });
     },
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -295,6 +338,17 @@ void main() {
         );
 
         expect(result.email, email.toLowerCase());
+      });
+
+      test(
+          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it is verified.',
+          () async {
+        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+          session,
+          accountRequestId: pendingAccountRequestId,
+        );
+
+        expect(requestInfo?.isVerified, isTrue);
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
@@ -361,6 +415,17 @@ void main() {
           ),
           throwsA(isA<EmailAccountRequestNotFoundException>()),
         );
+      });
+
+      test(
+          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it returns `null`.',
+          () async {
+        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+          session,
+          accountRequestId: accountCreationParameters.accountRequestId,
+        );
+
+        expect(requestInfo, isNull);
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,

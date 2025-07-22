@@ -114,6 +114,36 @@ final class EmailAccountsAdmin {
     );
   }
 
+  /// Checks whether the registration request is still pending, and if so
+  /// returns the associated email.
+  ///
+  /// In case the registration has been completed or the request is expired this
+  /// returns `null`.
+  Future<
+      ({
+        String email,
+        bool isVerified,
+      })?> findRegistrationRequest(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    final Transaction? transaction,
+  }) async {
+    final request = await EmailAccountRequest.db.findById(
+      session,
+      accountRequestId,
+      transaction: transaction,
+    );
+
+    if (request == null || request.isExpired) {
+      return null;
+    }
+
+    return (
+      email: request.email,
+      isVerified: request.verifiedAt != null,
+    );
+  }
+
   /// Creates an email authentication for the auth user with the given email and
   /// password.
   ///
