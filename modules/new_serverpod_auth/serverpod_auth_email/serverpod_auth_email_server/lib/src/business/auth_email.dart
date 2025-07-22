@@ -4,6 +4,8 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
+part 'auth_email_admin.dart';
+
 /// The default implementation for the email account endpoint methods.
 ///
 /// All public methods in here can be safely exposed to end-user clients.
@@ -11,7 +13,8 @@ import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 /// Uses `serverpod_auth_session` for session management and
 /// `serverpod_auth_profile` for user profiles.
 abstract class AuthEmail {
-  static const String _method = 'email';
+  /// Collection of admin-related functions.
+  static final AuthEmailAdmin admin = AuthEmailAdmin._();
 
   /// {@macro email_account_base_endpoint.login}
   static Future<AuthSuccess> login(
@@ -31,7 +34,11 @@ abstract class AuthEmail {
           transaction: transaction,
         );
 
-        return _createSession(session, authUserId, transaction: transaction);
+        return admin.createSession(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
       },
     );
   }
@@ -101,7 +108,11 @@ abstract class AuthEmail {
           transaction: transaction,
         );
 
-        return _createSession(session, authUserId, transaction: transaction);
+        return admin.createSession(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
       },
     );
   }
@@ -154,25 +165,12 @@ abstract class AuthEmail {
           transaction: transaction,
         );
 
-        return _createSession(
+        return admin.createSession(
           session,
           authUserId,
           transaction: transaction,
         );
       },
-    );
-  }
-
-  static Future<AuthSuccess> _createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction transaction,
-  }) async {
-    return AuthSessions.createSession(
-      session,
-      authUserId: authUserId,
-      method: _method,
-      transaction: transaction,
     );
   }
 }
