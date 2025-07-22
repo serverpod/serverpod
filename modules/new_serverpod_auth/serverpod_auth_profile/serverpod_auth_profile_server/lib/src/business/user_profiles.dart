@@ -8,8 +8,13 @@ import 'package:serverpod_auth_profile_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_profile_server/src/util/user_profile_extension.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+part 'user_profiles_admin.dart';
+
 /// Business logic for handling user profiles
 abstract final class UserProfiles {
+  /// Collection of admin-related functions.
+  static final UserProfilesAdmin admin = UserProfilesAdmin._();
+
   /// Creates a new user profile and stores it in the database.
   static Future<UserProfileModel> createUserProfile(
     final Session session,
