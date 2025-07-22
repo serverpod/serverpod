@@ -173,11 +173,11 @@ class ServerTestToolsGenerator {
     MethodDefinition method,
   ) {
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      mapRecordToJsonFuncName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
     var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+      mapContainerToJsonFunctionName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
@@ -186,22 +186,13 @@ class ServerTestToolsGenerator {
         return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
       }
 
-      if (parameterDef.type.returnsRecordInContainer) {
+      if (parameterDef.type.returnsRecordInContainer ||
+          parameterDef.type.containsNonStringKeyedMap) {
         return Block.of([
           if (parameterDef.type.nullable)
             Code('${parameterDef.name} == null ? null :'),
           mapRecordContainingContainerToJsonRef
               .call([refer(parameterDef.name)]).code,
-        ]);
-      }
-
-      if (parameterDef.type.isMapType &&
-          parameterDef.type.generics.first.className != 'String') {
-        return Block.of([
-          Code([
-            if (parameterDef.type.nullable) '${parameterDef.name} != null && ',
-            '${parameterDef.name}.isEmpty ? [] : ${parameterDef.name}'
-          ].join())
         ]);
       }
 
@@ -562,11 +553,11 @@ extension on ParameterDefinition {
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      mapRecordToJsonFuncName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
     var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+      mapContainerToJsonFunctionName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 

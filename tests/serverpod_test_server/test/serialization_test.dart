@@ -310,7 +310,7 @@ void main() {
   test(
       'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonMap = mapRecordContainingContainerToJson(
+    var jsonMap = mapContainerToJson(
       {
         'foo': (1, SimpleData(num: 2)),
         'bar': null,
@@ -344,7 +344,7 @@ void main() {
   test(
       'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson([
+    var jsonList = mapContainerToJson([
       null,
       (1, SimpleData(num: 2)),
     ]);
@@ -377,7 +377,7 @@ void main() {
   test(
       'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson({
+    var jsonList = mapContainerToJson({
       null,
       (1, SimpleData(num: 2)),
     });
@@ -410,7 +410,7 @@ void main() {
   test(
       'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson([
+    var jsonList = mapContainerToJson([
       {
         null,
         (1, SimpleData(num: 2)),

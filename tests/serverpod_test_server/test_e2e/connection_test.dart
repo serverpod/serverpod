@@ -418,6 +418,16 @@ void main() {
       expect(result, isNull);
     });
 
+    test('Empty nested Map<int, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnNestedIntIntMap(
+        {
+          'test': {},
+        },
+      );
+
+      expect(result['test'], isEmpty);
+    });
+
     test('Map<int, int> (empty) parameter and return type', () async {
       var result = await client.mapParameters.returnIntIntMap({});
       expect(result, isEmpty);
