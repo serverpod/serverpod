@@ -9,6 +9,7 @@ import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 ///
 /// Subclass this in your own application to expose an endpoint including all
 /// methods.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [AuthEmail].
 abstract class AuthEmailBaseEndpoint extends Endpoint {

@@ -3,6 +3,10 @@ import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Base endpoint for auth sessions.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 abstract class SessionBaseEndpoint extends Endpoint {
   /// Checks whether the caller is authenticated.
   ///
