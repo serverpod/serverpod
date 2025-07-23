@@ -2658,6 +2658,40 @@ class Protocol extends _i1.SerializationManager {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
+    if (t == Map<(Map<int, String>, String), String>) {
+      return Map.fromEntries((data as List).map((e) => MapEntry(
+          deserialize<(Map<int, String>, String)>(e['k']),
+          deserialize<String>(e['v'])))) as T;
+    }
+    if (t == _i1.getType<(Map<int, String>, String)>()) {
+      return (
+        deserialize<Map<int, String>>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t == _i1.getType<(Map<int, String>, String)>()) {
+      return (
+        deserialize<Map<int, String>>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t == Map<int, String>) {
+      return Map.fromEntries((data as List).map((e) =>
+              MapEntry(deserialize<int>(e['k']), deserialize<String>(e['v']))))
+          as T;
+    }
+    if (t == Map<String, (Map<int, int>,)>) {
+      return (data as Map).map((k, v) => MapEntry(
+          deserialize<String>(k), deserialize<(Map<int, int>,)>(v))) as T;
+    }
+    if (t == _i1.getType<(Map<int, int>,)>()) {
+      return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
+    if (t == _i1.getType<(Map<int, int>,)>()) {
+      return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
     if (t == List<_i159.UserInfo>) {
       return (data as List).map((e) => deserialize<_i159.UserInfo>(e)).toList()
           as T;
@@ -2736,10 +2770,6 @@ class Protocol extends _i1.SerializationManager {
       return (deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),)
           as T;
     }
-    if (t == _i1.getType<(Map<int, int>,)>()) {
-      return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
-          as T;
-    }
     if (t == _i1.getType<(Set<(int,)>,)>()) {
       return (deserialize<Set<(int,)>>(((data as Map)['p'] as List)[0]),) as T;
     }
@@ -2809,6 +2839,12 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<(bool,)>()) {
       return (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(Map<(Map<int, String>, String), String>,)>()) {
+      return (
+        deserialize<Map<(Map<int, String>, String), String>>(
+            ((data as Map)['p'] as List)[0]),
+      ) as T;
     }
     if (t == _i1.getType<(int, {_i157.SimpleData data})>()) {
       return (
@@ -4699,6 +4735,21 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
   }
+  if (record is (Map<int, String>, String)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+        record.$2,
+      ],
+    };
+  }
+  if (record is (Map<int, int>,)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+      ],
+    };
+  }
   if (record is (int, BigInt)) {
     return {
       "p": [
@@ -4741,13 +4792,6 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
-      ],
-    };
-  }
-  if (record is (Map<int, int>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
       ],
     };
   }
@@ -4800,6 +4844,13 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
+      ],
+    };
+  }
+  if (record is (Map<(Map<int, String>, String), String>,)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
       ],
     };
   }

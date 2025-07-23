@@ -3662,6 +3662,48 @@ class Endpoints extends _i1.EndpointDispatch {
             params['map'],
           ),
         ),
+        'returnNestedNonStringKeyedMapInsideRecordInsideMap':
+            _i1.MethodConnector(
+          name: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<(Map<int, String>, String), String>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i24.MapParametersEndpoint)
+                  .returnNestedNonStringKeyedMapInsideRecordInsideMap(
+                    session,
+                    params['map'],
+                  )
+                  .then((container) => _i55.mapContainerToJson(container)),
+        ),
+        'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap':
+            _i1.MethodConnector(
+          name: 'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<String, (Map<int, int>,)>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['mapParameters'] as _i24.MapParametersEndpoint)
+                  .returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+                    session,
+                    params['map'],
+                  )
+                  .then((container) => _i55.mapContainerToJson(container)),
+        ),
       },
     );
     connectors['methodSignaturePermutations'] = _i1.EndpointConnector(
@@ -5791,6 +5833,28 @@ class Endpoints extends _i1.EndpointDispatch {
                   .returnNamedSetWithNestedRecordRecord(
                     session,
                     params['record'],
+                  )
+                  .then((record) => _i55.mapRecordToJson(record)),
+        ),
+        'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord':
+            _i1.MethodConnector(
+          name:
+              'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<(Map<(Map<int, String>, String), String>,)>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recordParameters'] as _i31.RecordParametersEndpoint)
+                  .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+                    session,
+                    params['map'],
                   )
                   .then((record) => _i55.mapRecordToJson(record)),
         ),

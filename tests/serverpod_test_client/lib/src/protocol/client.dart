@@ -1593,6 +1593,24 @@ class EndpointMapParameters extends _i1.EndpointRef {
         'returnDurationMapNullableDurations',
         {'map': map},
       );
+
+  _i2.Future<Map<(Map<int, String>, String), String>>
+      returnNestedNonStringKeyedMapInsideRecordInsideMap(
+              Map<(Map<int, String>, String), String> map) =>
+          caller.callServerEndpoint<Map<(Map<int, String>, String), String>>(
+            'mapParameters',
+            'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+            {'map': _i16.mapContainerToJson(map)},
+          );
+
+  _i2.Future<Map<String, (Map<int, int>,)>>
+      returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+              Map<String, (Map<int, int>,)> map) =>
+          caller.callServerEndpoint<Map<String, (Map<int, int>,)>>(
+            'mapParameters',
+            'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+            {'map': _i16.mapContainerToJson(map)},
+          );
 }
 
 /// {@category Endpoint}
@@ -2562,6 +2580,15 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         'returnNamedSetWithNestedRecordRecord',
         {'record': _i16.mapRecordToJson(record)},
       );
+
+  _i2.Future<(Map<(Map<int, String>, String), String>,)>
+      returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+              (Map<(Map<int, String>, String), String>,) map) =>
+          caller.callServerEndpoint<(Map<(Map<int, String>, String), String>,)>(
+            'recordParameters',
+            'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
+            {'map': _i16.mapRecordToJson(map)},
+          );
 
   _i2.Future<(int, {_i10.SimpleData data})> returnRecordTypedef(
           (int, {_i10.SimpleData data}) record) =>

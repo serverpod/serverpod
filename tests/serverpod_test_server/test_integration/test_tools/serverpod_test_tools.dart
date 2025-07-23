@@ -5722,6 +5722,75 @@ class _MapParametersEndpoint {
       }
     });
   }
+
+  _i3.Future<Map<(Map<int, String>, String), String>>
+      returnNestedNonStringKeyedMapInsideRecordInsideMap(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<(Map<int, String>, String), String> map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'mapParameters',
+        method: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i17.Protocol()
+                .deserialize<Map<(Map<int, String>, String), String>>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<String, (Map<int, int>,)>>
+      returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<String, (Map<int, int>,)> map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'mapParameters',
+        method: 'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName:
+              'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
+          parameters:
+              _i1.testObjectToJson({'map': _i17.mapContainerToJson(map)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i17.Protocol()
+                .deserialize<Map<String, (Map<int, int>,)>>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _MethodSignaturePermutationsEndpoint {
@@ -9079,6 +9148,42 @@ class _RecordParametersEndpoint {
             )
             .then((record) =>
                 _i17.Protocol().deserialize<({Set<(bool,)> boolSet})>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<(Map<(Map<int, String>, String), String>,)>
+      returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+    _i1.TestSessionBuilder sessionBuilder,
+    (Map<(Map<int, String>, String), String>,) map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'recordParameters',
+        method:
+            'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'recordParameters',
+          methodName:
+              'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
+          parameters: _i1.testObjectToJson({'map': _i17.mapRecordToJson(map)}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i17.Protocol()
+                .deserialize<(Map<(Map<int, String>, String), String>,)>(
+                    record));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
