@@ -5,6 +5,10 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Base endpoint for user profile management.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 abstract class UserProfileBaseEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
