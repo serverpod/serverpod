@@ -662,6 +662,45 @@ void main() {
       expect(result, isNull);
     });
 
+    test(
+        'Map<(Map<int, String>, String), String> parameter with empty outer map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMap(
+        {},
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test(
+        'Map<(Map<int, String>, String), String> parameter with empty inner map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMap(
+        {
+          ({}, ''): '',
+        },
+      );
+
+      expect(result, hasLength(1));
+      expect(result.keys.single.$1, isEmpty);
+    });
+
+    test(
+        'Map<String, (Map<int, int>,)> parameter with empty inner map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+        {
+          '': ({},),
+        },
+      );
+
+      expect(result, hasLength(1));
+      expect(result.values.single.$1, isEmpty);
+    });
+
     test('CustomClass parameter and return type', () async {
       var result = await client.customTypes
           .returnCustomClass(CustomClass('customClassText'));

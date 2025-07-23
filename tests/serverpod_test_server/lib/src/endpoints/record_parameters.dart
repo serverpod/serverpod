@@ -143,6 +143,14 @@ class RecordParametersEndpoint extends Endpoint {
   ) async {
     return record;
   }
+
+  Future<(Map<(Map<int, String>, String), String>,)>
+      returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+    Session session,
+    (Map<(Map<int, String>, String), String>,) map,
+  ) async {
+    return map;
+  }
 // #endregion
 
 // #region Records using a `typedef`, pointing to positional and named parameters

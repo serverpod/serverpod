@@ -175,4 +175,20 @@ class MapParametersEndpoint extends Endpoint {
   ) async {
     return map;
   }
+
+  Future<Map<(Map<int, String>, String), String>>
+      returnNestedNonStringKeyedMapInsideRecordInsideMap(
+    Session session,
+    Map<(Map<int, String>, String), String> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<String, (Map<int, int>,)>>
+      returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+    Session session,
+    Map<String, (Map<int, int>,)> map,
+  ) async {
+    return map;
+  }
 }

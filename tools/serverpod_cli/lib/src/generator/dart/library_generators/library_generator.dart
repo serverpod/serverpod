@@ -1204,7 +1204,7 @@ extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {
     return ((isMapType || isListType || isSetType) &&
         generics.any((g) =>
             g.isRecordType ||
-            // Important to only check default container types, there is not need to descent into model classes
+            // Important to only check default container types, there is no need to descent into model classes
             (g.isMapType || g.isListType || g.isSetType) &&
                 g.returnsRecordInContainer));
   }
@@ -1215,7 +1215,7 @@ extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {
         ((isMapType || isListType || isSetType) &&
             generics.any((g) =>
                 (g.isMapType && g.generics.first.className != 'String') ||
-                // Important to only check default container types, there is not need to descent into model classes
+                // Important to only check default container types, there is no need to descent into model classes
                 (g.isMapType || g.isListType || g.isSetType) &&
                     g.containsNonStringKeyedMap));
   }

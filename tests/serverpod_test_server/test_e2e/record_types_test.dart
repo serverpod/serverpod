@@ -179,6 +179,33 @@ void main() {
 
       expect(result.$1, equals({123: 456}));
     });
+
+    test(
+        'Given the test server, when an empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+        ({},),
+      );
+
+      expect(result.$1, isEmpty);
+    });
+
+    test(
+        'Given the test server, when an inner empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+        (
+          {
+            ({}, ''): '',
+          },
+        ),
+      );
+
+      expect(result.$1, hasLength(1));
+      expect(result.$1.entries.single.key.$1, isEmpty);
+    });
   });
 
   group('Record with multiple named fields', () {
