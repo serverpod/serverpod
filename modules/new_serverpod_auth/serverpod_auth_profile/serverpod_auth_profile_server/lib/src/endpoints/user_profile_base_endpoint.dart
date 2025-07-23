@@ -4,8 +4,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
-/// User profile management endpoint.
-abstract class UserProfileEndpoint extends Endpoint {
+/// Base endpoint for user profile management.
+abstract class UserProfileBaseEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 

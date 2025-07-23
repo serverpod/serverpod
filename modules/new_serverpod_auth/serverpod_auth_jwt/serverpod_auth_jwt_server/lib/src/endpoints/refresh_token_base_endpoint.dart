@@ -1,9 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 
-/// Refresh token rotation endpoint.
-@doNotGenerate
-class RefreshTokenEndpoint extends Endpoint {
+/// Base endpoint for refresh token rotation.
+abstract class RefreshTokenBaseEndpoint extends Endpoint {
   /// Creates a new token pair for the given [refreshToken].
   ///
   /// - Throws a [RefreshTokenMalformedException] in case the refresh token is malformed.
