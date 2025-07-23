@@ -238,12 +238,12 @@ ALTER TABLE ONLY "serverpod_query_log"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_passkey_account
+-- MIGRATION VERSION FOR serverpod_auth_passkey
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_passkey_account', '20250723084427946', now())
+    VALUES ('serverpod_auth_passkey', '20250723085204223', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250723084427946', "timestamp" = now();
+    DO UPDATE SET "version" = '20250723085204223', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

@@ -1142,7 +1142,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_passkey",
-      "version": "20250723084507542"
+      "version": "20250723085204223"
     },
     {
       "module": "serverpod",
