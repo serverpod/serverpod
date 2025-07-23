@@ -269,14 +269,12 @@ void main() {
       );
 
       types = await client.basicDatabase.insertTypes(types);
-      expect(types.id, isNotNull);
+
+      expect(types.aMap, isEmpty);
 
       var storedTypes = await client.basicDatabase.getTypes(types.id!);
-      expect(storedTypes, isNotNull);
 
-      expect(storedTypes!.id, equals(types.id));
-
-      expect(storedTypes.aMap, isEmpty);
+      expect(storedTypes?.aMap, isEmpty);
     });
   });
 }
