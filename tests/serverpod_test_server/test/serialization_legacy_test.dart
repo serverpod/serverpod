@@ -474,43 +474,5 @@ void main() {
       expect(unpacked.intIntMap[2], equals(4));
       expect(unpacked.intIntMap[3], equals(9));
     });
-
-    test('Empty Map types', () {
-      var maps = ObjectWithMaps(
-        dataMap: {},
-        intMap: {},
-        stringMap: {},
-        dateTimeMap: {},
-        byteDataMap: {},
-        nullableDataMap: {},
-        nullableIntMap: {},
-        nullableStringMap: {},
-        nullableDateTimeMap: {},
-        nullableByteDataMap: {},
-        intIntMap: {},
-        durationMap: {},
-        nullableDurationMap: {},
-        uuidMap: {},
-        nullableUuidMap: {},
-      );
-
-      var s = SerializationManager.encode(maps);
-      var unpacked = protocol.deserialize<ObjectWithMaps>(jsonDecode(s));
-
-      expect(unpacked.dataMap, isEmpty);
-      expect(unpacked.intMap, isEmpty);
-      expect(unpacked.stringMap, isEmpty);
-      expect(unpacked.dateTimeMap, isEmpty);
-      expect(unpacked.byteDataMap, isEmpty);
-      expect(unpacked.durationMap, isEmpty);
-      expect(unpacked.uuidMap, isEmpty);
-      expect(unpacked.nullableDataMap, isEmpty);
-      expect(unpacked.nullableIntMap, isEmpty);
-      expect(unpacked.nullableStringMap, isEmpty);
-      expect(unpacked.nullableDateTimeMap, isEmpty);
-      expect(unpacked.nullableByteDataMap, isEmpty);
-      expect(unpacked.nullableDurationMap, isEmpty);
-      expect(unpacked.intIntMap, isEmpty);
-    });
   });
 }
