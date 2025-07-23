@@ -1,5 +1,6 @@
 name: modulename_server
 description: Starting point for a Serverpod module.
+resolution: workspace
 
 environment:
   sdk: DART_VERSION

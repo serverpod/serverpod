@@ -7,3 +7,10 @@ repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: DART_VERSION
+
+workspace:
+  - modulename_server
+  - modulename_client
+  - projectname_server
+  - projectname_client
+  - projectname_flutter

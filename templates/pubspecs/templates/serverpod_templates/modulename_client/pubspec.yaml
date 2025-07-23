@@ -1,5 +1,6 @@
 name: modulename_client
 description: Starting point for a Serverpod module client.
+resolution: workspace
 # version: 1.0.0
 # homepage: https://www.example.com
 

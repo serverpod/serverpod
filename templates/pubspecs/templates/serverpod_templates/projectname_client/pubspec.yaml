@@ -1,5 +1,6 @@
 name: projectname_client
 description: Starting point for a Serverpod client.
+resolution: workspace
 
 environment:
   sdk: DART_VERSION
