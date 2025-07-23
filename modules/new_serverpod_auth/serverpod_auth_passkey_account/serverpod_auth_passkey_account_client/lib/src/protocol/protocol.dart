@@ -11,6 +11,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+    as _i2;
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -26,6 +28,9 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
+    try {
+      return _i2.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -33,6 +38,10 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_user.$className';
+    }
     return null;
   }
 
@@ -41,6 +50,10 @@ class Protocol extends _i1.SerializationManager {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_user.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
