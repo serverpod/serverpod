@@ -271,8 +271,9 @@ void main() {
 
       expect(result, record);
     });
+
     test(
-        'Given the test server, when a record with an empty Map<int, int> is send to the server, then it is returned empty.',
+        'Given an empty `Map<int, int>` inside a record, when sending a request to the server, then it is returned empty.',
         () async {
       var result =
           await client.recordParameters.returnNamedNonStringKeyedMapRecord(
