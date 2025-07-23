@@ -121,6 +121,14 @@ echo "\nserverpod_auth_backwards_compatibility_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
 dart $CLI generate --no-analytics --experimental-features=all
 
+echo "\nserverpod_auth_passkey_account_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_server
+dart $CLI generate --no-analytics --experimental-features=all
+
+echo "\nserverpod_auth_passkey_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_server
+dart $CLI generate --no-analytics --experimental-features=all
+
 # Chat module
 
 echo "\nserverpod_chat_server"

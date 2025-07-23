@@ -1,0 +1,6 @@
+include: package:serverpod_lints/public_flutter.yaml
+
+linter:
+  rules:
+    unawaited_futures: true
+    discarded_futures: true

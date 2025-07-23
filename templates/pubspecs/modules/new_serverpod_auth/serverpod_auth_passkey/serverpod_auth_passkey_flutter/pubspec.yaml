@@ -1,0 +1,40 @@
+# TEMPLATE
+
+name: serverpod_auth_passkey_flutter
+description: Client-side companion for Serverpod servers using `serverpod_auth_passkey`.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.11.0
+  serverpod_auth_passkey_client: SERVERPOD_VERSION
+  serverpod_auth_session_client: SERVERPOD_VERSION
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_auth_passkey_client:
+    path: ../serverpod_auth_passkey_client
+  serverpod_auth_passkey_account_client:
+    path: ../../serverpod_auth_passkey_account/serverpod_auth_passkey_account_client
+  serverpod_auth_session_client:
+    path: ../../serverpod_auth_session/serverpod_auth_session_client
+  serverpod_auth_user_client:
+    path: ../../serverpod_auth_user/serverpod_auth_user_client
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
