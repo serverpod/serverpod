@@ -144,6 +144,19 @@ final class EmailAccountsAdmin {
     );
   }
 
+  /// Deletes a registration request by its ID.
+  Future<void> deleteRegistrationRequestById(
+    final Session session,
+    final UuidValue accountRequestId, {
+    final Transaction? transaction,
+  }) async {
+    await EmailAccountRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.id.equals(accountRequestId),
+      transaction: transaction,
+    );
+  }
+
   /// Creates an email authentication for the auth user with the given email and
   /// password.
   ///
