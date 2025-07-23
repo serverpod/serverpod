@@ -40,9 +40,9 @@ void main() {
     });
 
     test(
-        'when `deleteRegistrationRequestById` is called, '
+        'when `deleteEmailAccountRequestById` is called, '
         'then the account request is removed.', () async {
-      await EmailAccounts.admin.deleteRegistrationRequestById(
+      await EmailAccounts.admin.deleteEmailAccountRequestById(
         session,
         accountCreationResult.accountRequestId!,
       );
