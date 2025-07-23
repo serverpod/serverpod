@@ -177,6 +177,7 @@ mapParameters:
   - returnIntMapNullableInts:
   - returnNullableIntMapNullableInts:
   - returnIntIntMap:
+  - returnNestedIntIntMap:
   - returnEnumIntMap:
   - returnEnumMap:
   - returnDoubleMap:
@@ -195,6 +196,8 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+  - returnNestedNonStringKeyedMapInsideRecordInsideMap:
+  - returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap:
 methodSignaturePermutations:
   - echoPositionalArg:
   - echoNamedArg:
@@ -301,11 +304,17 @@ recordParameters:
   - returnNullableIntStringRecord:
   - returnIntSimpleDataRecord:
   - returnNullableIntSimpleDataRecord:
+  - returnStringKeyedMapRecord:
+  - returnNonStringKeyedMapRecord:
+  - returnSetWithNestedRecordRecord:
   - returnNamedIntStringRecord:
   - returnNamedNullableIntStringRecord:
   - returnRecordOfNamedIntAndObject:
   - returnNullableRecordOfNamedIntAndObject:
   - returnRecordOfNamedNullableIntAndNullableObject:
+  - returnNamedNonStringKeyedMapRecord:
+  - returnNamedSetWithNestedRecordRecord:
+  - returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord:
   - returnRecordTypedef:
   - returnNullableRecordTypedef:
   - returnListOfIntSimpleDataRecord:

@@ -226,15 +226,13 @@ abstract class TypesList
       if (aList != null)
         'aList': aList?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
-      if (aRecord != null)
-        'aRecord': _i6.mapRecordContainingContainerToJson(aRecord!),
+      if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord':
-            _i6.mapRecordContainingContainerToJson(aNullableRecord!),
+        'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
       if (anEnumRecord != null)
-        'anEnumRecord': _i6.mapRecordContainingContainerToJson(anEnumRecord!),
+        'anEnumRecord': _i6.mapContainerToJson(anEnumRecord!),
       if (anEnum2Record != null)
-        'anEnum2Record': _i6.mapRecordContainingContainerToJson(anEnum2Record!),
+        'anEnum2Record': _i6.mapContainerToJson(anEnum2Record!),
     };
   }
 
@@ -270,15 +268,13 @@ abstract class TypesList
         'aList': aList?.toJson(
             valueToJson: (v) =>
                 v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
-      if (aRecord != null)
-        'aRecord': _i6.mapRecordContainingContainerToJson(aRecord!),
+      if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord':
-            _i6.mapRecordContainingContainerToJson(aNullableRecord!),
+        'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
       if (anEnumRecord != null)
-        'anEnumRecord': _i6.mapRecordContainingContainerToJson(anEnumRecord!),
+        'anEnumRecord': _i6.mapContainerToJson(anEnumRecord!),
       if (anEnum2Record != null)
-        'anEnum2Record': _i6.mapRecordContainingContainerToJson(anEnum2Record!),
+        'anEnum2Record': _i6.mapContainerToJson(anEnum2Record!),
     };
   }
 

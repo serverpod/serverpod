@@ -418,6 +418,21 @@ void main() {
       expect(result, isNull);
     });
 
+    test('Empty nested Map<int, int> parameter and return type', () async {
+      var result = await client.mapParameters.returnNestedIntIntMap(
+        {
+          'test': {},
+        },
+      );
+
+      expect(result['test'], isEmpty);
+    });
+
+    test('Map<int, int> (empty) parameter and return type', () async {
+      var result = await client.mapParameters.returnIntIntMap({});
+      expect(result, isEmpty);
+    });
+
     test('Map<int, int> parameter and return type', () async {
       var result = await client.mapParameters.returnIntIntMap({
         0: 0,
@@ -428,6 +443,12 @@ void main() {
       expect(result[0], equals(0));
       expect(result[10], equals(1));
       expect(result[20], equals(2));
+    });
+
+    test('Map<TestEnum, int> (empty) parameter and return type', () async {
+      var result = await client.mapParameters.returnEnumIntMap({});
+
+      expect(result, isEmpty);
     });
 
     test('Map<TestEnum, int> parameter and return type', () async {
@@ -639,6 +660,45 @@ void main() {
       result = await client.mapParameters
           .returnNullableSimpleDataMapNullableSimpleData(null);
       expect(result, isNull);
+    });
+
+    test(
+        'Map<(Map<int, String>, String), String> parameter with empty outer map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMap(
+        {},
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test(
+        'Map<(Map<int, String>, String), String> parameter with empty inner map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMap(
+        {
+          ({}, ''): '',
+        },
+      );
+
+      expect(result, hasLength(1));
+      expect(result.keys.single.$1, isEmpty);
+    });
+
+    test(
+        'Map<String, (Map<int, int>,)> parameter with empty inner map and return type',
+        () async {
+      var result = await client.mapParameters
+          .returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+        {
+          '': ({},),
+        },
+      );
+
+      expect(result, hasLength(1));
+      expect(result.values.single.$1, isEmpty);
     });
 
     test('CustomClass parameter and return type', () async {

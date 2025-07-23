@@ -1190,7 +1190,7 @@ class SerializableModelLibraryGenerator {
 
     if (fieldType.isRecordType) {
       var mapRecordToJsonRef = refer(
-        'mapRecordToJson',
+        mapRecordToJsonFuncName,
         serverCode
             ? 'package:${config.serverPackage}/src/generated/protocol.dart'
             : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -1198,14 +1198,14 @@ class SerializableModelLibraryGenerator {
 
       return mapRecordToJsonRef.call([fieldRef]);
     } else if (fieldType.returnsRecordInContainer) {
-      var mapRecordContainingContainerToJsonRef = refer(
-        'mapRecordContainingContainerToJson',
+      var mapContainerToJsonRef = refer(
+        mapContainerToJsonFunctionName,
         serverCode
             ? 'package:${config.serverPackage}/src/generated/protocol.dart'
             : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
       );
 
-      return mapRecordContainingContainerToJsonRef.call(
+      return mapContainerToJsonRef.call(
         [refer('${fieldRef.symbol}${nullableField ? '!' : ''}')],
       );
     }

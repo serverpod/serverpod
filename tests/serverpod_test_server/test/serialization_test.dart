@@ -310,7 +310,7 @@ void main() {
   test(
       'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonMap = mapRecordContainingContainerToJson(
+    var jsonMap = mapContainerToJson(
       {
         'foo': (1, SimpleData(num: 2)),
         'bar': null,
@@ -344,7 +344,7 @@ void main() {
   test(
       'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson([
+    var jsonList = mapContainerToJson([
       null,
       (1, SimpleData(num: 2)),
     ]);
@@ -377,7 +377,7 @@ void main() {
   test(
       'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson({
+    var jsonList = mapContainerToJson({
       null,
       (1, SimpleData(num: 2)),
     });
@@ -410,7 +410,7 @@ void main() {
   test(
       'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
       () {
-    var jsonList = mapRecordContainingContainerToJson([
+    var jsonList = mapContainerToJson([
       {
         null,
         (1, SimpleData(num: 2)),
@@ -453,6 +453,50 @@ void main() {
           .having((c) => c.grandParentField, 'grandParentField',
               'grand parent value')
           .having((c) => c.parentField, 'parentField', 'parent value'),
+    );
+  });
+
+  test(
+      'Given a class with a empty `Map`s, when serializing it, then the empty maps are restored on decode.',
+      () {
+    final object = server.ObjectWithMaps(
+      dataMap: {},
+      intMap: {},
+      stringMap: {},
+      dateTimeMap: {},
+      byteDataMap: {},
+      nullableDataMap: {},
+      nullableIntMap: {},
+      nullableStringMap: {},
+      nullableDateTimeMap: {},
+      nullableByteDataMap: {},
+      intIntMap: {},
+      durationMap: {},
+      nullableDurationMap: {},
+      uuidMap: {},
+      nullableUuidMap: {},
+    );
+
+    var encodedString = server.Protocol().encodeWithType(object);
+    var decodedObject = server.Protocol().decodeWithType(encodedString);
+
+    expect(
+      decodedObject,
+      isA<server.ObjectWithMaps>()
+          .having((o) => o.dataMap, 'dataMap', isEmpty)
+          .having((o) => o.intMap, 'intMap', isEmpty)
+          .having((o) => o.stringMap, 'stringMap', isEmpty)
+          .having((o) => o.dateTimeMap, 'dateTimeMap', isEmpty)
+          .having((o) => o.byteDataMap, 'byteDataMap', isEmpty)
+          .having((o) => o.durationMap, 'durationMap', isEmpty)
+          .having((o) => o.uuidMap, 'uuidMap', isEmpty)
+          .having((o) => o.nullableDataMap, 'nullableDataMap', isEmpty)
+          .having((o) => o.nullableIntMap, 'nullableIntMap', isEmpty)
+          .having((o) => o.nullableStringMap, 'nullableStringMap', isEmpty)
+          .having((o) => o.nullableDateTimeMap, 'nullableDateTimeMap', isEmpty)
+          .having((o) => o.nullableByteDataMap, 'nullableByteDataMap', isEmpty)
+          .having((o) => o.nullableDurationMap, 'nullableDurationMap', isEmpty)
+          .having((o) => o.intIntMap, 'intIntMap', isEmpty),
     );
   });
 }

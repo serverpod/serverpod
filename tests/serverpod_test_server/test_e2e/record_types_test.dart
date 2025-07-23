@@ -139,6 +139,73 @@ void main() {
 
       expect(result, isNull);
     });
+
+    test(
+        'Given the test server, when an empty (Map<String, int>,) record is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters.returnStringKeyedMapRecord(
+        ({},),
+      );
+
+      expect(result.$1, isEmpty);
+    });
+
+    test(
+        'Given the test server, when a (Map<String, int>,) record is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters.returnStringKeyedMapRecord(
+        ({'test': 1},),
+      );
+
+      expect(result.$1, equals({'test': 1}));
+    });
+
+    test(
+        'Given the test server, when an empty (Map<int, int>,) record is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters.returnNonStringKeyedMapRecord(
+        ({},),
+      );
+
+      expect(result.$1, isEmpty);
+    });
+
+    test(
+        'Given the test server, when a (Map<int, int>,) record is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters.returnNonStringKeyedMapRecord(
+        ({123: 456},),
+      );
+
+      expect(result.$1, equals({123: 456}));
+    });
+
+    test(
+        'Given the test server, when an empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+        ({},),
+      );
+
+      expect(result.$1, isEmpty);
+    });
+
+    test(
+        'Given the test server, when an inner empty (Map<(Map<int, String>, String), String>,) is sent to the server, then it is returned verbatim.',
+        () async {
+      var result = await client.recordParameters
+          .returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+        (
+          {
+            ({}, ''): '',
+          },
+        ),
+      );
+
+      expect(result.$1, hasLength(1));
+      expect(result.$1.entries.single.key.$1, isEmpty);
+    });
   });
 
   group('Record with multiple named fields', () {
@@ -207,7 +274,7 @@ void main() {
     });
 
     test(
-        'Given the test server, when a  record with nullable named fields including an object is sent to the server, then it is returned verbatim',
+        'Given the test server, when a record with nullable named fields including an object is sent to the server, then it is returned verbatim',
         () async {
       var record = (number: 1, data: SimpleData(num: 1000));
 
@@ -219,7 +286,7 @@ void main() {
     });
 
     test(
-        'Given the test server, when a  record with nullable named fields including an object is sent to the server, then it is returned verbatim',
+        'Given the test server, when a record with nullable named fields including an object is sent to the server, then it is returned verbatim',
         () async {
       const ({int? number, SimpleData? data}) record = (
         number: null,
@@ -230,6 +297,30 @@ void main() {
           .returnRecordOfNamedNullableIntAndNullableObject(record);
 
       expect(result, record);
+    });
+
+    test(
+        'Given an empty `Map<int, int>` inside a record, when sending a request to the server, then it is returned empty.',
+        () async {
+      var result =
+          await client.recordParameters.returnNamedNonStringKeyedMapRecord(
+        (intIntMap: {}),
+      );
+
+      expect(result.intIntMap, isEmpty);
+    });
+
+    test(
+        'Given the test server, when a record with a nested Set containing records is send to the server, then it is returned verbatim.',
+        () async {
+      var result =
+          await client.recordParameters.returnNamedSetWithNestedRecordRecord(
+        (boolSet: {(true,), (false,)}),
+      );
+
+      expect(result.boolSet, hasLength(2));
+      expect(result.boolSet.first.$1, isTrue);
+      expect(result.boolSet.last.$1, isFalse);
     });
   });
 

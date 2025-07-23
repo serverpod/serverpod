@@ -150,8 +150,7 @@ abstract class ModelInSubfolder implements _i1.SerializableModel {
       if (enumRecordField != null)
         'enumRecordField': _i5.mapRecordToJson(enumRecordField),
       if (enumRecordListField != null)
-        'enumRecordListField':
-            _i5.mapRecordContainingContainerToJson(enumRecordListField!),
+        'enumRecordListField': _i5.mapContainerToJson(enumRecordListField!),
       if (moduleClassRecordField != null)
         'moduleClassRecordField': _i5.mapRecordToJson(moduleClassRecordField),
       if (classRecordField != null)
@@ -160,7 +159,7 @@ abstract class ModelInSubfolder implements _i1.SerializableModel {
         'enumNamedRecordField': _i5.mapRecordToJson(enumNamedRecordField),
       if (enumNamedRecordListField != null)
         'enumNamedRecordListField':
-            _i5.mapRecordContainingContainerToJson(enumNamedRecordListField!),
+            _i5.mapContainerToJson(enumNamedRecordListField!),
       if (moduleClassNamedRecordField != null)
         'moduleClassNamedRecordField':
             _i5.mapRecordToJson(moduleClassNamedRecordField),

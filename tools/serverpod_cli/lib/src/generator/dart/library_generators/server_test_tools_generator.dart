@@ -173,13 +173,31 @@ class ServerTestToolsGenerator {
     MethodDefinition method,
   ) {
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      mapRecordToJsonFuncName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
     var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+      mapContainerToJsonFunctionName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
+
+    Spec handleParameter(ParameterDefinition parameterDef) {
+      if (parameterDef.type.isRecordType) {
+        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+      }
+
+      if (parameterDef.type.returnsRecordInContainer ||
+          parameterDef.type.containsNonStringKeyedMap) {
+        return Block.of([
+          if (parameterDef.type.nullable)
+            Code('${parameterDef.name} == null ? null :'),
+          mapRecordContainingContainerToJsonRef
+              .call([refer(parameterDef.name)]).code,
+        ]);
+      }
+
+      return refer(parameterDef.name);
+    }
 
     var closure = Method(
       (methodBuilder) => methodBuilder
@@ -210,17 +228,7 @@ class ServerTestToolsGenerator {
                 'parameters': refer('testObjectToJson', serverpodTestUrl).call([
                   literalMap({
                     for (var parameter in method.allParameters)
-                      literalString(parameter.name): parameter.type.isRecordType
-                          ? mapRecordToJsonRef
-                              .call([refer(parameter.name)]).code
-                          : (parameter.type.returnsRecordInContainer
-                              ? Block.of([
-                                  if (parameter.type.nullable)
-                                    Code('${parameter.name} == null ? null :'),
-                                  mapRecordContainingContainerToJsonRef
-                                      .call([refer(parameter.name)]).code,
-                                ])
-                              : refer(parameter.name).code)
+                      literalString(parameter.name): handleParameter(parameter),
                   })
                 ]),
                 'serializationManager': refer('_serializationManager'),
@@ -545,11 +553,11 @@ extension on ParameterDefinition {
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
     var mapRecordToJsonRef = refer(
-      'mapRecordToJson',
+      mapRecordToJsonFuncName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
     var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+      mapContainerToJsonFunctionName,
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
@@ -586,7 +594,7 @@ extension on ParameterDefinition {
 }
 
 extension on Expression {
-  /// Adds deserialization for record return types if needed,
+  /// Adds deserialization for record and non-String map return types if needed,
   /// else cast into the desired return type.
   Expression transformReturnType(
     TypeDefinition returnType, {
@@ -609,6 +617,30 @@ extension on Expression {
                 .property('deserialize')
                 .call(
                   [refer('record')],
+                  {},
+                  [returnType.generics.single.reference(true, config: config)],
+                )
+                .code,
+          ]),
+        ),
+      ]);
+    } else if (returnType.isFutureType &&
+        returnType.generics.single.isMapType &&
+        returnType.generics.single.generics.first.className != 'String') {
+      var protocolRef = refer(
+        'Protocol',
+        'package:${config.serverPackage}/src/generated/protocol.dart',
+      );
+
+      return property('then').call([
+        CodeExpression(
+          Block.of([
+            const Code('(map) => '),
+            protocolRef
+                .newInstance([])
+                .property('deserialize')
+                .call(
+                  [refer('map')],
                   {},
                   [returnType.generics.single.reference(true, config: config)],
                 )

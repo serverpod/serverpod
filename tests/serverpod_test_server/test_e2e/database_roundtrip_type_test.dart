@@ -260,5 +260,21 @@ void main() {
       expect(storedTypes.aUuid, isNull);
       expect(storedTypes.aBigInt, isNull);
     });
+
+    test(
+        'When writing an object with an empty non-String-keyed map, then the empty map field is returned',
+        () async {
+      var types = Types(
+        aMap: {},
+      );
+
+      types = await client.basicDatabase.insertTypes(types);
+
+      expect(types.aMap, isEmpty);
+
+      var storedTypes = await client.basicDatabase.getTypes(types.id!);
+
+      expect(storedTypes?.aMap, isEmpty);
+    });
   });
 }
