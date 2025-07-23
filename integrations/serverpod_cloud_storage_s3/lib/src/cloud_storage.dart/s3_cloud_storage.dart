@@ -128,6 +128,7 @@ class S3CloudStorage extends CloudStorage {
       uploadDst: path,
       expires: expirationDuration,
       maxFileSize: maxFileSize,
+      public: public,
     );
   }
 
