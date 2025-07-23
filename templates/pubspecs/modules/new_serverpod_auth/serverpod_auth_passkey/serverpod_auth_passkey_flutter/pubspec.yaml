@@ -1,28 +1,27 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_auth_passkey_flutter
 description: Client-side companion for Serverpod servers using `serverpod_auth_passkey`.
-version: 2.9.1
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
   flutter:
     sdk: flutter
   meta: ^1.11.0
-  serverpod_auth_passkey_client: 2.9.1
-  serverpod_auth_session_client: 2.9.1
+  serverpod_auth_passkey_client: SERVERPOD_VERSION
+  serverpod_auth_session_client: SERVERPOD_VERSION
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 2.9.1
+  serverpod_lints: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:
