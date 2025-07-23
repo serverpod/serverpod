@@ -11362,11 +11362,11 @@ class Protocol extends _i1.SerializationManagerServer {
   /// Records and containers containing records will be return in their JSON representation in the returned map.
   @override
   Map<String, dynamic> wrapWithClassName(Object? data) {
-    /// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
-    if (data is Iterable || data is Map) {
+    /// In case the value (to be streamed) contains a record or potentially empty non-String-keyed Map, we need to map it before it reaches the underlying JSON encode
+    if (data != null && (data is Iterable || data is Map)) {
       return {
         'className': getClassNameForObject(data)!,
-        'data': mapContainerToJson(data!),
+        'data': mapContainerToJson(data),
       };
     } else if (data is Record) {
       return {

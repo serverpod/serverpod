@@ -346,11 +346,11 @@ class LibraryGenerator {
               ..name = 'data'
               ..type = refer('Object?')))
             ..body = const Code('''
-/// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
-   if (data is Iterable || data is Map) {
+    /// In case the value (to be streamed) contains a record or potentially empty non-String-keyed Map, we need to map it before it reaches the underlying JSON encode
+    if (data != null && (data is Iterable || data is Map)) {
       return {
         'className': getClassNameForObject(data)!,
-        'data': $mapContainerToJsonFunctionName(data!),
+        'data': $mapContainerToJsonFunctionName(data),
       };
     } else if (data is Record) {
       return {
