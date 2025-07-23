@@ -114,8 +114,8 @@ final class EmailAccountsAdmin {
     );
   }
 
-  /// Checks whether the registration request is still pending, and if so
-  /// returns the associated email.
+  /// Checks whether an email account request is still pending, and if so
+  /// returns the associated email and verification status.
   ///
   /// In case the registration has been completed or the request is expired this
   /// returns `null`.
@@ -123,7 +123,7 @@ final class EmailAccountsAdmin {
       ({
         String email,
         bool isVerified,
-      })?> findRegistrationRequest(
+      })?> findEmailAccountRequest(
     final Session session, {
     required final UuidValue accountRequestId,
     final Transaction? transaction,
@@ -141,6 +141,19 @@ final class EmailAccountsAdmin {
     return (
       email: request.email,
       isVerified: request.verifiedAt != null,
+    );
+  }
+
+  /// Deletes an account request by its ID.
+  Future<void> deleteEmailAccountRequestById(
+    final Session session,
+    final UuidValue accountRequestId, {
+    final Transaction? transaction,
+  }) async {
+    await EmailAccountRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.id.equals(accountRequestId),
+      transaction: transaction,
     );
   }
 

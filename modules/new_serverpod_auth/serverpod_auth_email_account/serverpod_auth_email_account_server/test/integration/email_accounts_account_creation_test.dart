@@ -237,9 +237,9 @@ void main() {
       });
 
       test(
-          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then the associated email is returned.',
+          'when looking up the request using `EmailAccountsAdmin.findEmailAccountRequest`, then the associated email is returned.',
           () async {
-        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+        final requestInfo = await EmailAccounts.admin.findEmailAccountRequest(
           session,
           accountRequestId: pendingAccountRequestId,
         );
@@ -251,9 +251,9 @@ void main() {
       });
 
       test(
-          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it is not verified.',
+          'when looking up the request using `EmailAccountsAdmin.findEmailAccountRequest`, then it is not verified.',
           () async {
-        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+        final requestInfo = await EmailAccounts.admin.findEmailAccountRequest(
           session,
           accountRequestId: pendingAccountRequestId,
         );
@@ -265,12 +265,12 @@ void main() {
       });
 
       test(
-          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest` after it has expired, then it returns `null`.',
+          'when looking up the request using `EmailAccountsAdmin.findEmailAccountRequest` after it has expired, then it returns `null`.',
           () async {
         final requestInfo = await withClock(
           Clock.fixed(DateTime.now()
               .add(EmailAccounts.config.registrationVerificationCodeLifetime)),
-          () => EmailAccounts.admin.findRegistrationRequest(
+          () => EmailAccounts.admin.findEmailAccountRequest(
             session,
             accountRequestId: pendingAccountRequestId,
           ),
@@ -341,9 +341,9 @@ void main() {
       });
 
       test(
-          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it is verified.',
+          'when looking up the request using `EmailAccountsAdmin.findEmailAccountRequest`, then it is verified.',
           () async {
-        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+        final requestInfo = await EmailAccounts.admin.findEmailAccountRequest(
           session,
           accountRequestId: pendingAccountRequestId,
         );
@@ -418,9 +418,9 @@ void main() {
       });
 
       test(
-          'when looking up the request using `EmailAccountsAdmin.findRegistrationRequest`, then it returns `null`.',
+          'when looking up the request using `EmailAccountsAdmin.findEmailAccountRequest`, then it returns `null`.',
           () async {
-        final requestInfo = await EmailAccounts.admin.findRegistrationRequest(
+        final requestInfo = await EmailAccounts.admin.findEmailAccountRequest(
           session,
           accountRequestId: accountCreationParameters.accountRequestId,
         );
