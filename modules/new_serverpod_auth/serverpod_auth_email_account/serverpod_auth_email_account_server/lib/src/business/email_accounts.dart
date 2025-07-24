@@ -188,13 +188,16 @@ abstract final class EmailAccounts {
   /// Checks whether the verification code matches the pending account creation
   /// request.
   ///
-  /// If this returns successfully, this means `createAccount` can be called.
+  /// If this returns successfully, this means [completeAccountCreation] can be
+  /// called.
   ///
   /// Throws an [EmailAccountRequestNotFoundException] in case the
   /// [accountRequestId] does not point to an existing request.
   /// Throws an [EmailAccountRequestExpiredException] in case the request's
   /// validation window has elapsed.
-  /// Throws [EmailAccountRequestUnauthorizedException] in case the
+  /// Throws an [EmailAccountRequestTooManyAttemptsException] in case too many
+  /// attempts have been made at finishing the same account request.
+  /// Throws an [EmailAccountRequestUnauthorizedException] in case the
   /// [verificationCode] is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed attempt will be
@@ -324,6 +327,9 @@ abstract final class EmailAccounts {
   /// Each reset request will be logged to the database outside of the
   /// [transaction] and can not be rolled back, so the throttling will always be
   /// enforced.
+  ///
+  /// Throws a [EmailAccountPasswordResetRequestTooManyAttemptsException] in
+  /// case the client or account has been involved in too many reset attempts.
   static Future<PasswordResetResult> startPasswordReset(
     final Session session, {
     required String email,
@@ -385,12 +391,14 @@ abstract final class EmailAccounts {
 
   /// Returns the auth user ID for the successfully changed password
   ///
-  /// Throws [EmailAccountPasswordResetRequestNotFoundException] in case no
+  /// Throws a [EmailAccountPasswordResetRequestNotFoundException] in case no
   /// reset request could be found for [passwordResetRequestId].
-  /// Throws [EmailAccountPasswordResetRequestExpiredException] in case the
+  /// Throws a [EmailAccountPasswordResetRequestExpiredException] in case the
   /// reset request has expired.
-  /// Throws [EmailAccountPasswordResetRequestUnauthorizedException] in case the
-  /// [verificationCode] is not valid.
+  /// Throws a [EmailAccountPasswordPolicyViolationException] in case the
+  /// password does not confirm to the configured policy.
+  /// Throws a [EmailAccountPasswordResetRequestUnauthorizedException] in case
+  /// the [verificationCode] is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed password reset
   /// completion will be logged to the database outside of the [transaction] and

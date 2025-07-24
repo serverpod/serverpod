@@ -1,3 +1,7 @@
+### Exception to be thrown if the login via email/password fails.
+###
+### Inspect the [reason] to determine whether this was due to invalid or unknown
+### credentials, or whether the client has been blocked outright.
 exception: EmailAccountLoginException
 fields:
   reason: EmailAccountLoginFailureReason

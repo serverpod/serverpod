@@ -1,1 +1,3 @@
+### Exception to be thrown when too many verification attempts were made on a
+### email account request.
 exception: EmailAccountRequestTooManyAttemptsException

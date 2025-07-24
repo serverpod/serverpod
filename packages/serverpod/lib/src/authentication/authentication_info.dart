@@ -19,12 +19,18 @@ class AuthenticationInfo {
   }
 
   /// Identifier of the user, as set by the [AuthenticationHandler].
+  ///
+  /// For example when using the `serverpod_auth_user` module, this contains the
+  /// current auth user's ID as a UUID string.
   final String userIdentifier;
 
   /// The scopes that the user can access.
   final Set<Scope> scopes;
 
   /// The authentication key id.
+  ///
+  /// For example when using the `serverpod_auth_session` module, this contains
+  /// the auth session's ID as a UUID string.
   final String? authId;
 
   /// Creates a new [AuthenticationInfo].

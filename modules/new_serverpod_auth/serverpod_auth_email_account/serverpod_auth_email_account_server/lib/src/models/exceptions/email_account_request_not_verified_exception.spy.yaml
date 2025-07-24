@@ -1,1 +1,3 @@
+### Exception to be thrown when an attempt is made to complete the creation
+### of an email account before the account request has been verified.
 exception: EmailAccountRequestNotVerifiedException

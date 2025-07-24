@@ -1,1 +1,3 @@
+### Exception to be thrown when the verification code given for an email account
+### request is not valid.
 exception: EmailAccountRequestUnauthorizedException
