@@ -1,6 +1,5 @@
 name: projectname_flutter
 description: A new Flutter project with Serverpod.
-resolution: workspace
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -37,15 +36,7 @@ dependencies:
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
-    sdk: flutter
-
-dependency_overrides: 
-  serverpod_flutter: 
-    path: ../../../packages/serverpod_flutter 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+    sdk: flutter 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

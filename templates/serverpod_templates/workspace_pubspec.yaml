@@ -1,0 +1,7 @@
+name: _
+publish_to: none
+environment:
+  sdk: ^3.6.0
+workspace:
+{{WORKSPACE_MEMBERS}}
+{{DEPENDENCY_OVERRIDES}}
