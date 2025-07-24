@@ -6,6 +6,10 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
+  serverpod_auth_google_account_client: 2.9.1
+  serverpod_auth_profile_client: 2.9.1
+  serverpod_auth_session_client: 2.9.1
+  serverpod_auth_user_client: 2.9.1
   serverpod_client: 2.9.1
 
 dependency_overrides:
