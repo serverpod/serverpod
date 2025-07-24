@@ -176,7 +176,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'attemptedAt',
+          name: 'attempted',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -218,12 +218,12 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.IndexDefinition(
           indexName:
-              'serverpod_auth_email_account_failed_login_attempt_attempted_at',
+              'serverpod_auth_email_account_failed_login_attempt_attempted',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'attemptedAt',
+              definition: 'attempted',
             )
           ],
           type: 'btree',
@@ -247,7 +247,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
-          name: 'attemptedAt',
+          name: 'attempted',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -306,12 +306,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_email_account_password_reset_attempt_at',
+          indexName: 'serverpod_auth_email_account_password_reset_attempted',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'attemptedAt',
+              definition: 'attempted',
             )
           ],
           type: 'btree',
@@ -410,7 +410,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'attemptedAt',
+          name: 'attempted',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -466,12 +466,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_email_account_pw_reset_request_attempt_at',
+          indexName: 'serverpod_auth_email_account_pw_reset_request_attempted',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'attemptedAt',
+              definition: 'attempted',
             )
           ],
           type: 'btree',
@@ -583,7 +583,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
-          name: 'attemptedAt',
+          name: 'attempted',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -645,12 +645,12 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.IndexDefinition(
           indexName:
-              'serverpod_auth_email_account_request_completion_attempt_at',
+              'serverpod_auth_email_account_request_completion_attempted',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'attemptedAt',
+              definition: 'attempted',
             )
           ],
           type: 'btree',

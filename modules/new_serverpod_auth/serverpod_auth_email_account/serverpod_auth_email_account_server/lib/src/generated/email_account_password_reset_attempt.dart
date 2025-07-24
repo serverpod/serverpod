@@ -21,15 +21,15 @@ abstract class EmailAccountPasswordResetAttempt
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetAttempt._({
     this.id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required this.ipAddress,
     required this.passwordResetRequestId,
     this.passwordResetRequest,
-  }) : attemptedAt = attemptedAt ?? DateTime.now();
+  }) : attempted = attempted ?? DateTime.now();
 
   factory EmailAccountPasswordResetAttempt({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
     required _i1.UuidValue passwordResetRequestId,
     _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
@@ -41,8 +41,8 @@ abstract class EmailAccountPasswordResetAttempt
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      attemptedAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attemptedAt']),
+      attempted:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attempted']),
       ipAddress: jsonSerialization['ipAddress'] as String,
       passwordResetRequestId: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['passwordResetRequestId']),
@@ -62,7 +62,7 @@ abstract class EmailAccountPasswordResetAttempt
   _i1.UuidValue? id;
 
   /// The time of the reset attempt.
-  DateTime attemptedAt;
+  DateTime attempted;
 
   /// The IP address of the sign in attempt.
   String ipAddress;
@@ -79,7 +79,7 @@ abstract class EmailAccountPasswordResetAttempt
   @_i1.useResult
   EmailAccountPasswordResetAttempt copyWith({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
     _i1.UuidValue? passwordResetRequestId,
     _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
@@ -88,7 +88,7 @@ abstract class EmailAccountPasswordResetAttempt
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'attemptedAt': attemptedAt.toJson(),
+      'attempted': attempted.toJson(),
       'ipAddress': ipAddress,
       'passwordResetRequestId': passwordResetRequestId.toJson(),
       if (passwordResetRequest != null)
@@ -139,13 +139,13 @@ class _EmailAccountPasswordResetAttemptImpl
     extends EmailAccountPasswordResetAttempt {
   _EmailAccountPasswordResetAttemptImpl({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
     required _i1.UuidValue passwordResetRequestId,
     _i2.EmailAccountPasswordResetRequest? passwordResetRequest,
   }) : super._(
           id: id,
-          attemptedAt: attemptedAt,
+          attempted: attempted,
           ipAddress: ipAddress,
           passwordResetRequestId: passwordResetRequestId,
           passwordResetRequest: passwordResetRequest,
@@ -157,14 +157,14 @@ class _EmailAccountPasswordResetAttemptImpl
   @override
   EmailAccountPasswordResetAttempt copyWith({
     Object? id = _Undefined,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
     _i1.UuidValue? passwordResetRequestId,
     Object? passwordResetRequest = _Undefined,
   }) {
     return EmailAccountPasswordResetAttempt(
       id: id is _i1.UuidValue? ? id : this.id,
-      attemptedAt: attemptedAt ?? this.attemptedAt,
+      attempted: attempted ?? this.attempted,
       ipAddress: ipAddress ?? this.ipAddress,
       passwordResetRequestId:
           passwordResetRequestId ?? this.passwordResetRequestId,
@@ -180,8 +180,8 @@ class EmailAccountPasswordResetAttemptTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetAttemptTable({super.tableRelation})
       : super(
             tableName: 'serverpod_auth_email_account_password_reset_attempt') {
-    attemptedAt = _i1.ColumnDateTime(
-      'attemptedAt',
+    attempted = _i1.ColumnDateTime(
+      'attempted',
       this,
     );
     ipAddress = _i1.ColumnString(
@@ -195,7 +195,7 @@ class EmailAccountPasswordResetAttemptTable extends _i1.Table<_i1.UuidValue?> {
   }
 
   /// The time of the reset attempt.
-  late final _i1.ColumnDateTime attemptedAt;
+  late final _i1.ColumnDateTime attempted;
 
   /// The IP address of the sign in attempt.
   late final _i1.ColumnString ipAddress;
@@ -221,7 +221,7 @@ class EmailAccountPasswordResetAttemptTable extends _i1.Table<_i1.UuidValue?> {
   @override
   List<_i1.Column> get columns => [
         id,
-        attemptedAt,
+        attempted,
         ipAddress,
         passwordResetRequestId,
       ];

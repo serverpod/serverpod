@@ -103,15 +103,15 @@
     },
     {
       "module": "serverpod_auth_backwards_compatibility",
-      "version": "20250708110241098"
+      "version": "20250724125750464"
     },
     {
       "module": "serverpod_auth_email_account",
-      "version": "20250606090748154"
+      "version": "20250724100154487"
     },
     {
       "module": "serverpod_auth_email",
-      "version": "20250611073844715"
+      "version": "20250724100231671"
     },
     {
       "module": "serverpod_auth_profile",

@@ -227,27 +227,27 @@ CREATE UNIQUE INDEX "serverpod_auth_email_account_email" ON "serverpod_auth_emai
 CREATE TABLE "serverpod_auth_email_account_failed_login_attempt" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "email" text NOT NULL,
-    "attemptedAt" timestamp without time zone NOT NULL,
+    "attempted" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL
 );
 
 -- Indexes
 CREATE INDEX "serverpod_auth_email_account_failed_login_attempt_email" ON "serverpod_auth_email_account_failed_login_attempt" USING btree ("email");
-CREATE INDEX "serverpod_auth_email_account_failed_login_attempt_attempted_at" ON "serverpod_auth_email_account_failed_login_attempt" USING btree ("attemptedAt");
+CREATE INDEX "serverpod_auth_email_account_failed_login_attempt_attempted" ON "serverpod_auth_email_account_failed_login_attempt" USING btree ("attempted");
 
 --
 -- Class EmailAccountPasswordResetAttempt as table serverpod_auth_email_account_password_reset_attempt
 --
 CREATE TABLE "serverpod_auth_email_account_password_reset_attempt" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "attemptedAt" timestamp without time zone NOT NULL,
+    "attempted" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL,
     "passwordResetRequestId" uuid NOT NULL
 );
 
 -- Indexes
 CREATE INDEX "serverpod_auth_email_account_password_reset_attempt_ip" ON "serverpod_auth_email_account_password_reset_attempt" USING btree ("ipAddress");
-CREATE INDEX "serverpod_auth_email_account_password_reset_attempt_at" ON "serverpod_auth_email_account_password_reset_attempt" USING btree ("attemptedAt");
+CREATE INDEX "serverpod_auth_email_account_password_reset_attempted" ON "serverpod_auth_email_account_password_reset_attempt" USING btree ("attempted");
 
 --
 -- Class EmailAccountPasswordResetRequest as table serverpod_auth_email_account_password_reset_request
@@ -266,14 +266,14 @@ CREATE TABLE "serverpod_auth_email_account_password_reset_request" (
 CREATE TABLE "serverpod_auth_email_account_pw_reset_request_attempt" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "email" text NOT NULL,
-    "attemptedAt" timestamp without time zone NOT NULL,
+    "attempted" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL
 );
 
 -- Indexes
 CREATE INDEX "serverpod_auth_email_account_pw_reset_request_attempt_email" ON "serverpod_auth_email_account_pw_reset_request_attempt" USING btree ("email");
 CREATE INDEX "serverpod_auth_email_account_pw_reset_request_attempt_ip" ON "serverpod_auth_email_account_pw_reset_request_attempt" USING btree ("ipAddress");
-CREATE INDEX "serverpod_auth_email_account_pw_reset_request_attempt_at" ON "serverpod_auth_email_account_pw_reset_request_attempt" USING btree ("attemptedAt");
+CREATE INDEX "serverpod_auth_email_account_pw_reset_request_attempted" ON "serverpod_auth_email_account_pw_reset_request_attempt" USING btree ("attempted");
 
 --
 -- Class EmailAccountRequest as table serverpod_auth_email_account_request
@@ -297,14 +297,14 @@ CREATE UNIQUE INDEX "serverpod_auth_email_account_request_email" ON "serverpod_a
 --
 CREATE TABLE "serverpod_auth_email_account_request_completion_attempt" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "attemptedAt" timestamp without time zone NOT NULL,
+    "attempted" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL,
     "emailAccountRequestId" uuid NOT NULL
 );
 
 -- Indexes
 CREATE INDEX "serverpod_auth_email_account_request_completion_attempt_ip" ON "serverpod_auth_email_account_request_completion_attempt" USING btree ("ipAddress");
-CREATE INDEX "serverpod_auth_email_account_request_completion_attempt_at" ON "serverpod_auth_email_account_request_completion_attempt" USING btree ("attemptedAt");
+CREATE INDEX "serverpod_auth_email_account_request_completion_attempted" ON "serverpod_auth_email_account_request_completion_attempt" USING btree ("attempted");
 
 --
 -- Class UserProfile as table serverpod_auth_profile_user_profile
@@ -340,8 +340,11 @@ CREATE TABLE "serverpod_auth_profile_user_profile_image" (
 CREATE TABLE "serverpod_auth_session" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "authUserId" uuid NOT NULL,
-    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "scopeNames" json NOT NULL,
+    "created" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUsed" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" timestamp without time zone,
+    "expireAfterUnusedFor" bigint,
     "sessionKeyHash" bytea NOT NULL,
     "sessionKeySalt" bytea NOT NULL,
     "method" text NOT NULL
@@ -468,9 +471,9 @@ ALTER TABLE ONLY "serverpod_auth_session"
 -- MIGRATION VERSION FOR serverpod_auth_email
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_email', '20250611073844715', now())
+    VALUES ('serverpod_auth_email', '20250724100231671', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250611073844715', "timestamp" = now();
+    DO UPDATE SET "version" = '20250724100231671', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -484,9 +487,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_email_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_email_account', '20250606090748154', now())
+    VALUES ('serverpod_auth_email_account', '20250724100154487', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250606090748154', "timestamp" = now();
+    DO UPDATE SET "version" = '20250724100154487', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_profile
@@ -500,9 +503,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_session
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_session', '20250607101155018', now())
+    VALUES ('serverpod_auth_session', '20250611085050241', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250607101155018', "timestamp" = now();
+    DO UPDATE SET "version" = '20250611085050241', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_user

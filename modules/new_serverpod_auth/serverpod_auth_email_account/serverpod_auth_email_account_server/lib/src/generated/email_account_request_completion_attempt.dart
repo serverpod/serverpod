@@ -21,15 +21,15 @@ abstract class EmailAccountRequestCompletionAttempt
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountRequestCompletionAttempt._({
     this.id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required this.ipAddress,
     required this.emailAccountRequestId,
     this.emailAccountRequest,
-  }) : attemptedAt = attemptedAt ?? DateTime.now();
+  }) : attempted = attempted ?? DateTime.now();
 
   factory EmailAccountRequestCompletionAttempt({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
     required _i1.UuidValue emailAccountRequestId,
     _i2.EmailAccountRequest? emailAccountRequest,
@@ -41,8 +41,8 @@ abstract class EmailAccountRequestCompletionAttempt
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      attemptedAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attemptedAt']),
+      attempted:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attempted']),
       ipAddress: jsonSerialization['ipAddress'] as String,
       emailAccountRequestId: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['emailAccountRequestId']),
@@ -61,8 +61,8 @@ abstract class EmailAccountRequestCompletionAttempt
   @override
   _i1.UuidValue? id;
 
-  /// The time of the reset attempt.
-  DateTime attemptedAt;
+  /// The time of the reset completion attempt.
+  DateTime attempted;
 
   /// The IP address of the sign in attempt.
   String ipAddress;
@@ -79,7 +79,7 @@ abstract class EmailAccountRequestCompletionAttempt
   @_i1.useResult
   EmailAccountRequestCompletionAttempt copyWith({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
     _i1.UuidValue? emailAccountRequestId,
     _i2.EmailAccountRequest? emailAccountRequest,
@@ -88,7 +88,7 @@ abstract class EmailAccountRequestCompletionAttempt
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'attemptedAt': attemptedAt.toJson(),
+      'attempted': attempted.toJson(),
       'ipAddress': ipAddress,
       'emailAccountRequestId': emailAccountRequestId.toJson(),
       if (emailAccountRequest != null)
@@ -141,13 +141,13 @@ class _EmailAccountRequestCompletionAttemptImpl
     extends EmailAccountRequestCompletionAttempt {
   _EmailAccountRequestCompletionAttemptImpl({
     _i1.UuidValue? id,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
     required _i1.UuidValue emailAccountRequestId,
     _i2.EmailAccountRequest? emailAccountRequest,
   }) : super._(
           id: id,
-          attemptedAt: attemptedAt,
+          attempted: attempted,
           ipAddress: ipAddress,
           emailAccountRequestId: emailAccountRequestId,
           emailAccountRequest: emailAccountRequest,
@@ -159,14 +159,14 @@ class _EmailAccountRequestCompletionAttemptImpl
   @override
   EmailAccountRequestCompletionAttempt copyWith({
     Object? id = _Undefined,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
     _i1.UuidValue? emailAccountRequestId,
     Object? emailAccountRequest = _Undefined,
   }) {
     return EmailAccountRequestCompletionAttempt(
       id: id is _i1.UuidValue? ? id : this.id,
-      attemptedAt: attemptedAt ?? this.attemptedAt,
+      attempted: attempted ?? this.attempted,
       ipAddress: ipAddress ?? this.ipAddress,
       emailAccountRequestId:
           emailAccountRequestId ?? this.emailAccountRequestId,
@@ -183,8 +183,8 @@ class EmailAccountRequestCompletionAttemptTable
       : super(
             tableName:
                 'serverpod_auth_email_account_request_completion_attempt') {
-    attemptedAt = _i1.ColumnDateTime(
-      'attemptedAt',
+    attempted = _i1.ColumnDateTime(
+      'attempted',
       this,
     );
     ipAddress = _i1.ColumnString(
@@ -197,8 +197,8 @@ class EmailAccountRequestCompletionAttemptTable
     );
   }
 
-  /// The time of the reset attempt.
-  late final _i1.ColumnDateTime attemptedAt;
+  /// The time of the reset completion attempt.
+  late final _i1.ColumnDateTime attempted;
 
   /// The IP address of the sign in attempt.
   late final _i1.ColumnString ipAddress;
@@ -223,7 +223,7 @@ class EmailAccountRequestCompletionAttemptTable
   @override
   List<_i1.Column> get columns => [
         id,
-        attemptedAt,
+        attempted,
         ipAddress,
         emailAccountRequestId,
       ];

@@ -112,7 +112,7 @@
             "dartType": "String"
           },
           {
-            "name": "attemptedAt",
+            "name": "attempted",
             "columnType": 4,
             "isNullable": false,
             "dartType": "DateTime"
@@ -151,11 +151,11 @@
             "isPrimary": false
           },
           {
-            "indexName": "serverpod_auth_email_account_failed_login_attempt_attempted_at",
+            "indexName": "serverpod_auth_email_account_failed_login_attempt_attempted",
             "elements": [
               {
                 "type": 0,
-                "definition": "attemptedAt"
+                "definition": "attempted"
               }
             ],
             "type": "btree",
@@ -182,7 +182,7 @@
             "dartType": "UuidValue?"
           },
           {
-            "name": "attemptedAt",
+            "name": "attempted",
             "columnType": 4,
             "isNullable": false,
             "dartType": "DateTime"
@@ -241,11 +241,11 @@
             "isPrimary": false
           },
           {
-            "indexName": "serverpod_auth_email_account_password_reset_attempt_at",
+            "indexName": "serverpod_auth_email_account_password_reset_attempted",
             "elements": [
               {
                 "type": 0,
-                "definition": "attemptedAt"
+                "definition": "attempted"
               }
             ],
             "type": "btree",
@@ -351,7 +351,7 @@
             "dartType": "String"
           },
           {
-            "name": "attemptedAt",
+            "name": "attempted",
             "columnType": 4,
             "isNullable": false,
             "dartType": "DateTime"
@@ -402,11 +402,11 @@
             "isPrimary": false
           },
           {
-            "indexName": "serverpod_auth_email_account_pw_reset_request_attempt_at",
+            "indexName": "serverpod_auth_email_account_pw_reset_request_attempted",
             "elements": [
               {
                 "type": 0,
-                "definition": "attemptedAt"
+                "definition": "attempted"
               }
             ],
             "type": "btree",
@@ -522,7 +522,7 @@
             "dartType": "UuidValue?"
           },
           {
-            "name": "attemptedAt",
+            "name": "attempted",
             "columnType": 4,
             "isNullable": false,
             "dartType": "DateTime"
@@ -581,11 +581,11 @@
             "isPrimary": false
           },
           {
-            "indexName": "serverpod_auth_email_account_request_completion_attempt_at",
+            "indexName": "serverpod_auth_email_account_request_completion_attempted",
             "elements": [
               {
                 "type": 0,
-                "definition": "attemptedAt"
+                "definition": "attempted"
               }
             ],
             "type": "btree",

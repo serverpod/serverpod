@@ -19,14 +19,14 @@ abstract class EmailAccountFailedLoginAttempt
   EmailAccountFailedLoginAttempt._({
     this.id,
     required this.email,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required this.ipAddress,
-  }) : attemptedAt = attemptedAt ?? DateTime.now();
+  }) : attempted = attempted ?? DateTime.now();
 
   factory EmailAccountFailedLoginAttempt({
     _i1.UuidValue? id,
     required String email,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
   }) = _EmailAccountFailedLoginAttemptImpl;
 
@@ -37,8 +37,8 @@ abstract class EmailAccountFailedLoginAttempt
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       email: jsonSerialization['email'] as String,
-      attemptedAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attemptedAt']),
+      attempted:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attempted']),
       ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }
@@ -56,7 +56,7 @@ abstract class EmailAccountFailedLoginAttempt
   String email;
 
   /// The time of the sign in attempt.
-  DateTime attemptedAt;
+  DateTime attempted;
 
   /// The IP address of the sign in attempt.
   String ipAddress;
@@ -70,7 +70,7 @@ abstract class EmailAccountFailedLoginAttempt
   EmailAccountFailedLoginAttempt copyWith({
     _i1.UuidValue? id,
     String? email,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
   });
   @override
@@ -78,7 +78,7 @@ abstract class EmailAccountFailedLoginAttempt
     return {
       if (id != null) 'id': id?.toJson(),
       'email': email,
-      'attemptedAt': attemptedAt.toJson(),
+      'attempted': attempted.toJson(),
       'ipAddress': ipAddress,
     };
   }
@@ -125,12 +125,12 @@ class _EmailAccountFailedLoginAttemptImpl
   _EmailAccountFailedLoginAttemptImpl({
     _i1.UuidValue? id,
     required String email,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     required String ipAddress,
   }) : super._(
           id: id,
           email: email,
-          attemptedAt: attemptedAt,
+          attempted: attempted,
           ipAddress: ipAddress,
         );
 
@@ -141,13 +141,13 @@ class _EmailAccountFailedLoginAttemptImpl
   EmailAccountFailedLoginAttempt copyWith({
     Object? id = _Undefined,
     String? email,
-    DateTime? attemptedAt,
+    DateTime? attempted,
     String? ipAddress,
   }) {
     return EmailAccountFailedLoginAttempt(
       id: id is _i1.UuidValue? ? id : this.id,
       email: email ?? this.email,
-      attemptedAt: attemptedAt ?? this.attemptedAt,
+      attempted: attempted ?? this.attempted,
       ipAddress: ipAddress ?? this.ipAddress,
     );
   }
@@ -160,8 +160,8 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
       'email',
       this,
     );
-    attemptedAt = _i1.ColumnDateTime(
-      'attemptedAt',
+    attempted = _i1.ColumnDateTime(
+      'attempted',
       this,
     );
     ipAddress = _i1.ColumnString(
@@ -176,7 +176,7 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnString email;
 
   /// The time of the sign in attempt.
-  late final _i1.ColumnDateTime attemptedAt;
+  late final _i1.ColumnDateTime attempted;
 
   /// The IP address of the sign in attempt.
   late final _i1.ColumnString ipAddress;
@@ -185,7 +185,7 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         email,
-        attemptedAt,
+        attempted,
         ipAddress,
       ];
 }
