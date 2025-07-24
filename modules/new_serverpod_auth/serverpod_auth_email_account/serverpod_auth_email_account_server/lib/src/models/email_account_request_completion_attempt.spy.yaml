@@ -6,8 +6,8 @@ table: serverpod_auth_email_account_request_completion_attempt
 fields:
   id: UuidValue?, defaultPersist=random
 
-  ### The time of the reset attempt.
-  attemptedAt: DateTime, defaultModel=now
+  ### The time of the reset completion attempt.
+  attempted: DateTime, defaultModel=now
 
   ### The IP address of the sign in attempt.
   ipAddress: String
@@ -18,5 +18,5 @@ indexes:
   serverpod_auth_email_account_request_completion_attempt_ip:
     fields: ipAddress
 
-  serverpod_auth_email_account_request_completion_attempt_at:
-    fields: attemptedAt
+  serverpod_auth_email_account_request_completion_attempted:
+    fields: attempted

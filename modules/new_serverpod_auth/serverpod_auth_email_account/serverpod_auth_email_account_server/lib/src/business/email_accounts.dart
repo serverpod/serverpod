@@ -496,7 +496,7 @@ abstract final class EmailAccounts {
       where: (final t) =>
           (t.email.equals(email) |
               t.ipAddress.equals(session.remoteIpAddress)) &
-          (t.attemptedAt > oldestRelevantAttempt),
+          (t.attempted > oldestRelevantAttempt),
       transaction: transaction,
     );
 
@@ -548,7 +548,7 @@ abstract final class EmailAccounts {
         where: (final t) =>
             (t.email.equals(email) |
                 t.ipAddress.equals(session.remoteIpAddress)) &
-            (t.attemptedAt > oldestRelevantAttemptTimestamp),
+            (t.attempted > oldestRelevantAttemptTimestamp),
         transaction: transaction,
       );
 

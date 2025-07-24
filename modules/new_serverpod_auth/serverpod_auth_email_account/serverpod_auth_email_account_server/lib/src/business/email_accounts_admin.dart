@@ -26,7 +26,7 @@ final class EmailAccountsAdmin {
 
     await EmailAccountPasswordResetAttempt.db.deleteWhere(
       session,
-      where: (final t) => t.attemptedAt < removeBefore,
+      where: (final t) => t.attempted < removeBefore,
       transaction: transaction,
     );
   }
@@ -79,7 +79,7 @@ final class EmailAccountsAdmin {
 
     await EmailAccountFailedLoginAttempt.db.deleteWhere(
       session,
-      where: (final t) => t.attemptedAt < removeBefore,
+      where: (final t) => t.attempted < removeBefore,
       transaction: transaction,
     );
   }
