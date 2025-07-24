@@ -125,12 +125,15 @@ Future<bool> performCreate(
     );
   }
 
-  success &= await log.progress('Getting server package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-  });
-
-  success &= await log.progress('Getting client package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+  // Create workspace configuration first, before flutter create
+  success &= await log.progress('Creating workspace configuration.', () async {
+    _createWorkspacePubspec(
+      serverpodDirs,
+      name: name,
+      template: template,
+      customServerpodPath: productionMode ? null : serverpodHome,
+    );
+    return true;
   });
 
   if (template == ServerpodTemplateType.server ||
@@ -139,11 +142,26 @@ Future<bool> performCreate(
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
+
+    // Copy our Flutter template files over the flutter create files
+    success &= await log.progress('Applying Flutter template.', () async {
+      _copyFlutterTemplateFiles(
+        serverpodDirs,
+        name: name,
+        customServerpodPath: productionMode ? null : serverpodHome,
+      );
+      return true;
+    });
+
     await log.progress('Updating Flutter app MacOS entitlements.', () {
       return EntitlementsModifier.addNetworkToEntitlements(
           serverpodDirs.flutterDir);
     });
   }
+
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
+  });
 
   success &= await log.progress('Running serverpod generator', () async {
     return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
@@ -342,8 +360,12 @@ void _createProjectDirectories(
   _createDirectory(serverpodDirs.serverDir);
   _createDirectory(serverpodDirs.clientDir);
 
-  if (template == ServerpodTemplateType.server) {
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.mini) {
     _createDirectory(serverpodDirs.flutterDir);
+  }
+
+  if (template == ServerpodTemplateType.server) {
     _createDirectory(serverpodDirs.githubDir);
   }
 }
@@ -622,6 +644,129 @@ void _copyModuleTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+}
+
+void _createWorkspacePubspec(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  required ServerpodTemplateType template,
+  String? customServerpodPath,
+}) {
+  log.debug('Creating workspace pubspec.yaml', newParagraph: true);
+
+  // Determine workspace members based on template type
+  List<String> workspaceMembers;
+  if (template == ServerpodTemplateType.module) {
+    workspaceMembers = [
+      '${name}_server',
+      '${name}_client',
+    ];
+  } else {
+    // Server or mini template
+    workspaceMembers = [
+      '${name}_server',
+      '${name}_client',
+      '${name}_flutter',
+    ];
+  }
+
+  // Generate workspace members YAML list
+  var workspaceMembersYaml =
+      workspaceMembers.map((member) => '  - $member').join('\n');
+
+  // Generate dependency overrides for development mode
+  var dependencyOverridesYaml = '';
+  if (customServerpodPath != null) {
+    dependencyOverridesYaml = '''
+
+dependency_overrides:
+  serverpod:
+    path: $customServerpodPath/packages/serverpod
+  serverpod_client:
+    path: $customServerpodPath/packages/serverpod_client
+  serverpod_flutter:
+    path: $customServerpodPath/packages/serverpod_flutter
+  serverpod_serialization:
+    path: $customServerpodPath/packages/serverpod_serialization
+  serverpod_shared:
+    path: $customServerpodPath/packages/serverpod_shared
+  serverpod_service_client:
+    path: $customServerpodPath/packages/serverpod_service_client
+  serverpod_test:
+    path: $customServerpodPath/packages/serverpod_test''';
+  }
+
+  // Read the workspace template
+  var templatePath = p.join(
+    resourceManager.templateDirectory.path,
+    'workspace_pubspec.yaml',
+  );
+  var templateFile = File(templatePath);
+  var contents = templateFile.readAsStringSync();
+
+  // Replace the placeholders
+  contents = contents.replaceAll('{{WORKSPACE_MEMBERS}}', workspaceMembersYaml);
+  contents =
+      contents.replaceAll('{{DEPENDENCY_OVERRIDES}}', dependencyOverridesYaml);
+
+  // Write the workspace pubspec.yaml
+  var workspacePubspecPath =
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml');
+  var workspacePubspecFile = File(workspacePubspecPath);
+  workspacePubspecFile.writeAsStringSync(contents);
+}
+
+void _copyFlutterTemplateFiles(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  String? customServerpodPath,
+}) {
+  log.debug('Copying Flutter template files', newParagraph: true);
+
+  // Copy just the files we need from our template, preserving flutter create's platform files
+  var templateDir = Directory(
+      p.join(resourceManager.templateDirectory.path, 'projectname_flutter'));
+
+  // Copy pubspec.yaml
+  var srcPubspec = File(p.join(templateDir.path, 'pubspec.yaml'));
+  var dstPubspec = File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml'));
+  var pubspecContent = srcPubspec.readAsStringSync();
+
+  // Apply replacements
+  pubspecContent = pubspecContent.replaceAll('projectname', name);
+  if (customServerpodPath != null) {
+    pubspecContent = pubspecContent.replaceAll(
+      'path: ../../../packages/',
+      'path: $customServerpodPath/packages/',
+    );
+  }
+
+  // Add resolution: workspace after the description line
+  var lines = pubspecContent.split('\n');
+  var newLines = <String>[];
+  for (var i = 0; i < lines.length; i++) {
+    newLines.add(lines[i]);
+    if (lines[i].startsWith('description:')) {
+      newLines.add('resolution: workspace');
+    }
+  }
+  pubspecContent = newLines.join('\n');
+
+  dstPubspec.writeAsStringSync(pubspecContent);
+
+  // Copy lib directory
+  var copier = Copier(
+    srcDir: Directory(p.join(templateDir.path, 'lib')),
+    dstDir: Directory(p.join(serverpodDirs.flutterDir.path, 'lib')),
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+    ],
+    fileNameReplacements: [],
   );
   copier.copyFiles();
 }
