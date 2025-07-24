@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -8980,6 +8981,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return Map.fromEntries((data as List).map((e) =>
           MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v'])))) as T;
     }
+    if (t == Map<String, Map<int, int>>) {
+      return (data as Map).map((k, v) =>
+          MapEntry(deserialize<String>(k), deserialize<Map<int, int>>(v))) as T;
+    }
     if (t == Map<_i162.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
           deserialize<_i162.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
@@ -9061,6 +9066,40 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<Duration?>(v))) as T;
     }
+    if (t == Map<(Map<int, String>, String), String>) {
+      return Map.fromEntries((data as List).map((e) => MapEntry(
+          deserialize<(Map<int, String>, String)>(e['k']),
+          deserialize<String>(e['v'])))) as T;
+    }
+    if (t == _i1.getType<(Map<int, String>, String)>()) {
+      return (
+        deserialize<Map<int, String>>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t == _i1.getType<(Map<int, String>, String)>()) {
+      return (
+        deserialize<Map<int, String>>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t == Map<int, String>) {
+      return Map.fromEntries((data as List).map((e) =>
+              MapEntry(deserialize<int>(e['k']), deserialize<String>(e['v']))))
+          as T;
+    }
+    if (t == Map<String, (Map<int, int>,)>) {
+      return (data as Map).map((k, v) => MapEntry(
+          deserialize<String>(k), deserialize<(Map<int, int>,)>(v))) as T;
+    }
+    if (t == _i1.getType<(Map<int, int>,)>()) {
+      return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
+    if (t == _i1.getType<(Map<int, int>,)>()) {
+      return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
     if (t == List<_i3.UserInfo>) {
       return (data as List).map((e) => deserialize<_i3.UserInfo>(e)).toList()
           as T;
@@ -9135,6 +9174,19 @@ class Protocol extends _i1.SerializationManagerServer {
               deserialize<_i161.SimpleData>(data['p'][1]),
             ) as T;
     }
+    if (t == _i1.getType<(Map<String, int>,)>()) {
+      return (deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),)
+          as T;
+    }
+    if (t == _i1.getType<(Set<(int,)>,)>()) {
+      return (deserialize<Set<(int,)>>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == Set<(int,)>) {
+      return (data as List).map((e) => deserialize<(int,)>(e)).toSet() as T;
+    }
+    if (t == _i1.getType<(int,)>()) {
+      return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
+    }
     if (t == _i1.getType<({int number, String text})>()) {
       return (
         number: deserialize<int>(((data as Map)['n'] as Map)['number']),
@@ -9173,6 +9225,33 @@ class Protocol extends _i1.SerializationManagerServer {
         number: ((data)['n'] as Map)['number'] == null
             ? null
             : deserialize<int>(data['n']['number']),
+      ) as T;
+    }
+    if (t == _i1.getType<({Map<int, int> intIntMap})>()) {
+      return (
+        intIntMap: deserialize<Map<int, int>>(
+            ((data as Map)['n'] as Map)['intIntMap']),
+      ) as T;
+    }
+    if (t == _i1.getType<({Set<(bool,)> boolSet})>()) {
+      return (
+        boolSet:
+            deserialize<Set<(bool,)>>(((data as Map)['n'] as Map)['boolSet']),
+      ) as T;
+    }
+    if (t == Set<(bool,)>) {
+      return (data as List).map((e) => deserialize<(bool,)>(e)).toSet() as T;
+    }
+    if (t == _i1.getType<(bool,)>()) {
+      return (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(bool,)>()) {
+      return (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(Map<(Map<int, String>, String), String>,)>()) {
+      return (
+        deserialize<Map<(Map<int, String>, String), String>>(
+            ((data as Map)['p'] as List)[0]),
       ) as T;
     }
     if (t == _i1.getType<(int, {_i161.SimpleData data})>()) {
@@ -9304,12 +9383,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<Set<(int,)>>) {
       return (data as List).map((e) => deserialize<Set<(int,)>>(e)).toList()
           as T;
-    }
-    if (t == Set<(int,)>) {
-      return (data as List).map((e) => deserialize<(int,)>(e)).toSet() as T;
-    }
-    if (t == _i1.getType<(int,)>()) {
-      return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
@@ -11325,11 +11398,11 @@ class Protocol extends _i1.SerializationManagerServer {
   /// Records and containers containing records will be return in their JSON representation in the returned map.
   @override
   Map<String, dynamic> wrapWithClassName(Object? data) {
-    /// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
-    if (data is Iterable || data is Map) {
+    /// In case the value (to be streamed) contains a record or potentially empty non-String-keyed Map, we need to map it before it reaches the underlying JSON encode
+    if (data != null && (data is Iterable || data is Map)) {
       return {
         'className': getClassNameForObject(data)!,
-        'data': mapRecordContainingContainerToJson(data!),
+        'data': mapContainerToJson(data),
       };
     } else if (data is Record) {
       return {
@@ -11350,6 +11423,21 @@ class Protocol extends _i1.SerializationManagerServer {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
+  }
+  if (record is (Map<int, String>, String)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+        record.$2,
+      ],
+    };
+  }
+  if (record is (Map<int, int>,)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+      ],
+    };
   }
   if (record is (int, BigInt)) {
     return {
@@ -11389,6 +11477,20 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
+  if (record is (Map<String, int>,)) {
+    return {
+      "p": [
+        record.$1,
+      ],
+    };
+  }
+  if (record is (Set<(int,)>,)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+      ],
+    };
+  }
   if (record is ({int number, String text})) {
     return {
       "n": {
@@ -11411,6 +11513,34 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
         "data": record.data,
         "number": record.number,
       },
+    };
+  }
+  if (record is ({Map<int, int> intIntMap})) {
+    return {
+      "n": {
+        "intIntMap": mapContainerToJson(record.intIntMap),
+      },
+    };
+  }
+  if (record is ({Set<(bool,)> boolSet})) {
+    return {
+      "n": {
+        "boolSet": mapContainerToJson(record.boolSet),
+      },
+    };
+  }
+  if (record is (bool,)) {
+    return {
+      "p": [
+        record.$1,
+      ],
+    };
+  }
+  if (record is (Map<(Map<int, String>, String), String>,)) {
+    return {
+      "p": [
+        mapContainerToJson(record.$1),
+      ],
     };
   }
   if (record is (int, {_i161.SimpleData data})) {
@@ -11633,7 +11763,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (Map<int, int>,)) {
     return {
       "p": [
-        record.$1,
+        mapContainerToJson(record.$1),
       ],
     };
   }
@@ -11702,7 +11832,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (List<(_i143.SimpleData,)>,)) {
     return {
       "p": [
-        record.$1,
+        mapContainerToJson(record.$1),
       ],
     };
   }
@@ -11717,14 +11847,18 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   throw Exception('Unsupported record type ${record.runtimeType}');
 }
 
-/// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+/// Maps container types (like [List], [Map], [Set]) containing
+/// [Record]s or non-String-keyed [Map]s to their JSON representation.
 ///
-/// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+/// It should not be called for [SerializableModel] types. These
+/// handle the "[Record] in container" mapping internally already.
 ///
 /// It is only supposed to be called from generated protocol code.
 ///
-/// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.
-Object? mapRecordContainingContainerToJson(Object obj) {
+/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+/// non-String keys) or a `Map<String, dynamic>` in case the input was
+/// a `Map<String, …>`.
+Object? mapContainerToJson(Object obj) {
   if (obj is! Iterable && obj is! Map) {
     throw ArgumentError.value(
       obj,
@@ -11736,8 +11870,8 @@ Object? mapRecordContainingContainerToJson(Object obj) {
   dynamic mapIfNeeded(Object? obj) {
     return switch (obj) {
       Record record => mapRecordToJson(record),
-      Iterable iterable => mapRecordContainingContainerToJson(iterable),
-      Map map => mapRecordContainingContainerToJson(map),
+      Iterable iterable => mapContainerToJson(iterable),
+      Map map => mapContainerToJson(map),
       Object? value => value,
     };
   }

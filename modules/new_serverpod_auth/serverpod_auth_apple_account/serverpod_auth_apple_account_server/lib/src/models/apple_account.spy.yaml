@@ -13,6 +13,12 @@ fields:
   ### Only the first one is stored per user.
   refreshToken: String
 
+  ### Whether the refresh token was created on an Apple OS.
+  ###
+  ### The source of the initial registration needs to be retained throughout
+  ### the lifecycle of the account.
+  refreshTokenRequestedWithBundleIdentifier: bool
+
   ### Time when the account data was last received from Apple's servers.
   lastRefreshed: DateTime, default=now
 

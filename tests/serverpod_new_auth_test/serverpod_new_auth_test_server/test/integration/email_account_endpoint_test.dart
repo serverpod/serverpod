@@ -300,7 +300,7 @@ void main() {
             authSuccess.sessionKey,
           );
 
-          expect(authInfo?.userUuid, authUserId);
+          expect(authInfo?.authUserId, authUserId);
         },
       );
     },
@@ -400,7 +400,7 @@ void main() {
             passwordResetSessionKey,
           );
 
-          expect(authInfo?.userUuid, authUserId);
+          expect(authInfo?.authUserId, authUserId);
         },
       );
     },
@@ -447,7 +447,10 @@ extension on TestEndpoints {
       authSuccess.sessionKey,
     );
 
-    return (sessionKey: authSuccess.sessionKey, authUserId: authInfo!.userUuid);
+    return (
+      sessionKey: authSuccess.sessionKey,
+      authUserId: authInfo!.authUserId
+    );
   }
 
   Future<

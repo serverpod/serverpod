@@ -1,15 +1,14 @@
-import 'dart:typed_data';
+part of 'email_accounts.dart';
 
-import 'package:clock/clock.dart';
-import 'package:meta/meta.dart';
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
-import 'package:serverpod_auth_email_account_server/src/business/email_account_secret_hash.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_email_account_server/src/util/uint8list_extension.dart';
-
-@internal
+/// Administrative email account management functions.
+///
+/// These should generally not be exposed to clients, but might be useful for
+/// internal tasks or an admin dashboard.
+///
+/// An instance of this class is available at [EmailAccounts.admin].
 final class EmailAccountsAdmin {
+  EmailAccountsAdmin._();
+
   /// Cleans up the log of failed password reset attempts older than
   /// [olderThan].
   ///
@@ -112,6 +111,49 @@ final class EmailAccountsAdmin {
       authUserId: account.authUserId,
       emailAccountId: account.id!,
       hasPassword: account.passwordHash.lengthInBytes > 0,
+    );
+  }
+
+  /// Checks whether an email account request is still pending, and if so
+  /// returns the associated email and verification status.
+  ///
+  /// In case the registration has been completed or the request is expired this
+  /// returns `null`.
+  Future<
+      ({
+        String email,
+        bool isVerified,
+      })?> findEmailAccountRequest(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    final Transaction? transaction,
+  }) async {
+    final request = await EmailAccountRequest.db.findById(
+      session,
+      accountRequestId,
+      transaction: transaction,
+    );
+
+    if (request == null || request.isExpired) {
+      return null;
+    }
+
+    return (
+      email: request.email,
+      isVerified: request.verifiedAt != null,
+    );
+  }
+
+  /// Deletes an account request by its ID.
+  Future<void> deleteEmailAccountRequestById(
+    final Session session,
+    final UuidValue accountRequestId, {
+    final Transaction? transaction,
+  }) async {
+    await EmailAccountRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.id.equals(accountRequestId),
+      transaction: transaction,
     );
   }
 

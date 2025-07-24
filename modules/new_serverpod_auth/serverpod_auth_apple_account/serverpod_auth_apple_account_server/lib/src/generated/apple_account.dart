@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: unnecessary_null_comparison
 
@@ -22,6 +23,7 @@ abstract class AppleAccount
     this.id,
     required this.userIdentifier,
     required this.refreshToken,
+    required this.refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshed,
     required this.authUserId,
     this.authUser,
@@ -38,6 +40,7 @@ abstract class AppleAccount
     _i1.UuidValue? id,
     required String userIdentifier,
     required String refreshToken,
+    required bool refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshed,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
@@ -56,6 +59,9 @@ abstract class AppleAccount
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
       refreshToken: jsonSerialization['refreshToken'] as String,
+      refreshTokenRequestedWithBundleIdentifier:
+          jsonSerialization['refreshTokenRequestedWithBundleIdentifier']
+              as bool,
       lastRefreshed: _i1.DateTimeJsonExtension.fromJson(
           jsonSerialization['lastRefreshed']),
       authUserId:
@@ -87,6 +93,12 @@ abstract class AppleAccount
   ///
   /// Only the first one is stored per user.
   String refreshToken;
+
+  /// Whether the refresh token was created on an Apple OS.
+  ///
+  /// The source of the initial registration needs to be retained throughout
+  /// the lifecycle of the account.
+  bool refreshTokenRequestedWithBundleIdentifier;
 
   /// Time when the account data was last received from Apple's servers.
   DateTime lastRefreshed;
@@ -136,6 +148,7 @@ abstract class AppleAccount
     _i1.UuidValue? id,
     String? userIdentifier,
     String? refreshToken,
+    bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshed,
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
@@ -152,6 +165,8 @@ abstract class AppleAccount
       if (id != null) 'id': id?.toJson(),
       'userIdentifier': userIdentifier,
       'refreshToken': refreshToken,
+      'refreshTokenRequestedWithBundleIdentifier':
+          refreshTokenRequestedWithBundleIdentifier,
       'lastRefreshed': lastRefreshed.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
@@ -206,6 +221,7 @@ class _AppleAccountImpl extends AppleAccount {
     _i1.UuidValue? id,
     required String userIdentifier,
     required String refreshToken,
+    required bool refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshed,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
@@ -219,6 +235,8 @@ class _AppleAccountImpl extends AppleAccount {
           id: id,
           userIdentifier: userIdentifier,
           refreshToken: refreshToken,
+          refreshTokenRequestedWithBundleIdentifier:
+              refreshTokenRequestedWithBundleIdentifier,
           lastRefreshed: lastRefreshed,
           authUserId: authUserId,
           authUser: authUser,
@@ -238,6 +256,7 @@ class _AppleAccountImpl extends AppleAccount {
     Object? id = _Undefined,
     String? userIdentifier,
     String? refreshToken,
+    bool? refreshTokenRequestedWithBundleIdentifier,
     DateTime? lastRefreshed,
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
@@ -252,6 +271,9 @@ class _AppleAccountImpl extends AppleAccount {
       id: id is _i1.UuidValue? ? id : this.id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       refreshToken: refreshToken ?? this.refreshToken,
+      refreshTokenRequestedWithBundleIdentifier:
+          refreshTokenRequestedWithBundleIdentifier ??
+              this.refreshTokenRequestedWithBundleIdentifier,
       lastRefreshed: lastRefreshed ?? this.lastRefreshed,
       authUserId: authUserId ?? this.authUserId,
       authUser:
@@ -277,6 +299,10 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
     );
     refreshToken = _i1.ColumnString(
       'refreshToken',
+      this,
+    );
+    refreshTokenRequestedWithBundleIdentifier = _i1.ColumnBool(
+      'refreshTokenRequestedWithBundleIdentifier',
       this,
     );
     lastRefreshed = _i1.ColumnDateTime(
@@ -321,6 +347,12 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
   ///
   /// Only the first one is stored per user.
   late final _i1.ColumnString refreshToken;
+
+  /// Whether the refresh token was created on an Apple OS.
+  ///
+  /// The source of the initial registration needs to be retained throughout
+  /// the lifecycle of the account.
+  late final _i1.ColumnBool refreshTokenRequestedWithBundleIdentifier;
 
   /// Time when the account data was last received from Apple's servers.
   late final _i1.ColumnDateTime lastRefreshed;
@@ -378,6 +410,7 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
         id,
         userIdentifier,
         refreshToken,
+        refreshTokenRequestedWithBundleIdentifier,
         lastRefreshed,
         authUserId,
         created,

@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -134,14 +135,18 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   throw Exception('Unsupported record type ${record.runtimeType}');
 }
 
-/// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+/// Maps container types (like [List], [Map], [Set]) containing
+/// [Record]s or non-String-keyed [Map]s to their JSON representation.
 ///
-/// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+/// It should not be called for [SerializableModel] types. These
+/// handle the "[Record] in container" mapping internally already.
 ///
 /// It is only supposed to be called from generated protocol code.
 ///
-/// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.
-Object? mapRecordContainingContainerToJson(Object obj) {
+/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+/// non-String keys) or a `Map<String, dynamic>` in case the input was
+/// a `Map<String, …>`.
+Object? mapContainerToJson(Object obj) {
   if (obj is! Iterable && obj is! Map) {
     throw ArgumentError.value(
       obj,
@@ -153,8 +158,8 @@ Object? mapRecordContainingContainerToJson(Object obj) {
   dynamic mapIfNeeded(Object? obj) {
     return switch (obj) {
       Record record => mapRecordToJson(record),
-      Iterable iterable => mapRecordContainingContainerToJson(iterable),
-      Map map => mapRecordContainingContainerToJson(map),
+      Iterable iterable => mapContainerToJson(iterable),
+      Map map => mapContainerToJson(map),
       Object? value => value,
     };
   }

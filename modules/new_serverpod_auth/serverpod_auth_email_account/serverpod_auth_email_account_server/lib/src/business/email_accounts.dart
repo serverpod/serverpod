@@ -4,10 +4,11 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/business/email_account_secret_hash.dart';
-import 'package:serverpod_auth_email_account_server/src/business/email_accounts_admin.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_email_account_server/src/util/byte_data_extension.dart';
 import 'package:serverpod_auth_email_account_server/src/util/uint8list_extension.dart';
+
+part 'email_accounts_admin.dart';
 
 /// Email account management functions.
 abstract final class EmailAccounts {
@@ -15,15 +16,15 @@ abstract final class EmailAccounts {
   static EmailAccountConfig config = EmailAccountConfig();
 
   /// Collection of admin-related functions.
-  static final admin = EmailAccountsAdmin();
+  static final admin = EmailAccountsAdmin._();
 
-  /// Returns the [AuthUser]'s ID upon successful login.
+  /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
   /// Throws [EmailAccountLoginException] for expected error cases.
   ///
-  /// In case of invalid credentials, the failed login attempt will be logged to
+  /// In case of invalid credentials, the failed attempt will be logged to
   /// the database outside of the [transaction] and can not be rolled back.
-  static Future<UuidValue> login(
+  static Future<UuidValue> authenticate(
     final Session session, {
     required String email,
     required final String password,

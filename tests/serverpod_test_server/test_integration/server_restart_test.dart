@@ -35,6 +35,7 @@ void main() {
     await serverpod.start();
 
     var session = await serverpod.createSession();
+    // ignore: invalid_use_of_internal_member
     await expectLater(session.db.testConnection(), completion(true));
   });
 

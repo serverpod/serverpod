@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -448,8 +449,7 @@ abstract class TypesMap
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
             keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson())),
-      if (aRecordKey != null)
-        'aRecordKey': _i6.mapRecordContainingContainerToJson(aRecordKey!),
+      if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -483,13 +483,11 @@ abstract class TypesMap
         'aListValue': aListValue?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
       if (aRecordValue != null)
-        'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
+        'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordValue!),
+        'aNullableRecordValue': _i6.mapContainerToJson(aNullableRecordValue!),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordKey!),
+        'aNullableRecordKey': _i6.mapContainerToJson(aNullableRecordKey!),
     };
   }
 
@@ -528,8 +526,7 @@ abstract class TypesMap
         'aListKey': aListKey?.toJson(
             keyToJson: (k) =>
                 k.toJson(valueToJson: (v) => v.toJsonForProtocol())),
-      if (aRecordKey != null)
-        'aRecordKey': _i6.mapRecordContainingContainerToJson(aRecordKey!),
+      if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -566,13 +563,11 @@ abstract class TypesMap
             valueToJson: (v) =>
                 v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
       if (aRecordValue != null)
-        'aRecordValue': _i6.mapRecordContainingContainerToJson(aRecordValue!),
+        'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordValue!),
+        'aNullableRecordValue': _i6.mapContainerToJson(aNullableRecordValue!),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey':
-            _i6.mapRecordContainingContainerToJson(aNullableRecordKey!),
+        'aNullableRecordKey': _i6.mapContainerToJson(aNullableRecordKey!),
     };
   }
 

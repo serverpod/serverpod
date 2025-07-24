@@ -9,7 +9,8 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-const _mapRecordToJsonFuncName = 'mapRecordToJson';
+const mapRecordToJsonFuncName = 'mapRecordToJson';
+const mapContainerToJsonFunctionName = 'mapContainerToJson';
 
 /// Generates all the [ProtocolDefinition] based
 /// dart libraries (basically the content of a standalone dart file).
@@ -345,11 +346,11 @@ class LibraryGenerator {
               ..name = 'data'
               ..type = refer('Object?')))
             ..body = const Code('''
-/// In case the value (to be streamed) contains a record, we need to map it before it reaches the underlying JSON encode
-   if (data is Iterable || data is Map) {
+    /// In case the value (to be streamed) contains a record or potentially empty non-String-keyed Map, we need to map it before it reaches the underlying JSON encode
+    if (data != null && (data is Iterable || data is Map)) {
       return {
         'className': getClassNameForObject(data)!,
-        'data': mapRecordContainingContainerToJson(data!),
+        'data': $mapContainerToJsonFunctionName(data),
       };
     } else if (data is Record) {
       return {
@@ -777,18 +778,35 @@ class LibraryGenerator {
       ...namedParameters,
     ];
 
-    var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+    var mapContainerToJsonRef = refer(
+      mapContainerToJsonFunctionName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
     );
     var mapRecordToJsonRef = refer(
-      _mapRecordToJsonFuncName,
+      mapRecordToJsonFuncName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
     );
+
+    Spec handleParameter(ParameterDefinition parameterDef) {
+      if (parameterDef.type.isRecordType) {
+        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+      }
+
+      if (parameterDef.type.returnsRecordInContainer ||
+          parameterDef.type.containsNonStringKeyedMap) {
+        return Block.of([
+          if (parameterDef.type.nullable)
+            Code('${parameterDef.name} == null ? null :'),
+          mapContainerToJsonRef.call([refer(parameterDef.name)]).code,
+        ]);
+      }
+
+      return refer(parameterDef.name);
+    }
 
     return refer('caller').property('callServerEndpoint').call([
       literalString('$modulePrefix${endpointDef.name}'),
@@ -797,16 +815,7 @@ class LibraryGenerator {
         for (var parameterDef in params)
           // The generated classes implement `ProtocolSerialization` and get handle by `serverpod_serialization` later
           // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
-          literalString(parameterDef.name): parameterDef.type.isRecordType
-              ? mapRecordToJsonRef.call([refer(parameterDef.name)]).code
-              : (parameterDef.type.returnsRecordInContainer
-                  ? Block.of([
-                      if (parameterDef.type.nullable)
-                        Code('${parameterDef.name} == null ? null :'),
-                      mapRecordContainingContainerToJsonRef
-                          .call([refer(parameterDef.name)]).code,
-                    ])
-                  : refer(parameterDef.name)),
+          literalString(parameterDef.name): handleParameter(parameterDef)
       })
     ], {}, [
       methodDef.returnType.generics.first.reference(false, config: config)
@@ -956,7 +965,7 @@ class LibraryGenerator {
                     param.name:
                         refer('params').index(literalString(param.name)),
                 })
-                .transformRecordReturnType(
+                .transformReturnType(
                   method.returnType,
                   serverCode: serverCode,
                   config: config,
@@ -1116,7 +1125,7 @@ class LibraryGenerator {
             /// Throws in case the record type is not known.
             ///
             /// This method will return `null` (only) for `null` inputs.''')
-          ..name = _mapRecordToJsonFuncName
+          ..name = mapRecordToJsonFuncName
           ..returns = refer('Map<String, dynamic>?')
           ..requiredParameters.add(Parameter((p) => p
             ..name = 'record'
@@ -1130,14 +1139,18 @@ class LibraryGenerator {
       ),
       Method((m) => m
         ..docs.add('''
-          /// Maps container types (like [List], [Map], [Set]) containing [Record]s to their JSON representation.
+          /// Maps container types (like [List], [Map], [Set]) containing 
+          /// [Record]s or non-String-keyed [Map]s to their JSON representation.
           ///
-          /// It should not be called for [SerializableModel] types. These handle the "[Record] in container" mapping internally already.
+          /// It should not be called for [SerializableModel] types. These 
+          /// handle the "[Record] in container" mapping internally already.
           ///
           /// It is only supposed to be called from generated protocol code.
           ///
-          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with non-String keys) or a `Map<String, dynamic>` in case the input was a `Map<String, …>`.''')
-        ..name = 'mapRecordContainingContainerToJson'
+          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with 
+          /// non-String keys) or a `Map<String, dynamic>` in case the input was
+          /// a `Map<String, …>`.''')
+        ..name = mapContainerToJsonFunctionName
         ..returns = refer('Object?')
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'obj'
@@ -1153,8 +1166,8 @@ class LibraryGenerator {
           dynamic mapIfNeeded(Object? obj) {
             return switch (obj) {
               Record record => mapRecordToJson(record),
-              Iterable iterable => mapRecordContainingContainerToJson(iterable),
-              Map map => mapRecordContainingContainerToJson(map),
+              Iterable iterable => $mapContainerToJsonFunctionName(iterable),
+              Map map => $mapContainerToJsonFunctionName(map),
               Object? value => value,
             };
           }
@@ -1191,9 +1204,20 @@ extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {
     return ((isMapType || isListType || isSetType) &&
         generics.any((g) =>
             g.isRecordType ||
-            // Important to only check default container types, there is not need to descent into model classes
+            // Important to only check default container types, there is no need to descent into model classes
             (g.isMapType || g.isListType || g.isSetType) &&
                 g.returnsRecordInContainer));
+  }
+
+  /// Returns `true` if the type is or contains a non-String-keyed Map in a container (non-model) type
+  bool get containsNonStringKeyedMap {
+    return (isMapType && generics.first.className != 'String') ||
+        ((isMapType || isListType || isSetType) &&
+            generics.any((g) =>
+                (g.isMapType && g.generics.first.className != 'String') ||
+                // Important to only check default container types, there is no need to descent into model classes
+                (g.isMapType || g.isListType || g.isSetType) &&
+                    g.containsNonStringKeyedMap));
   }
 }
 
@@ -1377,19 +1401,19 @@ Code _buildRecordEncode(
 }
 
 extension on Expression {
-  Expression transformRecordReturnType(
+  Expression transformReturnType(
     TypeDefinition returnType, {
     required bool serverCode,
     required GeneratorConfig config,
   }) {
     var mapRecordToJsonRef = refer(
-      _mapRecordToJsonFuncName,
+      mapRecordToJsonFuncName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
     );
-    var mapRecordContainingContainerToJsonRef = refer(
-      'mapRecordContainingContainerToJson',
+    var mapContainerToJsonRef = refer(
+      mapContainerToJsonFunctionName,
       serverCode
           ? 'package:${config.serverPackage}/src/generated/protocol.dart'
           : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -1405,10 +1429,9 @@ extension on Expression {
           ]),
         ),
       ]);
-    }
-
-    if (returnType.generics.isNotEmpty &&
-        returnType.generics.first.returnsRecordInContainer) {
+    } else if (returnType.generics.isNotEmpty &&
+        (returnType.generics.first.returnsRecordInContainer ||
+            returnType.generics.first.containsNonStringKeyedMap)) {
       return property('then').call(
         [
           CodeExpression(
@@ -1416,7 +1439,7 @@ extension on Expression {
               const Code('(container) => '),
               if (returnType.generics.first.nullable)
                 const Code('container == null ? null : '),
-              mapRecordContainingContainerToJsonRef.call([
+              mapContainerToJsonRef.call([
                 refer('container'),
               ]).code,
             ]),
@@ -1424,7 +1447,6 @@ extension on Expression {
         ],
       );
     }
-
     return this;
   }
 }
@@ -1448,11 +1470,16 @@ extension on TypeDefinition {
       if (positionalFields.isNotEmpty) ...[
         const Code('"p": ['),
         for (var (index, positionalField) in positionalFields.indexed) ...[
-          if (positionalField.isRecordType) ...[
+          if (positionalField.isRecordType)
             Code(
-              '$_mapRecordToJsonFuncName($name.\$${index + 1})',
-            ),
-          ] else
+              '$mapRecordToJsonFuncName($name.\$${index + 1})',
+            )
+          else if (positionalField.returnsRecordInContainer ||
+              positionalField.containsNonStringKeyedMap)
+            Code(
+              '$mapContainerToJsonFunctionName($name.\$${index + 1})',
+            )
+          else
             Code('$name.\$${index + 1}'),
           const Code(','),
         ],
@@ -1465,7 +1492,12 @@ extension on TypeDefinition {
           const Code(':'),
           if (namedField.isRecordType)
             Code(
-              '$_mapRecordToJsonFuncName($name.${namedField.recordFieldName!})',
+              '$mapRecordToJsonFuncName($name.${namedField.recordFieldName!})',
+            )
+          else if (namedField.returnsRecordInContainer ||
+              namedField.containsNonStringKeyedMap)
+            Code(
+              '$mapContainerToJsonFunctionName($name.${namedField.recordFieldName!})',
             )
           else
             Code('$name.${namedField.recordFieldName!}'),

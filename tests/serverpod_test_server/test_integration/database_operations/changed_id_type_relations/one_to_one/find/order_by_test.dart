@@ -195,8 +195,23 @@ void main() async {
     tearDownAll(() async => await deleteAll(session));
 
     test('then models returned are in expected order.', () {
-      var citizenNames = citizensOrderedByCompanyTownName.map((e) => e.name);
-      expect(citizenNames, ['Lina', 'Joanna', 'Alex', 'Isak', 'Theo', 'Haris']);
+      var citizenNames =
+          citizensOrderedByCompanyTownName.map((e) => e.name).toList();
+
+      expect(citizenNames, hasLength(6));
+      expect(
+        citizenNames.take(2),
+        // both at Systemair in Skinnskatteberg
+        unorderedEquals([
+          'Lina',
+          'Joanna',
+        ]),
+      );
+      expect(
+        citizenNames.skip(2),
+        // all at Serverpod or Pantor in Stockholm
+        unorderedEquals(['Alex', 'Isak', 'Haris', 'Theo']),
+      );
     });
   });
 }

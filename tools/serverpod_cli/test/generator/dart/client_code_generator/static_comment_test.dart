@@ -72,5 +72,16 @@ void main() {
         );
       }
     });
+
+    test(
+        'then all code contains ignore linting for invalid_use_of_internal_member',
+        () {
+      for (var code in codeMap.values) {
+        expect(
+          code,
+          contains('// ignore_for_file: invalid_use_of_internal_member'),
+        );
+      }
+    });
   });
 }

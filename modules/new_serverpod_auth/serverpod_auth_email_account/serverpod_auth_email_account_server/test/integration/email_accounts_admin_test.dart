@@ -13,11 +13,15 @@ void main() {
       (final sessionBuilder, final endpoints) {
     const email = 'test@serverpod.dev';
     late Session session;
+    late ({
+      EmailAccountRequestResult result,
+      UuidValue? accountRequestId,
+    }) accountCreationResult;
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      await EmailAccounts.startAccountCreation(
+      accountCreationResult = await EmailAccounts.startAccountCreation(
         session,
         email: email,
         password: 'Yolo12345!',
@@ -33,6 +37,17 @@ void main() {
         await EmailAccountRequest.db.count(session),
         1,
       );
+    });
+
+    test(
+        'when `deleteEmailAccountRequestById` is called, '
+        'then the account request is removed.', () async {
+      await EmailAccounts.admin.deleteEmailAccountRequestById(
+        session,
+        accountCreationResult.accountRequestId!,
+      );
+
+      expect(await EmailAccountRequest.db.find(session), isEmpty);
     });
 
     test(
@@ -120,7 +135,7 @@ void main() {
           );
 
           expect(
-            await EmailAccounts.login(
+            await EmailAccounts.authenticate(
               session,
               email: email,
               password: newPassword,
@@ -174,10 +189,10 @@ void main() {
       );
 
       test(
-        'when calling `EmailAccounts.login`, it works right away (without verification).',
+        'when calling `EmailAccounts.authenticate`, it works right away (without verification).',
         () async {
           expect(
-            await EmailAccounts.login(
+            await EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -319,7 +334,7 @@ void main() {
         session = sessionBuilder.build();
 
         try {
-          await EmailAccounts.login(
+          await EmailAccounts.authenticate(
             session,
             email: '404@serverpod.dev',
             password: 'Asdf123ll!',

@@ -48,11 +48,19 @@ final class AuthSessionsAdmin {
   }) async {
     final authSessions = await AuthSession.db.find(
       session,
-      where: (final t) =>
-          (authUserId != null
-              ? t.authUserId.equals(authUserId)
-              : Constant.bool(true)) &
-          (method != null ? t.method.equals(method) : Constant.bool(true)),
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
+        return expression;
+      },
       transaction: transaction,
     );
 

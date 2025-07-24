@@ -44,11 +44,18 @@ final class AppleAccountsAdmin {
         transaction: transaction,
       );
 
+      if (appleAccounts.isEmpty) {
+        break;
+      }
+
       for (final appleAccount in appleAccounts) {
         try {
-          // TODO: Get proper status from library in error cases.
-          await _siwa.validateRefreshToken(appleAccount.refreshToken);
-        } catch (_) {
+          await _siwa.validateRefreshToken(
+            appleAccount.refreshToken,
+            useBundleIdentifier:
+                appleAccount.refreshTokenRequestedWithBundleIdentifier,
+          );
+        } on RevokedTokenException catch (_) {
           expiredUserAuthenticationCallback(appleAccount.authUserId);
         }
 

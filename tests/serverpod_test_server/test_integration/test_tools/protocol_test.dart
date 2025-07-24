@@ -159,6 +159,17 @@ void main() {
 
         expect(result, 'NamedArg');
       });
+
+      test(
+          'when calling method with empty Map<int, int> argument, then it returns the empty map.',
+          () async {
+        final result = await endpoints.mapParameters.returnIntIntMap(
+          sessionBuilder,
+          {},
+        );
+
+        expect(result, isEmpty);
+      });
     },
   );
 }

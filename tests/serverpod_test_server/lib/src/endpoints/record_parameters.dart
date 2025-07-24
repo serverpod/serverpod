@@ -69,6 +69,27 @@ class RecordParametersEndpoint extends Endpoint {
   ) async {
     return record;
   }
+
+  Future<(Map<String, int>,)> returnStringKeyedMapRecord(
+    Session session,
+    (Map<String, int>,) record,
+  ) async {
+    return record;
+  }
+
+  Future<(Map<int, int>,)> returnNonStringKeyedMapRecord(
+    Session session,
+    (Map<int, int>,) record,
+  ) async {
+    return record;
+  }
+
+  Future<(Set<(int,)>,)> returnSetWithNestedRecordRecord(
+    Session session,
+    (Set<(int,)>,) record,
+  ) async {
+    return record;
+  }
 // #endregion
 
 // #region Records with named parameters
@@ -107,6 +128,28 @@ class RecordParametersEndpoint extends Endpoint {
     ({int? number, SimpleData? data}) record,
   ) async {
     return record;
+  }
+
+  Future<({Map<int, int> intIntMap})> returnNamedNonStringKeyedMapRecord(
+    Session session,
+    ({Map<int, int> intIntMap}) record,
+  ) async {
+    return record;
+  }
+
+  Future<({Set<(bool,)> boolSet})> returnNamedSetWithNestedRecordRecord(
+    Session session,
+    ({Set<(bool,)> boolSet}) record,
+  ) async {
+    return record;
+  }
+
+  Future<(Map<(Map<int, String>, String), String>,)>
+      returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord(
+    Session session,
+    (Map<(Map<int, String>, String), String>,) map,
+  ) async {
+    return map;
   }
 // #endregion
 

@@ -51,10 +51,10 @@ void main() {
       });
 
       test(
-        'when calling `EmailAccounts.login`, then it fails due to no password being set.',
+        'when calling `EmailAccounts.authenticate`, then it fails due to no password being set.',
         () async {
           await expectLater(
-            new_email_account.EmailAccounts.login(
+            new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -72,7 +72,7 @@ void main() {
       );
 
       test(
-        'when calling `EmailAccounts.login` after `AuthBackwardsCompatibility.importLegacyPasswordIfNeeded`, then it succeeds.',
+        'when calling `EmailAccounts.authenticate` after `AuthBackwardsCompatibility.importLegacyPasswordIfNeeded`, then it succeeds.',
         () async {
           await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
             session,
@@ -81,7 +81,7 @@ void main() {
           );
 
           expect(
-            await new_email_account.EmailAccounts.login(
+            await new_email_account.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,

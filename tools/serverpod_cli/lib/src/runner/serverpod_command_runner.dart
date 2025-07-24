@@ -27,22 +27,6 @@ Future<void> _preCommandEnvironmentChecks() async {
   if (!loadEnvironmentVars()) {
     throw ExitException.error();
   }
-
-  // Make sure all necessary downloads are installed
-  if (!resourceManager.isTemplatesInstalled) {
-    try {
-      await resourceManager.installTemplates();
-    } catch (e) {
-      log.error('Failed to download templates.');
-      throw ExitException.error();
-    }
-
-    if (!resourceManager.isTemplatesInstalled) {
-      log.error(
-          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.');
-      throw ExitException.error();
-    }
-  }
 }
 
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {

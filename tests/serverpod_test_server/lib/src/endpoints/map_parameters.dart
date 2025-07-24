@@ -42,6 +42,13 @@ class MapParametersEndpoint extends Endpoint {
     return map;
   }
 
+  Future<Map<String, Map<int, int>>> returnNestedIntIntMap(
+    Session session,
+    Map<String, Map<int, int>> map,
+  ) async {
+    return map;
+  }
+
   Future<Map<TestEnum, int>> returnEnumIntMap(
     Session session,
     Map<TestEnum, int> map,
@@ -165,6 +172,22 @@ class MapParametersEndpoint extends Endpoint {
   Future<Map<String, Duration?>> returnDurationMapNullableDurations(
     Session session,
     Map<String, Duration?> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<(Map<int, String>, String), String>>
+      returnNestedNonStringKeyedMapInsideRecordInsideMap(
+    Session session,
+    Map<(Map<int, String>, String), String> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<String, (Map<int, int>,)>>
+      returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap(
+    Session session,
+    Map<String, (Map<int, int>,)> map,
   ) async {
     return map;
   }
