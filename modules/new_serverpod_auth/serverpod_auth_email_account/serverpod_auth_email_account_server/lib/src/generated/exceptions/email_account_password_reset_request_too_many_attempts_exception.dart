@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown when too many attempts were made to request a
+/// password reset.
 abstract class EmailAccountPasswordResetRequestTooManyAttemptsException
     implements
         _i1.SerializableException,

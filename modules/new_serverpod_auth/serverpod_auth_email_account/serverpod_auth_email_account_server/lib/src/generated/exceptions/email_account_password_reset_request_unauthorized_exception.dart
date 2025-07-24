@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown when an attempt was made to complete a password reset
+/// with an invalid verification code.
 abstract class EmailAccountPasswordResetRequestUnauthorizedException
     implements
         _i1.SerializableException,

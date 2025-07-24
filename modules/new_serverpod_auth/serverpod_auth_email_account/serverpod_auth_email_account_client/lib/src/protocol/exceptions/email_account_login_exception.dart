@@ -13,6 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../exceptions/email_account_login_failure_reason.dart' as _i2;
 
+/// Exception to be thrown if the login via email/password fails.
+///
+/// Inspect the [reason] to determine whether this was due to invalid or unknown
+/// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountLoginException
     implements _i1.SerializableException, _i1.SerializableModel {
   EmailAccountLoginException._({required this.reason});

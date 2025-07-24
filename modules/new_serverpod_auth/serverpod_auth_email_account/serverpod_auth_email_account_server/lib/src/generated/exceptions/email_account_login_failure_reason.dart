@@ -12,8 +12,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// The reason for why the authentication via email credentials was rejected.
 enum EmailAccountLoginFailureReason implements _i1.SerializableModel {
+  /// Too many attempts made by the same client/IP or towards the same account.
   tooManyAttempts,
+
+  /// The credentials are either wrong or the email address is not known.
   invalidCredentials;
 
   static EmailAccountLoginFailureReason fromJson(int index) {

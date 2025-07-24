@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown when a attempting to set a password which does not
+/// match the configured policy.
 abstract class EmailAccountPasswordPolicyViolationException
     implements
         _i1.SerializableException,
