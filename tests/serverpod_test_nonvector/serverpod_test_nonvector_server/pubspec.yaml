@@ -9,7 +9,7 @@ description: Non-vector project test server for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 dependencies:
   serverpod: 2.9.1
