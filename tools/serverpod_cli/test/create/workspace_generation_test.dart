@@ -91,55 +91,6 @@ workspace:
       expect(result.trim(), endsWith('  - my_client'));
     });
   });
-
-  group('Copier removePatterns', () {
-    late Directory tempDir;
-
-    setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('serverpod_test_');
-    });
-
-    tearDown(() {
-      if (tempDir.existsSync()) {
-        tempDir.deleteSync(recursive: true);
-      }
-    });
-
-    test('Lines with CONDITIONALLY_REMOVE_LINE are removed', () {
-      // Create source file with conditional lines
-      var srcDir = Directory(p.join(tempDir.path, 'src'))..createSync();
-      var srcFile = File(p.join(srcDir.path, 'test.yaml'))
-        ..writeAsStringSync('''
-dependencies:
-  some_package: 1.0.0
-  
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  some_package: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../path #--CONDITIONALLY_REMOVE_LINE--#
-''');
-
-      var dstDir = Directory(p.join(tempDir.path, 'dst'));
-
-      var copier = Copier(
-        srcDir: srcDir,
-        dstDir: dstDir,
-        replacements: [],
-        fileNameReplacements: [],
-        removePatterns: ['#--CONDITIONALLY_REMOVE_LINE--#'],
-      );
-
-      copier.copyFiles();
-
-      var dstFile = File(p.join(dstDir.path, 'test.yaml'));
-      expect(dstFile.existsSync(), isTrue);
-
-      var content = dstFile.readAsStringSync();
-      expect(content, isNot(contains('dependency_overrides:')));
-      expect(content, isNot(contains('#--CONDITIONALLY_REMOVE_LINE--#')));
-      expect(content, contains('dependencies:'));
-      expect(content, contains('some_package: 1.0.0'));
-    });
-  });
 }
 
 // Helper functions that mirror the implementation
