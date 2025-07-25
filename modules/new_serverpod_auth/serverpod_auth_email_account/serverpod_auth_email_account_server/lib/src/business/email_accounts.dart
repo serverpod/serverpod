@@ -328,7 +328,7 @@ abstract final class EmailAccounts {
   /// [transaction] and can not be rolled back, so the throttling will always be
   /// enforced.
   ///
-  /// Throws a [EmailAccountPasswordResetRequestTooManyAttemptsException] in
+  /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   static Future<PasswordResetResult> startPasswordReset(
     final Session session, {
@@ -391,13 +391,13 @@ abstract final class EmailAccounts {
 
   /// Returns the auth user ID for the successfully changed password
   ///
-  /// Throws a [EmailAccountPasswordResetRequestNotFoundException] in case no
+  /// Throws an [EmailAccountPasswordResetRequestNotFoundException] in case no
   /// reset request could be found for [passwordResetRequestId].
-  /// Throws a [EmailAccountPasswordResetRequestExpiredException] in case the
+  /// Throws an [EmailAccountPasswordResetRequestExpiredException] in case the
   /// reset request has expired.
-  /// Throws a [EmailAccountPasswordPolicyViolationException] in case the
+  /// Throws an [EmailAccountPasswordPolicyViolationException] in case the
   /// password does not confirm to the configured policy.
-  /// Throws a [EmailAccountPasswordResetRequestUnauthorizedException] in case
+  /// Throws an [EmailAccountPasswordResetRequestUnauthorizedException] in case
   /// the [verificationCode] is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed password reset

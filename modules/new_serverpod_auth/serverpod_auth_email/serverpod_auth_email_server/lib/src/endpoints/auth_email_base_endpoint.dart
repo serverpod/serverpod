@@ -84,7 +84,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// If the email address is registered, an email with reset instructions will
   /// be send out. If the email is unknown, this method will have no effect.
   ///
-  /// Throws a [EmailAccountPasswordResetRequestTooManyAttemptsException] in
+  /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
   Future<void> startPasswordReset(
@@ -97,13 +97,13 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
-  /// Throws a [EmailAccountPasswordResetRequestNotFoundException] in case no
+  /// Throws an [EmailAccountPasswordResetRequestNotFoundException] in case no
   /// reset request could be found for [passwordResetRequestId].
-  /// Throws a [EmailAccountPasswordResetRequestExpiredException] in case the
+  /// Throws an [EmailAccountPasswordResetRequestExpiredException] in case the
   /// reset request has expired.
-  /// Throws a [EmailAccountPasswordPolicyViolationException] in case the
+  /// Throws an [EmailAccountPasswordPolicyViolationException] in case the
   /// password does not confirm to the configured policy.
-  /// Throws a [EmailAccountPasswordResetRequestUnauthorizedException] in case
+  /// Throws an [EmailAccountPasswordResetRequestUnauthorizedException] in case
   /// the [verificationCode] is not valid.
   ///
   /// If the reset was successful, a new session is returned and
