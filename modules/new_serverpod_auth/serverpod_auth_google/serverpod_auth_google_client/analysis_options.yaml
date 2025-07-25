@@ -1,0 +1,7 @@
+linter:
+  rules:
+    - depend_on_referenced_packages
+
+analyzer:
+  exclude:
+    - lib/src/protocol/**
