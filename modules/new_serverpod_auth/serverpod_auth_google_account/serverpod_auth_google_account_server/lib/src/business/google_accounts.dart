@@ -120,14 +120,15 @@ abstract final class GoogleAccounts {
 
     final userId = data['sub'] as String?;
     final email = data['email'] as String?;
-    final verifiedEmail = data['verified_email'] as bool?;
+    final verifiedEmail = data['verified_email'] as bool? ??
+        ((data['email_verified'] as String?) == 'true');
     final fullName = data['name'] as String?;
     final image = data['picture'] as String?;
     final name = data['given_name'] as String?;
 
     if (userId == null ||
         email == null ||
-        verifiedEmail != true ||
+        !verifiedEmail ||
         fullName == null ||
         image == null ||
         name == null) {
