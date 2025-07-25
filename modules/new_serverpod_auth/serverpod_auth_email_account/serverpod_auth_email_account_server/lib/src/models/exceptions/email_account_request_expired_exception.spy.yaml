@@ -1,1 +1,3 @@
+### Exception to be thrown when one attempts to complete an email account
+### request after it has expired.
 exception: EmailAccountRequestExpiredException

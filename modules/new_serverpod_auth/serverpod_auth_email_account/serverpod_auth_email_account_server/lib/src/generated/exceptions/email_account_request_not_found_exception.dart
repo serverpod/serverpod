@@ -12,6 +12,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown when an email account request could not be found by
+/// the given id.
+///
+/// This might mean that the account request never existed or has since been
+/// deleted.
 abstract class EmailAccountRequestNotFoundException
     implements
         _i1.SerializableException,

@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception to be thrown when an attempt is made to complete the creation
+/// of an email account before the account request has been verified.
 abstract class EmailAccountRequestNotVerifiedException
     implements _i1.SerializableException, _i1.SerializableModel {
   EmailAccountRequestNotVerifiedException._();

@@ -1,1 +1,6 @@
+### Exception to be thrown when an email account request could not be found by
+### the given id.
+###
+### This might mean that the account request never existed or has since been
+### deleted.
 exception: EmailAccountRequestNotFoundException

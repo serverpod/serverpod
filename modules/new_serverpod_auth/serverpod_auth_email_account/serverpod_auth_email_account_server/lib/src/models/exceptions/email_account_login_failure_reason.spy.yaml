@@ -1,4 +1,7 @@
+### The reason for why the authentication via email credentials was rejected.
 enum: EmailAccountLoginFailureReason
 values:
+  ### Too many attempts made by the same client/IP or towards the same account.
   - tooManyAttempts
+  ### The credentials are either wrong or the email address is not known.
   - invalidCredentials

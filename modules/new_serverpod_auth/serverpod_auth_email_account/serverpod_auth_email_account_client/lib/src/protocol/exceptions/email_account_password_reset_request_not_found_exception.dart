@@ -12,6 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception to be thrown when a password reset request could not be found.
+///
+/// This might mean that the password reset request never existed or has been
+/// removed in the meantime.
 abstract class EmailAccountPasswordResetRequestNotFoundException
     implements _i1.SerializableException, _i1.SerializableModel {
   EmailAccountPasswordResetRequestNotFoundException._();

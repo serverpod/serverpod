@@ -98,7 +98,14 @@ abstract final class AuthUsers {
 
   /// Removes the specified auth user.
   ///
-  /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
+  /// This also removes all authentication-related entities from all
+  /// `serverpod_auth_*` packages which are linked to this user, like the
+  /// various authentication methods and sessions.
+  /// (This is based on the `onDelete=Cascade` relationship between the models.
+  /// Other packages linking to the `AuthUser` may or may not opt into this.)
+  ///
+  /// Throws an [AuthUserNotFoundException] in case no auth user is found for
+  /// the ID.
   static Future<void> delete(
     final Session session, {
     required final UuidValue authUserId,

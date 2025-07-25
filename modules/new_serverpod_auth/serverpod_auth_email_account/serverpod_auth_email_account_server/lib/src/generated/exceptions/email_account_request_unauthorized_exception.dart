@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown when the verification code given for an email account
+/// request is not valid.
 abstract class EmailAccountRequestUnauthorizedException
     implements
         _i1.SerializableException,

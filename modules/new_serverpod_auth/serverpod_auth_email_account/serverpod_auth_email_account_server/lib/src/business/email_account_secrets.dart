@@ -6,10 +6,10 @@ abstract class EmailAccountSecrets {
   static const String passwordHashPepperConfigurationKey =
       'serverpod_auth_email_account_passwordHashPepper';
 
-  /// The pepper used for hashing passwords.
+  /// The pepper used for hashing passwords and verification codes.
   ///
-  /// This influences the stored password, so it must not be changed for a given deployment,
-  /// as otherwise all passwords become invalid.
+  /// This influences the stored password, so it must not be changed for a given
+  /// deployment, as otherwise all passwords become invalid.
   static String get passwordHashPepper {
     final pepper =
         Serverpod.instance.getPassword(passwordHashPepperConfigurationKey);

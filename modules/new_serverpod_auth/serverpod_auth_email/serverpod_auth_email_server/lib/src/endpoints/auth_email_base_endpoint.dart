@@ -17,7 +17,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a
-  /// `EmailAccountLoginException`.
+  /// [EmailAccountLoginException].
   /// {@endtemplate}
   Future<AuthSuccess> login(
     final Session session, {
@@ -54,6 +54,17 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
+  ///
+  /// Throws an [EmailAccountRequestNotFoundException] in case the
+  /// [accountRequestId] does not point to an existing request.
+  /// Throws an [EmailAccountRequestExpiredException] in case the request's
+  /// validation window has elapsed.
+  /// Throws an [EmailAccountRequestTooManyAttemptsException] in case too many
+  /// attempts have been made at finishing the same account request.
+  /// Throws an [EmailAccountRequestUnauthorizedException] in case the
+  /// [verificationCode] is not valid.
+  ///
+  /// Returns a session for the newly created user.
   /// {@endtemplate}
   Future<AuthSuccess> finishRegistration(
     final Session session, {
@@ -69,6 +80,12 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
 
   /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
+  ///
+  /// If the email address is registered, an email with reset instructions will
+  /// be send out. If the email is unknown, this method will have no effect.
+  ///
+  /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
+  /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
   Future<void> startPasswordReset(
     final Session session, {
@@ -80,9 +97,17 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
-  /// If the reset was successful, a new session key is returned.
+  /// Throws an [EmailAccountPasswordResetRequestNotFoundException] in case no
+  /// reset request could be found for [passwordResetRequestId].
+  /// Throws an [EmailAccountPasswordResetRequestExpiredException] in case the
+  /// reset request has expired.
+  /// Throws an [EmailAccountPasswordPolicyViolationException] in case the
+  /// password does not confirm to the configured policy.
+  /// Throws an [EmailAccountPasswordResetRequestUnauthorizedException] in case
+  /// the [verificationCode] is not valid.
   ///
-  /// Destroys all active sessions of the user.
+  /// If the reset was successful, a new session is returned and
+  /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
   Future<AuthSuccess> finishPasswordReset(
     final Session session, {
