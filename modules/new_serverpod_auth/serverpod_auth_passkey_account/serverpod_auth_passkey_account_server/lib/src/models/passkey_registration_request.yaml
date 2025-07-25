@@ -1,0 +1,4 @@
+### Data to be send for registration
+## TODO: Does this have to be tied to new user / existing user?
+## Use this throughout the stack, so the data packages don't have to manually forwarded``
+class: PasskeyAccountRequest
