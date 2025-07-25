@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 const _configFilePath = 'config/google_client_secret.json';
-const _passwordKey = 'serverpod_auth_googleClientSecret';
+const _passwordKey = 'serverpod_auth_google_account_clientSecret';
 
 /// Convenience methods for handling authentication with Google and accessing
 /// Google's APIs.
