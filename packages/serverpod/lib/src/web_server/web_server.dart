@@ -81,6 +81,11 @@ class WebServer {
       _server = server;
       _actualPort = (server.adapter as IOAdapter).port;
       _running = true;
+
+      var scheme = _securityContext != null ? 'https' : 'http';
+      var host = _config.publicHost;
+      var port = _actualPort;
+      logInfo('Webserver listening on $scheme://$host:$port');
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
           message: 'Failed to bind socket, '

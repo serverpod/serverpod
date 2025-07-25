@@ -137,8 +137,12 @@ class Server {
     }
 
     _running = true;
+
+    // Determine the scheme based on security context
+    var scheme = _securityContext != null ? 'https' : 'http';
+
     serverpod.logVerbose(
-      'Server started on port: $port',
+      'Server started on $scheme://localhost:$port',
     );
     return _running;
   }
