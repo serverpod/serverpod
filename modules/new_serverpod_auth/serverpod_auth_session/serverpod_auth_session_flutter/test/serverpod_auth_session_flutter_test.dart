@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart';
 import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart';
 import 'package:serverpod_auth_session_flutter/src/session_manager.dart';
 
