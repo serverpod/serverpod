@@ -68,7 +68,7 @@ abstract final class GoogleAccounts {
       throw StateError('The server side Google client secret is not loaded.');
     }
 
-    final String clientId = clientSecret.clientId;
+    final clientId = clientSecret.clientId;
 
     // Verify the ID token with Google's servers.
     final response = await http.get(
@@ -152,6 +152,7 @@ abstract final class GoogleAccounts {
 
 /// Details of a successful Google-based authentication.
 typedef GoogleAuthSuccess = ({
+  /// The ID of the `GoogleAccount` database entity.
   UuidValue googleAccountId,
   UuidValue authUserId,
   GoogleAccountDetails details,
@@ -160,10 +161,10 @@ typedef GoogleAuthSuccess = ({
 
 /// Details of the Google Account.
 typedef GoogleAccountDetails = ({
-  /// Google's user identifier for this account
+  /// Google's user identifier for this account.
   String userIdentifier,
 
-  /// The verified email received from Google
+  /// The verified email received from Google.
   String email,
   String name,
   String fullName,

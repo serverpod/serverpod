@@ -10,7 +10,7 @@ const _passwordKey = 'serverpod_auth_google_account_clientSecret';
 /// Convenience methods for handling authentication with Google and accessing
 /// Google's APIs.
 @internal
-class GoogleAuth {
+abstract final class GoogleAuth {
   /// The client secret loaded from `config/google_client_secret.json` or
   /// password `serverpod_auth_googleClientSecret`, null if the client secrets
   /// failed to load.
@@ -72,15 +72,15 @@ class GoogleAuth {
 /// `config/google_client_secret.json`. The file can be downloaded from Google's
 /// cloud console.
 @internal
-class GoogleClientSecret {
+final class GoogleClientSecret {
   /// The client identifier.
-  late final String clientId;
+  final String clientId;
 
   /// The client secret.
-  late final String clientSecret;
+  final String clientSecret;
 
   /// List of redirect uris.
-  late List<String> redirectUris;
+  final List<String> redirectUris;
 
   /// Private constructor to initialize the object.
   GoogleClientSecret._({
