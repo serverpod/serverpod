@@ -37,10 +37,6 @@ Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
       'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
     );
     log.debug('SERVERPOD_HOME is set to $serverpodHome');
-
-    if (!resourceManager.isTemplatesInstalled) {
-      log.warning('Could not find templates.');
-    }
   }
 }
 
