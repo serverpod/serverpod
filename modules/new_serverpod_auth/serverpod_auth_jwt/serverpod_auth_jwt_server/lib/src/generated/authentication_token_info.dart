@@ -19,8 +19,8 @@ abstract class AuthenticationTokenInfo
     required this.authUserId,
     required this.scopeNames,
     this.extraClaimsJSON,
-    required this.lastUpdated,
-    required this.created,
+    required this.lastUpdatedAt,
+    required this.createdAt,
   });
 
   factory AuthenticationTokenInfo({
@@ -28,8 +28,8 @@ abstract class AuthenticationTokenInfo
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
     String? extraClaimsJSON,
-    required DateTime lastUpdated,
-    required DateTime created,
+    required DateTime lastUpdatedAt,
+    required DateTime createdAt,
   }) = _AuthenticationTokenInfoImpl;
 
   factory AuthenticationTokenInfo.fromJson(
@@ -42,9 +42,10 @@ abstract class AuthenticationTokenInfo
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
       extraClaimsJSON: jsonSerialization['extraClaimsJSON'] as String?,
-      lastUpdated:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUpdated']),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['lastUpdatedAt']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 
@@ -62,10 +63,10 @@ abstract class AuthenticationTokenInfo
   String? extraClaimsJSON;
 
   /// The last time when a new token pair was created for this session.
-  DateTime lastUpdated;
+  DateTime lastUpdatedAt;
 
   /// The time when this session was initially created.
-  DateTime created;
+  DateTime createdAt;
 
   /// Returns a shallow copy of this [AuthenticationTokenInfo]
   /// with some or all fields replaced by the given arguments.
@@ -75,8 +76,8 @@ abstract class AuthenticationTokenInfo
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
     String? extraClaimsJSON,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,8 +86,8 @@ abstract class AuthenticationTokenInfo
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
       if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
-      'lastUpdated': lastUpdated.toJson(),
-      'created': created.toJson(),
+      'lastUpdatedAt': lastUpdatedAt.toJson(),
+      'createdAt': createdAt.toJson(),
     };
   }
 
@@ -97,8 +98,8 @@ abstract class AuthenticationTokenInfo
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
       if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
-      'lastUpdated': lastUpdated.toJson(),
-      'created': created.toJson(),
+      'lastUpdatedAt': lastUpdatedAt.toJson(),
+      'createdAt': createdAt.toJson(),
     };
   }
 
@@ -116,15 +117,15 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
     String? extraClaimsJSON,
-    required DateTime lastUpdated,
-    required DateTime created,
+    required DateTime lastUpdatedAt,
+    required DateTime createdAt,
   }) : super._(
           id: id,
           authUserId: authUserId,
           scopeNames: scopeNames,
           extraClaimsJSON: extraClaimsJSON,
-          lastUpdated: lastUpdated,
-          created: created,
+          lastUpdatedAt: lastUpdatedAt,
+          createdAt: createdAt,
         );
 
   /// Returns a shallow copy of this [AuthenticationTokenInfo]
@@ -136,8 +137,8 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
     Object? extraClaimsJSON = _Undefined,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   }) {
     return AuthenticationTokenInfo(
       id: id ?? this.id,
@@ -145,8 +146,8 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       extraClaimsJSON:
           extraClaimsJSON is String? ? extraClaimsJSON : this.extraClaimsJSON,
-      lastUpdated: lastUpdated ?? this.lastUpdated,
-      created: created ?? this.created,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

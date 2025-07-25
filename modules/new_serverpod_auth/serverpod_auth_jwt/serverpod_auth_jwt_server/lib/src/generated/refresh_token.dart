@@ -28,10 +28,10 @@ abstract class RefreshToken
     required this.fixedSecret,
     required this.rotatingSecretHash,
     required this.rotatingSecretSalt,
-    DateTime? lastUpdated,
-    DateTime? created,
-  })  : lastUpdated = lastUpdated ?? DateTime.now(),
-        created = created ?? DateTime.now();
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
+  })  : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
+        createdAt = createdAt ?? DateTime.now();
 
   factory RefreshToken({
     _i1.UuidValue? id,
@@ -42,8 +42,8 @@ abstract class RefreshToken
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   }) = _RefreshTokenImpl;
 
   factory RefreshToken.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -67,9 +67,10 @@ abstract class RefreshToken
           jsonSerialization['rotatingSecretHash']),
       rotatingSecretSalt: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['rotatingSecretSalt']),
-      lastUpdated:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUpdated']),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['lastUpdatedAt']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 
@@ -126,10 +127,10 @@ abstract class RefreshToken
   _i3.ByteData rotatingSecretSalt;
 
   /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
-  DateTime lastUpdated;
+  DateTime lastUpdatedAt;
 
   /// The time when the first refresh token was created.
-  DateTime created;
+  DateTime createdAt;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -146,8 +147,8 @@ abstract class RefreshToken
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -160,8 +161,8 @@ abstract class RefreshToken
       'fixedSecret': fixedSecret.toJson(),
       'rotatingSecretHash': rotatingSecretHash.toJson(),
       'rotatingSecretSalt': rotatingSecretSalt.toJson(),
-      'lastUpdated': lastUpdated.toJson(),
-      'created': created.toJson(),
+      'lastUpdatedAt': lastUpdatedAt.toJson(),
+      'createdAt': createdAt.toJson(),
     };
   }
 
@@ -212,8 +213,8 @@ class _RefreshTokenImpl extends RefreshToken {
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   }) : super._(
           id: id,
           authUserId: authUserId,
@@ -223,8 +224,8 @@ class _RefreshTokenImpl extends RefreshToken {
           fixedSecret: fixedSecret,
           rotatingSecretHash: rotatingSecretHash,
           rotatingSecretSalt: rotatingSecretSalt,
-          lastUpdated: lastUpdated,
-          created: created,
+          lastUpdatedAt: lastUpdatedAt,
+          createdAt: createdAt,
         );
 
   /// Returns a shallow copy of this [RefreshToken]
@@ -240,8 +241,8 @@ class _RefreshTokenImpl extends RefreshToken {
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
-    DateTime? lastUpdated,
-    DateTime? created,
+    DateTime? lastUpdatedAt,
+    DateTime? createdAt,
   }) {
     return RefreshToken(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -253,8 +254,8 @@ class _RefreshTokenImpl extends RefreshToken {
       fixedSecret: fixedSecret ?? this.fixedSecret.clone(),
       rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash.clone(),
       rotatingSecretSalt: rotatingSecretSalt ?? this.rotatingSecretSalt.clone(),
-      lastUpdated: lastUpdated ?? this.lastUpdated,
-      created: created ?? this.created,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }
@@ -286,13 +287,13 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       'rotatingSecretSalt',
       this,
     );
-    lastUpdated = _i1.ColumnDateTime(
-      'lastUpdated',
+    lastUpdatedAt = _i1.ColumnDateTime(
+      'lastUpdatedAt',
       this,
       hasDefault: true,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
       hasDefault: true,
     );
@@ -344,10 +345,10 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnByteData rotatingSecretSalt;
 
   /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
-  late final _i1.ColumnDateTime lastUpdated;
+  late final _i1.ColumnDateTime lastUpdatedAt;
 
   /// The time when the first refresh token was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   _i2.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
@@ -371,8 +372,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
         fixedSecret,
         rotatingSecretHash,
         rotatingSecretSalt,
-        lastUpdated,
-        created,
+        lastUpdatedAt,
+        createdAt,
       ];
 
   @override

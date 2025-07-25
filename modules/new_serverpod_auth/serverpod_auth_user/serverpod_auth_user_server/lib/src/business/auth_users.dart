@@ -1,4 +1,3 @@
-import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
@@ -35,7 +34,6 @@ abstract final class AuthUsers {
     final authUser = await AuthUser.db.insertRow(
       session,
       AuthUser(
-        created: clock.now(),
         blocked: blocked,
         scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
       ),
@@ -122,7 +120,7 @@ extension on AuthUser {
   AuthUserModel toModel() {
     return AuthUserModel(
       id: id!,
-      created: created,
+      createdAt: createdAt,
       blocked: blocked,
       scopeNames: scopeNames,
     );

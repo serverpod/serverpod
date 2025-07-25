@@ -26,10 +26,10 @@ abstract class UserProfile
     this.userName,
     this.fullName,
     this.email,
-    DateTime? created,
+    DateTime? createdAt,
     this.imageId,
     this.image,
-  }) : created = created ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfile({
     _i1.UuidValue? id,
@@ -38,7 +38,7 @@ abstract class UserProfile
     String? userName,
     String? fullName,
     String? email,
-    DateTime? created,
+    DateTime? createdAt,
     _i1.UuidValue? imageId,
     _i3.UserProfileImage? image,
   }) = _UserProfileImpl;
@@ -57,7 +57,8 @@ abstract class UserProfile
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       imageId: jsonSerialization['imageId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
@@ -95,7 +96,7 @@ abstract class UserProfile
   String? email;
 
   /// The time when this user was created.
-  DateTime created;
+  DateTime createdAt;
 
   _i1.UuidValue? imageId;
 
@@ -115,7 +116,7 @@ abstract class UserProfile
     String? userName,
     String? fullName,
     String? email,
-    DateTime? created,
+    DateTime? createdAt,
     _i1.UuidValue? imageId,
     _i3.UserProfileImage? image,
   });
@@ -128,7 +129,7 @@ abstract class UserProfile
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       if (imageId != null) 'imageId': imageId?.toJson(),
       if (image != null) 'image': image?.toJson(),
     };
@@ -185,7 +186,7 @@ class _UserProfileImpl extends UserProfile {
     String? userName,
     String? fullName,
     String? email,
-    DateTime? created,
+    DateTime? createdAt,
     _i1.UuidValue? imageId,
     _i3.UserProfileImage? image,
   }) : super._(
@@ -195,7 +196,7 @@ class _UserProfileImpl extends UserProfile {
           userName: userName,
           fullName: fullName,
           email: email,
-          created: created,
+          createdAt: createdAt,
           imageId: imageId,
           image: image,
         );
@@ -211,7 +212,7 @@ class _UserProfileImpl extends UserProfile {
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     Object? imageId = _Undefined,
     Object? image = _Undefined,
   }) {
@@ -223,7 +224,7 @@ class _UserProfileImpl extends UserProfile {
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       imageId: imageId is _i1.UuidValue? ? imageId : this.imageId,
       image: image is _i3.UserProfileImage? ? image : this.image?.copyWith(),
     );
@@ -249,8 +250,8 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
       'email',
       this,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
       hasDefault: true,
     );
@@ -280,7 +281,7 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnString email;
 
   /// The time when this user was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnUuid imageId;
 
@@ -320,7 +321,7 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
         userName,
         fullName,
         email,
-        created,
+        createdAt,
         imageId,
       ];
 

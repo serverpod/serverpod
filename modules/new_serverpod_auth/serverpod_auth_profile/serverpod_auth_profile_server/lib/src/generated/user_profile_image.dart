@@ -21,17 +21,17 @@ abstract class UserProfileImage
     this.id,
     required this.userProfileId,
     this.userProfile,
-    DateTime? created,
+    DateTime? createdAt,
     required this.storageId,
     required this.path,
     required this.url,
-  }) : created = created ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfileImage({
     _i1.UuidValue? id,
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
-    DateTime? created,
+    DateTime? createdAt,
     required String storageId,
     required String path,
     required Uri url,
@@ -48,7 +48,8 @@ abstract class UserProfileImage
           ? null
           : _i2.UserProfile.fromJson(
               (jsonSerialization['userProfile'] as Map<String, dynamic>)),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
@@ -68,7 +69,7 @@ abstract class UserProfileImage
   _i2.UserProfile? userProfile;
 
   /// The time when this profile image was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// Storage in which the image is stored.
   String storageId;
@@ -89,7 +90,7 @@ abstract class UserProfileImage
     _i1.UuidValue? id,
     _i1.UuidValue? userProfileId,
     _i2.UserProfile? userProfile,
-    DateTime? created,
+    DateTime? createdAt,
     String? storageId,
     String? path,
     Uri? url,
@@ -100,7 +101,7 @@ abstract class UserProfileImage
       if (id != null) 'id': id?.toJson(),
       'userProfileId': userProfileId.toJson(),
       if (userProfile != null) 'userProfile': userProfile?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'storageId': storageId,
       'path': path,
       'url': url.toJson(),
@@ -150,7 +151,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     _i1.UuidValue? id,
     required _i1.UuidValue userProfileId,
     _i2.UserProfile? userProfile,
-    DateTime? created,
+    DateTime? createdAt,
     required String storageId,
     required String path,
     required Uri url,
@@ -158,7 +159,7 @@ class _UserProfileImageImpl extends UserProfileImage {
           id: id,
           userProfileId: userProfileId,
           userProfile: userProfile,
-          created: created,
+          createdAt: createdAt,
           storageId: storageId,
           path: path,
           url: url,
@@ -172,7 +173,7 @@ class _UserProfileImageImpl extends UserProfileImage {
     Object? id = _Undefined,
     _i1.UuidValue? userProfileId,
     Object? userProfile = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     String? storageId,
     String? path,
     Uri? url,
@@ -183,7 +184,7 @@ class _UserProfileImageImpl extends UserProfileImage {
       userProfile: userProfile is _i2.UserProfile?
           ? userProfile
           : this.userProfile?.copyWith(),
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       url: url ?? this.url,
@@ -198,8 +199,8 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
       'userProfileId',
       this,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
       hasDefault: true,
     );
@@ -223,7 +224,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   _i2.UserProfileTable? _userProfile;
 
   /// The time when this profile image was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// Storage in which the image is stored.
   late final _i1.ColumnString storageId;
@@ -251,7 +252,7 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         userProfileId,
-        created,
+        createdAt,
         storageId,
         path,
         url,

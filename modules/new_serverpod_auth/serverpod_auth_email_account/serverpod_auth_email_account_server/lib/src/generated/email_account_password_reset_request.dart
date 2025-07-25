@@ -22,16 +22,16 @@ abstract class EmailAccountPasswordResetRequest
     this.id,
     required this.emailAccountId,
     this.emailAccount,
-    DateTime? created,
+    DateTime? createdAt,
     required this.verificationCodeHash,
     required this.verificationCodeSalt,
-  }) : created = created ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccountPasswordResetRequest({
     _i1.UuidValue? id,
     required _i1.UuidValue emailAccountId,
     _i2.EmailAccount? emailAccount,
-    DateTime? created,
+    DateTime? createdAt,
     required _i3.ByteData verificationCodeHash,
     required _i3.ByteData verificationCodeSalt,
   }) = _EmailAccountPasswordResetRequestImpl;
@@ -48,7 +48,8 @@ abstract class EmailAccountPasswordResetRequest
           ? null
           : _i2.EmailAccount.fromJson(
               (jsonSerialization['emailAccount'] as Map<String, dynamic>)),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       verificationCodeHash: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['verificationCodeHash']),
       verificationCodeSalt: _i1.ByteDataJsonExtension.fromJson(
@@ -69,7 +70,7 @@ abstract class EmailAccountPasswordResetRequest
   _i2.EmailAccount? emailAccount;
 
   /// The time when this request was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// The hash of the verification code sent to the user.
   _i3.ByteData verificationCodeHash;
@@ -87,7 +88,7 @@ abstract class EmailAccountPasswordResetRequest
     _i1.UuidValue? id,
     _i1.UuidValue? emailAccountId,
     _i2.EmailAccount? emailAccount,
-    DateTime? created,
+    DateTime? createdAt,
     _i3.ByteData? verificationCodeHash,
     _i3.ByteData? verificationCodeSalt,
   });
@@ -97,7 +98,7 @@ abstract class EmailAccountPasswordResetRequest
       if (id != null) 'id': id?.toJson(),
       'emailAccountId': emailAccountId.toJson(),
       if (emailAccount != null) 'emailAccount': emailAccount?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'verificationCodeHash': verificationCodeHash.toJson(),
       'verificationCodeSalt': verificationCodeSalt.toJson(),
     };
@@ -148,14 +149,14 @@ class _EmailAccountPasswordResetRequestImpl
     _i1.UuidValue? id,
     required _i1.UuidValue emailAccountId,
     _i2.EmailAccount? emailAccount,
-    DateTime? created,
+    DateTime? createdAt,
     required _i3.ByteData verificationCodeHash,
     required _i3.ByteData verificationCodeSalt,
   }) : super._(
           id: id,
           emailAccountId: emailAccountId,
           emailAccount: emailAccount,
-          created: created,
+          createdAt: createdAt,
           verificationCodeHash: verificationCodeHash,
           verificationCodeSalt: verificationCodeSalt,
         );
@@ -168,7 +169,7 @@ class _EmailAccountPasswordResetRequestImpl
     Object? id = _Undefined,
     _i1.UuidValue? emailAccountId,
     Object? emailAccount = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     _i3.ByteData? verificationCodeHash,
     _i3.ByteData? verificationCodeSalt,
   }) {
@@ -178,7 +179,7 @@ class _EmailAccountPasswordResetRequestImpl
       emailAccount: emailAccount is _i2.EmailAccount?
           ? emailAccount
           : this.emailAccount?.copyWith(),
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       verificationCodeHash:
           verificationCodeHash ?? this.verificationCodeHash.clone(),
       verificationCodeSalt:
@@ -195,8 +196,8 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
       'emailAccountId',
       this,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
       hasDefault: true,
     );
@@ -216,7 +217,7 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
   _i2.EmailAccountTable? _emailAccount;
 
   /// The time when this request was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// The hash of the verification code sent to the user.
   late final _i1.ColumnByteData verificationCodeHash;
@@ -241,7 +242,7 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         emailAccountId,
-        created,
+        createdAt,
         verificationCodeHash,
         verificationCodeSalt,
       ];
